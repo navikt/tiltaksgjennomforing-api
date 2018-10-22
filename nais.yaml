@@ -1,0 +1,16 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: tiltaksgjennomforing-backend
+  namespace: default
+spec:
+  image: navikt/tiltaksgjennomforing-backend:latest
+  team: tag
+  port: 8080
+  healthcheck:
+    liveness:
+      path: /isAlive
+      initialDelay: 20
+    readiness:
+      path: /isReady
+      initialDelay: 20
