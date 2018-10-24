@@ -3,6 +3,8 @@ kind: "Application"
 metadata:
   name: tiltaksgjennomforing-backend
   namespace: default
+  labels:
+    team: teamtag
 spec:
   image: navikt/tiltaksgjennomforing-backend:9
   team: teamtag
