@@ -5,8 +5,9 @@ metadata:
   namespace: default
 spec:
   image: navikt/tiltaksgjennomforing-backend:latest
-  team: tag
+  team: teamtag
   port: 8080
+  secrets: true
   healthcheck:
     liveness:
       path: /isAlive
