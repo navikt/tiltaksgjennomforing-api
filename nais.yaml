@@ -10,6 +10,8 @@ spec:
   team: teamtag
   port: 8080
   secrets: true
+  ingresses:
+    - https://tiltaksgjennomforing.nais.preprod.local
   healthcheck:
     liveness:
       path: /isAlive
