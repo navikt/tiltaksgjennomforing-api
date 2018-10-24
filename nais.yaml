@@ -4,7 +4,7 @@ metadata:
   name: tiltaksgjennomforing-backend
   namespace: default
 spec:
-  image: navikt/tiltaksgjennomforing-backend:latest
+  image: navikt/tiltaksgjennomforing-backend:9
   team: teamtag
   port: 8080
   secrets: true
