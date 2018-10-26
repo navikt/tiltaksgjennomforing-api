@@ -12,10 +12,9 @@ spec:
   secrets: true
   ingresses:
     - https://tiltaksgjennomforing.nais.preprod.local
-  healthcheck:
-    liveness:
-      path: /isAlive
-      initialDelay: 20
-    readiness:
-      path: /isReady
-      initialDelay: 20
+  liveness:
+    path: /isAlive
+    initialDelay: 20
+  readiness:
+    path: /isReady
+    initialDelay: 20
