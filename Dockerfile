@@ -5,5 +5,5 @@ COPY ./src ./src
 RUN mvn clean package
 
 FROM navikt/java:11
-ENV spring.config.location /var/vault/djssdkløask
+ENV SPRING_PROFILES_ACTIVE prod
 COPY --from=builder /target/tiltaksgjennomforing-1.0.0-SNAPSHOT.jar app.jar
