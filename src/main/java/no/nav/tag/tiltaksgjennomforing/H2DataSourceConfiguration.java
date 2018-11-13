@@ -1,14 +1,16 @@
 package no.nav.tag.tiltaksgjennomforing;
 
-import org.flywaydb.core.Flyway;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
 
 @Configuration
-public class DataSourceConfiguration {
+@Profile("dev")
+public class H2DataSourceConfiguration {
+
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -16,15 +18,6 @@ public class DataSourceConfiguration {
         dataSource.setUrl("jdbc:h2:mem:db;DB_CLOSE_DELAY=-1;MODE=PostgreSQL");
         dataSource.setUsername("sa");
         dataSource.setPassword("sa");
-        migrer(dataSource);
         return dataSource;
-    }
-
-    private static void migrer(DataSource dataSource) {
-        Flyway
-                .configure()
-                .dataSource(dataSource)
-                .load()
-                .migrate();
     }
 }

@@ -10,6 +10,9 @@ spec:
   team: teamtag
   port: 8080
   secrets: true
+  env:
+    - name: spring.config.location
+      value: /var/run/secrets/nais.io/vault/application.properties
   ingresses:
     - https://tiltaksgjennomforing.nais.preprod.local
   liveness:
