@@ -11,11 +11,11 @@ import javax.sql.DataSource;
 @Configuration
 @Profile("postgres")
 public class PostgresDataSourceConfiguration {
-    @Value("db_url")
+    @Value("${db_url}")
     private String url;
-    @Value("db_username")
+    @Value("${db_username}")
     private String username;
-    @Value("db_password")
+    @Value("${db_password}")
     private String password;
 
     @Bean
