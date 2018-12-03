@@ -6,17 +6,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class PersonController {
-    @Autowired
-    private PersonRepository repository;
+public class AvtaleController {
 
-    @RequestMapping("/person/{id}")
-    public Person hent(@PathVariable("id") Integer id) {
+    @Autowired
+    private AvtaleRepository repository;
+
+    @RequestMapping("/avtaler/{id}")
+    public Avtale hent(@PathVariable("id") Integer id) {
         return repository.findById(id).orElseThrow(ResourceNotFoundException::new);
     }
 
-    @RequestMapping("/person")
-    public Iterable<Person> hentAlle() {
+    @RequestMapping("/avtaler")
+    public Iterable<Avtale> hentAlle() {
         return repository.findAll();
     }
 }
