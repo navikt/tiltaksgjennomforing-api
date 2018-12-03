@@ -1,9 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class AvtaleController {
@@ -19,5 +17,11 @@ public class AvtaleController {
     @RequestMapping("/avtaler")
     public Iterable<Avtale> hentAlle() {
         return repository.findAll();
+    }
+
+    @PostMapping("/avtaler")
+    public Integer opprett(@RequestBody Avtale avtale) {
+        Avtale opprettetAvtale = repository.save(avtale);
+        return opprettetAvtale.getId();
     }
 }

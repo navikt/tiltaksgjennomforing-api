@@ -10,7 +10,7 @@ public class Avtale {
 
     @Id
     private Integer id;
-    private LocalDateTime opprettetTidspunkt;
+    private LocalDateTime opprettetTidspunkt = LocalDateTime.now();
 
     private String deltakerFornavn;
     private String deltakerEtternavn;
