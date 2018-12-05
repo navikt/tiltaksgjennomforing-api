@@ -2,8 +2,10 @@ package no.nav.tag.tiltaksgjennomforing;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class Avtale {
@@ -36,15 +38,16 @@ public class Avtale {
     private String oppfolging;
     private String tilrettelegging;
 
-    private LocalDateTime startDatoTimestamp;
+    private LocalDateTime startDatoTidspunkt;
     private Integer arbeidstreningLengde;
     private Integer arbeidstreningStillingprosent;
 
-    // maal: [],
-    // oppgaver: [],
+    @Column(keyColumn = "id")
+    private List<Maal> maal;
+    @Column(keyColumn = "id")
+    private List<Oppgave> oppgaver;
 
     private boolean bekreftetAvBruker;
     private boolean bekreftetAvArbeidsgiver;
     private boolean bekreftetAvVeileder;
-
 }

@@ -26,13 +26,31 @@ CREATE TABLE avtale (
   oppfolging varchar(255),
   tilrettelegging varchar(255),
 
-  start_dato_timestamp timestamp without time zone,
+  start_dato_tidspunkt timestamp without time zone,
   arbeidstrening_lengde integer,
   arbeidstrening_stillingprosent integer,
 
   bekreftet_av_bruker boolean,
   bekreftet_av_arbeidsgiver boolean,
   bekreftet_av_veileder boolean,
+);
+
+CREATE TABLE maal (
+  id serial primary key,
+  opprettet_tidspunkt timestamp without time zone not null default now(),
+  kategori varchar(255),
+  beskrivelse varchar(255),
+  avtale integer references avtale(id),
+);
+
+
+CREATE TABLE oppgave (
+  id serial primary key,
+  opprettet_tidspunkt timestamp without time zone not null default now(),
+  tittel varchar(255),
+  beskrivelse varchar(255),
+  opplaering varchar(255),
+  avtale integer references avtale(id),
 );
 
 insert into AVTALE (
@@ -55,7 +73,7 @@ insert into AVTALE (
   veileder_tlf,
   oppfolging,
   tilrettelegging,
-  start_dato_timestamp,
+  start_dato_tidspunkt,
   arbeidstrening_lengde,
   arbeidstrening_stillingprosent,
   bekreftet_av_bruker,

@@ -1,39 +1,87 @@
 package no.nav.tag.tiltaksgjennomforing;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.util.List;
+
+import static no.nav.tag.tiltaksgjennomforing.Utils.lagUri;
 
 @RestController
 public class AvtaleController {
 
-    private AvtaleRepository repository;
+    private AvtaleRepository avtaleRepository;
+    private OppgaveRepository oppgaveRepository;
+    private MaalRepository maalRepository;
 
     @Autowired
-    public AvtaleController(AvtaleRepository repository) {
-        this.repository = repository;
+    public AvtaleController(AvtaleRepository avtaleRepository,
+                            OppgaveRepository oppgaveRepository,
+                            MaalRepository maalRepository) {
+        this.avtaleRepository = avtaleRepository;
+        this.oppgaveRepository = oppgaveRepository;
+        this.maalRepository = maalRepository;
     }
 
     @GetMapping("/avtaler/{id}")
     public Avtale hent(@PathVariable("id") Integer id) {
-        return repository.findById(id).orElseThrow(ResourceNotFoundException::new);
+        Avtale avtale = avtaleRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
+        List<Oppgave> oppgaver = oppgaveRepository.hentOppgaverForAvtale(id);
+        List<Maal> maal = maalRepository.hentMaalForAvtale(id);
+        avtale.setOppgaver(oppgaver);
+        avtale.setMaal(maal);
+        return avtale;
     }
 
     @GetMapping("/avtaler")
     public Iterable<Avtale> hentAlle() {
-        return repository.findAll();
+        return avtaleRepository.findAll();
     }
 
     @PostMapping("/avtaler")
-    public Integer opprett(@RequestBody Avtale avtale) {
-        Avtale opprettetAvtale = repository.save(avtale);
-        return opprettetAvtale.getId();
+    public ResponseEntity opprettAvtale(@RequestBody Avtale avtale) {
+        Avtale opprettetAvtale = avtaleRepository.save(avtale);
+        URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
+        return ResponseEntity.created(uri).build();
     }
 
-    @PutMapping("/avtaler/{id}")
-    public void settAvtale(@PathVariable("id") Integer id, @RequestBody Avtale avtale) {
-        if (repository.existsById(id)) {
-            avtale.setId(id);
+    @PostMapping("/avtaler/{avtaleId}/maal")
+    public ResponseEntity opprettMaal(@PathVariable("avtaleId") Integer avtaleId, @RequestBody Maal maal) {
+        if (avtaleRepository.existsById(avtaleId)) {
+            maal.setAvtale(avtaleId);
+            Maal lagretMaal = maalRepository.save(maal);
+            URI uri = lagUri("/avtaler/" + avtaleId + "/maal/" + lagretMaal.getId());
+            return ResponseEntity.created(uri).build();
+        } else {
+            return ResponseEntity.notFound().build();
         }
-        repository.save(avtale);
+    }
+
+    @PostMapping("/avtaler/{avtaleId}/oppgaver")
+    public ResponseEntity opprettOppgave(@PathVariable("avtaleId") Integer avtaleId, @RequestBody Oppgave oppgave) {
+        if (avtaleRepository.existsById(avtaleId)) {
+            oppgave.setAvtale(avtaleId);
+            Oppgave lagretOppgave = oppgaveRepository.save(oppgave);
+            URI uri = lagUri("/avtaler/" + avtaleId + "/oppgaver/" + lagretOppgave.getId());
+            return ResponseEntity.created(uri).build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/avtaler/{avtaleId}")
+    public ResponseEntity putMapping(@PathVariable("avtaleId") Integer avtaleId, @RequestBody Avtale avtale) {
+        if (avtaleRepository.existsById(avtaleId)) {
+            Avtale gammelAvtale = avtaleRepository.findById(avtaleId).get();
+            // Ikke endre id eller opprettetTidspunkt
+            avtale.setId(gammelAvtale.getId());
+            avtale.setOpprettetTidspunkt(gammelAvtale.getOpprettetTidspunkt());
+            avtaleRepository.save(avtale);
+            return ResponseEntity.ok().build();
+        } {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
