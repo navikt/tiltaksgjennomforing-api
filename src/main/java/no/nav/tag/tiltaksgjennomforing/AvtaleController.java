@@ -10,6 +10,7 @@ import java.util.List;
 import static no.nav.tag.tiltaksgjennomforing.Utils.lagUri;
 
 @RestController
+@RequestMapping("/api")
 public class AvtaleController {
 
     private AvtaleRepository avtaleRepository;
