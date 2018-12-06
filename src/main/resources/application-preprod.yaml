@@ -1,4 +1,3 @@
-http.proxy: http://webproxy-nais.nav.no:8088
 no.nav.security.oidc.issuer:
 #  selvbetjening:
 #    discoveryurl: ${selvbetjening_discoveryurl}
