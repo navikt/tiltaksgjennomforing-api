@@ -11,14 +11,13 @@ spec:
   port: 8080
   secrets: true
   ingresses:
-    - https://tiltaksgjennomforing.nais.preprod.local
+  - https://tiltaksgjennomforing.nais.preprod.local
   liveness:
     path: /isAlive
     initialDelay: 20
   readiness:
     path: /isReady
     initialDelay: 20
-  containers:
-    - env:
-        - name: SPRING_PROFILES_ACTIVE
-          value: preprod
+  env:
+  - name: SPRING_PROFILES_ACTIVE
+    value: preprod
