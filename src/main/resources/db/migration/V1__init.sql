@@ -32,7 +32,7 @@ CREATE TABLE avtale (
 
   bekreftet_av_bruker boolean,
   bekreftet_av_arbeidsgiver boolean,
-  bekreftet_av_veileder boolean,
+  bekreftet_av_veileder boolean
 );
 
 CREATE TABLE maal (
@@ -40,7 +40,7 @@ CREATE TABLE maal (
   opprettet_tidspunkt timestamp without time zone not null default now(),
   kategori varchar(255),
   beskrivelse varchar(255),
-  avtale integer references avtale(id),
+  avtale integer references avtale(id)
 );
 
 
@@ -50,5 +50,5 @@ CREATE TABLE oppgave (
   tittel varchar(255),
   beskrivelse varchar(255),
   opplaering varchar(255),
-  avtale integer references avtale(id),
+  avtale integer references avtale(id)
 );
