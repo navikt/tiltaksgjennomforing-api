@@ -18,3 +18,7 @@ spec:
   readiness:
     path: /isReady
     initialDelay: 20
+  containers:
+    - env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: preprod

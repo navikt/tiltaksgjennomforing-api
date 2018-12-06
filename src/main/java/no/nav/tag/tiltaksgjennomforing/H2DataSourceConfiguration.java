@@ -8,7 +8,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import javax.sql.DataSource;
 
 @Configuration
-@Profile("h2")
+@Profile("dev")
 public class H2DataSourceConfiguration {
 
     @Bean

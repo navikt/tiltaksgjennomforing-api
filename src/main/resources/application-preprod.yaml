@@ -1,0 +1,7 @@
+no.nav.security.oidc.issuer:
+  selvbetjening:
+    discoveryurl: ${selvbetjening_discoveryurl}
+    accepted_audience: ${selvbetjening_accepted_audience}
+  isso:
+    discoveryurl: ${isso_discoveryurl}
+    accepted_audience: ${isso_accepted_audience}

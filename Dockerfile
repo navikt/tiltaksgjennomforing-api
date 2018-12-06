@@ -5,5 +5,4 @@ COPY ./src ./src
 RUN mvn clean package
 
 FROM navikt/java:11
-ENV SPRING_PROFILES_ACTIVE postgres
 COPY --from=builder /target/tiltaksgjennomforing-1.0.0-SNAPSHOT.jar app.jar

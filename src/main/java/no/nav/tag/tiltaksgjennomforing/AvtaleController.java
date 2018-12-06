@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing;
 
+import no.nav.security.oidc.api.Protected;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +10,7 @@ import java.util.List;
 
 import static no.nav.tag.tiltaksgjennomforing.Utils.lagUri;
 
+@Protected
 @RestController
 @RequestMapping("/api")
 public class AvtaleController {
