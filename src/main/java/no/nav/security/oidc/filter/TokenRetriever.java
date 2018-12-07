@@ -77,6 +77,8 @@ public class TokenRetriever {
     private static Optional<TokenContext> createTokenContext(MultiIssuerConfiguration config, String token) {
         try {
             JWT jwt = JWTParser.parse(token);
+            logger.debug("jwt.getJWTClaimsSet().getIssuer() = {}", jwt.getJWTClaimsSet().getIssuer());
+            logger.debug("config.isssuers = {}", config.getIssuerShortNames());
             if (config.getIssuer(jwt.getJWTClaimsSet().getIssuer()) != null) {
                 String issuer = config.getIssuer(jwt.getJWTClaimsSet().getIssuer()).getName();
                 return Optional.of(new TokenContext(issuer, token));
