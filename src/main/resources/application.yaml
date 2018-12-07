@@ -1,3 +1,4 @@
+http.proxy: ${HTTP_PROXY:}
 spring.profiles.active: dev
 logging:
   level:
