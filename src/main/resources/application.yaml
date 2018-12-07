@@ -1,0 +1,4 @@
+spring.profiles.active: dev
+logging:
+  level:
+    no.nav: ${NO_NAV_LOGGING_LEVEL:INFO}
