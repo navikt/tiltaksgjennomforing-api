@@ -1,7 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing;
 
 import no.nav.security.oidc.api.Protected;
-import no.nav.security.oidc.api.ProtectedWithClaims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,15 +38,8 @@ public class AvtaleController {
         return avtale;
     }
 
-    @ProtectedWithClaims(issuer = "isso")
     @GetMapping("/avtaler")
     public Iterable<Avtale> hentAlle() {
-        return avtaleRepository.findAll();
-    }
-
-    @ProtectedWithClaims(issuer = "selvbetjening")
-    @GetMapping("/avtaler_sb")
-    public Iterable<Avtale> hentAlleTest() {
         return avtaleRepository.findAll();
     }
 
@@ -91,7 +83,8 @@ public class AvtaleController {
             avtale.setOpprettetTidspunkt(gammelAvtale.getOpprettetTidspunkt());
             avtaleRepository.save(avtale);
             return ResponseEntity.ok().build();
-        } {
+        }
+        {
             return ResponseEntity.notFound().build();
         }
     }
