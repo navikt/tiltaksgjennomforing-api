@@ -61,14 +61,11 @@ public class TokenRetriever {
                         logger.debug("found cookie with expected name {}", expectedName);
                         Optional<TokenContext> tokenContext = createTokenContext(config, cookie.getValue());
 
-                        // Original kode:
-//                         if (tokenContext.isPresent()) {
-                        if (tokenContext.isPresent() && tokenContext.get().getIssuer().equalsIgnoreCase(issuer)) {
+                        if (tokenContext.isPresent()) {
                             tokens.add(tokenContext.get());
                             logger.debug("found token for issuer {}. adding new unvalidated tokencontext.", tokenContext.get().getIssuer());
                         }
-                        // Original kode:
-//                         return tokens;
+                         return tokens;
                     }
                 }
             }
