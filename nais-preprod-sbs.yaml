@@ -11,13 +11,15 @@ spec:
   port: 8080
   secrets: true
   ingresses:
-  - https://tiltaksgjennomforing.nais.preprod.local
+  - https://tjenester-t1.nav.no/tiltaksgjennomforing
   liveness:
-    path: /isAlive
+    path: /tiltaksgjennomforing/internal/isAlive
     initialDelay: 20
   readiness:
-    path: /isReady
+    path: /tiltaksgjennomforing/internal/isReady
     initialDelay: 20
   env:
   - name: SPRING_PROFILES_ACTIVE
     value: preprod
+  - name: CONTEXT_ROOT
+    value: /tiltaksgjennomforing

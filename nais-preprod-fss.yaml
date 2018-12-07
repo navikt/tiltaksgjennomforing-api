@@ -1,0 +1,23 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: tiltaksgjennomforing-backend
+  namespace: default
+  labels:
+    team: teamtag
+spec:
+  image: navikt/tiltaksgjennomforing-backend:latest
+  team: teamtag
+  port: 8080
+  secrets: true
+  ingresses:
+  - https://tiltaksgjennomforing.nais.preprod.local
+  liveness:
+    path: /internal/isAlive
+    initialDelay: 20
+  readiness:
+    path: /internal/isReady
+    initialDelay: 20
+  env:
+  - name: SPRING_PROFILES_ACTIVE
+    value: preprod

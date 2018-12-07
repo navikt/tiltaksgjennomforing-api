@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Unprotected
 public class HealthcheckController {
 
-    @RequestMapping(value = "/isAlive", method = RequestMethod.GET)
+    @RequestMapping(value = "/internal/isAlive", method = RequestMethod.GET)
     @ResponseBody
     public String isAlive() {
         return "ok";
     }
 
-    @RequestMapping(value = "/isReady", method = RequestMethod.GET)
+    @RequestMapping(value = "/internal/isReady", method = RequestMethod.GET)
     @ResponseBody
     public String isReady() {
         return "ok";
