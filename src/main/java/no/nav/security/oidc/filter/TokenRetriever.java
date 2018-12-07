@@ -61,11 +61,10 @@ public class TokenRetriever {
                         logger.debug("found cookie with expected name {}", expectedName);
                         Optional<TokenContext> tokenContext = createTokenContext(config, cookie.getValue());
 
-                        if (tokenContext.isPresent()) {
+                        if (tokenContext.isPresent() && tokenContext.get().getIssuer().equalsIgnoreCase(issuer)) {
                             tokens.add(tokenContext.get());
                             logger.debug("found token for issuer {}. adding new unvalidated tokencontext.", tokenContext.get().getIssuer());
                         }
-                         return tokens;
                     }
                 }
             }
@@ -77,8 +76,6 @@ public class TokenRetriever {
     private static Optional<TokenContext> createTokenContext(MultiIssuerConfiguration config, String token) {
         try {
             JWT jwt = JWTParser.parse(token);
-            logger.debug("jwt.getJWTClaimsSet().getIssuer() = {}", jwt.getJWTClaimsSet().getIssuer());
-            logger.debug("config.isssuers = {}", config.getIssuerShortNames());
             if (config.getIssuer(jwt.getJWTClaimsSet().getIssuer()) != null) {
                 String issuer = config.getIssuer(jwt.getJWTClaimsSet().getIssuer()).getName();
                 return Optional.of(new TokenContext(issuer, token));
