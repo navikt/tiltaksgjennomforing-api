@@ -84,17 +84,17 @@ public class OIDCTokenControllerHandlerInterceptor implements HandlerInterceptor
             Method method = handlerMethod.getMethod();
             Class<?> declaringClass = method.getDeclaringClass();
             if (declaringClass.isAnnotationPresent(Unprotected.class)) {
-                logger.debug("method " + handlerMethod + " marked @Unprotected throug annotation on class");
+                logger.debug("method " + handlerMethod + " marked @Unprotected through annotation on class");
                 return true;
             }
 
             if (declaringClass.isAnnotationPresent(ProtectedWithClaims.class)) {
-                logger.debug("method " + handlerMethod + " marked @ProtectedWithClaims");
+                logger.debug("method " + handlerMethod + " marked @ProtectedWithClaims through annotation on class");
                 return handleProtectedWithClaimsAnnotation(validationContext,
                         declaringClass.getAnnotation(ProtectedWithClaims.class));
             } else {
                 if (declaringClass.isAnnotationPresent(Protected.class)) {
-                    logger.debug("method " + handlerMethod + " marked @Protected");
+                    logger.debug("method " + handlerMethod + " marked @Protected through annotation on class");
                     return handleProtectedAnnotation(validationContext);
                 }
             }
