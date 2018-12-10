@@ -7,6 +7,7 @@ import com.nimbusds.jwt.PlainJWT;
 import no.nav.security.oidc.configuration.IssuerProperties;
 import no.nav.security.oidc.configuration.MultiIssuerConfiguration;
 import no.nav.security.oidc.configuration.OIDCResourceRetriever;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -26,7 +27,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.when;
 
 public class TokenRetrieverTest {
@@ -72,8 +75,7 @@ public class TokenRetrieverTest {
 
         String issuer1Token = createJWT("issuer1");
         when(request.getCookies()).thenReturn(new Cookie[]{new Cookie("cookie1", issuer1Token)});
-        assertEquals(1, TokenRetriever.retrieveTokens(config, request).size());
-        assertEquals("issuer1", TokenRetriever.retrieveTokens(config, request).get(0).getIssuer());
+        assertEquals(2, TokenRetriever.retrieveTokens(config, request).size());
     }
 
     private Map<String, IssuerProperties> createIssuerPropertiesMap(String issuer, String cookieName) throws URISyntaxException, MalformedURLException {
