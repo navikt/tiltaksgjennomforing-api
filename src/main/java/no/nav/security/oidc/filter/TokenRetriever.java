@@ -18,6 +18,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +27,7 @@ public class TokenRetriever {
     private static Logger logger = LoggerFactory.getLogger(TokenRetriever.class);
 
     public static List<TokenContext> retrieveTokens(MultiIssuerConfiguration config, HttpServletRequest request) {
-        List<TokenContext> tokens = new ArrayList<>();
+        var tokens = new HashMap<String, TokenContext>();
 
         logger.debug("checking authorization header ...");
         String auth = request.getHeader(OIDCConstants.AUTHORIZATION_HEADER);
@@ -37,11 +38,11 @@ public class TokenRetriever {
                     String[] pair = authElement.split(" ");
                     if (pair[0].trim().equalsIgnoreCase("bearer")) {
                         String token = pair[1].trim();
-                        Optional<TokenContext> tokenContext = createTokenContext(config, token);
-                        if (tokenContext.isPresent()) {
-                            tokens.add(tokenContext.get());
-                            logger.debug("found token for issuer {}. adding new unvalidated tokencontext.", tokenContext.get().getIssuer());
-                        }
+                        createTokenContext(config, token)
+                                .ifPresent(tokenContext -> {
+                                    tokens.put(tokenContext.getIssuer(), tokenContext);
+                                    logger.debug("found token for issuer {}. adding new unvalidated tokencontext.", tokenContext.getIssuer());
+                                });
                     }
                 } catch (Exception e) {
                     // log, ignore and jump to next
@@ -59,18 +60,17 @@ public class TokenRetriever {
                 for (Cookie cookie : cookies) {
                     if (cookie.getName().equalsIgnoreCase(expectedName)) {
                         logger.debug("found cookie with expected name {}", expectedName);
-                        Optional<TokenContext> tokenContext = createTokenContext(config, cookie.getValue());
-
-                        if (tokenContext.isPresent()) {
-                            tokens.add(tokenContext.get());
-                            logger.debug("found token for issuer {}. adding new unvalidated tokencontext.", tokenContext.get().getIssuer());
-                        }
+                        createTokenContext(config, cookie.getValue())
+                                .ifPresentOrElse(tokenContext -> {
+                                    tokens.put(tokenContext.getIssuer(), tokenContext);
+                                    logger.debug("found token for issuer {}. adding new unvalidated tokencontext.", tokenContext.getIssuer());
+                                }, () -> logger.debug("could not find token for issuer {}", issuer));
                     }
                 }
             }
         }
 
-        return tokens;
+        return new ArrayList<>(tokens.values());
     }
 
     private static Optional<TokenContext> createTokenContext(MultiIssuerConfiguration config, String token) {
