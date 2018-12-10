@@ -20,6 +20,6 @@ spec:
     initialDelay: 20
   env:
   - name: SPRING_PROFILES_ACTIVE
-    value: preprod
+    value: nais
   - name: HTTP_PROXY
     value: http://webproxy-nais.nav.no:8088
