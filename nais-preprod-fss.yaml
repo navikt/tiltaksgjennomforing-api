@@ -21,3 +21,5 @@ spec:
   env:
   - name: SPRING_PROFILES_ACTIVE
     value: preprod
+  - name: HTTP_PROXY
+    value: http://webproxy-nais.nav.no:8088
