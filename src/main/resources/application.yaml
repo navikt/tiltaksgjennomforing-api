@@ -1,5 +1,5 @@
 http.proxy: ${HTTP_PROXY:}
-server.servlet.context-path: ${CONTEXT_ROOT:}
+server.servlet.context-path: ${CONTEXT_PATH:}
 spring.profiles.active: dev
 logging:
   level:

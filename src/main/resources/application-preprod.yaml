@@ -1,7 +1,15 @@
+spring:
+  datasource:
+    platform: postgres
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driverClassName: org.postgresql.Driver
+
 no.nav.security.oidc.issuer:
   selvbetjening:
-    discoveryurl: ${selvbetjening_discoveryurl}
-    accepted_audience: ${selvbetjening_accepted_audience}
+    discoveryurl: ${SELVBETJENING_DISCOVERYURL}
+    accepted_audience: ${SELVBETJENING_ACCEPTED_AUDIENCE}
   isso:
-    discoveryurl: ${isso_discoveryurl}
-    accepted_audience: ${isso_accepted_audience}
+    discoveryurl: ${ISSO_DISCOVERYURL}
+    accepted_audience: ${ISSO_ACCEPTED_AUDIENCE}

@@ -21,5 +21,5 @@ spec:
   env:
   - name: SPRING_PROFILES_ACTIVE
     value: preprod
-  - name: CONTEXT_ROOT
+  - name: CONTEXT_PATH
     value: /tiltaksgjennomforing
