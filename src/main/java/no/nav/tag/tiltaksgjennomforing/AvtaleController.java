@@ -73,7 +73,7 @@ public class AvtaleController {
     }
 
     @PutMapping("/avtaler/{avtaleId}")
-    public ResponseEntity putMapping(@PathVariable("avtaleId") Integer avtaleId, @RequestBody Avtale avtale) {
+    public ResponseEntity endreAvtale(@PathVariable("avtaleId") Integer avtaleId, @RequestBody Avtale avtale) {
         if (avtaleRepository.existsById(avtaleId)) {
             Avtale gammelAvtale = avtaleRepository.findById(avtaleId).get();
             // Ikke endre id eller opprettetTidspunkt
