@@ -1,8 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing;
 
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
@@ -11,10 +13,11 @@ import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
+@RunWith(MockitoJUnitRunner.class)
 public class AvtaleControllerTest {
 
+    @InjectMocks
     private AvtaleController avtaleController;
 
     @Mock
@@ -25,12 +28,6 @@ public class AvtaleControllerTest {
 
     @Mock
     private MaalRepository maalRepository;
-
-    @Before
-    public void setUp() {
-        initMocks(this);
-        avtaleController = new AvtaleController(avtaleRepository, oppgaveRepository, maalRepository);
-    }
 
     @Test
     public void hentSkalReturnereRiktigAvtale() {
@@ -114,7 +111,7 @@ public class AvtaleControllerTest {
         assertEquals(svar.getStatusCodeValue(), 200);
     }
 
-    private Avtale lagAvtale() {
+    private static Avtale lagAvtale() {
         Avtale avtale = new Avtale();
         avtale.setId(1);
         avtale.setOpprettetTidspunkt(LocalDateTime.of(1, 1, 1, 1, 1));
@@ -125,7 +122,7 @@ public class AvtaleControllerTest {
         return avtale;
     }
 
-    private Maal lagMaal() {
+    private static Maal lagMaal() {
         Maal maal = new Maal();
         maal.setId(1);
         maal.setOpprettetTidspunkt(LocalDateTime.of(1, 1, 1, 1, 1));
@@ -135,7 +132,7 @@ public class AvtaleControllerTest {
         return maal;
     }
 
-    private Oppgave lagOppgave() {
+    private static Oppgave lagOppgave() {
         Oppgave oppgave = new Oppgave();
         oppgave.setId(1);
         oppgave.setOpprettetTidspunkt(LocalDateTime.of(1, 1, 1, 1, 1));
