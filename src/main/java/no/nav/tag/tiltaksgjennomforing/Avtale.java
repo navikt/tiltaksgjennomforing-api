@@ -11,7 +11,7 @@ import java.util.List;
 public class Avtale {
 
     @Id
-    private String id;
+    private Integer id;
     private LocalDateTime opprettetTidspunkt = LocalDateTime.now();
 
     private String deltakerFornavn;
