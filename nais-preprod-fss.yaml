@@ -11,7 +11,7 @@ spec:
   port: 8080
   secrets: true
   ingresses:
-  - https://tiltaksgjennomforing.nais.preprod.local
+  - https://tiltaksgjennomforing.nais.preprod.local/tiltaksgjennomforing-api
   liveness:
     path: /internal/isAlive
     initialDelay: 20
@@ -23,3 +23,5 @@ spec:
     value: nais
   - name: HTTP_PROXY
     value: http://webproxy-nais.nav.no:8088
+  - name: CONTEXT_PATH
+    value: /tiltaksgjennomforing-api

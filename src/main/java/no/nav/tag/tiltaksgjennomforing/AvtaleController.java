@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing;
 
-import no.nav.security.oidc.api.Protected;
+import no.nav.security.oidc.api.Unprotected;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,9 +10,9 @@ import java.util.List;
 
 import static no.nav.tag.tiltaksgjennomforing.Utils.lagUri;
 
-@Protected
+@Unprotected
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/avtaler")
 public class AvtaleController {
 
     private AvtaleRepository avtaleRepository;
@@ -28,7 +28,7 @@ public class AvtaleController {
         this.maalRepository = maalRepository;
     }
 
-    @GetMapping("/avtaler/{id}")
+    @GetMapping("/{id}")
     public Avtale hent(@PathVariable("id") Integer id) {
         Avtale avtale = avtaleRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
         List<Oppgave> oppgaver = oppgaveRepository.hentOppgaverForAvtale(id);
@@ -38,19 +38,19 @@ public class AvtaleController {
         return avtale;
     }
 
-    @GetMapping("/avtaler")
+    @GetMapping
     public Iterable<Avtale> hentAlle() {
         return avtaleRepository.findAll();
     }
 
-    @PostMapping("/avtaler")
+    @PostMapping
     public ResponseEntity opprettAvtale(@RequestBody Avtale avtale) {
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
     }
 
-    @PostMapping("/avtaler/{avtaleId}/maal")
+    @PostMapping("/{avtaleId}/maal")
     public ResponseEntity opprettMaal(@PathVariable("avtaleId") Integer avtaleId, @RequestBody Maal maal) {
         if (avtaleRepository.existsById(avtaleId)) {
             maal.setAvtale(avtaleId);
@@ -62,7 +62,7 @@ public class AvtaleController {
         }
     }
 
-    @PostMapping("/avtaler/{avtaleId}/oppgaver")
+    @PostMapping("/{avtaleId}/oppgaver")
     public ResponseEntity opprettOppgave(@PathVariable("avtaleId") Integer avtaleId, @RequestBody Oppgave oppgave) {
         if (avtaleRepository.existsById(avtaleId)) {
             oppgave.setAvtale(avtaleId);
@@ -74,8 +74,8 @@ public class AvtaleController {
         }
     }
 
-    @PutMapping("/avtaler/{avtaleId}")
-    public ResponseEntity putMapping(@PathVariable("avtaleId") Integer avtaleId, @RequestBody Avtale avtale) {
+    @PutMapping("/{avtaleId}")
+    public ResponseEntity endreAvtale(@PathVariable("avtaleId") Integer avtaleId, @RequestBody Avtale avtale) {
         if (avtaleRepository.existsById(avtaleId)) {
             Avtale gammelAvtale = avtaleRepository.findById(avtaleId).get();
             // Ikke endre id eller opprettetTidspunkt
