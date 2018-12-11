@@ -13,10 +13,10 @@ spec:
   ingresses:
   - https://tiltaksgjennomforing.nais.preprod.local/tiltaksgjennomforing-api
   liveness:
-    path: /internal/isAlive
+    path: /tiltaksgjennomforing-api/internal/isAlive
     initialDelay: 20
   readiness:
-    path: /internal/isReady
+    path: /tiltaksgjennomforing-api/internal/isReady
     initialDelay: 20
   env:
   - name: SPRING_PROFILES_ACTIVE
