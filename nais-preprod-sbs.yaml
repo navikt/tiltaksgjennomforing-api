@@ -11,15 +11,17 @@ spec:
   port: 8080
   secrets: true
   ingresses:
-  - https://tjenester-t1.nav.no/tiltaksgjennomforing
+  - https://arbeidsgiver-q.nav.no/tiltaksgjennomforing-api
   liveness:
-    path: /tiltaksgjennomforing/internal/isAlive
+    path: /tiltaksgjennomforing-api/internal/isAlive
     initialDelay: 20
   readiness:
-    path: /tiltaksgjennomforing/internal/isReady
+    path: /tiltaksgjennomforing-api/internal/isReady
     initialDelay: 20
   env:
   - name: SPRING_PROFILES_ACTIVE
     value: nais
+  - name: HTTP_PROXY
+    value: http://webproxy-nais.nav.no:8088
   - name: CONTEXT_PATH
-    value: /tiltaksgjennomforing
+    value: /tiltaksgjennomforing-api

@@ -11,7 +11,7 @@ spec:
   port: 8080
   secrets: true
   ingresses:
-  - https://tiltaksgjennomforing.nais.preprod.local/tiltaksgjennomforing-api
+  - https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api
   liveness:
     path: /tiltaksgjennomforing-api/internal/isAlive
     initialDelay: 20
