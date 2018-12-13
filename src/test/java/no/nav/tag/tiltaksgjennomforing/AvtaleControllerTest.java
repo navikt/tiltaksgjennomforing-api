@@ -7,11 +7,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -31,11 +30,11 @@ public class AvtaleControllerTest {
 
     @Test
     public void hentSkalReturnereRiktigAvtale() {
-        Avtale avtale = lagAvtale();
+        Avtale avtale = TestData.lagAvtale();
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         Avtale hentetAvtale = avtaleController.hent(avtale.getId());
 
-        assertEquals(lagAvtale(), hentetAvtale);
+        assertEquals(TestData.lagAvtale(), hentetAvtale);
     }
 
     @Test
@@ -50,20 +49,19 @@ public class AvtaleControllerTest {
 
     @Test
     public void opprettMaalSkalReturnereCreatedOgLokasjonHvisMaalBlirOpprettet() {
-        Avtale avtale = lagAvtale();
-        Maal maal = lagMaal();
+        Avtale avtale = TestData.lagAvtale();
+        Maal maal = TestData.lagMaal();
         when(avtaleRepository.existsById(avtale.getId())).thenReturn(true);
         when(maalRepository.save(maal)).thenReturn(maal);
         ResponseEntity svar = avtaleController.opprettMaal(avtale.getId(), maal);
-
         assertEquals(svar.getStatusCodeValue(), 201);
         assertEquals(svar.getHeaders().getLocation().getPath(), "/avtaler/" + avtale.getId() + "/maal/" + maal.getId());
     }
 
     @Test
     public void opprettMaalSkalReturnereNotFoundHvisAvtaleIkkeFins() {
-        Avtale avtale = lagAvtale();
-        Maal maal = lagMaal();
+        Avtale avtale = TestData.lagAvtale();
+        Maal maal = TestData.lagMaal();
         when(avtaleRepository.existsById(avtale.getId())).thenReturn(false);
         ResponseEntity svar = avtaleController.opprettMaal(avtale.getId(), maal);
 
@@ -72,8 +70,8 @@ public class AvtaleControllerTest {
 
     @Test
     public void opprettOppgaveSkalReturnereCreatedOgLokasjonHvisMaalBlirOpprettet() {
-        Avtale avtale = lagAvtale();
-        Oppgave oppgave = lagOppgave();
+        Avtale avtale = TestData.lagAvtale();
+        Oppgave oppgave = TestData.lagOppgave();
         when(avtaleRepository.existsById(avtale.getId())).thenReturn(true);
         when(oppgaveRepository.save(oppgave)).thenReturn(oppgave);
         ResponseEntity svar = avtaleController.opprettOppgave(avtale.getId(), oppgave);
@@ -84,8 +82,8 @@ public class AvtaleControllerTest {
 
     @Test
     public void opprettOppgaveSkalReturnereNotFoundHvisAvtaleIkkeFins() {
-        Avtale avtale = lagAvtale();
-        Oppgave oppgave = lagOppgave();
+        Avtale avtale = TestData.lagAvtale();
+        Oppgave oppgave = TestData.lagOppgave();
         when(avtaleRepository.existsById(avtale.getId())).thenReturn(false);
         ResponseEntity svar = avtaleController.opprettOppgave(avtale.getId(), oppgave);
 
@@ -94,7 +92,7 @@ public class AvtaleControllerTest {
 
     @Test
     public void endreAvtaleSkalReturnereNotFoundHvisDenIkkeFins() {
-        Avtale avtale = lagAvtale();
+        Avtale avtale = TestData.lagAvtale();
         when(avtaleRepository.existsById(avtale.getId())).thenReturn(false);
         ResponseEntity svar = avtaleController.endreAvtale(avtale.getId(), avtale);
 
@@ -103,43 +101,11 @@ public class AvtaleControllerTest {
 
     @Test
     public void endreAvtaleSkalReturnereOkEtterEndretAvtale() {
-        Avtale avtale = lagAvtale();
+        Avtale avtale = TestData.lagAvtale();
         when(avtaleRepository.existsById(avtale.getId())).thenReturn(true);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         ResponseEntity svar = avtaleController.endreAvtale(avtale.getId(), avtale);
 
         assertEquals(svar.getStatusCodeValue(), 200);
-    }
-
-    private static Avtale lagAvtale() {
-        Avtale avtale = new Avtale();
-        avtale.setId(1);
-        avtale.setOpprettetTidspunkt(LocalDateTime.of(1, 1, 1, 1, 1));
-        avtale.setDeltakerFornavn("Donald");
-        avtale.setDeltakerEtternavn("Duck");
-        avtale.setOppgaver(Collections.emptyList());
-        avtale.setMaal(Collections.emptyList());
-        return avtale;
-    }
-
-    private static Maal lagMaal() {
-        Maal maal = new Maal();
-        maal.setId(1);
-        maal.setOpprettetTidspunkt(LocalDateTime.of(1, 1, 1, 1, 1));
-        maal.setAvtale(1);
-        maal.setBeskrivelse("Beksrivelse");
-        maal.setKategori("Kategori");
-        return maal;
-    }
-
-    private static Oppgave lagOppgave() {
-        Oppgave oppgave = new Oppgave();
-        oppgave.setId(1);
-        oppgave.setOpprettetTidspunkt(LocalDateTime.of(1, 1, 1, 1, 1));
-        oppgave.setTittel("Tittel");
-        oppgave.setBeskrivelse("Beksrivelse");
-        oppgave.setOpplaering("Opplæring");
-        oppgave.setAvtale(1);
-        return oppgave;
     }
 }
