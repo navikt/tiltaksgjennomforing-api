@@ -4,16 +4,13 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 
 public class TestData {
-
-
     static Avtale lagAvtale() {
-        // TODO: Ikke ha med ID
         return Avtale.builder()
                 .id(1)
                 .opprettetTidspunkt(LocalDateTime.of(1, 1, 1, 1, 1))
                 .deltakerFornavn("Donald")
                 .deltakerEtternavn("Duck")
-                .deltakerFodselsnr("12345678901")
+                .deltakerFnr(new Fnr("12345678901"))
                 .oppgaver(Collections.emptyList())
                 .maal(Collections.emptyList())
                 .build();

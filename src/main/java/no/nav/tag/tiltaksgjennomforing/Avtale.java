@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -17,7 +18,8 @@ public class Avtale {
     private Integer id;
     private LocalDateTime opprettetTidspunkt;
 
-    private String deltakerFodselsnr;
+    @JsonUnwrapped
+    private Fnr deltakerFnr;
     private String deltakerFornavn;
     private String deltakerEtternavn;
     private String deltakerAdresse;
@@ -29,7 +31,7 @@ public class Avtale {
     private String bedriftPostnummer;
     private String bedriftPoststed;
 
-    private String arbeidsgiverFodselsnr;
+    private String arbeidsgiverFnr;
     private String arbeidsgiverFornavn;
     private String arbeidsgiverEtternavn;
     private String arbeidsgiverEpost;
@@ -59,16 +61,16 @@ public class Avtale {
     public static AvtaleBuilder builder() {
         return new AvtaleBuilder() {
             public Avtale build() {
-                if (super.deltakerFodselsnr == null)
+                if (super.deltakerFnr == null)
                     throw new IllegalArgumentException();
                 return super.build();
             }
         };
     }
 
-    public static Avtale nyAvtale(String deltakerFodselsnr) {
+    public static Avtale nyAvtale(Fnr deltakerFnr) {
         return Avtale.builder()
-                .deltakerFodselsnr(deltakerFodselsnr)
+                .deltakerFnr(deltakerFnr)
                 .opprettetTidspunkt(LocalDateTime.now())
                 .maal(new ArrayList<>())
                 .oppgaver(new ArrayList<>())
@@ -81,7 +83,7 @@ public class Avtale {
                 .bedriftAdresse("")
                 .bedriftPostnummer("")
                 .bedriftPoststed("")
-                .arbeidsgiverFodselsnr("")
+                .arbeidsgiverFnr("")
                 .arbeidsgiverFornavn("")
                 .arbeidsgiverEtternavn("")
                 .arbeidsgiverEpost("")

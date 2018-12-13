@@ -34,16 +34,16 @@ public class AvtaleControllerTest {
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         Avtale hentetAvtale = avtaleController.hent(avtale.getId());
 
-        assertEquals(TestData.lagAvtale(), hentetAvtale);
+        assertEquals(avtale, hentetAvtale);
     }
 
     @Test
     public void opprettAvtaleSkalReturnereCreatedOgOpprettetLokasjon() {
-        String deltakerFodselsnr = "12345678012";
-        Avtale avtale = Avtale.nyAvtale(deltakerFodselsnr);
+        Fnr deltakerFnr = new Fnr("12345678012");
+        Avtale avtale = Avtale.nyAvtale(deltakerFnr);
 
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
-        ResponseEntity svar = avtaleController.opprettAvtale(deltakerFodselsnr);
+        ResponseEntity svar = avtaleController.opprettAvtale(deltakerFnr);
 
         assertEquals(svar.getStatusCodeValue(), 201);
         assertEquals(svar.getHeaders().getLocation().getPath(), "/avtaler/" + avtale.getId());
@@ -56,6 +56,7 @@ public class AvtaleControllerTest {
         when(avtaleRepository.existsById(avtale.getId())).thenReturn(true);
         when(maalRepository.save(maal)).thenReturn(maal);
         ResponseEntity svar = avtaleController.opprettMaal(avtale.getId(), maal);
+
         assertEquals(svar.getStatusCodeValue(), 201);
         assertEquals(svar.getHeaders().getLocation().getPath(), "/avtaler/" + avtale.getId() + "/maal/" + maal.getId());
     }

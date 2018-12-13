@@ -42,11 +42,11 @@ public class AvtaleController {
     }
 
     @PostMapping("/avtaler")
-    public ResponseEntity opprettAvtale(@RequestBody String deltakerFodselsnr) {
-        if (deltakerFodselsnr == null) {
+    public ResponseEntity opprettAvtale(@RequestBody Fnr deltakerFnr) {
+        if (deltakerFnr == null) {
             return ResponseEntity.badRequest().build();
         } else {
-            Avtale avtale = Avtale.nyAvtale(deltakerFodselsnr);
+            Avtale avtale = Avtale.nyAvtale(deltakerFnr);
             Avtale opprettetAvtale = avtaleRepository.save(avtale);
             URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
             return ResponseEntity.created(uri).build();

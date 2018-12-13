@@ -17,8 +17,8 @@ public class AvtaleRepositoryTest {
 
     @Test
     public void tomAvtaleSkalKunneLagresAvRepository() {
-        String deltakerFodselsnr = "12345678901";
-        Avtale avtale = Avtale.nyAvtale(deltakerFodselsnr);
+        String deltakerFnr = "12345678901";
+        Avtale avtale = Avtale.nyAvtale(new Fnr(deltakerFnr));
         Avtale lagretAvtale = avtaleRepository.save(avtale);
         assertThat(lagretAvtale).isNotNull();
     }
