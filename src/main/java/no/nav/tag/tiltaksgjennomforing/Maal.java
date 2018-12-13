@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
 @Data
 public class Maal {
     @Id
-    private Integer id;
-    private LocalDateTime opprettetTidspunkt = LocalDateTime.now();
+    private final  Integer id;
+    private final LocalDateTime opprettetTidspunkt;
     private String kategori;
     private String beskrivelse;
     @JsonIgnore

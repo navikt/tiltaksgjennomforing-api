@@ -40,9 +40,7 @@ public class TestData {
     }*/
 
     static Maal lagMaal() {
-        Maal maal = new Maal();
-        maal.setId(1);
-        maal.setOpprettetTidspunkt(LocalDateTime.of(1, 1, 1, 1, 1));
+        Maal maal = new Maal(1, LocalDateTime.of(1, 1, 1, 1, 1));
         maal.setAvtale(1);
         maal.setBeskrivelse("Beksrivelse");
         maal.setKategori("Kategori");
