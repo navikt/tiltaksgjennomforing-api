@@ -65,4 +65,39 @@ public class Avtale {
             }
         };
     }
+
+    public static Avtale nyAvtale(String deltakerFodselsnr) {
+        return Avtale.builder()
+                .deltakerFodselsnr(deltakerFodselsnr)
+                .opprettetTidspunkt(LocalDateTime.now())
+                .maal(new ArrayList<>())
+                .oppgaver(new ArrayList<>())
+                .deltakerFornavn("")
+                .deltakerEtternavn("")
+                .deltakerAdresse("")
+                .deltakerPostnummer("")
+                .deltakerPoststed("")
+                .bedriftNavn("")
+                .bedriftAdresse("")
+                .bedriftPostnummer("")
+                .bedriftPoststed("")
+                .arbeidsgiverFodselsnr("")
+                .arbeidsgiverFornavn("")
+                .arbeidsgiverEtternavn("")
+                .arbeidsgiverEpost("")
+                .arbeidsgiverTlf("")
+                .veilederFornavn("")
+                .veilederEtternavn("")
+                .veilederEpost("")
+                .veilederTlf("")
+                .oppfolging("")
+                .tilrettelegging("")
+                .startDatoTidspunkt(LocalDateTime.now())
+                .arbeidstreningLengde(1)
+                .arbeidstreningStillingprosent(0)
+                .bekreftetAvBruker(false)
+                .bekreftetAvArbeidsgiver(false)
+                .bekreftetAvVeileder(false)
+                .build();
+    }
 }
