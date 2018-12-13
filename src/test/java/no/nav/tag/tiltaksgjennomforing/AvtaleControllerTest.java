@@ -39,9 +39,11 @@ public class AvtaleControllerTest {
 
     @Test
     public void opprettAvtaleSkalReturnereCreatedOgOpprettetLokasjon() {
-        Avtale avtale = lagAvtale();
-        when(avtaleRepository.save(avtale)).thenReturn(avtale);
-        ResponseEntity svar = avtaleController.opprettAvtale(avtale);
+        String deltakerFodselsnr = "12345678012";
+        Avtale avtale = Avtale.nyAvtale(deltakerFodselsnr);
+
+        when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
+        ResponseEntity svar = avtaleController.opprettAvtale(deltakerFodselsnr);
 
         assertEquals(svar.getStatusCodeValue(), 201);
         assertEquals(svar.getHeaders().getLocation().getPath(), "/avtaler/" + avtale.getId());

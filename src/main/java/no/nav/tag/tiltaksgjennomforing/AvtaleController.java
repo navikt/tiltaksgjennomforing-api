@@ -42,10 +42,15 @@ public class AvtaleController {
     }
 
     @PostMapping("/avtaler")
-    public ResponseEntity opprettAvtale(@RequestBody Avtale avtale) {
-        Avtale opprettetAvtale = avtaleRepository.save(avtale);
-        URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
-        return ResponseEntity.created(uri).build();
+    public ResponseEntity opprettAvtale(@RequestBody String deltakerFodselsnr) {
+        if (deltakerFodselsnr == null) {
+            return ResponseEntity.badRequest().build();
+        } else {
+            Avtale avtale = Avtale.nyAvtale(deltakerFodselsnr);
+            Avtale opprettetAvtale = avtaleRepository.save(avtale);
+            URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
+            return ResponseEntity.created(uri).build();
+        }
     }
 
     @PostMapping("/avtaler/{avtaleId}/maal")
@@ -71,6 +76,8 @@ public class AvtaleController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    // TODO: endreOppgave, endreMaal
 
     @PutMapping("/avtaler/{avtaleId}")
     public ResponseEntity endreAvtale(@PathVariable("avtaleId") Integer avtaleId, @RequestBody Avtale avtale) {
