@@ -83,8 +83,7 @@ public class AvtaleController {
             avtale.setOpprettetTidspunkt(gammelAvtale.getOpprettetTidspunkt());
             avtaleRepository.save(avtale);
             return ResponseEntity.ok().build();
-        }
-        {
+        } else {
             return ResponseEntity.notFound().build();
         }
     }
