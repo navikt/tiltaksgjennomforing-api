@@ -1,0 +1,6 @@
+src/*
+target/*
+!target/tiltaksgjennomforing-1.0.0-SNAPSHOT.jar
+pom.xml
+.git
+.gitignore
