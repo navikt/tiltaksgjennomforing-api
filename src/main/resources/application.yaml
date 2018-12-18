@@ -1,0 +1,6 @@
+http.proxy: ${HTTP_PROXY:}
+server.servlet.context-path: /tiltaksgjennomforing-api
+spring.profiles.active: dev
+logging:
+  level:
+    no.nav: ${NO_NAV_LOGGING_LEVEL:INFO}

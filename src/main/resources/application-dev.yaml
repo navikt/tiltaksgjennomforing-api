@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    platform: postgres
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    username: sa
+    password: sa
+    driverClassName: org.h2.Driver
+
+no.nav.security.oidc.issuer:
+  selvbetjening:
+    discoveryurl: https://login.microsoftonline.com/NAVtestB2C.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_idporten_ver1
+    accepted_audience: 0090b6e1-ffcc-4c37-bc21-049f7d1f0fe5
+  isso:
+    discoveryurl: https://login.microsoftonline.com/NAVQ.onmicrosoft.com/v2.0/.well-known/openid-configuration
+    accepted_audience: 0090b6e1-ffcc-4c37-bc21-049f7d1f0fe5

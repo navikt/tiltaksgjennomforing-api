@@ -5,12 +5,27 @@ jobs:
       - image: circleci/openjdk:11
     steps:
       - checkout
+      - restore_cache:
+          keys:
+          # when lock file changes, use increasingly general patterns to restore cache
+          - maven-repo-v1-{{ .Branch }}-{{ checksum "pom.xml" }}
+          - maven-repo-v1-{{ .Branch }}-
+          - maven-repo-v1-
+      - run:
+          name: Bygger med Maven
+          command: mvn clean package
+      - save_cache:
+          paths:
+          - ~/.m2
+          key: maven-repo-v1-{{ .Branch }}-{{ checksum "pom.xml" }}
       - setup_remote_docker
       - run:
           name: Setter miljøvariable
           command: |
             echo 'export RELEASE_VERSION="$(git rev-list --count $CIRCLE_SHA1)"' >> $BASH_ENV
-            echo 'export DOCKER_IMAGE_VERSIONED="$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$RELEASE_VERSION"' >> $BASH_ENV
+            echo 'export BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"' >> $BASH_ENV
+            echo 'export BRANCH_PREFIX=`[ $BRANCH_NAME == "master" ] && echo "" || echo $BRANCH_NAME\_`' >> $BASH_ENV
+            echo 'export DOCKER_IMAGE_VERSIONED="$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$BRANCH_PREFIX$RELEASE_VERSION"' >> $BASH_ENV
             echo 'export DOCKER_IMAGE_UNVERSIONED="$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"' >> $BASH_ENV
       - run:
           name: Bygger Docker image

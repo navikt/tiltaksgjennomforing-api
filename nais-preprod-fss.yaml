@@ -11,10 +11,15 @@ spec:
   port: 8080
   secrets: true
   ingresses:
-    - https://tiltaksgjennomforing.nais.preprod.local
+  - https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api
   liveness:
-    path: /isAlive
+    path: /tiltaksgjennomforing-api/internal/isAlive
     initialDelay: 20
   readiness:
-    path: /isReady
+    path: /tiltaksgjennomforing-api/internal/isReady
     initialDelay: 20
+  env:
+  - name: SPRING_PROFILES_ACTIVE
+    value: nais
+  - name: HTTP_PROXY
+    value: http://webproxy-nais.nav.no:8088
