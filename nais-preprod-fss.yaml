@@ -23,5 +23,3 @@ spec:
     value: nais
   - name: HTTP_PROXY
     value: http://webproxy-nais.nav.no:8088
-  - name: CONTEXT_PATH
-    value: /tiltaksgjennomforing-api
