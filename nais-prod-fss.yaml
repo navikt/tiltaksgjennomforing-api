@@ -11,7 +11,7 @@ spec:
   port: 8080
   secrets: true
   ingresses:
-  - https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api
+  - https://arbeidsgiver.nais.adeo.no/tiltaksgjennomforing-api
   liveness:
     path: /tiltaksgjennomforing-api/internal/isAlive
     initialDelay: 20
@@ -24,10 +24,10 @@ spec:
   - name: HTTP_PROXY
     value: http://webproxy-nais.nav.no:8088
   - name: ISSO_DISCOVERYURL
-    value: https://login.microsoftonline.com/NAVQ.onmicrosoft.com/.well-known/openid-configuration
+    value: https://login.microsoftonline.com/navno.onmicrosoft.com/.well-known/openid-configuration
   - name: ISSO_ACCEPTED_AUDIENCE
-    value: 38e07d31-659d-4595-939a-f18dce3446c5
+    value: 9b4e07a3-4f4c-4bab-b866-87f62dff480d
   - name: SELVBETJENING_DISCOVERYURL
-    value: https://login.microsoftonline.com/NAVtestB2C.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_idporten_ver1
+    value: https://login.microsoftonline.com/navnob2c.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_idporten
   - name: SELVBETJENING_ACCEPTED_AUDIENCE
-    value: 38e07d31-659d-4595-939a-f18dce3446c5
+    value: 45104d6a-f5bc-4e8c-b352-4bbfc9381f25
