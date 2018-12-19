@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,7 +21,6 @@ public class Avtale {
     private Integer id;
     private LocalDateTime opprettetTidspunkt;
 
-    @JsonUnwrapped
     private Fnr deltakerFnr;
     private String deltakerFornavn;
     private String deltakerEtternavn;

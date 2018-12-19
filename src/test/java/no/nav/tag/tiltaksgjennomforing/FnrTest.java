@@ -2,6 +2,8 @@ package no.nav.tag.tiltaksgjennomforing;
 
 import org.junit.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class FnrTest {
 
     @Test(expected = TiltaksgjennomforingException.class)
@@ -22,5 +24,16 @@ public class FnrTest {
     @Test(expected = TiltaksgjennomforingException.class)
     public void fnrSkalIkkeInneholdeBokstaver() {
         Fnr fnr = new Fnr("1234567890a");
+    }
+
+    @Test(expected = TiltaksgjennomforingException.class)
+    public void fnrSkalIkkeInneholdeAndreTingEnnTall() {
+        Fnr fnr = new Fnr("12345678900 ");
+    }
+
+    @Test
+    public void fnrSkalInneholde11Tall() {
+        String gyldigFnr = "01234567890";
+        assertThat(new Fnr(gyldigFnr).getFnr()).isEqualTo(gyldigFnr);
     }
 }
