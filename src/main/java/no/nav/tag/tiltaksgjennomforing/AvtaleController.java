@@ -58,7 +58,6 @@ public class AvtaleController {
     @PostMapping("/{avtaleId}/maal")
     public ResponseEntity opprettMaal(@PathVariable("avtaleId") Integer avtaleId, @RequestBody Maal maal) {
         if (avtaleRepository.existsById(avtaleId)) {
-            maal.setAvtale(avtaleId);
             Maal lagretMaal = maalRepository.save(maal);
             URI uri = lagUri("/avtaler/" + avtaleId + "/maal/" + lagretMaal.getId());
             return ResponseEntity.created(uri).build();
@@ -70,7 +69,6 @@ public class AvtaleController {
     @PostMapping("/{avtaleId}/oppgaver")
     public ResponseEntity opprettOppgave(@PathVariable("avtaleId") Integer avtaleId, @RequestBody Oppgave oppgave) {
         if (avtaleRepository.existsById(avtaleId)) {
-            oppgave.setAvtale(avtaleId);
             Oppgave lagretOppgave = oppgaveRepository.save(oppgave);
             URI uri = lagUri("/avtaler/" + avtaleId + "/oppgaver/" + lagretOppgave.getId());
             return ResponseEntity.created(uri).build();
