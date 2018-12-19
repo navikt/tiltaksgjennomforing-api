@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -21,12 +21,6 @@ public class AvtaleControllerTest {
 
     @Mock
     private AvtaleRepository avtaleRepository;
-
-    @Mock
-    private OppgaveRepository oppgaveRepository;
-
-    @Mock
-    private MaalRepository maalRepository;
 
     @Test
     public void hentSkalReturnereRiktigAvtale() {
@@ -50,53 +44,9 @@ public class AvtaleControllerTest {
     }
 
     @Test
-    public void opprettMaalSkalReturnereCreatedOgLokasjonHvisMaalBlirOpprettet() {
-        Avtale avtale = TestData.lagAvtale();
-        Maal maal = TestData.lagMaal();
-        when(avtaleRepository.existsById(avtale.getId())).thenReturn(true);
-        when(maalRepository.save(maal)).thenReturn(maal);
-        ResponseEntity svar = avtaleController.opprettMaal(avtale.getId(), maal);
-
-        assertEquals(svar.getStatusCodeValue(), 201);
-        assertEquals(svar.getHeaders().getLocation().getPath(), "/avtaler/" + avtale.getId() + "/maal/" + maal.getId());
-    }
-
-    @Test
-    public void opprettMaalSkalReturnereNotFoundHvisAvtaleIkkeFins() {
-        Avtale avtale = TestData.lagAvtale();
-        Maal maal = TestData.lagMaal();
-        when(avtaleRepository.existsById(avtale.getId())).thenReturn(false);
-        ResponseEntity svar = avtaleController.opprettMaal(avtale.getId(), maal);
-
-        assertEquals(svar.getStatusCodeValue(), 404);
-    }
-
-    @Test
-    public void opprettOppgaveSkalReturnereCreatedOgLokasjonHvisMaalBlirOpprettet() {
-        Avtale avtale = TestData.lagAvtale();
-        Oppgave oppgave = TestData.lagOppgave();
-        when(avtaleRepository.existsById(avtale.getId())).thenReturn(true);
-        when(oppgaveRepository.save(oppgave)).thenReturn(oppgave);
-        ResponseEntity svar = avtaleController.opprettOppgave(avtale.getId(), oppgave);
-
-        assertEquals(svar.getStatusCodeValue(), 201);
-        assertEquals(svar.getHeaders().getLocation().getPath(), "/avtaler/" + avtale.getId() + "/oppgaver/" + oppgave.getId());
-    }
-
-    @Test
-    public void opprettOppgaveSkalReturnereNotFoundHvisAvtaleIkkeFins() {
-        Avtale avtale = TestData.lagAvtale();
-        Oppgave oppgave = TestData.lagOppgave();
-        when(avtaleRepository.existsById(avtale.getId())).thenReturn(false);
-        ResponseEntity svar = avtaleController.opprettOppgave(avtale.getId(), oppgave);
-
-        assertEquals(svar.getStatusCodeValue(), 404);
-    }
-
-    @Test
     public void endreAvtaleSkalReturnereNotFoundHvisDenIkkeFins() {
         Avtale avtale = TestData.lagAvtale();
-        when(avtaleRepository.existsById(avtale.getId())).thenReturn(false);
+        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.empty());
         ResponseEntity svar = avtaleController.endreAvtale(avtale.getId(), avtale);
 
         assertEquals(svar.getStatusCodeValue(), 404);
@@ -105,9 +55,44 @@ public class AvtaleControllerTest {
     @Test
     public void endreAvtaleSkalReturnereOkEtterEndretAvtale() {
         Avtale avtale = TestData.lagAvtale();
-        when(avtaleRepository.existsById(avtale.getId())).thenReturn(true);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         ResponseEntity svar = avtaleController.endreAvtale(avtale.getId(), avtale);
+
+        assertEquals(svar.getStatusCodeValue(), 200);
+    }
+
+    @Test
+    public void endreMaalSkalReturnereNotFoundHvisDenIkkeFins() {
+        Avtale avtale = TestData.lagAvtale();
+        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.empty());
+        ResponseEntity svar = avtaleController.endreMaal(avtale.getId(), avtale.getMaal());
+
+        assertEquals(svar.getStatusCodeValue(), 404);
+    }
+
+    @Test
+    public void endreMaalSkalReturnereOkEtterEndretAvtale() {
+        Avtale avtale = TestData.lagAvtale();
+        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
+        ResponseEntity svar = avtaleController.endreMaal(avtale.getId(), avtale.getMaal());
+
+        assertEquals(svar.getStatusCodeValue(), 200);
+    }
+
+    @Test
+    public void endreOppgaveSkalReturnereNotFoundHvisDenIkkeFins() {
+        Avtale avtale = TestData.lagAvtale();
+        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.empty());
+        ResponseEntity svar = avtaleController.endreOppgaver(avtale.getId(), avtale.getOppgaver());
+
+        assertEquals(svar.getStatusCodeValue(), 404);
+    }
+
+    @Test
+    public void endreOppgaveSkalReturnereOkEtterEndretAvtale() {
+        Avtale avtale = TestData.lagAvtale();
+        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
+        ResponseEntity svar = avtaleController.endreOppgaver(avtale.getId(), avtale.getOppgaver());
 
         assertEquals(svar.getStatusCodeValue(), 200);
     }

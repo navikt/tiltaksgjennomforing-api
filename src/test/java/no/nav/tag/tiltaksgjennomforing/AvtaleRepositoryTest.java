@@ -25,4 +25,6 @@ public class AvtaleRepositoryTest {
         Optional<Avtale> avtaleOptional = avtaleRepository.findById(lagretAvtale.getId());
         assertThat(avtaleOptional).isPresent();
     }
+
+    // endreMaal og endreOppgaver
 }
