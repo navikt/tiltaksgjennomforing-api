@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing;
 
+import no.nav.tag.tiltaksgjennomforing.domene.Avtale;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +20,9 @@ public class AvtaleRepositoryTest {
 
     @Test
     public void nyAvtaleSkalKunneLagreOgReturneresAvRepository() {
-        Fnr deltakerFnr = new Fnr("12345678901");
-        Avtale lagretAvtale = avtaleRepository.save(Avtale.nyAvtale(deltakerFnr));
+        Avtale lagretAvtale = avtaleRepository.save(TestData.minimalAvtale());
 
         Optional<Avtale> avtaleOptional = avtaleRepository.findById(lagretAvtale.getId());
         assertThat(avtaleOptional).isPresent();
     }
-
-    // endreMaal og endreOppgaver
 }

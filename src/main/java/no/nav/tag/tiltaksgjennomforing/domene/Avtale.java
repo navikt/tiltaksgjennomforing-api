@@ -1,9 +1,10 @@
-package no.nav.tag.tiltaksgjennomforing;
+package no.nav.tag.tiltaksgjennomforing.domene;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import no.nav.tag.tiltaksgjennomforing.TiltaksgjennomforingException;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 
@@ -12,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@Builder
-@AllArgsConstructor
+@Builder(toBuilder = true)
 @NoArgsConstructor
+@AllArgsConstructor
 public class Avtale {
 
     @Id
@@ -33,12 +34,13 @@ public class Avtale {
     private String bedriftPostnummer;
     private String bedriftPoststed;
 
-    private String arbeidsgiverFnr;
+    private Fnr arbeidsgiverFnr;
     private String arbeidsgiverFornavn;
     private String arbeidsgiverEtternavn;
     private String arbeidsgiverEpost;
     private String arbeidsgiverTlf;
 
+    private NavIdent veilederNavIdent;
     private String veilederFornavn;
     private String veilederEtternavn;
     private String veilederEpost;
@@ -63,16 +65,19 @@ public class Avtale {
     public static AvtaleBuilder builder() {
         return new AvtaleBuilder() {
             public Avtale build() {
-                if (super.deltakerFnr == null)
-                    throw new IllegalArgumentException();
+                if (super.deltakerFnr == null || super.veilederNavIdent == null) {
+                    throw new TiltaksgjennomforingException("Identitet til enten deltaker eller " +
+                            "veileder er null.");
+                }
                 return super.build();
             }
         };
     }
 
-    public static Avtale nyAvtale(Fnr deltakerFnr) {
+    public static Avtale nyAvtale(Fnr deltakerFnr, NavIdent veilederNavIdent) {
         return Avtale.builder()
                 .deltakerFnr(deltakerFnr)
+                .veilederNavIdent(veilederNavIdent)
                 .opprettetTidspunkt(LocalDateTime.now())
                 .maal(new ArrayList<>())
                 .oppgaver(new ArrayList<>())
@@ -85,7 +90,6 @@ public class Avtale {
                 .bedriftAdresse("")
                 .bedriftPostnummer("")
                 .bedriftPoststed("")
-                .arbeidsgiverFnr("")
                 .arbeidsgiverFornavn("")
                 .arbeidsgiverEtternavn("")
                 .arbeidsgiverEpost("")
@@ -103,5 +107,41 @@ public class Avtale {
                 .bekreftetAvArbeidsgiver(false)
                 .bekreftetAvVeileder(false)
                 .build();
+    }
+
+    public void endreAvtale(Avtale nyAvtale) {
+        setDeltakerFnr(nyAvtale.deltakerFnr);
+        setDeltakerFornavn(nyAvtale.deltakerFornavn);
+        setDeltakerEtternavn(nyAvtale.deltakerEtternavn);
+        setDeltakerAdresse(nyAvtale.deltakerAdresse);
+        setDeltakerPostnummer(nyAvtale.deltakerPostnummer);
+        setDeltakerPoststed(nyAvtale.deltakerPoststed);
+
+        setBedriftNavn(nyAvtale.bedriftNavn);
+        setBedriftAdresse(nyAvtale.bedriftAdresse);
+        setBedriftPostnummer(nyAvtale.bedriftPostnummer);
+        setBedriftPoststed(nyAvtale.bedriftPoststed);
+
+        setArbeidsgiverFnr(nyAvtale.arbeidsgiverFnr);
+        setArbeidsgiverFornavn(nyAvtale.arbeidsgiverFornavn);
+        setArbeidsgiverEtternavn(nyAvtale.arbeidsgiverEtternavn);
+        setArbeidsgiverEpost(nyAvtale.arbeidsgiverEpost);
+        setArbeidsgiverTlf(nyAvtale.arbeidsgiverTlf);
+
+        setVeilederFornavn(nyAvtale.veilederFornavn);
+        setVeilederEtternavn(nyAvtale.veilederEtternavn);
+        setVeilederEpost(nyAvtale.veilederEpost);
+        setVeilederTlf(nyAvtale.veilederTlf);
+
+        setOppfolging(nyAvtale.oppfolging);
+        setTilrettelegging(nyAvtale.tilrettelegging);
+        setStartDatoTidspunkt(nyAvtale.startDatoTidspunkt);
+        setArbeidstreningLengde(nyAvtale.arbeidstreningLengde);
+        setArbeidstreningStillingprosent(nyAvtale.arbeidstreningStillingprosent);
+
+        setMaal(nyAvtale.maal);
+        maal.forEach(Maal::setterOppretterTidspunkt);
+        setOppgaver(nyAvtale.oppgaver);
+        oppgaver.forEach(Oppgave::setterOppretterTidspunkt);
     }
 }

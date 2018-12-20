@@ -1,9 +1,10 @@
-package no.nav.tag.tiltaksgjennomforing;
+package no.nav.tag.tiltaksgjennomforing.domene;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import lombok.EqualsAndHashCode;
+import lombok.Value;
+import no.nav.tag.tiltaksgjennomforing.TiltaksgjennomforingException;
 
-@EqualsAndHashCode
+@Value
 public class Fnr {
 
     private final String fnr;
