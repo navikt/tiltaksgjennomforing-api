@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing;
+package no.nav.tag.tiltaksgjennomforing.controller;
 
 import no.nav.security.oidc.api.Unprotected;
 import org.springframework.web.bind.annotation.RequestMapping;
