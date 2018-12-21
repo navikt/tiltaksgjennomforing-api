@@ -20,31 +20,41 @@ public class AvtaleTest {
         assertThat(avtale.getDeltakerFnr()).isEqualTo(deltakerFnr);
         assertThat(avtale.getMaal()).isEmpty();
         assertThat(avtale.getOppgaver()).isEmpty();
-        assertThat(avtale.getDeltakerFornavn()).isEqualTo("");
-        assertThat(avtale.getDeltakerEtternavn()).isEqualTo("");
-        assertThat(avtale.getDeltakerAdresse()).isEqualTo("");
-        assertThat(avtale.getDeltakerPostnummer()).isEqualTo("");
-        assertThat(avtale.getDeltakerPoststed()).isEqualTo("");
-        assertThat(avtale.getBedriftNavn()).isEqualTo("");
-        assertThat(avtale.getBedriftAdresse()).isEqualTo("");
-        assertThat(avtale.getBedriftPostnummer()).isEqualTo("");
-        assertThat(avtale.getBedriftPoststed()).isEqualTo("");
-        assertThat(avtale.getArbeidsgiverFnr()).isEqualTo(null);
-        assertThat(avtale.getArbeidsgiverFornavn()).isEqualTo("");
-        assertThat(avtale.getArbeidsgiverEtternavn()).isEqualTo("");
-        assertThat(avtale.getArbeidsgiverEpost()).isEqualTo("");
-        assertThat(avtale.getArbeidsgiverTlf()).isEqualTo("");
-        assertThat(avtale.getVeilederFornavn()).isEqualTo("");
-        assertThat(avtale.getVeilederEtternavn()).isEqualTo("");
-        assertThat(avtale.getVeilederEpost()).isEqualTo("");
-        assertThat(avtale.getVeilederTlf()).isEqualTo("");
-        assertThat(avtale.getOppfolging()).isEqualTo("");
-        assertThat(avtale.getTilrettelegging()).isEqualTo("");
-        assertThat(avtale.getStartDatoTidspunkt()).isEqualToIgnoringMinutes(LocalDateTime.now());
-        assertThat(avtale.getArbeidstreningLengde()).isEqualTo(1);
-        assertThat(avtale.getArbeidstreningStillingprosent()).isEqualTo(0);
+        assertThat(avtale.getDeltakerFornavn()).isNull();
+        assertThat(avtale.getDeltakerEtternavn()).isNull();
+        assertThat(avtale.getDeltakerAdresse()).isNull();
+        assertThat(avtale.getDeltakerPostnummer()).isNull();
+        assertThat(avtale.getDeltakerPoststed()).isNull();
+        assertThat(avtale.getBedriftNavn()).isNull();
+        assertThat(avtale.getBedriftAdresse()).isNull();
+        assertThat(avtale.getBedriftPostnummer()).isNull();
+        assertThat(avtale.getBedriftPoststed()).isNull();
+        assertThat(avtale.getArbeidsgiverFnr()).isNull();
+        assertThat(avtale.getArbeidsgiverFornavn()).isNull();
+        assertThat(avtale.getArbeidsgiverEtternavn()).isNull();
+        assertThat(avtale.getArbeidsgiverEpost()).isNull();
+        assertThat(avtale.getArbeidsgiverTlf()).isNull();
+        assertThat(avtale.getVeilederFornavn()).isNull();
+        assertThat(avtale.getVeilederEtternavn()).isNull();
+        assertThat(avtale.getVeilederEpost()).isNull();
+        assertThat(avtale.getVeilederTlf()).isNull();
+        assertThat(avtale.getOppfolging()).isNull();
+        assertThat(avtale.getTilrettelegging()).isNull();
+        assertThat(avtale.getStartDatoTidspunkt()).isNull();
+        assertThat(avtale.getArbeidstreningLengde()).isNull();
+        assertThat(avtale.getArbeidstreningStillingprosent()).isNull();
         assertThat(avtale.isBekreftetAvBruker()).isFalse();
         assertThat(avtale.isBekreftetAvArbeidsgiver()).isFalse();
         assertThat(avtale.isBekreftetAvVeileder()).isFalse();
+    }
+
+    @Test(expected = TiltaksgjennomforingException.class)
+    public void nyAvtaleSkalFeileHvisManglerDeltaker() {
+        Avtale.nyAvtale(null, new NavIdent("X12345"));
+    }
+
+    @Test(expected = TiltaksgjennomforingException.class)
+    public void nyAvtaleSkalFeileHvisManglerVeileder() {
+        Avtale.nyAvtale(new Fnr("1122334455555"), null);
     }
 }

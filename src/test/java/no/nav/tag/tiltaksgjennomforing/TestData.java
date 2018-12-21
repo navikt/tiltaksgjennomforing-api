@@ -8,16 +8,15 @@ public class TestData {
     static Avtale minimalAvtale() {
         Fnr deltakerFnr = new Fnr("12345678901");
         NavIdent veilderNavIdent = new NavIdent("X123456");
-        return Avtale.nyAvtale(deltakerFnr, veilderNavIdent);
+        return new Avtale(deltakerFnr, veilderNavIdent, LocalDateTime.now());
     }
 
     static Avtale lagAvtale() {
-        return minimalAvtale().toBuilder()
-                .id(1)
-                .opprettetTidspunkt(LocalDateTime.of(1, 1, 1, 1, 1))
-                .deltakerFornavn("Donald")
-                .deltakerEtternavn("Duck")
-                .build();
+        Avtale avtale = minimalAvtale();
+        avtale.setId(1);
+        avtale.setDeltakerFornavn("Donald");
+        avtale.setDeltakerEtternavn("Duck");
+        return avtale;
     }
 
     static Oppgave lagOppgave() {

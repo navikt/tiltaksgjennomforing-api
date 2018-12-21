@@ -1,28 +1,24 @@
 package no.nav.tag.tiltaksgjennomforing.domene;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import no.nav.tag.tiltaksgjennomforing.TiltaksgjennomforingException;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.relational.core.mapping.Column;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static no.nav.tag.tiltaksgjennomforing.Utils.ikkeNull;
+
 @Data
-@Builder(toBuilder = true)
-@NoArgsConstructor
-@AllArgsConstructor
 public class Avtale {
 
     @Id
     private Integer id;
-    private LocalDateTime opprettetTidspunkt;
+    private final LocalDateTime opprettetTidspunkt;
 
-    private Fnr deltakerFnr;
+    private final Fnr deltakerFnr;
     private String deltakerFornavn;
     private String deltakerEtternavn;
     private String deltakerAdresse;
@@ -40,7 +36,7 @@ public class Avtale {
     private String arbeidsgiverEpost;
     private String arbeidsgiverTlf;
 
-    private NavIdent veilederNavIdent;
+    private final NavIdent veilederNavIdent;
     private String veilederFornavn;
     private String veilederEtternavn;
     private String veilederEpost;
@@ -54,63 +50,26 @@ public class Avtale {
     private Integer arbeidstreningStillingprosent;
 
     @Column(keyColumn = "id")
-    private List<Maal> maal;
+    private List<Maal> maal = new ArrayList<>();
     @Column(keyColumn = "id")
-    private List<Oppgave> oppgaver;
+    private List<Oppgave> oppgaver = new ArrayList<>();
 
     private boolean bekreftetAvBruker;
     private boolean bekreftetAvArbeidsgiver;
     private boolean bekreftetAvVeileder;
 
-    public static AvtaleBuilder builder() {
-        return new AvtaleBuilder() {
-            public Avtale build() {
-                if (super.deltakerFnr == null || super.veilederNavIdent == null) {
-                    throw new TiltaksgjennomforingException("Identitet til enten deltaker eller " +
-                            "veileder er null.");
-                }
-                return super.build();
-            }
-        };
+    @PersistenceConstructor
+    public Avtale(Fnr deltakerFnr, NavIdent veilederNavIdent, LocalDateTime opprettetTidspunkt) {
+        this.deltakerFnr = ikkeNull(deltakerFnr, "Deltakers fnr må være satt.");
+        this.veilederNavIdent = ikkeNull(veilederNavIdent, "Veileders NAV-ident må være satt.");
+        this.opprettetTidspunkt = ikkeNull(opprettetTidspunkt, "Opprettet tidspunkt må være satt.");
     }
 
     public static Avtale nyAvtale(Fnr deltakerFnr, NavIdent veilederNavIdent) {
-        return Avtale.builder()
-                .deltakerFnr(deltakerFnr)
-                .veilederNavIdent(veilederNavIdent)
-                .opprettetTidspunkt(LocalDateTime.now())
-                .maal(new ArrayList<>())
-                .oppgaver(new ArrayList<>())
-                .deltakerFornavn("")
-                .deltakerEtternavn("")
-                .deltakerAdresse("")
-                .deltakerPostnummer("")
-                .deltakerPoststed("")
-                .bedriftNavn("")
-                .bedriftAdresse("")
-                .bedriftPostnummer("")
-                .bedriftPoststed("")
-                .arbeidsgiverFornavn("")
-                .arbeidsgiverEtternavn("")
-                .arbeidsgiverEpost("")
-                .arbeidsgiverTlf("")
-                .veilederFornavn("")
-                .veilederEtternavn("")
-                .veilederEpost("")
-                .veilederTlf("")
-                .oppfolging("")
-                .tilrettelegging("")
-                .startDatoTidspunkt(LocalDateTime.now())
-                .arbeidstreningLengde(1)
-                .arbeidstreningStillingprosent(0)
-                .bekreftetAvBruker(false)
-                .bekreftetAvArbeidsgiver(false)
-                .bekreftetAvVeileder(false)
-                .build();
+        return new Avtale(deltakerFnr, veilederNavIdent, LocalDateTime.now());
     }
 
     public void endreAvtale(Avtale nyAvtale) {
-        setDeltakerFnr(nyAvtale.deltakerFnr);
         setDeltakerFornavn(nyAvtale.deltakerFornavn);
         setDeltakerEtternavn(nyAvtale.deltakerEtternavn);
         setDeltakerAdresse(nyAvtale.deltakerAdresse);
