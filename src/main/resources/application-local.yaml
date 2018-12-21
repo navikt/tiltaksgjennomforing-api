@@ -1,0 +1,7 @@
+logging.level.no.nav.security: DEBUG
+
+no.nav.security.oidc.issuers: localhost
+
+no.nav.security.oidc.issuer.localhost:
+  uri: /local/metadata
+  accepted_audience: aud-local
