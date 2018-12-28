@@ -1,5 +1,5 @@
 {
-  "issuer": "$ISSUER",
+  "issuer": "iss-localhost",
   "authorization_endpoint": "na",
   "token_endpoint": "na",
   "end_session_endpoint": "na",
