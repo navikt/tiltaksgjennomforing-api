@@ -3,6 +3,8 @@ package no.nav.tag.tiltaksgjennomforing;
 import no.nav.tag.tiltaksgjennomforing.domene.Avtale;
 import no.nav.tag.tiltaksgjennomforing.domene.Fnr;
 import no.nav.tag.tiltaksgjennomforing.domene.NavIdent;
+import no.nav.tag.tiltaksgjennomforing.domene.OpprettAvtale;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
@@ -15,46 +17,67 @@ public class AvtaleTest {
     public void nyAvtaleFactorySkalReturnereRiktigeStandardverdier() {
         Fnr deltakerFnr = new Fnr("01234567890");
         NavIdent veilederNavIdent = new NavIdent("X123456");
-        Avtale avtale = Avtale.nyAvtale(deltakerFnr, veilederNavIdent);
-        assertThat(avtale.getOpprettetTidspunkt()).isEqualToIgnoringMinutes(LocalDateTime.now());
-        assertThat(avtale.getDeltakerFnr()).isEqualTo(deltakerFnr);
-        assertThat(avtale.getMaal()).isEmpty();
-        assertThat(avtale.getOppgaver()).isEmpty();
-        assertThat(avtale.getDeltakerFornavn()).isNull();
-        assertThat(avtale.getDeltakerEtternavn()).isNull();
-        assertThat(avtale.getDeltakerAdresse()).isNull();
-        assertThat(avtale.getDeltakerPostnummer()).isNull();
-        assertThat(avtale.getDeltakerPoststed()).isNull();
-        assertThat(avtale.getBedriftNavn()).isNull();
-        assertThat(avtale.getBedriftAdresse()).isNull();
-        assertThat(avtale.getBedriftPostnummer()).isNull();
-        assertThat(avtale.getBedriftPoststed()).isNull();
-        assertThat(avtale.getArbeidsgiverFnr()).isNull();
-        assertThat(avtale.getArbeidsgiverFornavn()).isNull();
-        assertThat(avtale.getArbeidsgiverEtternavn()).isNull();
-        assertThat(avtale.getArbeidsgiverEpost()).isNull();
-        assertThat(avtale.getArbeidsgiverTlf()).isNull();
-        assertThat(avtale.getVeilederFornavn()).isNull();
-        assertThat(avtale.getVeilederEtternavn()).isNull();
-        assertThat(avtale.getVeilederEpost()).isNull();
-        assertThat(avtale.getVeilederTlf()).isNull();
-        assertThat(avtale.getOppfolging()).isNull();
-        assertThat(avtale.getTilrettelegging()).isNull();
-        assertThat(avtale.getStartDatoTidspunkt()).isNull();
-        assertThat(avtale.getArbeidstreningLengde()).isNull();
-        assertThat(avtale.getArbeidstreningStillingprosent()).isNull();
-        assertThat(avtale.isBekreftetAvBruker()).isFalse();
-        assertThat(avtale.isBekreftetAvArbeidsgiver()).isFalse();
-        assertThat(avtale.isBekreftetAvVeileder()).isFalse();
+        Avtale avtale = Avtale.nyAvtale(new OpprettAvtale(deltakerFnr, veilederNavIdent));
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(avtale.getOpprettetTidspunkt()).isEqualToIgnoringMinutes(LocalDateTime.now());
+            softly.assertThat(avtale.getDeltakerFnr()).isEqualTo(deltakerFnr);
+            softly.assertThat(avtale.getMaal()).isEmpty();
+            softly.assertThat(avtale.getOppgaver()).isEmpty();
+            softly.assertThat(avtale.getDeltakerFornavn()).isNull();
+            softly.assertThat(avtale.getDeltakerEtternavn()).isNull();
+            softly.assertThat(avtale.getDeltakerAdresse()).isNull();
+            softly.assertThat(avtale.getDeltakerPostnummer()).isNull();
+            softly.assertThat(avtale.getDeltakerPoststed()).isNull();
+            softly.assertThat(avtale.getBedriftNavn()).isNull();
+            softly.assertThat(avtale.getBedriftAdresse()).isNull();
+            softly.assertThat(avtale.getBedriftPostnummer()).isNull();
+            softly.assertThat(avtale.getBedriftPoststed()).isNull();
+            softly.assertThat(avtale.getArbeidsgiverFnr()).isNull();
+            softly.assertThat(avtale.getArbeidsgiverFornavn()).isNull();
+            softly.assertThat(avtale.getArbeidsgiverEtternavn()).isNull();
+            softly.assertThat(avtale.getArbeidsgiverEpost()).isNull();
+            softly.assertThat(avtale.getArbeidsgiverTlf()).isNull();
+            softly.assertThat(avtale.getVeilederFornavn()).isNull();
+            softly.assertThat(avtale.getVeilederEtternavn()).isNull();
+            softly.assertThat(avtale.getVeilederEpost()).isNull();
+            softly.assertThat(avtale.getVeilederTlf()).isNull();
+            softly.assertThat(avtale.getOppfolging()).isNull();
+            softly.assertThat(avtale.getTilrettelegging()).isNull();
+            softly.assertThat(avtale.getStartDatoTidspunkt()).isNull();
+            softly.assertThat(avtale.getArbeidstreningLengde()).isNull();
+            softly.assertThat(avtale.getArbeidstreningStillingprosent()).isNull();
+            softly.assertThat(avtale.isBekreftetAvBruker()).isFalse();
+            softly.assertThat(avtale.isBekreftetAvArbeidsgiver()).isFalse();
+            softly.assertThat(avtale.isBekreftetAvVeileder()).isFalse();
+        });
     }
 
     @Test(expected = TiltaksgjennomforingException.class)
     public void nyAvtaleSkalFeileHvisManglerDeltaker() {
-        Avtale.nyAvtale(null, new NavIdent("X12345"));
+        Avtale.nyAvtale(new OpprettAvtale(null, new NavIdent("X12345")));
     }
 
     @Test(expected = TiltaksgjennomforingException.class)
     public void nyAvtaleSkalFeileHvisManglerVeileder() {
-        Avtale.nyAvtale(new Fnr("1122334455555"), null);
+        Avtale.nyAvtale(new OpprettAvtale(new Fnr("1122334455555"), null));
+    }
+
+    @Test(expected = TiltaksgjennomforingException.class)
+    public void sjekkVersjonMedUgyldigVersjon() {
+        Avtale avtale = TestData.minimalAvtale();
+        avtale.sjekkVersjon("-1");
+    }
+
+    @Test
+    public void sjekkVersjonMedGyldigVersjon() {
+        Avtale avtale = TestData.minimalAvtale();
+        avtale.sjekkVersjon(avtale.getVersjon());
+    }
+
+    @Test
+    public void endreAvtaleSkalInkrementereVersjon() {
+        Avtale avtale = TestData.minimalAvtale();
+        avtale.endreAvtale(TestData.ingenEndring());
+        assertThat(avtale.getVersjon()).isEqualTo("2");
     }
 }

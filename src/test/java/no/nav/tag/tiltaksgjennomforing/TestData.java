@@ -8,7 +8,11 @@ public class TestData {
     static Avtale minimalAvtale() {
         Fnr deltakerFnr = new Fnr("12345678901");
         NavIdent veilderNavIdent = new NavIdent("X123456");
-        return new Avtale(deltakerFnr, veilderNavIdent, LocalDateTime.now());
+        return Avtale.nyAvtale(new OpprettAvtale(deltakerFnr, veilderNavIdent));
+    }
+
+    static EndreAvtale ingenEndring() {
+        return new EndreAvtale();
     }
 
     static Avtale lagAvtale() {
