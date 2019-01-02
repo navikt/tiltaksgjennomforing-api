@@ -1,1 +1,1 @@
-ALTER TABLE avtale ADD COLUMN versjon integer not null;
+ALTER TABLE avtale ADD COLUMN versjon integer not null default 1;
