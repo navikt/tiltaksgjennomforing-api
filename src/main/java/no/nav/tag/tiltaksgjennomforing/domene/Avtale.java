@@ -104,6 +104,10 @@ public class Avtale {
         maal.forEach(Maal::setterOppretterTidspunkt);
         setOppgaver(nyAvtale.getOppgaver());
         oppgaver.forEach(Oppgave::setterOppretterTidspunkt);
+
+        setBekreftetAvBruker(nyAvtale.isBekreftetAvBruker());
+        setBekreftetAvArbeidsgiver(nyAvtale.isBekreftetAvArbeidsgiver());
+        setBekreftetAvVeileder(nyAvtale.isBekreftetAvVeileder());
     }
 
     private void inkrementerVersjonsnummer() {
