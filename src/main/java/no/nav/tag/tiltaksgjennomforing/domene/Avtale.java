@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.domene;
 
 import lombok.Data;
+import no.nav.tag.tiltaksgjennomforing.TiltaksgjennomforingException;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.relational.core.mapping.Column;
@@ -14,29 +15,26 @@ import static no.nav.tag.tiltaksgjennomforing.Utils.ikkeNull;
 @Data
 public class Avtale {
 
+    private final LocalDateTime opprettetTidspunkt;
+    private final Fnr deltakerFnr;
+    private final NavIdent veilederNavIdent;
     @Id
     private Integer id;
-    private final LocalDateTime opprettetTidspunkt;
-
-    private final Fnr deltakerFnr;
+    private String versjon;
     private String deltakerFornavn;
     private String deltakerEtternavn;
     private String deltakerAdresse;
     private String deltakerPostnummer;
     private String deltakerPoststed;
-
     private String bedriftNavn;
     private String bedriftAdresse;
     private String bedriftPostnummer;
     private String bedriftPoststed;
-
     private Fnr arbeidsgiverFnr;
     private String arbeidsgiverFornavn;
     private String arbeidsgiverEtternavn;
     private String arbeidsgiverEpost;
     private String arbeidsgiverTlf;
-
-    private final NavIdent veilederNavIdent;
     private String veilederFornavn;
     private String veilederEtternavn;
     private String veilederEpost;
@@ -65,42 +63,61 @@ public class Avtale {
         this.opprettetTidspunkt = ikkeNull(opprettetTidspunkt, "Opprettet tidspunkt må være satt.");
     }
 
-    public static Avtale nyAvtale(Fnr deltakerFnr, NavIdent veilederNavIdent) {
-        return new Avtale(deltakerFnr, veilederNavIdent, LocalDateTime.now());
+    public static Avtale nyAvtale(OpprettAvtale opprettAvtale) {
+        Avtale avtale = new Avtale(opprettAvtale.getDeltakerFnr(), opprettAvtale.getVeilederNavIdent(), LocalDateTime.now());
+        avtale.setVersjon("1");
+        return avtale;
     }
 
-    public void endreAvtale(Avtale nyAvtale) {
-        setDeltakerFornavn(nyAvtale.deltakerFornavn);
-        setDeltakerEtternavn(nyAvtale.deltakerEtternavn);
-        setDeltakerAdresse(nyAvtale.deltakerAdresse);
-        setDeltakerPostnummer(nyAvtale.deltakerPostnummer);
-        setDeltakerPoststed(nyAvtale.deltakerPoststed);
+    public void endreAvtale(EndreAvtale nyAvtale) {
+        inkrementerVersjonsnummer();
 
-        setBedriftNavn(nyAvtale.bedriftNavn);
-        setBedriftAdresse(nyAvtale.bedriftAdresse);
-        setBedriftPostnummer(nyAvtale.bedriftPostnummer);
-        setBedriftPoststed(nyAvtale.bedriftPoststed);
+        setDeltakerFornavn(nyAvtale.getDeltakerFornavn());
+        setDeltakerEtternavn(nyAvtale.getDeltakerEtternavn());
+        setDeltakerAdresse(nyAvtale.getDeltakerAdresse());
+        setDeltakerPostnummer(nyAvtale.getDeltakerPostnummer());
+        setDeltakerPoststed(nyAvtale.getDeltakerPoststed());
 
-        setArbeidsgiverFnr(nyAvtale.arbeidsgiverFnr);
-        setArbeidsgiverFornavn(nyAvtale.arbeidsgiverFornavn);
-        setArbeidsgiverEtternavn(nyAvtale.arbeidsgiverEtternavn);
-        setArbeidsgiverEpost(nyAvtale.arbeidsgiverEpost);
-        setArbeidsgiverTlf(nyAvtale.arbeidsgiverTlf);
+        setBedriftNavn(nyAvtale.getBedriftNavn());
+        setBedriftAdresse(nyAvtale.getBedriftAdresse());
+        setBedriftPostnummer(nyAvtale.getBedriftPostnummer());
+        setBedriftPoststed(nyAvtale.getBedriftPoststed());
 
-        setVeilederFornavn(nyAvtale.veilederFornavn);
-        setVeilederEtternavn(nyAvtale.veilederEtternavn);
-        setVeilederEpost(nyAvtale.veilederEpost);
-        setVeilederTlf(nyAvtale.veilederTlf);
+        setArbeidsgiverFnr(nyAvtale.getArbeidsgiverFnr());
+        setArbeidsgiverFornavn(nyAvtale.getArbeidsgiverFornavn());
+        setArbeidsgiverEtternavn(nyAvtale.getArbeidsgiverEtternavn());
+        setArbeidsgiverEpost(nyAvtale.getArbeidsgiverEpost());
+        setArbeidsgiverTlf(nyAvtale.getArbeidsgiverTlf());
 
-        setOppfolging(nyAvtale.oppfolging);
-        setTilrettelegging(nyAvtale.tilrettelegging);
-        setStartDatoTidspunkt(nyAvtale.startDatoTidspunkt);
-        setArbeidstreningLengde(nyAvtale.arbeidstreningLengde);
-        setArbeidstreningStillingprosent(nyAvtale.arbeidstreningStillingprosent);
+        setVeilederFornavn(nyAvtale.getVeilederFornavn());
+        setVeilederEtternavn(nyAvtale.getVeilederEtternavn());
+        setVeilederEpost(nyAvtale.getVeilederEpost());
+        setVeilederTlf(nyAvtale.getVeilederTlf());
 
-        setMaal(nyAvtale.maal);
+        setOppfolging(nyAvtale.getOppfolging());
+        setTilrettelegging(nyAvtale.getTilrettelegging());
+        setStartDatoTidspunkt(nyAvtale.getStartDatoTidspunkt());
+        setArbeidstreningLengde(nyAvtale.getArbeidstreningLengde());
+        setArbeidstreningStillingprosent(nyAvtale.getArbeidstreningStillingprosent());
+
+        setMaal(nyAvtale.getMaal());
         maal.forEach(Maal::setterOppretterTidspunkt);
-        setOppgaver(nyAvtale.oppgaver);
+        setOppgaver(nyAvtale.getOppgaver());
         oppgaver.forEach(Oppgave::setterOppretterTidspunkt);
+
+        setBekreftetAvBruker(nyAvtale.isBekreftetAvBruker());
+        setBekreftetAvArbeidsgiver(nyAvtale.isBekreftetAvArbeidsgiver());
+        setBekreftetAvVeileder(nyAvtale.isBekreftetAvVeileder());
+    }
+
+    private void inkrementerVersjonsnummer() {
+        int versjonsnummer = Integer.parseInt(this.versjon);
+        versjon = String.valueOf(versjonsnummer + 1);
+    }
+
+    public void sjekkVersjon(String versjon) {
+        if (!this.versjon.equals(versjon)) {
+            throw new TiltaksgjennomforingException("Ugyldig versjonsnummer, kan ikke endre avtale.");
+        }
     }
 }

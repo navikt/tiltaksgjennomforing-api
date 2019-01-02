@@ -3,6 +3,8 @@ package no.nav.tag.tiltaksgjennomforing.controller;
 import no.nav.security.oidc.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.domene.Avtale;
+import no.nav.tag.tiltaksgjennomforing.domene.EndreAvtale;
+import no.nav.tag.tiltaksgjennomforing.domene.OpprettAvtale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +26,10 @@ public class AvtaleController {
     }
 
     @GetMapping("/{id}")
-    public Avtale hent(@PathVariable("id") Integer id) {
-        return avtaleRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
+    public ResponseEntity<Avtale> hent(@PathVariable("id") Integer id) {
+        return avtaleRepository.findById(id)
+                .map(avtale -> ResponseEntity.ok(avtale))
+                .orElseThrow(ResourceNotFoundException::new);
     }
 
     @GetMapping
@@ -34,19 +38,22 @@ public class AvtaleController {
     }
 
     @PostMapping
-    public ResponseEntity opprettAvtale(@RequestBody OpprettAvtaleRequest opprettAvtaleRequest) {
-        Avtale opprettetAvtale = avtaleRepository.save(opprettAvtaleRequest.create());
+    public ResponseEntity opprettAvtale(@RequestBody OpprettAvtale opprettAvtale) {
+        Avtale opprettetAvtale = avtaleRepository.save(Avtale.nyAvtale(opprettAvtale));
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
     }
 
-    @PutMapping("/{avtaleId}")
-    public ResponseEntity endreAvtale(@PathVariable("avtaleId") Integer avtaleId, @RequestBody Avtale nyAvtale) {
+    @PutMapping(value = "/{avtaleId}")
+    public ResponseEntity endreAvtale(@PathVariable("avtaleId") Integer avtaleId,
+                                      @RequestHeader("If-Match") String versjon,
+                                      @RequestBody EndreAvtale endreAvtale) {
         return avtaleRepository.findById(avtaleId)
                 .map(avtale -> {
-                    avtale.endreAvtale(nyAvtale);
-                    avtaleRepository.save(avtale);
-                    return ResponseEntity.ok().build();
+                    avtale.sjekkVersjon(versjon);
+                    avtale.endreAvtale(endreAvtale);
+                    Avtale lagretAvtale = avtaleRepository.save(avtale);
+                    return ResponseEntity.ok().header("eTag", lagretAvtale.getVersjon()).build();
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
