@@ -46,14 +46,14 @@ public class AvtaleController {
 
     @PutMapping(value = "/{avtaleId}")
     public ResponseEntity endreAvtale(@PathVariable("avtaleId") Integer avtaleId,
-                                      @RequestHeader("If-Match") String versjon,
+                                      @RequestHeader("If-Match") Integer versjon,
                                       @RequestBody EndreAvtale endreAvtale) {
         return avtaleRepository.findById(avtaleId)
                 .map(avtale -> {
                     avtale.sjekkVersjon(versjon);
                     avtale.endreAvtale(endreAvtale);
                     Avtale lagretAvtale = avtaleRepository.save(avtale);
-                    return ResponseEntity.ok().header("eTag", lagretAvtale.getVersjon()).build();
+                    return ResponseEntity.ok().header("eTag", lagretAvtale.getVersjon().toString()).build();
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
