@@ -2,27 +2,24 @@ package no.nav.tag.tiltaksgjennomforing.controller;
 
 import com.nimbusds.jwt.JWTClaimsSet;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
-import no.nav.tag.tiltaksgjennomforing.domene.Avtale;
-import no.nav.tag.tiltaksgjennomforing.domene.Fnr;
-import no.nav.tag.tiltaksgjennomforing.domene.NavIdent;
+import no.nav.tag.tiltaksgjennomforing.domene.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AuthorizationUtils {
+public class TilgangskontrollUtils {
     private final OIDCRequestContextHolder contextHolder;
 
     @Autowired
-    public AuthorizationUtils(OIDCRequestContextHolder contextHolder) {
+    public TilgangskontrollUtils(OIDCRequestContextHolder contextHolder) {
         this.contextHolder = contextHolder;
     }
 
-    public boolean harTilgangTilAvtale(Avtale avtale) {
+    public Person hentPersonFraToken() {
         if (brukerErVeileder()) {
-            return getNavIdentFraToken().equals(avtale.getVeilederNavIdent());
+            return new Veileder(getNavIdentFraToken());
         } else {
-            Fnr fnr = getFnrFraToken();
-            return fnr.equals(avtale.getDeltakerFnr()) || fnr.equals(avtale.getArbeidsgiverFnr());
+            return new Bruker(getFnrFraToken());
         }
     }
 
@@ -39,10 +36,10 @@ public class AuthorizationUtils {
                 .containsKey("NAVident");
     }
 
-    private NavIdent getNavIdentFraToken() {
-        return new NavIdent(String.valueOf(
+    private String getNavIdentFraToken() {
+        return String.valueOf(
                 getClaimSet().getClaim("NAVident")
-        ));
+        );
 
     }
 

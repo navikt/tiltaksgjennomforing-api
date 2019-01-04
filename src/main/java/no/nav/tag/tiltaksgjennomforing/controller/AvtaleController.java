@@ -4,7 +4,6 @@ import no.nav.security.oidc.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.domene.Avtale;
 import no.nav.tag.tiltaksgjennomforing.domene.EndreAvtale;
-import no.nav.tag.tiltaksgjennomforing.domene.Fnr;
 import no.nav.tag.tiltaksgjennomforing.domene.OpprettAvtale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.Optional;
 
 import static no.nav.tag.tiltaksgjennomforing.Utils.lagUri;
 
@@ -22,12 +20,12 @@ import static no.nav.tag.tiltaksgjennomforing.Utils.lagUri;
 public class AvtaleController {
 
     private final AvtaleRepository avtaleRepository;
-    private final AuthorizationUtils authorizationUtils;
+    private final TilgangskontrollUtils tilgangskontrollUtils;
 
     @Autowired
-    public AvtaleController(AvtaleRepository avtaleRepository, AuthorizationUtils authorizationUtils) {
+    public AvtaleController(AvtaleRepository avtaleRepository, TilgangskontrollUtils tilgangskontrollUtils) {
         this.avtaleRepository = avtaleRepository;
-        this.authorizationUtils = authorizationUtils;
+        this.tilgangskontrollUtils = tilgangskontrollUtils;
     }
 
     @GetMapping("/{id}")
@@ -35,7 +33,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(id)
                 .orElseThrow(ResourceNotFoundException::new);
 
-        if (authorizationUtils.harTilgangTilAvtale(avtale)) {
+        if (avtale.erTilgjengeligFor(tilgangskontrollUtils.hentPersonFraToken())) {
             return ResponseEntity.ok(avtale);
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
