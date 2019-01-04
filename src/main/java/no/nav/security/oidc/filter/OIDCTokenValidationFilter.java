@@ -45,7 +45,7 @@ public class OIDCTokenValidationFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         if (request instanceof HttpServletRequest) {
-            doTokenValidation((HttpServletRequest) request, (HttpServletResponse) response, chain);
+                doTokenValidation((HttpServletRequest) request, (HttpServletResponse) response, chain);
         } else {
             chain.doFilter(request, response);
         }
