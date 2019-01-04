@@ -69,7 +69,8 @@ public class Avtale {
         return avtale;
     }
 
-    public void endreAvtale(EndreAvtale nyAvtale) {
+    public void endreAvtale(Integer versjon, EndreAvtale nyAvtale) {
+        sjekkVersjon(versjon);
         inkrementerVersjonsnummer();
 
         setDeltakerFornavn(nyAvtale.getDeltakerFornavn());

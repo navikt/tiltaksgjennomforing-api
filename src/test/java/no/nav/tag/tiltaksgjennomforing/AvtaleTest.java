@@ -77,7 +77,7 @@ public class AvtaleTest {
     @Test
     public void endreAvtaleSkalInkrementereVersjon() {
         Avtale avtale = TestData.minimalAvtale();
-        avtale.endreAvtale(TestData.ingenEndring());
+        avtale.endreAvtale(avtale.getVersjon(), TestData.ingenEndring());
         assertThat(avtale.getVersjon()).isEqualTo(2);
     }
 }

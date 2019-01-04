@@ -50,8 +50,7 @@ public class AvtaleController {
                                       @RequestBody EndreAvtale endreAvtale) {
         return avtaleRepository.findById(avtaleId)
                 .map(avtale -> {
-                    avtale.sjekkVersjon(versjon);
-                    avtale.endreAvtale(endreAvtale);
+                    avtale.endreAvtale(versjon, endreAvtale);
                     Avtale lagretAvtale = avtaleRepository.save(avtale);
                     return ResponseEntity.ok().header("eTag", lagretAvtale.getVersjon().toString()).build();
                 })
