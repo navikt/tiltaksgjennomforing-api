@@ -50,7 +50,7 @@ public class TokenGeneratorController {
 
     @Unprotected
     @GetMapping("/cookie")
-    public Cookie addCookie(@RequestParam(value = "subject", defaultValue = "12345678910") String subject,
+    public Cookie addCookie(@RequestParam(value = "subject", defaultValue = "01234567890") String subject,
                             @RequestParam(value = "cookiename", defaultValue = "localhost-idtoken") String cookieName,
                             @RequestParam(value = "redirect", required = false) String redirect,
                             @RequestParam(value = "expiry", required = false) String expiry,
@@ -60,8 +60,8 @@ public class TokenGeneratorController {
 
     @Unprotected
     @GetMapping("/nav-cookie")
-    public Cookie addNavCookie(@RequestParam(value = "subject", defaultValue = "01987654321") String subject,
-                               @RequestParam(value = "NAV-ident", defaultValue = "Z123456") String navIdent,
+    public Cookie addNavCookie(@RequestParam(value = "subject", defaultValue = "01234567890") String subject,
+                               @RequestParam(value = "NAV-ident", defaultValue = "X123456") String navIdent,
                                @RequestParam(value = "cookiename", defaultValue = "localhost-idtoken") String cookieName,
                                @RequestParam(value = "redirect", required = false) String redirect,
                                @RequestParam(value = "expiry", required = false) String expiry,
