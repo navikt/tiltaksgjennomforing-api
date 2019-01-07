@@ -36,10 +36,10 @@ public class TilgangskontrollUtils {
                 .containsKey("NAVident");
     }
 
-    private String getNavIdentFraToken() {
-        return String.valueOf(
+    private NavIdent getNavIdentFraToken() {
+        return new NavIdent(String.valueOf(
                 getClaimSet().getClaim("NAVident")
-        );
+        ));
 
     }
 
