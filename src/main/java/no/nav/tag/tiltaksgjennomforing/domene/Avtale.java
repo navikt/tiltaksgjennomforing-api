@@ -117,7 +117,7 @@ public class Avtale {
 
     public void sjekkVersjon(Integer versjon) {
         if (this.versjon != versjon) {
-            throw new TiltaksgjennomforingException("Ugyldig versjonsnummer, kan ikke endre avtale.");
+            throw new TiltaksgjennomforingException("Avtalen kan ikke lagres, versjonen er utdatert.");
         }
     }
 }
