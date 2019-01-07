@@ -15,7 +15,7 @@ public class TilgangskontrollUtils {
         this.contextHolder = contextHolder;
     }
 
-    public Person hentPersonFraToken() {
+    public Person hentInnloggetBruker() {
         if (brukerErVeileder()) {
             return new Veileder(getNavIdentFraToken());
         } else {

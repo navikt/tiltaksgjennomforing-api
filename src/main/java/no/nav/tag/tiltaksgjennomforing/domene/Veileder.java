@@ -9,4 +9,8 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = false)
 public class Veileder extends Person {
     private NavIdent navIdent;
+
+    public Veileder(String navIdent) {
+        this(new NavIdent(navIdent));
+    }
 }

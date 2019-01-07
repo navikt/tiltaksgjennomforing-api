@@ -7,8 +7,15 @@ import org.junit.Test;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
 
 public class AvtaleTest {
+
+    @Test
+    public void kunAvtalensVeilederSkalKunneOppretteAvtale() {
+        Avtale avtale = TestData.minimalAvtale();
+        assertFalse(avtale.kanOpprettesAv(new Bruker(avtale.getDeltakerFnr())));
+    }
 
     @Test
     public void kunParteneIAvtalenSkalHaTilgang() {

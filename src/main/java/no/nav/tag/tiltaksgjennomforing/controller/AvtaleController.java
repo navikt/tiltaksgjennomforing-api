@@ -11,6 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import static no.nav.tag.tiltaksgjennomforing.Utils.lagUri;
 
@@ -20,12 +23,12 @@ import static no.nav.tag.tiltaksgjennomforing.Utils.lagUri;
 public class AvtaleController {
 
     private final AvtaleRepository avtaleRepository;
-    private final TilgangskontrollUtils tilgangskontrollUtils;
+    private final TilgangskontrollUtils tilgangskontroll;
 
     @Autowired
-    public AvtaleController(AvtaleRepository avtaleRepository, TilgangskontrollUtils tilgangskontrollUtils) {
+    public AvtaleController(AvtaleRepository avtaleRepository, TilgangskontrollUtils tilgangskontroll) {
         this.avtaleRepository = avtaleRepository;
-        this.tilgangskontrollUtils = tilgangskontrollUtils;
+        this.tilgangskontroll = tilgangskontroll;
     }
 
     @GetMapping("/{id}")
@@ -33,7 +36,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(id)
                 .orElseThrow(ResourceNotFoundException::new);
 
-        if (avtale.erTilgjengeligFor(tilgangskontrollUtils.hentPersonFraToken())) {
+        if (avtale.erTilgjengeligFor(tilgangskontroll.hentInnloggetBruker())) {
             return ResponseEntity.ok(avtale);
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -42,27 +45,43 @@ public class AvtaleController {
 
     @GetMapping
     public Iterable<Avtale> hentAlle() {
-        return avtaleRepository.findAll();
+        List<Avtale> avtaler = new ArrayList<>();
+        for (Avtale avtale : avtaleRepository.findAll()) {
+            if (avtale.erTilgjengeligFor(tilgangskontroll.hentInnloggetBruker())) {
+                avtaler.add(avtale);
+            }
+        }
+        return avtaler;
     }
 
     @PostMapping
     public ResponseEntity opprettAvtale(@RequestBody OpprettAvtale opprettAvtale) {
-        Avtale opprettetAvtale = avtaleRepository.save(Avtale.nyAvtale(opprettAvtale));
-        URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
-        return ResponseEntity.created(uri).build();
+        Avtale avtale = Avtale.nyAvtale(opprettAvtale);
+        if (avtale.kanOpprettesAv(tilgangskontroll.hentInnloggetBruker())) {
+            Avtale opprettetAvtale = avtaleRepository.save(avtale);
+            URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
+            return ResponseEntity.created(uri).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 
     @PutMapping(value = "/{avtaleId}")
     public ResponseEntity endreAvtale(@PathVariable("avtaleId") Integer avtaleId,
                                       @RequestHeader("If-Match") String versjon,
                                       @RequestBody EndreAvtale endreAvtale) {
-        return avtaleRepository.findById(avtaleId)
-                .map(avtale -> {
-                    avtale.sjekkVersjon(versjon);
-                    avtale.endreAvtale(endreAvtale);
-                    Avtale lagretAvtale = avtaleRepository.save(avtale);
-                    return ResponseEntity.ok().header("eTag", lagretAvtale.getVersjon()).build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+        Optional<Avtale> optionalAvtale = avtaleRepository.findById(avtaleId);
+        if (optionalAvtale.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        Avtale avtale = optionalAvtale.get();
+        if (optionalAvtale.get().erTilgjengeligFor(tilgangskontroll.hentInnloggetBruker())) {
+            avtale.sjekkVersjon(versjon);
+            avtale.endreAvtale(endreAvtale);
+            Avtale lagretAvtale = avtaleRepository.save(avtale);
+            return ResponseEntity.ok().header("eTag", lagretAvtale.getVersjon()).build();
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
     }
 }

@@ -6,9 +6,13 @@ import java.time.LocalDateTime;
 
 public class TestData {
     static Avtale minimalAvtale() {
+        return Avtale.nyAvtale(lagOpprettAvtale());
+    }
+
+    static OpprettAvtale lagOpprettAvtale() {
         Fnr deltakerFnr = new Fnr("12345678901");
         NavIdent veilderNavIdent = new NavIdent("X123456");
-        return Avtale.nyAvtale(new OpprettAvtale(deltakerFnr, veilderNavIdent));
+        return new OpprettAvtale(deltakerFnr, veilderNavIdent);
     }
 
     static EndreAvtale ingenEndring() {

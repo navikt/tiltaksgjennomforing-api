@@ -10,4 +10,8 @@ import no.nav.tag.tiltaksgjennomforing.TiltaksgjennomforingException;
 @AllArgsConstructor
 public class Bruker extends Person {
     private Fnr fnr;
+
+    public Bruker(String fnr) {
+        this(new Fnr(fnr));
+    }
 }

@@ -63,6 +63,13 @@ public class Avtale {
         this.opprettetTidspunkt = ikkeNull(opprettetTidspunkt, "Opprettet tidspunkt må være satt.");
     }
 
+    public boolean kanOpprettesAv(Person person) {
+        if (person instanceof Veileder) {
+            return erTilgjengeligFor(person);
+        }
+        return false;
+    }
+
     public boolean erTilgjengeligFor(Person person) {
         if (person instanceof Veileder) {
             return veilederNavIdent.equals(((Veileder) person).getNavIdent());
