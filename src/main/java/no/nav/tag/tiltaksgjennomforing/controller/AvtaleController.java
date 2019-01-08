@@ -68,7 +68,7 @@ public class AvtaleController {
 
     @PutMapping(value = "/{avtaleId}")
     public ResponseEntity endreAvtale(@PathVariable("avtaleId") Integer avtaleId,
-                                      @RequestHeader("If-Match") String versjon,
+                                      @RequestHeader("If-Match") Integer versjon,
                                       @RequestBody EndreAvtale endreAvtale) {
         Optional<Avtale> optionalAvtale = avtaleRepository.findById(avtaleId);
         if (optionalAvtale.isEmpty()) {
@@ -79,7 +79,7 @@ public class AvtaleController {
             avtale.sjekkVersjon(versjon);
             avtale.endreAvtale(endreAvtale);
             Avtale lagretAvtale = avtaleRepository.save(avtale);
-            return ResponseEntity.ok().header("eTag", lagretAvtale.getVersjon()).build();
+            return ResponseEntity.ok().header("eTag", lagretAvtale.getVersjon().toString()).build();
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }

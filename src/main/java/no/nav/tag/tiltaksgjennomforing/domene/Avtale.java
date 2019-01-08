@@ -20,7 +20,7 @@ public class Avtale {
     private final NavIdent veilederNavIdent;
     @Id
     private Integer id;
-    private String versjon;
+    private Integer versjon;
     private String deltakerFornavn;
     private String deltakerEtternavn;
     private String deltakerAdresse;
@@ -82,7 +82,7 @@ public class Avtale {
 
     public static Avtale nyAvtale(OpprettAvtale opprettAvtale) {
         Avtale avtale = new Avtale(opprettAvtale.getDeltakerFnr(), opprettAvtale.getVeilederNavIdent(), LocalDateTime.now());
-        avtale.setVersjon("1");
+        avtale.setVersjon(1);
         return avtale;
     }
 
@@ -128,12 +128,11 @@ public class Avtale {
     }
 
     private void inkrementerVersjonsnummer() {
-        int versjonsnummer = Integer.parseInt(this.versjon);
-        versjon = String.valueOf(versjonsnummer + 1);
+        versjon += 1;
     }
 
-    public void sjekkVersjon(String versjon) {
-        if (!this.versjon.equals(versjon)) {
+    public void sjekkVersjon(Integer versjon) {
+        if (this.versjon != versjon) {
             throw new TiltaksgjennomforingException("Ugyldig versjonsnummer, kan ikke endre avtale.");
         }
     }

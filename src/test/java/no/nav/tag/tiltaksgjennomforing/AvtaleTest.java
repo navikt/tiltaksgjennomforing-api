@@ -87,7 +87,7 @@ public class AvtaleTest {
     @Test(expected = TiltaksgjennomforingException.class)
     public void sjekkVersjonMedUgyldigVersjon() {
         Avtale avtale = TestData.minimalAvtale();
-        avtale.sjekkVersjon("-1");
+        avtale.sjekkVersjon(-1);
     }
 
     @Test
@@ -100,6 +100,6 @@ public class AvtaleTest {
     public void endreAvtaleSkalInkrementereVersjon() {
         Avtale avtale = TestData.minimalAvtale();
         avtale.endreAvtale(TestData.ingenEndring());
-        assertThat(avtale.getVersjon()).isEqualTo("2");
+        assertThat(avtale.getVersjon()).isEqualTo(2);
     }
 }
