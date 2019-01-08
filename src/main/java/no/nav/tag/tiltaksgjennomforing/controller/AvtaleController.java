@@ -75,8 +75,7 @@ public class AvtaleController {
         }
         Avtale avtale = optionalAvtale.get();
         if (optionalAvtale.get().erTilgjengeligFor(tilgangskontroll.hentInnloggetBruker())) {
-            avtale.sjekkVersjon(versjon);
-            avtale.endreAvtale(endreAvtale);
+            avtale.endreAvtale(versjon, endreAvtale);
             Avtale lagretAvtale = avtaleRepository.save(avtale);
             return ResponseEntity.ok().header("eTag", lagretAvtale.getVersjon().toString()).build();
         } else {

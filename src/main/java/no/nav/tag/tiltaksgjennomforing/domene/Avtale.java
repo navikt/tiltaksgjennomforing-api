@@ -79,7 +79,8 @@ public class Avtale {
         return avtale;
     }
 
-    public void endreAvtale(EndreAvtale nyAvtale) {
+    public void endreAvtale(Integer versjon, EndreAvtale nyAvtale) {
+        sjekkVersjon(versjon);
         inkrementerVersjonsnummer();
 
         setDeltakerFornavn(nyAvtale.getDeltakerFornavn());
@@ -126,7 +127,7 @@ public class Avtale {
 
     public void sjekkVersjon(Integer versjon) {
         if (this.versjon != versjon) {
-            throw new TiltaksgjennomforingException("Ugyldig versjonsnummer, kan ikke endre avtale.");
+            throw new TiltaksgjennomforingException("Avtalen kan ikke lagres, versjonen er utdatert.");
         }
     }
 }
