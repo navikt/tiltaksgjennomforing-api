@@ -55,12 +55,7 @@ public class AvtaleController {
 
     @PostMapping
     public ResponseEntity opprettAvtale(@RequestBody OpprettAvtale opprettAvtale) {
-        Person innloggetBruker = tilgangskontroll.hentInnloggetPerson();
-        if (!(innloggetBruker instanceof Veileder)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-
-        Avtale avtale = ((Veileder) innloggetBruker).opprettAvtale(opprettAvtale);
+        Avtale avtale = tilgangskontroll.hentInnloggetVeileder().opprettAvtale(opprettAvtale);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
