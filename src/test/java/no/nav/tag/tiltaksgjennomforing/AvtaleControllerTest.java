@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing;
 
 import no.nav.tag.tiltaksgjennomforing.controller.AvtaleController;
+import no.nav.tag.tiltaksgjennomforing.controller.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.controller.TilgangskontrollUtils;
 import no.nav.tag.tiltaksgjennomforing.domene.*;
 import org.junit.Test;
@@ -60,14 +61,6 @@ public class AvtaleControllerTest {
 
         assertEquals(svar.getStatusCodeValue(), 201);
         assertEquals(svar.getHeaders().getLocation().getPath(), "/avtaler/" + avtale.getId());
-    }
-
-    @Test
-    public void opprettAvtaleSkalReturnereForbiddenHvisInnloggetBrukerIkkeHarTilgang() {
-        OpprettAvtale opprettAvtale = TestData.lagOpprettAvtale();
-        vaerInnloggetSom(new Bruker(opprettAvtale.getDeltakerFnr()));
-        ResponseEntity svar = avtaleController.opprettAvtale(opprettAvtale);
-        assertEquals(svar.getStatusCode(), HttpStatus.FORBIDDEN);
     }
 
     @Test
@@ -134,5 +127,8 @@ public class AvtaleControllerTest {
 
     private void vaerInnloggetSom(Person person) {
         when(tilgangskontroll.hentInnloggetPerson()).thenReturn(person);
+        if (person instanceof Veileder) {
+            when(tilgangskontroll.hentInnloggetVeileder()).thenReturn((Veileder) person);
+        }
     }
 }
