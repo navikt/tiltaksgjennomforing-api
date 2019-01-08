@@ -13,4 +13,8 @@ public class Veileder extends Person {
     public Veileder(String navIdent) {
         this(new NavIdent(navIdent));
     }
+
+    public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
+        return Avtale.nyAvtale(opprettAvtale, this.navIdent);
+    }
 }

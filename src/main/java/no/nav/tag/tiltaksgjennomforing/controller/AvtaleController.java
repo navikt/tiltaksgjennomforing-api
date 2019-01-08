@@ -2,9 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.controller;
 
 import no.nav.security.oidc.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.domene.Avtale;
-import no.nav.tag.tiltaksgjennomforing.domene.EndreAvtale;
-import no.nav.tag.tiltaksgjennomforing.domene.OpprettAvtale;
+import no.nav.tag.tiltaksgjennomforing.domene.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,14 +54,15 @@ public class AvtaleController {
 
     @PostMapping
     public ResponseEntity opprettAvtale(@RequestBody OpprettAvtale opprettAvtale) {
-        Avtale avtale = Avtale.nyAvtale(opprettAvtale);
-        if (avtale.kanOpprettesAv(tilgangskontroll.hentInnloggetBruker())) {
-            Avtale opprettetAvtale = avtaleRepository.save(avtale);
-            URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
-            return ResponseEntity.created(uri).build();
-        } else {
+        Person innloggetBruker = tilgangskontroll.hentInnloggetBruker();
+        if (!(innloggetBruker instanceof Veileder)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
+
+        Avtale avtale = ((Veileder) innloggetBruker).opprettAvtale(opprettAvtale);
+        Avtale opprettetAvtale = avtaleRepository.save(avtale);
+        URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
+        return ResponseEntity.created(uri).build();
     }
 
     @PutMapping(value = "/{avtaleId}")

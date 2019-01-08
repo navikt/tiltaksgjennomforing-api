@@ -9,5 +9,4 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OpprettAvtale {
     private Fnr deltakerFnr;
-    private NavIdent veilederNavIdent;
 }

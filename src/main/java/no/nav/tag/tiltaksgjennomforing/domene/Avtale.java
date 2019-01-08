@@ -63,13 +63,6 @@ public class Avtale {
         this.opprettetTidspunkt = ikkeNull(opprettetTidspunkt, "Opprettet tidspunkt må være satt.");
     }
 
-    public boolean kanOpprettesAv(Person person) {
-        if (person instanceof Veileder) {
-            return erTilgjengeligFor(person);
-        }
-        return false;
-    }
-
     public boolean erTilgjengeligFor(Person person) {
         if (person instanceof Veileder) {
             return veilederNavIdent.equals(((Veileder) person).getNavIdent());
@@ -80,8 +73,8 @@ public class Avtale {
         return false;
     }
 
-    public static Avtale nyAvtale(OpprettAvtale opprettAvtale) {
-        Avtale avtale = new Avtale(opprettAvtale.getDeltakerFnr(), opprettAvtale.getVeilederNavIdent(), LocalDateTime.now());
+    public static Avtale nyAvtale(OpprettAvtale opprettAvtale, NavIdent veilederNavIdent) {
+        Avtale avtale = new Avtale(opprettAvtale.getDeltakerFnr(), veilederNavIdent, LocalDateTime.now());
         avtale.setVersjon(1);
         return avtale;
     }
