@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class TilgangskontrollUtils {
     private final OIDCRequestContextHolder contextHolder;
+    private final static String ISSUER = "selvbetjening";
 
     @Autowired
     public TilgangskontrollUtils(OIDCRequestContextHolder contextHolder) {
@@ -26,7 +27,7 @@ public class TilgangskontrollUtils {
     private JWTClaimsSet getClaimSet() {
         return contextHolder
                 .getOIDCValidationContext()
-                .getClaims("localhost")
+                .getClaims(ISSUER)
                 .getClaimSet();
     }
 
