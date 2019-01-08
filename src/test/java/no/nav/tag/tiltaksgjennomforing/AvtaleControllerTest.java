@@ -133,6 +133,6 @@ public class AvtaleControllerTest {
     }
 
     private void vaerInnloggetSom(Person person) {
-        when(tilgangskontroll.hentInnloggetBruker()).thenReturn(person);
+        when(tilgangskontroll.hentInnloggetPerson()).thenReturn(person);
     }
 }

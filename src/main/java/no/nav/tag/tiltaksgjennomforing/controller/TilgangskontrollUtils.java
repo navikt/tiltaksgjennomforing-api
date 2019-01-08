@@ -9,44 +9,43 @@ import org.springframework.stereotype.Component;
 @Component
 public class TilgangskontrollUtils {
     private final OIDCRequestContextHolder contextHolder;
-    private final static String ISSUER = "isso";
+    private final static String ISSUER_ISSO = "isso";
+    private final static String ISSUER_SELVBETJENING = "selvbetjening";
 
     @Autowired
     public TilgangskontrollUtils(OIDCRequestContextHolder contextHolder) {
         this.contextHolder = contextHolder;
     }
 
-    public Person hentInnloggetBruker() {
-        if (brukerErVeileder()) {
-            return new Veileder(getNavIdentFraToken());
+    public Person hentInnloggetPerson() {
+        if (innloggetPersonErVeileder()) {
+            return hentInnloggetVeileder();
         } else {
-            return new Bruker(getFnrFraToken());
+            return new Bruker(getClaim(ISSUER_SELVBETJENING, "sub"));
         }
     }
 
-    private JWTClaimsSet getClaimSet() {
+    public Veileder hentInnloggetVeileder() {
+        if (innloggetPersonErVeileder()) {
+            return new Veileder(getClaim(ISSUER_ISSO, "NAVident"));
+        }
+        throw new TilgangskontrollException("Innlogget bruker er ikke veileder.");
+    }
+
+    private String getClaim(String issuer, String claim) {
+        return String.valueOf(getClaimSet(issuer).getClaim(claim));
+    }
+
+    private JWTClaimsSet getClaimSet(String issuer) {
         return contextHolder
                 .getOIDCValidationContext()
-                .getClaims(ISSUER)
+                .getClaims(issuer)
                 .getClaimSet();
     }
 
-    private boolean brukerErVeileder() {
-        return getClaimSet()
+    private boolean innloggetPersonErVeileder() {
+        return getClaimSet(ISSUER_ISSO)
                 .getClaims()
                 .containsKey("NAVident");
-    }
-
-    private NavIdent getNavIdentFraToken() {
-        return new NavIdent(String.valueOf(
-                getClaimSet().getClaim("NAVident")
-        ));
-
-    }
-
-    private Fnr getFnrFraToken() {
-        return new Fnr(String.valueOf(
-                getClaimSet().getClaim("sub")
-        ));
     }
 }

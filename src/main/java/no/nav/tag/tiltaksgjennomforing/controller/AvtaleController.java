@@ -34,7 +34,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(id)
                 .orElseThrow(ResourceNotFoundException::new);
 
-        if (avtale.erTilgjengeligFor(tilgangskontroll.hentInnloggetBruker())) {
+        if (avtale.erTilgjengeligFor(tilgangskontroll.hentInnloggetPerson())) {
             return ResponseEntity.ok(avtale);
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -43,9 +43,10 @@ public class AvtaleController {
 
     @GetMapping
     public Iterable<Avtale> hentAlle() {
+        Person bruker = tilgangskontroll.hentInnloggetPerson();
         List<Avtale> avtaler = new ArrayList<>();
         for (Avtale avtale : avtaleRepository.findAll()) {
-            if (avtale.erTilgjengeligFor(tilgangskontroll.hentInnloggetBruker())) {
+            if (avtale.erTilgjengeligFor(bruker)) {
                 avtaler.add(avtale);
             }
         }
@@ -54,7 +55,7 @@ public class AvtaleController {
 
     @PostMapping
     public ResponseEntity opprettAvtale(@RequestBody OpprettAvtale opprettAvtale) {
-        Person innloggetBruker = tilgangskontroll.hentInnloggetBruker();
+        Person innloggetBruker = tilgangskontroll.hentInnloggetPerson();
         if (!(innloggetBruker instanceof Veileder)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -74,7 +75,7 @@ public class AvtaleController {
             return ResponseEntity.notFound().build();
         }
         Avtale avtale = optionalAvtale.get();
-        if (optionalAvtale.get().erTilgjengeligFor(tilgangskontroll.hentInnloggetBruker())) {
+        if (optionalAvtale.get().erTilgjengeligFor(tilgangskontroll.hentInnloggetPerson())) {
             avtale.endreAvtale(versjon, endreAvtale);
             Avtale lagretAvtale = avtaleRepository.save(avtale);
             return ResponseEntity.ok().header("eTag", lagretAvtale.getVersjon().toString()).build();
