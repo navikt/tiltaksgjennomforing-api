@@ -64,13 +64,11 @@ public class Avtale {
     }
 
     public boolean erTilgjengeligFor(Person person) {
-        if (person instanceof Veileder) {
-            return veilederNavIdent.equals(((Veileder) person).getNavIdent());
-        } else if (person instanceof Bruker) {
-            Fnr fnr = ((Bruker) person).getFnr();
-            return fnr.equals(arbeidsgiverFnr) || fnr.equals(deltakerFnr);
-        }
-        return false;
+        PersonIdentifikator id = person.getIdentifikator();
+
+        return id.equals(veilederNavIdent) ||
+                id.equals(deltakerFnr) ||
+                id.equals(arbeidsgiverFnr);
     }
 
     public static Avtale nyAvtale(OpprettAvtale opprettAvtale, NavIdent veilederNavIdent) {
