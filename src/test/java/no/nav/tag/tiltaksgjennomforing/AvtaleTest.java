@@ -1,23 +1,39 @@
 package no.nav.tag.tiltaksgjennomforing;
 
-import no.nav.tag.tiltaksgjennomforing.domene.Avtale;
-import no.nav.tag.tiltaksgjennomforing.domene.Fnr;
-import no.nav.tag.tiltaksgjennomforing.domene.NavIdent;
-import no.nav.tag.tiltaksgjennomforing.domene.OpprettAvtale;
+import no.nav.tag.tiltaksgjennomforing.domene.*;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
 
 public class AvtaleTest {
+
+    @Test
+    public void kunParteneIAvtalenSkalHaTilgang() {
+        Bruker arbeidsgiver = new Bruker(new Fnr("77667766776"));
+        Bruker kandidat = new Bruker(new Fnr("01234567890"));
+        Veileder veileder = new Veileder(new NavIdent("X123456"));
+
+        Avtale avtale = Avtale.nyAvtale(new OpprettAvtale(kandidat.getFnr()), veileder.getNavIdent());
+        avtale.setArbeidsgiverFnr(arbeidsgiver.getFnr());
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(avtale.erTilgjengeligFor(arbeidsgiver)).isTrue();
+            softly.assertThat(avtale.erTilgjengeligFor(kandidat)).isTrue();
+            softly.assertThat(avtale.erTilgjengeligFor(veileder)).isTrue();
+            softly.assertThat(avtale.erTilgjengeligFor(new Bruker(new Fnr("90909090909")))).isFalse();
+            softly.assertThat(avtale.erTilgjengeligFor(new Veileder(new NavIdent("Y654321")))).isFalse();
+        });
+    }
 
     @Test
     public void nyAvtaleFactorySkalReturnereRiktigeStandardverdier() {
         Fnr deltakerFnr = new Fnr("01234567890");
         NavIdent veilederNavIdent = new NavIdent("X123456");
-        Avtale avtale = Avtale.nyAvtale(new OpprettAvtale(deltakerFnr, veilederNavIdent));
+        Avtale avtale = Avtale.nyAvtale(new OpprettAvtale(deltakerFnr), veilederNavIdent);
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(avtale.getOpprettetTidspunkt()).isEqualToIgnoringMinutes(LocalDateTime.now());
             softly.assertThat(avtale.getDeltakerFnr()).isEqualTo(deltakerFnr);
@@ -54,12 +70,12 @@ public class AvtaleTest {
 
     @Test(expected = TiltaksgjennomforingException.class)
     public void nyAvtaleSkalFeileHvisManglerDeltaker() {
-        Avtale.nyAvtale(new OpprettAvtale(null, new NavIdent("X12345")));
+        Avtale.nyAvtale(new OpprettAvtale(null), new NavIdent("X12345"));
     }
 
     @Test(expected = TiltaksgjennomforingException.class)
     public void nyAvtaleSkalFeileHvisManglerVeileder() {
-        Avtale.nyAvtale(new OpprettAvtale(new Fnr("1122334455555"), null));
+        Avtale.nyAvtale(new OpprettAvtale(new Fnr("1122334455555")), null);
     }
 
     @Test(expected = TiltaksgjennomforingException.class)

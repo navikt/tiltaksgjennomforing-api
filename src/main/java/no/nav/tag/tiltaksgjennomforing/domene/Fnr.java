@@ -5,7 +5,7 @@ import lombok.Value;
 import no.nav.tag.tiltaksgjennomforing.TiltaksgjennomforingException;
 
 @Value
-public class Fnr {
+public class Fnr extends PersonIdentifikator {
 
     private final String fnr;
 

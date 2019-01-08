@@ -16,6 +16,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/local")
@@ -47,13 +50,38 @@ public class TokenGeneratorController {
 
     @Unprotected
     @GetMapping("/cookie")
-    public Cookie addCookie(@RequestParam(value = "subject", defaultValue = "12345678910") String subject,
+    public Cookie addCookie(@RequestParam(value = "subject", defaultValue = "01234567890") String subject,
                             @RequestParam(value = "cookiename", defaultValue = "localhost-idtoken") String cookieName,
                             @RequestParam(value = "redirect", required = false) String redirect,
                             @RequestParam(value = "expiry", required = false) String expiry,
                             HttpServletRequest request, HttpServletResponse response) throws IOException {
+        return bakeCookie(subject, cookieName, redirect, expiry, request, response, new HashMap<>());
+    }
+
+    @Unprotected
+    @GetMapping("/nav-cookie")
+    public Cookie addNavCookie(@RequestParam(value = "subject", defaultValue = "01234567890") String subject,
+                               @RequestParam(value = "NAV-ident", defaultValue = "X123456") String navIdent,
+                               @RequestParam(value = "cookiename", defaultValue = "localhost-idtoken") String cookieName,
+                               @RequestParam(value = "redirect", required = false) String redirect,
+                               @RequestParam(value = "expiry", required = false) String expiry,
+                               HttpServletRequest request,
+                               HttpServletResponse response
+    ) throws IOException {
+        return bakeCookie(subject, cookieName, redirect, expiry, request, response, Collections.singletonMap("NAVident", navIdent));
+    }
+
+    private Cookie bakeCookie(
+            String subject,
+            String cookieName,
+            String redirect,
+            String expiry,
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Map<String, Object> claims
+    ) throws IOException {
         long expiryTime = expiry != null ? Long.parseLong(expiry) : JwtTokenGenerator.EXPIRY;
-        SignedJWT token = JwtTokenGenerator.createSignedJWT(subject, expiryTime);
+        SignedJWT token = JwtTokenGenerator.createSignedJWT(subject, expiryTime, claims);
         Cookie cookie = new Cookie(cookieName, token.serialize());
         cookie.setDomain("localhost");
         cookie.setPath("/");

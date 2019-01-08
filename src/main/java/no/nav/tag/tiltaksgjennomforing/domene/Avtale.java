@@ -63,8 +63,16 @@ public class Avtale {
         this.opprettetTidspunkt = ikkeNull(opprettetTidspunkt, "Opprettet tidspunkt må være satt.");
     }
 
-    public static Avtale nyAvtale(OpprettAvtale opprettAvtale) {
-        Avtale avtale = new Avtale(opprettAvtale.getDeltakerFnr(), opprettAvtale.getVeilederNavIdent(), LocalDateTime.now());
+    public boolean erTilgjengeligFor(Person person) {
+        PersonIdentifikator id = person.getIdentifikator();
+
+        return id.equals(veilederNavIdent) ||
+                id.equals(deltakerFnr) ||
+                id.equals(arbeidsgiverFnr);
+    }
+
+    public static Avtale nyAvtale(OpprettAvtale opprettAvtale, NavIdent veilederNavIdent) {
+        Avtale avtale = new Avtale(opprettAvtale.getDeltakerFnr(), veilederNavIdent, LocalDateTime.now());
         avtale.setVersjon(1);
         return avtale;
     }
