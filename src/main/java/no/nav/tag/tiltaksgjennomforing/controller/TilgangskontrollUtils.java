@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class TilgangskontrollUtils {
     private final OIDCRequestContextHolder contextHolder;
-    private final static String ISSUER = "selvbetjening";
+    private final static String ISSUER = "isso";
 
     @Autowired
     public TilgangskontrollUtils(OIDCRequestContextHolder contextHolder) {
