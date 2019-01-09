@@ -102,9 +102,9 @@ public class Avtale {
         setArbeidstreningStillingprosent(nyAvtale.getArbeidstreningStillingprosent());
 
         setMaal(nyAvtale.getMaal());
-        maal.forEach(Maal::setterOppretterTidspunkt);
+        maal.forEach(Maal::settIdOgOpprettetTidspunkt);
         setOppgaver(nyAvtale.getOppgaver());
-        oppgaver.forEach(Oppgave::setterOppretterTidspunkt);
+        oppgaver.forEach(Oppgave::settIdOgOpprettetTidspunkt);
 
         setBekreftetAvBruker(nyAvtale.isBekreftetAvBruker());
         setBekreftetAvArbeidsgiver(nyAvtale.isBekreftetAvArbeidsgiver());

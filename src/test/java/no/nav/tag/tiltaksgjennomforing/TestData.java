@@ -25,7 +25,7 @@ public class TestData {
 
     static Oppgave lagOppgave() {
         Oppgave oppgave = new Oppgave();
-        oppgave.setId(1);
+        oppgave.setId("1");
         oppgave.setOpprettetTidspunkt(LocalDateTime.now());
         oppgave.setTittel("Tittel");
         oppgave.setBeskrivelse("Beksrivelse");
@@ -35,7 +35,7 @@ public class TestData {
 
     static Maal lagMaal() {
         Maal maal = new Maal();
-        maal.setId(1);
+        maal.setId("1");
         maal.setOpprettetTidspunkt(LocalDateTime.now());
         maal.setBeskrivelse("Beksrivelse");
         maal.setKategori("Kategori");
