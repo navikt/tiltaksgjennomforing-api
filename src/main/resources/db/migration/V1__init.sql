@@ -1,23 +1,27 @@
 CREATE TABLE avtale (
-  id serial primary key,
+  id uuid primary key,
   opprettet_tidspunkt timestamp without time zone not null default now(),
+  versjon integer not null default 1,
 
   deltaker_fornavn varchar(255),
   deltaker_etternavn varchar(255),
   deltaker_adresse varchar(255),
   deltaker_postnummer varchar(255),
   deltaker_poststed varchar(255),
+  deltaker_fnr varchar(11),
 
   bedrift_navn varchar(255),
   bedrift_adresse varchar(255),
   bedrift_postnummer varchar(255),
   bedrift_poststed varchar(255),
 
+  arbeidsgiver_fnr varchar(11),
   arbeidsgiver_fornavn varchar(255),
   arbeidsgiver_etternavn varchar(255),
   arbeidsgiver_epost varchar(255),
   arbeidsgiver_tlf varchar(255),
 
+  veileder_nav_ident varchar(7),
   veileder_fornavn varchar(255),
   veileder_etternavn varchar(255),
   veileder_epost varchar(255),
@@ -36,19 +40,19 @@ CREATE TABLE avtale (
 );
 
 CREATE TABLE maal (
-  id serial primary key,
+  id uuid primary key,
   opprettet_tidspunkt timestamp without time zone not null default now(),
   kategori varchar(255),
   beskrivelse varchar(255),
-  avtale integer references avtale(id)
+  avtale uuid references avtale(id)
 );
 
 
 CREATE TABLE oppgave (
-  id serial primary key,
+  id uuid primary key,
   opprettet_tidspunkt timestamp without time zone not null default now(),
   tittel varchar(255),
   beskrivelse varchar(255),
   opplaering varchar(255),
-  avtale integer references avtale(id)
+  avtale uuid references avtale(id)
 );

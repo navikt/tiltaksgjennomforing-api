@@ -35,7 +35,7 @@ public class AvtaleTest {
         NavIdent veilederNavIdent = new NavIdent("X123456");
         Avtale avtale = Avtale.nyAvtale(new OpprettAvtale(deltakerFnr), veilederNavIdent);
         SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(avtale.getOpprettetTidspunkt()).isEqualToIgnoringMinutes(LocalDateTime.now());
+            softly.assertThat(avtale.getOpprettetTidspunkt()).isNull();
             softly.assertThat(avtale.getDeltakerFnr()).isEqualTo(deltakerFnr);
             softly.assertThat(avtale.getMaal()).isEmpty();
             softly.assertThat(avtale.getOppgaver()).isEmpty();

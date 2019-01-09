@@ -12,6 +12,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static no.nav.tag.tiltaksgjennomforing.Utils.lagUri;
 
@@ -30,7 +31,7 @@ public class AvtaleController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Avtale> hent(@PathVariable("id") Integer id) {
+    public ResponseEntity<Avtale> hent(@PathVariable("id") UUID id) {
         Avtale avtale = avtaleRepository.findById(id)
                 .orElseThrow(ResourceNotFoundException::new);
 
@@ -62,7 +63,7 @@ public class AvtaleController {
     }
 
     @PutMapping(value = "/{avtaleId}")
-    public ResponseEntity endreAvtale(@PathVariable("avtaleId") Integer avtaleId,
+    public ResponseEntity endreAvtale(@PathVariable("avtaleId") UUID avtaleId,
                                       @RequestHeader("If-Match") Integer versjon,
                                       @RequestBody EndreAvtale endreAvtale) {
         Optional<Avtale> optionalAvtale = avtaleRepository.findById(avtaleId);
