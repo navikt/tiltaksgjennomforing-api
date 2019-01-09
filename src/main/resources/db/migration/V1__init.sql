@@ -1,5 +1,5 @@
 CREATE TABLE avtale (
-  id serial primary key,
+  id varchar(255) primary key,
   opprettet_tidspunkt timestamp without time zone not null default now(),
 
   deltaker_fornavn varchar(255),
@@ -36,7 +36,7 @@ CREATE TABLE avtale (
 );
 
 CREATE TABLE maal (
-  id serial primary key,
+  id varchar(255) primary key,
   opprettet_tidspunkt timestamp without time zone not null default now(),
   kategori varchar(255),
   beskrivelse varchar(255),
@@ -45,7 +45,7 @@ CREATE TABLE maal (
 
 
 CREATE TABLE oppgave (
-  id serial primary key,
+  id varchar(255) primary key,
   opprettet_tidspunkt timestamp without time zone not null default now(),
   tittel varchar(255),
   beskrivelse varchar(255),

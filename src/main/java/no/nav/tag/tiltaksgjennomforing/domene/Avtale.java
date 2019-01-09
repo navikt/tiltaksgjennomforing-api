@@ -19,7 +19,7 @@ public class Avtale {
     private final Fnr deltakerFnr;
     private final NavIdent veilederNavIdent;
     @Id
-    private Integer id;
+    private String id;
     private Integer versjon;
     private String deltakerFornavn;
     private String deltakerEtternavn;
@@ -102,9 +102,7 @@ public class Avtale {
         setArbeidstreningStillingprosent(nyAvtale.getArbeidstreningStillingprosent());
 
         setMaal(nyAvtale.getMaal());
-        maal.forEach(Maal::settIdOgOpprettetTidspunkt);
         setOppgaver(nyAvtale.getOppgaver());
-        oppgaver.forEach(Oppgave::settIdOgOpprettetTidspunkt);
 
         setBekreftetAvBruker(nyAvtale.isBekreftetAvBruker());
         setBekreftetAvArbeidsgiver(nyAvtale.isBekreftetAvArbeidsgiver());

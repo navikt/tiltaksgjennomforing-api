@@ -26,7 +26,7 @@ public class AvtaleController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Avtale> hent(@PathVariable("id") Integer id) {
+    public ResponseEntity<Avtale> hent(@PathVariable("id") String id) {
         return avtaleRepository.findById(id)
                 .map(avtale -> ResponseEntity.ok(avtale))
                 .orElseThrow(ResourceNotFoundException::new);
@@ -45,7 +45,7 @@ public class AvtaleController {
     }
 
     @PutMapping(value = "/{avtaleId}")
-    public ResponseEntity endreAvtale(@PathVariable("avtaleId") Integer avtaleId,
+    public ResponseEntity endreAvtale(@PathVariable("avtaleId") String avtaleId,
                                       @RequestHeader("If-Match") Integer versjon,
                                       @RequestBody EndreAvtale endreAvtale) {
         return avtaleRepository.findById(avtaleId)
