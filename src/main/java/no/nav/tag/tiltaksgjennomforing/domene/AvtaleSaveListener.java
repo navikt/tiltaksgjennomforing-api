@@ -5,8 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.relational.core.mapping.event.BeforeSaveEvent;
 
-import java.util.UUID;
-
 @Configuration
 public class AvtaleSaveListener {
 
@@ -16,12 +14,7 @@ public class AvtaleSaveListener {
             Object entity = event.getEntity();
             if (entity instanceof Avtale) {
                 Avtale avtale = (Avtale) entity;
-                if (avtale.getId() == null) {
-                    avtale.setId(UUID.randomUUID());
-                }
-
-                avtale.getMaal().forEach(Maal::settIdOgOpprettetTidspunkt);
-                avtale.getOppgaver().forEach(Oppgave::settIdOgOpprettetTidspunkt);
+                avtale.settIdOgOpprettetTidspunkt();
             }
         };
     }
