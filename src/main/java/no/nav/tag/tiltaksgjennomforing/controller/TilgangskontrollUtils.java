@@ -24,24 +24,28 @@ public class TilgangskontrollUtils {
         if (innloggetPersonErVeileder()) {
             return hentInnloggetVeileder();
         } else {
-            String fnr = getClaim(ISSUER_SELVBETJENING, "sub")
-                    .orElseThrow(() -> new TilgangskontrollException("Finner ikke fodselsnummer til bruker."));
-            return new Bruker(fnr);
+            return hentInnloggetBruker();
         }
     }
 
+    private Bruker hentInnloggetBruker() {
+        String fnr = hentClaim(ISSUER_SELVBETJENING, "sub")
+                .orElseThrow(() -> new TilgangskontrollException("Finner ikke fodselsnummer til bruker."));
+        return new Bruker(fnr);
+    }
+
     public Veileder hentInnloggetVeileder() {
-        String navIdent = getClaim(ISSUER_ISSO, "NAVident")
+        String navIdent = hentClaim(ISSUER_ISSO, "NAVident")
                 .orElseThrow(() -> new TilgangskontrollException("Innlogget bruker er ikke veileder."));
         return new Veileder(navIdent);
     }
 
-    private Optional<String> getClaim(String issuer, String claim) {
-        Optional<JWTClaimsSet> claimSet = getClaimSet(issuer);
+    private Optional<String> hentClaim(String issuer, String claim) {
+        Optional<JWTClaimsSet> claimSet = hentClaimSet(issuer);
         return claimSet.map(jwtClaimsSet -> String.valueOf(jwtClaimsSet.getClaim(claim)));
     }
 
-    private Optional<JWTClaimsSet> getClaimSet(String issuer) {
+    private Optional<JWTClaimsSet> hentClaimSet(String issuer) {
         OIDCClaims claims = contextHolder
                 .getOIDCValidationContext()
                 .getClaims(issuer);
@@ -55,7 +59,7 @@ public class TilgangskontrollUtils {
     }
 
     private boolean innloggetPersonErVeileder() {
-        return getClaimSet(ISSUER_ISSO)
+        return hentClaimSet(ISSUER_ISSO)
                 .map(jwtClaimsSet -> jwtClaimsSet.getClaims().containsKey("NAVident"))
                 .orElse(false);
     }
