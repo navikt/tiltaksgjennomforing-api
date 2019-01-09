@@ -5,7 +5,7 @@ import lombok.Value;
 import no.nav.tag.tiltaksgjennomforing.TiltaksgjennomforingException;
 
 @Value
-public class NavIdent {
+public class NavIdent extends PersonIdentifikator {
     private final String id;
 
     public NavIdent(String id) {
