@@ -17,7 +17,7 @@ public class AvtaleSaveListener {
             if (entity instanceof Avtale) {
                 Avtale avtale = (Avtale) entity;
                 if (avtale.getId() == null) {
-                    avtale.setId(UUID.randomUUID().toString());
+                    avtale.setId(UUID.randomUUID());
                 }
 
                 avtale.getMaal().forEach(Maal::settIdOgOpprettetTidspunkt);

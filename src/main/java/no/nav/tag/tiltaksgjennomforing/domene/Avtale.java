@@ -9,6 +9,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static no.nav.tag.tiltaksgjennomforing.Utils.ikkeNull;
 
@@ -19,7 +20,7 @@ public class Avtale {
     private final Fnr deltakerFnr;
     private final NavIdent veilederNavIdent;
     @Id
-    private String id;
+    private UUID id;
     private Integer versjon;
     private String deltakerFornavn;
     private String deltakerEtternavn;

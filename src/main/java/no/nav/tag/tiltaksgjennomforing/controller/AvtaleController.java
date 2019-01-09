@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.UUID;
 
 import static no.nav.tag.tiltaksgjennomforing.Utils.lagUri;
 
@@ -26,7 +27,7 @@ public class AvtaleController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Avtale> hent(@PathVariable("id") String id) {
+    public ResponseEntity<Avtale> hent(@PathVariable("id") UUID id) {
         return avtaleRepository.findById(id)
                 .map(avtale -> ResponseEntity.ok(avtale))
                 .orElseThrow(ResourceNotFoundException::new);
@@ -45,7 +46,7 @@ public class AvtaleController {
     }
 
     @PutMapping(value = "/{avtaleId}")
-    public ResponseEntity endreAvtale(@PathVariable("avtaleId") String avtaleId,
+    public ResponseEntity endreAvtale(@PathVariable("avtaleId") UUID avtaleId,
                                       @RequestHeader("If-Match") Integer versjon,
                                       @RequestBody EndreAvtale endreAvtale) {
         return avtaleRepository.findById(avtaleId)
