@@ -9,8 +9,12 @@ spring:
 logging.level.no.nav.security: DEBUG
 
 no.nav.security.oidc:
-  issuers: selvbetjening
+  issuers: selvbetjening, isso
   issuer.selvbetjening:
+    discoveryurl: http://metadata
+    accepted_audience: aud-localhost
+    cookie_name: localhost-idtoken
+  issuer.isso:
     discoveryurl: http://metadata
     accepted_audience: aud-localhost
     cookie_name: localhost-idtoken
