@@ -1,7 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing;
 
 import no.nav.tag.tiltaksgjennomforing.controller.AvtaleController;
-import no.nav.tag.tiltaksgjennomforing.controller.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.controller.TilgangskontrollUtils;
 import no.nav.tag.tiltaksgjennomforing.domene.*;
 import org.junit.Test;
@@ -95,9 +94,9 @@ public class AvtaleControllerTest {
     }
 
     @Test
-    public void hentAlleSkalBareReturnereAvtalerBrukerenHarTilgangTil() {
+    public void hentAlleAvtalerInnloggetBrukerHarTilgangTilSkalIkkeReturnereAvtalerManIkkeHarTilgangTil() {
         Avtale avtaleMedTilgang = TestData.minimalAvtale();
-        Avtale avtaleUtenTilgang = Avtale.nyAvtale(new OpprettAvtale(new Fnr("89898989898")), avtaleMedTilgang.getVeilederNavIdent());
+        Avtale avtaleUtenTilgang = Avtale.nyAvtale(new OpprettAvtale(new Fnr("89898989898")), new NavIdent("X643564"));
 
         Bruker innloggetBruker = new Bruker(avtaleMedTilgang.getDeltakerFnr());
         vaerInnloggetSom(innloggetBruker);
@@ -110,7 +109,7 @@ public class AvtaleControllerTest {
         when(avtaleRepository.findAll()).thenReturn(alleAvtaler);
 
         List<Avtale> hentedeAvtaler = new ArrayList<>();
-        for (Avtale avtale : avtaleController.hentAlle()) {
+        for (Avtale avtale : avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil()) {
             hentedeAvtaler.add(avtale);
         }
         hentedeAvtaler.forEach(avtale -> assertTrue(avtale.erTilgjengeligFor(innloggetBruker)));

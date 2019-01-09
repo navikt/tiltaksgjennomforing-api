@@ -42,7 +42,7 @@ public class AvtaleController {
     }
 
     @GetMapping
-    public Iterable<Avtale> hentAlle() {
+    public Iterable<Avtale> hentAlleAvtalerInnloggetBrukerHarTilgangTil() {
         Person bruker = tilgangskontroll.hentInnloggetPerson();
         List<Avtale> avtaler = new ArrayList<>();
         for (Avtale avtale : avtaleRepository.findAll()) {

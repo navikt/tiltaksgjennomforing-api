@@ -31,33 +31,33 @@ public class TilgangskontrollUtilsTest {
     @Test
     public void skalHenteInnloggetBrukerFraToken() {
         Bruker bruker = new Bruker("99988877766");
-        setupContextHolder(bruker.getFnr());
+        vaerInnloggetSom(bruker);
         assertEquals(bruker, tilgangskontroll.hentInnloggetPerson());
     }
 
     @Test
     public void skalHenteInnloggetVeilederFraToken() {
         Veileder veileder = new Veileder("Z333333");
-        setupContextHolder(veileder.getNavIdent());
+        vaerInnloggetSom(veileder);
         assertEquals(veileder, tilgangskontroll.hentInnloggetPerson());
     }
 
     @Test(expected = TilgangskontrollException.class)
     public void hentInnloggetVeilederSkalFeileHvisInnloggetBrukerIkkeErVeileder() {
         Bruker bruker = new Bruker("99988877766");
-        setupContextHolder(bruker.getFnr());
+        vaerInnloggetSom(bruker);
         tilgangskontroll.hentInnloggetVeileder();
     }
 
-    private void setupContextHolder(Fnr fnr) {
-        setupContextHolder(TilgangskontrollUtils.ISSUER_SELVBETJENING, fnr.getFnr(), new HashMap<>());
+    private void vaerInnloggetSom(Bruker bruker) {
+        vaerInnloggetSom(TilgangskontrollUtils.ISSUER_SELVBETJENING, bruker.getFnr().getFnr(), new HashMap<>());
     }
 
-    private void setupContextHolder(NavIdent navIdent) {
-        setupContextHolder(TilgangskontrollUtils.ISSUER_ISSO, "blablabla", Collections.singletonMap("NAVident", navIdent.getId()));
+    private void vaerInnloggetSom(Veileder veileder) {
+        vaerInnloggetSom(TilgangskontrollUtils.ISSUER_ISSO, "blablabla", Collections.singletonMap("NAVident", veileder.getNavIdent().getId()));
     }
 
-    private void setupContextHolder(String issuer, String subject, Map<String, Object> claims) {
+    private void vaerInnloggetSom(String issuer, String subject, Map<String, Object> claims) {
         OIDCValidationContext context = new OIDCValidationContext();
         TokenContext tokenContext = new TokenContext(issuer, "");
         OIDCClaims oidcClaims = new OIDCClaims(createSignedJWT(subject, 0, claims));
