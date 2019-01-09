@@ -9,17 +9,18 @@ import org.springframework.data.relational.core.mapping.Column;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static no.nav.tag.tiltaksgjennomforing.Utils.ikkeNull;
 
 @Data
 public class Avtale {
 
-    private final LocalDateTime opprettetTidspunkt;
+    private LocalDateTime opprettetTidspunkt;
     private final Fnr deltakerFnr;
     private final NavIdent veilederNavIdent;
     @Id
-    private Integer id;
+    private UUID id;
     private Integer versjon;
     private String deltakerFornavn;
     private String deltakerEtternavn;
@@ -57,10 +58,9 @@ public class Avtale {
     private boolean bekreftetAvVeileder;
 
     @PersistenceConstructor
-    public Avtale(Fnr deltakerFnr, NavIdent veilederNavIdent, LocalDateTime opprettetTidspunkt) {
+    public Avtale(Fnr deltakerFnr, NavIdent veilederNavIdent) {
         this.deltakerFnr = ikkeNull(deltakerFnr, "Deltakers fnr må være satt.");
         this.veilederNavIdent = ikkeNull(veilederNavIdent, "Veileders NAV-ident må være satt.");
-        this.opprettetTidspunkt = ikkeNull(opprettetTidspunkt, "Opprettet tidspunkt må være satt.");
     }
 
     public boolean erTilgjengeligFor(Person person) {
@@ -72,7 +72,7 @@ public class Avtale {
     }
 
     public static Avtale nyAvtale(OpprettAvtale opprettAvtale, NavIdent veilederNavIdent) {
-        Avtale avtale = new Avtale(opprettAvtale.getDeltakerFnr(), veilederNavIdent, LocalDateTime.now());
+        Avtale avtale = new Avtale(opprettAvtale.getDeltakerFnr(), veilederNavIdent);
         avtale.setVersjon(1);
         return avtale;
     }
@@ -110,9 +110,7 @@ public class Avtale {
         setArbeidstreningStillingprosent(nyAvtale.getArbeidstreningStillingprosent());
 
         setMaal(nyAvtale.getMaal());
-        maal.forEach(Maal::setterOppretterTidspunkt);
         setOppgaver(nyAvtale.getOppgaver());
-        oppgaver.forEach(Oppgave::setterOppretterTidspunkt);
 
         setBekreftetAvBruker(nyAvtale.isBekreftetAvBruker());
         setBekreftetAvArbeidsgiver(nyAvtale.isBekreftetAvArbeidsgiver());
@@ -127,5 +125,18 @@ public class Avtale {
         if (this.versjon != versjon) {
             throw new TiltaksgjennomforingException("Avtalen kan ikke lagres, versjonen er utdatert.");
         }
+    }
+
+    public void settIdOgOpprettetTidspunkt() {
+        if (this.id == null) {
+            this.id = UUID.randomUUID();
+        }
+
+        if (this.getOpprettetTidspunkt() == null) {
+            this.opprettetTidspunkt = LocalDateTime.now();
+        }
+
+        this.getMaal().forEach(Maal::settIdOgOpprettetTidspunkt);
+        this.getOppgaver().forEach(Oppgave::settIdOgOpprettetTidspunkt);
     }
 }

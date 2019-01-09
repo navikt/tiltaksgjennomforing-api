@@ -13,7 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 public class EndreAvtale {
 
-    private Integer id;
     private String deltakerFornavn;
     private String deltakerEtternavn;
     private String deltakerAdresse;
