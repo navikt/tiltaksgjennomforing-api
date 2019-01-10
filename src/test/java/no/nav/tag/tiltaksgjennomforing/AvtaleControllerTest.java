@@ -56,7 +56,7 @@ public class AvtaleControllerTest {
         vaerInnloggetSom(new Veileder(avtale.getVeilederNavIdent()));
 
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
-        ResponseEntity svar = avtaleController.opprettAvtale(new OpprettAvtale(avtale.getDeltakerFnr()));
+        ResponseEntity svar = avtaleController.opprettAvtale(new OpprettAvtale(avtale.getDeltakerFnr(), avtale.getArbeidsgiverFnr()));
 
         assertEquals(svar.getStatusCodeValue(), 201);
         assertEquals(svar.getHeaders().getLocation().getPath(), "/avtaler/" + avtale.getId());
@@ -96,7 +96,7 @@ public class AvtaleControllerTest {
     @Test
     public void hentAlleAvtalerInnloggetBrukerHarTilgangTilSkalIkkeReturnereAvtalerManIkkeHarTilgangTil() {
         Avtale avtaleMedTilgang = TestData.minimalAvtale();
-        Avtale avtaleUtenTilgang = Avtale.nyAvtale(new OpprettAvtale(new Fnr("89898989898")), new NavIdent("X643564"));
+        Avtale avtaleUtenTilgang = Avtale.nyAvtale(new OpprettAvtale(new Fnr("89898989898"), new Fnr("89898989898")), new NavIdent("X643564"));
 
         Bruker innloggetBruker = new Bruker(avtaleMedTilgang.getDeltakerFnr());
         vaerInnloggetSom(innloggetBruker);
