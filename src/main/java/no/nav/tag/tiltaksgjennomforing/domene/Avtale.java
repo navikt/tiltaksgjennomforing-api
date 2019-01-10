@@ -58,8 +58,9 @@ public class Avtale {
     private boolean bekreftetAvVeileder;
 
     @PersistenceConstructor
-    public Avtale(Fnr deltakerFnr, NavIdent veilederNavIdent) {
+    public Avtale(Fnr deltakerFnr, Fnr arbeidsgiverFnr, NavIdent veilederNavIdent) {
         this.deltakerFnr = ikkeNull(deltakerFnr, "Deltakers fnr må være satt.");
+        this.arbeidsgiverFnr = ikkeNull(arbeidsgiverFnr, "Arbeidsgivers fnr må være satt.");
         this.veilederNavIdent = ikkeNull(veilederNavIdent, "Veileders NAV-ident må være satt.");
     }
 
@@ -72,7 +73,7 @@ public class Avtale {
     }
 
     public static Avtale nyAvtale(OpprettAvtale opprettAvtale, NavIdent veilederNavIdent) {
-        Avtale avtale = new Avtale(opprettAvtale.getDeltakerFnr(), veilederNavIdent);
+        Avtale avtale = new Avtale(opprettAvtale.getDeltakerFnr(), opprettAvtale.getArbeidsgiverFnr(), veilederNavIdent);
         avtale.setVersjon(1);
         return avtale;
     }
