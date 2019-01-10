@@ -49,9 +49,9 @@ public class TokenGeneratorController {
     }
 
     @Unprotected
-    @GetMapping("/cookie")
+    @GetMapping("/selvbetjening-cookie")
     public Cookie addCookie(@RequestParam(value = "subject", defaultValue = "01234567890") String subject,
-                            @RequestParam(value = "cookiename", defaultValue = "localhost-idtoken") String cookieName,
+                            @RequestParam(value = "cookiename", defaultValue = "selvbetjening-idtoken") String cookieName,
                             @RequestParam(value = "redirect", required = false) String redirect,
                             @RequestParam(value = "expiry", required = false) String expiry,
                             HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -59,10 +59,10 @@ public class TokenGeneratorController {
     }
 
     @Unprotected
-    @GetMapping("/nav-cookie")
+    @GetMapping("/isso-cookie")
     public Cookie addNavCookie(@RequestParam(value = "subject", defaultValue = "01234567890") String subject,
                                @RequestParam(value = "NAV-ident", defaultValue = "X123456") String navIdent,
-                               @RequestParam(value = "cookiename", defaultValue = "localhost-idtoken") String cookieName,
+                               @RequestParam(value = "cookiename", defaultValue = "isso-idtoken") String cookieName,
                                @RequestParam(value = "redirect", required = false) String redirect,
                                @RequestParam(value = "expiry", required = false) String expiry,
                                HttpServletRequest request,

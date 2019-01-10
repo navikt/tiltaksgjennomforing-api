@@ -15,7 +15,7 @@ public class DevTokenRedirectInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if (response.getStatus() == HttpServletResponse.SC_UNAUTHORIZED
                 && requestErIkkeGjennomProxy(request)) {
-            response.sendRedirect(request.getServletContext().getContextPath() + "/local/cookie?redirect="
+            response.sendRedirect(request.getServletContext().getContextPath() + "/local/isso-cookie?redirect="
                     + originalRequestUri(request));
             return false;
         }
