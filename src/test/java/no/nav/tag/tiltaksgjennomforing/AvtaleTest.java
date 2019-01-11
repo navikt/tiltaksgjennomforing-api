@@ -101,4 +101,32 @@ public class AvtaleTest {
         avtale.endreAvtale(avtale.getVersjon(), TestData.ingenEndring());
         assertThat(avtale.getVersjon()).isEqualTo(2);
     }
+
+    @Test
+    public void deltakerKnyttetTilAvtaleSkalHaDeltakerRolle() {
+        Avtale avtale = TestData.minimalAvtale();
+        Bruker deltaker = new Bruker(avtale.getDeltakerFnr());
+        assertThat(avtale.hentInnloggetRolle(deltaker)).isEqualTo(Rolle.DELTAKER);
+    }
+
+    @Test
+    public void arbeidsgiverKnyttetTilAvtaleSkalHaArbeidsgiverRolle() {
+        Avtale avtale = TestData.minimalAvtale();
+        Bruker arbeidsgiver = new Bruker(avtale.getArbeidsgiverFnr());
+        assertThat(avtale.hentInnloggetRolle(arbeidsgiver)).isEqualTo(Rolle.ARBEIDSGIVER);
+    }
+
+    @Test
+    public void veilederKnyttetTilAvtaleSkalHaVeilederRolle() {
+        Avtale avtale = TestData.minimalAvtale();
+        Veileder veileder = new Veileder(avtale.getVeilederNavIdent());
+        assertThat(avtale.hentInnloggetRolle(veileder)).isEqualTo(Rolle.VEILEDER);
+    }
+
+    @Test
+    public void personUtenTilgangTilAvtaleSkalHaIngenRolle() {
+        Avtale avtale = TestData.minimalAvtale();
+        Bruker deltakerUtenTilgang = new Bruker("00000000000");
+        assertThat(avtale.hentInnloggetRolle(deltakerUtenTilgang)).isEqualTo(Rolle.INGEN_ROLLE);
+    }
 }
