@@ -80,7 +80,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(ResourceNotFoundException::new);
         Person person = tilgangskontroll.hentInnloggetPerson();
         if (avtale.erTilgjengeligFor(person)) {
-            return ResponseEntity.ok(avtale.hentRolle(person));
+            return ResponseEntity.ok(avtale.hentRollenTil(person));
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }

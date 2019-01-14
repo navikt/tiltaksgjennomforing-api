@@ -104,27 +104,27 @@ public class AvtaleTest {
     public void deltakerKnyttetTilAvtaleSkalHaDeltakerRolle() {
         Avtale avtale = TestData.minimalAvtale();
         Bruker deltaker = new Bruker(avtale.getDeltakerFnr());
-        assertThat(avtale.hentRolle(deltaker)).isEqualTo(Rolle.DELTAKER);
+        assertThat(avtale.hentRollenTil(deltaker)).isEqualTo(Rolle.DELTAKER);
     }
 
     @Test
     public void arbeidsgiverKnyttetTilAvtaleSkalHaArbeidsgiverRolle() {
         Avtale avtale = TestData.minimalAvtale();
         Bruker arbeidsgiver = new Bruker(avtale.getArbeidsgiverFnr());
-        assertThat(avtale.hentRolle(arbeidsgiver)).isEqualTo(Rolle.ARBEIDSGIVER);
+        assertThat(avtale.hentRollenTil(arbeidsgiver)).isEqualTo(Rolle.ARBEIDSGIVER);
     }
 
     @Test
     public void veilederKnyttetTilAvtaleSkalHaVeilederRolle() {
         Avtale avtale = TestData.minimalAvtale();
         Veileder veileder = new Veileder(avtale.getVeilederNavIdent());
-        assertThat(avtale.hentRolle(veileder)).isEqualTo(Rolle.VEILEDER);
+        assertThat(avtale.hentRollenTil(veileder)).isEqualTo(Rolle.VEILEDER);
     }
 
     @Test
     public void personUtenTilgangTilAvtaleSkalHaIngenRolle() {
         Avtale avtale = TestData.minimalAvtale();
         Bruker deltakerUtenTilgang = new Bruker("00000000000");
-        assertThat(avtale.hentRolle(deltakerUtenTilgang)).isEqualTo(Rolle.INGEN_ROLLE);
+        assertThat(avtale.hentRollenTil(deltakerUtenTilgang)).isEqualTo(Rolle.INGEN_ROLLE);
     }
 }
