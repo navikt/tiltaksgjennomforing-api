@@ -2,7 +2,6 @@ package no.nav.tag.tiltaksgjennomforing;
 
 import no.nav.tag.tiltaksgjennomforing.controller.AvtaleController;
 import no.nav.tag.tiltaksgjennomforing.controller.ResourceNotFoundException;
-import no.nav.tag.tiltaksgjennomforing.controller.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.controller.TilgangskontrollUtils;
 import no.nav.tag.tiltaksgjennomforing.domene.*;
 import org.junit.Test;
@@ -17,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -40,7 +39,7 @@ public class AvtaleControllerTest {
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         Avtale hentetAvtale = avtaleController.hent(avtale.getId()).getBody();
 
-        assertEquals(avtale, hentetAvtale);
+        assertThat(hentetAvtale).isEqualTo(avtale);
     }
 
     @Test(expected = ResourceNotFoundException.class)
@@ -57,7 +56,7 @@ public class AvtaleControllerTest {
         Avtale avtale = TestData.minimalAvtale();
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         ResponseEntity svar = avtaleController.hent(avtale.getId());
-        assertEquals(HttpStatus.FORBIDDEN, svar.getStatusCode());
+        assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
     @Test
@@ -68,8 +67,8 @@ public class AvtaleControllerTest {
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
         ResponseEntity svar = avtaleController.opprettAvtale(new OpprettAvtale(avtale.getDeltakerFnr(), avtale.getArbeidsgiverFnr()));
 
-        assertEquals(HttpStatus.CREATED, svar.getStatusCode());
-        assertEquals("/avtaler/" + avtale.getId(), svar.getHeaders().getLocation().getPath());
+        assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(svar.getHeaders().getLocation().getPath()).isEqualTo("/avtaler/" + avtale.getId());
     }
 
     @Test(expected = ResourceNotFoundException.class)
@@ -88,7 +87,7 @@ public class AvtaleControllerTest {
         when(avtaleRepository.save(avtale)).thenReturn(avtale);
         ResponseEntity svar = avtaleController.endreAvtale(avtale.getId(), avtale.getVersjon(), TestData.ingenEndring());
 
-        assertEquals(HttpStatus.OK, svar.getStatusCode());
+        assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
@@ -98,7 +97,7 @@ public class AvtaleControllerTest {
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         ResponseEntity svar = avtaleController.endreAvtale(avtale.getId(), avtale.getVersjon(), TestData.ingenEndring());
 
-        assertEquals(HttpStatus.FORBIDDEN, svar.getStatusCode());
+        assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
     @Test
@@ -120,8 +119,9 @@ public class AvtaleControllerTest {
         for (Avtale avtale : avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil()) {
             hentedeAvtaler.add(avtale);
         }
-        hentedeAvtaler.forEach(avtale -> assertTrue(avtale.erTilgjengeligFor(innloggetBruker)));
-        assertEquals(avtalerBrukerHarTilgangTil.size(), hentedeAvtaler.size());
+
+        hentedeAvtaler.forEach(avtale -> assertThat(avtale.erTilgjengeligFor(innloggetBruker)).isTrue());
+        assertThat(hentedeAvtaler.size()).isEqualTo(avtalerBrukerHarTilgangTil.size());
     }
 
     private List<Avtale> lagListeMedAvtaler(Avtale avtale, int antall) {
@@ -155,7 +155,7 @@ public class AvtaleControllerTest {
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         ResponseEntity svar = avtaleController.hentRolle(avtale.getId());
 
-        assertEquals(HttpStatus.FORBIDDEN, svar.getStatusCode());
+        assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
     @Test
@@ -167,7 +167,7 @@ public class AvtaleControllerTest {
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         ResponseEntity svar = avtaleController.hentRolle(avtale.getId());
 
-        assertEquals(HttpStatus.OK, svar.getStatusCode());
-        assertEquals(Rolle.DELTAKER, svar.getBody());
+        assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(svar.getBody()).isEqualTo(Rolle.DELTAKER);
     }
 }

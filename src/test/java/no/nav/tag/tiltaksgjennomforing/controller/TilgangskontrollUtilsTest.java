@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static no.nav.security.oidc.test.support.JwtTokenGenerator.createSignedJWT;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -32,14 +32,14 @@ public class TilgangskontrollUtilsTest {
     public void skalHenteInnloggetBrukerFraToken() {
         Bruker bruker = new Bruker("99988877766");
         vaerInnloggetSom(bruker);
-        assertEquals(bruker, tilgangskontroll.hentInnloggetPerson());
+        assertThat(tilgangskontroll.hentInnloggetPerson()).isEqualTo(bruker);
     }
 
     @Test
     public void skalHenteInnloggetVeilederFraToken() {
         Veileder veileder = new Veileder("Z333333");
         vaerInnloggetSom(veileder);
-        assertEquals(veileder, tilgangskontroll.hentInnloggetPerson());
+        assertThat(tilgangskontroll.hentInnloggetPerson()).isEqualTo(veileder);
     }
 
     @Test(expected = TilgangskontrollException.class)
