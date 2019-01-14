@@ -66,12 +66,8 @@ public class AvtaleController {
     public ResponseEntity endreAvtale(@PathVariable("avtaleId") UUID avtaleId,
                                       @RequestHeader("If-Match") Integer versjon,
                                       @RequestBody EndreAvtale endreAvtale) {
-        Optional<Avtale> optionalAvtale = avtaleRepository.findById(avtaleId);
-        if (optionalAvtale.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        Avtale avtale = optionalAvtale.get();
-        if (optionalAvtale.get().erTilgjengeligFor(tilgangskontroll.hentInnloggetPerson())) {
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(ResourceNotFoundException::new);
+        if (avtale.erTilgjengeligFor(tilgangskontroll.hentInnloggetPerson())) {
             avtale.endreAvtale(versjon, endreAvtale);
             Avtale lagretAvtale = avtaleRepository.save(avtale);
             return ResponseEntity.ok().header("eTag", lagretAvtale.getVersjon().toString()).build();

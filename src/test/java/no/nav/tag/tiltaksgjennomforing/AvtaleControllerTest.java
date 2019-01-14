@@ -65,15 +65,12 @@ public class AvtaleControllerTest {
         assertEquals(svar.getHeaders().getLocation().getPath(), "/avtaler/" + avtale.getId());
     }
 
-    @Test
+    @Test(expected = ResourceNotFoundException.class)
     public void endreAvtaleSkalReturnereNotFoundHvisDenIkkeFins() {
         Avtale avtale = TestData.lagAvtale();
         vaerInnloggetSom(new Veileder(avtale.getVeilederNavIdent()));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.empty());
-        ResponseEntity svar = avtaleController.endreAvtale(avtale.getId(), avtale.getVersjon(), TestData.ingenEndring());
-
-        // TODO: Endre til å kaste ResourceNotFoundException
-        assertEquals(svar.getStatusCodeValue(), 404);
+        avtaleController.endreAvtale(avtale.getId(), avtale.getVersjon(), TestData.ingenEndring());
     }
 
     @Test
