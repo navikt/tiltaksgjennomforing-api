@@ -79,4 +79,15 @@ public class AvtaleController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
+
+    @GetMapping(value = "/{avtaleId}/rolle")
+    public ResponseEntity<Rolle> hentRolle(@PathVariable("avtaleId") UUID avtaleId) {
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(ResourceNotFoundException::new);
+        Person person = tilgangskontroll.hentInnloggetPerson();
+        if (avtale.erTilgjengeligFor(person)) {
+            return ResponseEntity.ok(avtale.hentInnloggetRolle(person));
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+    }
 }
