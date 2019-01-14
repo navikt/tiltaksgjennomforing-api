@@ -18,13 +18,6 @@ public class TestData {
         return new EndreAvtale();
     }
 
-    static Avtale lagAvtale() {
-        Avtale avtale = minimalAvtale();
-        avtale.setDeltakerFornavn("Donald");
-        avtale.setDeltakerEtternavn("Duck");
-        return avtale;
-    }
-
     static Oppgave lagOppgave() {
         Oppgave oppgave = new Oppgave();
         oppgave.setTittel("Tittel");

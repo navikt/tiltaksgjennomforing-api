@@ -35,7 +35,7 @@ public class AvtaleControllerTest {
 
     @Test
     public void hentSkalReturnereRiktigAvtale() {
-        Avtale avtale = TestData.lagAvtale();
+        Avtale avtale = TestData.minimalAvtale();
         vaerInnloggetSom(new Veileder(avtale.getVeilederNavIdent()));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         Avtale hentetAvtale = avtaleController.hent(avtale.getId()).getBody();
@@ -75,7 +75,7 @@ public class AvtaleControllerTest {
 
     @Test(expected = ResourceNotFoundException.class)
     public void endreAvtaleSkalReturnereNotFoundHvisDenIkkeFins() {
-        Avtale avtale = TestData.lagAvtale();
+        Avtale avtale = TestData.minimalAvtale();
         vaerInnloggetSom(new Veileder(avtale.getVeilederNavIdent()));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.empty());
         avtaleController.endreAvtale(avtale.getId(), avtale.getVersjon(), TestData.ingenEndring());
@@ -83,7 +83,7 @@ public class AvtaleControllerTest {
 
     @Test
     public void endreAvtaleSkalReturnereOkEtterEndretAvtale() {
-        Avtale avtale = TestData.lagAvtale();
+        Avtale avtale = TestData.minimalAvtale();
         vaerInnloggetSom(new Veileder(avtale.getVeilederNavIdent()));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         when(avtaleRepository.save(avtale)).thenReturn(avtale);
@@ -141,7 +141,7 @@ public class AvtaleControllerTest {
     }
 
     @Test(expected = ResourceNotFoundException.class)
-    public void hentRolleSkalReturnereNotFoundHvisAvtaleIkkeFins() {
+    public void hentRolleSkalKasteResourceNotFoundExceptionHvisAvtaleIkkeFins() {
         Avtale avtale = TestData.minimalAvtale();
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.empty());
         avtaleController.hentRolle(avtale.getId());
