@@ -57,7 +57,7 @@ public class AvtaleControllerTest {
         Avtale avtale = TestData.minimalAvtale();
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         ResponseEntity svar = avtaleController.hent(avtale.getId());
-        assertEquals(svar.getStatusCode(), HttpStatus.FORBIDDEN);
+        assertEquals(HttpStatus.FORBIDDEN, svar.getStatusCode());
     }
 
     @Test
@@ -68,9 +68,8 @@ public class AvtaleControllerTest {
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
         ResponseEntity svar = avtaleController.opprettAvtale(new OpprettAvtale(avtale.getDeltakerFnr(), avtale.getArbeidsgiverFnr()));
 
-        // TODO: Feil rekkefølge på expected og actual
-        assertEquals(svar.getStatusCodeValue(), 201);
-        assertEquals(svar.getHeaders().getLocation().getPath(), "/avtaler/" + avtale.getId());
+        assertEquals(HttpStatus.CREATED, svar.getStatusCode());
+        assertEquals("/avtaler/" + avtale.getId(), svar.getHeaders().getLocation().getPath());
     }
 
     @Test(expected = ResourceNotFoundException.class)
@@ -89,7 +88,7 @@ public class AvtaleControllerTest {
         when(avtaleRepository.save(avtale)).thenReturn(avtale);
         ResponseEntity svar = avtaleController.endreAvtale(avtale.getId(), avtale.getVersjon(), TestData.ingenEndring());
 
-        assertEquals(svar.getStatusCodeValue(), 200);
+        assertEquals(HttpStatus.OK, svar.getStatusCode());
     }
 
     @Test
@@ -99,7 +98,7 @@ public class AvtaleControllerTest {
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         ResponseEntity svar = avtaleController.endreAvtale(avtale.getId(), avtale.getVersjon(), TestData.ingenEndring());
 
-        assertEquals(svar.getStatusCode(), HttpStatus.FORBIDDEN);
+        assertEquals(HttpStatus.FORBIDDEN, svar.getStatusCode());
     }
 
     @Test
