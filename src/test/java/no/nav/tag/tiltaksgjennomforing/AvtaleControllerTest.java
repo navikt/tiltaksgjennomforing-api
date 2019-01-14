@@ -43,6 +43,14 @@ public class AvtaleControllerTest {
         assertEquals(avtale, hentetAvtale);
     }
 
+    @Test(expected = ResourceNotFoundException.class)
+    public void hentSkalKasteResourceNotFoundExceptionHvisAvtaleIkkeFins() {
+        Avtale avtale = TestData.minimalAvtale();
+        vaerInnloggetSom(new Veileder(avtale.getVeilederNavIdent()));
+        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.empty());
+        avtaleController.hent(avtale.getId());
+    }
+
     @Test
     public void hentSkalReturnereForbiddenHvisInnloggetBrukerIkkeHarTilgang() {
         vaerInnloggetSom(new Veileder("Z909090"));
