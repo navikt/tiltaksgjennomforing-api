@@ -140,4 +140,16 @@ public class Avtale {
         this.getMaal().forEach(Maal::settIdOgOpprettetTidspunkt);
         this.getOppgaver().forEach(Oppgave::settIdOgOpprettetTidspunkt);
     }
+
+    public Rolle hentRollenTil(Person person) {
+        if (person.getIdentifikator().equals(this.deltakerFnr)) {
+            return Rolle.DELTAKER;
+        } else if (person.getIdentifikator().equals(this.arbeidsgiverFnr)) {
+            return Rolle.ARBEIDSGIVER;
+        } else if (person.getIdentifikator().equals(this.veilederNavIdent)) {
+            return Rolle.VEILEDER;
+        } else {
+            return Rolle.INGEN_ROLLE;
+        }
+    }
 }

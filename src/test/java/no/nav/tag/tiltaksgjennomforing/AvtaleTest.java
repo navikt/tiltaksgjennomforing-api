@@ -4,8 +4,6 @@ import no.nav.tag.tiltaksgjennomforing.domene.*;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 
-import java.time.LocalDateTime;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
 
@@ -100,5 +98,33 @@ public class AvtaleTest {
         Avtale avtale = TestData.minimalAvtale();
         avtale.endreAvtale(avtale.getVersjon(), TestData.ingenEndring());
         assertThat(avtale.getVersjon()).isEqualTo(2);
+    }
+
+    @Test
+    public void deltakerKnyttetTilAvtaleSkalHaDeltakerRolle() {
+        Avtale avtale = TestData.minimalAvtale();
+        Bruker deltaker = new Bruker(avtale.getDeltakerFnr());
+        assertThat(avtale.hentRollenTil(deltaker)).isEqualTo(Rolle.DELTAKER);
+    }
+
+    @Test
+    public void arbeidsgiverKnyttetTilAvtaleSkalHaArbeidsgiverRolle() {
+        Avtale avtale = TestData.minimalAvtale();
+        Bruker arbeidsgiver = new Bruker(avtale.getArbeidsgiverFnr());
+        assertThat(avtale.hentRollenTil(arbeidsgiver)).isEqualTo(Rolle.ARBEIDSGIVER);
+    }
+
+    @Test
+    public void veilederKnyttetTilAvtaleSkalHaVeilederRolle() {
+        Avtale avtale = TestData.minimalAvtale();
+        Veileder veileder = new Veileder(avtale.getVeilederNavIdent());
+        assertThat(avtale.hentRollenTil(veileder)).isEqualTo(Rolle.VEILEDER);
+    }
+
+    @Test
+    public void personUtenTilgangTilAvtaleSkalHaIngenRolle() {
+        Avtale avtale = TestData.minimalAvtale();
+        Bruker deltakerUtenTilgang = new Bruker("00000000000");
+        assertThat(avtale.hentRollenTil(deltakerUtenTilgang)).isEqualTo(Rolle.INGEN_ROLLE);
     }
 }

@@ -18,25 +18,11 @@ public class TestData {
         return new EndreAvtale();
     }
 
-    static Avtale lagAvtale() {
-        Avtale avtale = minimalAvtale();
-        avtale.setDeltakerFornavn("Donald");
-        avtale.setDeltakerEtternavn("Duck");
-        return avtale;
+    static Oppgave minimalOppgave() {
+        return new Oppgave();
     }
 
-    static Oppgave lagOppgave() {
-        Oppgave oppgave = new Oppgave();
-        oppgave.setTittel("Tittel");
-        oppgave.setBeskrivelse("Beksrivelse");
-        oppgave.setOpplaering("Opplæring");
-        return oppgave;
-    }
-
-    static Maal lagMaal() {
-        Maal maal = new Maal();
-        maal.setBeskrivelse("Beksrivelse");
-        maal.setKategori("Kategori");
-        return maal;
+    static Maal minimaltMaal() {
+        return new Maal();
     }
 }

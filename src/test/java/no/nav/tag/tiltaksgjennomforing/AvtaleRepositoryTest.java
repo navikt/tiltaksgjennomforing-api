@@ -37,7 +37,7 @@ public class AvtaleRepositoryTest {
 
         // Lagre maal skal fungere
         EndreAvtale endreAvtale = new EndreAvtale();
-        Maal maal = TestData.lagMaal();
+        Maal maal = TestData.minimaltMaal();
         endreAvtale.setMaal(List.of(maal));
         lagretAvtale.endreAvtale(1, endreAvtale);
         avtaleRepository.save(lagretAvtale);
@@ -47,7 +47,7 @@ public class AvtaleRepositoryTest {
 
         // Lagre maal skal enda fungere
         EndreAvtale endreAvtale2 = new EndreAvtale();
-        Maal maal2 = TestData.lagMaal();
+        Maal maal2 = TestData.minimaltMaal();
         endreAvtale2.setMaal(List.of(maal2));
         lagretAvtale2.endreAvtale(1, endreAvtale2);
         avtaleRepository.save(lagretAvtale2);
@@ -60,7 +60,7 @@ public class AvtaleRepositoryTest {
 
         // Lagre maal skal fungere
         EndreAvtale endreAvtale = new EndreAvtale();
-        Oppgave oppgave = TestData.lagOppgave();
+        Oppgave oppgave = TestData.minimalOppgave();
         endreAvtale.setOppgaver(List.of(oppgave));
         lagretAvtale.endreAvtale(1, endreAvtale);
         avtaleRepository.save(lagretAvtale);
@@ -70,7 +70,7 @@ public class AvtaleRepositoryTest {
 
         // Lagre maal skal enda fungere
         EndreAvtale endreAvtale2 = new EndreAvtale();
-        Oppgave oppgave2 = TestData.lagOppgave();
+        Oppgave oppgave2 = TestData.minimalOppgave();
         endreAvtale2.setOppgaver(List.of(oppgave2));
         lagretAvtale2.endreAvtale(1, endreAvtale2);
         avtaleRepository.save(lagretAvtale2);
