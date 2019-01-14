@@ -49,6 +49,7 @@ public class TilgangskontrollUtilsTest {
         tilgangskontroll.hentInnloggetVeileder();
     }
 
+
     private void vaerInnloggetSom(Bruker bruker) {
         vaerInnloggetSom(TilgangskontrollUtils.ISSUER_SELVBETJENING, bruker.getFnr().getFnr(), new HashMap<>());
     }
@@ -66,4 +67,14 @@ public class TilgangskontrollUtilsTest {
         when(contextHolder.getOIDCValidationContext()).thenReturn(context);
     }
 
+    @Test(expected = TilgangskontrollException.class)
+    public void hentInnloggetPersonSkalKasteTilgangskontrollExceptionHvisIkkeInnlogget() {
+        vaerUinnlogget();
+        tilgangskontroll.hentInnloggetPerson();
+    }
+
+    private void vaerUinnlogget() {
+        OIDCValidationContext context = new OIDCValidationContext();
+        when(contextHolder.getOIDCValidationContext()).thenReturn(context);
+    }
 }

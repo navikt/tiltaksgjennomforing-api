@@ -23,8 +23,10 @@ public class TilgangskontrollUtils {
     public Person hentInnloggetPerson() {
         if (innloggetPersonErVeileder()) {
             return hentInnloggetVeileder();
-        } else {
+        } else if (innloggetPersonErBruker()) {
             return hentInnloggetBruker();
+        } else {
+            throw new TilgangskontrollException("Bruker er ikke innlogget.");
         }
     }
 
@@ -62,5 +64,10 @@ public class TilgangskontrollUtils {
         return hentClaimSet(ISSUER_ISSO)
                 .map(jwtClaimsSet -> jwtClaimsSet.getClaims().containsKey("NAVident"))
                 .orElse(false);
+    }
+
+    private boolean innloggetPersonErBruker() {
+        Optional<Fnr> fnr = hentClaim(ISSUER_SELVBETJENING, "sub").map(fnrString -> new Fnr(fnrString));
+        return fnr.isPresent();
     }
 }
