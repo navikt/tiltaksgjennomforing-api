@@ -141,7 +141,7 @@ public class Avtale {
         this.getOppgaver().forEach(Oppgave::settIdOgOpprettetTidspunkt);
     }
 
-    public Rolle hentInnloggetRolle(Person person) {
+    public Rolle hentRolle(Person person) {
         if (person.getIdentifikator().equals(this.deltakerFnr)) {
             return Rolle.DELTAKER;
         } else if (person.getIdentifikator().equals(this.arbeidsgiverFnr)) {

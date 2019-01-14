@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static no.nav.tag.tiltaksgjennomforing.Utils.lagUri;
@@ -81,7 +80,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(ResourceNotFoundException::new);
         Person person = tilgangskontroll.hentInnloggetPerson();
         if (avtale.erTilgjengeligFor(person)) {
-            return ResponseEntity.ok(avtale.hentInnloggetRolle(person));
+            return ResponseEntity.ok(avtale.hentRolle(person));
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
