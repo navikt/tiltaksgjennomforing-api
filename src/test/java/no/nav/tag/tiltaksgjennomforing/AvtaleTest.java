@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing;
 
+import no.nav.tag.tiltaksgjennomforing.controller.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.domene.*;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
@@ -121,10 +122,10 @@ public class AvtaleTest {
         assertThat(avtale.hentRollenTil(veileder)).isEqualTo(Rolle.VEILEDER);
     }
 
-    @Test
+    @Test(expected = TilgangskontrollException.class)
     public void personUtenTilgangTilAvtaleSkalHaIngenRolle() {
         Avtale avtale = TestData.minimalAvtale();
         Bruker deltakerUtenTilgang = new Bruker("00000000000");
-        assertThat(avtale.hentRollenTil(deltakerUtenTilgang)).isEqualTo(Rolle.INGEN_ROLLE);
+        avtale.hentRollenTil(deltakerUtenTilgang);
     }
 }

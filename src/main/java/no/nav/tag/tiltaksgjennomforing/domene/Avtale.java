@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.domene;
 
 import lombok.Data;
 import no.nav.tag.tiltaksgjennomforing.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.controller.TilgangskontrollException;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.relational.core.mapping.Column;
@@ -149,7 +150,7 @@ public class Avtale {
         } else if (person.getIdentifikator().equals(this.veilederNavIdent)) {
             return Rolle.VEILEDER;
         } else {
-            return Rolle.INGEN_ROLLE;
+            throw new TilgangskontrollException("Brukeren er ikke tilknyttet avtalen.");
         }
     }
 }
