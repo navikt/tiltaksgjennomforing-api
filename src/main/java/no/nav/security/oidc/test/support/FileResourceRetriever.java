@@ -18,11 +18,13 @@ import java.nio.charset.Charset;
 
 public class FileResourceRetriever extends OIDCResourceRetriever {
 
-    private final String metadataFile;
+    private final String metadataSelvbetjeningFile;
+    private final String metadataIssoFile;
     private final String jwksFile;
 
-    public FileResourceRetriever(String metadataFile, String jwksFile) {
-        this.metadataFile = metadataFile;
+    public FileResourceRetriever(String metadataSelvbetjeningFile, String metadataIssoFile, String jwksFile) {
+        this.metadataSelvbetjeningFile = metadataSelvbetjeningFile;
+        this.metadataIssoFile = metadataIssoFile;
         this.jwksFile = jwksFile;
     }
 
@@ -34,8 +36,11 @@ public class FileResourceRetriever extends OIDCResourceRetriever {
 
     private String getContentFromFile(URL url) {
         try {
-            if (url.toString().contains("metadata")) {
-                return IOUtils.readInputStreamToString(getInputStream(metadataFile), Charset.forName("UTF-8"));
+            if (url.toString().contains("metadata-isso")) {
+                return IOUtils.readInputStreamToString(getInputStream(metadataIssoFile), Charset.forName("UTF-8"));
+            }
+            if (url.toString().contains("metadata-selvbetjening")) {
+                return IOUtils.readInputStreamToString(getInputStream(metadataSelvbetjeningFile), Charset.forName("UTF-8"));
             }
             if (url.toString().contains("jwks")) {
                 return IOUtils.readInputStreamToString(getInputStream(jwksFile), Charset.forName("UTF-8"));
@@ -52,6 +57,7 @@ public class FileResourceRetriever extends OIDCResourceRetriever {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + " [metadataFile=" + metadataFile + ", jwksFile=" + jwksFile + "]";
+        // TODO fix
+        return getClass().getSimpleName() + " [metadataFile=" + "får det til å funke nå" + ", jwksFile=" + jwksFile + "]";
     }
 }

@@ -15,24 +15,22 @@ import java.util.concurrent.TimeUnit;
 
 public class JwtTokenGenerator {
 
-    public static String ISS = "iss-localhost";
-    public static String AUD = "aud-localhost";
     public static String ACR = "Level4";
     public static long EXPIRY = 60 * 60 * 3600;
 
     private JwtTokenGenerator() {
     }
 
-    public static String signedJWTAsString(String subject) {
-        return createSignedJWT(subject).serialize();
+    public static String signedJWTAsString(String subject, String issuer, String audience) {
+        return createSignedJWT(subject, issuer, audience).serialize();
     }
 
-    public static SignedJWT createSignedJWT(String subject) {
-        return createSignedJWT(subject, EXPIRY, new HashMap<>());
+    public static SignedJWT createSignedJWT(String subject, String issuer, String audience) {
+        return createSignedJWT(subject, EXPIRY, new HashMap<>(), issuer, audience);
     }
 
-    public static SignedJWT createSignedJWT(String subject, long expiryInMinutes, Map<String, Object> claims) {
-        JWTClaimsSet claimsSet = buildClaimSet(subject, ISS, AUD, ACR, TimeUnit.MINUTES.toMillis(expiryInMinutes), claims);
+    public static SignedJWT createSignedJWT(String subject, long expiryInMinutes, Map<String, Object> claims, String issuer, String audience) {
+        JWTClaimsSet claimsSet = buildClaimSet(subject, issuer, audience, ACR, TimeUnit.MINUTES.toMillis(expiryInMinutes), claims);
         return createSignedJWT(JwkGenerator.getDefaultRSAKey(), claimsSet);
     }
 

@@ -39,13 +39,13 @@ public class TokenGeneratorController {
     @Unprotected
     @GetMapping("/jwt")
     public String issueToken(@RequestParam(value = "subject", defaultValue = "12345678910") String subject) {
-        return JwtTokenGenerator.createSignedJWT(subject).serialize();
+        return JwtTokenGenerator.createSignedJWT(subject, "iss-localhost", "aud-localhost").serialize();
     }
 
     @Unprotected
     @GetMapping("/claims")
     public SignedJWT jwtClaims(@RequestParam(value = "subject", defaultValue = "12345678910") String subject) {
-        return JwtTokenGenerator.createSignedJWT(subject);
+        return JwtTokenGenerator.createSignedJWT(subject, "iss-localhost", "aud-localhost");
     }
 
     @Unprotected
@@ -55,7 +55,7 @@ public class TokenGeneratorController {
                             @RequestParam(value = "redirect", required = false) String redirect,
                             @RequestParam(value = "expiry", required = false) String expiry,
                             HttpServletRequest request, HttpServletResponse response) throws IOException {
-        return bakeCookie(subject, cookieName, redirect, expiry, request, response, new HashMap<>());
+        return bakeCookie(subject, cookieName, redirect, expiry, request, response, new HashMap<>(), "selvbetjening", "aud-selvbetjening");
     }
 
     @Unprotected
@@ -68,7 +68,7 @@ public class TokenGeneratorController {
                                HttpServletRequest request,
                                HttpServletResponse response
     ) throws IOException {
-        return bakeCookie(subject, cookieName, redirect, expiry, request, response, Collections.singletonMap("NAVident", navIdent));
+        return bakeCookie(subject, cookieName, redirect, expiry, request, response, Collections.singletonMap("NAVident", navIdent), "isso", "aud-isso");
     }
 
     private Cookie bakeCookie(
@@ -78,10 +78,12 @@ public class TokenGeneratorController {
             String expiry,
             HttpServletRequest request,
             HttpServletResponse response,
-            Map<String, Object> claims
+            Map<String, Object> claims,
+            String issuer,
+            String audience
     ) throws IOException {
         long expiryTime = expiry != null ? Long.parseLong(expiry) : JwtTokenGenerator.EXPIRY;
-        SignedJWT token = JwtTokenGenerator.createSignedJWT(subject, expiryTime, claims);
+        SignedJWT token = JwtTokenGenerator.createSignedJWT(subject, expiryTime, claims, issuer, audience);
         Cookie cookie = new Cookie(cookieName, token.serialize());
         cookie.setDomain("localhost");
         cookie.setPath("/");
@@ -109,6 +111,7 @@ public class TokenGeneratorController {
     @Unprotected
     @GetMapping("/metadata")
     public String metadata() throws IOException {
+        // TODO fix
         return IOUtils.readInputStreamToString(getClass().getResourceAsStream("/metadata.json"),
                 Charset.defaultCharset());
     }

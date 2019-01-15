@@ -51,17 +51,17 @@ public class TilgangskontrollUtilsTest {
 
 
     private void vaerInnloggetSom(Bruker bruker) {
-        vaerInnloggetSom(TilgangskontrollUtils.ISSUER_SELVBETJENING, bruker.getFnr().getFnr(), new HashMap<>());
+        vaerInnloggetSom(TilgangskontrollUtils.ISSUER_SELVBETJENING, bruker.getFnr().getFnr(), new HashMap<>(), "aud-selvbetjening");
     }
 
     private void vaerInnloggetSom(Veileder veileder) {
-        vaerInnloggetSom(TilgangskontrollUtils.ISSUER_ISSO, "blablabla", Collections.singletonMap("NAVident", veileder.getNavIdent().getId()));
+        vaerInnloggetSom(TilgangskontrollUtils.ISSUER_ISSO, "blablabla", Collections.singletonMap("NAVident", veileder.getNavIdent().getId()), "aud-isso");
     }
 
-    private void vaerInnloggetSom(String issuer, String subject, Map<String, Object> claims) {
+    private void vaerInnloggetSom(String issuer, String subject, Map<String, Object> claims, String audience) {
         OIDCValidationContext context = new OIDCValidationContext();
         TokenContext tokenContext = new TokenContext(issuer, "");
-        OIDCClaims oidcClaims = new OIDCClaims(createSignedJWT(subject, 0, claims));
+        OIDCClaims oidcClaims = new OIDCClaims(createSignedJWT(subject, 0, claims, issuer, audience));
         context.addValidatedToken(issuer, tokenContext, oidcClaims);
 
         when(contextHolder.getOIDCValidationContext()).thenReturn(context);
