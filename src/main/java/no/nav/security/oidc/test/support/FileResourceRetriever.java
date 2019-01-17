@@ -57,7 +57,9 @@ public class FileResourceRetriever extends OIDCResourceRetriever {
 
     @Override
     public String toString() {
-        // TODO fix
-        return getClass().getSimpleName() + " [metadataFile=" + "får det til å funke nå" + ", jwksFile=" + jwksFile + "]";
+        return getClass().getSimpleName()
+                + " [metadataIssoFile=" + metadataIssoFile
+                + ", metadataSelvbetjeningFile=" + metadataSelvbetjeningFile
+                + ", jwksFile=" + jwksFile + "]";
     }
 }
