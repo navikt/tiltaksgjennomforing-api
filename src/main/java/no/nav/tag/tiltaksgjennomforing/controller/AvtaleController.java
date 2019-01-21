@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.domene.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -18,6 +19,7 @@ import static no.nav.tag.tiltaksgjennomforing.Utils.lagUri;
 @Protected
 @RestController
 @RequestMapping("/avtaler")
+@Transactional
 public class AvtaleController {
 
     private final AvtaleRepository avtaleRepository;
