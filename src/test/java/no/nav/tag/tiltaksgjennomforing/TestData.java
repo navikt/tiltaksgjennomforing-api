@@ -3,7 +3,7 @@ package no.nav.tag.tiltaksgjennomforing;
 import no.nav.tag.tiltaksgjennomforing.domene.*;
 
 public class TestData {
-    static Avtale minimalAvtale() {
+    static Avtale enAvtale() {
         NavIdent veilderNavIdent = new NavIdent("X123456");
         return Avtale.nyAvtale(lagOpprettAvtale(), veilderNavIdent);
     }
@@ -18,11 +18,43 @@ public class TestData {
         return new EndreAvtale();
     }
 
-    static Oppgave minimalOppgave() {
+    public static Bruker deltaker() {
+        return new Bruker("01234567890");
+    }
+
+    static Bruker deltaker(Avtale avtale) {
+        return new Bruker(avtale.getDeltakerFnr());
+    }
+
+    static Bruker deltakerUtenTilgang() {
+        return new Bruker("99999999999");
+    }
+
+    static Bruker arbeidsgiver() {
+        return new Bruker("12345678901");
+    }
+
+    static Bruker arbeidsgiver(Avtale avtale) {
+        return new Bruker(avtale.getArbeidsgiverFnr());
+    }
+
+    public static Veileder veileder() {
+        return new Veileder("X123456");
+    }
+
+    static Veileder veileder(Avtale avtale) {
+        return new Veileder(avtale.getVeilederNavIdent());
+    }
+
+    public static Veileder veilederUtenTilgang() {
+        return new Veileder("Y999999");
+    }
+
+    static Oppgave enOppgave() {
         return new Oppgave();
     }
 
-    static Maal minimaltMaal() {
+    static Maal etMaal() {
         return new Maal();
     }
 }

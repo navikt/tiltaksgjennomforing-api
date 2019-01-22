@@ -34,8 +34,8 @@ public class AvtaleControllerTest {
 
     @Test
     public void hentSkalReturnereRiktigAvtale() {
-        Avtale avtale = TestData.minimalAvtale();
-        vaerInnloggetSom(new Veileder(avtale.getVeilederNavIdent()));
+        Avtale avtale = TestData.enAvtale();
+        vaerInnloggetSom(TestData.veileder(avtale));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         Avtale hentetAvtale = avtaleController.hent(avtale.getId()).getBody();
 
@@ -44,16 +44,16 @@ public class AvtaleControllerTest {
 
     @Test(expected = ResourceNotFoundException.class)
     public void hentSkalKasteResourceNotFoundExceptionHvisAvtaleIkkeFins() {
-        Avtale avtale = TestData.minimalAvtale();
-        vaerInnloggetSom(new Veileder(avtale.getVeilederNavIdent()));
+        Avtale avtale = TestData.enAvtale();
+        vaerInnloggetSom(TestData.veileder(avtale));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.empty());
         avtaleController.hent(avtale.getId());
     }
 
     @Test
     public void hentSkalReturnereForbiddenHvisInnloggetBrukerIkkeHarTilgang() {
-        vaerInnloggetSom(new Veileder("Z909090"));
-        Avtale avtale = TestData.minimalAvtale();
+        Avtale avtale = TestData.enAvtale();
+        vaerInnloggetSom(TestData.veilederUtenTilgang());
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         ResponseEntity svar = avtaleController.hent(avtale.getId());
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
@@ -61,8 +61,8 @@ public class AvtaleControllerTest {
 
     @Test
     public void opprettAvtaleSkalReturnereCreatedOgOpprettetLokasjon() {
-        Avtale avtale = TestData.minimalAvtale();
-        vaerInnloggetSom(new Veileder(avtale.getVeilederNavIdent()));
+        Avtale avtale = TestData.enAvtale();
+        vaerInnloggetSom(TestData.veileder(avtale));
 
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
         ResponseEntity svar = avtaleController.opprettAvtale(new OpprettAvtale(avtale.getDeltakerFnr(), avtale.getArbeidsgiverFnr()));
@@ -73,16 +73,16 @@ public class AvtaleControllerTest {
 
     @Test(expected = ResourceNotFoundException.class)
     public void endreAvtaleSkalReturnereNotFoundHvisDenIkkeFins() {
-        Avtale avtale = TestData.minimalAvtale();
-        vaerInnloggetSom(new Veileder(avtale.getVeilederNavIdent()));
+        Avtale avtale = TestData.enAvtale();
+        vaerInnloggetSom(TestData.veileder(avtale));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.empty());
         avtaleController.endreAvtale(avtale.getId(), avtale.getVersjon(), TestData.ingenEndring());
     }
 
     @Test
-    public void endreAvtaleSkalReturnereOkEtterEndretAvtale() {
-        Avtale avtale = TestData.minimalAvtale();
-        vaerInnloggetSom(new Veileder(avtale.getVeilederNavIdent()));
+    public void endreAvtaleSkalReturnereOkHvisInnloggetPersonErVeileder() {
+        Avtale avtale = TestData.enAvtale();
+        vaerInnloggetSom(TestData.veileder(avtale));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         when(avtaleRepository.save(avtale)).thenReturn(avtale);
         ResponseEntity svar = avtaleController.endreAvtale(avtale.getId(), avtale.getVersjon(), TestData.ingenEndring());
@@ -91,9 +91,10 @@ public class AvtaleControllerTest {
     }
 
     @Test
-    public void endreAvtaleSkalReturnereForbiddenHvisInnloggetBrukerIkkeHarTilgang() {
-        Avtale avtale = TestData.minimalAvtale();
-        vaerInnloggetSom(new Bruker("89898989898"));
+    public void endreAvtaleSkalReturnereForbiddenHvisInnloggetPersonIkkeHarTilgang() {
+        Avtale avtale = TestData.enAvtale();
+        vaerInnloggetSom(TestData.deltakerUtenTilgang());
+
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         ResponseEntity svar = avtaleController.endreAvtale(avtale.getId(), avtale.getVersjon(), TestData.ingenEndring());
 
@@ -102,10 +103,10 @@ public class AvtaleControllerTest {
 
     @Test
     public void hentAlleAvtalerInnloggetBrukerHarTilgangTilSkalIkkeReturnereAvtalerManIkkeHarTilgangTil() {
-        Avtale avtaleMedTilgang = TestData.minimalAvtale();
+        Avtale avtaleMedTilgang = TestData.enAvtale();
         Avtale avtaleUtenTilgang = Avtale.nyAvtale(new OpprettAvtale(new Fnr("89898989898"), new Fnr("89898989898")), new NavIdent("X643564"));
 
-        Bruker innloggetBruker = new Bruker(avtaleMedTilgang.getDeltakerFnr());
+        Bruker innloggetBruker = TestData.deltaker(avtaleMedTilgang);
         vaerInnloggetSom(innloggetBruker);
 
         List<Avtale> avtalerBrukerHarTilgangTil = lagListeMedAvtaler(avtaleMedTilgang, 5);
@@ -141,16 +142,15 @@ public class AvtaleControllerTest {
 
     @Test(expected = ResourceNotFoundException.class)
     public void hentRolleSkalKasteResourceNotFoundExceptionHvisAvtaleIkkeFins() {
-        Avtale avtale = TestData.minimalAvtale();
+        Avtale avtale = TestData.enAvtale();
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.empty());
         avtaleController.hentRolle(avtale.getId());
     }
 
     @Test
     public void hentRolleSkalReturnereForbiddenHvisIkkeTilknyttetAvtale() {
-        Avtale avtale = TestData.minimalAvtale();
-        Bruker deltakerUtenTilgang = new Bruker("00000000000");
-        vaerInnloggetSom(deltakerUtenTilgang);
+        Avtale avtale = TestData.enAvtale();
+        vaerInnloggetSom(TestData.deltakerUtenTilgang());
 
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         ResponseEntity svar = avtaleController.hentRolle(avtale.getId());
@@ -160,8 +160,8 @@ public class AvtaleControllerTest {
 
     @Test
     public void hentRolleSkalReturnereOkMedEnRolleHvisInnloggetBrukerErTilknyttetAvtale() {
-        Avtale avtale = TestData.minimalAvtale();
-        Bruker deltaker = new Bruker(avtale.getDeltakerFnr());
+        Avtale avtale = TestData.enAvtale();
+        Bruker deltaker = TestData.deltaker(avtale);
         vaerInnloggetSom(deltaker);
 
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));

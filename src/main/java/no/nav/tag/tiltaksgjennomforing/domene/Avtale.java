@@ -79,7 +79,8 @@ public class Avtale {
         return avtale;
     }
 
-    public void endreAvtale(Integer versjon, EndreAvtale nyAvtale) {
+    public void endreAvtale(Integer versjon, Person personSomEndrer, EndreAvtale nyAvtale) {
+        sjekkRollenTil(personSomEndrer);
         sjekkVersjon(versjon);
         inkrementerVersjonsnummer();
 
@@ -119,6 +120,13 @@ public class Avtale {
         setBekreftetAvVeileder(nyAvtale.isBekreftetAvVeileder());
     }
 
+    private void sjekkRollenTil(Person person) {
+        Rolle rolle = hentRollenTil(person);
+        if (rolle != Rolle.ARBEIDSGIVER && rolle != Rolle.VEILEDER) {
+            throw new TilgangskontrollException("Kun arbeidsgiver og veileder kan endre på avtalen.");
+        }
+    }
+
     private void inkrementerVersjonsnummer() {
         versjon += 1;
     }
@@ -143,11 +151,11 @@ public class Avtale {
     }
 
     public Rolle hentRollenTil(Person person) {
-        if (person.getIdentifikator().equals(this.deltakerFnr)) {
+        if (person.getIdentifikator().equals(deltakerFnr)) {
             return Rolle.DELTAKER;
-        } else if (person.getIdentifikator().equals(this.arbeidsgiverFnr)) {
+        } else if (person.getIdentifikator().equals(arbeidsgiverFnr)) {
             return Rolle.ARBEIDSGIVER;
-        } else if (person.getIdentifikator().equals(this.veilederNavIdent)) {
+        } else if (person.getIdentifikator().equals(veilederNavIdent)) {
             return Rolle.VEILEDER;
         } else {
             throw new TilgangskontrollException("Brukeren er ikke tilknyttet avtalen.");
