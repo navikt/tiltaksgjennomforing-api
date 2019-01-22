@@ -68,7 +68,13 @@ public class AvtaleController {
                                       @RequestHeader("If-Match") Integer versjon,
                                       @RequestBody EndreAvtale endreAvtale) {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(ResourceNotFoundException::new);
-        if (avtale.erTilgjengeligFor(tilgangskontroll.hentInnloggetPerson())) {
+        Person innloggetPerson = tilgangskontroll.hentInnloggetPerson();
+
+        if (avtale.erTilgjengeligFor(innloggetPerson)) {
+            if (avtale.hentRollenTil(innloggetPerson).equals(Rolle.DELTAKER)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
             avtale.endreAvtale(versjon, endreAvtale);
             Avtale lagretAvtale = avtaleRepository.save(avtale);
             return ResponseEntity.ok().header("eTag", lagretAvtale.getVersjon().toString()).build();

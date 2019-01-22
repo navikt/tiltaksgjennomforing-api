@@ -1,7 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing;
 
+import lombok.ToString;
 import no.nav.tag.tiltaksgjennomforing.controller.AvtaleController;
 import no.nav.tag.tiltaksgjennomforing.controller.ResourceNotFoundException;
+import no.nav.tag.tiltaksgjennomforing.controller.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.controller.TilgangskontrollUtils;
 import no.nav.tag.tiltaksgjennomforing.domene.*;
 import org.junit.Test;
@@ -9,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -80,7 +83,7 @@ public class AvtaleControllerTest {
     }
 
     @Test
-    public void endreAvtaleSkalReturnereOkEtterEndretAvtale() {
+    public void endreAvtaleSkalReturnereOkHvisInnloggetPersonErVeileder() {
         Avtale avtale = TestData.minimalAvtale();
         vaerInnloggetSom(new Veileder(avtale.getVeilederNavIdent()));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
@@ -91,9 +94,10 @@ public class AvtaleControllerTest {
     }
 
     @Test
-    public void endreAvtaleSkalReturnereForbiddenHvisInnloggetBrukerIkkeHarTilgang() {
+    public void endreAvtaleSkalReturnereForbiddenHvisInnloggetPersonIkkeHarTilgang() {
         Avtale avtale = TestData.minimalAvtale();
         vaerInnloggetSom(new Bruker("89898989898"));
+
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         ResponseEntity svar = avtaleController.endreAvtale(avtale.getId(), avtale.getVersjon(), TestData.ingenEndring());
 
@@ -169,5 +173,30 @@ public class AvtaleControllerTest {
 
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(svar.getBody()).isEqualTo(Rolle.DELTAKER);
+    }
+
+    @Test
+    public void endreAvtaleSkalReturnereForbiddenlHvisInnloggetPersonErDeltaker() {
+        Avtale avtale = TestData.minimalAvtale();
+        Bruker deltaker = new Bruker(avtale.getDeltakerFnr());
+        vaerInnloggetSom(deltaker);
+
+        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
+        ResponseEntity svar = avtaleController.endreAvtale(avtale.getId(), avtale.getVersjon(), TestData.ingenEndring());
+
+        assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+    }
+
+    @Test
+    public void endreAvtaleSkalReturnereOkHvisInnloggetPersonErArbeidsgiver() {
+        Avtale avtale = TestData.minimalAvtale();
+        Bruker arbeidsgiver = new Bruker(avtale.getArbeidsgiverFnr());
+        vaerInnloggetSom(arbeidsgiver);
+
+        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
+        when(avtaleRepository.save(avtale)).thenReturn(avtale);
+        ResponseEntity svar = avtaleController.endreAvtale(avtale.getId(), avtale.getVersjon(), TestData.ingenEndring());
+
+        assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 }
