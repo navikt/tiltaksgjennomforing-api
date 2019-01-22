@@ -6,21 +6,20 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
 
 public class AvtaleTest {
 
     @Test
     public void kunParteneIAvtalenSkalHaTilgang() {
-        Bruker arbeidsgiver = new Bruker(new Fnr("77667766776"));
-        Bruker kandidat = new Bruker(new Fnr("12345678901"));
-        Veileder veileder = new Veileder(new NavIdent("X123456"));
+        Bruker deltaker = TestData.deltaker();
+        Bruker arbeidsgiver = TestData.arbeidsgiver();
+        Veileder veileder = TestData.veileder();
 
-        Avtale avtale = Avtale.nyAvtale(new OpprettAvtale(kandidat.getFnr(), arbeidsgiver.getFnr()), veileder.getNavIdent());
+        Avtale avtale = Avtale.nyAvtale(new OpprettAvtale(deltaker.getFnr(), arbeidsgiver.getFnr()), veileder.getNavIdent());
 
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(avtale.erTilgjengeligFor(arbeidsgiver)).isTrue();
-            softly.assertThat(avtale.erTilgjengeligFor(kandidat)).isTrue();
+            softly.assertThat(avtale.erTilgjengeligFor(deltaker)).isTrue();
             softly.assertThat(avtale.erTilgjengeligFor(veileder)).isTrue();
             softly.assertThat(avtale.erTilgjengeligFor(new Bruker(new Fnr("90909090909")))).isFalse();
             softly.assertThat(avtale.erTilgjengeligFor(new Veileder(new NavIdent("Y654321")))).isFalse();
@@ -97,28 +96,28 @@ public class AvtaleTest {
     @Test
     public void endreAvtaleSkalInkrementereVersjon() {
         Avtale avtale = TestData.minimalAvtale();
-        avtale.endreAvtale(avtale.getVersjon(), TestData.veileder(), TestData.ingenEndring());
+        avtale.endreAvtale(avtale.getVersjon(), TestData.veileder(avtale), TestData.ingenEndring());
         assertThat(avtale.getVersjon()).isEqualTo(2);
     }
 
     @Test
     public void deltakerKnyttetTilAvtaleSkalHaDeltakerRolle() {
         Avtale avtale = TestData.minimalAvtale();
-        Bruker deltaker = new Bruker(avtale.getDeltakerFnr());
+        Bruker deltaker = TestData.deltaker(avtale);
         assertThat(avtale.hentRollenTil(deltaker)).isEqualTo(Rolle.DELTAKER);
     }
 
     @Test
     public void arbeidsgiverKnyttetTilAvtaleSkalHaArbeidsgiverRolle() {
         Avtale avtale = TestData.minimalAvtale();
-        Bruker arbeidsgiver = new Bruker(avtale.getArbeidsgiverFnr());
+        Bruker arbeidsgiver = TestData.arbeidsgiver(avtale);
         assertThat(avtale.hentRollenTil(arbeidsgiver)).isEqualTo(Rolle.ARBEIDSGIVER);
     }
 
     @Test
     public void veilederKnyttetTilAvtaleSkalHaVeilederRolle() {
         Avtale avtale = TestData.minimalAvtale();
-        Veileder veileder = new Veileder(avtale.getVeilederNavIdent());
+        Veileder veileder = TestData.veileder(avtale);
         assertThat(avtale.hentRollenTil(veileder)).isEqualTo(Rolle.VEILEDER);
     }
 

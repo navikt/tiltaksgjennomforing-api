@@ -19,8 +19,28 @@ public class TestData {
         return new EndreAvtale();
     }
 
-    static Veileder veileder() {
+    public static Bruker deltaker() {
+        return new Bruker("01234567890");
+    }
+
+    static Bruker deltaker(Avtale avtale) {
+        return new Bruker(avtale.getDeltakerFnr());
+    }
+
+    static Bruker arbeidsgiver() {
+        return new Bruker("12345678901");
+    }
+
+    static Bruker arbeidsgiver(Avtale avtale) {
+        return new Bruker(avtale.getArbeidsgiverFnr());
+    }
+
+    public static Veileder veileder() {
         return new Veileder("X123456");
+    }
+
+    static Veileder veileder(Avtale avtale) {
+        return new Veileder(avtale.getVeilederNavIdent());
     }
 
     static Oppgave minimalOppgave() {

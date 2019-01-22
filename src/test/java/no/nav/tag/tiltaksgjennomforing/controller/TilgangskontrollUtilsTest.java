@@ -4,6 +4,7 @@ import no.nav.security.oidc.context.OIDCClaims;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.security.oidc.context.OIDCValidationContext;
 import no.nav.security.oidc.context.TokenContext;
+import no.nav.tag.tiltaksgjennomforing.TestData;
 import no.nav.tag.tiltaksgjennomforing.domene.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,22 +31,21 @@ public class TilgangskontrollUtilsTest {
 
     @Test
     public void skalHenteInnloggetBrukerFraToken() {
-        Bruker bruker = new Bruker("99988877766");
+        Bruker bruker = TestData.deltaker();
         vaerInnloggetSom(bruker);
         assertThat(tilgangskontroll.hentInnloggetPerson()).isEqualTo(bruker);
     }
 
     @Test
     public void skalHenteInnloggetVeilederFraToken() {
-        Veileder veileder = new Veileder("Z333333");
+        Veileder veileder = TestData.veileder();
         vaerInnloggetSom(veileder);
         assertThat(tilgangskontroll.hentInnloggetPerson()).isEqualTo(veileder);
     }
 
     @Test(expected = TilgangskontrollException.class)
     public void hentInnloggetVeilederSkalFeileHvisInnloggetBrukerIkkeErVeileder() {
-        Bruker bruker = new Bruker("99988877766");
-        vaerInnloggetSom(bruker);
+        vaerInnloggetSom(TestData.deltaker());
         tilgangskontroll.hentInnloggetVeileder();
     }
 
