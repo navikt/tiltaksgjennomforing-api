@@ -71,11 +71,7 @@ public class AvtaleController {
         Person innloggetPerson = tilgangskontroll.hentInnloggetPerson();
 
         if (avtale.erTilgjengeligFor(innloggetPerson)) {
-            if (avtale.hentRollenTil(innloggetPerson).equals(Rolle.DELTAKER)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
-
-            avtale.endreAvtale(versjon, endreAvtale);
+            avtale.endreAvtale(versjon, innloggetPerson, endreAvtale);
             Avtale lagretAvtale = avtaleRepository.save(avtale);
             return ResponseEntity.ok().header("eTag", lagretAvtale.getVersjon().toString()).build();
         } else {

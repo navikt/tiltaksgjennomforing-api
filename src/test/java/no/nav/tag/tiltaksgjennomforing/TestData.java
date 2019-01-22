@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing;
 import no.nav.tag.tiltaksgjennomforing.domene.*;
 
 public class TestData {
+    // TODO: Rename
     static Avtale minimalAvtale() {
         NavIdent veilderNavIdent = new NavIdent("X123456");
         return Avtale.nyAvtale(lagOpprettAvtale(), veilderNavIdent);
@@ -16,6 +17,10 @@ public class TestData {
 
     static EndreAvtale ingenEndring() {
         return new EndreAvtale();
+    }
+
+    static Veileder veileder() {
+        return new Veileder("X123456");
     }
 
     static Oppgave minimalOppgave() {

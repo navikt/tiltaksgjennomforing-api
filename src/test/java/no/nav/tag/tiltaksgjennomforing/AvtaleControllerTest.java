@@ -175,16 +175,14 @@ public class AvtaleControllerTest {
         assertThat(svar.getBody()).isEqualTo(Rolle.DELTAKER);
     }
 
-    @Test
-    public void endreAvtaleSkalReturnereForbiddenlHvisInnloggetPersonErDeltaker() {
+    @Test(expected = TilgangskontrollException.class)
+    public void endreAvtaleSkalKasteTilgangskontrollExceptionHvisInnloggetPersonErDeltaker() {
         Avtale avtale = TestData.minimalAvtale();
         Bruker deltaker = new Bruker(avtale.getDeltakerFnr());
         vaerInnloggetSom(deltaker);
 
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        ResponseEntity svar = avtaleController.endreAvtale(avtale.getId(), avtale.getVersjon(), TestData.ingenEndring());
-
-        assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        avtaleController.endreAvtale(avtale.getId(), avtale.getVersjon(), TestData.ingenEndring());
     }
 
     @Test
