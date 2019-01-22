@@ -2,7 +2,6 @@ package no.nav.tag.tiltaksgjennomforing;
 
 import no.nav.tag.tiltaksgjennomforing.controller.AvtaleController;
 import no.nav.tag.tiltaksgjennomforing.controller.ResourceNotFoundException;
-import no.nav.tag.tiltaksgjennomforing.controller.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.controller.TilgangskontrollUtils;
 import no.nav.tag.tiltaksgjennomforing.domene.*;
 import org.junit.Test;
@@ -35,7 +34,7 @@ public class AvtaleControllerTest {
 
     @Test
     public void hentSkalReturnereRiktigAvtale() {
-        Avtale avtale = TestData.minimalAvtale();
+        Avtale avtale = TestData.enAvtale();
         vaerInnloggetSom(TestData.veileder(avtale));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         Avtale hentetAvtale = avtaleController.hent(avtale.getId()).getBody();
@@ -45,7 +44,7 @@ public class AvtaleControllerTest {
 
     @Test(expected = ResourceNotFoundException.class)
     public void hentSkalKasteResourceNotFoundExceptionHvisAvtaleIkkeFins() {
-        Avtale avtale = TestData.minimalAvtale();
+        Avtale avtale = TestData.enAvtale();
         vaerInnloggetSom(TestData.veileder(avtale));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.empty());
         avtaleController.hent(avtale.getId());
@@ -54,7 +53,7 @@ public class AvtaleControllerTest {
     @Test
     public void hentSkalReturnereForbiddenHvisInnloggetBrukerIkkeHarTilgang() {
         vaerInnloggetSom(new Veileder("Z909090"));
-        Avtale avtale = TestData.minimalAvtale();
+        Avtale avtale = TestData.enAvtale();
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         ResponseEntity svar = avtaleController.hent(avtale.getId());
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
@@ -62,7 +61,7 @@ public class AvtaleControllerTest {
 
     @Test
     public void opprettAvtaleSkalReturnereCreatedOgOpprettetLokasjon() {
-        Avtale avtale = TestData.minimalAvtale();
+        Avtale avtale = TestData.enAvtale();
         vaerInnloggetSom(TestData.veileder(avtale));
 
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
@@ -74,7 +73,7 @@ public class AvtaleControllerTest {
 
     @Test(expected = ResourceNotFoundException.class)
     public void endreAvtaleSkalReturnereNotFoundHvisDenIkkeFins() {
-        Avtale avtale = TestData.minimalAvtale();
+        Avtale avtale = TestData.enAvtale();
         vaerInnloggetSom(TestData.veileder(avtale));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.empty());
         avtaleController.endreAvtale(avtale.getId(), avtale.getVersjon(), TestData.ingenEndring());
@@ -82,7 +81,7 @@ public class AvtaleControllerTest {
 
     @Test
     public void endreAvtaleSkalReturnereOkHvisInnloggetPersonErVeileder() {
-        Avtale avtale = TestData.minimalAvtale();
+        Avtale avtale = TestData.enAvtale();
         vaerInnloggetSom(TestData.veileder(avtale));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         when(avtaleRepository.save(avtale)).thenReturn(avtale);
@@ -93,7 +92,7 @@ public class AvtaleControllerTest {
 
     @Test
     public void endreAvtaleSkalReturnereForbiddenHvisInnloggetPersonIkkeHarTilgang() {
-        Avtale avtale = TestData.minimalAvtale();
+        Avtale avtale = TestData.enAvtale();
         vaerInnloggetSom(new Bruker("89898989898"));
 
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
@@ -104,7 +103,7 @@ public class AvtaleControllerTest {
 
     @Test
     public void hentAlleAvtalerInnloggetBrukerHarTilgangTilSkalIkkeReturnereAvtalerManIkkeHarTilgangTil() {
-        Avtale avtaleMedTilgang = TestData.minimalAvtale();
+        Avtale avtaleMedTilgang = TestData.enAvtale();
         Avtale avtaleUtenTilgang = Avtale.nyAvtale(new OpprettAvtale(new Fnr("89898989898"), new Fnr("89898989898")), new NavIdent("X643564"));
 
         Bruker innloggetBruker = TestData.deltaker(avtaleMedTilgang);
@@ -143,14 +142,14 @@ public class AvtaleControllerTest {
 
     @Test(expected = ResourceNotFoundException.class)
     public void hentRolleSkalKasteResourceNotFoundExceptionHvisAvtaleIkkeFins() {
-        Avtale avtale = TestData.minimalAvtale();
+        Avtale avtale = TestData.enAvtale();
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.empty());
         avtaleController.hentRolle(avtale.getId());
     }
 
     @Test
     public void hentRolleSkalReturnereForbiddenHvisIkkeTilknyttetAvtale() {
-        Avtale avtale = TestData.minimalAvtale();
+        Avtale avtale = TestData.enAvtale();
         Bruker deltakerUtenTilgang = new Bruker("00000000000");
         vaerInnloggetSom(deltakerUtenTilgang);
 
@@ -162,7 +161,7 @@ public class AvtaleControllerTest {
 
     @Test
     public void hentRolleSkalReturnereOkMedEnRolleHvisInnloggetBrukerErTilknyttetAvtale() {
-        Avtale avtale = TestData.minimalAvtale();
+        Avtale avtale = TestData.enAvtale();
         Bruker deltaker = TestData.deltaker(avtale);
         vaerInnloggetSom(deltaker);
 

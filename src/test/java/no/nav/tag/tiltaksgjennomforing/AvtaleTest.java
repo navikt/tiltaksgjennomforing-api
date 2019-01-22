@@ -83,66 +83,66 @@ public class AvtaleTest {
 
     @Test(expected = TiltaksgjennomforingException.class)
     public void sjekkVersjonMedUgyldigVersjon() {
-        Avtale avtale = TestData.minimalAvtale();
+        Avtale avtale = TestData.enAvtale();
         avtale.sjekkVersjon(-1);
     }
 
     @Test
     public void sjekkVersjonMedGyldigVersjon() {
-        Avtale avtale = TestData.minimalAvtale();
+        Avtale avtale = TestData.enAvtale();
         avtale.sjekkVersjon(avtale.getVersjon());
     }
 
     @Test
     public void endreAvtaleSkalInkrementereVersjon() {
-        Avtale avtale = TestData.minimalAvtale();
+        Avtale avtale = TestData.enAvtale();
         avtale.endreAvtale(avtale.getVersjon(), TestData.veileder(avtale), TestData.ingenEndring());
         assertThat(avtale.getVersjon()).isEqualTo(2);
     }
 
     @Test
     public void deltakerKnyttetTilAvtaleSkalHaDeltakerRolle() {
-        Avtale avtale = TestData.minimalAvtale();
+        Avtale avtale = TestData.enAvtale();
         Bruker deltaker = TestData.deltaker(avtale);
         assertThat(avtale.hentRollenTil(deltaker)).isEqualTo(Rolle.DELTAKER);
     }
 
     @Test
     public void arbeidsgiverKnyttetTilAvtaleSkalHaArbeidsgiverRolle() {
-        Avtale avtale = TestData.minimalAvtale();
+        Avtale avtale = TestData.enAvtale();
         Bruker arbeidsgiver = TestData.arbeidsgiver(avtale);
         assertThat(avtale.hentRollenTil(arbeidsgiver)).isEqualTo(Rolle.ARBEIDSGIVER);
     }
 
     @Test
     public void veilederKnyttetTilAvtaleSkalHaVeilederRolle() {
-        Avtale avtale = TestData.minimalAvtale();
+        Avtale avtale = TestData.enAvtale();
         Veileder veileder = TestData.veileder(avtale);
         assertThat(avtale.hentRollenTil(veileder)).isEqualTo(Rolle.VEILEDER);
     }
 
     @Test(expected = TilgangskontrollException.class)
     public void personUtenTilgangTilAvtaleSkalHaIngenRolle() {
-        Avtale avtale = TestData.minimalAvtale();
+        Avtale avtale = TestData.enAvtale();
         Bruker deltakerUtenTilgang = new Bruker("00000000000");
         avtale.hentRollenTil(deltakerUtenTilgang);
     }
 
     @Test(expected = TilgangskontrollException.class)
     public void endreAvtaleSkalKasteTilgangskontrollExceptionHvisPersonSomEndrerErDeltaker() {
-        Avtale avtale = TestData.minimalAvtale();
+        Avtale avtale = TestData.enAvtale();
         avtale.endreAvtale(avtale.getVersjon(), TestData.deltaker(avtale), TestData.ingenEndring());
     }
 
     @Test
     public void arbeidsgiverSkalKunneEndreAvtale() {
-        Avtale avtale = TestData.minimalAvtale();
+        Avtale avtale = TestData.enAvtale();
         avtale.endreAvtale(avtale.getVersjon(), TestData.arbeidsgiver(avtale), TestData.ingenEndring());
     }
 
     @Test
     public void veilederSkalKunneEndreAvtale() {
-        Avtale avtale = TestData.minimalAvtale();
+        Avtale avtale = TestData.enAvtale();
         avtale.endreAvtale(avtale.getVersjon(), TestData.veileder(avtale), TestData.ingenEndring());
     }
 }

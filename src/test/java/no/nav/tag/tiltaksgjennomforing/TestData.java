@@ -3,8 +3,7 @@ package no.nav.tag.tiltaksgjennomforing;
 import no.nav.tag.tiltaksgjennomforing.domene.*;
 
 public class TestData {
-    // TODO: Rename
-    static Avtale minimalAvtale() {
+    static Avtale enAvtale() {
         NavIdent veilderNavIdent = new NavIdent("X123456");
         return Avtale.nyAvtale(lagOpprettAvtale(), veilderNavIdent);
     }
@@ -43,11 +42,11 @@ public class TestData {
         return new Veileder(avtale.getVeilederNavIdent());
     }
 
-    static Oppgave minimalOppgave() {
+    static Oppgave enOppgave() {
         return new Oppgave();
     }
 
-    static Maal minimaltMaal() {
+    static Maal etMaal() {
         return new Maal();
     }
 }
