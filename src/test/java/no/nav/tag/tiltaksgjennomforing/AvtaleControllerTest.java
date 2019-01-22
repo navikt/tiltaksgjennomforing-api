@@ -52,8 +52,8 @@ public class AvtaleControllerTest {
 
     @Test
     public void hentSkalReturnereForbiddenHvisInnloggetBrukerIkkeHarTilgang() {
-        vaerInnloggetSom(new Veileder("Z909090"));
         Avtale avtale = TestData.enAvtale();
+        vaerInnloggetSom(TestData.veilederUtenTilgang());
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         ResponseEntity svar = avtaleController.hent(avtale.getId());
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
@@ -93,7 +93,7 @@ public class AvtaleControllerTest {
     @Test
     public void endreAvtaleSkalReturnereForbiddenHvisInnloggetPersonIkkeHarTilgang() {
         Avtale avtale = TestData.enAvtale();
-        vaerInnloggetSom(new Bruker("89898989898"));
+        vaerInnloggetSom(TestData.deltakerUtenTilgang());
 
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         ResponseEntity svar = avtaleController.endreAvtale(avtale.getId(), avtale.getVersjon(), TestData.ingenEndring());
@@ -150,8 +150,7 @@ public class AvtaleControllerTest {
     @Test
     public void hentRolleSkalReturnereForbiddenHvisIkkeTilknyttetAvtale() {
         Avtale avtale = TestData.enAvtale();
-        Bruker deltakerUtenTilgang = new Bruker("00000000000");
-        vaerInnloggetSom(deltakerUtenTilgang);
+        vaerInnloggetSom(TestData.deltakerUtenTilgang());
 
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         ResponseEntity svar = avtaleController.hentRolle(avtale.getId());

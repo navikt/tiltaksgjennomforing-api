@@ -26,6 +26,10 @@ public class TestData {
         return new Bruker(avtale.getDeltakerFnr());
     }
 
+    static Bruker deltakerUtenTilgang() {
+        return new Bruker("99999999999");
+    }
+
     static Bruker arbeidsgiver() {
         return new Bruker("12345678901");
     }
@@ -40,6 +44,10 @@ public class TestData {
 
     static Veileder veileder(Avtale avtale) {
         return new Veileder(avtale.getVeilederNavIdent());
+    }
+
+    public static Veileder veilederUtenTilgang() {
+        return new Veileder("Y999999");
     }
 
     static Oppgave enOppgave() {

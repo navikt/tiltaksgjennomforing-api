@@ -21,8 +21,8 @@ public class AvtaleTest {
             softly.assertThat(avtale.erTilgjengeligFor(arbeidsgiver)).isTrue();
             softly.assertThat(avtale.erTilgjengeligFor(deltaker)).isTrue();
             softly.assertThat(avtale.erTilgjengeligFor(veileder)).isTrue();
-            softly.assertThat(avtale.erTilgjengeligFor(new Bruker(new Fnr("90909090909")))).isFalse();
-            softly.assertThat(avtale.erTilgjengeligFor(new Veileder(new NavIdent("Y654321")))).isFalse();
+            softly.assertThat(avtale.erTilgjengeligFor(TestData.deltakerUtenTilgang())).isFalse();
+            softly.assertThat(avtale.erTilgjengeligFor(TestData.veilederUtenTilgang())).isFalse();
         });
     }
 
@@ -124,8 +124,7 @@ public class AvtaleTest {
     @Test(expected = TilgangskontrollException.class)
     public void personUtenTilgangTilAvtaleSkalHaIngenRolle() {
         Avtale avtale = TestData.enAvtale();
-        Bruker deltakerUtenTilgang = new Bruker("00000000000");
-        avtale.hentRollenTil(deltakerUtenTilgang);
+        avtale.hentRollenTil(TestData.deltakerUtenTilgang());
     }
 
     @Test(expected = TilgangskontrollException.class)
