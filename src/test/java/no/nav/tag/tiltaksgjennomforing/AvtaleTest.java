@@ -127,4 +127,22 @@ public class AvtaleTest {
         Bruker deltakerUtenTilgang = new Bruker("00000000000");
         avtale.hentRollenTil(deltakerUtenTilgang);
     }
+
+    @Test(expected = TilgangskontrollException.class)
+    public void endreAvtaleSkalKasteTilgangskontrollExceptionHvisPersonSomEndrerErDeltaker() {
+        Avtale avtale = TestData.minimalAvtale();
+        avtale.endreAvtale(avtale.getVersjon(), TestData.deltaker(avtale), TestData.ingenEndring());
+    }
+
+    @Test
+    public void arbeidsgiverSkalKunneEndreAvtale() {
+        Avtale avtale = TestData.minimalAvtale();
+        avtale.endreAvtale(avtale.getVersjon(), TestData.arbeidsgiver(avtale), TestData.ingenEndring());
+    }
+
+    @Test
+    public void veilederSkalKunneEndreAvtale() {
+        Avtale avtale = TestData.minimalAvtale();
+        avtale.endreAvtale(avtale.getVersjon(), TestData.veileder(avtale), TestData.ingenEndring());
+    }
 }

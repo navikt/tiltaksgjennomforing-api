@@ -172,27 +172,4 @@ public class AvtaleControllerTest {
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(svar.getBody()).isEqualTo(Rolle.DELTAKER);
     }
-
-    @Test(expected = TilgangskontrollException.class)
-    public void endreAvtaleSkalKasteTilgangskontrollExceptionHvisInnloggetPersonErDeltaker() {
-        Avtale avtale = TestData.minimalAvtale();
-        Bruker deltaker = new Bruker(avtale.getDeltakerFnr());
-        vaerInnloggetSom(deltaker);
-
-        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        avtaleController.endreAvtale(avtale.getId(), avtale.getVersjon(), TestData.ingenEndring());
-    }
-
-    @Test
-    public void endreAvtaleSkalReturnereOkHvisInnloggetPersonErArbeidsgiver() {
-        Avtale avtale = TestData.minimalAvtale();
-        Bruker arbeidsgiver = new Bruker(avtale.getArbeidsgiverFnr());
-        vaerInnloggetSom(arbeidsgiver);
-
-        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        when(avtaleRepository.save(avtale)).thenReturn(avtale);
-        ResponseEntity svar = avtaleController.endreAvtale(avtale.getId(), avtale.getVersjon(), TestData.ingenEndring());
-
-        assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
 }
