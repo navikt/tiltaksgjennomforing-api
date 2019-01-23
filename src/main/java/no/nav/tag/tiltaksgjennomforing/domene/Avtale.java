@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static no.nav.tag.tiltaksgjennomforing.Utils.ikkeNull;
+import static no.nav.tag.tiltaksgjennomforing.domene.Rolle.*;
 
 @Data
 public class Avtale {
@@ -54,6 +55,7 @@ public class Avtale {
     @Column(keyColumn = "id")
     private List<Oppgave> oppgaver = new ArrayList<>();
 
+    // TODO: Endre navn
     private boolean bekreftetAvBruker;
     private boolean bekreftetAvArbeidsgiver;
     private boolean bekreftetAvVeileder;
@@ -65,14 +67,6 @@ public class Avtale {
         this.veilederNavIdent = ikkeNull(veilederNavIdent, "Veileders NAV-ident må være satt.");
     }
 
-    public boolean erTilgjengeligFor(Person person) {
-        PersonIdentifikator id = person.getIdentifikator();
-
-        return id.equals(veilederNavIdent) ||
-                id.equals(deltakerFnr) ||
-                id.equals(arbeidsgiverFnr);
-    }
-
     public static Avtale nyAvtale(OpprettAvtale opprettAvtale, NavIdent veilederNavIdent) {
         Avtale avtale = new Avtale(opprettAvtale.getDeltakerFnr(), opprettAvtale.getArbeidsgiverFnr(), veilederNavIdent);
         avtale.setVersjon(1);
@@ -80,7 +74,7 @@ public class Avtale {
     }
 
     public void endreAvtale(Integer versjon, Person personSomEndrer, EndreAvtale nyAvtale) {
-        sjekkRollenTil(personSomEndrer);
+        sjekkOmKanEndreAvtale(personSomEndrer);
         sjekkVersjon(versjon);
         inkrementerVersjonsnummer();
 
@@ -114,15 +108,19 @@ public class Avtale {
 
         setMaal(nyAvtale.getMaal());
         setOppgaver(nyAvtale.getOppgaver());
-
-        setBekreftetAvBruker(nyAvtale.isBekreftetAvBruker());
-        setBekreftetAvArbeidsgiver(nyAvtale.isBekreftetAvArbeidsgiver());
-        setBekreftetAvVeileder(nyAvtale.isBekreftetAvVeileder());
     }
 
-    private void sjekkRollenTil(Person person) {
+    public boolean erTilgjengeligFor(Person person) {
+        PersonIdentifikator id = person.getIdentifikator();
+
+        return id.equals(veilederNavIdent) ||
+                id.equals(deltakerFnr) ||
+                id.equals(arbeidsgiverFnr);
+    }
+
+    private void sjekkOmKanEndreAvtale(Person person) {
         Rolle rolle = hentRollenTil(person);
-        if (rolle != Rolle.ARBEIDSGIVER && rolle != Rolle.VEILEDER) {
+        if (rolle != ARBEIDSGIVER && rolle != VEILEDER) {
             throw new TilgangskontrollException("Kun arbeidsgiver og veileder kan endre på avtalen.");
         }
     }
@@ -152,13 +150,40 @@ public class Avtale {
 
     public Rolle hentRollenTil(Person person) {
         if (person.getIdentifikator().equals(deltakerFnr)) {
-            return Rolle.DELTAKER;
+            return DELTAKER;
         } else if (person.getIdentifikator().equals(arbeidsgiverFnr)) {
-            return Rolle.ARBEIDSGIVER;
+            return ARBEIDSGIVER;
         } else if (person.getIdentifikator().equals(veilederNavIdent)) {
-            return Rolle.VEILEDER;
+            return VEILEDER;
         } else {
             throw new TilgangskontrollException("Brukeren er ikke tilknyttet avtalen.");
+        }
+    }
+
+    public void endreGodkjenningDeltaker(Person personSomGodkjenner, boolean verdi) {
+        Rolle rolle = hentRollenTil(personSomGodkjenner);
+        if (rolle.equals(DELTAKER)) {
+            setBekreftetAvBruker(verdi);
+        } else {
+            throw new TilgangskontrollException("Kun deltaker kan godkjenne på vegne av seg selv.");
+        }
+    }
+
+    public void endreGodkjenningArbeidsgiver(Person personSomGodkjenner, boolean verdi) {
+        Rolle rolle = hentRollenTil(personSomGodkjenner);
+        if (rolle.equals(ARBEIDSGIVER)) {
+            setBekreftetAvArbeidsgiver(verdi);
+        } else {
+            throw new TilgangskontrollException("Kun arbeidsgiver kan godkjenne på vegne av seg selv.");
+        }
+    }
+
+    public void endreGodkjenningVeileder(Person personSomGodkjenner, boolean verdi) {
+        Rolle rolle = hentRollenTil(personSomGodkjenner);
+        if (rolle.equals(VEILEDER)) {
+            setBekreftetAvVeileder(verdi);
+        } else {
+            throw new TilgangskontrollException("Kun veileder kan godkjenne på vegne av seg selv.");
         }
     }
 }

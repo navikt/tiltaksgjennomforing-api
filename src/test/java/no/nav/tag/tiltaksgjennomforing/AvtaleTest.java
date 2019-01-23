@@ -144,4 +144,35 @@ public class AvtaleTest {
         Avtale avtale = TestData.enAvtale();
         avtale.endreAvtale(avtale.getVersjon(), TestData.veileder(avtale), TestData.ingenEndring());
     }
+
+    @Test
+    public void deltakerSkalKunneEndreEgenGodkjenning() {
+        Avtale avtale = TestData.enAvtale();
+        Bruker deltaker = TestData.deltaker(avtale);
+        avtale.endreGodkjenningDeltaker(deltaker, true);
+        assertThat(avtale.isBekreftetAvBruker()).isTrue();
+    }
+
+    @Test
+    public void arbeidsgiverSkalKunneEndreEgenGodkjenning() {
+        Avtale avtale = TestData.enAvtale();
+        Bruker arbeidsgiver = TestData.arbeidsgiver(avtale);
+        avtale.endreGodkjenningArbeidsgiver(arbeidsgiver, true);
+        assertThat(avtale.isBekreftetAvArbeidsgiver()).isTrue();
+    }
+
+    @Test
+    public void veilederSkalKunneEndreEgenGodkjenning() {
+        Avtale avtale = TestData.enAvtale();
+        Veileder veileder = TestData.veileder(avtale);
+        avtale.endreGodkjenningVeileder(veileder, true);
+        assertThat(avtale.isBekreftetAvVeileder()).isTrue();
+    }
+
+    @Test(expected = TilgangskontrollException.class)
+    public void skalIkkeKunneGodkjennePaVegneAvAndreEnnSegSelv() {
+        Avtale avtale = TestData.enAvtale();
+        Veileder veileder = TestData.veileder(avtale);
+        avtale.endreGodkjenningDeltaker(veileder, true);
+    }
 }
