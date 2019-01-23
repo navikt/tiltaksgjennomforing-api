@@ -55,10 +55,9 @@ public class Avtale {
     @Column(keyColumn = "id")
     private List<Oppgave> oppgaver = new ArrayList<>();
 
-    // TODO: Endre navn
-    private boolean bekreftetAvBruker;
-    private boolean bekreftetAvArbeidsgiver;
-    private boolean bekreftetAvVeileder;
+    private boolean godkjentAvDeltaker;
+    private boolean godkjentAvArbeidsgiver;
+    private boolean godkjentAvVeileder;
 
     @PersistenceConstructor
     public Avtale(Fnr deltakerFnr, Fnr arbeidsgiverFnr, NavIdent veilederNavIdent) {
@@ -163,7 +162,7 @@ public class Avtale {
     public void endreGodkjenningDeltaker(Person personSomGodkjenner, boolean verdi) {
         Rolle rolle = hentRollenTil(personSomGodkjenner);
         if (rolle.equals(DELTAKER)) {
-            setBekreftetAvBruker(verdi);
+            setGodkjentAvDeltaker(verdi);
         } else {
             throw new TilgangskontrollException("Kun deltaker kan godkjenne på vegne av seg selv.");
         }
@@ -172,7 +171,7 @@ public class Avtale {
     public void endreGodkjenningArbeidsgiver(Person personSomGodkjenner, boolean verdi) {
         Rolle rolle = hentRollenTil(personSomGodkjenner);
         if (rolle.equals(ARBEIDSGIVER)) {
-            setBekreftetAvArbeidsgiver(verdi);
+            setGodkjentAvArbeidsgiver(verdi);
         } else {
             throw new TilgangskontrollException("Kun arbeidsgiver kan godkjenne på vegne av seg selv.");
         }
@@ -181,7 +180,7 @@ public class Avtale {
     public void endreGodkjenningVeileder(Person personSomGodkjenner, boolean verdi) {
         Rolle rolle = hentRollenTil(personSomGodkjenner);
         if (rolle.equals(VEILEDER)) {
-            setBekreftetAvVeileder(verdi);
+            setGodkjentAvVeileder(verdi);
         } else {
             throw new TilgangskontrollException("Kun veileder kan godkjenne på vegne av seg selv.");
         }

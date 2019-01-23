@@ -60,9 +60,9 @@ public class AvtaleTest {
             softly.assertThat(avtale.getStartDatoTidspunkt()).isNull();
             softly.assertThat(avtale.getArbeidstreningLengde()).isNull();
             softly.assertThat(avtale.getArbeidstreningStillingprosent()).isNull();
-            softly.assertThat(avtale.isBekreftetAvBruker()).isFalse();
-            softly.assertThat(avtale.isBekreftetAvArbeidsgiver()).isFalse();
-            softly.assertThat(avtale.isBekreftetAvVeileder()).isFalse();
+            softly.assertThat(avtale.isGodkjentAvDeltaker()).isFalse();
+            softly.assertThat(avtale.isGodkjentAvArbeidsgiver()).isFalse();
+            softly.assertThat(avtale.isGodkjentAvVeileder()).isFalse();
         });
     }
 
@@ -150,7 +150,7 @@ public class AvtaleTest {
         Avtale avtale = TestData.enAvtale();
         Bruker deltaker = TestData.deltaker(avtale);
         avtale.endreGodkjenningDeltaker(deltaker, true);
-        assertThat(avtale.isBekreftetAvBruker()).isTrue();
+        assertThat(avtale.isGodkjentAvDeltaker()).isTrue();
     }
 
     @Test
@@ -158,7 +158,7 @@ public class AvtaleTest {
         Avtale avtale = TestData.enAvtale();
         Bruker arbeidsgiver = TestData.arbeidsgiver(avtale);
         avtale.endreGodkjenningArbeidsgiver(arbeidsgiver, true);
-        assertThat(avtale.isBekreftetAvArbeidsgiver()).isTrue();
+        assertThat(avtale.isGodkjentAvArbeidsgiver()).isTrue();
     }
 
     @Test
@@ -166,7 +166,7 @@ public class AvtaleTest {
         Avtale avtale = TestData.enAvtale();
         Veileder veileder = TestData.veileder(avtale);
         avtale.endreGodkjenningVeileder(veileder, true);
-        assertThat(avtale.isBekreftetAvVeileder()).isTrue();
+        assertThat(avtale.isGodkjentAvVeileder()).isTrue();
     }
 
     @Test(expected = TilgangskontrollException.class)
