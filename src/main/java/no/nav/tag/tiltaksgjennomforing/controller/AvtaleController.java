@@ -89,4 +89,31 @@ public class AvtaleController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
+
+    @PostMapping(value = "/{avtaleId}/godkjentAvDeltaker")
+    public ResponseEntity endreGodkjenningDeltaker(@PathVariable("avtaleId") UUID avtaleId, @RequestBody EndreGodkjenning endreGodkjenning) {
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(ResourceNotFoundException::new);
+        Person innloggetPerson = tilgangskontroll.hentInnloggetPerson();
+        avtale.endreGodkjenningDeltaker(innloggetPerson, endreGodkjenning.getGodkjent());
+        avtaleRepository.save(avtale);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(value = "/{avtaleId}/godkjentAvArbeidsgiver")
+    public ResponseEntity endreGodkjenningArbeidsgiver(@PathVariable("avtaleId") UUID avtaleId, @RequestBody EndreGodkjenning endreGodkjenning) {
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(ResourceNotFoundException::new);
+        Person innloggetPerson = tilgangskontroll.hentInnloggetPerson();
+        avtale.endreGodkjenningArbeidsgiver(innloggetPerson, endreGodkjenning.getGodkjent());
+        avtaleRepository.save(avtale);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(value = "/{avtaleId}/godkjentAvVeileder")
+    public ResponseEntity endreGodkjenningVeileder(@PathVariable("avtaleId") UUID avtaleId, @RequestBody EndreGodkjenning endreGodkjenning) {
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(ResourceNotFoundException::new);
+        Person innloggetPerson = tilgangskontroll.hentInnloggetPerson();
+        avtale.endreGodkjenningVeileder(innloggetPerson, endreGodkjenning.getGodkjent());
+        avtaleRepository.save(avtale);
+        return ResponseEntity.ok().build();
+    }
 }
