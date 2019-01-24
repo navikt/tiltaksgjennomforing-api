@@ -2,6 +2,9 @@ package no.nav.tag.tiltaksgjennomforing;
 
 import no.nav.tag.tiltaksgjennomforing.domene.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 public class TestData {
     static Avtale enAvtale() {
         NavIdent veilderNavIdent = new NavIdent("X123456");
@@ -16,6 +19,39 @@ public class TestData {
 
     static EndreAvtale ingenEndring() {
         return new EndreAvtale();
+    }
+
+    static EndreAvtale endringPaAlleFelt() {
+        EndreAvtale endreAvtale = new EndreAvtale();
+        endreAvtale.setDeltakerFornavn("Fornavn");
+        endreAvtale.setDeltakerEtternavn("Etternavn");
+        endreAvtale.setDeltakerAdresse("Adresse");
+        endreAvtale.setDeltakerPostnummer("Postnr");
+        endreAvtale.setDeltakerPoststed("Poststed");
+        endreAvtale.setBedriftNavn("Bedriftnavn");
+        endreAvtale.setBedriftAdresse("Bedriftadresse");
+        endreAvtale.setBedriftPostnummer("Bedriftspostnr");
+        endreAvtale.setBedriftPoststed("Bedriftpoststed");
+
+        // TODO
+        // endreAvtale.setArbeidsgiverFnr("AG fnr");
+
+        endreAvtale.setArbeidsgiverFornavn("AG fornavn");
+        endreAvtale.setArbeidsgiverEtternavn("AG etternavn");
+        endreAvtale.setArbeidsgiverEpost("AG epost");
+        endreAvtale.setArbeidsgiverTlf("AG tlf");
+        endreAvtale.setVeilederFornavn("Veilederfornavn");
+        endreAvtale.setVeilederEtternavn("Veilederetternavn");
+        endreAvtale.setVeilederEpost("Veilederepost");
+        endreAvtale.setVeilederTlf("Veiledertlf");
+        endreAvtale.setOppfolging("Oppfolging");
+        endreAvtale.setTilrettelegging("Tilrettelegging");
+        endreAvtale.setStartDatoTidspunkt(LocalDateTime.now());
+        endreAvtale.setArbeidstreningLengde(2);
+        endreAvtale.setArbeidstreningStillingprosent(50);
+        endreAvtale.setMaal(List.of(TestData.etMaal(), TestData.etMaal()));
+        endreAvtale.setOppgaver(List.of(TestData.enOppgave(), TestData.enOppgave()));
+        return endreAvtale;
     }
 
     public static Bruker deltaker() {

@@ -94,6 +94,53 @@ public class AvtaleTest {
     }
 
     @Test
+    public void endreAvtaleSkalOppdatereRiktigeFelt() {
+        Avtale avtale = TestData.enAvtale();
+        EndreAvtale endreAvtale = TestData.endringPaAlleFelt();
+        avtale.endreAvtale(avtale.getVersjon(), TestData.arbeidsgiver(avtale), endreAvtale);
+
+        assertThat(avtale.getDeltakerFornavn()).isEqualTo(endreAvtale.getDeltakerFornavn());
+        assertThat(avtale.getDeltakerEtternavn()).isEqualTo(endreAvtale.getDeltakerEtternavn());
+        assertThat(avtale.getDeltakerAdresse()).isEqualTo(endreAvtale.getDeltakerAdresse());
+        assertThat(avtale.getDeltakerPostnummer()).isEqualTo(endreAvtale.getDeltakerPostnummer());
+        assertThat(avtale.getDeltakerPoststed()).isEqualTo(endreAvtale.getDeltakerPoststed());
+        assertThat(avtale.getBedriftNavn()).isEqualTo(endreAvtale.getBedriftNavn());
+        assertThat(avtale.getBedriftAdresse()).isEqualTo(endreAvtale.getBedriftAdresse());
+        assertThat(avtale.getBedriftPostnummer()).isEqualTo(endreAvtale.getBedriftPostnummer());
+        assertThat(avtale.getBedriftPoststed()).isEqualTo(endreAvtale.getBedriftPoststed());
+        assertThat(avtale.getArbeidsgiverFnr()).isEqualTo(endreAvtale.getArbeidsgiverFnr());
+        assertThat(avtale.getArbeidsgiverFornavn()).isEqualTo(endreAvtale.getArbeidsgiverFornavn());
+        assertThat(avtale.getArbeidsgiverEtternavn()).isEqualTo(endreAvtale.getArbeidsgiverEtternavn());
+        assertThat(avtale.getArbeidsgiverEpost()).isEqualTo(endreAvtale.getArbeidsgiverEpost());
+        assertThat(avtale.getArbeidsgiverTlf()).isEqualTo(endreAvtale.getArbeidsgiverTlf());
+        assertThat(avtale.getVeilederFornavn()).isEqualTo(endreAvtale.getVeilederFornavn());
+        assertThat(avtale.getVeilederEtternavn()).isEqualTo(endreAvtale.getVeilederEtternavn());
+        assertThat(avtale.getVeilederEpost()).isEqualTo(endreAvtale.getVeilederEpost());
+        assertThat(avtale.getVeilederTlf()).isEqualTo(endreAvtale.getVeilederTlf());
+        assertThat(avtale.getOppfolging()).isEqualTo(endreAvtale.getOppfolging());
+        assertThat(avtale.getTilrettelegging()).isEqualTo(endreAvtale.getTilrettelegging());
+        assertThat(avtale.getStartDatoTidspunkt()).isEqualTo(endreAvtale.getStartDatoTidspunkt());
+        assertThat(avtale.getArbeidstreningLengde()).isEqualTo(endreAvtale.getArbeidstreningLengde());
+        assertThat(avtale.getArbeidstreningStillingprosent()).isEqualTo(endreAvtale.getArbeidstreningStillingprosent());
+        assertThat(avtale.getMaal()).isEqualTo(endreAvtale.getMaal());
+        assertThat(avtale.getOppgaver()).isEqualTo(endreAvtale.getOppgaver());
+    }
+
+    @Test
+    public void endreAvtaleSkalIkkeEndreGodkjenninger() {
+        Avtale avtale = TestData.enAvtale();
+        boolean deltakerGodkjenningFoerEndring = avtale.isGodkjentAvDeltaker();
+        boolean arbeidsgiverGodkjenningFoerEndring = avtale.isGodkjentAvArbeidsgiver();
+        boolean veilederGodkjenningFoerEndring = avtale.isGodkjentAvVeileder();
+
+        avtale.endreAvtale(avtale.getVersjon(), TestData.arbeidsgiver(avtale), TestData.endringPaAlleFelt());
+
+        assertThat(deltakerGodkjenningFoerEndring).isEqualTo(avtale.isGodkjentAvDeltaker());
+        assertThat(arbeidsgiverGodkjenningFoerEndring).isEqualTo(avtale.isGodkjentAvArbeidsgiver());
+        assertThat(veilederGodkjenningFoerEndring).isEqualTo(avtale.isGodkjentAvVeileder());
+    }
+
+    @Test
     public void endreAvtaleSkalInkrementereVersjon() {
         Avtale avtale = TestData.enAvtale();
         avtale.endreAvtale(avtale.getVersjon(), TestData.veileder(avtale), TestData.ingenEndring());
