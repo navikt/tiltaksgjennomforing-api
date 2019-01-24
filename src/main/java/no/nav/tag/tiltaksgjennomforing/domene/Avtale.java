@@ -33,7 +33,7 @@ public class Avtale {
     private String bedriftAdresse;
     private String bedriftPostnummer;
     private String bedriftPoststed;
-    private Fnr arbeidsgiverFnr;
+    private final Fnr arbeidsgiverFnr;
     private String arbeidsgiverFornavn;
     private String arbeidsgiverEtternavn;
     private String arbeidsgiverEpost;
@@ -88,7 +88,6 @@ public class Avtale {
         setBedriftPostnummer(nyAvtale.getBedriftPostnummer());
         setBedriftPoststed(nyAvtale.getBedriftPoststed());
 
-        setArbeidsgiverFnr(nyAvtale.getArbeidsgiverFnr());
         setArbeidsgiverFornavn(nyAvtale.getArbeidsgiverFornavn());
         setArbeidsgiverEtternavn(nyAvtale.getArbeidsgiverEtternavn());
         setArbeidsgiverEpost(nyAvtale.getArbeidsgiverEpost());

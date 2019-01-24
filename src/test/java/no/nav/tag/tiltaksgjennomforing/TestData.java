@@ -32,10 +32,6 @@ public class TestData {
         endreAvtale.setBedriftAdresse("Bedriftadresse");
         endreAvtale.setBedriftPostnummer("Bedriftspostnr");
         endreAvtale.setBedriftPoststed("Bedriftpoststed");
-
-        // TODO
-        // endreAvtale.setArbeidsgiverFnr("AG fnr");
-
         endreAvtale.setArbeidsgiverFornavn("AG fornavn");
         endreAvtale.setArbeidsgiverEtternavn("AG etternavn");
         endreAvtale.setArbeidsgiverEpost("AG epost");

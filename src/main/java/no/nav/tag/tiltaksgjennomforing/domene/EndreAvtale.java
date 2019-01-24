@@ -22,7 +22,6 @@ public class EndreAvtale {
     private String bedriftAdresse;
     private String bedriftPostnummer;
     private String bedriftPoststed;
-    private Fnr arbeidsgiverFnr;
     private String arbeidsgiverFornavn;
     private String arbeidsgiverEtternavn;
     private String arbeidsgiverEpost;

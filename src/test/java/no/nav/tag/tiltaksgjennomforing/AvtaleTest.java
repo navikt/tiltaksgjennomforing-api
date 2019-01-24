@@ -109,7 +109,6 @@ public class AvtaleTest {
             softly.assertThat(avtale.getBedriftAdresse()).isEqualTo(endreAvtale.getBedriftAdresse());
             softly.assertThat(avtale.getBedriftPostnummer()).isEqualTo(endreAvtale.getBedriftPostnummer());
             softly.assertThat(avtale.getBedriftPoststed()).isEqualTo(endreAvtale.getBedriftPoststed());
-            softly.assertThat(avtale.getArbeidsgiverFnr()).isEqualTo(endreAvtale.getArbeidsgiverFnr());
             softly.assertThat(avtale.getArbeidsgiverFornavn()).isEqualTo(endreAvtale.getArbeidsgiverFornavn());
             softly.assertThat(avtale.getArbeidsgiverEtternavn()).isEqualTo(endreAvtale.getArbeidsgiverEtternavn());
             softly.assertThat(avtale.getArbeidsgiverEpost()).isEqualTo(endreAvtale.getArbeidsgiverEpost());
