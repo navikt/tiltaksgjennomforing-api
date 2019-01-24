@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static no.nav.tag.tiltaksgjennomforing.Utils.ikkeNull;
+import static no.nav.tag.tiltaksgjennomforing.domene.Rolle.*;
 
 @Data
 public class Avtale {
@@ -32,7 +33,7 @@ public class Avtale {
     private String bedriftAdresse;
     private String bedriftPostnummer;
     private String bedriftPoststed;
-    private Fnr arbeidsgiverFnr;
+    private final Fnr arbeidsgiverFnr;
     private String arbeidsgiverFornavn;
     private String arbeidsgiverEtternavn;
     private String arbeidsgiverEpost;
@@ -54,23 +55,15 @@ public class Avtale {
     @Column(keyColumn = "id")
     private List<Oppgave> oppgaver = new ArrayList<>();
 
-    private boolean bekreftetAvBruker;
-    private boolean bekreftetAvArbeidsgiver;
-    private boolean bekreftetAvVeileder;
+    private boolean godkjentAvDeltaker;
+    private boolean godkjentAvArbeidsgiver;
+    private boolean godkjentAvVeileder;
 
     @PersistenceConstructor
     public Avtale(Fnr deltakerFnr, Fnr arbeidsgiverFnr, NavIdent veilederNavIdent) {
         this.deltakerFnr = ikkeNull(deltakerFnr, "Deltakers fnr må være satt.");
         this.arbeidsgiverFnr = ikkeNull(arbeidsgiverFnr, "Arbeidsgivers fnr må være satt.");
         this.veilederNavIdent = ikkeNull(veilederNavIdent, "Veileders NAV-ident må være satt.");
-    }
-
-    public boolean erTilgjengeligFor(Person person) {
-        PersonIdentifikator id = person.getIdentifikator();
-
-        return id.equals(veilederNavIdent) ||
-                id.equals(deltakerFnr) ||
-                id.equals(arbeidsgiverFnr);
     }
 
     public static Avtale nyAvtale(OpprettAvtale opprettAvtale, NavIdent veilederNavIdent) {
@@ -80,7 +73,7 @@ public class Avtale {
     }
 
     public void endreAvtale(Integer versjon, Person personSomEndrer, EndreAvtale nyAvtale) {
-        sjekkRollenTil(personSomEndrer);
+        sjekkOmKanEndreAvtale(personSomEndrer);
         sjekkVersjon(versjon);
         inkrementerVersjonsnummer();
 
@@ -95,7 +88,6 @@ public class Avtale {
         setBedriftPostnummer(nyAvtale.getBedriftPostnummer());
         setBedriftPoststed(nyAvtale.getBedriftPoststed());
 
-        setArbeidsgiverFnr(nyAvtale.getArbeidsgiverFnr());
         setArbeidsgiverFornavn(nyAvtale.getArbeidsgiverFornavn());
         setArbeidsgiverEtternavn(nyAvtale.getArbeidsgiverEtternavn());
         setArbeidsgiverEpost(nyAvtale.getArbeidsgiverEpost());
@@ -114,15 +106,19 @@ public class Avtale {
 
         setMaal(nyAvtale.getMaal());
         setOppgaver(nyAvtale.getOppgaver());
-
-        setBekreftetAvBruker(nyAvtale.isBekreftetAvBruker());
-        setBekreftetAvArbeidsgiver(nyAvtale.isBekreftetAvArbeidsgiver());
-        setBekreftetAvVeileder(nyAvtale.isBekreftetAvVeileder());
     }
 
-    private void sjekkRollenTil(Person person) {
+    public boolean erTilgjengeligFor(Person person) {
+        PersonIdentifikator id = person.getIdentifikator();
+
+        return id.equals(veilederNavIdent) ||
+                id.equals(deltakerFnr) ||
+                id.equals(arbeidsgiverFnr);
+    }
+
+    private void sjekkOmKanEndreAvtale(Person person) {
         Rolle rolle = hentRollenTil(person);
-        if (rolle != Rolle.ARBEIDSGIVER && rolle != Rolle.VEILEDER) {
+        if (rolle != ARBEIDSGIVER && rolle != VEILEDER) {
             throw new TilgangskontrollException("Kun arbeidsgiver og veileder kan endre på avtalen.");
         }
     }
@@ -152,13 +148,33 @@ public class Avtale {
 
     public Rolle hentRollenTil(Person person) {
         if (person.getIdentifikator().equals(deltakerFnr)) {
-            return Rolle.DELTAKER;
+            return DELTAKER;
         } else if (person.getIdentifikator().equals(arbeidsgiverFnr)) {
-            return Rolle.ARBEIDSGIVER;
+            return ARBEIDSGIVER;
         } else if (person.getIdentifikator().equals(veilederNavIdent)) {
-            return Rolle.VEILEDER;
+            return VEILEDER;
         } else {
-            throw new TilgangskontrollException("Brukeren er ikke tilknyttet avtalen.");
+            return INGEN_ROLLE;
+        }
+    }
+
+    public void endreGodkjenning(Person personSomGodkjenner, boolean godkjent) {
+        Rolle rolle = hentRollenTil(personSomGodkjenner);
+        switch (rolle) {
+            case DELTAKER:
+                setGodkjentAvDeltaker(godkjent);
+                break;
+
+            case ARBEIDSGIVER:
+                setGodkjentAvArbeidsgiver(godkjent);
+                break;
+
+            case VEILEDER:
+                setGodkjentAvVeileder(godkjent);
+                break;
+
+            case INGEN_ROLLE:
+                throw new TilgangskontrollException("Brukeren er ikke tilknyttet avtalen.");
         }
     }
 }

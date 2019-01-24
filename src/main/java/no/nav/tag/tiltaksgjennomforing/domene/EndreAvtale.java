@@ -22,7 +22,6 @@ public class EndreAvtale {
     private String bedriftAdresse;
     private String bedriftPostnummer;
     private String bedriftPoststed;
-    private Fnr arbeidsgiverFnr;
     private String arbeidsgiverFornavn;
     private String arbeidsgiverEtternavn;
     private String arbeidsgiverEpost;
@@ -41,8 +40,4 @@ public class EndreAvtale {
 
     private List<Maal> maal = new ArrayList<>();
     private List<Oppgave> oppgaver = new ArrayList<>();
-
-    private boolean bekreftetAvBruker;
-    private boolean bekreftetAvArbeidsgiver;
-    private boolean bekreftetAvVeileder;
 }

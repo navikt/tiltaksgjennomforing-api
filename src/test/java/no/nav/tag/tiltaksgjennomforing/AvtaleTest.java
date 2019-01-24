@@ -5,6 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.domene.*;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 
+import static no.nav.tag.tiltaksgjennomforing.domene.Rolle.INGEN_ROLLE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AvtaleTest {
@@ -60,9 +61,9 @@ public class AvtaleTest {
             softly.assertThat(avtale.getStartDatoTidspunkt()).isNull();
             softly.assertThat(avtale.getArbeidstreningLengde()).isNull();
             softly.assertThat(avtale.getArbeidstreningStillingprosent()).isNull();
-            softly.assertThat(avtale.isBekreftetAvBruker()).isFalse();
-            softly.assertThat(avtale.isBekreftetAvArbeidsgiver()).isFalse();
-            softly.assertThat(avtale.isBekreftetAvVeileder()).isFalse();
+            softly.assertThat(avtale.isGodkjentAvDeltaker()).isFalse();
+            softly.assertThat(avtale.isGodkjentAvArbeidsgiver()).isFalse();
+            softly.assertThat(avtale.isGodkjentAvVeileder()).isFalse();
         });
     }
 
@@ -94,6 +95,56 @@ public class AvtaleTest {
     }
 
     @Test
+    public void endreAvtaleSkalOppdatereRiktigeFelt() {
+        Avtale avtale = TestData.enAvtale();
+        EndreAvtale endreAvtale = TestData.endringPaAlleFelt();
+        avtale.endreAvtale(avtale.getVersjon(), TestData.arbeidsgiver(avtale), endreAvtale);
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(avtale.getDeltakerFornavn()).isEqualTo(endreAvtale.getDeltakerFornavn());
+            softly.assertThat(avtale.getDeltakerEtternavn()).isEqualTo(endreAvtale.getDeltakerEtternavn());
+            softly.assertThat(avtale.getDeltakerAdresse()).isEqualTo(endreAvtale.getDeltakerAdresse());
+            softly.assertThat(avtale.getDeltakerPostnummer()).isEqualTo(endreAvtale.getDeltakerPostnummer());
+            softly.assertThat(avtale.getDeltakerPoststed()).isEqualTo(endreAvtale.getDeltakerPoststed());
+            softly.assertThat(avtale.getBedriftNavn()).isEqualTo(endreAvtale.getBedriftNavn());
+            softly.assertThat(avtale.getBedriftAdresse()).isEqualTo(endreAvtale.getBedriftAdresse());
+            softly.assertThat(avtale.getBedriftPostnummer()).isEqualTo(endreAvtale.getBedriftPostnummer());
+            softly.assertThat(avtale.getBedriftPoststed()).isEqualTo(endreAvtale.getBedriftPoststed());
+            softly.assertThat(avtale.getArbeidsgiverFornavn()).isEqualTo(endreAvtale.getArbeidsgiverFornavn());
+            softly.assertThat(avtale.getArbeidsgiverEtternavn()).isEqualTo(endreAvtale.getArbeidsgiverEtternavn());
+            softly.assertThat(avtale.getArbeidsgiverEpost()).isEqualTo(endreAvtale.getArbeidsgiverEpost());
+            softly.assertThat(avtale.getArbeidsgiverTlf()).isEqualTo(endreAvtale.getArbeidsgiverTlf());
+            softly.assertThat(avtale.getVeilederFornavn()).isEqualTo(endreAvtale.getVeilederFornavn());
+            softly.assertThat(avtale.getVeilederEtternavn()).isEqualTo(endreAvtale.getVeilederEtternavn());
+            softly.assertThat(avtale.getVeilederEpost()).isEqualTo(endreAvtale.getVeilederEpost());
+            softly.assertThat(avtale.getVeilederTlf()).isEqualTo(endreAvtale.getVeilederTlf());
+            softly.assertThat(avtale.getOppfolging()).isEqualTo(endreAvtale.getOppfolging());
+            softly.assertThat(avtale.getTilrettelegging()).isEqualTo(endreAvtale.getTilrettelegging());
+            softly.assertThat(avtale.getStartDatoTidspunkt()).isEqualTo(endreAvtale.getStartDatoTidspunkt());
+            softly.assertThat(avtale.getArbeidstreningLengde()).isEqualTo(endreAvtale.getArbeidstreningLengde());
+            softly.assertThat(avtale.getArbeidstreningStillingprosent()).isEqualTo(endreAvtale.getArbeidstreningStillingprosent());
+            softly.assertThat(avtale.getMaal()).isEqualTo(endreAvtale.getMaal());
+            softly.assertThat(avtale.getOppgaver()).isEqualTo(endreAvtale.getOppgaver());
+        });
+    }
+
+    @Test
+    public void endreAvtaleSkalIkkeEndreGodkjenninger() {
+        Avtale avtale = TestData.enAvtale();
+        boolean deltakerGodkjenningFoerEndring = avtale.isGodkjentAvDeltaker();
+        boolean arbeidsgiverGodkjenningFoerEndring = avtale.isGodkjentAvArbeidsgiver();
+        boolean veilederGodkjenningFoerEndring = avtale.isGodkjentAvVeileder();
+
+        avtale.endreAvtale(avtale.getVersjon(), TestData.arbeidsgiver(avtale), TestData.endringPaAlleFelt());
+
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(deltakerGodkjenningFoerEndring).isEqualTo(avtale.isGodkjentAvDeltaker());
+            softly.assertThat(arbeidsgiverGodkjenningFoerEndring).isEqualTo(avtale.isGodkjentAvArbeidsgiver());
+            softly.assertThat(veilederGodkjenningFoerEndring).isEqualTo(avtale.isGodkjentAvVeileder());
+        });
+    }
+
+    @Test
     public void endreAvtaleSkalInkrementereVersjon() {
         Avtale avtale = TestData.enAvtale();
         avtale.endreAvtale(avtale.getVersjon(), TestData.veileder(avtale), TestData.ingenEndring());
@@ -121,10 +172,12 @@ public class AvtaleTest {
         assertThat(avtale.hentRollenTil(veileder)).isEqualTo(Rolle.VEILEDER);
     }
 
-    @Test(expected = TilgangskontrollException.class)
+    @Test
     public void personUtenTilgangTilAvtaleSkalHaIngenRolle() {
         Avtale avtale = TestData.enAvtale();
-        avtale.hentRollenTil(TestData.deltakerUtenTilgang());
+        Rolle rolle = avtale.hentRollenTil(TestData.deltakerUtenTilgang());
+
+        assertThat(rolle).isEqualTo(INGEN_ROLLE);
     }
 
     @Test(expected = TilgangskontrollException.class)
@@ -143,5 +196,37 @@ public class AvtaleTest {
     public void veilederSkalKunneEndreAvtale() {
         Avtale avtale = TestData.enAvtale();
         avtale.endreAvtale(avtale.getVersjon(), TestData.veileder(avtale), TestData.ingenEndring());
+    }
+
+    @Test
+    public void deltakerSkalKunneEndreEgenGodkjenning() {
+        Avtale avtale = TestData.enAvtale();
+        Bruker deltaker = TestData.deltaker(avtale);
+        avtale.endreGodkjenning(deltaker, true);
+        assertThat(avtale.isGodkjentAvDeltaker()).isTrue();
+    }
+
+    @Test
+    public void arbeidsgiverSkalKunneEndreEgenGodkjenning() {
+        Avtale avtale = TestData.enAvtale();
+        Bruker arbeidsgiver = TestData.arbeidsgiver(avtale);
+        avtale.endreGodkjenning(arbeidsgiver, true);
+        assertThat(avtale.isGodkjentAvArbeidsgiver()).isTrue();
+    }
+
+    @Test
+    public void veilederSkalKunneEndreEgenGodkjenning() {
+        Avtale avtale = TestData.enAvtale();
+        Veileder veileder = TestData.veileder(avtale);
+        avtale.endreGodkjenning(veileder, true);
+        assertThat(avtale.isGodkjentAvVeileder()).isTrue();
+    }
+
+    @Test
+    public void skalIkkeKunneGodkjennePaVegneAvAndreEnnSegSelv() {
+        Avtale avtale = TestData.enAvtale();
+        Veileder veileder = TestData.veileder(avtale);
+        avtale.endreGodkjenning(veileder, true);
+        assertThat(avtale.isGodkjentAvDeltaker()).isFalse();
     }
 }

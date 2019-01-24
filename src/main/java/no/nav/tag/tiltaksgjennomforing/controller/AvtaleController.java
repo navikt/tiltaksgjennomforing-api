@@ -89,4 +89,13 @@ public class AvtaleController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
+
+    @PostMapping(value = "/{avtaleId}/godkjent")
+    public ResponseEntity endreGodkjenning(@PathVariable("avtaleId") UUID avtaleId, @RequestBody EndreGodkjenning endreGodkjenning) {
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(ResourceNotFoundException::new);
+        Person innloggetPerson = tilgangskontroll.hentInnloggetPerson();
+        innloggetPerson.endreGodkjenning(avtale, endreGodkjenning);
+        avtaleRepository.save(avtale);
+        return ResponseEntity.ok().build();
+    }
 }

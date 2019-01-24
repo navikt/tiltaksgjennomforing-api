@@ -34,9 +34,9 @@ CREATE TABLE avtale (
   arbeidstrening_lengde integer,
   arbeidstrening_stillingprosent integer,
 
-  bekreftet_av_bruker boolean,
-  bekreftet_av_arbeidsgiver boolean,
-  bekreftet_av_veileder boolean
+  godkjent_av_deltaker boolean,
+  godkjent_av_arbeidsgiver boolean,
+  godkjent_av_veileder boolean
 );
 
 CREATE TABLE maal (
