@@ -99,31 +99,33 @@ public class AvtaleTest {
         EndreAvtale endreAvtale = TestData.endringPaAlleFelt();
         avtale.endreAvtale(avtale.getVersjon(), TestData.arbeidsgiver(avtale), endreAvtale);
 
-        assertThat(avtale.getDeltakerFornavn()).isEqualTo(endreAvtale.getDeltakerFornavn());
-        assertThat(avtale.getDeltakerEtternavn()).isEqualTo(endreAvtale.getDeltakerEtternavn());
-        assertThat(avtale.getDeltakerAdresse()).isEqualTo(endreAvtale.getDeltakerAdresse());
-        assertThat(avtale.getDeltakerPostnummer()).isEqualTo(endreAvtale.getDeltakerPostnummer());
-        assertThat(avtale.getDeltakerPoststed()).isEqualTo(endreAvtale.getDeltakerPoststed());
-        assertThat(avtale.getBedriftNavn()).isEqualTo(endreAvtale.getBedriftNavn());
-        assertThat(avtale.getBedriftAdresse()).isEqualTo(endreAvtale.getBedriftAdresse());
-        assertThat(avtale.getBedriftPostnummer()).isEqualTo(endreAvtale.getBedriftPostnummer());
-        assertThat(avtale.getBedriftPoststed()).isEqualTo(endreAvtale.getBedriftPoststed());
-        assertThat(avtale.getArbeidsgiverFnr()).isEqualTo(endreAvtale.getArbeidsgiverFnr());
-        assertThat(avtale.getArbeidsgiverFornavn()).isEqualTo(endreAvtale.getArbeidsgiverFornavn());
-        assertThat(avtale.getArbeidsgiverEtternavn()).isEqualTo(endreAvtale.getArbeidsgiverEtternavn());
-        assertThat(avtale.getArbeidsgiverEpost()).isEqualTo(endreAvtale.getArbeidsgiverEpost());
-        assertThat(avtale.getArbeidsgiverTlf()).isEqualTo(endreAvtale.getArbeidsgiverTlf());
-        assertThat(avtale.getVeilederFornavn()).isEqualTo(endreAvtale.getVeilederFornavn());
-        assertThat(avtale.getVeilederEtternavn()).isEqualTo(endreAvtale.getVeilederEtternavn());
-        assertThat(avtale.getVeilederEpost()).isEqualTo(endreAvtale.getVeilederEpost());
-        assertThat(avtale.getVeilederTlf()).isEqualTo(endreAvtale.getVeilederTlf());
-        assertThat(avtale.getOppfolging()).isEqualTo(endreAvtale.getOppfolging());
-        assertThat(avtale.getTilrettelegging()).isEqualTo(endreAvtale.getTilrettelegging());
-        assertThat(avtale.getStartDatoTidspunkt()).isEqualTo(endreAvtale.getStartDatoTidspunkt());
-        assertThat(avtale.getArbeidstreningLengde()).isEqualTo(endreAvtale.getArbeidstreningLengde());
-        assertThat(avtale.getArbeidstreningStillingprosent()).isEqualTo(endreAvtale.getArbeidstreningStillingprosent());
-        assertThat(avtale.getMaal()).isEqualTo(endreAvtale.getMaal());
-        assertThat(avtale.getOppgaver()).isEqualTo(endreAvtale.getOppgaver());
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(avtale.getDeltakerFornavn()).isEqualTo(endreAvtale.getDeltakerFornavn());
+            softly.assertThat(avtale.getDeltakerEtternavn()).isEqualTo(endreAvtale.getDeltakerEtternavn());
+            softly.assertThat(avtale.getDeltakerAdresse()).isEqualTo(endreAvtale.getDeltakerAdresse());
+            softly.assertThat(avtale.getDeltakerPostnummer()).isEqualTo(endreAvtale.getDeltakerPostnummer());
+            softly.assertThat(avtale.getDeltakerPoststed()).isEqualTo(endreAvtale.getDeltakerPoststed());
+            softly.assertThat(avtale.getBedriftNavn()).isEqualTo(endreAvtale.getBedriftNavn());
+            softly.assertThat(avtale.getBedriftAdresse()).isEqualTo(endreAvtale.getBedriftAdresse());
+            softly.assertThat(avtale.getBedriftPostnummer()).isEqualTo(endreAvtale.getBedriftPostnummer());
+            softly.assertThat(avtale.getBedriftPoststed()).isEqualTo(endreAvtale.getBedriftPoststed());
+            softly.assertThat(avtale.getArbeidsgiverFnr()).isEqualTo(endreAvtale.getArbeidsgiverFnr());
+            softly.assertThat(avtale.getArbeidsgiverFornavn()).isEqualTo(endreAvtale.getArbeidsgiverFornavn());
+            softly.assertThat(avtale.getArbeidsgiverEtternavn()).isEqualTo(endreAvtale.getArbeidsgiverEtternavn());
+            softly.assertThat(avtale.getArbeidsgiverEpost()).isEqualTo(endreAvtale.getArbeidsgiverEpost());
+            softly.assertThat(avtale.getArbeidsgiverTlf()).isEqualTo(endreAvtale.getArbeidsgiverTlf());
+            softly.assertThat(avtale.getVeilederFornavn()).isEqualTo(endreAvtale.getVeilederFornavn());
+            softly.assertThat(avtale.getVeilederEtternavn()).isEqualTo(endreAvtale.getVeilederEtternavn());
+            softly.assertThat(avtale.getVeilederEpost()).isEqualTo(endreAvtale.getVeilederEpost());
+            softly.assertThat(avtale.getVeilederTlf()).isEqualTo(endreAvtale.getVeilederTlf());
+            softly.assertThat(avtale.getOppfolging()).isEqualTo(endreAvtale.getOppfolging());
+            softly.assertThat(avtale.getTilrettelegging()).isEqualTo(endreAvtale.getTilrettelegging());
+            softly.assertThat(avtale.getStartDatoTidspunkt()).isEqualTo(endreAvtale.getStartDatoTidspunkt());
+            softly.assertThat(avtale.getArbeidstreningLengde()).isEqualTo(endreAvtale.getArbeidstreningLengde());
+            softly.assertThat(avtale.getArbeidstreningStillingprosent()).isEqualTo(endreAvtale.getArbeidstreningStillingprosent());
+            softly.assertThat(avtale.getMaal()).isEqualTo(endreAvtale.getMaal());
+            softly.assertThat(avtale.getOppgaver()).isEqualTo(endreAvtale.getOppgaver());
+        });
     }
 
     @Test
@@ -135,9 +137,11 @@ public class AvtaleTest {
 
         avtale.endreAvtale(avtale.getVersjon(), TestData.arbeidsgiver(avtale), TestData.endringPaAlleFelt());
 
-        assertThat(deltakerGodkjenningFoerEndring).isEqualTo(avtale.isGodkjentAvDeltaker());
-        assertThat(arbeidsgiverGodkjenningFoerEndring).isEqualTo(avtale.isGodkjentAvArbeidsgiver());
-        assertThat(veilederGodkjenningFoerEndring).isEqualTo(avtale.isGodkjentAvVeileder());
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(deltakerGodkjenningFoerEndring).isEqualTo(avtale.isGodkjentAvDeltaker());
+            softly.assertThat(arbeidsgiverGodkjenningFoerEndring).isEqualTo(avtale.isGodkjentAvArbeidsgiver());
+            softly.assertThat(veilederGodkjenningFoerEndring).isEqualTo(avtale.isGodkjentAvVeileder());
+        });
     }
 
     @Test
