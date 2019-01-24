@@ -154,7 +154,7 @@ public class Avtale {
         } else if (person.getIdentifikator().equals(veilederNavIdent)) {
             return VEILEDER;
         } else {
-            throw new TilgangskontrollException("Brukeren er ikke tilknyttet avtalen.");
+            return INGEN_ROLLE;
         }
     }
 
@@ -172,6 +172,9 @@ public class Avtale {
             case VEILEDER:
                 setGodkjentAvVeileder(godkjent);
                 break;
+
+            case INGEN_ROLLE:
+                throw new TilgangskontrollException("Brukeren er ikke tilknyttet avtalen.");
         }
     }
 }

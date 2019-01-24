@@ -5,6 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.domene.*;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 
+import static no.nav.tag.tiltaksgjennomforing.domene.Rolle.INGEN_ROLLE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AvtaleTest {
@@ -171,10 +172,12 @@ public class AvtaleTest {
         assertThat(avtale.hentRollenTil(veileder)).isEqualTo(Rolle.VEILEDER);
     }
 
-    @Test(expected = TilgangskontrollException.class)
+    @Test
     public void personUtenTilgangTilAvtaleSkalHaIngenRolle() {
         Avtale avtale = TestData.enAvtale();
-        avtale.hentRollenTil(TestData.deltakerUtenTilgang());
+        Rolle rolle = avtale.hentRollenTil(TestData.deltakerUtenTilgang());
+
+        assertThat(rolle).isEqualTo(INGEN_ROLLE);
     }
 
     @Test(expected = TilgangskontrollException.class)
