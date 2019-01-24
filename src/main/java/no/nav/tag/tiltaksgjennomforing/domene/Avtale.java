@@ -158,30 +158,20 @@ public class Avtale {
         }
     }
 
-    public void endreGodkjenningDeltaker(Person personSomGodkjenner, boolean verdi) {
+    public void endreGodkjenning(Person personSomGodkjenner, boolean godkjent) {
         Rolle rolle = hentRollenTil(personSomGodkjenner);
-        if (rolle.equals(DELTAKER)) {
-            setGodkjentAvDeltaker(verdi);
-        } else {
-            throw new TilgangskontrollException("Kun deltaker kan godkjenne på vegne av seg selv.");
-        }
-    }
+        switch (rolle) {
+            case DELTAKER:
+                setGodkjentAvDeltaker(godkjent);
+                break;
 
-    public void endreGodkjenningArbeidsgiver(Person personSomGodkjenner, boolean verdi) {
-        Rolle rolle = hentRollenTil(personSomGodkjenner);
-        if (rolle.equals(ARBEIDSGIVER)) {
-            setGodkjentAvArbeidsgiver(verdi);
-        } else {
-            throw new TilgangskontrollException("Kun arbeidsgiver kan godkjenne på vegne av seg selv.");
-        }
-    }
+            case ARBEIDSGIVER:
+                setGodkjentAvArbeidsgiver(godkjent);
+                break;
 
-    public void endreGodkjenningVeileder(Person personSomGodkjenner, boolean verdi) {
-        Rolle rolle = hentRollenTil(personSomGodkjenner);
-        if (rolle.equals(VEILEDER)) {
-            setGodkjentAvVeileder(verdi);
-        } else {
-            throw new TilgangskontrollException("Kun veileder kan godkjenne på vegne av seg selv.");
+            case VEILEDER:
+                setGodkjentAvVeileder(godkjent);
+                break;
         }
     }
 }

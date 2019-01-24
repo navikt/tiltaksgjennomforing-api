@@ -90,29 +90,11 @@ public class AvtaleController {
         }
     }
 
-    @PostMapping(value = "/{avtaleId}/godkjentAvDeltaker")
-    public ResponseEntity endreGodkjenningDeltaker(@PathVariable("avtaleId") UUID avtaleId, @RequestBody EndreGodkjenning endreGodkjenning) {
+    @PostMapping(value = "/{avtaleId}/godkjent")
+    public ResponseEntity endreGodkjenning(@PathVariable("avtaleId") UUID avtaleId, @RequestBody EndreGodkjenning endreGodkjenning) {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(ResourceNotFoundException::new);
         Person innloggetPerson = tilgangskontroll.hentInnloggetPerson();
-        avtale.endreGodkjenningDeltaker(innloggetPerson, endreGodkjenning.getGodkjent());
-        avtaleRepository.save(avtale);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping(value = "/{avtaleId}/godkjentAvArbeidsgiver")
-    public ResponseEntity endreGodkjenningArbeidsgiver(@PathVariable("avtaleId") UUID avtaleId, @RequestBody EndreGodkjenning endreGodkjenning) {
-        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(ResourceNotFoundException::new);
-        Person innloggetPerson = tilgangskontroll.hentInnloggetPerson();
-        avtale.endreGodkjenningArbeidsgiver(innloggetPerson, endreGodkjenning.getGodkjent());
-        avtaleRepository.save(avtale);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping(value = "/{avtaleId}/godkjentAvVeileder")
-    public ResponseEntity endreGodkjenningVeileder(@PathVariable("avtaleId") UUID avtaleId, @RequestBody EndreGodkjenning endreGodkjenning) {
-        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(ResourceNotFoundException::new);
-        Person innloggetPerson = tilgangskontroll.hentInnloggetPerson();
-        avtale.endreGodkjenningVeileder(innloggetPerson, endreGodkjenning.getGodkjent());
+        innloggetPerson.endreGodkjenning(avtale, endreGodkjenning);
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();
     }

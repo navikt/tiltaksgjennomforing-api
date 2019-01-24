@@ -199,7 +199,7 @@ public class AvtaleTest {
     public void deltakerSkalKunneEndreEgenGodkjenning() {
         Avtale avtale = TestData.enAvtale();
         Bruker deltaker = TestData.deltaker(avtale);
-        avtale.endreGodkjenningDeltaker(deltaker, true);
+        avtale.endreGodkjenning(deltaker, true);
         assertThat(avtale.isGodkjentAvDeltaker()).isTrue();
     }
 
@@ -207,7 +207,7 @@ public class AvtaleTest {
     public void arbeidsgiverSkalKunneEndreEgenGodkjenning() {
         Avtale avtale = TestData.enAvtale();
         Bruker arbeidsgiver = TestData.arbeidsgiver(avtale);
-        avtale.endreGodkjenningArbeidsgiver(arbeidsgiver, true);
+        avtale.endreGodkjenning(arbeidsgiver, true);
         assertThat(avtale.isGodkjentAvArbeidsgiver()).isTrue();
     }
 
@@ -215,14 +215,15 @@ public class AvtaleTest {
     public void veilederSkalKunneEndreEgenGodkjenning() {
         Avtale avtale = TestData.enAvtale();
         Veileder veileder = TestData.veileder(avtale);
-        avtale.endreGodkjenningVeileder(veileder, true);
+        avtale.endreGodkjenning(veileder, true);
         assertThat(avtale.isGodkjentAvVeileder()).isTrue();
     }
 
-    @Test(expected = TilgangskontrollException.class)
+    @Test
     public void skalIkkeKunneGodkjennePaVegneAvAndreEnnSegSelv() {
         Avtale avtale = TestData.enAvtale();
         Veileder veileder = TestData.veileder(avtale);
-        avtale.endreGodkjenningDeltaker(veileder, true);
+        avtale.endreGodkjenning(veileder, true);
+        assertThat(avtale.isGodkjentAvDeltaker()).isFalse();
     }
 }
