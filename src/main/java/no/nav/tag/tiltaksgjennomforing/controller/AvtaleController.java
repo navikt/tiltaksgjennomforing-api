@@ -68,7 +68,7 @@ public class AvtaleController {
         InnloggetBruker innloggetBruker = tilgangskontroll.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         Avtalepart avtalepart = avtale.hentAvtalepart(innloggetBruker);
-        avtalepart.endreAvtale(avtale, versjon, endreAvtale);
+        avtalepart.endreAvtale(versjon, endreAvtale);
         Avtale lagretAvtale = avtaleRepository.save(avtale);
         return ResponseEntity.ok().header("eTag", lagretAvtale.getVersjon().toString()).build();
     }
@@ -86,7 +86,7 @@ public class AvtaleController {
         InnloggetBruker innloggetBruker = tilgangskontroll.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         Avtalepart avtalepart = avtale.hentAvtalepart(innloggetBruker);
-        avtalepart.endreGodkjenning(avtale, endreGodkjenning.getGodkjent());
+        avtalepart.endreGodkjenning(endreGodkjenning.getGodkjent());
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();
     }

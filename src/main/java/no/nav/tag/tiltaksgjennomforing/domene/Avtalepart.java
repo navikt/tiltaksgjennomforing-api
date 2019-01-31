@@ -8,14 +8,15 @@ import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollExcepti
 @Data
 public abstract class Avtalepart<T extends Identifikator> {
     private final T identifikator;
+    final Avtale avtale;
 
-    public abstract void endreGodkjenning(Avtale avtale, boolean godkjenning);
+    public abstract void endreGodkjenning(boolean godkjenning);
 
     public abstract boolean kanEndreAvtale();
 
     public abstract Rolle rolle();
 
-    public void endreAvtale(Avtale avtale, Integer versjon, EndreAvtale endreAvtale) {
+    public void endreAvtale(Integer versjon, EndreAvtale endreAvtale) {
         if (!kanEndreAvtale()) {
             throw new TilgangskontrollException("Kan ikke endre avtale.");
         }
@@ -23,6 +24,6 @@ public abstract class Avtalepart<T extends Identifikator> {
     }
 
     public enum Rolle {
-        DELTAKER, ARBEIDSGIVER, VEILEDER, INGEN_ROLLE
+        DELTAKER, ARBEIDSGIVER, VEILEDER
     }
 }

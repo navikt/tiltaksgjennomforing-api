@@ -1,12 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.domene;
 
 public class Arbeidsgiver extends Avtalepart<Fnr> {
-    public Arbeidsgiver(Fnr fnr) {
-        super(fnr);
+    public Arbeidsgiver(Fnr identifikator, Avtale avtale) {
+        super(identifikator, avtale);
     }
 
     @Override
-    public void endreGodkjenning(Avtale avtale, boolean godkjenning) {
+    public void endreGodkjenning(boolean godkjenning) {
         avtale.endreArbeidsgiversGodkjennelse(godkjenning);
     }
 

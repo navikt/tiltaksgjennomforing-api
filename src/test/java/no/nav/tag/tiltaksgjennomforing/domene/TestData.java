@@ -12,14 +12,14 @@ public class TestData {
         return Avtale.nyAvtale(lagOpprettAvtale(), veilderNavIdent);
     }
 
-    public static Avtale enAvtaleMedAltUtfylt() {
+    static Avtale enAvtaleMedAltUtfylt() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         Avtale avtale = Avtale.nyAvtale(lagOpprettAvtale(), veilderNavIdent);
         avtale.endreAvtale(avtale.getVersjon(), endringPaAlleFelt());
         return avtale;
     }
 
-    public static OpprettAvtale lagOpprettAvtale() {
+    private static OpprettAvtale lagOpprettAvtale() {
         Fnr deltakerFnr = new Fnr("88888899999");
         Fnr arbeidsgiverFnr = new Fnr("77777788888");
         return new OpprettAvtale(deltakerFnr, arbeidsgiverFnr);
@@ -29,7 +29,7 @@ public class TestData {
         return new EndreAvtale();
     }
 
-    public static EndreAvtale endringPaAlleFelt() {
+    static EndreAvtale endringPaAlleFelt() {
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setDeltakerFornavn("Fornavn");
         endreAvtale.setDeltakerEtternavn("Etternavn");
@@ -58,12 +58,12 @@ public class TestData {
         return endreAvtale;
     }
 
-    public static Deltaker enDeltaker() {
-        return new Deltaker(new Fnr("01234567890"));
+    static Deltaker enDeltaker() {
+        return new Deltaker(new Fnr("01234567890"), enAvtale());
     }
 
     public static Deltaker enDeltaker(Avtale avtale) {
-        return new Deltaker(avtale.getDeltakerFnr());
+        return new Deltaker(avtale.getDeltakerFnr(), avtale);
     }
 
     public static InnloggetSelvbetjeningBruker enSelvbetjeningBruker() {
@@ -75,19 +75,19 @@ public class TestData {
     }
 
     public static Arbeidsgiver enArbeidsgiver() {
-        return new Arbeidsgiver(new Fnr("12345678901"));
+        return new Arbeidsgiver(new Fnr("12345678901"), enAvtale());
     }
 
-    public static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
-        return new Arbeidsgiver(avtale.getArbeidsgiverFnr());
+    static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
+        return new Arbeidsgiver(avtale.getArbeidsgiverFnr(), avtale);
     }
 
     public static Veileder enVeileder() {
-        return new Veileder(new NavIdent("X123456"));
+        return new Veileder(new NavIdent("X123456"), enAvtale());
     }
 
     public static Veileder enVeileder(Avtale avtale) {
-        return new Veileder(avtale.getVeilederNavIdent());
+        return new Veileder(avtale.getVeilederNavIdent(), avtale);
     }
 
     public static Oppgave enOppgave() {

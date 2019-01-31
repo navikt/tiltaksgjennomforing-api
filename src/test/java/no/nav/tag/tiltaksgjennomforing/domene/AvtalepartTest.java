@@ -10,28 +10,28 @@ public class AvtalepartTest {
     public void endreAvtale__skal_feile_for_deltaker() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Deltaker deltaker = TestData.enDeltaker(avtale);
-        deltaker.endreAvtale(avtale, avtale.getVersjon(), TestData.ingenEndring());
+        deltaker.endreAvtale(avtale.getVersjon(), TestData.ingenEndring());
     }
 
     @Test
     public void endreAvtale__skal_fungere_for_arbeidsgiver() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.endreAvtale(avtale, avtale.getVersjon(), TestData.ingenEndring());
+        arbeidsgiver.endreAvtale(avtale.getVersjon(), TestData.ingenEndring());
     }
 
     @Test
-    public void endreAvtale__skal_fungere_for_veilder() {
+    public void endreAvtale__skal_fungere_for_veileder() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.endreAvtale(avtale, avtale.getVersjon(), TestData.ingenEndring());
+        veileder.endreAvtale(avtale.getVersjon(), TestData.ingenEndring());
     }
 
     @Test
     public void endreGodkjenning__skal_fungere_for_deltaker() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Deltaker deltaker = TestData.enDeltaker(avtale);
-        deltaker.endreGodkjenning(avtale, true);
+        deltaker.endreGodkjenning(true);
         assertThat(avtale.isGodkjentAvDeltaker()).isTrue();
         assertThat(avtale.isGodkjentAvArbeidsgiver()).isFalse();
         assertThat(avtale.isGodkjentAvVeileder()).isFalse();
@@ -41,7 +41,7 @@ public class AvtalepartTest {
     public void endreGodkjenning__skal_fungere_for_arbeidsgiver() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.endreGodkjenning(avtale, true);
+        arbeidsgiver.endreGodkjenning(true);
         assertThat(avtale.isGodkjentAvArbeidsgiver()).isTrue();
         assertThat(avtale.isGodkjentAvVeileder()).isFalse();
         assertThat(avtale.isGodkjentAvDeltaker()).isFalse();
@@ -51,7 +51,7 @@ public class AvtalepartTest {
     public void endreGodkjenning__skal_fungere_for_veileder() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.endreGodkjenning(avtale, true);
+        veileder.endreGodkjenning(true);
         assertThat(avtale.isGodkjentAvVeileder()).isTrue();
         assertThat(avtale.isGodkjentAvDeltaker()).isFalse();
         assertThat(avtale.isGodkjentAvArbeidsgiver()).isFalse();
@@ -62,7 +62,7 @@ public class AvtalepartTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setGodkjentAvVeileder(true);
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.endreGodkjenning(avtale, false);
+        veileder.endreGodkjenning(false);
         assertThat(avtale.isGodkjentAvVeileder()).isFalse();
     }
 }
