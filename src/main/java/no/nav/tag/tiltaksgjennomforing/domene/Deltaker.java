@@ -2,12 +2,12 @@ package no.nav.tag.tiltaksgjennomforing.domene;
 
 public class Deltaker extends Avtalepart<Fnr> {
 
-    public Deltaker(Fnr identifikator) {
-        super(identifikator);
+    public Deltaker(Fnr identifikator, Avtale avtale) {
+        super(identifikator, avtale);
     }
 
     @Override
-    public void endreGodkjenning(Avtale avtale, boolean godkjenning) {
+    public void endreGodkjenning(boolean godkjenning) {
         avtale.endreDeltakersGodkjennelse(godkjenning);
     }
 

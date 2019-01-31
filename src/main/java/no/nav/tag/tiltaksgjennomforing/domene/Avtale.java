@@ -149,11 +149,11 @@ public class Avtale {
     public Avtalepart hentAvtalepart(InnloggetBruker innloggetBruker) {
         Identifikator identifikator = innloggetBruker.getIdentifikator();
         if (identifikator.equals(deltakerFnr)) {
-            return new Deltaker((Fnr) identifikator);
+            return new Deltaker(deltakerFnr, this);
         } else if (identifikator.equals(arbeidsgiverFnr)) {
-            return new Arbeidsgiver((Fnr) identifikator);
+            return new Arbeidsgiver(arbeidsgiverFnr, this);
         } else if (identifikator.equals(veilederNavIdent)) {
-            return new Veileder((NavIdent) identifikator);
+            return new Veileder(veilederNavIdent, this);
         } else {
             throw new TilgangskontrollException("Er ikke part i avtalen");
         }
