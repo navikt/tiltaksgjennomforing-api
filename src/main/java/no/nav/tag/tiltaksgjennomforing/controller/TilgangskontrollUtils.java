@@ -1,9 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.controller;
 
 import com.nimbusds.jwt.JWTClaimsSet;
-import no.nav.security.oidc.context.OIDCClaims;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
-import no.nav.tag.tiltaksgjennomforing.domene.*;
+import no.nav.tag.tiltaksgjennomforing.domene.Fnr;
+import no.nav.tag.tiltaksgjennomforing.domene.NavIdent;
+import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
+import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
+import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
+import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,35 +15,36 @@ import java.util.Optional;
 
 @Component
 public class TilgangskontrollUtils {
-    private final OIDCRequestContextHolder contextHolder;
     public final static String ISSUER_ISSO = "isso";
     public final static String ISSUER_SELVBETJENING = "selvbetjening";
+
+    private final OIDCRequestContextHolder contextHolder;
 
     @Autowired
     public TilgangskontrollUtils(OIDCRequestContextHolder contextHolder) {
         this.contextHolder = contextHolder;
     }
 
-    public Person hentInnloggetPerson() {
-        if (innloggetPersonErVeileder()) {
-            return hentInnloggetVeileder();
-        } else if (innloggetPersonErBruker()) {
-            return hentInnloggetBruker();
+    public InnloggetBruker hentInnloggetBruker() {
+        if (erInnloggetNavAnsatt()) {
+            return hentInnloggetNavAnsatt();
+        } else if (erInnloggetSelvbetjeningBruker()) {
+            return hentInnloggetSelvbetjeningBruker();
         } else {
             throw new TilgangskontrollException("Bruker er ikke innlogget.");
         }
     }
 
-    private Bruker hentInnloggetBruker() {
+    InnloggetSelvbetjeningBruker hentInnloggetSelvbetjeningBruker() {
         String fnr = hentClaim(ISSUER_SELVBETJENING, "sub")
                 .orElseThrow(() -> new TilgangskontrollException("Finner ikke fodselsnummer til bruker."));
-        return new Bruker(fnr);
+        return new InnloggetSelvbetjeningBruker(new Fnr(fnr));
     }
 
-    public Veileder hentInnloggetVeileder() {
+    InnloggetNavAnsatt hentInnloggetNavAnsatt() {
         String navIdent = hentClaim(ISSUER_ISSO, "NAVident")
                 .orElseThrow(() -> new TilgangskontrollException("Innlogget bruker er ikke veileder."));
-        return new Veileder(navIdent);
+        return new InnloggetNavAnsatt(new NavIdent(navIdent));
     }
 
     private Optional<String> hentClaim(String issuer, String claim) {
@@ -48,26 +53,20 @@ public class TilgangskontrollUtils {
     }
 
     private Optional<JWTClaimsSet> hentClaimSet(String issuer) {
-        OIDCClaims claims = contextHolder
-                .getOIDCValidationContext()
-                .getClaims(issuer);
-
-        if (claims == null) {
-            return Optional.empty();
-        } else {
-            return Optional.of(claims.getClaimSet());
-        }
-
+        return Optional.ofNullable(contextHolder.getOIDCValidationContext().getClaims(issuer))
+                .map(claims -> claims.getClaimSet());
     }
 
-    private boolean innloggetPersonErVeileder() {
+    private boolean erInnloggetNavAnsatt() {
         return hentClaimSet(ISSUER_ISSO)
-                .map(jwtClaimsSet -> jwtClaimsSet.getClaims().containsKey("NAVident"))
+                .map(jwtClaimsSet -> (String) jwtClaimsSet.getClaims().get("NAVident"))
+                .map(navIdentString -> NavIdent.erGyldigNavIdent(navIdentString))
                 .orElse(false);
     }
 
-    private boolean innloggetPersonErBruker() {
-        Optional<Fnr> fnr = hentClaim(ISSUER_SELVBETJENING, "sub").map(fnrString -> new Fnr(fnrString));
-        return fnr.isPresent();
+    private boolean erInnloggetSelvbetjeningBruker() {
+        return hentClaim(ISSUER_SELVBETJENING, "sub")
+                .map(fnrString -> Fnr.erGyldigFnr(fnrString))
+                .orElse(false);
     }
 }

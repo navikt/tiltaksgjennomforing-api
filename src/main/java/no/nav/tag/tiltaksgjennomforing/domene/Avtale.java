@@ -1,8 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.domene;
 
 import lombok.Data;
-import no.nav.tag.tiltaksgjennomforing.TiltaksgjennomforingException;
-import no.nav.tag.tiltaksgjennomforing.controller.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
+import no.nav.tag.tiltaksgjennomforing.domene.exceptions.SamtidigeEndringerException;
+import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.relational.core.mapping.Column;
@@ -12,15 +14,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static no.nav.tag.tiltaksgjennomforing.Utils.ikkeNull;
-import static no.nav.tag.tiltaksgjennomforing.domene.Rolle.*;
+import static no.nav.tag.tiltaksgjennomforing.Utils.erIkkeNull;
+import static no.nav.tag.tiltaksgjennomforing.Utils.sjekkAtIkkeNull;
 
 @Data
 public class Avtale {
 
-    private LocalDateTime opprettetTidspunkt;
     private final Fnr deltakerFnr;
     private final NavIdent veilederNavIdent;
+    private final Fnr arbeidsgiverFnr;
+    private LocalDateTime opprettetTidspunkt;
     @Id
     private UUID id;
     private Integer versjon;
@@ -33,7 +36,6 @@ public class Avtale {
     private String bedriftAdresse;
     private String bedriftPostnummer;
     private String bedriftPoststed;
-    private final Fnr arbeidsgiverFnr;
     private String arbeidsgiverFornavn;
     private String arbeidsgiverEtternavn;
     private String arbeidsgiverEpost;
@@ -61,9 +63,9 @@ public class Avtale {
 
     @PersistenceConstructor
     public Avtale(Fnr deltakerFnr, Fnr arbeidsgiverFnr, NavIdent veilederNavIdent) {
-        this.deltakerFnr = ikkeNull(deltakerFnr, "Deltakers fnr må være satt.");
-        this.arbeidsgiverFnr = ikkeNull(arbeidsgiverFnr, "Arbeidsgivers fnr må være satt.");
-        this.veilederNavIdent = ikkeNull(veilederNavIdent, "Veileders NAV-ident må være satt.");
+        this.deltakerFnr = sjekkAtIkkeNull(deltakerFnr, "Deltakers fnr må være satt.");
+        this.arbeidsgiverFnr = sjekkAtIkkeNull(arbeidsgiverFnr, "Arbeidsgivers fnr må være satt.");
+        this.veilederNavIdent = sjekkAtIkkeNull(veilederNavIdent, "Veileders NAV-ident må være satt.");
     }
 
     public static Avtale nyAvtale(OpprettAvtale opprettAvtale, NavIdent veilederNavIdent) {
@@ -72,8 +74,7 @@ public class Avtale {
         return avtale;
     }
 
-    public void endreAvtale(Integer versjon, Person personSomEndrer, EndreAvtale nyAvtale) {
-        sjekkOmKanEndreAvtale(personSomEndrer);
+    public void endreAvtale(Integer versjon, EndreAvtale nyAvtale) {
         sjekkVersjon(versjon);
         inkrementerVersjonsnummer();
 
@@ -108,19 +109,18 @@ public class Avtale {
         setOppgaver(nyAvtale.getOppgaver());
     }
 
-    public boolean erTilgjengeligFor(Person person) {
-        PersonIdentifikator id = person.getIdentifikator();
+    public void sjekkLesetilgang(InnloggetBruker bruker) {
+        if (!harLesetilgang(bruker)) {
+            throw new TilgangskontrollException("Innlogget bruker har ikke lesetilgang til avtalen.");
+        }
+    }
+
+    public boolean harLesetilgang(InnloggetBruker bruker) {
+        Identifikator id = bruker.getIdentifikator();
 
         return id.equals(veilederNavIdent) ||
                 id.equals(deltakerFnr) ||
                 id.equals(arbeidsgiverFnr);
-    }
-
-    private void sjekkOmKanEndreAvtale(Person person) {
-        Rolle rolle = hentRollenTil(person);
-        if (rolle != ARBEIDSGIVER && rolle != VEILEDER) {
-            throw new TilgangskontrollException("Kun arbeidsgiver og veileder kan endre på avtalen.");
-        }
     }
 
     private void inkrementerVersjonsnummer() {
@@ -128,8 +128,8 @@ public class Avtale {
     }
 
     public void sjekkVersjon(Integer versjon) {
-        if (this.versjon != versjon) {
-            throw new TiltaksgjennomforingException("Avtalen kan ikke lagres, versjonen er utdatert.");
+        if (!this.versjon.equals(versjon)) {
+            throw new SamtidigeEndringerException("Noen andre har lagret avtalen.");
         }
     }
 
@@ -146,35 +146,67 @@ public class Avtale {
         this.getOppgaver().forEach(Oppgave::settIdOgOpprettetTidspunkt);
     }
 
-    public Rolle hentRollenTil(Person person) {
-        if (person.getIdentifikator().equals(deltakerFnr)) {
-            return DELTAKER;
-        } else if (person.getIdentifikator().equals(arbeidsgiverFnr)) {
-            return ARBEIDSGIVER;
-        } else if (person.getIdentifikator().equals(veilederNavIdent)) {
-            return VEILEDER;
+    public Avtalepart hentAvtalepart(InnloggetBruker innloggetBruker) {
+        Identifikator identifikator = innloggetBruker.getIdentifikator();
+        if (identifikator.equals(deltakerFnr)) {
+            return new Deltaker((Fnr) identifikator);
+        } else if (identifikator.equals(arbeidsgiverFnr)) {
+            return new Arbeidsgiver((Fnr) identifikator);
+        } else if (identifikator.equals(veilederNavIdent)) {
+            return new Veileder((NavIdent) identifikator);
         } else {
-            return INGEN_ROLLE;
+            throw new TilgangskontrollException("Er ikke part i avtalen");
         }
     }
 
-    public void endreGodkjenning(Person personSomGodkjenner, boolean godkjent) {
-        Rolle rolle = hentRollenTil(personSomGodkjenner);
-        switch (rolle) {
-            case DELTAKER:
-                setGodkjentAvDeltaker(godkjent);
-                break;
+    public void endreArbeidsgiversGodkjennelse(boolean godkjennelse) {
+        sjekkOmKanGodkjennes();
+        this.godkjentAvArbeidsgiver = godkjennelse;
+    }
 
-            case ARBEIDSGIVER:
-                setGodkjentAvArbeidsgiver(godkjent);
-                break;
+    public void endreVeiledersGodkjennelse(boolean godkjennelse) {
+        sjekkOmKanGodkjennes();
+        this.godkjentAvVeileder = godkjennelse;
+    }
 
-            case VEILEDER:
-                setGodkjentAvVeileder(godkjent);
-                break;
+    public void endreDeltakersGodkjennelse(boolean godkjennelse) {
+        sjekkOmKanGodkjennes();
+        this.godkjentAvDeltaker = godkjennelse;
+    }
 
-            case INGEN_ROLLE:
-                throw new TilgangskontrollException("Brukeren er ikke tilknyttet avtalen.");
+    public void sjekkOmKanGodkjennes() {
+        if (!heleAvtalenErFyltUt()) {
+            throw new TiltaksgjennomforingException("Alt må være utfylt før avtalen kan godkjennes.");
         }
+    }
+
+    private boolean heleAvtalenErFyltUt() {
+        return erIkkeNull(deltakerFnr,
+                veilederNavIdent,
+                arbeidsgiverFnr,
+                deltakerFornavn,
+                deltakerEtternavn,
+                deltakerAdresse,
+                deltakerPostnummer,
+                deltakerPoststed,
+                bedriftNavn,
+                bedriftAdresse,
+                bedriftPostnummer,
+                bedriftPoststed,
+                arbeidsgiverFornavn,
+                arbeidsgiverEtternavn,
+                arbeidsgiverEpost,
+                arbeidsgiverTlf,
+                veilederFornavn,
+                veilederEtternavn,
+                veilederEpost,
+                veilederTlf,
+                oppfolging,
+                tilrettelegging,
+                startDatoTidspunkt,
+                arbeidstreningLengde,
+                arbeidstreningStillingprosent
+        )
+                && !oppgaver.isEmpty() && !maal.isEmpty();
     }
 }

@@ -1,29 +1,30 @@
-package no.nav.tag.tiltaksgjennomforing;
+package no.nav.tag.tiltaksgjennomforing.domene;
 
-import no.nav.tag.tiltaksgjennomforing.controller.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.domene.*;
+import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
+import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
+import no.nav.tag.tiltaksgjennomforing.domene.exceptions.SamtidigeEndringerException;
+import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 
-import static no.nav.tag.tiltaksgjennomforing.domene.Rolle.INGEN_ROLLE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AvtaleTest {
 
     @Test
     public void kunParteneIAvtalenSkalHaTilgang() {
-        Bruker deltaker = TestData.deltaker();
-        Bruker arbeidsgiver = TestData.arbeidsgiver();
-        Veileder veileder = TestData.veileder();
+        Deltaker deltaker = TestData.enDeltaker();
+        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver();
+        Veileder veileder = TestData.enVeileder();
 
-        Avtale avtale = Avtale.nyAvtale(new OpprettAvtale(deltaker.getFnr(), arbeidsgiver.getFnr()), veileder.getNavIdent());
+        Avtale avtale = Avtale.nyAvtale(new OpprettAvtale(deltaker.getIdentifikator(), arbeidsgiver.getIdentifikator()), veileder.getIdentifikator());
 
         SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(avtale.erTilgjengeligFor(arbeidsgiver)).isTrue();
-            softly.assertThat(avtale.erTilgjengeligFor(deltaker)).isTrue();
-            softly.assertThat(avtale.erTilgjengeligFor(veileder)).isTrue();
-            softly.assertThat(avtale.erTilgjengeligFor(TestData.deltakerUtenTilgang())).isFalse();
-            softly.assertThat(avtale.erTilgjengeligFor(TestData.veilederUtenTilgang())).isFalse();
+            softly.assertThat(avtale.harLesetilgang(TestData.innloggetSelvbetjeningBruker(arbeidsgiver))).isTrue();
+            softly.assertThat(avtale.harLesetilgang(TestData.innloggetSelvbetjeningBruker(deltaker))).isTrue();
+            softly.assertThat(avtale.harLesetilgang(TestData.innloggetNavAnsatt(veileder))).isTrue();
+            softly.assertThat(avtale.harLesetilgang(TestData.enSelvbetjeningBruker())).isFalse();
+            softly.assertThat(avtale.harLesetilgang(TestData.enNavAnsatt())).isFalse();
         });
     }
 
@@ -82,7 +83,7 @@ public class AvtaleTest {
         Avtale.nyAvtale(new OpprettAvtale(new Fnr("11223344555"), new Fnr("12345678901")), null);
     }
 
-    @Test(expected = TiltaksgjennomforingException.class)
+    @Test(expected = SamtidigeEndringerException.class)
     public void sjekkVersjonMedUgyldigVersjon() {
         Avtale avtale = TestData.enAvtale();
         avtale.sjekkVersjon(-1);
@@ -98,7 +99,7 @@ public class AvtaleTest {
     public void endreAvtaleSkalOppdatereRiktigeFelt() {
         Avtale avtale = TestData.enAvtale();
         EndreAvtale endreAvtale = TestData.endringPaAlleFelt();
-        avtale.endreAvtale(avtale.getVersjon(), TestData.arbeidsgiver(avtale), endreAvtale);
+        avtale.endreAvtale(avtale.getVersjon(), endreAvtale);
 
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(avtale.getDeltakerFornavn()).isEqualTo(endreAvtale.getDeltakerFornavn());
@@ -135,7 +136,7 @@ public class AvtaleTest {
         boolean arbeidsgiverGodkjenningFoerEndring = avtale.isGodkjentAvArbeidsgiver();
         boolean veilederGodkjenningFoerEndring = avtale.isGodkjentAvVeileder();
 
-        avtale.endreAvtale(avtale.getVersjon(), TestData.arbeidsgiver(avtale), TestData.endringPaAlleFelt());
+        avtale.endreAvtale(avtale.getVersjon(), TestData.endringPaAlleFelt());
 
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(deltakerGodkjenningFoerEndring).isEqualTo(avtale.isGodkjentAvDeltaker());
@@ -147,86 +148,40 @@ public class AvtaleTest {
     @Test
     public void endreAvtaleSkalInkrementereVersjon() {
         Avtale avtale = TestData.enAvtale();
-        avtale.endreAvtale(avtale.getVersjon(), TestData.veileder(avtale), TestData.ingenEndring());
+        avtale.endreAvtale(avtale.getVersjon(), TestData.ingenEndring());
         assertThat(avtale.getVersjon()).isEqualTo(2);
     }
 
     @Test
     public void deltakerKnyttetTilAvtaleSkalHaDeltakerRolle() {
         Avtale avtale = TestData.enAvtale();
-        Bruker deltaker = TestData.deltaker(avtale);
-        assertThat(avtale.hentRollenTil(deltaker)).isEqualTo(Rolle.DELTAKER);
+        InnloggetSelvbetjeningBruker selvbetjeningBruker = TestData.innloggetSelvbetjeningBruker(TestData.enDeltaker(avtale));
+        assertThat(avtale.hentAvtalepart(selvbetjeningBruker)).isInstanceOf(Deltaker.class);
     }
 
     @Test
     public void arbeidsgiverKnyttetTilAvtaleSkalHaArbeidsgiverRolle() {
         Avtale avtale = TestData.enAvtale();
-        Bruker arbeidsgiver = TestData.arbeidsgiver(avtale);
-        assertThat(avtale.hentRollenTil(arbeidsgiver)).isEqualTo(Rolle.ARBEIDSGIVER);
+        InnloggetSelvbetjeningBruker selvbetjeningBruker = TestData.innloggetSelvbetjeningBruker(TestData.enArbeidsgiver(avtale));
+        assertThat(avtale.hentAvtalepart(selvbetjeningBruker)).isInstanceOf(Arbeidsgiver.class);
     }
 
     @Test
     public void veilederKnyttetTilAvtaleSkalHaVeilederRolle() {
         Avtale avtale = TestData.enAvtale();
-        Veileder veileder = TestData.veileder(avtale);
-        assertThat(avtale.hentRollenTil(veileder)).isEqualTo(Rolle.VEILEDER);
+        InnloggetNavAnsatt navAnsatt = TestData.innloggetNavAnsatt(TestData.enVeileder(avtale));
+        assertThat(avtale.hentAvtalepart(navAnsatt)).isInstanceOf(Veileder.class);
+    }
+
+    @Test(expected = TiltaksgjennomforingException.class)
+    public void kanIkkeGodkjennesNaarIkkeAltErUtfylt() {
+        Avtale avtale = TestData.enAvtale();
+        avtale.sjekkOmKanGodkjennes();
     }
 
     @Test
-    public void personUtenTilgangTilAvtaleSkalHaIngenRolle() {
-        Avtale avtale = TestData.enAvtale();
-        Rolle rolle = avtale.hentRollenTil(TestData.deltakerUtenTilgang());
-
-        assertThat(rolle).isEqualTo(INGEN_ROLLE);
-    }
-
-    @Test(expected = TilgangskontrollException.class)
-    public void endreAvtaleSkalKasteTilgangskontrollExceptionHvisPersonSomEndrerErDeltaker() {
-        Avtale avtale = TestData.enAvtale();
-        avtale.endreAvtale(avtale.getVersjon(), TestData.deltaker(avtale), TestData.ingenEndring());
-    }
-
-    @Test
-    public void arbeidsgiverSkalKunneEndreAvtale() {
-        Avtale avtale = TestData.enAvtale();
-        avtale.endreAvtale(avtale.getVersjon(), TestData.arbeidsgiver(avtale), TestData.ingenEndring());
-    }
-
-    @Test
-    public void veilederSkalKunneEndreAvtale() {
-        Avtale avtale = TestData.enAvtale();
-        avtale.endreAvtale(avtale.getVersjon(), TestData.veileder(avtale), TestData.ingenEndring());
-    }
-
-    @Test
-    public void deltakerSkalKunneEndreEgenGodkjenning() {
-        Avtale avtale = TestData.enAvtale();
-        Bruker deltaker = TestData.deltaker(avtale);
-        avtale.endreGodkjenning(deltaker, true);
-        assertThat(avtale.isGodkjentAvDeltaker()).isTrue();
-    }
-
-    @Test
-    public void arbeidsgiverSkalKunneEndreEgenGodkjenning() {
-        Avtale avtale = TestData.enAvtale();
-        Bruker arbeidsgiver = TestData.arbeidsgiver(avtale);
-        avtale.endreGodkjenning(arbeidsgiver, true);
-        assertThat(avtale.isGodkjentAvArbeidsgiver()).isTrue();
-    }
-
-    @Test
-    public void veilederSkalKunneEndreEgenGodkjenning() {
-        Avtale avtale = TestData.enAvtale();
-        Veileder veileder = TestData.veileder(avtale);
-        avtale.endreGodkjenning(veileder, true);
-        assertThat(avtale.isGodkjentAvVeileder()).isTrue();
-    }
-
-    @Test
-    public void skalIkkeKunneGodkjennePaVegneAvAndreEnnSegSelv() {
-        Avtale avtale = TestData.enAvtale();
-        Veileder veileder = TestData.veileder(avtale);
-        avtale.endreGodkjenning(veileder, true);
-        assertThat(avtale.isGodkjentAvDeltaker()).isFalse();
+    public void kanGodkjennesNaarAltErUtfylt() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.sjekkOmKanGodkjennes();
     }
 }

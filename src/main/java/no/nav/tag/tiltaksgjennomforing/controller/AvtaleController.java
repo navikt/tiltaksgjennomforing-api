@@ -3,8 +3,9 @@ package no.nav.tag.tiltaksgjennomforing.controller;
 import no.nav.security.oidc.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.domene.*;
+import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
+import no.nav.tag.tiltaksgjennomforing.domene.exceptions.RessursFinnesIkkeException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -34,21 +35,18 @@ public class AvtaleController {
     @GetMapping("/{id}")
     public ResponseEntity<Avtale> hent(@PathVariable("id") UUID id) {
         Avtale avtale = avtaleRepository.findById(id)
-                .orElseThrow(ResourceNotFoundException::new);
-
-        if (avtale.erTilgjengeligFor(tilgangskontroll.hentInnloggetPerson())) {
-            return ResponseEntity.ok(avtale);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+                .orElseThrow(RessursFinnesIkkeException::new);
+        InnloggetBruker innloggetBruker = tilgangskontroll.hentInnloggetBruker();
+        avtale.sjekkLesetilgang(innloggetBruker);
+        return ResponseEntity.ok(avtale);
     }
 
     @GetMapping
     public Iterable<Avtale> hentAlleAvtalerInnloggetBrukerHarTilgangTil() {
-        Person bruker = tilgangskontroll.hentInnloggetPerson();
+        InnloggetBruker bruker = tilgangskontroll.hentInnloggetBruker();
         List<Avtale> avtaler = new ArrayList<>();
         for (Avtale avtale : avtaleRepository.findAll()) {
-            if (avtale.erTilgjengeligFor(bruker)) {
+            if (avtale.harLesetilgang(bruker)) {
                 avtaler.add(avtale);
             }
         }
@@ -57,7 +55,7 @@ public class AvtaleController {
 
     @PostMapping
     public ResponseEntity opprettAvtale(@RequestBody OpprettAvtale opprettAvtale) {
-        Avtale avtale = tilgangskontroll.hentInnloggetVeileder().opprettAvtale(opprettAvtale);
+        Avtale avtale = tilgangskontroll.hentInnloggetNavAnsatt().opprettAvtale(opprettAvtale);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
@@ -67,34 +65,28 @@ public class AvtaleController {
     public ResponseEntity endreAvtale(@PathVariable("avtaleId") UUID avtaleId,
                                       @RequestHeader("If-Match") Integer versjon,
                                       @RequestBody EndreAvtale endreAvtale) {
-        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(ResourceNotFoundException::new);
-        Person innloggetPerson = tilgangskontroll.hentInnloggetPerson();
-
-        if (avtale.erTilgjengeligFor(innloggetPerson)) {
-            avtale.endreAvtale(versjon, innloggetPerson, endreAvtale);
-            Avtale lagretAvtale = avtaleRepository.save(avtale);
-            return ResponseEntity.ok().header("eTag", lagretAvtale.getVersjon().toString()).build();
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        InnloggetBruker innloggetBruker = tilgangskontroll.hentInnloggetBruker();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        Avtalepart avtalepart = avtale.hentAvtalepart(innloggetBruker);
+        avtalepart.endreAvtale(avtale, versjon, endreAvtale);
+        Avtale lagretAvtale = avtaleRepository.save(avtale);
+        return ResponseEntity.ok().header("eTag", lagretAvtale.getVersjon().toString()).build();
     }
 
     @GetMapping(value = "/{avtaleId}/rolle")
-    public ResponseEntity<Rolle> hentRolle(@PathVariable("avtaleId") UUID avtaleId) {
-        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(ResourceNotFoundException::new);
-        Person person = tilgangskontroll.hentInnloggetPerson();
-        if (avtale.erTilgjengeligFor(person)) {
-            return ResponseEntity.ok(avtale.hentRollenTil(person));
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+    public ResponseEntity<Avtalepart.Rolle> hentRolle(@PathVariable("avtaleId") UUID avtaleId) {
+        InnloggetBruker innloggetBruker = tilgangskontroll.hentInnloggetBruker();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        Avtalepart avtalepart = avtale.hentAvtalepart(innloggetBruker);
+        return ResponseEntity.ok(avtalepart.rolle());
     }
 
     @PostMapping(value = "/{avtaleId}/godkjent")
     public ResponseEntity endreGodkjenning(@PathVariable("avtaleId") UUID avtaleId, @RequestBody EndreGodkjenning endreGodkjenning) {
-        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(ResourceNotFoundException::new);
-        Person innloggetPerson = tilgangskontroll.hentInnloggetPerson();
-        innloggetPerson.endreGodkjenning(avtale, endreGodkjenning);
+        InnloggetBruker innloggetBruker = tilgangskontroll.hentInnloggetBruker();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        Avtalepart avtalepart = avtale.hentAvtalepart(innloggetBruker);
+        avtalepart.endreGodkjenning(avtale, endreGodkjenning.getGodkjent());
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();
     }
