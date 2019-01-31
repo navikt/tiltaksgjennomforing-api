@@ -1,9 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing;
 
-import no.nav.tag.tiltaksgjennomforing.domene.Avtale;
-import no.nav.tag.tiltaksgjennomforing.domene.EndreAvtale;
-import no.nav.tag.tiltaksgjennomforing.domene.Maal;
-import no.nav.tag.tiltaksgjennomforing.domene.Oppgave;
+import no.nav.tag.tiltaksgjennomforing.domene.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +36,7 @@ public class AvtaleRepositoryTest {
         EndreAvtale endreAvtale = new EndreAvtale();
         Maal maal = TestData.etMaal();
         endreAvtale.setMaal(List.of(maal));
-        lagretAvtale.endreAvtale(1, TestData.veileder(), endreAvtale);
+        lagretAvtale.endreAvtale(1, endreAvtale);
         avtaleRepository.save(lagretAvtale);
 
         // Lage ny avtale
@@ -49,7 +46,7 @@ public class AvtaleRepositoryTest {
         EndreAvtale endreAvtale2 = new EndreAvtale();
         Maal maal2 = TestData.etMaal();
         endreAvtale2.setMaal(List.of(maal2));
-        lagretAvtale2.endreAvtale(1, TestData.veileder(), endreAvtale2);
+        lagretAvtale2.endreAvtale(1, endreAvtale2);
         avtaleRepository.save(lagretAvtale2);
     }
 
@@ -62,7 +59,7 @@ public class AvtaleRepositoryTest {
         EndreAvtale endreAvtale = new EndreAvtale();
         Oppgave oppgave = TestData.enOppgave();
         endreAvtale.setOppgaver(List.of(oppgave));
-        lagretAvtale.endreAvtale(1, TestData.veileder(), endreAvtale);
+        lagretAvtale.endreAvtale(1, endreAvtale);
         avtaleRepository.save(lagretAvtale);
 
         // Lage ny avtale
@@ -72,7 +69,7 @@ public class AvtaleRepositoryTest {
         EndreAvtale endreAvtale2 = new EndreAvtale();
         Oppgave oppgave2 = TestData.enOppgave();
         endreAvtale2.setOppgaver(List.of(oppgave2));
-        lagretAvtale2.endreAvtale(1, TestData.veileder(), endreAvtale2);
+        lagretAvtale2.endreAvtale(1, endreAvtale2);
         avtaleRepository.save(lagretAvtale2);
     }
 }

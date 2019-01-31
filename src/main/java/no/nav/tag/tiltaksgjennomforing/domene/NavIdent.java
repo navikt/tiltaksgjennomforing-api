@@ -2,10 +2,10 @@ package no.nav.tag.tiltaksgjennomforing.domene;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Value;
-import no.nav.tag.tiltaksgjennomforing.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
 
 @Value
-public class NavIdent extends PersonIdentifikator {
+public class NavIdent implements Identifikator {
     private final String id;
 
     public NavIdent(String id) {
@@ -15,12 +15,13 @@ public class NavIdent extends PersonIdentifikator {
         this.id = id;
     }
 
-    private static boolean erGyldigNavIdent(String id) {
+    public static boolean erGyldigNavIdent(String id) {
         return true;
     }
 
     @JsonValue
-    public String getId() {
+    @Override
+    public String asString() {
         return id;
     }
 }

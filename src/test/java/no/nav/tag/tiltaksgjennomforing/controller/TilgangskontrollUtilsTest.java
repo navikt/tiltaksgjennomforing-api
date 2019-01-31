@@ -4,8 +4,10 @@ import no.nav.security.oidc.context.OIDCClaims;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.security.oidc.context.OIDCValidationContext;
 import no.nav.security.oidc.context.TokenContext;
-import no.nav.tag.tiltaksgjennomforing.TestData;
-import no.nav.tag.tiltaksgjennomforing.domene.*;
+import no.nav.tag.tiltaksgjennomforing.domene.TestData;
+import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
+import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
+import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -30,51 +32,57 @@ public class TilgangskontrollUtilsTest {
     private OIDCRequestContextHolder contextHolder;
 
     @Test
-    public void skalHenteInnloggetBrukerFraToken() {
-        Bruker bruker = TestData.deltaker();
-        vaerInnloggetSom(bruker);
-        assertThat(tilgangskontroll.hentInnloggetPerson()).isEqualTo(bruker);
+    public void hentInnloggetBruker__er_selvbetjeningbruker() {
+        InnloggetSelvbetjeningBruker selvbetjeningBruker = TestData.enSelvbetjeningBruker();
+        vaerInnloggetSelvbetjening(selvbetjeningBruker);
+        assertThat(tilgangskontroll.hentInnloggetBruker()).isEqualTo(selvbetjeningBruker);
     }
 
     @Test
-    public void skalHenteInnloggetVeilederFraToken() {
-        Veileder veileder = TestData.veileder();
-        vaerInnloggetSom(veileder);
-        assertThat(tilgangskontroll.hentInnloggetPerson()).isEqualTo(veileder);
+    public void hentInnloggetBruker__er_nav_ansatt() {
+        InnloggetNavAnsatt navAnsatt = TestData.enNavAnsatt();
+        vaerInnloggetNavAnsatt(navAnsatt);
+        assertThat(tilgangskontroll.hentInnloggetBruker()).isEqualTo(navAnsatt);
     }
 
     @Test(expected = TilgangskontrollException.class)
-    public void hentInnloggetVeilederSkalFeileHvisInnloggetBrukerIkkeErVeileder() {
-        vaerInnloggetSom(TestData.deltaker());
-        tilgangskontroll.hentInnloggetVeileder();
+    public void hentInnloggetSelvbetjeningBruker__er_nav_ansatt() {
+        vaerInnloggetNavAnsatt(TestData.enNavAnsatt());
+        tilgangskontroll.hentInnloggetSelvbetjeningBruker();
     }
 
 
-    private void vaerInnloggetSom(Bruker bruker) {
-        vaerInnloggetSom(TilgangskontrollUtils.ISSUER_SELVBETJENING, bruker.getFnr().getFnr(), new HashMap<>(), "aud-selvbetjening");
+    @Test(expected = TilgangskontrollException.class)
+    public void hentInnloggetNavAnsatt__er_selvbetjeningbruker() {
+        vaerInnloggetSelvbetjening(TestData.enSelvbetjeningBruker());
+        tilgangskontroll.hentInnloggetNavAnsatt();
     }
 
-    private void vaerInnloggetSom(Veileder veileder) {
-        vaerInnloggetSom(TilgangskontrollUtils.ISSUER_ISSO, "blablabla", Collections.singletonMap("NAVident", veileder.getNavIdent().getId()), "aud-isso");
+    @Test(expected = TilgangskontrollException.class)
+    public void hentInnloggetBruker__er_uinnlogget() {
+        vaerUinnlogget();
+        tilgangskontroll.hentInnloggetBruker();
     }
 
-    private void vaerInnloggetSom(String issuer, String subject, Map<String, Object> claims, String audience) {
+    private void vaerUinnlogget() {
+        OIDCValidationContext context = new OIDCValidationContext();
+        when(contextHolder.getOIDCValidationContext()).thenReturn(context);
+    }
+
+    private void vaerInnloggetSelvbetjening(InnloggetSelvbetjeningBruker bruker) {
+        vaerInnloggetNavAnsatt(TilgangskontrollUtils.ISSUER_SELVBETJENING, bruker.getIdentifikator().asString(), new HashMap<>(), "aud-selvbetjening");
+    }
+
+    private void vaerInnloggetNavAnsatt(InnloggetNavAnsatt innloggetBruker) {
+        vaerInnloggetNavAnsatt(TilgangskontrollUtils.ISSUER_ISSO, "blablabla", Collections.singletonMap("NAVident", innloggetBruker.getIdentifikator().asString()), "aud-isso");
+    }
+
+    private void vaerInnloggetNavAnsatt(String issuer, String subject, Map<String, Object> claims, String audience) {
         OIDCValidationContext context = new OIDCValidationContext();
         TokenContext tokenContext = new TokenContext(issuer, "");
         OIDCClaims oidcClaims = new OIDCClaims(createSignedJWT(subject, 0, claims, issuer, audience));
         context.addValidatedToken(issuer, tokenContext, oidcClaims);
 
-        when(contextHolder.getOIDCValidationContext()).thenReturn(context);
-    }
-
-    @Test(expected = TilgangskontrollException.class)
-    public void hentInnloggetPersonSkalKasteTilgangskontrollExceptionHvisIkkeInnlogget() {
-        vaerUinnlogget();
-        tilgangskontroll.hentInnloggetPerson();
-    }
-
-    private void vaerUinnlogget() {
-        OIDCValidationContext context = new OIDCValidationContext();
         when(contextHolder.getOIDCValidationContext()).thenReturn(context);
     }
 }
