@@ -6,7 +6,7 @@ metadata:
   labels:
     team: teamtag
 spec:
-  image: navikt/tiltaksgjennomforing-backend:latest
+  image: navikt/tiltaksgjennomforing-api:latest
   team: teamtag
   port: 8080
   secrets: true
