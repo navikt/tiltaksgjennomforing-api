@@ -128,7 +128,7 @@ public class Avtale {
     }
 
     public void sjekkVersjon(Integer versjon) {
-        if (!this.versjon.equals(versjon)) {
+        if (versjon == null || !versjon.equals(this.versjon)) {
             throw new SamtidigeEndringerException("Noen andre har lagret avtalen.");
         }
     }
