@@ -84,13 +84,19 @@ public class AvtaleTest {
     }
 
     @Test(expected = SamtidigeEndringerException.class)
-    public void sjekkVersjonMedUgyldigVersjon() {
+    public void sjekkVersjon__ugyldig_versjon() {
         Avtale avtale = TestData.enAvtale();
         avtale.sjekkVersjon(-1);
     }
 
+    @Test(expected = SamtidigeEndringerException.class)
+    public void sjekkVersjon__null() {
+        Avtale avtale = TestData.enAvtale();
+        avtale.sjekkVersjon(null);
+    }
+
     @Test
-    public void sjekkVersjonMedGyldigVersjon() {
+    public void sjekkVersjon__gyldig_versjon() {
         Avtale avtale = TestData.enAvtale();
         avtale.sjekkVersjon(avtale.getVersjon());
     }
