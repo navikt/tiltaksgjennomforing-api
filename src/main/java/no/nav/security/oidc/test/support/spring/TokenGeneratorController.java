@@ -50,11 +50,11 @@ public class TokenGeneratorController {
 
     @Unprotected
     @GetMapping("/selvbetjening-cookie")
-    public Cookie addCookie(@RequestParam(value = "subject", defaultValue = "01234567890") String subject,
-                            @RequestParam(value = "cookiename", defaultValue = "selvbetjening-idtoken") String cookieName,
-                            @RequestParam(value = "redirect", required = false) String redirect,
-                            @RequestParam(value = "expiry", required = false) String expiry,
-                            HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public Cookie addSelvbetjeningCookie(@RequestParam(value = "subject", defaultValue = "01234567890") String subject,
+                                         @RequestParam(value = "cookiename", defaultValue = "selvbetjening-idtoken") String cookieName,
+                                         @RequestParam(value = "redirect", required = false) String redirect,
+                                         @RequestParam(value = "expiry", required = false) String expiry,
+                                         HttpServletRequest request, HttpServletResponse response) throws IOException {
         return bakeCookie(subject, cookieName, redirect, expiry, request, response, new HashMap<>(), "selvbetjening", "aud-selvbetjening");
     }
 
@@ -85,7 +85,7 @@ public class TokenGeneratorController {
         long expiryTime = expiry != null ? Long.parseLong(expiry) : JwtTokenGenerator.EXPIRY;
         SignedJWT token = JwtTokenGenerator.createSignedJWT(subject, expiryTime, claims, issuer, audience);
         Cookie cookie = new Cookie(cookieName, token.serialize());
-        cookie.setDomain("localhost");
+        cookie.setDomain(request.getServerName());
         cookie.setPath("/");
         response.addCookie(cookie);
         if (redirect != null) {
