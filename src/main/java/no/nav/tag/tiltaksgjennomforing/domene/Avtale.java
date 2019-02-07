@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.relational.core.mapping.Column;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +49,7 @@ public class Avtale {
     private String oppfolging;
     private String tilrettelegging;
 
-    private LocalDateTime startDatoTidspunkt;
+    private LocalDate startDato;
     private Integer arbeidstreningLengde;
     private Integer arbeidstreningStillingprosent;
 
@@ -101,7 +102,7 @@ public class Avtale {
 
         setOppfolging(nyAvtale.getOppfolging());
         setTilrettelegging(nyAvtale.getTilrettelegging());
-        setStartDatoTidspunkt(nyAvtale.getStartDatoTidspunkt());
+        setStartDato(nyAvtale.getStartDato());
         setArbeidstreningLengde(nyAvtale.getArbeidstreningLengde());
         setArbeidstreningStillingprosent(nyAvtale.getArbeidstreningStillingprosent());
 
@@ -203,7 +204,7 @@ public class Avtale {
                 veilederTlf,
                 oppfolging,
                 tilrettelegging,
-                startDatoTidspunkt,
+                startDato,
                 arbeidstreningLengde,
                 arbeidstreningStillingprosent
         )

@@ -3,7 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.domene;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 public class TestData {
@@ -50,7 +50,7 @@ public class TestData {
         endreAvtale.setVeilederTlf("Veiledertlf");
         endreAvtale.setOppfolging("Oppfolging");
         endreAvtale.setTilrettelegging("Tilrettelegging");
-        endreAvtale.setStartDatoTidspunkt(LocalDateTime.now());
+        endreAvtale.setStartDato(LocalDate.now());
         endreAvtale.setArbeidstreningLengde(2);
         endreAvtale.setArbeidstreningStillingprosent(50);
         endreAvtale.setMaal(List.of(TestData.etMaal(), TestData.etMaal()));

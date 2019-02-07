@@ -30,7 +30,7 @@ CREATE TABLE avtale (
   oppfolging varchar(255),
   tilrettelegging varchar(255),
 
-  start_dato_tidspunkt timestamp without time zone,
+  start_dato date,
   arbeidstrening_lengde integer,
   arbeidstrening_stillingprosent integer,
 
