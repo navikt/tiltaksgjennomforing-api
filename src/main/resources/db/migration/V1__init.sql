@@ -5,26 +5,20 @@ CREATE TABLE avtale (
 
   deltaker_fornavn varchar(255),
   deltaker_etternavn varchar(255),
-  deltaker_adresse varchar(255),
-  deltaker_postnummer varchar(255),
-  deltaker_poststed varchar(255),
   deltaker_fnr varchar(11),
 
   bedrift_navn varchar(255),
-  bedrift_adresse varchar(255),
-  bedrift_postnummer varchar(255),
-  bedrift_poststed varchar(255),
+  org_nr varchar(255),
+  bedrift_nr varchar(255),
 
   arbeidsgiver_fnr varchar(11),
   arbeidsgiver_fornavn varchar(255),
   arbeidsgiver_etternavn varchar(255),
-  arbeidsgiver_epost varchar(255),
   arbeidsgiver_tlf varchar(255),
 
   veileder_nav_ident varchar(7),
   veileder_fornavn varchar(255),
   veileder_etternavn varchar(255),
-  veileder_epost varchar(255),
   veileder_tlf varchar(255),
 
   oppfolging varchar(255),

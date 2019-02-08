@@ -15,20 +15,14 @@ public class EndreAvtale {
 
     private String deltakerFornavn;
     private String deltakerEtternavn;
-    private String deltakerAdresse;
-    private String deltakerPostnummer;
-    private String deltakerPoststed;
     private String bedriftNavn;
-    private String bedriftAdresse;
-    private String bedriftPostnummer;
-    private String bedriftPoststed;
+    private String orgNr;
+    private String bedriftNr;
     private String arbeidsgiverFornavn;
     private String arbeidsgiverEtternavn;
-    private String arbeidsgiverEpost;
     private String arbeidsgiverTlf;
     private String veilederFornavn;
     private String veilederEtternavn;
-    private String veilederEpost;
     private String veilederTlf;
 
     private String oppfolging;
