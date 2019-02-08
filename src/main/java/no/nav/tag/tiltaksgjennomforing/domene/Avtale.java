@@ -30,20 +30,14 @@ public class Avtale {
     private Integer versjon;
     private String deltakerFornavn;
     private String deltakerEtternavn;
-    private String deltakerAdresse;
-    private String deltakerPostnummer;
-    private String deltakerPoststed;
     private String bedriftNavn;
-    private String bedriftAdresse;
-    private String bedriftPostnummer;
-    private String bedriftPoststed;
+    private String orgNr;
+    private String bedriftNr;
     private String arbeidsgiverFornavn;
     private String arbeidsgiverEtternavn;
-    private String arbeidsgiverEpost;
     private String arbeidsgiverTlf;
     private String veilederFornavn;
     private String veilederEtternavn;
-    private String veilederEpost;
     private String veilederTlf;
 
     private String oppfolging;
@@ -81,23 +75,17 @@ public class Avtale {
 
         setDeltakerFornavn(nyAvtale.getDeltakerFornavn());
         setDeltakerEtternavn(nyAvtale.getDeltakerEtternavn());
-        setDeltakerAdresse(nyAvtale.getDeltakerAdresse());
-        setDeltakerPostnummer(nyAvtale.getDeltakerPostnummer());
-        setDeltakerPoststed(nyAvtale.getDeltakerPoststed());
 
         setBedriftNavn(nyAvtale.getBedriftNavn());
-        setBedriftAdresse(nyAvtale.getBedriftAdresse());
-        setBedriftPostnummer(nyAvtale.getBedriftPostnummer());
-        setBedriftPoststed(nyAvtale.getBedriftPoststed());
+        setOrgNr(nyAvtale.getOrgNr());
+        setBedriftNr(nyAvtale.getBedriftNr());
 
         setArbeidsgiverFornavn(nyAvtale.getArbeidsgiverFornavn());
         setArbeidsgiverEtternavn(nyAvtale.getArbeidsgiverEtternavn());
-        setArbeidsgiverEpost(nyAvtale.getArbeidsgiverEpost());
         setArbeidsgiverTlf(nyAvtale.getArbeidsgiverTlf());
 
         setVeilederFornavn(nyAvtale.getVeilederFornavn());
         setVeilederEtternavn(nyAvtale.getVeilederEtternavn());
-        setVeilederEpost(nyAvtale.getVeilederEpost());
         setVeilederTlf(nyAvtale.getVeilederTlf());
 
         setOppfolging(nyAvtale.getOppfolging());
@@ -128,13 +116,13 @@ public class Avtale {
         versjon += 1;
     }
 
-    public void sjekkVersjon(Integer versjon) {
+    void sjekkVersjon(Integer versjon) {
         if (versjon == null || !versjon.equals(this.versjon)) {
             throw new SamtidigeEndringerException("Noen andre har lagret avtalen.");
         }
     }
 
-    public void settIdOgOpprettetTidspunkt() {
+    void settIdOgOpprettetTidspunkt() {
         if (this.id == null) {
             this.id = UUID.randomUUID();
         }
@@ -160,22 +148,22 @@ public class Avtale {
         }
     }
 
-    public void endreArbeidsgiversGodkjennelse(boolean godkjennelse) {
+    void endreArbeidsgiversGodkjennelse(boolean godkjennelse) {
         sjekkOmKanGodkjennes();
         this.godkjentAvArbeidsgiver = godkjennelse;
     }
 
-    public void endreVeiledersGodkjennelse(boolean godkjennelse) {
+    void endreVeiledersGodkjennelse(boolean godkjennelse) {
         sjekkOmKanGodkjennes();
         this.godkjentAvVeileder = godkjennelse;
     }
 
-    public void endreDeltakersGodkjennelse(boolean godkjennelse) {
+    void endreDeltakersGodkjennelse(boolean godkjennelse) {
         sjekkOmKanGodkjennes();
         this.godkjentAvDeltaker = godkjennelse;
     }
 
-    public void sjekkOmKanGodkjennes() {
+    void sjekkOmKanGodkjennes() {
         if (!heleAvtalenErFyltUt()) {
             throw new TiltaksgjennomforingException("Alt må være utfylt før avtalen kan godkjennes.");
         }
@@ -187,20 +175,13 @@ public class Avtale {
                 arbeidsgiverFnr,
                 deltakerFornavn,
                 deltakerEtternavn,
-                deltakerAdresse,
-                deltakerPostnummer,
-                deltakerPoststed,
                 bedriftNavn,
-                bedriftAdresse,
-                bedriftPostnummer,
-                bedriftPoststed,
+                orgNr,
                 arbeidsgiverFornavn,
                 arbeidsgiverEtternavn,
-                arbeidsgiverEpost,
                 arbeidsgiverTlf,
                 veilederFornavn,
                 veilederEtternavn,
-                veilederEpost,
                 veilederTlf,
                 oppfolging,
                 tilrettelegging,
