@@ -27,7 +27,6 @@ public class TokenGeneratorController {
     private static void bakeCookie(
             String subject,
             String cookieName,
-            String cookieDomain,
             String redirect,
             String expiry,
             HttpServletResponse response,
@@ -38,7 +37,6 @@ public class TokenGeneratorController {
         long expiryTime = expiry != null ? Long.parseLong(expiry) : JwtTokenGenerator.EXPIRY;
         SignedJWT token = JwtTokenGenerator.createSignedJWT(subject, expiryTime, claims, issuer, audience);
         Cookie cookie = new Cookie(cookieName, token.serialize());
-        cookie.setDomain(cookieDomain);
         cookie.setPath("/");
         response.addCookie(cookie);
         if (redirect != null) {
@@ -74,11 +72,10 @@ public class TokenGeneratorController {
     @GetMapping("/selvbetjening-login")
     public void addSelvbetjeningCookie(@RequestHeader(value = "selvbetjening-id", defaultValue = "01234567890") String subject,
                                        @RequestParam(value = "cookiename", defaultValue = SELVBETJENING_IDTOKEN) String cookieName,
-                                       @RequestParam(value = "cookiedomain", defaultValue = "localhost") String cookieDomain,
                                        @RequestParam(value = "redirect", required = false) String redirect,
                                        @RequestParam(value = "expiry", required = false) String expiry,
                                        HttpServletResponse response) throws IOException {
-        bakeCookie(subject, cookieName, cookieDomain, redirect, expiry, response, new HashMap<>(), "selvbetjening", "aud-selvbetjening");
+        bakeCookie(subject, cookieName, redirect, expiry, response, new HashMap<>(), "selvbetjening", "aud-selvbetjening");
     }
 
     @Unprotected
@@ -86,12 +83,11 @@ public class TokenGeneratorController {
     public void addNavCookie(@RequestParam(value = "subject", defaultValue = "01234567890") String subject,
                              @RequestHeader(value = "isso-id", defaultValue = "X123456") String navIdent,
                              @RequestParam(value = "cookiename", defaultValue = ISSO_IDTOKEN) String cookieName,
-                             @RequestParam(value = "cookiedomain", defaultValue = "localhost") String cookieDomain,
                              @RequestParam(value = "redirect", required = false) String redirect,
                              @RequestParam(value = "expiry", required = false) String expiry,
                              HttpServletResponse response
     ) throws IOException {
-        bakeCookie(subject, cookieName, cookieDomain, redirect, expiry, response, Collections.singletonMap("NAVident", navIdent), "isso", "aud-isso");
+        bakeCookie(subject, cookieName, redirect, expiry, response, Collections.singletonMap("NAVident", navIdent), "isso", "aud-isso");
     }
 
     @Unprotected
