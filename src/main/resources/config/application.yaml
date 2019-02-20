@@ -1,0 +1,12 @@
+server.servlet.context-path: /tiltaksgjennomforing-api
+
+management.endpoints.web:
+  exposure.include: info, health, metrics, prometheus
+  base-path: /internal/actuator
+
+spring:
+  datasource:
+    hikari:
+      maximum-pool-size: 2
+  flyway:
+    skip-default-callbacks: true

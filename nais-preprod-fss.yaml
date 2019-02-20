@@ -9,25 +9,17 @@ spec:
   image: navikt/tiltaksgjennomforing-api:latest
   team: teamtag
   port: 8080
-  secrets: true
-  ingresses:
-  - https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api
   liveness:
-    path: /tiltaksgjennomforing-api/internal/isAlive
+    path: /tiltaksgjennomforing-api/internal/actuator/info
     initialDelay: 20
   readiness:
-    path: /tiltaksgjennomforing-api/internal/isReady
+    path: /tiltaksgjennomforing-api/internal/actuator/info
     initialDelay: 20
+  ingresses:
+  - https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api/
+  vault:
+    enabled: true
   env:
   - name: SPRING_PROFILES_ACTIVE
-    value: prod
-  - name: HTTP_PROXY
-    value: http://webproxy-nais.nav.no:8088
-  - name: ISSO_DISCOVERYURL
-    value: https://login.microsoftonline.com/NAVQ.onmicrosoft.com/.well-known/openid-configuration
-  - name: ISSO_ACCEPTED_AUDIENCE
-    value: 38e07d31-659d-4595-939a-f18dce3446c5
-  - name: SELVBETJENING_DISCOVERYURL
-    value: https://login.microsoftonline.com/NAVtestB2C.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_idporten_ver1
-  - name: SELVBETJENING_ACCEPTED_AUDIENCE
-    value: 0090b6e1-ffcc-4c37-bc21-049f7d1f0fe5
+    value: preprod
+  webproxy: true

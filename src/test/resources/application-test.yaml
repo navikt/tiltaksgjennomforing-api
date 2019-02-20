@@ -1,0 +1,4 @@
+spring:
+  datasource:
+    platform: postgres
+    driverClassName: org.postgresql.Driver

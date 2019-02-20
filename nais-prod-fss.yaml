@@ -9,25 +9,17 @@ spec:
   image: navikt/tiltaksgjennomforing-api:latest
   team: teamtag
   port: 8080
-  secrets: true
-  ingresses:
-  - https://arbeidsgiver.nais.adeo.no/tiltaksgjennomforing-api
   liveness:
-    path: /tiltaksgjennomforing-api/internal/isAlive
+    path: /tiltaksgjennomforing-api/internal/actuator/info
     initialDelay: 20
   readiness:
-    path: /tiltaksgjennomforing-api/internal/isReady
+    path: /tiltaksgjennomforing-api/internal/actuator/info
     initialDelay: 20
+  ingresses:
+  - https://arbeidsgiver.nais.adeo.no/tiltaksgjennomforing-api/
+  vault:
+    enabled: true
   env:
   - name: SPRING_PROFILES_ACTIVE
     value: prod
-  - name: HTTP_PROXY
-    value: http://webproxy-nais.nav.no:8088
-  - name: ISSO_DISCOVERYURL
-    value: https://login.microsoftonline.com/navno.onmicrosoft.com/.well-known/openid-configuration
-  - name: ISSO_ACCEPTED_AUDIENCE
-    value: 9b4e07a3-4f4c-4bab-b866-87f62dff480d
-  - name: SELVBETJENING_DISCOVERYURL
-    value: https://login.microsoftonline.com/navnob2c.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_idporten
-  - name: SELVBETJENING_ACCEPTED_AUDIENCE
-    value: 45104d6a-f5bc-4e8c-b352-4bbfc9381f25
+  webproxy: true
