@@ -58,19 +58,19 @@ public class TokenGeneratorController {
 
     @Unprotected
     @GetMapping("/jwt")
-    public String issueToken(@RequestParam(value = "subject", defaultValue = "12345678910") String subject) {
+    public String issueToken(@RequestParam(value = "subject", defaultValue = "00000000000") String subject) {
         return JwtTokenGenerator.createSignedJWT(subject, "iss-localhost", "aud-localhost").serialize();
     }
 
     @Unprotected
     @GetMapping("/claims")
-    public SignedJWT jwtClaims(@RequestParam(value = "subject", defaultValue = "12345678910") String subject) {
+    public SignedJWT jwtClaims(@RequestParam(value = "subject", defaultValue = "00000000000") String subject) {
         return JwtTokenGenerator.createSignedJWT(subject, "iss-localhost", "aud-localhost");
     }
 
     @Unprotected
     @GetMapping("/selvbetjening-login")
-    public void addSelvbetjeningCookie(@RequestHeader(value = "selvbetjening-id", defaultValue = "01234567890") String subject,
+    public void addSelvbetjeningCookie(@RequestHeader(value = "selvbetjening-id", defaultValue = "00000000000") String subject,
                                        @RequestParam(value = "cookiename", defaultValue = SELVBETJENING_IDTOKEN) String cookieName,
                                        @RequestParam(value = "redirect", required = false) String redirect,
                                        @RequestParam(value = "expiry", required = false) String expiry,
@@ -80,7 +80,7 @@ public class TokenGeneratorController {
 
     @Unprotected
     @GetMapping("/isso-login")
-    public void addNavCookie(@RequestParam(value = "subject", defaultValue = "01234567890") String subject,
+    public void addNavCookie(@RequestParam(value = "subject", defaultValue = "00000000000") String subject,
                              @RequestHeader(value = "isso-id", defaultValue = "X123456") String navIdent,
                              @RequestParam(value = "cookiename", defaultValue = ISSO_IDTOKEN) String cookieName,
                              @RequestParam(value = "redirect", required = false) String redirect,
