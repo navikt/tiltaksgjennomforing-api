@@ -31,7 +31,6 @@ public class Avtale {
     private String deltakerFornavn;
     private String deltakerEtternavn;
     private String bedriftNavn;
-    private String orgNr;
     private String bedriftNr;
     private String arbeidsgiverFornavn;
     private String arbeidsgiverEtternavn;
@@ -77,7 +76,6 @@ public class Avtale {
         setDeltakerEtternavn(nyAvtale.getDeltakerEtternavn());
 
         setBedriftNavn(nyAvtale.getBedriftNavn());
-        setOrgNr(nyAvtale.getOrgNr());
         setBedriftNr(nyAvtale.getBedriftNr());
 
         setArbeidsgiverFornavn(nyAvtale.getArbeidsgiverFornavn());
@@ -176,7 +174,6 @@ public class Avtale {
                 deltakerFornavn,
                 deltakerEtternavn,
                 bedriftNavn,
-                orgNr,
                 arbeidsgiverFornavn,
                 arbeidsgiverEtternavn,
                 arbeidsgiverTlf,

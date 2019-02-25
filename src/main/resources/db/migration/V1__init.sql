@@ -8,7 +8,6 @@ CREATE TABLE avtale (
   deltaker_fnr varchar(11),
 
   bedrift_navn varchar(255),
-  org_nr varchar(255),
   bedrift_nr varchar(255),
 
   arbeidsgiver_fnr varchar(11),
