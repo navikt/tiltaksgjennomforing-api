@@ -2,10 +2,6 @@ spring:
   datasource:
     platform: postgres
     driverClassName: org.postgresql.Driver
-  flyway:
-    skip-default-callbacks: false
-    placeholders:
-      admin-rolle: tiltaksgjennomforing-preprod-admin
 
 no.nav.security.oidc:
   issuers: selvbetjening, isso
