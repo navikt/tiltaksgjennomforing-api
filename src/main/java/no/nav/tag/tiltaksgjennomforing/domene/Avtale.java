@@ -56,14 +56,15 @@ public class Avtale {
     private boolean godkjentAvVeileder;
 
     @PersistenceConstructor
-    public Avtale(Fnr deltakerFnr, Fnr arbeidsgiverFnr, NavIdent veilederNavIdent) {
+    public Avtale(Fnr deltakerFnr, Fnr arbeidsgiverFnr, String bedriftNavn, NavIdent veilederNavIdent) {
         this.deltakerFnr = sjekkAtIkkeNull(deltakerFnr, "Deltakers fnr må være satt.");
         this.arbeidsgiverFnr = sjekkAtIkkeNull(arbeidsgiverFnr, "Arbeidsgivers fnr må være satt.");
         this.veilederNavIdent = sjekkAtIkkeNull(veilederNavIdent, "Veileders NAV-ident må være satt.");
+        this.bedriftNavn = bedriftNavn;
     }
 
     public static Avtale nyAvtale(OpprettAvtale opprettAvtale, NavIdent veilederNavIdent) {
-        Avtale avtale = new Avtale(opprettAvtale.getDeltakerFnr(), opprettAvtale.getArbeidsgiverFnr(), veilederNavIdent);
+        Avtale avtale = new Avtale(opprettAvtale.getDeltakerFnr(), opprettAvtale.getArbeidsgiverFnr(), opprettAvtale.getBedriftNavn(), veilederNavIdent);
         avtale.setVersjon(1);
         return avtale;
     }
