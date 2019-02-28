@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: tiltaksgjennomforing-api
+  cloud:
+    vault:
+      enabled: false
+  profiles:
+    active: dev
+---
+spring:
+  profiles: preprod
+  cloud:
+    vault:
+      enabled: true
+      authentication: TOKEN
+      generic:
+        enabled: false
+      database:
+        enabled: true
+        role: tiltaksgjennomforing-preprod-admin
+        backend: postgresql/preprod-fss
+      token: ${VAULT_TOKEN}
+      uri: https://vault.adeo.no
+---
+spring:
+  profiles: prod
+  cloud:
+    vault:
+      enabled: true
+      authentication: TOKEN
+      generic:
+        enabled: false
+      database:
+        enabled: true
+        role: tiltaksgjennomforing-prod-admin
+        backend: postgresql/prod-fss
+      token: ${VAULT_TOKEN}
+      uri: https://vault.adeo.no

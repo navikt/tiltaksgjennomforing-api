@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    platform: postgres
+    driverClassName: org.postgresql.Driver
+
+no.nav.security.oidc:
+  issuers: selvbetjening, isso
+  issuer:
+    selvbetjening:
+      discoveryurl: https://login.microsoftonline.com/navnob2c.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_idporten
+      accepted_audience: 45104d6a-f5bc-4e8c-b352-4bbfc9381f25
+    isso:
+      discoveryurl: https://login.microsoftonline.com/navno.onmicrosoft.com/.well-known/openid-configuration
+      accepted_audience: 9b4e07a3-4f4c-4bab-b866-87f62dff480d
