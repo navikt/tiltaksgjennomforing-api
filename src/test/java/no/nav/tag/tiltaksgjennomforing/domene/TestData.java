@@ -22,7 +22,7 @@ public class TestData {
     private static OpprettAvtale lagOpprettAvtale() {
         Fnr deltakerFnr = new Fnr("88888899999");
         Fnr arbeidsgiverFnr = new Fnr("77777788888");
-        return new OpprettAvtale(deltakerFnr, arbeidsgiverFnr);
+        return new OpprettAvtale(deltakerFnr, arbeidsgiverFnr, "");
     }
 
     public static EndreAvtale ingenEndring() {

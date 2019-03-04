@@ -17,7 +17,7 @@ public class AvtaleTest {
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver();
         Veileder veileder = TestData.enVeileder();
 
-        Avtale avtale = Avtale.nyAvtale(new OpprettAvtale(deltaker.getIdentifikator(), arbeidsgiver.getIdentifikator()), veileder.getIdentifikator());
+        Avtale avtale = Avtale.nyAvtale(new OpprettAvtale(deltaker.getIdentifikator(), arbeidsgiver.getIdentifikator(), "Testbutikken"), veileder.getIdentifikator());
 
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(avtale.harLesetilgang(TestData.innloggetSelvbetjeningBruker(arbeidsgiver))).isTrue();
@@ -33,7 +33,7 @@ public class AvtaleTest {
         Fnr deltakerFnr = new Fnr("01234567890");
         Fnr arbeidsgiverFnr = new Fnr("12345678901");
         NavIdent veilederNavIdent = new NavIdent("X123456");
-        Avtale avtale = Avtale.nyAvtale(new OpprettAvtale(deltakerFnr, arbeidsgiverFnr), veilederNavIdent);
+        Avtale avtale = Avtale.nyAvtale(new OpprettAvtale(deltakerFnr, arbeidsgiverFnr, "Testbedrift"), veilederNavIdent);
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(avtale.getOpprettetTidspunkt()).isNull();
             softly.assertThat(avtale.getDeltakerFnr()).isEqualTo(deltakerFnr);
@@ -41,7 +41,7 @@ public class AvtaleTest {
             softly.assertThat(avtale.getOppgaver()).isEmpty();
             softly.assertThat(avtale.getDeltakerFornavn()).isNull();
             softly.assertThat(avtale.getDeltakerEtternavn()).isNull();
-            softly.assertThat(avtale.getBedriftNavn()).isNull();
+            softly.assertThat(avtale.getBedriftNavn()).isEqualTo("Testbedrift");
             softly.assertThat(avtale.getBedriftNr()).isNull();
             softly.assertThat(avtale.getArbeidsgiverFnr()).isEqualTo(arbeidsgiverFnr);
             softly.assertThat(avtale.getArbeidsgiverFornavn()).isNull();
@@ -63,17 +63,17 @@ public class AvtaleTest {
 
     @Test(expected = TiltaksgjennomforingException.class)
     public void nyAvtaleSkalFeileHvisManglerDeltaker() {
-        Avtale.nyAvtale(new OpprettAvtale(null, new Fnr("12345678901")), new NavIdent("X12345"));
+        Avtale.nyAvtale(new OpprettAvtale(null, new Fnr("12345678901"), ""), new NavIdent("X12345"));
     }
 
     @Test(expected = TiltaksgjennomforingException.class)
     public void nyAvtaleSkalFeileHvisManglerArbeidsgiver() {
-        Avtale.nyAvtale(new OpprettAvtale(new Fnr("12345678901"), null), new NavIdent("X12345"));
+        Avtale.nyAvtale(new OpprettAvtale(new Fnr("12345678901"), null, ""), new NavIdent("X12345"));
     }
 
     @Test(expected = TiltaksgjennomforingException.class)
     public void nyAvtaleSkalFeileHvisManglerVeileder() {
-        Avtale.nyAvtale(new OpprettAvtale(new Fnr("11223344555"), new Fnr("12345678901")), null);
+        Avtale.nyAvtale(new OpprettAvtale(new Fnr("11223344555"), new Fnr("12345678901"), ""), null);
     }
 
     @Test(expected = SamtidigeEndringerException.class)
