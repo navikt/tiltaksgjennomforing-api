@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.domene;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.SamtidigeEndringerException;
@@ -70,6 +71,7 @@ public class Avtale {
     }
 
     public void endreAvtale(Integer versjon, EndreAvtale nyAvtale) {
+        sjekkOmAvtalenKanEndres();
         sjekkVersjon(versjon);
         inkrementerVersjonsnummer();
 
@@ -95,6 +97,23 @@ public class Avtale {
 
         setMaal(nyAvtale.getMaal());
         setOppgaver(nyAvtale.getOppgaver());
+    }
+
+    @JsonProperty("erLaast")
+    public boolean erLaast() {
+        return godkjentAvVeileder && godkjentAvArbeidsgiver && godkjentAvDeltaker;
+    }
+
+    private void sjekkOmAvtalenKanEndres() {
+        if (godkjentAvDeltaker || godkjentAvArbeidsgiver || godkjentAvVeileder) {
+            throw new TilgangskontrollException("Godkjenninger må oppheves før avtalen kan endres.");
+        }
+    }
+
+    void opphevGodkjenninger() {
+        setGodkjentAvDeltaker(false);
+        setGodkjentAvArbeidsgiver(false);
+        setGodkjentAvVeileder(false);
     }
 
     public void sjekkLesetilgang(InnloggetBruker bruker) {
@@ -147,19 +166,19 @@ public class Avtale {
         }
     }
 
-    void endreArbeidsgiversGodkjennelse(boolean godkjennelse) {
+    void godkjennForArbeidsgiver() {
         sjekkOmKanGodkjennes();
-        this.godkjentAvArbeidsgiver = godkjennelse;
+        this.godkjentAvArbeidsgiver = true;
     }
 
-    void endreVeiledersGodkjennelse(boolean godkjennelse) {
+    void godkjennForVeileder() {
         sjekkOmKanGodkjennes();
-        this.godkjentAvVeileder = godkjennelse;
+        this.godkjentAvVeileder = true;
     }
 
-    void endreDeltakersGodkjennelse(boolean godkjennelse) {
+    void godkjennForDeltaker() {
         sjekkOmKanGodkjennes();
-        this.godkjentAvDeltaker = godkjennelse;
+        this.godkjentAvDeltaker = true;
     }
 
     void sjekkOmKanGodkjennes() {

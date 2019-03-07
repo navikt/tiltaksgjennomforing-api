@@ -31,7 +31,7 @@ public class AvtalepartTest {
     public void endreGodkjenning__skal_fungere_for_deltaker() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Deltaker deltaker = TestData.enDeltaker(avtale);
-        deltaker.endreGodkjenning(true);
+        deltaker.godkjennForAvtalepart();
         assertThat(avtale.isGodkjentAvDeltaker()).isTrue();
         assertThat(avtale.isGodkjentAvArbeidsgiver()).isFalse();
         assertThat(avtale.isGodkjentAvVeileder()).isFalse();
@@ -41,28 +41,28 @@ public class AvtalepartTest {
     public void endreGodkjenning__skal_fungere_for_arbeidsgiver() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.endreGodkjenning(true);
+        arbeidsgiver.godkjennForAvtalepart();
         assertThat(avtale.isGodkjentAvArbeidsgiver()).isTrue();
         assertThat(avtale.isGodkjentAvVeileder()).isFalse();
         assertThat(avtale.isGodkjentAvDeltaker()).isFalse();
     }
 
     @Test
-    public void endreGodkjenning__skal_fungere_for_veileder() {
+    public void godkjennForAvtalepart__skal_fungere_for_veileder() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.endreGodkjenning(true);
+        veileder.godkjennForAvtalepart();
         assertThat(avtale.isGodkjentAvVeileder()).isTrue();
         assertThat(avtale.isGodkjentAvDeltaker()).isFalse();
         assertThat(avtale.isGodkjentAvArbeidsgiver()).isFalse();
     }
 
     @Test
-    public void veilederSkalKunneEndreEgenGodkjenningTilbakeIgjen() {
+    public void opphevGodkjenninger__veileder_skal_kunne_trekke_tilbake_egen_godkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setGodkjentAvVeileder(true);
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.endreGodkjenning(false);
+        veileder.opphevGodkjenninger();
         assertThat(avtale.isGodkjentAvVeileder()).isFalse();
     }
 }
