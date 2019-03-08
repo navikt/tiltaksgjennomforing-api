@@ -7,12 +7,17 @@ public class Deltaker extends Avtalepart<Fnr> {
     }
 
     @Override
-    public void endreGodkjenning(boolean godkjenning) {
-        avtale.endreDeltakersGodkjennelse(godkjenning);
+    public void godkjennForAvtalepart() {
+        avtale.godkjennForDeltaker();
     }
 
     @Override
     public boolean kanEndreAvtale() {
+        return false;
+    }
+
+    @Override
+    boolean kanOppheveGodkjenninger() {
         return false;
     }
 

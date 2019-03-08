@@ -81,12 +81,22 @@ public class AvtaleController {
         return ResponseEntity.ok(avtalepart.rolle());
     }
 
-    @PostMapping(value = "/{avtaleId}/godkjent")
-    public ResponseEntity endreGodkjenning(@PathVariable("avtaleId") UUID avtaleId, @RequestBody EndreGodkjenning endreGodkjenning) {
+    @PostMapping(value = "/{avtaleId}/opphev-godkjenninger")
+    public ResponseEntity opphevGodkjenninger(@PathVariable("avtaleId") UUID avtaleId) {
         InnloggetBruker innloggetBruker = tilgangskontroll.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         Avtalepart avtalepart = avtale.hentAvtalepart(innloggetBruker);
-        avtalepart.endreGodkjenning(endreGodkjenning.getGodkjent());
+        avtalepart.opphevGodkjenninger();
+        avtaleRepository.save(avtale);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(value = "/{avtaleId}/godkjenn")
+    public ResponseEntity godkjenn(@PathVariable("avtaleId") UUID avtaleId) {
+        InnloggetBruker innloggetBruker = tilgangskontroll.hentInnloggetBruker();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        Avtalepart avtalepart = avtale.hentAvtalepart(innloggetBruker);
+        avtalepart.godkjennAvtale();
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();
     }

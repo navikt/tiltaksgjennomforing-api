@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.domene;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
 
 @AllArgsConstructor
 @Data
@@ -10,11 +11,20 @@ public abstract class Avtalepart<T extends Identifikator> {
     private final T identifikator;
     final Avtale avtale;
 
-    public abstract void endreGodkjenning(boolean godkjenning);
+    abstract void godkjennForAvtalepart();
 
-    public abstract boolean kanEndreAvtale();
+    abstract boolean kanEndreAvtale();
+
+    void sjekkOmAvtaleKanGodkjennes() {}
+
+    abstract boolean kanOppheveGodkjenninger();
 
     public abstract Rolle rolle();
+
+    public void godkjennAvtale() {
+        sjekkOmAvtaleKanGodkjennes();
+        godkjennForAvtalepart();
+    }
 
     public void endreAvtale(Integer versjon, EndreAvtale endreAvtale) {
         if (!kanEndreAvtale()) {
@@ -22,6 +32,14 @@ public abstract class Avtalepart<T extends Identifikator> {
         }
         avtale.endreAvtale(versjon, endreAvtale);
     }
+
+    public void opphevGodkjenninger() {
+        if (!kanOppheveGodkjenninger()) {
+            throw new TiltaksgjennomforingException("Kan ikke oppheve godkjenninger i avtalen.");
+        }
+        avtale.opphevGodkjenninger();
+    }
+
 
     public enum Rolle {
         DELTAKER, ARBEIDSGIVER, VEILEDER

@@ -6,13 +6,18 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     @Override
-    public void endreGodkjenning(boolean godkjenning) {
-        avtale.endreArbeidsgiversGodkjennelse(godkjenning);
+    public void godkjennForAvtalepart() {
+        avtale.godkjennForArbeidsgiver();
     }
 
     @Override
     public boolean kanEndreAvtale() {
         return true;
+    }
+
+    @Override
+    boolean kanOppheveGodkjenninger() {
+        return !avtale.isGodkjentAvVeileder();
     }
 
     @Override
