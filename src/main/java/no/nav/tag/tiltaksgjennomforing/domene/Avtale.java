@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.domene;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
@@ -24,6 +25,7 @@ public class Avtale {
 
     private final Fnr deltakerFnr;
     private final NavIdent veilederNavIdent;
+    @JsonIgnore
     private final Fnr arbeidsgiverFnr;
     private LocalDateTime opprettetTidspunkt;
     @Id
