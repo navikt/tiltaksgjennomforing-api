@@ -19,7 +19,7 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     abstract boolean kanOppheveGodkjenninger();
 
-    public abstract Rolle rolle();
+    public abstract Avtalerolle rolle();
 
     public void godkjennAvtale() {
         sjekkOmAvtaleKanGodkjennes();
@@ -30,18 +30,13 @@ public abstract class Avtalepart<T extends Identifikator> {
         if (!kanEndreAvtale()) {
             throw new TilgangskontrollException("Kan ikke endre avtale.");
         }
-        avtale.endreAvtale(versjon, endreAvtale);
+        avtale.endreAvtale(versjon, endreAvtale, rolle());
     }
 
     public void opphevGodkjenninger() {
         if (!kanOppheveGodkjenninger()) {
             throw new TiltaksgjennomforingException("Kan ikke oppheve godkjenninger i avtalen.");
         }
-        avtale.opphevGodkjenninger();
-    }
-
-
-    public enum Rolle {
-        DELTAKER, ARBEIDSGIVER, VEILEDER
+        avtale.opphevGodkjenninger(rolle());
     }
 }

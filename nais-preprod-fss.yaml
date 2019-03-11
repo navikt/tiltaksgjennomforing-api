@@ -23,3 +23,6 @@ spec:
   - name: SPRING_PROFILES_ACTIVE
     value: preprod
   webproxy: true
+  prometheus:
+    enabled: true
+    path: /tiltaksgjennomforing-api/internal/actuator/prometheus

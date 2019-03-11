@@ -12,10 +12,10 @@ public class TestData {
         return Avtale.nyAvtale(lagOpprettAvtale(), veilderNavIdent);
     }
 
-    static Avtale enAvtaleMedAltUtfylt() {
+    public static Avtale enAvtaleMedAltUtfylt() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         Avtale avtale = Avtale.nyAvtale(lagOpprettAvtale(), veilderNavIdent);
-        avtale.endreAvtale(avtale.getVersjon(), endringPaAlleFelt());
+        avtale.endreAvtale(avtale.getVersjon(), endringPaAlleFelt(), Avtalerolle.VEILEDER);
         return avtale;
     }
 
@@ -71,7 +71,7 @@ public class TestData {
         return new Arbeidsgiver(new Fnr("12345678901"), enAvtale());
     }
 
-    static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
+    public static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
         return new Arbeidsgiver(avtale.getArbeidsgiverFnr(), avtale);
     }
 
@@ -97,5 +97,14 @@ public class TestData {
 
     public static InnloggetNavAnsatt innloggetNavAnsatt(Avtalepart<NavIdent> avtalepartMedNavIdent) {
         return new InnloggetNavAnsatt(avtalepartMedNavIdent.getIdentifikator());
+    }
+
+    public static Identifikator enIdentifikator() {
+        return new Identifikator() {
+            @Override
+            public String asString() {
+                return "test-id";
+            }
+        };
     }
 }

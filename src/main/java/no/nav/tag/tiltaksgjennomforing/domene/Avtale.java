@@ -3,12 +3,15 @@ package no.nav.tag.tiltaksgjennomforing.domene;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
+import no.nav.tag.tiltaksgjennomforing.domene.events.*;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
+import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.relational.core.mapping.Column;
 
 import java.time.LocalDate;
@@ -21,7 +24,8 @@ import static no.nav.tag.tiltaksgjennomforing.Utils.erIkkeNull;
 import static no.nav.tag.tiltaksgjennomforing.Utils.sjekkAtIkkeNull;
 
 @Data
-public class Avtale {
+@EqualsAndHashCode(callSuper = false)
+public class Avtale extends AbstractAggregateRoot {
 
     private final Fnr deltakerFnr;
     private final NavIdent veilederNavIdent;
@@ -69,10 +73,11 @@ public class Avtale {
     public static Avtale nyAvtale(OpprettAvtale opprettAvtale, NavIdent veilederNavIdent) {
         Avtale avtale = new Avtale(opprettAvtale.getDeltakerFnr(), opprettAvtale.getArbeidsgiverFnr(), opprettAvtale.getBedriftNavn(), veilederNavIdent);
         avtale.setVersjon(1);
+        avtale.registerEvent(new AvtaleOpprettet(avtale, veilederNavIdent));
         return avtale;
     }
 
-    public void endreAvtale(Integer versjon, EndreAvtale nyAvtale) {
+    public void endreAvtale(Integer versjon, EndreAvtale nyAvtale, Avtalerolle utfortAv) {
         sjekkOmAvtalenKanEndres();
         sjekkVersjon(versjon);
         inkrementerVersjonsnummer();
@@ -99,6 +104,8 @@ public class Avtale {
 
         setMaal(nyAvtale.getMaal());
         setOppgaver(nyAvtale.getOppgaver());
+
+        registerEvent(new AvtaleEndret(this, utfortAv));
     }
 
     @JsonProperty("erLaast")
@@ -112,10 +119,11 @@ public class Avtale {
         }
     }
 
-    void opphevGodkjenninger() {
+    void opphevGodkjenninger(Avtalerolle avtalerolle) {
         setGodkjentAvDeltaker(false);
         setGodkjentAvArbeidsgiver(false);
         setGodkjentAvVeileder(false);
+        registerEvent(new GodkjenningerOpphevet(this, avtalerolle));
     }
 
     public void sjekkLesetilgang(InnloggetBruker bruker) {
@@ -168,19 +176,22 @@ public class Avtale {
         }
     }
 
-    void godkjennForArbeidsgiver() {
+    void godkjennForArbeidsgiver(Identifikator utfortAv) {
         sjekkOmKanGodkjennes();
         this.godkjentAvArbeidsgiver = true;
+        registerEvent(new GodkjentAvArbeidsgiver(this, utfortAv));
     }
 
-    void godkjennForVeileder() {
+    void godkjennForVeileder(Identifikator utfortAv) {
         sjekkOmKanGodkjennes();
         this.godkjentAvVeileder = true;
+        registerEvent(new GodkjentAvVeileder(this, utfortAv));
     }
 
-    void godkjennForDeltaker() {
+    void godkjennForDeltaker(Identifikator utfortAv) {
         sjekkOmKanGodkjennes();
         this.godkjentAvDeltaker = true;
+        registerEvent(new GodkjentAvDeltaker(this, utfortAv));
     }
 
     void sjekkOmKanGodkjennes() {
