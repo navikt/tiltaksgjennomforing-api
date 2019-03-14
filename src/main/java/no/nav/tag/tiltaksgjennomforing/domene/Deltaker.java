@@ -8,7 +8,7 @@ public class Deltaker extends Avtalepart<Fnr> {
 
     @Override
     public void godkjennForAvtalepart() {
-        avtale.godkjennForDeltaker(null);
+        avtale.godkjennForDeltaker(getIdentifikator());
     }
 
     @Override

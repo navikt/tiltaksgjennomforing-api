@@ -10,7 +10,7 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     @Override
     public void godkjennForAvtalepart() {
-        avtale.godkjennForVeileder(null);
+        avtale.godkjennForVeileder(getIdentifikator());
     }
 
     @Override
