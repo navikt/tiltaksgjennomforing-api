@@ -20,8 +20,8 @@ CREATE TABLE avtale (
   veileder_etternavn varchar(255),
   veileder_tlf varchar(255),
 
-  oppfolging varchar(1000),
-  tilrettelegging varchar(1000),
+  oppfolging varchar(255),
+  tilrettelegging varchar(255),
 
   start_dato date,
   arbeidstrening_lengde integer,
@@ -36,7 +36,7 @@ CREATE TABLE maal (
   id uuid primary key,
   opprettet_tidspunkt timestamp without time zone not null default now(),
   kategori varchar(255),
-  beskrivelse varchar(1000),
+  beskrivelse varchar(255),
   avtale uuid references avtale(id)
 );
 
@@ -45,7 +45,7 @@ CREATE TABLE oppgave (
   id uuid primary key,
   opprettet_tidspunkt timestamp without time zone not null default now(),
   tittel varchar(255),
-  beskrivelse varchar(1000),
-  opplaering varchar(1000),
+  beskrivelse varchar(255),
+  opplaering varchar(255),
   avtale uuid references avtale(id)
 );
