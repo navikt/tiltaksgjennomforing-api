@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.controller;
 
+import io.micrometer.core.annotation.Timed;
 import no.nav.security.oidc.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.domene.*;
@@ -21,6 +22,7 @@ import static no.nav.tag.tiltaksgjennomforing.Utils.lagUri;
 @RestController
 @RequestMapping("/avtaler")
 @Transactional
+@Timed
 public class AvtaleController {
 
     private final AvtaleRepository avtaleRepository;
@@ -32,8 +34,8 @@ public class AvtaleController {
         this.tilgangskontroll = tilgangskontroll;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Avtale> hent(@PathVariable("id") UUID id) {
+    @GetMapping("/{avtaleId}")
+    public ResponseEntity<Avtale> hent(@PathVariable("avtaleId") UUID id) {
         Avtale avtale = avtaleRepository.findById(id)
                 .orElseThrow(RessursFinnesIkkeException::new);
         InnloggetBruker innloggetBruker = tilgangskontroll.hentInnloggetBruker();
@@ -74,7 +76,7 @@ public class AvtaleController {
     }
 
     @GetMapping(value = "/{avtaleId}/rolle")
-    public ResponseEntity<Avtalepart.Rolle> hentRolle(@PathVariable("avtaleId") UUID avtaleId) {
+    public ResponseEntity<Avtalerolle> hentRolle(@PathVariable("avtaleId") UUID avtaleId) {
         InnloggetBruker innloggetBruker = tilgangskontroll.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         Avtalepart avtalepart = avtale.hentAvtalepart(innloggetBruker);

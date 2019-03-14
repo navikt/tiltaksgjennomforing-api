@@ -174,6 +174,6 @@ public class AvtaleControllerTest {
         ResponseEntity svar = avtaleController.hentRolle(avtale.getId());
 
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(svar.getBody()).isEqualTo(Avtalepart.Rolle.DELTAKER);
+        assertThat(svar.getBody()).isEqualTo(Avtalerolle.DELTAKER);
     }
 }

@@ -8,7 +8,7 @@ public class Deltaker extends Avtalepart<Fnr> {
 
     @Override
     public void godkjennForAvtalepart() {
-        avtale.godkjennForDeltaker();
+        avtale.godkjennForDeltaker(getIdentifikator());
     }
 
     @Override
@@ -22,7 +22,7 @@ public class Deltaker extends Avtalepart<Fnr> {
     }
 
     @Override
-    public Rolle rolle() {
-        return Rolle.DELTAKER;
+    public Avtalerolle rolle() {
+        return Avtalerolle.DELTAKER;
     }
 }

@@ -7,7 +7,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
     @Override
     public void godkjennForAvtalepart() {
-        avtale.godkjennForArbeidsgiver();
+        avtale.godkjennForArbeidsgiver(getIdentifikator());
     }
 
     @Override
@@ -21,7 +21,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     @Override
-    public Rolle rolle() {
-        return Rolle.ARBEIDSGIVER;
+    public Avtalerolle rolle() {
+        return Avtalerolle.ARBEIDSGIVER;
     }
 }
