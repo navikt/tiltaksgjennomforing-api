@@ -5,6 +5,8 @@ management.endpoints.web:
   base-path: /internal/actuator
 
 spring:
+  main:
+    banner-mode: "off"
   datasource:
     hikari:
       maximum-pool-size: 2
