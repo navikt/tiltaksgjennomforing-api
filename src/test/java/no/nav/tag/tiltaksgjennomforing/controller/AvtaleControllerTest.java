@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.controller;
 
 import no.nav.tag.tiltaksgjennomforing.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.TilgangUnderPilotering;
 import no.nav.tag.tiltaksgjennomforing.domene.*;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
@@ -21,6 +22,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -33,7 +35,18 @@ public class AvtaleControllerTest {
     private AvtaleRepository avtaleRepository;
 
     @Mock
-    private TilgangskontrollUtils tilgangskontroll;
+    private TokenUtils tokenUtils;
+
+    @Mock
+    private TilgangUnderPilotering tilgangUnderPilotering;
+
+    private static List<Avtale> lagListeMedAvtaler(Avtale avtale, int antall) {
+        List<Avtale> avtaler = new ArrayList<>();
+        for (int i = 0; i <= antall; i++) {
+            avtaler.add(avtale);
+        }
+        return avtaler;
+    }
 
     @Test
     public void hentSkalReturnereRiktigAvtale() {
@@ -133,21 +146,6 @@ public class AvtaleControllerTest {
         assertThat(hentedeAvtaler.size()).isEqualTo(avtalerBrukerHarTilgangTil.size());
     }
 
-    private static List<Avtale> lagListeMedAvtaler(Avtale avtale, int antall) {
-        List<Avtale> avtaler = new ArrayList<>();
-        for (int i = 0; i <= antall; i++) {
-            avtaler.add(avtale);
-        }
-        return avtaler;
-    }
-
-    private void vaerInnloggetSom(InnloggetBruker innloggetBruker) {
-        when(tilgangskontroll.hentInnloggetBruker()).thenReturn(innloggetBruker);
-        if (innloggetBruker instanceof InnloggetNavAnsatt) {
-            when(tilgangskontroll.hentInnloggetNavAnsatt()).thenReturn((InnloggetNavAnsatt) innloggetBruker);
-        }
-    }
-
     @Test(expected = RessursFinnesIkkeException.class)
     public void hentRolleSkalKasteResourceNotFoundExceptionHvisAvtaleIkkeFins() {
         Avtale avtale = TestData.enAvtale();
@@ -175,5 +173,19 @@ public class AvtaleControllerTest {
 
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(svar.getBody()).isEqualTo(Avtalerolle.DELTAKER);
+    }
+
+    @Test(expected = TilgangskontrollException.class)
+    public void opprettAvtale__skal_feile_hvis_bruker_ikke_er_i_pilotering() {
+        vaerInnloggetSom(TestData.enNavAnsatt());
+        doThrow(TilgangskontrollException.class).when(tilgangUnderPilotering).sjekkTilgang(any());
+        avtaleController.opprettAvtale(new OpprettAvtale(new Fnr("11111100000"), new Fnr("11111100000"), "bedriften"));
+    }
+
+    private void vaerInnloggetSom(InnloggetBruker innloggetBruker) {
+        when(tokenUtils.hentInnloggetBruker()).thenReturn(innloggetBruker);
+        if (innloggetBruker instanceof InnloggetNavAnsatt) {
+            when(tokenUtils.hentInnloggetNavAnsatt()).thenReturn((InnloggetNavAnsatt) innloggetBruker);
+        }
     }
 }
