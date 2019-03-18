@@ -23,10 +23,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TilgangskontrollUtilsTest {
+public class TokenUtilsTest {
 
     @InjectMocks
-    private TilgangskontrollUtils tilgangskontroll;
+    private TokenUtils tilgangskontroll;
 
     @Mock
     private OIDCRequestContextHolder contextHolder;
@@ -70,11 +70,11 @@ public class TilgangskontrollUtilsTest {
     }
 
     private void vaerInnloggetSelvbetjening(InnloggetSelvbetjeningBruker bruker) {
-        vaerInnloggetNavAnsatt(TilgangskontrollUtils.ISSUER_SELVBETJENING, bruker.getIdentifikator().asString(), new HashMap<>(), "aud-selvbetjening");
+        vaerInnloggetNavAnsatt(TokenUtils.ISSUER_SELVBETJENING, bruker.getIdentifikator().asString(), new HashMap<>(), "aud-selvbetjening");
     }
 
     private void vaerInnloggetNavAnsatt(InnloggetNavAnsatt innloggetBruker) {
-        vaerInnloggetNavAnsatt(TilgangskontrollUtils.ISSUER_ISSO, "blablabla", Collections.singletonMap("NAVident", innloggetBruker.getIdentifikator().asString()), "aud-isso");
+        vaerInnloggetNavAnsatt(TokenUtils.ISSUER_ISSO, "blablabla", Collections.singletonMap("NAVident", innloggetBruker.getIdentifikator().asString()), "aud-isso");
     }
 
     private void vaerInnloggetNavAnsatt(String issuer, String subject, Map<String, Object> claims, String audience) {

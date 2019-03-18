@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/innlogget-bruker")
 @Transactional
 public class InnloggetBrukerController {
-    private final TilgangskontrollUtils tilgangskontroll;
+    private final TokenUtils tilgangskontroll;
 
     @Autowired
-    public InnloggetBrukerController(TilgangskontrollUtils tilgangskontroll) {
+    public InnloggetBrukerController(TokenUtils tilgangskontroll) {
         this.tilgangskontroll = tilgangskontroll;
     }
 
