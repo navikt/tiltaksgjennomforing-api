@@ -10,10 +10,10 @@ spec:
   team: teamtag
   port: 8080
   liveness:
-    path: /tiltaksgjennomforing-api/internal/actuator/info
+    path: /tiltaksgjennomforing-api/internal/healthcheck
     initialDelay: 20
   readiness:
-    path: /tiltaksgjennomforing-api/internal/actuator/info
+    path: /tiltaksgjennomforing-api/internal/healthcheck
     initialDelay: 20
   ingresses:
   - https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api/
