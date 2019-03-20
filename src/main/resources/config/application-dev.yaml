@@ -8,6 +8,8 @@ spring:
   h2:
     console:
       enabled: true
+  main:
+    banner-mode: "console"
 
 no.nav.security.oidc:
   issuers: selvbetjening, isso

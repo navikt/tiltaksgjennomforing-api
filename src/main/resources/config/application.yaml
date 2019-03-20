@@ -9,4 +9,6 @@ spring:
     banner-mode: "off"
   datasource:
     hikari:
-      maximum-pool-size: 2
+      minimum-idle: 1
+      maximum-pool-size: 5
+      max-lifetime: 300000
