@@ -32,12 +32,14 @@ public class AvtaleController {
     private final AvtaleRepository avtaleRepository;
     private final TokenUtils tokenUtils;
     private final TilgangUnderPilotering tilgangUnderPilotering;
+    private final OrganisasjonerService organisasjonerService;
 
     @Autowired
-    public AvtaleController(AvtaleRepository avtaleRepository, TokenUtils tokenUtils, TilgangUnderPilotering tilgangUnderPilotering) {
+    public AvtaleController(AvtaleRepository avtaleRepository, TokenUtils tokenUtils, TilgangUnderPilotering tilgangUnderPilotering, OrganisasjonerService organisasjonerService) {
         this.avtaleRepository = avtaleRepository;
         this.tokenUtils = tokenUtils;
         this.tilgangUnderPilotering = tilgangUnderPilotering;
+        this.organisasjonerService = organisasjonerService;
     }
 
     @GetMapping("/{avtaleId}")
@@ -59,7 +61,7 @@ public class AvtaleController {
             }
         }
         try {
-            String mineOrg =  OrganisasjonerService.getOrganisasjoner();
+            List<Organisasjon> mineOrg =  OrganisasjonerService.getOrganisasjoner();
             System.out.print(mineOrg);
         } catch (IOException e) {
             e.printStackTrace();
