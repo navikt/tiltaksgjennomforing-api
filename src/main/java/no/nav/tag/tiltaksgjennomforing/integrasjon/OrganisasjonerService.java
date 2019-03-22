@@ -1,8 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.integrasjon;
 
-import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.tag.tiltaksgjennomforing.controller.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.domene.Organisasjon;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -12,22 +12,22 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
 
 @Component
 public class OrganisasjonerService {
 
+    private final TokenUtils tokenUtils;
+
+    @Autowired
+    public OrganisasjonerService(TokenUtils tokenUtils) {
+        this.tokenUtils = tokenUtils;
+    }
 
 
-    public static List<Organisasjon> getOrganisasjoner() throws IOException {
-        TokenUtils tokenUtils = null;
-        String query = "&subject=04010100653";
-        String dnaGetOrganisasjoner = "https://arbeidsgiver-q.nav.no/ditt-nav-arbeidsgiver/api/organisasjoner" + query;
+    public  List<Organisasjon> getOrganisasjoner() throws IOException {
+        String dnaGetOrganisasjoner = "https://arbeidsgiver-q.nav.no/ditt-nav-arbeidsgiver/api/organisasjoner";
 
         ResponseEntity<List<Organisasjon>> respons = getFromDna(new ParameterizedTypeReference<List<Organisasjon>>() {},dnaGetOrganisasjoner);
         return respons.getBody();
@@ -35,23 +35,36 @@ public class OrganisasjonerService {
 
 
 
-    private static <T> ResponseEntity<List<T>> getFromDna(ParameterizedTypeReference<List<T>> typeReference, String query)  {
-        HttpHeaders headers = new HttpHeaders();
+    private  <T> ResponseEntity<List<T>> getFromDna(ParameterizedTypeReference<List<T>> typeReference, String query)  {
         RestTemplate restTemplate = new RestTemplate();
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
+        HttpEntity<String> headers = getheaderEntity();
         try {
             ResponseEntity<List<T>> respons = restTemplate.exchange(query,
-                    HttpMethod.GET, entity, typeReference);
+                    HttpMethod.GET, headers, typeReference);
             return respons;
 
         } catch (RestClientException exception) {
-           // log.error("Feil fra Altinn. Exception: ", exception);
-            //throw new Exception("Feil fra DNA", exception);
             System.out.println("Feil fra DNA lol");
             System.out.println(exception);
             return null;
         }
+    }
+
+    private  HttpEntity<String>  getheaderEntity() {
+        try {
+            String token = tokenUtils.hentToken();
+            System.out.println("TOKEN: ");
+            System.out.println(token);
+        } catch (Exception exception) {
+            System.out.println("Excpetion i tokenhenting: ");
+            System.out.println(exception);
+        }
+
+        String idtoken = "";
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Cookie", "selvbetjening-idtoken=" + idtoken);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        return entity;
     }
 
 

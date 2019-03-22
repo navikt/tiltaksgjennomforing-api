@@ -61,7 +61,7 @@ public class AvtaleController {
             }
         }
         try {
-            List<Organisasjon> mineOrg =  OrganisasjonerService.getOrganisasjoner();
+            List<Organisasjon> mineOrg =  organisasjonerService.getOrganisasjoner();
             System.out.print(mineOrg);
         } catch (IOException e) {
             e.printStackTrace();

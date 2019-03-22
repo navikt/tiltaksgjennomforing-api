@@ -36,7 +36,7 @@ public class TokenUtils {
     }
 
     public String hentToken() {
-        return contextHolder.getOIDCValidationContext().getToken("selvbetjening").getIdToken();
+        return contextHolder.getOIDCValidationContext().getToken(ISSUER_SELVBETJENING).getIdToken();
     }
 
     InnloggetSelvbetjeningBruker hentInnloggetSelvbetjeningBruker() {
