@@ -35,6 +35,10 @@ public class TokenUtils {
         }
     }
 
+    public String hentToken() {
+        return contextHolder.getOIDCValidationContext().getToken("selvbetjening").getIdToken();
+    }
+
     InnloggetSelvbetjeningBruker hentInnloggetSelvbetjeningBruker() {
         String fnr = hentClaim(ISSUER_SELVBETJENING, "sub")
                 .orElseThrow(() -> new TilgangskontrollException("Finner ikke fodselsnummer til bruker."));

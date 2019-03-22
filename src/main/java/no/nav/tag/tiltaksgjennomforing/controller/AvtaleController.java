@@ -8,11 +8,13 @@ import no.nav.tag.tiltaksgjennomforing.domene.*;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.RessursFinnesIkkeException;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.OrganisasjonerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +57,12 @@ public class AvtaleController {
             if (avtale.harLesetilgang(bruker)) {
                 avtaler.add(avtale);
             }
+        }
+        try {
+            String mineOrg =  OrganisasjonerService.getOrganisasjoner();
+            System.out.print(mineOrg);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return avtaler;
     }
