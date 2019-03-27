@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.domene.*;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
+import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
 import org.junit.Test;
@@ -35,10 +36,10 @@ public class AvtaleControllerTest {
     private AvtaleRepository avtaleRepository;
 
     @Mock
-    private TokenUtils tokenUtils;
+    private TilgangUnderPilotering tilgangUnderPilotering;
 
     @Mock
-    private TilgangUnderPilotering tilgangUnderPilotering;
+    private InnloggingService innloggingService;
 
     private static List<Avtale> lagListeMedAvtaler(Avtale avtale, int antall) {
         List<Avtale> avtaler = new ArrayList<>();
@@ -142,7 +143,7 @@ public class AvtaleControllerTest {
             hentedeAvtaler.add(avtale);
         }
 
-        hentedeAvtaler.forEach(avtale -> assertThat(avtale.harLesetilgang(selvbetjeningBruker)).isTrue());
+        hentedeAvtaler.forEach(avtale -> assertThat(selvbetjeningBruker.harTilgang(avtale)).isTrue());
         assertThat(hentedeAvtaler.size()).isEqualTo(avtalerBrukerHarTilgangTil.size());
     }
 
@@ -183,9 +184,9 @@ public class AvtaleControllerTest {
     }
 
     private void vaerInnloggetSom(InnloggetBruker innloggetBruker) {
-        when(tokenUtils.hentInnloggetBruker()).thenReturn(innloggetBruker);
+        when(innloggingService.hentInnloggetBruker()).thenReturn(innloggetBruker);
         if (innloggetBruker instanceof InnloggetNavAnsatt) {
-            when(tokenUtils.hentInnloggetNavAnsatt()).thenReturn((InnloggetNavAnsatt) innloggetBruker);
+            when(innloggingService.hentInnloggetNavAnsatt()).thenReturn((InnloggetNavAnsatt) innloggetBruker);
         }
     }
 }

@@ -12,3 +12,6 @@ no.nav.security.oidc:
     isso:
       discoveryurl: https://login.microsoftonline.com/navno.onmicrosoft.com/.well-known/openid-configuration
       accepted_audience: 9b4e07a3-4f4c-4bab-b866-87f62dff480d
+
+altinn:
+  altinn_url: "https://api-gw.adeo.no/ekstern/altinn/api/serviceowner/"

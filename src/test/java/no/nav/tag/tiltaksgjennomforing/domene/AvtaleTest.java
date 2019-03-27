@@ -12,23 +12,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AvtaleTest {
 
     @Test
-    public void kunParteneIAvtalenSkalHaTilgang() {
-        Deltaker deltaker = TestData.enDeltaker();
-        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver();
-        Veileder veileder = TestData.enVeileder();
-
-        Avtale avtale = Avtale.nyAvtale(new OpprettAvtale(deltaker.getIdentifikator(), arbeidsgiver.getIdentifikator(), "Testbutikken"), veileder.getIdentifikator());
-
-        SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(avtale.harLesetilgang(TestData.innloggetSelvbetjeningBruker(arbeidsgiver))).isTrue();
-            softly.assertThat(avtale.harLesetilgang(TestData.innloggetSelvbetjeningBruker(deltaker))).isTrue();
-            softly.assertThat(avtale.harLesetilgang(TestData.innloggetNavAnsatt(veileder))).isTrue();
-            softly.assertThat(avtale.harLesetilgang(TestData.enSelvbetjeningBruker())).isFalse();
-            softly.assertThat(avtale.harLesetilgang(TestData.enNavAnsatt())).isFalse();
-        });
-    }
-
-    @Test
     public void nyAvtaleFactorySkalReturnereRiktigeStandardverdier() {
         Fnr deltakerFnr = new Fnr("01234567890");
         Fnr arbeidsgiverFnr = new Fnr("12345678901");

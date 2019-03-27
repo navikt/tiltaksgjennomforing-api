@@ -1,0 +1,170 @@
+[
+  {
+    "Name": "BALLSTAD OG EIDSLANDET",
+    "Type": "Business",
+    "OrganizationNumber": "811076422",
+    "OrganizationForm": "BEDR",
+    "Status": "Active"
+  },
+  {
+    "Name": "BALLSTAD OG HAMARØY",
+    "Type": "Business",
+    "OrganizationNumber": "811076732",
+    "OrganizationForm": "BEDR",
+    "Status": "Active"
+  },
+  {
+    "Name": "BALLSTAD OG HORTEN",
+    "Type": "Enterprise",
+    "OrganizationNumber": "811076112",
+    "OrganizationForm": "AS",
+    "Status": "Active"
+  },
+  {
+    "Name": "BALLSTAD OG SÆTERVIK",
+    "Type": "Business",
+    "OrganizationNumber": "811076902",
+    "OrganizationForm": "BEDR",
+    "Status": "Active"
+  },
+  {
+    "Name": "BAREKSTAD OG YTTERVÅG REGNSKAP",
+    "Type": "Enterprise",
+    "OrganizationNumber": "810514442",
+    "OrganizationForm": "AS",
+    "Status": "Active"
+  },
+  {
+    "Name": "BIRI OG VANNAREID REVISJON",
+    "Type": "Enterprise",
+    "OrganizationNumber": "910998250",
+    "OrganizationForm": "AS",
+    "Status": "Active"
+  },
+  {
+    "Name": "EIDSNES OG AUSTRE ÅMØY",
+    "Type": "Business",
+    "OrganizationNumber": "910521551",
+    "OrganizationForm": "BEDR",
+    "Status": "Active"
+  },
+  {
+    "Name": "ERLING ENGENES",
+    "Type": "Person",
+    "OrganizationNumber": null,
+    "OrganizationForm": null,
+    "Status": null
+  },
+  {
+    "Name": "FRØNNINGEN OG LAUVSTAD REVISJON",
+    "Type": "Enterprise",
+    "OrganizationNumber": "910223208",
+    "OrganizationForm": "AS",
+    "Status": "Active"
+  },
+  {
+    "Name": "HARSTAD OG TYSSEDAL REVISJON",
+    "Type": "Enterprise",
+    "OrganizationNumber": "810989572",
+    "OrganizationForm": "AS",
+    "Status": "Active"
+  },
+  {
+    "Name": "HAVNNES OG ÅGSKARDET",
+    "Type": "Enterprise",
+    "OrganizationNumber": "910646176",
+    "OrganizationForm": "AS",
+    "Status": "Active"
+  },
+  {
+    "Name": "KJØLLEFJORD OG ØKSFJORD",
+    "Type": "Enterprise",
+    "OrganizationNumber": "910175777",
+    "OrganizationForm": "AS",
+    "Status": "Active"
+  },
+  {
+    "Name": "KYSTBASEN ÅGOTNES OG ILSENG REGNSKAP",
+    "Type": "Enterprise",
+    "OrganizationNumber": "910514318",
+    "OrganizationForm": "ASA",
+    "Status": "Active"
+  },
+  {
+    "Name": "RAMNES OG TYSSEDAL REGNSKAP",
+    "Type": "Business",
+    "OrganizationNumber": "910804456",
+    "OrganizationForm": "BEDR",
+    "Status": "Active"
+  },
+  {
+    "Name": "RODAL LOUIS",
+    "Type": "Person",
+    "OrganizationNumber": null,
+    "OrganizationForm": null,
+    "Status": null
+  },
+  {
+    "Name": "SANDVÆR OG HOV",
+    "Type": "Business",
+    "OrganizationNumber": "910793829",
+    "OrganizationForm": "BEDR",
+    "Status": "Active"
+  },
+  {
+    "Name": "SKOTSELV OG HJELSET",
+    "Type": "Enterprise",
+    "OrganizationNumber": "910720120",
+    "OrganizationForm": "AS",
+    "Status": "Active"
+  },
+  {
+    "Name": "STOL PÅ TORE",
+    "Type": "Enterprise",
+    "OrganizationNumber": "810771852",
+    "OrganizationForm": "AS",
+    "Status": "Active"
+  },
+  {
+    "Name": "SØR-HIDLE OG STRAUMGJERDE",
+    "Type": "Enterprise",
+    "OrganizationNumber": "910167200",
+    "OrganizationForm": "AS",
+    "Status": "Active"
+  },
+  {
+    "Name": "TROMVIK OG SPARBU REVISJON",
+    "Type": "Business",
+    "OrganizationNumber": "910989626",
+    "OrganizationForm": "BEDR",
+    "Status": "Active"
+  },
+  {
+    "Name": "Tore sitt testselskap",
+    "Type": "Enterprise",
+    "OrganizationNumber": "910820834",
+    "OrganizationForm": "AS",
+    "Status": "Active"
+  },
+  {
+    "Name": "UGGDAL OG STEINSDALEN",
+    "Type": "Business",
+    "OrganizationNumber": "910521616",
+    "OrganizationForm": "BEDR",
+    "Status": "Active"
+  },
+  {
+    "Name": "VALESTRANDSFOSSEN OG SØRLI REVISJON",
+    "Type": "Business",
+    "OrganizationNumber": "810989602",
+    "OrganizationForm": "BEDR",
+    "Status": "Active"
+  },
+  {
+    "Name": "VESTBY OG LOEN REVISJON",
+    "Type": "Business",
+    "OrganizationNumber": "910989642",
+    "OrganizationForm": "BEDR",
+    "Status": "Active"
+  }
+]

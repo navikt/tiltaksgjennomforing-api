@@ -9,6 +9,7 @@ import no.nav.tag.tiltaksgjennomforing.domene.events.*;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.AltinnService;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.domain.AbstractAggregateRoot;
@@ -38,7 +39,7 @@ public class Avtale extends AbstractAggregateRoot {
     private String deltakerFornavn;
     private String deltakerEtternavn;
     private String bedriftNavn;
-    private String bedriftNr;
+    private BedriftNr bedriftNr;
     private String arbeidsgiverFornavn;
     private String arbeidsgiverEtternavn;
     private String arbeidsgiverTlf;
@@ -126,20 +127,6 @@ public class Avtale extends AbstractAggregateRoot {
         registerEvent(new GodkjenningerOpphevet(this, avtalerolle));
     }
 
-    public void sjekkLesetilgang(InnloggetBruker bruker) {
-        if (!harLesetilgang(bruker)) {
-            throw new TilgangskontrollException("Innlogget bruker har ikke lesetilgang til avtalen.");
-        }
-    }
-
-    public boolean harLesetilgang(InnloggetBruker bruker) {
-        Identifikator id = bruker.getIdentifikator();
-
-        return id.equals(veilederNavIdent) ||
-                id.equals(deltakerFnr) ||
-                id.equals(arbeidsgiverFnr);
-    }
-
     private void inkrementerVersjonsnummer() {
         versjon += 1;
     }
@@ -171,7 +158,8 @@ public class Avtale extends AbstractAggregateRoot {
             return new Arbeidsgiver(arbeidsgiverFnr, this);
         } else if (identifikator.equals(veilederNavIdent)) {
             return new Veileder(veilederNavIdent, this);
-        } else {
+        }
+        else {
             throw new TilgangskontrollException("Er ikke part i avtalen");
         }
     }
