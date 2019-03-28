@@ -2,12 +2,11 @@ package no.nav.tag.tiltaksgjennomforing.controller;
 
 import io.micrometer.core.annotation.Timed;
 import no.nav.security.oidc.api.Protected;
-import no.nav.tag.tiltaksgjennomforing.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.TilgangUnderPilotering;
 import no.nav.tag.tiltaksgjennomforing.domene.*;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.RessursFinnesIkkeException;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static no.nav.tag.tiltaksgjennomforing.Utils.lagUri;
+import static no.nav.tag.tiltaksgjennomforing.domene.Utils.lagUri;
 
 @Protected
 @RestController
@@ -29,10 +28,10 @@ public class AvtaleController {
 
     private final AvtaleRepository avtaleRepository;
     private final TokenUtils tokenUtils;
-    private final TilgangUnderPilotering tilgangUnderPilotering;
+    private final PilotProperties tilgangUnderPilotering;
 
     @Autowired
-    public AvtaleController(AvtaleRepository avtaleRepository, TokenUtils tokenUtils, TilgangUnderPilotering tilgangUnderPilotering) {
+    public AvtaleController(AvtaleRepository avtaleRepository, TokenUtils tokenUtils, PilotProperties tilgangUnderPilotering) {
         this.avtaleRepository = avtaleRepository;
         this.tokenUtils = tokenUtils;
         this.tilgangUnderPilotering = tilgangUnderPilotering;

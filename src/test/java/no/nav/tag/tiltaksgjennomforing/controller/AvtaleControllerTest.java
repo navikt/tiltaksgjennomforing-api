@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.controller;
 
-import no.nav.tag.tiltaksgjennomforing.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.TilgangUnderPilotering;
+import no.nav.tag.tiltaksgjennomforing.domene.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
 import no.nav.tag.tiltaksgjennomforing.domene.*;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
@@ -38,7 +38,7 @@ public class AvtaleControllerTest {
     private TokenUtils tokenUtils;
 
     @Mock
-    private TilgangUnderPilotering tilgangUnderPilotering;
+    private PilotProperties tilgangUnderPilotering;
 
     private static List<Avtale> lagListeMedAvtaler(Avtale avtale, int antall) {
         List<Avtale> avtaler = new ArrayList<>();

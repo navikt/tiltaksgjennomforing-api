@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing;
+package no.nav.tag.tiltaksgjennomforing.integrasjon;
 
 import io.micrometer.core.aop.TimedAspect;
 import io.micrometer.core.instrument.MeterRegistry;

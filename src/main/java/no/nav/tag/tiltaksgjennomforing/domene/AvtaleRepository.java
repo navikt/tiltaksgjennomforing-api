@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing;
+package no.nav.tag.tiltaksgjennomforing.domene;
 
 import no.nav.tag.tiltaksgjennomforing.domene.Avtale;
 import org.springframework.data.repository.CrudRepository;
