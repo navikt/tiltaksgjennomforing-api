@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing;
+package no.nav.tag.tiltaksgjennomforing.integrasjon;
 
 import no.nav.tag.tiltaksgjennomforing.domene.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.domene.Fnr;
@@ -12,7 +12,7 @@ import org.springframework.lang.Nullable;
 import java.util.Arrays;
 
 @Configuration
-public class DatabaseConfiguration extends JdbcConfiguration {
+public class JdbcConvertersConfiguration extends JdbcConfiguration {
     @Override
     public JdbcCustomConversions jdbcCustomConversions() {
         return new JdbcCustomConversions(Arrays.asList(new Converter<Fnr, String>() {

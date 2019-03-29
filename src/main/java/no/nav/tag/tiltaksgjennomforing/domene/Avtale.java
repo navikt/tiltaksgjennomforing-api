@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static no.nav.tag.tiltaksgjennomforing.Utils.erIkkeNull;
-import static no.nav.tag.tiltaksgjennomforing.Utils.sjekkAtIkkeNull;
+import static no.nav.tag.tiltaksgjennomforing.domene.Utils.erIkkeNull;
+import static no.nav.tag.tiltaksgjennomforing.domene.Utils.sjekkAtIkkeNull;
 
 @Data
 @EqualsAndHashCode(callSuper = false)

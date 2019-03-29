@@ -2,14 +2,13 @@ package no.nav.tag.tiltaksgjennomforing.controller;
 
 import io.micrometer.core.annotation.Timed;
 import no.nav.security.oidc.api.Protected;
-import no.nav.tag.tiltaksgjennomforing.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.TilgangUnderPilotering;
 import no.nav.tag.tiltaksgjennomforing.domene.*;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static no.nav.tag.tiltaksgjennomforing.Utils.lagUri;
+import static no.nav.tag.tiltaksgjennomforing.domene.Utils.lagUri;
 
 @Protected
 @RestController
@@ -30,11 +29,11 @@ import static no.nav.tag.tiltaksgjennomforing.Utils.lagUri;
 public class AvtaleController {
 
     private final AvtaleRepository avtaleRepository;
-    private final TilgangUnderPilotering tilgangUnderPilotering;
+    private final PilotProperties tilgangUnderPilotering;
     private final InnloggingService innloggingService;
 
     @Autowired
-    public AvtaleController(AvtaleRepository avtaleRepository, TilgangUnderPilotering tilgangUnderPilotering, InnloggingService innloggingService) {
+    public AvtaleController(AvtaleRepository avtaleRepository, PilotProperties tilgangUnderPilotering, InnloggingService innloggingService) {
         this.avtaleRepository = avtaleRepository;
         this.tilgangUnderPilotering = tilgangUnderPilotering;
         this.innloggingService = innloggingService;

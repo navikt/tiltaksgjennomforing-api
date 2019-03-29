@@ -1,7 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.controller;
 
-import no.nav.tag.tiltaksgjennomforing.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.TilgangUnderPilotering;
 import no.nav.tag.tiltaksgjennomforing.domene.*;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
@@ -9,6 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjenin
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -36,7 +35,7 @@ public class AvtaleControllerTest {
     private AvtaleRepository avtaleRepository;
 
     @Mock
-    private TilgangUnderPilotering tilgangUnderPilotering;
+    private PilotProperties tilgangUnderPilotering;
 
     @Mock
     private InnloggingService innloggingService;

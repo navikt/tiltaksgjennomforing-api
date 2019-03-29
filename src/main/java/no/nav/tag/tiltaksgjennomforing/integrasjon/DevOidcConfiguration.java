@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing;
+package no.nav.tag.tiltaksgjennomforing.integrasjon;
 
 import no.nav.security.oidc.test.support.spring.TokenGeneratorConfiguration;
 import org.springframework.context.annotation.Configuration;
