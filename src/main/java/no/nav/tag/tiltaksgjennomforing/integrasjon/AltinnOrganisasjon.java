@@ -22,7 +22,7 @@ public class AltinnOrganisasjon {
     @JsonProperty("Status")
     private String status;
 
-    public Organisasjon create() {
+    public Organisasjon konverterTilDomeneObjekt() {
         return new Organisasjon(new BedriftNr(organizationNumber), name);
     }
 }

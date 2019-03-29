@@ -1,8 +1,8 @@
-package no.nav.tag.tiltaksgjennomforing.domene.autorisasjon;
+package no.nav.tag.tiltaksgjennomforing.integrasjon;
 
-import no.nav.tag.tiltaksgjennomforing.controller.TokenUtils;
-import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.integrasjon.AltinnService;
+import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
+import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
+import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,12 +18,11 @@ public class InnloggingService {
     public InnloggetBruker hentInnloggetBruker() {
         if (tokenUtils.erInnloggetSelvbetjeningBruker()) {
             InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker = tokenUtils.hentInnloggetSelvbetjeningBruker();
-            innloggetSelvbetjeningBruker.getOrganisasjoner().addAll(altinnService.hentOrganisasjoner(innloggetSelvbetjeningBruker.getIdentifikator()));
+            innloggetSelvbetjeningBruker.setOrganisasjoner(altinnService.hentOrganisasjoner(innloggetSelvbetjeningBruker.getIdentifikator()));
             return innloggetSelvbetjeningBruker;
-        } else if (tokenUtils.erInnloggetNavAnsatt()) {
+        } else {
             return tokenUtils.hentInnloggetNavAnsatt();
         }
-        throw new TilgangskontrollException("");
     }
 
     public InnloggetNavAnsatt hentInnloggetNavAnsatt() {

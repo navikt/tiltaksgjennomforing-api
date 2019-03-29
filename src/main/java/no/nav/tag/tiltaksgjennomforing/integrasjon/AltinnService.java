@@ -1,74 +1,52 @@
 package no.nav.tag.tiltaksgjennomforing.integrasjon;
 
-import no.nav.tag.tiltaksgjennomforing.controller.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.domene.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.domene.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.AltinnException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.AltinnProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
 public class AltinnService {
+    private final AltinnProperties altinnProperties;
+    private final RestTemplate restTemplate;
 
-    private final TokenUtils tokenUtils;
-    private final AltinnConfiguration altinnConfiguration;
-
-    @Autowired
-    public AltinnService(TokenUtils tokenUtils, AltinnConfiguration altinnConfiguration) {
-        this.tokenUtils = tokenUtils;
-        this.altinnConfiguration = altinnConfiguration;
+    public AltinnService(AltinnProperties altinnProperties) {
+        this.altinnProperties = altinnProperties;
+        restTemplate = new RestTemplate();
+        restTemplate.setInterceptors(Arrays.asList((request, body, execution) -> {
+            request.getHeaders().add("X-NAV-APIKEY", altinnProperties.getAltinnApiKey());
+            request.getHeaders().add("APIKEY", altinnProperties.getApiGwApiKey());
+            return execution.execute(request, body);
+        }));
     }
 
-
-    public  List<Organisasjon> hentOrganisasjoner(Identifikator fnr) {
-        String query = "&subject=" + fnr;
-        ResponseEntity<List<AltinnOrganisasjon>> respons = getFromAltinn(new ParameterizedTypeReference<List<AltinnOrganisasjon>>() {},query);
-        return respons.getBody().stream()
-                .map(AltinnOrganisasjon::create)
+    private static List<Organisasjon> konverterTilDomeneObjekter(List<AltinnOrganisasjon> altinnOrganisasjoner) {
+        return altinnOrganisasjoner.stream()
+                .map(AltinnOrganisasjon::konverterTilDomeneObjekt)
                 .collect(Collectors.toList());
     }
 
-    private  HttpEntity<String>  getheaderEntity() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("X-NAV-APIKEY", altinnConfiguration.getApikey());
-        headers.set("APIKEY", altinnConfiguration.getGw_apikey());
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        return entity;
-    }
-
-
-    private  <T> ResponseEntity<List<T>> getFromAltinn(ParameterizedTypeReference<List<T>> typeReference, String query)  {
-        String url = altinnConfiguration.getAltinn_url() + "/reportees/?ForceEIAuthentication" + query;
-        RestTemplate restTemplate = new RestTemplate();
-        HttpEntity<String> headers = getheaderEntity();
-
+    public List<Organisasjon> hentOrganisasjoner(Identifikator fnr) {
+        String uri = UriComponentsBuilder.fromUri(altinnProperties.getAltinnUrl())
+                .pathSegment("reportees")
+                .queryParam("ForceEIAuthentication", true)
+                .queryParam("subject", fnr.asString())
+                .toUriString();
         try {
-            ResponseEntity<List<T>> respons = restTemplate.exchange(url,
-                    HttpMethod.GET, headers, typeReference);
-            return respons;
-
+            List<AltinnOrganisasjon> altinnOrganisasjoner = restTemplate.getForObject(uri, List.class);
+            return konverterTilDomeneObjekter(altinnOrganisasjoner);
         } catch (RestClientException exception) {
-           // log.error("Feil fra Altinn. Exception: ", exception);
             throw new AltinnException("Feil fra Altinn", exception);
         }
-
     }
-
-
-
-
-
-
 }
 
 

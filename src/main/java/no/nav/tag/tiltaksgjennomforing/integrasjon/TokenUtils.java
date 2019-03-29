@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.controller;
+package no.nav.tag.tiltaksgjennomforing.integrasjon;
 
 import com.nimbusds.jwt.JWTClaimsSet;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;

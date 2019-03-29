@@ -12,3 +12,7 @@ no.nav.security.oidc:
     isso:
       discoveryurl: http://metadata-isso
       accepted_audience: aud-isso
+
+tiltaksgjennomforing:
+  altinn:
+    altinn_url: http://localhost:${mock.port}/altinn
