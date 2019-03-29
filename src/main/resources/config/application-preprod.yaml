@@ -12,3 +12,12 @@ no.nav.security.oidc:
     isso:
       discoveryurl: https://login.microsoftonline.com/NAVQ.onmicrosoft.com/.well-known/openid-configuration
       accepted_audience: 38e07d31-659d-4595-939a-f18dce3446c5
+
+tiltaksgjennomforing:
+  database:
+    database-navn: tiltaksgjennomforing-preprod
+    database-url: ${spring.datasource.url}
+    vault-sti: postgresql/preprod-fss
+    minimum-idle: 1
+    maximum-pool-size: 5
+    max-lifetime: 300000

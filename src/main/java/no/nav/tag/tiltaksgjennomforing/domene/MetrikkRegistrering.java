@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing;
+package no.nav.tag.tiltaksgjennomforing.domene;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;

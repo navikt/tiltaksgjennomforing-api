@@ -5,10 +5,9 @@ management.endpoints.web:
   base-path: /internal/actuator
 
 spring:
+  application:
+    name: tiltaksgjennomforing-api
+  profiles:
+    active: dev
   main:
     banner-mode: "off"
-  datasource:
-    hikari:
-      minimum-idle: 1
-      maximum-pool-size: 5
-      max-lifetime: 300000
