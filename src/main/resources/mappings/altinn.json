@@ -4,7 +4,7 @@
       "priority": 1,
       "request": {
         "method": "GET",
-        "urlPath": "/altinn/reportees",
+        "urlPath": "/ekstern/altinn/api/serviceowner/reportees",
         "queryParameters" : {
           "subject" : {
             "matches" : "^1\\d{10}$"
@@ -23,7 +23,7 @@
       "priority": 1,
       "request": {
         "method": "GET",
-        "urlPath": "/altinn/reportees",
+        "urlPath": "/ekstern/altinn/api/serviceowner/reportees",
         "queryParameters" : {
           "subject" : {
             "matches" : "^2\\d{10}$"
@@ -41,7 +41,7 @@
       "priority": 2,
       "request": {
         "method": "GET",
-        "urlPath": "/altinn/reportees",
+        "urlPath": "/ekstern/altinn/api/serviceowner/reportees",
         "queryParameters" : {
           "subject" : {
             "matches" : "^\\d{11}$"
@@ -59,7 +59,7 @@
     {
       "request": {
         "method": "GET",
-        "urlPath": "/altinn/reportees",
+        "urlPath": "/ekstern/altinn/api/serviceowner/reportees",
         "queryParameters" : {
           "subject" : {
             "doesNotMatch" : "^\\d{11}$"

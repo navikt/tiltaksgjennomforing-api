@@ -36,6 +36,7 @@ public class AltinnService {
 
     public List<Organisasjon> hentOrganisasjoner(Identifikator fnr) {
         String uri = UriComponentsBuilder.fromUri(altinnProperties.getAltinnUri())
+                .pathSegment("ekstern", "altinn", "api", "serviceowner", "reportees")
                 .queryParam("ForceEIAuthentication")
                 .queryParam("subject", fnr.asString())
                 .build()

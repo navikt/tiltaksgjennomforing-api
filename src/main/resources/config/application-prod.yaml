@@ -22,4 +22,4 @@ tiltaksgjennomforing:
     maximum-pool-size: 5
     max-lifetime: 300000
   altinn:
-    altinn-uri: https://api-gw.adeo.no/ekstern/altinn/api/serviceowner/
+    altinn-uri: https://api-gw.adeo.no
