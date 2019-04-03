@@ -23,4 +23,6 @@ no.nav.security.oidc:
 
 tiltaksgjennomforing:
   altinn:
-    altinn_url: http://localhost:${mock.port}/altinn
+    altinn-uri: http://localhost:8090/altinn/reportees
+    altinn-api-key: test
+    api-gw-api-key: test

@@ -5,13 +5,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.net.URI;
-import java.net.URL;
 
-@Component
 @Data
+@Component
 @ConfigurationProperties(prefix = "tiltaksgjennomforing.altinn")
 public class AltinnProperties {
-    private URI altinnUrl;
+    private URI altinnUri;
     private String altinnApiKey;
     private String apiGwApiKey;
 }

@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.controller;
+package no.nav.tag.tiltaksgjennomforing.integrasjon;
 
 import no.nav.security.oidc.context.OIDCClaims;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
@@ -8,7 +8,6 @@ import no.nav.tag.tiltaksgjennomforing.domene.TestData;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.integrasjon.TokenUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

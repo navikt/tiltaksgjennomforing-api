@@ -28,20 +28,20 @@ public class AltinnService {
         }));
     }
 
-    private static List<Organisasjon> konverterTilDomeneObjekter(List<AltinnOrganisasjon> altinnOrganisasjoner) {
-        return altinnOrganisasjoner.stream()
+    private static List<Organisasjon> konverterTilDomeneObjekter(AltinnOrganisasjon[] altinnOrganisasjoner) {
+        return Arrays.stream(altinnOrganisasjoner)
                 .map(AltinnOrganisasjon::konverterTilDomeneObjekt)
                 .collect(Collectors.toList());
     }
 
     public List<Organisasjon> hentOrganisasjoner(Identifikator fnr) {
-        String uri = UriComponentsBuilder.fromUri(altinnProperties.getAltinnUrl())
-                .pathSegment("reportees")
-                .queryParam("ForceEIAuthentication", true)
+        String uri = UriComponentsBuilder.fromUri(altinnProperties.getAltinnUri())
+                .queryParam("ForceEIAuthentication")
                 .queryParam("subject", fnr.asString())
+                .build()
                 .toUriString();
         try {
-            List<AltinnOrganisasjon> altinnOrganisasjoner = restTemplate.getForObject(uri, List.class);
+            AltinnOrganisasjon[] altinnOrganisasjoner = restTemplate.getForObject(uri, AltinnOrganisasjon[].class);
             return konverterTilDomeneObjekter(altinnOrganisasjoner);
         } catch (RestClientException exception) {
             throw new AltinnException("Feil fra Altinn", exception);

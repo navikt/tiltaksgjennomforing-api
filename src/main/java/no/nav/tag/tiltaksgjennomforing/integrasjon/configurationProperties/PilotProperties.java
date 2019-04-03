@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
 @Component
 @ConfigurationProperties(prefix = "tiltaksgjennomforing.pilot")
-@Data
 public class PilotProperties {
     private boolean enabled;
     private List<NavIdent> identer = new ArrayList<>();

@@ -2,9 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.domene.autorisasjon;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import no.nav.tag.tiltaksgjennomforing.domene.Avtale;
-import no.nav.tag.tiltaksgjennomforing.domene.Fnr;
-import no.nav.tag.tiltaksgjennomforing.domene.Organisasjon;
+import no.nav.tag.tiltaksgjennomforing.domene.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,12 +16,15 @@ public class InnloggetSelvbetjeningBruker extends InnloggetBruker<Fnr> {
         super(identifikator);
     }
 
-    public boolean harTilgang(Avtale avtale) {
-        if (avtale.getDeltakerFnr().equals(getIdentifikator())
-                || avtale.getArbeidsgiverFnr().equals(getIdentifikator())
+    @Override
+    public Avtalepart avtalepart(Avtale avtale) {
+        if (avtale.getDeltakerFnr().equals(getIdentifikator())) {
+            return new Deltaker(getIdentifikator(), avtale);
+        } else if (avtale.getArbeidsgiverFnr().equals(getIdentifikator())
                 || organisasjoner.stream().anyMatch(o -> avtale.getBedriftNr().equals(o.getBedriftNr()))) {
-            return true;
+            return new Arbeidsgiver(getIdentifikator(), avtale);
+        } else {
+            return null;
         }
-        return false;
     }
 }

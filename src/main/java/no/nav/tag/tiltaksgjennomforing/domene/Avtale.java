@@ -4,12 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.events.*;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
-import no.nav.tag.tiltaksgjennomforing.integrasjon.AltinnService;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.domain.AbstractAggregateRoot;
@@ -148,20 +146,6 @@ public class Avtale extends AbstractAggregateRoot {
 
         this.getMaal().forEach(Maal::settIdOgOpprettetTidspunkt);
         this.getOppgaver().forEach(Oppgave::settIdOgOpprettetTidspunkt);
-    }
-
-    public Avtalepart hentAvtalepart(InnloggetBruker innloggetBruker) {
-        Identifikator identifikator = innloggetBruker.getIdentifikator();
-        if (identifikator.equals(deltakerFnr)) {
-            return new Deltaker(deltakerFnr, this);
-        } else if (identifikator.equals(arbeidsgiverFnr)) {
-            return new Arbeidsgiver(arbeidsgiverFnr, this);
-        } else if (identifikator.equals(veilederNavIdent)) {
-            return new Veileder(veilederNavIdent, this);
-        }
-        else {
-            throw new TilgangskontrollException("Er ikke part i avtalen");
-        }
     }
 
     void godkjennForArbeidsgiver(Identifikator utfortAv) {

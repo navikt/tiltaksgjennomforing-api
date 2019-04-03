@@ -1,7 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.domene;
 
-import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
-import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
 import org.assertj.core.api.SoftAssertions;
@@ -125,27 +123,6 @@ public class AvtaleTest {
         Avtale avtale = TestData.enAvtale();
         avtale.endreAvtale(avtale.getVersjon(), TestData.ingenEndring(), Avtalerolle.VEILEDER);
         assertThat(avtale.getVersjon()).isEqualTo(2);
-    }
-
-    @Test
-    public void deltakerKnyttetTilAvtaleSkalHaDeltakerRolle() {
-        Avtale avtale = TestData.enAvtale();
-        InnloggetSelvbetjeningBruker selvbetjeningBruker = TestData.innloggetSelvbetjeningBruker(TestData.enDeltaker(avtale));
-        assertThat(avtale.hentAvtalepart(selvbetjeningBruker)).isInstanceOf(Deltaker.class);
-    }
-
-    @Test
-    public void arbeidsgiverKnyttetTilAvtaleSkalHaArbeidsgiverRolle() {
-        Avtale avtale = TestData.enAvtale();
-        InnloggetSelvbetjeningBruker selvbetjeningBruker = TestData.innloggetSelvbetjeningBruker(TestData.enArbeidsgiver(avtale));
-        assertThat(avtale.hentAvtalepart(selvbetjeningBruker)).isInstanceOf(Arbeidsgiver.class);
-    }
-
-    @Test
-    public void veilederKnyttetTilAvtaleSkalHaVeilederRolle() {
-        Avtale avtale = TestData.enAvtale();
-        InnloggetNavAnsatt navAnsatt = TestData.innloggetNavAnsatt(TestData.enVeileder(avtale));
-        assertThat(avtale.hentAvtalepart(navAnsatt)).isInstanceOf(Veileder.class);
     }
 
     @Test(expected = TiltaksgjennomforingException.class)

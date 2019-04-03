@@ -5,9 +5,8 @@ import no.nav.security.oidc.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.domene.*;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
-import no.nav.tag.tiltaksgjennomforing.integrasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.RessursFinnesIkkeException;
-import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +43,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(id)
                 .orElseThrow(RessursFinnesIkkeException::new);
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
-        if (!innloggetBruker.harTilgang(avtale)) throw new TilgangskontrollException("");
+        innloggetBruker.sjekkTilgang(avtale);
         return ResponseEntity.ok(avtale);
     }
 
@@ -75,8 +74,10 @@ public class AvtaleController {
                                       @RequestHeader("If-Match") Integer versjon,
                                       @RequestBody EndreAvtale endreAvtale) {
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
-        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        Avtalepart avtalepart = avtale.hentAvtalepart(innloggetBruker);
+        Avtale avtale = avtaleRepository.findById(avtaleId)
+                .orElseThrow(RessursFinnesIkkeException::new);
+        innloggetBruker.sjekkTilgang(avtale);
+        Avtalepart avtalepart = innloggetBruker.avtalepart(avtale);
         avtalepart.endreAvtale(versjon, endreAvtale);
         Avtale lagretAvtale = avtaleRepository.save(avtale);
         return ResponseEntity.ok().header("eTag", lagretAvtale.getVersjon().toString()).build();
@@ -86,7 +87,8 @@ public class AvtaleController {
     public ResponseEntity<Avtalerolle> hentRolle(@PathVariable("avtaleId") UUID avtaleId) {
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        Avtalepart avtalepart = avtale.hentAvtalepart(innloggetBruker);
+        innloggetBruker.sjekkTilgang(avtale);
+        Avtalepart avtalepart = innloggetBruker.avtalepart(avtale);
         return ResponseEntity.ok(avtalepart.rolle());
     }
 
@@ -94,7 +96,8 @@ public class AvtaleController {
     public ResponseEntity opphevGodkjenninger(@PathVariable("avtaleId") UUID avtaleId) {
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        Avtalepart avtalepart = avtale.hentAvtalepart(innloggetBruker);
+        innloggetBruker.sjekkTilgang(avtale);
+        Avtalepart avtalepart = innloggetBruker.avtalepart(avtale);
         avtalepart.opphevGodkjenninger();
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();
@@ -104,7 +107,8 @@ public class AvtaleController {
     public ResponseEntity godkjenn(@PathVariable("avtaleId") UUID avtaleId) {
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        Avtalepart avtalepart = avtale.hentAvtalepart(innloggetBruker);
+        innloggetBruker.sjekkTilgang(avtale);
+        Avtalepart avtalepart = innloggetBruker.avtalepart(avtale);
         avtalepart.godkjennAvtale();
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();

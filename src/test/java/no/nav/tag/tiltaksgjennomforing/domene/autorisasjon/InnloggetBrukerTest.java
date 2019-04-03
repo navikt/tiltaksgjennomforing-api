@@ -26,25 +26,51 @@ public class InnloggetBrukerTest {
     }
 
     @Test
+    public void deltakerKnyttetTilAvtaleSkalHaDeltakerRolle() {
+        Avtale avtale = TestData.enAvtale();
+        InnloggetSelvbetjeningBruker selvbetjeningBruker = TestData.innloggetSelvbetjeningBruker(TestData.enDeltaker(avtale));
+        assertThat(selvbetjeningBruker.avtalepart(avtale)).isInstanceOf(Deltaker.class);
+    }
+
+    @Test
+    public void arbeidsgiverKnyttetTilAvtaleSkalHaArbeidsgiverRolle() {
+        Avtale avtale = TestData.enAvtale();
+        InnloggetSelvbetjeningBruker selvbetjeningBruker = TestData.innloggetSelvbetjeningBruker(TestData.enArbeidsgiver(avtale));
+        assertThat(selvbetjeningBruker.avtalepart(avtale)).isInstanceOf(Arbeidsgiver.class);
+    }
+
+    @Test
+    public void veilederKnyttetTilAvtaleSkalHaVeilederRolle() {
+        Avtale avtale = TestData.enAvtale();
+        InnloggetNavAnsatt navAnsatt = TestData.innloggetNavAnsatt(TestData.enVeileder(avtale));
+        assertThat(navAnsatt.avtalepart(avtale)).isInstanceOf(Veileder.class);
+    }
+
+    @Test
     public void harTilgang__deltaker_skal_ha_tilgang_til_avtale() {
         assertThat(new InnloggetSelvbetjeningBruker(deltaker).harTilgang(avtale)).isTrue();
     }
+
     @Test
     public void harTilgang__veileder_skal_ha_tilgang_til_avtale() {
         assertThat(new InnloggetNavAnsatt(navIdent).harTilgang(avtale)).isTrue();
     }
+
     @Test
     public void harTilgang__arbeidsgiver_skal_ha_tilgang_til_avtale() {
         assertThat(new InnloggetSelvbetjeningBruker(arbeidsgiver).harTilgang(avtale)).isTrue();
     }
+
     @Test
     public void harTilgang__ikkepart_veileder_skal_ikke_ha_tilgang() {
         assertThat(new InnloggetNavAnsatt(new NavIdent("X123456")).harTilgang(avtale)).isFalse();
     }
+
     @Test
     public void harTilgang__ikkepart_selvbetjeningsbruker_skal_ikke_ha_tilgang() {
         assertThat(new InnloggetSelvbetjeningBruker(new Fnr("00000000001")).harTilgang(avtale)).isFalse();
     }
+
     @Test
     public void harTilgang__arbeidsgiver_skal_kunne_representere_bedrift_uten_Fnr() {
         InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker = new InnloggetSelvbetjeningBruker(new Fnr("00000000009"));

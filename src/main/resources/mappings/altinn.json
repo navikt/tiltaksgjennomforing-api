@@ -1,0 +1,77 @@
+{
+  "mappings": [
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPath": "/altinn/reportees",
+        "queryParameters" : {
+          "subject" : {
+            "matches" : "^1\\d{10}$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "[{\"Name\":\"STOL PA KNUT\",\"Type\":\"Business\",\"OrganizationNumber\":\"111111111\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPath": "/altinn/reportees",
+        "queryParameters" : {
+          "subject" : {
+            "matches" : "^2\\d{10}$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "[{\"Name\":\"FISKEBUTIKKEN\",\"Type\":\"Business\",\"OrganizationNumber\":\"222222222\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },{
+      "priority": 2,
+      "request": {
+        "method": "GET",
+        "urlPath": "/altinn/reportees",
+        "queryParameters" : {
+          "subject" : {
+            "matches" : "^\\d{11}$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "[]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/altinn/reportees",
+        "queryParameters" : {
+          "subject" : {
+            "doesNotMatch" : "^\\d{11}$"
+          }
+        }
+      },
+      "response": {
+        "status": 400,
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}
