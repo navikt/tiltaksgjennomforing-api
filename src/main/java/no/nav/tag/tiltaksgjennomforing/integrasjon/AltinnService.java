@@ -22,8 +22,8 @@ public class AltinnService {
         this.altinnProperties = altinnProperties;
         restTemplate = new RestTemplate();
         restTemplate.setInterceptors(Arrays.asList((request, body, execution) -> {
-            request.getHeaders().add("X-NAV-APIKEY", altinnProperties.getAltinnApiKey());
-            request.getHeaders().add("APIKEY", altinnProperties.getApiGwApiKey());
+            request.getHeaders().add("X-NAV-APIKEY", altinnProperties.getApiGwApiKey());
+            request.getHeaders().add("APIKEY", altinnProperties.getAltinnApiKey());
             return execution.execute(request, body);
         }));
     }
