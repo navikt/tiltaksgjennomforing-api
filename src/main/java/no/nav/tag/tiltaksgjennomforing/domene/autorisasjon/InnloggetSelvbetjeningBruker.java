@@ -21,7 +21,7 @@ public class InnloggetSelvbetjeningBruker extends InnloggetBruker<Fnr> {
         if (avtale.getDeltakerFnr().equals(getIdentifikator())) {
             return new Deltaker(getIdentifikator(), avtale);
         } else if (avtale.getArbeidsgiverFnr().equals(getIdentifikator())
-                || organisasjoner.stream().anyMatch(o -> avtale.getBedriftNr().equals(o.getBedriftNr()))) {
+                || organisasjoner.stream().anyMatch(o -> o.getBedriftNr().equals(avtale.getBedriftNr()))) {
             return new Arbeidsgiver(getIdentifikator(), avtale);
         } else {
             return null;
