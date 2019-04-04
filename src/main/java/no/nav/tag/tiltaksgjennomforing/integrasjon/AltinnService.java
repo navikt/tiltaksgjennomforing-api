@@ -41,6 +41,7 @@ public class AltinnService {
                 .pathSegment("ekstern", "altinn", "api", "serviceowner", "reportees")
                 .queryParam("ForceEIAuthentication")
                 .queryParam("subject", fnr.asString())
+                .queryParam("roleDefinitionId", "UIHTL")
                 .build()
                 .toUriString();
         try {
