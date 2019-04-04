@@ -70,7 +70,8 @@
         "status": 400,
         "headers": {
           "Content-Type": "application/json"
-        }
+        },
+        "statusMessage": "Invalid social security number"
       }
     }
   ]

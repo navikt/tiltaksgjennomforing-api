@@ -4,7 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.domene.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.domene.Fnr;
 import no.nav.tag.tiltaksgjennomforing.domene.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.domene.TestData;
-import no.nav.tag.tiltaksgjennomforing.domene.exceptions.AltinnException;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.AltinnProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +13,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.net.URI;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,8 +38,17 @@ public class AltinnServiceTest {
         assertThat(organisasjoner).hasSize(0);
     }
 
-    @Test(expected = AltinnException.class)
-    public void hentOrganisasjoner__ugyldig_fnr_skal_gi_feil() {
-        altinnService.hentOrganisasjoner(TestData.enIdentifikator());
+    @Test
+    public void hentOrganisasjoner__ugyldig_fnr_tom_liste() {
+        List<Organisasjon> organisasjoner = altinnService.hentOrganisasjoner(TestData.enIdentifikator());
+        assertThat(organisasjoner).hasSize(0);
+    }
+
+    @Test
+    public void hentOrganisasjoner__feilkonfigurasjon_tom_liste() {
+        AltinnProperties altinnProperties = new AltinnProperties();
+        altinnProperties.setAltinnUri(URI.create("http://foobar"));
+        List<Organisasjon> organisasjoner = new AltinnService(altinnProperties).hentOrganisasjoner(TestData.enIdentifikator());
+        assertThat(organisasjoner).hasSize(0);
     }
 }
