@@ -27,9 +27,9 @@ import static no.nav.tag.tiltaksgjennomforing.domene.Utils.sjekkAtIkkeNull;
 public class Avtale extends AbstractAggregateRoot {
 
     private final Fnr deltakerFnr;
+    private final BedriftNr bedriftNr;
     private final NavIdent veilederNavIdent;
-    @JsonIgnore
-    private final Fnr arbeidsgiverFnr;
+
     private LocalDateTime opprettetTidspunkt;
     @Id
     private UUID id;
@@ -37,7 +37,6 @@ public class Avtale extends AbstractAggregateRoot {
     private String deltakerFornavn;
     private String deltakerEtternavn;
     private String bedriftNavn;
-    private BedriftNr bedriftNr;
     private String arbeidsgiverFornavn;
     private String arbeidsgiverEtternavn;
     private String arbeidsgiverTlf;
@@ -62,15 +61,14 @@ public class Avtale extends AbstractAggregateRoot {
     private boolean godkjentAvVeileder;
 
     @PersistenceConstructor
-    public Avtale(Fnr deltakerFnr, Fnr arbeidsgiverFnr, String bedriftNavn, NavIdent veilederNavIdent) {
+    public Avtale(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent) {
         this.deltakerFnr = sjekkAtIkkeNull(deltakerFnr, "Deltakers fnr må være satt.");
-        this.arbeidsgiverFnr = sjekkAtIkkeNull(arbeidsgiverFnr, "Arbeidsgivers fnr må være satt.");
+        this.bedriftNr = sjekkAtIkkeNull(bedriftNr, "Arbeidsgivers bedriftnr må være satt.");
         this.veilederNavIdent = sjekkAtIkkeNull(veilederNavIdent, "Veileders NAV-ident må være satt.");
-        this.bedriftNavn = bedriftNavn;
     }
 
     public static Avtale nyAvtale(OpprettAvtale opprettAvtale, NavIdent veilederNavIdent) {
-        Avtale avtale = new Avtale(opprettAvtale.getDeltakerFnr(), opprettAvtale.getArbeidsgiverFnr(), opprettAvtale.getBedriftNavn(), veilederNavIdent);
+        Avtale avtale = new Avtale(opprettAvtale.getDeltakerFnr(), opprettAvtale.getBedriftNr(), veilederNavIdent);
         avtale.setVersjon(1);
         avtale.registerEvent(new AvtaleOpprettet(avtale, veilederNavIdent));
         return avtale;
@@ -85,7 +83,6 @@ public class Avtale extends AbstractAggregateRoot {
         setDeltakerEtternavn(nyAvtale.getDeltakerEtternavn());
 
         setBedriftNavn(nyAvtale.getBedriftNavn());
-        setBedriftNr(nyAvtale.getBedriftNr());
 
         setArbeidsgiverFornavn(nyAvtale.getArbeidsgiverFornavn());
         setArbeidsgiverEtternavn(nyAvtale.getArbeidsgiverEtternavn());
@@ -175,7 +172,6 @@ public class Avtale extends AbstractAggregateRoot {
     private boolean heleAvtalenErFyltUt() {
         return erIkkeNull(deltakerFnr,
                 veilederNavIdent,
-                arbeidsgiverFnr,
                 deltakerFornavn,
                 deltakerEtternavn,
                 bedriftNavn,

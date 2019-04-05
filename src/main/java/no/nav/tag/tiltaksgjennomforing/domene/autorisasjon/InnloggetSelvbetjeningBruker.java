@@ -20,8 +20,7 @@ public class InnloggetSelvbetjeningBruker extends InnloggetBruker<Fnr> {
     public Avtalepart avtalepart(Avtale avtale) {
         if (avtale.getDeltakerFnr().equals(getIdentifikator())) {
             return new Deltaker(getIdentifikator(), avtale);
-        } else if (avtale.getArbeidsgiverFnr().equals(getIdentifikator())
-                || organisasjoner.stream().anyMatch(o -> o.getBedriftNr().equals(avtale.getBedriftNr()))) {
+        } else if (organisasjoner.stream().anyMatch(o -> o.getBedriftNr().equals(avtale.getBedriftNr()))) {
             return new Arbeidsgiver(getIdentifikator(), avtale);
         } else {
             return null;

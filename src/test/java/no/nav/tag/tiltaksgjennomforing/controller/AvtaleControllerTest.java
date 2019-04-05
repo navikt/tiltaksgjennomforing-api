@@ -4,9 +4,9 @@ import no.nav.tag.tiltaksgjennomforing.domene.*;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
-import no.nav.tag.tiltaksgjennomforing.integrasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -89,7 +89,7 @@ public class AvtaleControllerTest {
         vaerInnloggetSom(TestData.innloggetNavAnsatt(TestData.enVeileder(avtale)));
 
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
-        ResponseEntity svar = avtaleController.opprettAvtale(new OpprettAvtale(avtale.getDeltakerFnr(), avtale.getArbeidsgiverFnr(), avtale.getBedriftNavn()));
+        ResponseEntity svar = avtaleController.opprettAvtale(new OpprettAvtale(avtale.getDeltakerFnr(), avtale.getBedriftNr()));
 
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(svar.getHeaders().getLocation().getPath()).isEqualTo("/avtaler/" + avtale.getId());
@@ -125,7 +125,7 @@ public class AvtaleControllerTest {
     @Test
     public void hentAlleAvtalerInnloggetBrukerHarTilgangTilSkalIkkeReturnereAvtalerManIkkeHarTilgangTil() {
         Avtale avtaleMedTilgang = TestData.enAvtale();
-        Avtale avtaleUtenTilgang = Avtale.nyAvtale(new OpprettAvtale(new Fnr("89898989898"), new Fnr("89898989898"), ""), new NavIdent("X643564"));
+        Avtale avtaleUtenTilgang = Avtale.nyAvtale(new OpprettAvtale(new Fnr("89898989898"), new BedriftNr("111222333")), new NavIdent("X643564"));
 
         InnloggetSelvbetjeningBruker selvbetjeningBruker = TestData.innloggetSelvbetjeningBruker(TestData.enDeltaker(avtaleMedTilgang));
         vaerInnloggetSom(selvbetjeningBruker);
@@ -179,7 +179,7 @@ public class AvtaleControllerTest {
     public void opprettAvtale__skal_feile_hvis_bruker_ikke_er_i_pilotering() {
         vaerInnloggetSom(TestData.enNavAnsatt());
         doThrow(TilgangskontrollException.class).when(tilgangUnderPilotering).sjekkTilgang(any());
-        avtaleController.opprettAvtale(new OpprettAvtale(new Fnr("11111100000"), new Fnr("11111100000"), "bedriften"));
+        avtaleController.opprettAvtale(new OpprettAvtale(new Fnr("11111100000"), new BedriftNr("111222333")));
     }
 
     private void vaerInnloggetSom(InnloggetBruker innloggetBruker) {
