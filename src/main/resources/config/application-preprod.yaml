@@ -23,3 +23,5 @@ tiltaksgjennomforing:
     max-lifetime: 300000
   altinn:
     altinn-uri: https://api-gw-q1.adeo.no
+  brreg:
+    brreg-uri: https://data.brreg.no

@@ -18,3 +18,5 @@ tiltaksgjennomforing:
     altinn-uri: http://localhost:8090/altinn/reportees
     altinn-api-key: test
     api-gw-api-key: test
+  brreg:
+    brreg-uri: https://data.brreg.no
