@@ -4,6 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
 public class TestData {
@@ -95,8 +96,16 @@ public class TestData {
         return new Maal();
     }
 
-    public static InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker(Avtalepart<Fnr> avtalepartMedFnr) {
-        return new InnloggetSelvbetjeningBruker(avtalepartMedFnr.getIdentifikator());
+    public static InnloggetSelvbetjeningBruker innloggetSelvbetjeningBrukerMedOrganisasjon(Avtalepart<Fnr> avtalepartMedFnr) {
+        InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker = new InnloggetSelvbetjeningBruker(avtalepartMedFnr.getIdentifikator());
+        Organisasjon organisasjon = new Organisasjon(avtalepartMedFnr.getAvtale().getBedriftNr(), avtalepartMedFnr.getAvtale().getBedriftNavn());
+        innloggetSelvbetjeningBruker.setOrganisasjoner(Arrays.asList(organisasjon));
+        return innloggetSelvbetjeningBruker;
+    }
+
+    public static InnloggetSelvbetjeningBruker innloggetSelvbetjeningBrukerUtenOrganisasjon(Avtalepart<Fnr> avtalepartMedFnr) {
+        InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker = new InnloggetSelvbetjeningBruker(avtalepartMedFnr.getIdentifikator());
+        return innloggetSelvbetjeningBruker;
     }
 
     public static InnloggetNavAnsatt innloggetNavAnsatt(Avtalepart<NavIdent> avtalepartMedNavIdent) {

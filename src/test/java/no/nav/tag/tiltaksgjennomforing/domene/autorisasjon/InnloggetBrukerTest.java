@@ -16,7 +16,7 @@ public class InnloggetBrukerTest {
 
     @Before
     public void setup() {
-        deltaker = new Fnr("00000000000");
+        deltaker = new Fnr("10000000000");
         navIdent = new NavIdent("X100000");
         bedriftNr = new BedriftNr("12345678901");
         avtale = Avtale.nyAvtale(new OpprettAvtale(deltaker, bedriftNr), navIdent);
@@ -25,14 +25,14 @@ public class InnloggetBrukerTest {
     @Test
     public void deltakerKnyttetTilAvtaleSkalHaDeltakerRolle() {
         Avtale avtale = TestData.enAvtale();
-        InnloggetSelvbetjeningBruker selvbetjeningBruker = TestData.innloggetSelvbetjeningBruker(TestData.enDeltaker(avtale));
+        InnloggetSelvbetjeningBruker selvbetjeningBruker = TestData.innloggetSelvbetjeningBrukerUtenOrganisasjon(TestData.enDeltaker(avtale));
         assertThat(selvbetjeningBruker.avtalepart(avtale)).isInstanceOf(Deltaker.class);
     }
 
     @Test
     public void arbeidsgiverKnyttetTilAvtaleSkalHaArbeidsgiverRolle() {
         Avtale avtale = TestData.enAvtale();
-        InnloggetSelvbetjeningBruker selvbetjeningBruker = TestData.innloggetSelvbetjeningBruker(TestData.enArbeidsgiver(avtale));
+        InnloggetSelvbetjeningBruker selvbetjeningBruker = TestData.innloggetSelvbetjeningBrukerMedOrganisasjon(TestData.enArbeidsgiver(avtale));
         assertThat(selvbetjeningBruker.avtalepart(avtale)).isInstanceOf(Arbeidsgiver.class);
     }
 
