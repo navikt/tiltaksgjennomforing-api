@@ -15,7 +15,7 @@ no.nav.security.oidc:
 
 tiltaksgjennomforing:
   altinn:
-    altinn-uri: http://localhost:8090/altinn/reportees
+    altinn-uri: http://localhost:8090
     altinn-api-key: test
     api-gw-api-key: test
   brreg:
