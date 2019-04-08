@@ -21,7 +21,7 @@ public class TestData {
 
     private static OpprettAvtale lagOpprettAvtale() {
         Fnr deltakerFnr = new Fnr("88888899999");
-        BedriftNr bedriftNr = new BedriftNr("777888999");
+        BedriftNr bedriftNr = new BedriftNr("12345678");
         return new OpprettAvtale(deltakerFnr, bedriftNr);
     }
 
