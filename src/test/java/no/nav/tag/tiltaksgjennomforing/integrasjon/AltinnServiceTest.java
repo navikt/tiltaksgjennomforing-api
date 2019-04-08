@@ -29,7 +29,7 @@ public class AltinnServiceTest {
     @Test
     public void hentOrganisasjoner__gyldig_fnr_en_bedrift() {
         List<Organisasjon> organisasjoner = altinnService.hentOrganisasjoner(new Fnr("10000000000"));
-        assertThat(organisasjoner).extracting("bedriftNr").containsOnly(new BedriftNr("111111111"));
+        assertThat(organisasjoner).extracting("bedriftNr").containsOnly(new BedriftNr("610909086"));
     }
 
     @Test

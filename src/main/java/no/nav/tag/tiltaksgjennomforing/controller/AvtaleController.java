@@ -1,14 +1,15 @@
 package no.nav.tag.tiltaksgjennomforing.controller;
 
 import io.micrometer.core.annotation.Timed;
+import lombok.RequiredArgsConstructor;
 import no.nav.security.oidc.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.domene.*;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.RessursFinnesIkkeException;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.BrregService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -25,18 +26,13 @@ import static no.nav.tag.tiltaksgjennomforing.domene.Utils.lagUri;
 @RequestMapping("/avtaler")
 @Transactional
 @Timed
+@RequiredArgsConstructor
 public class AvtaleController {
 
     private final AvtaleRepository avtaleRepository;
     private final PilotProperties tilgangUnderPilotering;
     private final InnloggingService innloggingService;
-
-    @Autowired
-    public AvtaleController(AvtaleRepository avtaleRepository, PilotProperties tilgangUnderPilotering, InnloggingService innloggingService) {
-        this.avtaleRepository = avtaleRepository;
-        this.tilgangUnderPilotering = tilgangUnderPilotering;
-        this.innloggingService = innloggingService;
-    }
+    private final BrregService brregService;
 
     @GetMapping("/{avtaleId}")
     public ResponseEntity<Avtale> hent(@PathVariable("avtaleId") UUID id) {
@@ -64,6 +60,7 @@ public class AvtaleController {
         InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
         tilgangUnderPilotering.sjekkTilgang(innloggetNavAnsatt.getIdentifikator());
         Avtale avtale = innloggetNavAnsatt.opprettAvtale(opprettAvtale);
+        avtale.setBedriftNavn(brregService.hentBedriftNavn(avtale.getBedriftNr()));
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();

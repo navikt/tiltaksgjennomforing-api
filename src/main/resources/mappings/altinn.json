@@ -13,7 +13,7 @@
       },
       "response": {
         "status": 200,
-        "body": "[{\"Name\":\"STOL PA KNUT\",\"Type\":\"Business\",\"OrganizationNumber\":\"111111111\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}]",
+        "body": "[{\"Name\":\"STOL PA KNUT\",\"Type\":\"Business\",\"OrganizationNumber\":\"610909086\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}]",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -32,7 +32,7 @@
       },
       "response": {
         "status": 200,
-        "body": "[{\"Name\":\"FISKEBUTIKKEN\",\"Type\":\"Business\",\"OrganizationNumber\":\"222222222\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}]",
+        "body": "[{\"Name\":\"FISKEBUTIKKEN\",\"Type\":\"Business\",\"OrganizationNumber\":\"710909083\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}]",
         "headers": {
           "Content-Type": "application/json"
         }

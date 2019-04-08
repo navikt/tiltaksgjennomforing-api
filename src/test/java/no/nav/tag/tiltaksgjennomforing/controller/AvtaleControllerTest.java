@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.BrregService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
 import org.junit.Test;
@@ -39,6 +40,9 @@ public class AvtaleControllerTest {
 
     @Mock
     private InnloggingService innloggingService;
+
+    @Mock
+    private BrregService brregService;
 
     private static List<Avtale> lagListeMedAvtaler(Avtale avtale, int antall) {
         List<Avtale> avtaler = new ArrayList<>();
