@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@ActiveProfiles({"mock", "dev"})
+@ActiveProfiles("dev")
 @DirtiesContext
 public class AltinnServiceTest {
     @Autowired

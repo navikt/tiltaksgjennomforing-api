@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@ActiveProfiles({"dev", "mock"})
+@ActiveProfiles("dev")
 @DirtiesContext
 public class BrregServiceTest {
     @Autowired

@@ -7,7 +7,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-@Profile({"mock"})
+@Profile("dev")
 @Slf4j
 @Component
 public class IntegrasjonerMockServer implements DisposableBean {

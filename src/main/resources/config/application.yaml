@@ -7,7 +7,5 @@ management.endpoints.web:
 spring:
   application:
     name: tiltaksgjennomforing-api
-  profiles:
-    active: dev
   main:
     banner-mode: "off"
