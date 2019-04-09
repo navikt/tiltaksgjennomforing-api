@@ -90,8 +90,9 @@ public class AvtaleControllerTest {
     public void opprettAvtaleSkalReturnereCreatedOgOpprettetLokasjon() {
         Avtale avtale = TestData.enAvtale();
         vaerInnloggetSom(TestData.innloggetNavAnsatt(TestData.enVeileder(avtale)));
-
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
+        when(brregService.hentOrganisasjon(avtale.getBedriftNr())).thenReturn(new Organisasjon(avtale.getBedriftNr(), avtale.getBedriftNavn()));
+
         ResponseEntity svar = avtaleController.opprettAvtale(new OpprettAvtale(avtale.getDeltakerFnr(), avtale.getBedriftNr()));
 
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.CREATED);
