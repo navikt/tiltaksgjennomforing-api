@@ -9,6 +9,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -37,14 +38,14 @@ public class AltinnService {
     }
 
     public List<Organisasjon> hentOrganisasjoner(Identifikator fnr) {
-        String uri = UriComponentsBuilder.fromUri(altinnProperties.getAltinnUri())
+        URI uri = UriComponentsBuilder.fromUri(altinnProperties.getAltinnUri())
                 .pathSegment("ekstern", "altinn", "api", "serviceowner", "reportees")
                 .queryParam("ForceEIAuthentication")
                 .queryParam("subject", fnr.asString())
                 .queryParam("serviceCode", altinnProperties.getServiceCode())
                 .queryParam("serviceEdition", altinnProperties.getServiceEdition())
                 .build()
-                .toUriString();
+                .toUri();
         try {
             AltinnOrganisasjon[] altinnOrganisasjoner = restTemplate.getForObject(uri, AltinnOrganisasjon[].class);
             return konverterTilDomeneObjekter(altinnOrganisasjoner);

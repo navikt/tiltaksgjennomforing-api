@@ -7,7 +7,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\"navn\": \"BEDRIFTEN AS\"}",
+        "body": "{\"organisasjonsnummer\": \"899999999\", \"navn\": \"BEDRIFTEN AS\"}",
         "headers": {
           "Content-Type": "application/json"
         }

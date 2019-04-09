@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.integrasjon;
 
 import no.nav.tag.tiltaksgjennomforing.domene.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.domene.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.EnhetFinnesIkkeException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,13 +22,14 @@ public class BrregServiceTest {
     private BrregService brregService;
 
     @Test
-    public void hentBedriftNavn__returnerer_navn() {
-        String bedriftNavn = brregService.hentBedriftNavn(new BedriftNr("899999999"));
-        assertThat(bedriftNavn).isEqualTo("BEDRIFTEN AS");
+    public void hentBedriftNavn__returnerer_navn_og_bedriftnr() {
+        Organisasjon organisasjon = brregService.hentOrganisasjon(new BedriftNr("899999999"));
+        assertThat(organisasjon.getBedriftNr()).isEqualTo(new BedriftNr("899999999"));
+        assertThat(organisasjon.getNavn()).isEqualTo("BEDRIFTEN AS");
     }
 
     @Test(expected = EnhetFinnesIkkeException.class)
     public void hentBedriftNavn__kaster_exception_ved_404() {
-        brregService.hentBedriftNavn(new BedriftNr("999999999"));
+        brregService.hentOrganisasjon(new BedriftNr("999999999"));
     }
 }

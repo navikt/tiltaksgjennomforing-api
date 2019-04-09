@@ -16,12 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/organisasjon")
 @Timed
 @RequiredArgsConstructor
-public class BrregController {
+public class OrganisasjonController {
     private final BrregService brregService;
 
     @GetMapping("/{bedriftNr}")
     public Organisasjon hentOrganisasjon(@PathVariable("bedriftNr") BedriftNr bedriftNr) {
-        String bedriftNavn = brregService.hentBedriftNavn(bedriftNr);
-        return new Organisasjon(bedriftNr, bedriftNavn);
+        return brregService.hentOrganisasjon(bedriftNr);
     }
 }
