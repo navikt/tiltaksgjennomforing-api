@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Protected
 @RestController
-@RequestMapping("/organisasjon")
+@RequestMapping("/organisasjoner")
 @Timed
 @RequiredArgsConstructor
 public class OrganisasjonController {
