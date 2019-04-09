@@ -13,4 +13,6 @@ public class AltinnProperties {
     private URI altinnUri;
     private String altinnApiKey;
     private String apiGwApiKey;
+    private Integer serviceCode;
+    private Integer serviceEdition;
 }

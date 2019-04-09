@@ -23,7 +23,6 @@ public class BrregService {
         try {
             return restTemplate.getForObject(uri, BrregEnhet.class).getNavn();
         } catch (RestClientException e) {
-
             throw new EnhetFinnesIkkeException();
         }
     }
