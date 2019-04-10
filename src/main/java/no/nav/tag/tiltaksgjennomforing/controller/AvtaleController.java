@@ -60,7 +60,7 @@ public class AvtaleController {
         InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
         tilgangUnderPilotering.sjekkTilgang(innloggetNavAnsatt.getIdentifikator());
         Avtale avtale = innloggetNavAnsatt.opprettAvtale(opprettAvtale);
-        avtale.setBedriftNavn(brregService.hentOrganisasjon(avtale.getBedriftNr()).getNavn());
+        avtale.setBedriftNavn(brregService.hentOrganisasjon(avtale.getBedriftNr()).getBedriftNavn());
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
