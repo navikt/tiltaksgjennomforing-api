@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.controller;
+package no.nav.tag.tiltaksgjennomforing.integrasjon;
 
 import com.nimbusds.jwt.JWTClaimsSet;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
@@ -35,13 +35,13 @@ public class TokenUtils {
         }
     }
 
-    InnloggetSelvbetjeningBruker hentInnloggetSelvbetjeningBruker() {
+    public InnloggetSelvbetjeningBruker hentInnloggetSelvbetjeningBruker() {
         String fnr = hentClaim(ISSUER_SELVBETJENING, "sub")
                 .orElseThrow(() -> new TilgangskontrollException("Finner ikke fodselsnummer til bruker."));
         return new InnloggetSelvbetjeningBruker(new Fnr(fnr));
     }
 
-    InnloggetNavAnsatt hentInnloggetNavAnsatt() {
+    public InnloggetNavAnsatt hentInnloggetNavAnsatt() {
         String navIdent = hentClaim(ISSUER_ISSO, "NAVident")
                 .orElseThrow(() -> new TilgangskontrollException("Innlogget bruker er ikke veileder."));
         return new InnloggetNavAnsatt(new NavIdent(navIdent));
@@ -57,14 +57,14 @@ public class TokenUtils {
                 .map(claims -> claims.getClaimSet());
     }
 
-    private boolean erInnloggetNavAnsatt() {
+    public boolean erInnloggetNavAnsatt() {
         return hentClaimSet(ISSUER_ISSO)
                 .map(jwtClaimsSet -> (String) jwtClaimsSet.getClaims().get("NAVident"))
                 .map(navIdentString -> NavIdent.erGyldigNavIdent(navIdentString))
                 .orElse(false);
     }
 
-    private boolean erInnloggetSelvbetjeningBruker() {
+    public boolean erInnloggetSelvbetjeningBruker() {
         return hentClaim(ISSUER_SELVBETJENING, "sub")
                 .map(fnrString -> Fnr.erGyldigFnr(fnrString))
                 .orElse(false);

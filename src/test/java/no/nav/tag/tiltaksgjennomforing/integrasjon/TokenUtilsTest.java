@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.controller;
+package no.nav.tag.tiltaksgjennomforing.integrasjon;
 
 import no.nav.security.oidc.context.OIDCClaims;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
