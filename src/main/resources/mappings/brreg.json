@@ -3,11 +3,11 @@
     {
       "request": {
         "method": "GET",
-        "urlPattern": "/enhetsregisteret/enhet/[0-8][0-9]{8}\\.json"
+        "urlPattern": "/enhetsregisteret/enhet/9[0-9]{8}\\.json"
       },
       "response": {
         "status": 200,
-        "body": "{\"organisasjonsnummer\": \"899999999\", \"navn\": \"BEDRIFTEN AS\"}",
+        "body": "{\"organisasjonsnummer\": \"999999999\", \"navn\": \"BEDRIFTEN AS\"}",
         "headers": {
           "Content-Type": "application/json"
         }

@@ -23,13 +23,13 @@ public class BrregServiceTest {
 
     @Test
     public void hentBedriftNavn__returnerer_navn_og_bedriftnr() {
-        Organisasjon organisasjon = brregService.hentOrganisasjon(new BedriftNr("899999999"));
-        assertThat(organisasjon.getBedriftNr()).isEqualTo(new BedriftNr("899999999"));
-        assertThat(organisasjon.getNavn()).isEqualTo("BEDRIFTEN AS");
+        Organisasjon organisasjon = brregService.hentOrganisasjon(new BedriftNr("999999999"));
+        assertThat(organisasjon.getBedriftNr()).isEqualTo(new BedriftNr("999999999"));
+        assertThat(organisasjon.getBedriftNavn()).isEqualTo("BEDRIFTEN AS");
     }
 
     @Test(expected = EnhetFinnesIkkeException.class)
     public void hentBedriftNavn__kaster_exception_ved_404() {
-        brregService.hentOrganisasjon(new BedriftNr("999999999"));
+        brregService.hentOrganisasjon(new BedriftNr("899999999"));
     }
 }
