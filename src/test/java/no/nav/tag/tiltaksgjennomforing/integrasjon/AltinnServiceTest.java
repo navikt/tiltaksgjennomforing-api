@@ -27,9 +27,15 @@ public class AltinnServiceTest {
     private AltinnService altinnService;
 
     @Test
-    public void hentOrganisasjoner__gyldig_fnr_en_bedrift() {
+    public void hentOrganisasjoner__gyldig_fnr_en_forste_bedrift() {
         List<Organisasjon> organisasjoner = altinnService.hentOrganisasjoner(new Fnr("10000000000"));
-        assertThat(organisasjoner).extracting("bedriftNr").containsOnly(new BedriftNr("610909086"));
+        assertThat(organisasjoner).extracting("bedriftNr").containsOnly(new BedriftNr("975959171"));
+    }
+
+    @Test
+    public void hentOrganisasjoner__gyldig_fnr_en_andre_bedrift() {
+        List<Organisasjon> organisasjoner = altinnService.hentOrganisasjoner(new Fnr("20000000000"));
+        assertThat(organisasjoner).extracting("bedriftNr").containsOnly(new BedriftNr("910909088"));
     }
 
     @Test
