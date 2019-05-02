@@ -6,22 +6,22 @@ metadata:
   labels:
     team: teamtag
 spec:
-  image: navikt/tiltaksgjennomforing-api:latest
+  image: navikt/tiltaksgjennomforing-api:{{version}}
   team: teamtag
   port: 8080
   liveness:
     path: /tiltaksgjennomforing-api/internal/healthcheck
-    initialDelay: 20
+    initialDelay: 30
   readiness:
     path: /tiltaksgjennomforing-api/internal/healthcheck
-    initialDelay: 20
+    initialDelay: 30
   ingresses:
-  - https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api/
+    - {{ingress}}
   vault:
     enabled: true
   env:
-  - name: SPRING_PROFILES_ACTIVE
-    value: preprod
+    - name: SPRING_PROFILES_ACTIVE
+      value: {{spring-profil}}
   webproxy: true
   prometheus:
     enabled: true
