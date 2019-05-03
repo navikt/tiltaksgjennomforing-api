@@ -6,7 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.integrasjon.BrregService;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.ereg.EregService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
 import org.junit.Test;
@@ -42,7 +42,7 @@ public class AvtaleControllerTest {
     private InnloggingService innloggingService;
 
     @Mock
-    private BrregService brregService;
+    private EregService eregService;
 
     private static List<Avtale> lagListeMedAvtaler(Avtale avtale, int antall) {
         List<Avtale> avtaler = new ArrayList<>();
@@ -91,7 +91,7 @@ public class AvtaleControllerTest {
         Avtale avtale = TestData.enAvtale();
         vaerInnloggetSom(TestData.innloggetNavAnsatt(TestData.enVeileder(avtale)));
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
-        when(brregService.hentOrganisasjon(avtale.getBedriftNr())).thenReturn(new Organisasjon(avtale.getBedriftNr(), avtale.getBedriftNavn()));
+        when(eregService.hentOrganisasjon(avtale.getBedriftNr())).thenReturn(new Organisasjon(avtale.getBedriftNr(), avtale.getBedriftNavn()));
 
         ResponseEntity svar = avtaleController.opprettAvtale(new OpprettAvtale(avtale.getDeltakerFnr(), avtale.getBedriftNr()));
 

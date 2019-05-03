@@ -7,9 +7,9 @@ import no.nav.tag.tiltaksgjennomforing.domene.*;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.RessursFinnesIkkeException;
-import no.nav.tag.tiltaksgjennomforing.integrasjon.BrregService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.ereg.EregService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +32,7 @@ public class AvtaleController {
     private final AvtaleRepository avtaleRepository;
     private final PilotProperties tilgangUnderPilotering;
     private final InnloggingService innloggingService;
-    private final BrregService brregService;
+    private final EregService eregService;
 
     @GetMapping("/{avtaleId}")
     public ResponseEntity<Avtale> hent(@PathVariable("avtaleId") UUID id) {
@@ -60,7 +60,7 @@ public class AvtaleController {
         InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
         tilgangUnderPilotering.sjekkTilgang(innloggetNavAnsatt.getIdentifikator());
         Avtale avtale = innloggetNavAnsatt.opprettAvtale(opprettAvtale);
-        avtale.setBedriftNavn(brregService.hentOrganisasjon(avtale.getBedriftNr()).getBedriftNavn());
+        avtale.setBedriftNavn(eregService.hentOrganisasjon(avtale.getBedriftNr()).getBedriftNavn());
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();

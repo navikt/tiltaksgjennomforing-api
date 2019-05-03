@@ -1,10 +1,10 @@
-package no.nav.tag.tiltaksgjennomforing.integrasjon;
+package no.nav.tag.tiltaksgjennomforing.integrasjon.ereg;
 
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.domene.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.domene.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.EnhetFinnesIkkeException;
-import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.BrregProperties;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.EregProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -14,17 +14,17 @@ import java.net.URI;
 
 @Service
 @RequiredArgsConstructor
-public class BrregService {
-    private final BrregProperties brregProperties;
+public class EregService {
+    private final EregProperties eregProperties;
     private final RestTemplate restTemplate = new RestTemplate();
 
     public Organisasjon hentOrganisasjon(BedriftNr bedriftNr) {
-        URI uri = UriComponentsBuilder.fromUri(brregProperties.getBrregUri())
-                .pathSegment("enhetsregisteret", "enhet", bedriftNr.getBedriftNr() + ".json")
+        URI uri = UriComponentsBuilder.fromUri(eregProperties.getEregUri())
+                .pathSegment("ereg", "api", "v1", "organisasjon", bedriftNr.getBedriftNr())
                 .build()
                 .toUri();
         try {
-            return restTemplate.getForObject(uri, BrregEnhet.class).konverterTilDomeneObjekt();
+            return restTemplate.getForObject(uri, EregEnhet.class).konverterTilDomeneObjekt();
         } catch (RestClientException e) {
             throw new EnhetFinnesIkkeException();
         }

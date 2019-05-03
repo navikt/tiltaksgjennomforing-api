@@ -20,5 +20,5 @@ tiltaksgjennomforing:
     api-gw-api-key: test
     service-code: 42
     service-edition: 1
-  brreg:
-    brreg-uri: https://data.brreg.no
+  ereg:
+    ereg-uri: http://localhost:8090

@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.integrasjon;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.altinn.AltinnService;
 import org.springframework.stereotype.Component;
 
 @Component

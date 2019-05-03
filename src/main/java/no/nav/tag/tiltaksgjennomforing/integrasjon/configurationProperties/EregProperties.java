@@ -8,7 +8,7 @@ import java.net.URI;
 
 @Data
 @Component
-@ConfigurationProperties(prefix = "tiltaksgjennomforing.brreg")
-public class BrregProperties {
-    private URI brregUri;
+@ConfigurationProperties(prefix = "tiltaksgjennomforing.ereg")
+public class EregProperties {
+    private URI eregUri;
 }

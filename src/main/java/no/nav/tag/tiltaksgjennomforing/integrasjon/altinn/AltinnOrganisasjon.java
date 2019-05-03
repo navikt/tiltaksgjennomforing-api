@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.integrasjon;
+package no.nav.tag.tiltaksgjennomforing.integrasjon.altinn;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

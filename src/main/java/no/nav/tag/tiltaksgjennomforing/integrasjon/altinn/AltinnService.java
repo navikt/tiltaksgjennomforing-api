@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.integrasjon;
+package no.nav.tag.tiltaksgjennomforing.integrasjon.altinn;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.domene.Identifikator;

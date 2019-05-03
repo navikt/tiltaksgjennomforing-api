@@ -4,6 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.domene.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.domene.Fnr;
 import no.nav.tag.tiltaksgjennomforing.domene.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.domene.TestData;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.altinn.AltinnService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.AltinnProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
