@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.integrasjon.ereg;
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.domene.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.domene.Organisasjon;
+import no.nav.tag.tiltaksgjennomforing.domene.exceptions.EnhetErJuridiskException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.EnhetFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.EregProperties;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,11 @@ public class EregService {
                 .build()
                 .toUri();
         try {
-            return restTemplate.getForObject(uri, EregEnhet.class).konverterTilDomeneObjekt();
+            EregEnhet eregEnhet = restTemplate.getForObject(uri, EregEnhet.class);
+            if ("JuridiskEnhet".equals(eregEnhet.getType())) {
+                throw new EnhetErJuridiskException();
+            }
+            return eregEnhet.konverterTilDomeneObjekt();
         } catch (RestClientException e) {
             throw new EnhetFinnesIkkeException();
         }
