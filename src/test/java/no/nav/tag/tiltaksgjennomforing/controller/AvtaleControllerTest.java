@@ -6,9 +6,9 @@ import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.integrasjon.ereg.EregService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.ereg.EregService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -91,7 +91,7 @@ public class AvtaleControllerTest {
         Avtale avtale = TestData.enAvtale();
         vaerInnloggetSom(TestData.innloggetNavAnsatt(TestData.enVeileder(avtale)));
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
-        when(eregService.hentOrganisasjon(avtale.getBedriftNr())).thenReturn(new Organisasjon(avtale.getBedriftNr(), avtale.getBedriftNavn()));
+        when(eregService.hentVirksomhet(avtale.getBedriftNr())).thenReturn(new Organisasjon(avtale.getBedriftNr(), avtale.getBedriftNavn()));
 
         ResponseEntity svar = avtaleController.opprettAvtale(new OpprettAvtale(avtale.getDeltakerFnr(), avtale.getBedriftNr()));
 

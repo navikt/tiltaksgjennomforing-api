@@ -21,6 +21,6 @@ public class OrganisasjonController {
 
     @GetMapping("/{bedriftNr}")
     public Organisasjon hentOrganisasjon(@PathVariable("bedriftNr") BedriftNr bedriftNr) {
-        return eregService.hentOrganisasjon(bedriftNr);
+        return eregService.hentVirksomhet(bedriftNr);
     }
 }

@@ -24,13 +24,13 @@ public class EregServiceTest {
 
     @Test
     public void hentBedriftNavn__returnerer_navn_og_bedriftnr() {
-        Organisasjon organisasjon = eregService.hentOrganisasjon(new BedriftNr("910712330"));
+        Organisasjon organisasjon = eregService.hentVirksomhet(new BedriftNr("910712330"));
         assertThat(organisasjon.getBedriftNr()).isEqualTo(new BedriftNr("910712330"));
         assertThat(organisasjon.getBedriftNavn()).isEqualTo("Saltrød og Høneby");
     }
 
     @Test(expected = EnhetFinnesIkkeException.class)
     public void hentBedriftNavn__kaster_exception_ved_404() {
-        eregService.hentOrganisasjon(new BedriftNr("899999999"));
+        eregService.hentVirksomhet(new BedriftNr("899999999"));
     }
 }
