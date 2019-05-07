@@ -6,6 +6,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class EnhetErIkkeVirksomhetException extends RuntimeException {
     public EnhetErIkkeVirksomhetException() {
-        super("Avtale må registreres på virksomhetens organisasjonsnummer, ikke juridisk enhet.");
+        super("Avtale må registreres på virksomhetens bedriftsnummer, ikke den juridisk enheten.");
     }
 }
