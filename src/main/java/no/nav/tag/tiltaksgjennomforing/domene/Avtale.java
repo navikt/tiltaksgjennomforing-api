@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.domene;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -167,6 +166,30 @@ public class Avtale extends AbstractAggregateRoot {
         if (!heleAvtalenErFyltUt()) {
             throw new TiltaksgjennomforingException("Alt må være utfylt før avtalen kan godkjennes.");
         }
+    }
+
+    @JsonProperty("status")
+    public String status() {
+        String statusString = "";
+        if (isGodkjentAvVeileder()/* og sluttdato har ikke kommet enda*/) {
+            return "Ferdigstilt";
+        } else /* if sluttdato har ikke kommet enda*/ {
+            if (!heleAvtalenErFyltUt()) {
+                return "Påbegynt";
+            } else {
+                if (!isGodkjentAvArbeidsgiver()) {
+                    statusString += "AG, ";
+                }
+                if (!isGodkjentAvDeltaker()) {
+                    statusString += "Deltaker, ";
+                }
+                if (!isGodkjentAvVeileder()) {
+                    statusString += "Veilder ";
+                }
+                return statusString + " må godkjenne";
+            }
+        }
+        //return "";
     }
 
     private boolean heleAvtalenErFyltUt() {

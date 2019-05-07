@@ -136,4 +136,17 @@ public class AvtaleTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.sjekkOmKanGodkjennes();
     }
+
+    @Test
+    public void status__ny_avtale() {
+        Avtale avtale = TestData.enAvtale();
+        assertThat(avtale.status()).isEqualTo("Påbegynt");
+    }
+
+    @Test
+    public void status__veileder_har_godkjent() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setGodkjentAvVeileder(true);
+        assertThat(avtale.status()).isEqualTo("Ferdigstilt");
+    }
 }
