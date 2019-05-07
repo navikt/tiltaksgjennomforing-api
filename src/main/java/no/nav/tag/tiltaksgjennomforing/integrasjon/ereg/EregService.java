@@ -3,7 +3,8 @@ package no.nav.tag.tiltaksgjennomforing.integrasjon.ereg;
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.domene.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.domene.Organisasjon;
-import no.nav.tag.tiltaksgjennomforing.domene.exceptions.EnhetErIkkeVirksomhetException;
+import no.nav.tag.tiltaksgjennomforing.domene.exceptions.EnhetErJuridiskException;
+import no.nav.tag.tiltaksgjennomforing.domene.exceptions.EnhetErOrganisasjonsleddException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.EnhetFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.EregProperties;
 import org.springframework.stereotype.Service;
@@ -26,8 +27,10 @@ public class EregService {
                 .toUri();
         try {
             EregEnhet eregEnhet = restTemplate.getForObject(uri, EregEnhet.class);
-            if (!"Virksomhet".equals(eregEnhet.getType())) {
-                throw new EnhetErIkkeVirksomhetException();
+            if ("JuridiskEnhet".equals(eregEnhet.getType())) {
+                throw new EnhetErJuridiskException();
+            } else if ("Organisasjonsledd".equals(eregEnhet.getType())) {
+                throw new EnhetErOrganisasjonsleddException();
             }
             return eregEnhet.konverterTilDomeneObjekt();
         } catch (RestClientException e) {
