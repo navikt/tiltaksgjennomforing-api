@@ -7,8 +7,8 @@ import no.nav.tag.tiltaksgjennomforing.domene.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.domene.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.ereg.EregService;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Protected
@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrganisasjonController {
     private final EregService eregService;
 
-    @GetMapping("/{bedriftNr}")
-    public Organisasjon hentOrganisasjon(@PathVariable("bedriftNr") BedriftNr bedriftNr) {
+    @GetMapping
+    public Organisasjon hentVirksomhet(@RequestParam("bedriftNr") BedriftNr bedriftNr) {
         return eregService.hentVirksomhet(bedriftNr);
     }
 }
