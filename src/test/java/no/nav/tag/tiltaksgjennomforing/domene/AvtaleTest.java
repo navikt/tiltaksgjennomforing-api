@@ -5,6 +5,8 @@ import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingExc
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 
+import java.time.LocalDate;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AvtaleTest {
@@ -144,8 +146,27 @@ public class AvtaleTest {
     }
 
     @Test
+    public void status__avsluttet() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setStartDato(LocalDate.parse("2018-01-01"));
+        avtale.setArbeidstreningLengde(90);
+        avtale.setGodkjentAvArbeidsgiver(true);
+        avtale.setGodkjentAvDeltaker(true);
+        avtale.setGodkjentAvVeileder(true);
+        assertThat(avtale.status()).isEqualTo("Avsluttet");
+    }
+
+    @Test
+    public void status__klar__for__godkjenning() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        assertThat(avtale.status()).isEqualTo("AG, Deltaker, Veileder må godkjenne");
+    }
+
+    @Test
     public void status__veileder_har_godkjent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setGodkjentAvArbeidsgiver(true);
+        avtale.setGodkjentAvDeltaker(true);
         avtale.setGodkjentAvVeileder(true);
         assertThat(avtale.status()).isEqualTo("Ferdigstilt");
     }

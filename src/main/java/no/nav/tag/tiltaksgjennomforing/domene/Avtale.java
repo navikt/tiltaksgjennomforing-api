@@ -171,9 +171,11 @@ public class Avtale extends AbstractAggregateRoot {
     @JsonProperty("status")
     public String status() {
         String statusString = "";
-        if (isGodkjentAvVeileder()/* og sluttdato har ikke kommet enda*/) {
+        if (isGodkjentAvVeileder() && (startDato.plusDays(arbeidstreningLengde).isBefore(LocalDate.now()))) {
+            return "Avsluttet";
+        } else if (isGodkjentAvVeileder()) {
             return "Ferdigstilt";
-        } else /* if sluttdato har ikke kommet enda*/ {
+        } else {
             if (!heleAvtalenErFyltUt()) {
                 return "Påbegynt";
             } else {
@@ -184,9 +186,9 @@ public class Avtale extends AbstractAggregateRoot {
                     statusString += "Deltaker, ";
                 }
                 if (!isGodkjentAvVeileder()) {
-                    statusString += "Veilder ";
+                    statusString += "Veileder ";
                 }
-                return statusString + " må godkjenne";
+                return statusString + "må godkjenne";
             }
         }
         //return "";
