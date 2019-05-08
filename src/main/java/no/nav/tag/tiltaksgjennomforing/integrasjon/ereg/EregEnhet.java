@@ -17,7 +17,7 @@ public class EregEnhet {
 
     public Organisasjon konverterTilDomeneObjekt() {
         String bedriftnavn = Stream.of(navn.getNavnelinje1(), navn.getNavnelinje2(), navn.getNavnelinje3(), navn.getNavnelinje4())
-                .filter(Predicate.not(Objects::isNull))
+                .filter(navnelinje -> navnelinje != null)
                 .collect(Collectors.joining(" "));
         return new Organisasjon(new BedriftNr(organisasjonsnummer), bedriftnavn);
     }
