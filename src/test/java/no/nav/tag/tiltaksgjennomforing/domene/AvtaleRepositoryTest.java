@@ -1,7 +1,5 @@
-package no.nav.tag.tiltaksgjennomforing;
+package no.nav.tag.tiltaksgjennomforing.domene;
 
-import no.nav.tag.tiltaksgjennomforing.domene.*;
-import no.nav.tag.tiltaksgjennomforing.domene.MetrikkRegistrering;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -82,7 +81,7 @@ public class AvtaleRepositoryTest {
 
     @Test
     public void opprettAvtale__skal_publisere_domainevent() {
-        Avtale nyAvtale = Avtale.nyAvtale(new OpprettAvtale(new Fnr("10101033333"), new Fnr("10101033333"), "bedriften"), new NavIdent("Q000111"));
+        Avtale nyAvtale = Avtale.nyAvtale(new OpprettAvtale(new Fnr("10101033333"), new BedriftNr("101033333")), new NavIdent("Q000111"));
         avtaleRepository.save(nyAvtale);
         verify(metrikkRegistrering).avtaleOpprettet(any());
     }

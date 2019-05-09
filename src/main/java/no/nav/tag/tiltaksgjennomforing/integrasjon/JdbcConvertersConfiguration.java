@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.integrasjon;
 
+import no.nav.tag.tiltaksgjennomforing.domene.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.domene.Fnr;
 import no.nav.tag.tiltaksgjennomforing.domene.NavIdent;
 import org.springframework.context.annotation.Configuration;
@@ -31,6 +32,18 @@ public class JdbcConvertersConfiguration extends JdbcConfiguration {
             @Override
             public NavIdent convert(String in) {
                 return new NavIdent(in);
+            }
+        }, new Converter<String, BedriftNr>() {
+            @Nullable
+            @Override
+            public BedriftNr convert(String in) {
+                return new BedriftNr(in);
+            }
+        }, new Converter<BedriftNr, String>() {
+            @Nullable
+            @Override
+            public String convert(BedriftNr in) {
+                return in.getBedriftNr();
             }
         }));
     }

@@ -16,7 +16,7 @@ public class EndreAvtale {
     private String deltakerFornavn;
     private String deltakerEtternavn;
     private String bedriftNavn;
-    private String bedriftNr;
+    private BedriftNr bedriftNr;
     private String arbeidsgiverFornavn;
     private String arbeidsgiverEtternavn;
     private String arbeidsgiverTlf;

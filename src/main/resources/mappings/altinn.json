@@ -1,0 +1,96 @@
+{
+  "mappings": [
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPath": "/ekstern/altinn/api/serviceowner/reportees",
+        "queryParameters" : {
+          "subject" : {
+            "matches" : "^1\\d{10}$"
+          },
+          "serviceCode": {
+            "equalTo": "42"
+          },
+          "serviceEdition": {
+            "equalTo": "1"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "[{\"Name\":\"KIWI NORGE AS\",\"Type\":\"Business\",\"OrganizationNumber\":\"975959171\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPath": "/ekstern/altinn/api/serviceowner/reportees",
+        "queryParameters" : {
+          "subject" : {
+            "matches" : "^2\\d{10}$"
+          },
+          "serviceCode": {
+            "equalTo": "42"
+          },
+          "serviceEdition": {
+            "equalTo": "1"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "[{\"Name\":\"SOPRA STERIA AS\",\"Type\":\"Business\",\"OrganizationNumber\":\"910909088\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },{
+      "priority": 2,
+      "request": {
+        "method": "GET",
+        "urlPath": "/ekstern/altinn/api/serviceowner/reportees",
+        "queryParameters" : {
+          "subject" : {
+            "matches" : "^\\d{11}$"
+          },
+          "serviceCode": {
+            "equalTo": "42"
+          },
+          "serviceEdition": {
+            "equalTo": "1"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "[]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/ekstern/altinn/api/serviceowner/reportees",
+        "queryParameters" : {
+          "subject" : {
+            "doesNotMatch" : "^\\d{11}$"
+          }
+        }
+      },
+      "response": {
+        "status": 400,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "statusMessage": "Invalid social security number"
+      }
+    }
+  ]
+}

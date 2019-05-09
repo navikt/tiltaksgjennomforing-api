@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.events.*;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
@@ -28,9 +27,9 @@ import static no.nav.tag.tiltaksgjennomforing.domene.Utils.sjekkAtIkkeNull;
 public class Avtale extends AbstractAggregateRoot {
 
     private final Fnr deltakerFnr;
+    private final BedriftNr bedriftNr;
     private final NavIdent veilederNavIdent;
-    @JsonIgnore
-    private final Fnr arbeidsgiverFnr;
+
     private LocalDateTime opprettetTidspunkt;
     @Id
     private UUID id;
@@ -38,7 +37,6 @@ public class Avtale extends AbstractAggregateRoot {
     private String deltakerFornavn;
     private String deltakerEtternavn;
     private String bedriftNavn;
-    private String bedriftNr;
     private String arbeidsgiverFornavn;
     private String arbeidsgiverEtternavn;
     private String arbeidsgiverTlf;
@@ -63,15 +61,14 @@ public class Avtale extends AbstractAggregateRoot {
     private boolean godkjentAvVeileder;
 
     @PersistenceConstructor
-    public Avtale(Fnr deltakerFnr, Fnr arbeidsgiverFnr, String bedriftNavn, NavIdent veilederNavIdent) {
+    public Avtale(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent) {
         this.deltakerFnr = sjekkAtIkkeNull(deltakerFnr, "Deltakers fnr må være satt.");
-        this.arbeidsgiverFnr = sjekkAtIkkeNull(arbeidsgiverFnr, "Arbeidsgivers fnr må være satt.");
+        this.bedriftNr = sjekkAtIkkeNull(bedriftNr, "Arbeidsgivers bedriftnr må være satt.");
         this.veilederNavIdent = sjekkAtIkkeNull(veilederNavIdent, "Veileders NAV-ident må være satt.");
-        this.bedriftNavn = bedriftNavn;
     }
 
     public static Avtale nyAvtale(OpprettAvtale opprettAvtale, NavIdent veilederNavIdent) {
-        Avtale avtale = new Avtale(opprettAvtale.getDeltakerFnr(), opprettAvtale.getArbeidsgiverFnr(), opprettAvtale.getBedriftNavn(), veilederNavIdent);
+        Avtale avtale = new Avtale(opprettAvtale.getDeltakerFnr(), opprettAvtale.getBedriftNr(), veilederNavIdent);
         avtale.setVersjon(1);
         avtale.registerEvent(new AvtaleOpprettet(avtale, veilederNavIdent));
         return avtale;
@@ -86,7 +83,6 @@ public class Avtale extends AbstractAggregateRoot {
         setDeltakerEtternavn(nyAvtale.getDeltakerEtternavn());
 
         setBedriftNavn(nyAvtale.getBedriftNavn());
-        setBedriftNr(nyAvtale.getBedriftNr());
 
         setArbeidsgiverFornavn(nyAvtale.getArbeidsgiverFornavn());
         setArbeidsgiverEtternavn(nyAvtale.getArbeidsgiverEtternavn());
@@ -126,20 +122,6 @@ public class Avtale extends AbstractAggregateRoot {
         registerEvent(new GodkjenningerOpphevet(this, avtalerolle));
     }
 
-    public void sjekkLesetilgang(InnloggetBruker bruker) {
-        if (!harLesetilgang(bruker)) {
-            throw new TilgangskontrollException("Innlogget bruker har ikke lesetilgang til avtalen.");
-        }
-    }
-
-    public boolean harLesetilgang(InnloggetBruker bruker) {
-        Identifikator id = bruker.getIdentifikator();
-
-        return id.equals(veilederNavIdent) ||
-                id.equals(deltakerFnr) ||
-                id.equals(arbeidsgiverFnr);
-    }
-
     private void inkrementerVersjonsnummer() {
         versjon += 1;
     }
@@ -161,19 +143,6 @@ public class Avtale extends AbstractAggregateRoot {
 
         this.getMaal().forEach(Maal::settIdOgOpprettetTidspunkt);
         this.getOppgaver().forEach(Oppgave::settIdOgOpprettetTidspunkt);
-    }
-
-    public Avtalepart hentAvtalepart(InnloggetBruker innloggetBruker) {
-        Identifikator identifikator = innloggetBruker.getIdentifikator();
-        if (identifikator.equals(deltakerFnr)) {
-            return new Deltaker(deltakerFnr, this);
-        } else if (identifikator.equals(arbeidsgiverFnr)) {
-            return new Arbeidsgiver(arbeidsgiverFnr, this);
-        } else if (identifikator.equals(veilederNavIdent)) {
-            return new Veileder(veilederNavIdent, this);
-        } else {
-            throw new TilgangskontrollException("Er ikke part i avtalen");
-        }
     }
 
     void godkjennForArbeidsgiver(Identifikator utfortAv) {
@@ -203,7 +172,6 @@ public class Avtale extends AbstractAggregateRoot {
     private boolean heleAvtalenErFyltUt() {
         return erIkkeNull(deltakerFnr,
                 veilederNavIdent,
-                arbeidsgiverFnr,
                 deltakerFornavn,
                 deltakerEtternavn,
                 bedriftNavn,

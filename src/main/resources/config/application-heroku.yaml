@@ -12,3 +12,13 @@ no.nav.security.oidc:
     isso:
       discoveryurl: http://metadata-isso
       accepted_audience: aud-isso
+
+tiltaksgjennomforing:
+  altinn:
+    altinn-uri: http://localhost:8090
+    altinn-api-key: test
+    api-gw-api-key: test
+    service-code: 42
+    service-edition: 1
+  ereg:
+    ereg-uri: http://localhost:8090

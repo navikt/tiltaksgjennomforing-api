@@ -1,13 +1,12 @@
-package no.nav.tag.tiltaksgjennomforing;
+package no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties;
 
 import no.nav.tag.tiltaksgjennomforing.domene.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
 import org.junit.Test;
 
 import java.util.Arrays;
 
-public class TilgangUnderPiloteringTest {
+public class PilotPropertiesTest {
     @Test
     public void sjekkTilgang__default_skal_ikke_feile() {
         new PilotProperties().sjekkTilgang(new NavIdent("Q000111"));

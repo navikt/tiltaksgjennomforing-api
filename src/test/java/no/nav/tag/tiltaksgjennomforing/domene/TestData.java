@@ -4,6 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 
 public class TestData {
@@ -21,8 +22,8 @@ public class TestData {
 
     private static OpprettAvtale lagOpprettAvtale() {
         Fnr deltakerFnr = new Fnr("88888899999");
-        Fnr arbeidsgiverFnr = new Fnr("77777788888");
-        return new OpprettAvtale(deltakerFnr, arbeidsgiverFnr, "");
+        BedriftNr bedriftNr = new BedriftNr("12345678");
+        return new OpprettAvtale(deltakerFnr, bedriftNr);
     }
 
     public static EndreAvtale ingenEndring() {
@@ -34,7 +35,7 @@ public class TestData {
         endreAvtale.setDeltakerFornavn("Fornavn");
         endreAvtale.setDeltakerEtternavn("Etternavn");
         endreAvtale.setBedriftNavn("Bedriftnavn");
-        endreAvtale.setBedriftNr("12345678");
+        endreAvtale.setBedriftNr(new BedriftNr("12345678"));
         endreAvtale.setArbeidsgiverFornavn("AG fornavn");
         endreAvtale.setArbeidsgiverEtternavn("AG etternavn");
         endreAvtale.setArbeidsgiverTlf("AG tlf");
@@ -72,7 +73,11 @@ public class TestData {
     }
 
     public static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
-        return new Arbeidsgiver(avtale.getArbeidsgiverFnr(), avtale);
+        return new Arbeidsgiver(TestData.etFodselsnummer(), avtale);
+    }
+
+    public static Fnr etFodselsnummer() {
+        return new Fnr("00000000000");
     }
 
     public static Veileder enVeileder() {
@@ -91,8 +96,16 @@ public class TestData {
         return new Maal();
     }
 
-    public static InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker(Avtalepart<Fnr> avtalepartMedFnr) {
-        return new InnloggetSelvbetjeningBruker(avtalepartMedFnr.getIdentifikator());
+    public static InnloggetSelvbetjeningBruker innloggetSelvbetjeningBrukerMedOrganisasjon(Avtalepart<Fnr> avtalepartMedFnr) {
+        InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker = new InnloggetSelvbetjeningBruker(avtalepartMedFnr.getIdentifikator());
+        Organisasjon organisasjon = new Organisasjon(avtalepartMedFnr.getAvtale().getBedriftNr(), avtalepartMedFnr.getAvtale().getBedriftNavn());
+        innloggetSelvbetjeningBruker.setOrganisasjoner(Arrays.asList(organisasjon));
+        return innloggetSelvbetjeningBruker;
+    }
+
+    public static InnloggetSelvbetjeningBruker innloggetSelvbetjeningBrukerUtenOrganisasjon(Avtalepart<Fnr> avtalepartMedFnr) {
+        InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker = new InnloggetSelvbetjeningBruker(avtalepartMedFnr.getIdentifikator());
+        return innloggetSelvbetjeningBruker;
     }
 
     public static InnloggetNavAnsatt innloggetNavAnsatt(Avtalepart<NavIdent> avtalepartMedNavIdent) {

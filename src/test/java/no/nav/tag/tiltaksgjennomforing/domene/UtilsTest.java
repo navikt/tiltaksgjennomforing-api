@@ -1,6 +1,5 @@
-package no.nav.tag.tiltaksgjennomforing;
+package no.nav.tag.tiltaksgjennomforing.domene;
 
-import no.nav.tag.tiltaksgjennomforing.domene.Utils;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
