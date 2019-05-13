@@ -174,11 +174,12 @@ public class Avtale extends AbstractAggregateRoot {
         if (isGodkjentAvVeileder() && (startDato.plusDays(arbeidstreningLengde).isBefore(LocalDate.now()))) {
             return "Avsluttet";
         } else if (isGodkjentAvVeileder()) {
-            return "Ferdigstilt";
+            return "Godkjent -godkjenningsdato-";
         } else {
             if (!heleAvtalenErFyltUt()) {
                 return "Påbegynt";
             } else {
+                statusString = "Mangler godkjenning av ";
                 if (!isGodkjentAvArbeidsgiver()) {
                     statusString += "AG, ";
                 }
@@ -188,7 +189,7 @@ public class Avtale extends AbstractAggregateRoot {
                 if (!isGodkjentAvVeileder()) {
                     statusString += "Veileder ";
                 }
-                return statusString + "må godkjenne";
+                return statusString;
             }
         }
         //return "";

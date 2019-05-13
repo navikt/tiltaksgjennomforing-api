@@ -159,7 +159,7 @@ public class AvtaleTest {
     @Test
     public void status__klar__for__godkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        assertThat(avtale.status()).isEqualTo("AG, Deltaker, Veileder må godkjenne");
+        assertThat(avtale.status()).isEqualTo("Mangler godkjenning av AG, Deltaker, Veileder ");
     }
 
     @Test
@@ -168,6 +168,6 @@ public class AvtaleTest {
         avtale.setGodkjentAvArbeidsgiver(true);
         avtale.setGodkjentAvDeltaker(true);
         avtale.setGodkjentAvVeileder(true);
-        assertThat(avtale.status()).isEqualTo("Ferdigstilt");
+        assertThat(avtale.status()).isEqualTo("Godkjent -godkjenningsdato-");
     }
 }
