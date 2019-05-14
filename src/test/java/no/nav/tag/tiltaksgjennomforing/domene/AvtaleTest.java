@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.domene;
 
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
+import org.apache.tomcat.jni.Local;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 
@@ -142,14 +143,29 @@ public class AvtaleTest {
     @Test
     public void status__ny_avtale() {
         Avtale avtale = TestData.enAvtale();
+
         assertThat(avtale.status()).isEqualTo("Påbegynt");
     }
 
     @Test
-    public void status__avsluttet() {
+    public void status__null_startdato(){
+        Avtale avtale = TestData.enAvtale();
+        avtale.setStartDato(null);
+        assertThat(avtale.status()).isEqualTo("Påbegynt");
+    }
+    @Test
+    public void status__noe__fyltut(){
+        Avtale avtale = TestData.enAvtale();
+        avtale.setStartDato(LocalDate.now().plusDays(5));
+        avtale.setArbeidstreningLengde(12);
+        avtale.setBedriftNavn("testbedriftsnavn");
+        assertThat(avtale.status()).isEqualTo("Påbegynt");
+    }
+    @Test
+    public void status__avsluttet_i_gaar() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setStartDato(LocalDate.parse("2018-01-01"));
-        avtale.setArbeidstreningLengde(90);
+        avtale.setStartDato(LocalDate.now().minusWeeks(4).minusDays(1));
+        avtale.setArbeidstreningLengde(4);
         avtale.setGodkjentAvArbeidsgiver(true);
         avtale.setGodkjentAvDeltaker(true);
         avtale.setGodkjentAvVeileder(true);
@@ -157,9 +173,20 @@ public class AvtaleTest {
     }
 
     @Test
+    public void status__avslutter_i_dag() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setStartDato(LocalDate.now().minusWeeks(4));
+        avtale.setArbeidstreningLengde(4);
+        avtale.setGodkjentAvArbeidsgiver(true);
+        avtale.setGodkjentAvDeltaker(true);
+        avtale.setGodkjentAvVeileder(true);
+        assertThat(avtale.status()).isEqualTo("Klar for oppstart");
+    }
+
+    @Test
     public void status__klar__for__godkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        assertThat(avtale.status()).isEqualTo("Mangler godkjenning av AG, Deltaker, Veileder ");
+        assertThat(avtale.status()).isEqualTo("Mangler godkjenning");
     }
 
     @Test
@@ -168,6 +195,6 @@ public class AvtaleTest {
         avtale.setGodkjentAvArbeidsgiver(true);
         avtale.setGodkjentAvDeltaker(true);
         avtale.setGodkjentAvVeileder(true);
-        assertThat(avtale.status()).isEqualTo("Godkjent -godkjenningsdato-");
+        assertThat(avtale.status()).isEqualTo("Klar for oppstart");
     }
 }

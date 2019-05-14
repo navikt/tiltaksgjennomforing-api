@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.domene;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -170,17 +171,17 @@ public class Avtale extends AbstractAggregateRoot {
 
     @JsonProperty("status")
     public String status() {
-        String statusString = "";
-        if (isGodkjentAvVeileder() && (startDato.plusDays(arbeidstreningLengde).isBefore(LocalDate.now()))) {
+        if (isGodkjentAvVeileder() && (startDato.plusWeeks(arbeidstreningLengde).isBefore(LocalDate.now()))) {
             return "Avsluttet";
         } else if (isGodkjentAvVeileder()) {
-            return "Godkjent -godkjenningsdato-";
+            return "Klar for oppstart";
         } else {
             if (!heleAvtalenErFyltUt()) {
                 return "Påbegynt";
             } else {
-                statusString = "Mangler godkjenning av ";
-                if (!isGodkjentAvArbeidsgiver()) {
+
+                String statusString = "Mangler godkjenning";
+                /*if (!isGodkjentAvArbeidsgiver()) {
                     statusString += "AG, ";
                 }
                 if (!isGodkjentAvDeltaker()) {
@@ -188,7 +189,7 @@ public class Avtale extends AbstractAggregateRoot {
                 }
                 if (!isGodkjentAvVeileder()) {
                     statusString += "Veileder ";
-                }
+                }*/
                 return statusString;
             }
         }
