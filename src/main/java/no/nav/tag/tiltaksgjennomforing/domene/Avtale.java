@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.domene;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -175,25 +174,11 @@ public class Avtale extends AbstractAggregateRoot {
             return "Avsluttet";
         } else if (isGodkjentAvVeileder()) {
             return "Klar for oppstart";
+        } else if (!heleAvtalenErFyltUt()) {
+            return "Påbegynt";
         } else {
-            if (!heleAvtalenErFyltUt()) {
-                return "Påbegynt";
-            } else {
-
-                String statusString = "Mangler godkjenning";
-                /*if (!isGodkjentAvArbeidsgiver()) {
-                    statusString += "AG, ";
-                }
-                if (!isGodkjentAvDeltaker()) {
-                    statusString += "Deltaker, ";
-                }
-                if (!isGodkjentAvVeileder()) {
-                    statusString += "Veileder ";
-                }*/
-                return statusString;
-            }
+            return "Mangler godkjenning";
         }
-        //return "";
     }
 
     private boolean heleAvtalenErFyltUt() {
