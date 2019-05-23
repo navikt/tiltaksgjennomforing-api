@@ -174,10 +174,10 @@ public class Avtale extends AbstractAggregateRoot {
             return "Avsluttet";
         } else if (isGodkjentAvVeileder()) {
             return "Klar for oppstart";
-        } else if (!heleAvtalenErFyltUt()) {
-            return "Påbegynt";
-        } else {
+        } else if (heleAvtalenErFyltUt()) {
             return "Mangler godkjenning";
+        } else {
+            return "Påbegynt";
         }
     }
 
