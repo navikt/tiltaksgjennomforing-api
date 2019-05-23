@@ -143,7 +143,6 @@ public class AvtaleTest {
     @Test
     public void status__ny_avtale() {
         Avtale avtale = TestData.enAvtale();
-
         assertThat(avtale.status()).isEqualTo("Påbegynt");
     }
 
@@ -151,16 +150,19 @@ public class AvtaleTest {
     public void status__null_startdato(){
         Avtale avtale = TestData.enAvtale();
         avtale.setStartDato(null);
+        avtale.setArbeidstreningLengde(null);
         assertThat(avtale.status()).isEqualTo("Påbegynt");
     }
+
     @Test
-    public void status__noe__fyltut(){
+    public void status__noe_fylt_ut(){
         Avtale avtale = TestData.enAvtale();
         avtale.setStartDato(LocalDate.now().plusDays(5));
         avtale.setArbeidstreningLengde(12);
         avtale.setBedriftNavn("testbedriftsnavn");
         assertThat(avtale.status()).isEqualTo("Påbegynt");
     }
+
     @Test
     public void status__avsluttet_i_gaar() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
@@ -184,7 +186,7 @@ public class AvtaleTest {
     }
 
     @Test
-    public void status__klar__for__godkjenning() {
+    public void status__klar_for_godkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         assertThat(avtale.status()).isEqualTo("Mangler godkjenning");
     }
