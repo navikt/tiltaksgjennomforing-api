@@ -15,8 +15,11 @@ public class Utils {
         return in;
     }
 
-    public static boolean erIkkeNull(Object... objekter) {
+    public static boolean erIkkeTomme(Object... objekter) {
         for (Object objekt : objekter) {
+            if (objekt instanceof String && ((String) objekt).isEmpty()) {
+                return false;
+            }
             if (objekt == null) {
                 return false;
             }

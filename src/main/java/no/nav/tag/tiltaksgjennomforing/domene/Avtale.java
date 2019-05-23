@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static no.nav.tag.tiltaksgjennomforing.domene.Utils.erIkkeNull;
+import static no.nav.tag.tiltaksgjennomforing.domene.Utils.erIkkeTomme;
 import static no.nav.tag.tiltaksgjennomforing.domene.Utils.sjekkAtIkkeNull;
 
 @Data
@@ -182,7 +182,7 @@ public class Avtale extends AbstractAggregateRoot {
     }
 
     private boolean heleAvtalenErFyltUt() {
-        return erIkkeNull(deltakerFnr,
+        return erIkkeTomme(deltakerFnr,
                 veilederNavIdent,
                 deltakerFornavn,
                 deltakerEtternavn,
