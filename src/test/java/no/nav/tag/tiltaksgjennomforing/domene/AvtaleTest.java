@@ -5,6 +5,8 @@ import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingExc
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 
+import java.time.LocalDate;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AvtaleTest {
@@ -135,5 +137,65 @@ public class AvtaleTest {
     public void kanGodkjennesNaarAltErUtfylt() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.sjekkOmKanGodkjennes();
+    }
+
+    @Test
+    public void status__ny_avtale() {
+        Avtale avtale = TestData.enAvtale();
+        assertThat(avtale.status()).isEqualTo("Påbegynt");
+    }
+
+    @Test
+    public void status__null_startdato() {
+        Avtale avtale = TestData.enAvtale();
+        avtale.setStartDato(null);
+        avtale.setArbeidstreningLengde(null);
+        assertThat(avtale.status()).isEqualTo("Påbegynt");
+    }
+
+    @Test
+    public void status__noe_fylt_ut() {
+        Avtale avtale = TestData.enAvtale();
+        avtale.setStartDato(LocalDate.now().plusDays(5));
+        avtale.setArbeidstreningLengde(12);
+        avtale.setBedriftNavn("testbedriftsnavn");
+        assertThat(avtale.status()).isEqualTo("Påbegynt");
+    }
+
+    @Test
+    public void status__avsluttet_i_gaar() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setStartDato(LocalDate.now().minusWeeks(4).minusDays(1));
+        avtale.setArbeidstreningLengde(4);
+        avtale.setGodkjentAvArbeidsgiver(true);
+        avtale.setGodkjentAvDeltaker(true);
+        avtale.setGodkjentAvVeileder(true);
+        assertThat(avtale.status()).isEqualTo("Avsluttet");
+    }
+
+    @Test
+    public void status__avslutter_i_dag() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setStartDato(LocalDate.now().minusWeeks(4));
+        avtale.setArbeidstreningLengde(4);
+        avtale.setGodkjentAvArbeidsgiver(true);
+        avtale.setGodkjentAvDeltaker(true);
+        avtale.setGodkjentAvVeileder(true);
+        assertThat(avtale.status()).isEqualTo("Klar for oppstart");
+    }
+
+    @Test
+    public void status__klar_for_godkjenning() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        assertThat(avtale.status()).isEqualTo("Mangler godkjenning");
+    }
+
+    @Test
+    public void status__veileder_har_godkjent() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setGodkjentAvArbeidsgiver(true);
+        avtale.setGodkjentAvDeltaker(true);
+        avtale.setGodkjentAvVeileder(true);
+        assertThat(avtale.status()).isEqualTo("Klar for oppstart");
     }
 }

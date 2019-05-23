@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.domene;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -19,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static no.nav.tag.tiltaksgjennomforing.domene.Utils.erIkkeNull;
+import static no.nav.tag.tiltaksgjennomforing.domene.Utils.erIkkeTomme;
 import static no.nav.tag.tiltaksgjennomforing.domene.Utils.sjekkAtIkkeNull;
 
 @Data
@@ -169,8 +168,21 @@ public class Avtale extends AbstractAggregateRoot {
         }
     }
 
+    @JsonProperty("status")
+    public String status() {
+        if (isGodkjentAvVeileder() && (startDato.plusWeeks(arbeidstreningLengde).isBefore(LocalDate.now()))) {
+            return "Avsluttet";
+        } else if (isGodkjentAvVeileder()) {
+            return "Klar for oppstart";
+        } else if (heleAvtalenErFyltUt()) {
+            return "Mangler godkjenning";
+        } else {
+            return "Påbegynt";
+        }
+    }
+
     private boolean heleAvtalenErFyltUt() {
-        return erIkkeNull(deltakerFnr,
+        return erIkkeTomme(deltakerFnr,
                 veilederNavIdent,
                 deltakerFornavn,
                 deltakerEtternavn,
