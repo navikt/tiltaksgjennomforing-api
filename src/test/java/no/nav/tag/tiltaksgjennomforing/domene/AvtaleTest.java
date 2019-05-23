@@ -2,7 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.domene;
 
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
-import org.apache.tomcat.jni.Local;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 
@@ -147,7 +146,7 @@ public class AvtaleTest {
     }
 
     @Test
-    public void status__null_startdato(){
+    public void status__null_startdato() {
         Avtale avtale = TestData.enAvtale();
         avtale.setStartDato(null);
         avtale.setArbeidstreningLengde(null);
@@ -155,7 +154,7 @@ public class AvtaleTest {
     }
 
     @Test
-    public void status__noe_fylt_ut(){
+    public void status__noe_fylt_ut() {
         Avtale avtale = TestData.enAvtale();
         avtale.setStartDato(LocalDate.now().plusDays(5));
         avtale.setArbeidstreningLengde(12);
