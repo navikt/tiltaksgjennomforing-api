@@ -20,7 +20,7 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     @Override
     public void sjekkOmAvtaleKanGodkjennes() {
-        if (!avtale.isGodkjentAvArbeidsgiver() || !avtale.isGodkjentAvDeltaker()) {
+        if (!avtale.erGodkjentAvArbeidsgiver() || !avtale.erGodkjentAvDeltaker()) {
             throw new TiltaksgjennomforingException("Veileder må godkjenne avtalen etter deltaker og arbeidsgiver.");
         }
     }
@@ -33,5 +33,16 @@ public class Veileder extends Avtalepart<NavIdent> {
     @Override
     public Avtalerolle rolle() {
         return Avtalerolle.VEILEDER;
+    }
+
+    @Override
+    public void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn) {
+        if (!avtale.erGodkjentAvArbeidsgiver()) {
+            throw new TiltaksgjennomforingException("Arbeidsgiver må godkjenne avtalen først");
+        }
+        if (!paVegneAvGrunn.isIkkeMinId() && !paVegneAvGrunn.isReservert() && !paVegneAvGrunn.isDigitalKompetanse()) {
+            throw new TiltaksgjennomforingException("Minst èn grunn må være valgt");
+        }
+        avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
     }
 }

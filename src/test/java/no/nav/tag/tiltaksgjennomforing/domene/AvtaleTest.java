@@ -38,9 +38,9 @@ public class AvtaleTest {
             softly.assertThat(avtale.getStartDato()).isNull();
             softly.assertThat(avtale.getArbeidstreningLengde()).isNull();
             softly.assertThat(avtale.getArbeidstreningStillingprosent()).isNull();
-            softly.assertThat(avtale.isGodkjentAvDeltaker()).isFalse();
-            softly.assertThat(avtale.isGodkjentAvArbeidsgiver()).isFalse();
-            softly.assertThat(avtale.isGodkjentAvVeileder()).isFalse();
+            softly.assertThat(avtale.erGodkjentAvDeltaker()).isFalse();
+            softly.assertThat(avtale.erGodkjentAvArbeidsgiver()).isFalse();
+            softly.assertThat(avtale.erGodkjentAvVeileder()).isFalse();
         });
     }
 
@@ -107,16 +107,16 @@ public class AvtaleTest {
     @Test
     public void endreAvtaleSkalIkkeEndreGodkjenninger() {
         Avtale avtale = TestData.enAvtale();
-        boolean deltakerGodkjenningFoerEndring = avtale.isGodkjentAvDeltaker();
-        boolean arbeidsgiverGodkjenningFoerEndring = avtale.isGodkjentAvArbeidsgiver();
-        boolean veilederGodkjenningFoerEndring = avtale.isGodkjentAvVeileder();
+        boolean deltakerGodkjenningFoerEndring = avtale.erGodkjentAvDeltaker();
+        boolean arbeidsgiverGodkjenningFoerEndring = avtale.erGodkjentAvArbeidsgiver();
+        boolean veilederGodkjenningFoerEndring = avtale.erGodkjentAvVeileder();
 
         avtale.endreAvtale(avtale.getVersjon(), TestData.endringPaAlleFelt(), Avtalerolle.VEILEDER);
 
         SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(deltakerGodkjenningFoerEndring).isEqualTo(avtale.isGodkjentAvDeltaker());
-            softly.assertThat(arbeidsgiverGodkjenningFoerEndring).isEqualTo(avtale.isGodkjentAvArbeidsgiver());
-            softly.assertThat(veilederGodkjenningFoerEndring).isEqualTo(avtale.isGodkjentAvVeileder());
+            softly.assertThat(deltakerGodkjenningFoerEndring).isEqualTo(avtale.erGodkjentAvDeltaker());
+            softly.assertThat(arbeidsgiverGodkjenningFoerEndring).isEqualTo(avtale.erGodkjentAvArbeidsgiver());
+            softly.assertThat(veilederGodkjenningFoerEndring).isEqualTo(avtale.erGodkjentAvVeileder());
         });
     }
 

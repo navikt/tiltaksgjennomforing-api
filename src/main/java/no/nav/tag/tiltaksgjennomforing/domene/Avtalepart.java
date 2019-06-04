@@ -21,9 +21,15 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     public abstract Avtalerolle rolle();
 
+    abstract void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn);
+
     public void godkjennAvtale() {
         sjekkOmAvtaleKanGodkjennes();
         godkjennForAvtalepart();
+    }
+
+    public void godkjennPaVegneAvDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn) {
+        godkjennForVeilederOgDeltaker(paVegneAvGrunn);
     }
 
     public void endreAvtale(Integer versjon, EndreAvtale endreAvtale) {

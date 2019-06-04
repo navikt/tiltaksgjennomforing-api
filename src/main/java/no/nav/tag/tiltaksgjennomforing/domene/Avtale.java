@@ -55,9 +55,12 @@ public class Avtale extends AbstractAggregateRoot {
     @Column(keyColumn = "id")
     private List<Oppgave> oppgaver = new ArrayList<>();
 
-    private boolean godkjentAvDeltaker;
-    private boolean godkjentAvArbeidsgiver;
-    private boolean godkjentAvVeileder;
+    private GodkjentPaVegneGrunn godkjentPaVegneGrunn;
+
+    private LocalDateTime godkjentAvDeltaker;
+    private LocalDateTime godkjentAvArbeidsgiver;
+    private LocalDateTime godkjentAvVeileder;
+    private boolean godkjentPaVegneAv;
 
     @PersistenceConstructor
     public Avtale(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent) {
@@ -105,19 +108,40 @@ public class Avtale extends AbstractAggregateRoot {
 
     @JsonProperty("erLaast")
     public boolean erLaast() {
-        return godkjentAvVeileder && godkjentAvArbeidsgiver && godkjentAvDeltaker;
+        return erGodkjentAvVeileder() && erGodkjentAvArbeidsgiver() && erGodkjentAvDeltaker();
+    }
+
+    public boolean erGodkjentAvDeltaker() {
+        if (godkjentAvDeltaker == null) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean erGodkjentAvArbeidsgiver() {
+        if (godkjentAvArbeidsgiver == null) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean erGodkjentAvVeileder() {
+        if (godkjentAvVeileder == null) {
+            return false;
+        }
+        return true;
     }
 
     private void sjekkOmAvtalenKanEndres() {
-        if (godkjentAvDeltaker || godkjentAvArbeidsgiver || godkjentAvVeileder) {
+        if (erGodkjentAvDeltaker()|| erGodkjentAvArbeidsgiver() || erGodkjentAvVeileder()) {
             throw new TilgangskontrollException("Godkjenninger må oppheves før avtalen kan endres.");
         }
     }
 
     void opphevGodkjenninger(Avtalerolle avtalerolle) {
-        setGodkjentAvDeltaker(false);
-        setGodkjentAvArbeidsgiver(false);
-        setGodkjentAvVeileder(false);
+        setGodkjentAvDeltaker(null);
+        setGodkjentAvArbeidsgiver(null);
+        setGodkjentAvVeileder(null);
         registerEvent(new GodkjenningerOpphevet(this, avtalerolle));
     }
 
@@ -146,19 +170,28 @@ public class Avtale extends AbstractAggregateRoot {
 
     void godkjennForArbeidsgiver(Identifikator utfortAv) {
         sjekkOmKanGodkjennes();
-        this.godkjentAvArbeidsgiver = true;
+        this.godkjentAvArbeidsgiver = LocalDateTime.now();
         registerEvent(new GodkjentAvArbeidsgiver(this, utfortAv));
     }
 
     void godkjennForVeileder(Identifikator utfortAv) {
         sjekkOmKanGodkjennes();
-        this.godkjentAvVeileder = true;
+        this.godkjentAvVeileder = LocalDateTime.now();
         registerEvent(new GodkjentAvVeileder(this, utfortAv));
+    }
+
+    void godkjennForVeilederOgDeltaker(Identifikator utfortAv, GodkjentPaVegneGrunn paVegneAvGrunn) {
+        sjekkOmKanGodkjennes();
+        this.godkjentAvVeileder = LocalDateTime.now();
+        this.godkjentAvDeltaker = LocalDateTime.now();
+        this.godkjentPaVegneAv = true;
+        this.godkjentPaVegneGrunn = paVegneAvGrunn;
+        registerEvent(new GodkjentPaVegneAv(this, utfortAv));
     }
 
     void godkjennForDeltaker(Identifikator utfortAv) {
         sjekkOmKanGodkjennes();
-        this.godkjentAvDeltaker = true;
+        this.godkjentAvDeltaker = LocalDateTime.now();
         registerEvent(new GodkjentAvDeltaker(this, utfortAv));
     }
 

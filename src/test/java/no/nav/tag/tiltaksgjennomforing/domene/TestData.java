@@ -4,6 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,6 +18,12 @@ public class TestData {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         Avtale avtale = Avtale.nyAvtale(lagOpprettAvtale(), veilderNavIdent);
         avtale.endreAvtale(avtale.getVersjon(), endringPaAlleFelt(), Avtalerolle.VEILEDER);
+        return avtale;
+    }
+
+    public static Avtale enAvtaleMedAltUtfyltGodkjentAvVeileder() {
+        Avtale avtale = enAvtaleMedAltUtfylt();
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         return avtale;
     }
 
@@ -94,6 +101,10 @@ public class TestData {
 
     public static Maal etMaal() {
         return new Maal();
+    }
+
+    public static GodkjentPaVegneGrunn enGodkjentPaVegneGrunn() {
+        return new GodkjentPaVegneGrunn();
     }
 
     public static InnloggetSelvbetjeningBruker innloggetSelvbetjeningBrukerMedOrganisasjon(Avtalepart<Fnr> avtalepartMedFnr) {

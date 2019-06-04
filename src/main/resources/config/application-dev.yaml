@@ -8,6 +8,7 @@ spring:
   h2:
     console:
       enabled: true
+      path: /h2-console
   main:
     banner-mode: "console"
 
