@@ -104,7 +104,9 @@ public class TestData {
     }
 
     public static GodkjentPaVegneGrunn enGodkjentPaVegneGrunn() {
-        return new GodkjentPaVegneGrunn();
+        GodkjentPaVegneGrunn paVegneGrunn = new GodkjentPaVegneGrunn();
+        paVegneGrunn.setIkkeMinId(true);
+        return paVegneGrunn;
     }
 
     public static InnloggetSelvbetjeningBruker innloggetSelvbetjeningBrukerMedOrganisasjon(Avtalepart<Fnr> avtalepartMedFnr) {
