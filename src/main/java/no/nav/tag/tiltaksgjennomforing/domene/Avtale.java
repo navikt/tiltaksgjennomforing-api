@@ -112,28 +112,19 @@ public class Avtale extends AbstractAggregateRoot {
     }
 
     public boolean erGodkjentAvDeltaker() {
-        if (godkjentAvDeltaker == null) {
-            return false;
-        }
-        return true;
+        return godkjentAvDeltaker != null;
     }
 
     public boolean erGodkjentAvArbeidsgiver() {
-        if (godkjentAvArbeidsgiver == null) {
-            return false;
-        }
-        return true;
+        return godkjentAvArbeidsgiver != null;
     }
 
     public boolean erGodkjentAvVeileder() {
-        if (godkjentAvVeileder == null) {
-            return false;
-        }
-        return true;
+        return godkjentAvVeileder != null;
     }
 
     private void sjekkOmAvtalenKanEndres() {
-        if (erGodkjentAvDeltaker()|| erGodkjentAvArbeidsgiver() || erGodkjentAvVeileder()) {
+        if (erGodkjentAvDeltaker() || erGodkjentAvArbeidsgiver() || erGodkjentAvVeileder()) {
             throw new TilgangskontrollException("Godkjenninger må oppheves før avtalen kan endres.");
         }
     }

@@ -1,7 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.domene;
 
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
 
 public class Deltaker extends Avtalepart<Fnr> {
 
@@ -31,6 +30,6 @@ public class Deltaker extends Avtalepart<Fnr> {
 
     @Override
     public void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn) {
-            throw new TilgangskontrollException("Deltaker kan ikke godkjenne som veileder");
+        throw new TilgangskontrollException("Deltaker kan ikke godkjenne som veileder");
     }
 }

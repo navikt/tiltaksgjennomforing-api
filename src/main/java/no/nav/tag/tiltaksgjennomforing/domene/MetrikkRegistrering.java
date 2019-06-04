@@ -3,8 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.domene;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.domene.Avtalerolle;
-import no.nav.tag.tiltaksgjennomforing.domene.Tiltaktype;
 import no.nav.tag.tiltaksgjennomforing.domene.events.*;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
