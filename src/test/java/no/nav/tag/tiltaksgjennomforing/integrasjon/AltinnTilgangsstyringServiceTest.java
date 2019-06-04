@@ -4,8 +4,8 @@ import no.nav.tag.tiltaksgjennomforing.domene.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.domene.Fnr;
 import no.nav.tag.tiltaksgjennomforing.domene.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.domene.TestData;
-import no.nav.tag.tiltaksgjennomforing.integrasjon.altinn.AltinnService;
-import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.AltinnProperties;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.altinn_tilgangsstyring.AltinnTilgangsstyringService;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.AltinnTilgangsstyringProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,39 +23,39 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @ActiveProfiles("dev")
 @DirtiesContext
-public class AltinnServiceTest {
+public class AltinnTilgangsstyringServiceTest {
     @Autowired
-    private AltinnService altinnService;
+    private AltinnTilgangsstyringService altinnTilgangsstyringService;
 
     @Test
     public void hentOrganisasjoner__gyldig_fnr_en_forste_bedrift() {
-        List<Organisasjon> organisasjoner = altinnService.hentOrganisasjoner(new Fnr("10000000000"));
+        List<Organisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(new Fnr("10000000000"));
         assertThat(organisasjoner).extracting("bedriftNr").containsOnly(new BedriftNr("975959171"));
     }
 
     @Test
     public void hentOrganisasjoner__gyldig_fnr_en_andre_bedrift() {
-        List<Organisasjon> organisasjoner = altinnService.hentOrganisasjoner(new Fnr("20000000000"));
+        List<Organisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(new Fnr("20000000000"));
         assertThat(organisasjoner).extracting("bedriftNr").containsOnly(new BedriftNr("910909088"));
     }
 
     @Test
     public void hentOrganisasjoner__gyldig_fnr_tom_liste() {
-        List<Organisasjon> organisasjoner = altinnService.hentOrganisasjoner(new Fnr("00000000000"));
+        List<Organisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(new Fnr("00000000000"));
         assertThat(organisasjoner).hasSize(0);
     }
 
     @Test
     public void hentOrganisasjoner__ugyldig_fnr_tom_liste() {
-        List<Organisasjon> organisasjoner = altinnService.hentOrganisasjoner(TestData.enIdentifikator());
+        List<Organisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(TestData.enIdentifikator());
         assertThat(organisasjoner).hasSize(0);
     }
 
     @Test
     public void hentOrganisasjoner__feilkonfigurasjon_tom_liste() {
-        AltinnProperties altinnProperties = new AltinnProperties();
-        altinnProperties.setAltinnUri(URI.create("http://foobar"));
-        List<Organisasjon> organisasjoner = new AltinnService(altinnProperties).hentOrganisasjoner(TestData.enIdentifikator());
+        AltinnTilgangsstyringProperties altinnTilgangsstyringProperties = new AltinnTilgangsstyringProperties();
+        altinnTilgangsstyringProperties.setUri(URI.create("http://foobar"));
+        List<Organisasjon> organisasjoner = new AltinnTilgangsstyringService(altinnTilgangsstyringProperties).hentOrganisasjoner(TestData.enIdentifikator());
         assertThat(organisasjoner).hasSize(0);
     }
 }

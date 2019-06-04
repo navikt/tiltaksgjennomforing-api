@@ -23,13 +23,14 @@ no.nav.security.oidc:
       accepted_audience: aud-isso
 
 tiltaksgjennomforing:
-  altinn:
-    altinn-uri: http://localhost:8090
+  altinn-tilgangsstyring:
+    uri: http://localhost:8090
     altinn-api-key: test
     api-gw-api-key: test
     service-code: 42
     service-edition: 1
+  altinn-varsel:
+    uri: https://tt02.altinn.no/ServiceEngineExternal/NotificationAgencyExternalBasic.svc
   ereg:
-    ereg-uri: http://localhost:8090
-  axsys:
+    ereg-uri: http://localhost:8090  axsys:
     axsys-uri: http://localhost:8090

@@ -21,10 +21,9 @@ tiltaksgjennomforing:
     minimum-idle: 1
     maximum-pool-size: 2
     max-lifetime: 300000
-  altinn:
-    altinn-uri: https://api-gw.adeo.no
+  altinn-tilgangsstyring:
+    uri: https://api-gw.adeo.no
   ereg:
-    ereg-uri: https://modapp.adeo.no
-  axsys:
+    ereg-uri: https://modapp.adeo.no  axsys:
     axsys-uri: https://axsys.nais.adeo.no
     nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}
