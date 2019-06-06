@@ -6,6 +6,7 @@ import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -167,9 +168,9 @@ public class AvtaleTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setStartDato(LocalDate.now().minusWeeks(4).minusDays(1));
         avtale.setArbeidstreningLengde(4);
-        avtale.setGodkjentAvArbeidsgiver(true);
-        avtale.setGodkjentAvDeltaker(true);
-        avtale.setGodkjentAvVeileder(true);
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvVeileder(LocalDateTime.now());
         assertThat(avtale.status()).isEqualTo("Avsluttet");
     }
 
@@ -178,9 +179,9 @@ public class AvtaleTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setStartDato(LocalDate.now().minusWeeks(4));
         avtale.setArbeidstreningLengde(4);
-        avtale.setGodkjentAvArbeidsgiver(true);
-        avtale.setGodkjentAvDeltaker(true);
-        avtale.setGodkjentAvVeileder(true);
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvVeileder(LocalDateTime.now());
         assertThat(avtale.status()).isEqualTo("Klar for oppstart");
     }
 
@@ -193,9 +194,9 @@ public class AvtaleTest {
     @Test
     public void status__veileder_har_godkjent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvArbeidsgiver(true);
-        avtale.setGodkjentAvDeltaker(true);
-        avtale.setGodkjentAvVeileder(true);
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvVeileder(LocalDateTime.now());
         assertThat(avtale.status()).isEqualTo("Klar for oppstart");
     }
 }

@@ -196,9 +196,9 @@ public class Avtale extends AbstractAggregateRoot {
 
     @JsonProperty("status")
     public String status() {
-        if (isGodkjentAvVeileder() && (startDato.plusWeeks(arbeidstreningLengde).isBefore(LocalDate.now()))) {
+        if (erGodkjentAvVeileder() && (startDato.plusWeeks(arbeidstreningLengde).isBefore(LocalDate.now()))) {
             return "Avsluttet";
-        } else if (isGodkjentAvVeileder()) {
+        } else if (erGodkjentAvVeileder()) {
             return "Klar for oppstart";
         } else if (heleAvtalenErFyltUt()) {
             return "Mangler godkjenning";
