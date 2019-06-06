@@ -133,6 +133,8 @@ public class Avtale extends AbstractAggregateRoot {
         setGodkjentAvDeltaker(null);
         setGodkjentAvArbeidsgiver(null);
         setGodkjentAvVeileder(null);
+        setGodkjentPaVegneAv(false);
+        setGodkjentPaVegneGrunn(null);
         registerEvent(new GodkjenningerOpphevet(this, avtalerolle));
     }
 

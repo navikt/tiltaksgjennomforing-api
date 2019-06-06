@@ -37,12 +37,13 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     @Override
     public void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn) {
+        if (avtale.erGodkjentAvDeltaker()) {
+            throw new TiltaksgjennomforingException("Deltaker har allerde godkjent avtalen");
+        }
         if (!avtale.erGodkjentAvArbeidsgiver()) {
             throw new TiltaksgjennomforingException("Arbeidsgiver må godkjenne avtalen først");
         }
-        if (!paVegneAvGrunn.isIkkeMinId() && !paVegneAvGrunn.isReservert() && !paVegneAvGrunn.isDigitalKompetanse()) {
-            throw new TiltaksgjennomforingException("Minst èn grunn må være valgt");
-        }
+        paVegneAvGrunn.valgtMinstEnGrunn();
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
     }
 }
