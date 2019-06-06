@@ -55,8 +55,7 @@ public class MetrikkRegistrering {
     @EventListener
     public void godkjentPaVegneAv(GodkjentPaVegneAv event) {
         log.info("Avtale godkjent på vegne av deltaker, avtaleId={} avtalepart=VEILEDER", event.getAvtale().getId());
-        counter("avtale.godkjenning.godkjent", Avtalerolle.VEILEDER).increment();
-        counter("avtale.godkjenning.godkjent", Avtalerolle.DELTAKER).increment();
+        counter("avtale.godkjenning.godkjentPaVegneAv", Avtalerolle.VEILEDER).increment();
     }
 
     private Counter counter(String navn, Avtalerolle avtalerolle) {
