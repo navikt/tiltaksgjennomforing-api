@@ -32,4 +32,3 @@ values ('e16350f6-27ea-49b3-9fbc-25fcee0dd080', current_timestamp, 'Arbeidserfar
 insert into oppgave (ID, OPPRETTET_TIDSPUNKT, TITTEL, BESKRIVELSE, OPPLAERING, AVTALE)
 values ('86a83e6d-e668-4073-a1ac-88885ae4df90', current_timestamp, 'Lager', 'Rydde på lageret', 'Ryddekurs',
         '5ae3be81-abcd-477e-a8f3-4a5eb5fe91e3');
-
