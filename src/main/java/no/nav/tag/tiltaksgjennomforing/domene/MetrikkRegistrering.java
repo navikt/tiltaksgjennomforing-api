@@ -3,8 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.domene;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.domene.Avtalerolle;
-import no.nav.tag.tiltaksgjennomforing.domene.Tiltaktype;
 import no.nav.tag.tiltaksgjennomforing.domene.events.*;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -52,6 +50,12 @@ public class MetrikkRegistrering {
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
         log.info("Avtale godkjent, avtaleId={} avtalepart=VEILEDER", event.getAvtale().getId());
         counter("avtale.godkjenning.godkjent", Avtalerolle.VEILEDER).increment();
+    }
+
+    @EventListener
+    public void godkjentPaVegneAv(GodkjentPaVegneAv event) {
+        log.info("Avtale godkjent på vegne av deltaker, avtaleId={} avtalepart=VEILEDER", event.getAvtale().getId());
+        counter("avtale.godkjenning.godkjentPaVegneAv", Avtalerolle.VEILEDER).increment();
     }
 
     private Counter counter(String navn, Avtalerolle avtalerolle) {

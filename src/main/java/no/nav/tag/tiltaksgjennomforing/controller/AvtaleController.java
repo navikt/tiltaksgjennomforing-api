@@ -110,4 +110,15 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping(value = "/{avtaleId}/godkjenn-paa-vegne-av")
+    public ResponseEntity godkjennPaVegneAv(@PathVariable("avtaleId") UUID avtaleId, @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn) {
+        InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        innloggetBruker.sjekkTilgang(avtale);
+        Avtalepart avtalepart = innloggetBruker.avtalepart(avtale);
+        avtalepart.godkjennPaVegneAvDeltaker(paVegneAvGrunn);
+        avtaleRepository.save(avtale);
+        return ResponseEntity.ok().build();
+    }
 }

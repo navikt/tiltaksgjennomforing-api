@@ -1,5 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.domene;
 
+import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
+
 public class Arbeidsgiver extends Avtalepart<Fnr> {
     public Arbeidsgiver(Fnr identifikator, Avtale avtale) {
         super(identifikator, avtale);
@@ -17,11 +19,16 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
     @Override
     boolean kanOppheveGodkjenninger() {
-        return !avtale.isGodkjentAvVeileder();
+        return !avtale.erGodkjentAvVeileder();
     }
 
     @Override
     public Avtalerolle rolle() {
         return Avtalerolle.ARBEIDSGIVER;
+    }
+
+    @Override
+    public void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn) {
+        throw new TilgangskontrollException("Arbeidsgiver kan ikke godkjenne som veileder");
     }
 }

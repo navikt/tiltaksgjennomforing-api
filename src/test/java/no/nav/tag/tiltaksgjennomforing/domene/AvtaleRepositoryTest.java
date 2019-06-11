@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,6 +81,32 @@ public class AvtaleRepositoryTest {
     }
 
     @Test
+    public void avtale_godkjent_pa_vegne_av_skal_lagres_med_pa_vegne_av_grunn() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+
+        GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
+        godkjentPaVegneGrunn.setIkkeBankId(true);
+        Veileder veileder = TestData.enVeileder(avtale);
+
+        veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn);
+        Avtale lagretAvtale = avtaleRepository.save(avtale);
+
+        assertThat(lagretAvtale.getGodkjentPaVegneGrunn().isIkkeBankId()).isEqualTo(godkjentPaVegneGrunn.isIkkeBankId());
+    }
+
+    @Test
+    public void lagre_pa_vegne_skal_publisere_domainevent() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+
+        Veileder veileder = TestData.enVeileder(avtale);
+        GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
+        veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn);
+
+        avtaleRepository.save(avtale);
+        verify(metrikkRegistrering).godkjentPaVegneAv(any());
+    }
+
+    @Test
     public void opprettAvtale__skal_publisere_domainevent() {
         Avtale nyAvtale = Avtale.nyAvtale(new OpprettAvtale(new Fnr("10101033333"), new BedriftNr("101033333")), new NavIdent("Q000111"));
         avtaleRepository.save(nyAvtale);
@@ -115,8 +142,8 @@ public class AvtaleRepositoryTest {
     @Test
     public void godkjennForVeileder__skal_publisere_domainevent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvDeltaker(true);
-        avtale.setGodkjentAvArbeidsgiver(true);
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         TestData.enVeileder(avtale).godkjennAvtale();
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).godkjentAvVeileder(any());

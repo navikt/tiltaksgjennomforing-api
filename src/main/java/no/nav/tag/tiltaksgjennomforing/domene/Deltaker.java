@@ -1,5 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.domene;
 
+import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
+
 public class Deltaker extends Avtalepart<Fnr> {
 
     public Deltaker(Fnr identifikator, Avtale avtale) {
@@ -24,5 +26,10 @@ public class Deltaker extends Avtalepart<Fnr> {
     @Override
     public Avtalerolle rolle() {
         return Avtalerolle.DELTAKER;
+    }
+
+    @Override
+    public void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn) {
+        throw new TilgangskontrollException("Deltaker kan ikke godkjenne som veileder");
     }
 }
