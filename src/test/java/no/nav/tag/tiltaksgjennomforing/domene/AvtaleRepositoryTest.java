@@ -85,13 +85,13 @@ public class AvtaleRepositoryTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
 
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
-        godkjentPaVegneGrunn.setIkkeMinId(true);
+        godkjentPaVegneGrunn.setIkkeBankId(true);
         Veileder veileder = TestData.enVeileder(avtale);
 
         veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn);
         Avtale lagretAvtale = avtaleRepository.save(avtale);
 
-        assertThat(lagretAvtale.getGodkjentPaVegneGrunn().isIkkeMinId()).isEqualTo(godkjentPaVegneGrunn.isIkkeMinId());
+        assertThat(lagretAvtale.getGodkjentPaVegneGrunn().isIkkeBankId()).isEqualTo(godkjentPaVegneGrunn.isIkkeBankId());
     }
 
     @Test

@@ -105,7 +105,7 @@ public class TestData {
 
     public static GodkjentPaVegneGrunn enGodkjentPaVegneGrunn() {
         GodkjentPaVegneGrunn paVegneGrunn = new GodkjentPaVegneGrunn();
-        paVegneGrunn.setIkkeMinId(true);
+        paVegneGrunn.setIkkeBankId(true);
         return paVegneGrunn;
     }
 

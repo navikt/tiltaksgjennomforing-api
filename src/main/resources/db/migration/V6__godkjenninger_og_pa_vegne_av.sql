@@ -11,7 +11,7 @@ alter table avtale add godkjent_pa_vegne_av boolean default false;
 
 create table godkjent_pa_vegne_grunn (
     avtale uuid primary key references avtale(id),
-    ikke_min_id boolean default false,
+    ikke_bank_id boolean default false,
     reservert boolean default false,
     digital_kompetanse boolean default false
 );

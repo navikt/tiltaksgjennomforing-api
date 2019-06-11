@@ -11,12 +11,12 @@ import java.util.UUID;
 public class GodkjentPaVegneGrunn {
     @Id
     private UUID avtale;
-    private boolean ikkeMinId;
+    private boolean ikkeBankId;
     private boolean reservert;
     private boolean digitalKompetanse;
 
     public void valgtMinstEnGrunn() {
-        if (!ikkeMinId && !reservert && !digitalKompetanse) {
+        if (!ikkeBankId && !reservert && !digitalKompetanse) {
             throw new TiltaksgjennomforingException("Minst èn grunn må være valgt");
         }
     }
