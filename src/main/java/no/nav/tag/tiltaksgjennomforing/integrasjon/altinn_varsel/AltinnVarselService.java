@@ -7,6 +7,7 @@ import no.altinn.schemas.services.serviceengine.notification._2009._10.*;
 import no.altinn.schemas.services.serviceengine.standalonenotificationbe._2009._10.StandaloneNotificationBEList;
 import no.altinn.services.serviceengine.notification._2010._10.INotificationAgencyExternalBasic;
 import no.altinn.services.serviceengine.notification._2010._10.INotificationAgencyExternalBasicSendStandaloneNotificationBasicV3AltinnFaultFaultFaultMessage;
+import no.nav.tag.tiltaksgjennomforing.domene.Varsel;
 import no.nav.tag.tiltaksgjennomforing.domene.VarselService;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.AltinnVarselProperties;
@@ -19,24 +20,24 @@ import javax.xml.namespace.QName;
 @Slf4j
 @RequiredArgsConstructor
 public class AltinnVarselService implements VarselService {
-    public static final String NS = "http://schemas.altinn.no/services/ServiceEngine/Notification/2009/10";
+    private static final String NAMESPACE = "http://schemas.altinn.no/services/ServiceEngine/Notification/2009/10";
 
     private final INotificationAgencyExternalBasic iNotificationAgencyExternalBasic;
     private final AltinnVarselProperties varselProperties;
 
     private static JAXBElement<String> ns(String localpart, String value) {
-        return new JAXBElement<>(new QName(NS, localpart), String.class, value);
+        return new JAXBElement<>(new QName(NAMESPACE, localpart), String.class, value);
     }
 
     private static <T> JAXBElement<T> ns(String localpart, Class<T> clazz, T value) {
-        return new JAXBElement<>(new QName(NS, localpart), clazz, value);
+        return new JAXBElement<>(new QName(NAMESPACE, localpart), clazz, value);
     }
 
     private static JAXBElement<Boolean> ns(String localpart, Boolean value) {
-        return new JAXBElement<>(new QName(NS, localpart), Boolean.class, value);
+        return new JAXBElement<>(new QName(NAMESPACE, localpart), Boolean.class, value);
     }
 
-    public void sendVarsel() {
+    public void sendVarsel(Varsel varsel) {
         StandaloneNotificationBEList standaloneNotification = new StandaloneNotificationBEList().withStandaloneNotification(new StandaloneNotification()
                 .withIsReservable(ns("IsReservable", false))
                 .withLanguageID(1044)
@@ -44,15 +45,18 @@ public class AltinnVarselService implements VarselService {
                 .withReceiverEndPoints(ns("ReceiverEndPoints", ReceiverEndPointBEList.class, new ReceiverEndPointBEList()
                         .withReceiverEndPoint(new ReceiverEndPoint()
                                 .withTransportType(ns("TransportType", TransportType.class, TransportType.SMS))
-                                .withReceiverAddress(ns("ReceiverAddress", "00000000")))))
-                .withReporteeNumber(ns("ReporteeNumber", "000000000"))
+                                .withReceiverAddress(ns("ReceiverAddress", varsel.getTelefonnummer())))))
+                .withReporteeNumber(ns("ReporteeNumber", varsel.getAvgiver().asString()))
                 .withTextTokens(ns("TextTokens", TextTokenSubstitutionBEList.class, new TextTokenSubstitutionBEList()
                         .withTextToken(new TextToken()
-                                .withTokenValue(ns("TokenValue", "Tester altinn_varsel")))))
+                                .withTokenValue(ns("TokenValue", varsel.getVarseltekst())))))
                 .withUseServiceOwnerShortNameAsSenderOfSms(ns("UseServiceOwnerShortNameAsSenderOfSms", true)));
 
         try {
-            iNotificationAgencyExternalBasic.sendStandaloneNotificationBasicV3("foo", "bar", standaloneNotification);
+            iNotificationAgencyExternalBasic.sendStandaloneNotificationBasicV3(
+                    varselProperties.getSystemBruker(),
+                    varselProperties.getSystemPassord(),
+                    standaloneNotification);
         } catch (INotificationAgencyExternalBasicSendStandaloneNotificationBasicV3AltinnFaultFaultFaultMessage fault) {
             log.error("Feil ved varsling gjennom Altinn", fault);
             throw new TiltaksgjennomforingException("Feil ved varsling gjennom Altinn");

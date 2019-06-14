@@ -11,6 +11,11 @@ spring:
       path: /h2-console
   main:
     banner-mode: "console"
+  kafka:
+    consumer:
+      bootstrap-servers: ${spring.embedded.kafka.brokers}
+    producer:
+      bootstrap-servers: ${spring.embedded.kafka.brokers}
 
 no.nav.security.oidc:
   issuers: selvbetjening, isso

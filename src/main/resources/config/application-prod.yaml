@@ -23,6 +23,8 @@ tiltaksgjennomforing:
     max-lifetime: 300000
   altinn-tilgangsstyring:
     uri: https://api-gw.adeo.no
+  altinn-varsel:
+    uri: https://www.altinn.no/ServiceEngineExternal/NotificationAgencyExternalBasic.svc
   ereg:
     ereg-uri: https://modapp.adeo.no  axsys:
     axsys-uri: https://axsys.nais.adeo.no

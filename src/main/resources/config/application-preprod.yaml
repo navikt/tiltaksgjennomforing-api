@@ -2,6 +2,20 @@ spring:
   datasource:
     platform: postgres
     driverClassName: org.postgresql.Driver
+  kafka:
+    bootstrap-servers: b27apvl00045.preprod.local:8443, b27apvl00046.preprod.local:8443, b27apvl00047.preprod.local:8443
+    client-id: tiltaksgjennomforing-api-preprod
+    properties:
+      security.protocol: SASL_SSL
+      sasl:
+        mechanism: PLAIN
+        jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="${TILTAKSGJENNOMFORING_SERVICEUSER_USERNAME}" password="${TILTAKSGJENNOMFORING_SERVICEUSER_PASSWORD}";
+      ssl.truststore:
+        location: ${javax.net.ssl.trustStore}
+        password: ${javax.net.ssl.trustStorePassword}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 no.nav.security.oidc:
   issuers: selvbetjening, isso
@@ -23,6 +37,8 @@ tiltaksgjennomforing:
     max-lifetime: 300000
   altinn-tilgangsstyring:
     uri: https://api-gw-q1.adeo.no
+  altinn-varsel:
+    uri: https://tt02.altinn.no/ServiceEngineExternal/NotificationAgencyExternalBasic.svc
   ereg:
     ereg-uri: https://modapp-q1.adeo.no  axsys:
     axsys-uri: https://axsys.nais.preprod.local

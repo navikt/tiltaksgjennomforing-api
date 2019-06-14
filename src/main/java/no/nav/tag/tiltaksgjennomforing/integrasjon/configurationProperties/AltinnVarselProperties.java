@@ -11,6 +11,7 @@ import java.net.URI;
 @ConfigurationProperties(prefix = "tiltaksgjennomforing.altinn-varsel")
 public class AltinnVarselProperties {
     private URI uri;
-    private Integer serviceCode;
-    private Integer serviceEdition;
+    private String systemBruker;
+    private String systemPassord;
+    private String varseltekst;
 }
