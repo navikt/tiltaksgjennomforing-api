@@ -19,7 +19,7 @@ tiltaksgjennomforing:
     database-url: ${spring.datasource.url}
     vault-sti: postgresql/prod-fss
     minimum-idle: 1
-    maximum-pool-size: 5
+    maximum-pool-size: 2
     max-lifetime: 300000
   altinn:
     altinn-uri: https://api-gw.adeo.no
