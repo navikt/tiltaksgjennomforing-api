@@ -127,11 +127,6 @@ public class TestData {
     }
 
     public static Identifikator enIdentifikator() {
-        return new Identifikator() {
-            @Override
-            public String asString() {
-                return "test-id";
-            }
-        };
+        return new Identifikator("test-id");
     }
 }
