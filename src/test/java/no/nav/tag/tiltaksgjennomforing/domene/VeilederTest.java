@@ -3,6 +3,8 @@ package no.nav.tag.tiltaksgjennomforing.domene;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
 import org.junit.Test;
 
+import java.time.LocalDateTime;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class VeilederTest {
@@ -15,19 +17,19 @@ public class VeilederTest {
     @Test
     public void godkjennAvtale__kan_godkjenne_sist() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvDeltaker(true);
-        avtale.setGodkjentAvArbeidsgiver(true);
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         Veileder veileder = TestData.enVeileder(avtale);
         veileder.godkjennAvtale();
-        assertThat(avtale.isGodkjentAvVeileder()).isTrue();
+        assertThat(avtale.erGodkjentAvVeileder()).isTrue();
     }
 
     @Test
     public void opphevGodkjenninger__kan_alltid_oppheve_godkjenninger() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvVeileder(true);
-        avtale.setGodkjentAvDeltaker(true);
-        avtale.setGodkjentAvArbeidsgiver(true);
+        avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         Veileder veileder = TestData.enVeileder(avtale);
         veileder.opphevGodkjenninger();
 

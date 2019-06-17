@@ -15,15 +15,22 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     abstract boolean kanEndreAvtale();
 
-    void sjekkOmAvtaleKanGodkjennes() {}
+    void sjekkOmAvtaleKanGodkjennes() {
+    }
 
     abstract boolean kanOppheveGodkjenninger();
 
     public abstract Avtalerolle rolle();
 
+    abstract void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn);
+
     public void godkjennAvtale() {
         sjekkOmAvtaleKanGodkjennes();
         godkjennForAvtalepart();
+    }
+
+    public void godkjennPaVegneAvDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn) {
+        godkjennForVeilederOgDeltaker(paVegneAvGrunn);
     }
 
     public void endreAvtale(Integer versjon, EndreAvtale endreAvtale) {
