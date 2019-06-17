@@ -147,6 +147,17 @@ public class AvtaleTest {
         avtale.sjekkOmKanGodkjennes();
     }
 
+    @Test(expected = TiltaksgjennomforingException.class)
+    public void kanIkkeGodkjennesNaarDeltakerTlfMangler() {
+        // Deltaker tlf ble innført etter at avtaler er opprettet. Det kan derfor være
+        // avtaler som er godkjent av deltaker og AG som mangler tlf.
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setDeltakerTlf(null);
+        avtale.sjekkOmKanGodkjennes();
+    }
+
     @Test
     public void kanGodkjennesNaarAltErUtfylt() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
