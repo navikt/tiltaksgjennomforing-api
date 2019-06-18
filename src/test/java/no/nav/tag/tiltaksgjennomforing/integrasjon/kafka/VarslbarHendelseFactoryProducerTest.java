@@ -23,6 +23,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
@@ -54,7 +55,7 @@ public class VarslbarHendelseFactoryProducerTest {
     @Test
     public void avtaleGodkjent__skal_sendes_på_kafka_topic_med_riktige_felter() throws JSONException {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvDeltaker(true);
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setId(UUID.randomUUID());
         eventPublisher.publishEvent(new GodkjentAvDeltaker(avtale, TestData.enIdentifikator()));
 
