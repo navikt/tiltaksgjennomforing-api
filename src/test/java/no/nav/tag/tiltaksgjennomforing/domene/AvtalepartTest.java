@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.domene;
 
+import no.nav.tag.tiltaksgjennomforing.domene.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
 import org.junit.Test;
@@ -17,7 +18,7 @@ public class AvtalepartTest {
     }
 
     @Test(expected = TilgangskontrollException.class)
-    public void godkjenne_pa_vegne_av_deltaker_skal_feile_for_deltaker() {
+    public void godkjennForVeilederOgDeltaker__skal_feile_for_deltaker() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Deltaker deltaker = TestData.enDeltaker(avtale);
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
@@ -25,7 +26,7 @@ public class AvtalepartTest {
     }
 
     @Test(expected = TilgangskontrollException.class)
-    public void godkjenne_pa_vegne_av_deltaker_skal_feile_for_arbeidsgiver() {
+    public void godkjennForVeilederOgDeltaker__skal_feile_for_arbeidsgiver() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
@@ -33,7 +34,7 @@ public class AvtalepartTest {
     }
 
     @Test(expected = TiltaksgjennomforingException.class)
-    public void godkjenne_pa_vegne_av_deltaker_skal_feile_hvis_ag_ikke_har_godkjent() {
+    public void godkjennForVeilederOgDeltaker__skal_feile_hvis_ag_ikke_har_godkjent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Veileder veileder = TestData.enVeileder(avtale);
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
@@ -41,7 +42,7 @@ public class AvtalepartTest {
     }
 
     @Test
-    public void godkjenne_pa_vegne_av_deltaker_skal_fungere_for_veileder() {
+    public void godkjennForVeilederOgDeltaker__skal_fungere_for_veileder() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         arbeidsgiver.godkjennForAvtalepart();
@@ -67,21 +68,28 @@ public class AvtalepartTest {
         veileder.endreAvtale(avtale.getVersjon(), TestData.ingenEndring());
     }
 
-    @Test
-    public void endreGodkjenning__skal_fungere_for_deltaker() {
+    @Test(expected = SamtidigeEndringerException.class)
+    public void godkjennForAvtalepart__skal_ikke_fungere_hvis_versjon_er_feil() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Deltaker deltaker = TestData.enDeltaker(avtale);
-        deltaker.godkjennForAvtalepart();
+        deltaker.godkjennAvtale(-1);
+    }
+
+    @Test
+    public void godkjennForAvtalepart__skal_fungere_for_deltaker() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        Deltaker deltaker = TestData.enDeltaker(avtale);
+        deltaker.godkjennAvtale(avtale.getVersjon());
         assertThat(avtale.erGodkjentAvDeltaker()).isTrue();
         assertThat(avtale.erGodkjentAvArbeidsgiver()).isFalse();
         assertThat(avtale.erGodkjentAvVeileder()).isFalse();
     }
 
     @Test
-    public void endreGodkjenning__skal_fungere_for_arbeidsgiver() {
+    public void godkjennForAvtalepart__skal_fungere_for_arbeidsgiver() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.godkjennForAvtalepart();
+        arbeidsgiver.godkjennAvtale(avtale.getVersjon());
         assertThat(avtale.erGodkjentAvArbeidsgiver()).isTrue();
         assertThat(avtale.erGodkjentAvVeileder()).isFalse();
         assertThat(avtale.erGodkjentAvDeltaker()).isFalse();
@@ -90,11 +98,11 @@ public class AvtalepartTest {
     @Test
     public void godkjennForAvtalepart__skal_fungere_for_veileder() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.godkjennForAvtalepart();
-        assertThat(avtale.erGodkjentAvVeileder()).isTrue();
-        assertThat(avtale.erGodkjentAvDeltaker()).isFalse();
-        assertThat(avtale.erGodkjentAvArbeidsgiver()).isFalse();
+        veileder.godkjennAvtale(avtale.getVersjon());
+        assertThat(avtale.erGodkjentAvArbeidsgiver()).isTrue();
     }
 
     @Test

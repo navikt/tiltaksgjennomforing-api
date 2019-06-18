@@ -126,7 +126,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void godkjennForArbeidsgiver__skal_publisere_domainevent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        TestData.enArbeidsgiver(avtale).godkjennAvtale();
+        TestData.enArbeidsgiver(avtale).godkjennAvtale(avtale.getVersjon());
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).godkjentAvArbeidsgiver(any());
     }
@@ -134,7 +134,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void godkjennForDeltaker__skal_publisere_domainevent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        TestData.enDeltaker(avtale).godkjennAvtale();
+        TestData.enDeltaker(avtale).godkjennAvtale(avtale.getVersjon());
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).godkjentAvDeltaker(any());
     }
@@ -144,7 +144,7 @@ public class AvtaleRepositoryTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
-        TestData.enVeileder(avtale).godkjennAvtale();
+        TestData.enVeileder(avtale).godkjennAvtale(avtale.getVersjon());
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).godkjentAvVeileder(any());
     }

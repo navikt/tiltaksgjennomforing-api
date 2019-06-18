@@ -24,12 +24,14 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     abstract void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn);
 
-    public void godkjennAvtale() {
+    public void godkjennAvtale(Integer versjon) {
+        avtale.sjekkVersjon(versjon);
         sjekkOmAvtaleKanGodkjennes();
         godkjennForAvtalepart();
     }
 
-    public void godkjennPaVegneAvDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn) {
+    public void godkjennPaVegneAvDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn, Integer versjon) {
+        avtale.sjekkVersjon(versjon);
         godkjennForVeilederOgDeltaker(paVegneAvGrunn);
     }
 

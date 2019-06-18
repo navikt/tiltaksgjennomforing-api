@@ -10,8 +10,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class VeilederTest {
     @Test(expected = TiltaksgjennomforingException.class)
     public void godkjennAvtale__kan_ikke_godkjenne_foerst() {
-        Veileder veileder = TestData.enVeileder(TestData.enAvtaleMedAltUtfylt());
-        veileder.godkjennAvtale();
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        Veileder veileder = TestData.enVeileder(avtale);
+        veileder.godkjennAvtale(avtale.getVersjon());
     }
 
     @Test
@@ -20,7 +21,7 @@ public class VeilederTest {
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.godkjennAvtale();
+        veileder.godkjennAvtale(avtale.getVersjon());
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
     }
 

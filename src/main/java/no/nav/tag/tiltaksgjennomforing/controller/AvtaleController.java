@@ -101,23 +101,23 @@ public class AvtaleController {
     }
 
     @PostMapping(value = "/{avtaleId}/godkjenn")
-    public ResponseEntity godkjenn(@PathVariable("avtaleId") UUID avtaleId) {
+    public ResponseEntity godkjenn(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader("If-Match") Integer versjon) {
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkTilgang(avtale);
         Avtalepart avtalepart = innloggetBruker.avtalepart(avtale);
-        avtalepart.godkjennAvtale();
+        avtalepart.godkjennAvtale(versjon);
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping(value = "/{avtaleId}/godkjenn-paa-vegne-av")
-    public ResponseEntity godkjennPaVegneAv(@PathVariable("avtaleId") UUID avtaleId, @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn) {
+    public ResponseEntity godkjennPaVegneAv(@PathVariable("avtaleId") UUID avtaleId, @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn, @RequestHeader("If-Match") Integer versjon) {
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkTilgang(avtale);
         Avtalepart avtalepart = innloggetBruker.avtalepart(avtale);
-        avtalepart.godkjennPaVegneAvDeltaker(paVegneAvGrunn);
+        avtalepart.godkjennPaVegneAvDeltaker(paVegneAvGrunn, versjon);
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();
     }
