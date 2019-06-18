@@ -41,7 +41,7 @@ public class Veileder extends Avtalepart<NavIdent> {
             throw new TiltaksgjennomforingException("Deltaker har allerde godkjent avtalen");
         }
         if (!avtale.erGodkjentAvArbeidsgiver()) {
-            throw new TiltaksgjennomforingException("Arbeidsgiver må godkjenne avtalen først");
+            throw new TiltaksgjennomforingException("Arbeidsgiver må godkjenne avtalen før veileder kan godkjenne");
         }
         paVegneAvGrunn.valgtMinstEnGrunn();
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
