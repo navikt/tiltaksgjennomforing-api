@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.domene.Varsel;
 import no.nav.tag.tiltaksgjennomforing.domene.VarselService;
 import no.nav.tag.tiltaksgjennomforing.domene.VarslbarHendelse;
+import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
@@ -25,13 +26,26 @@ public class VarslbarHendelseConsumer {
     @KafkaListener(topics = Topics.VARSLBAR_HENDELSE_OPPSTAATT)
     public void consume(String message) {
         log.info("Consumed message -> {}", message);
+        VarslbarHendelse varslbarHendelse;
         try {
-            VarslbarHendelse varslbarHendelse = OBJECT_MAPPER.readValue(message, VarslbarHendelse.class);
-            for (Varsel varsel : varslbarHendelse.getVarsler()) {
-                varselService.sendVarsel(varsel);
-            }
+            varslbarHendelse = OBJECT_MAPPER.readValue(message, VarslbarHendelse.class);
         } catch (IOException e) {
             log.error("Feil ved mapping av JSON", e);
+            throw new TiltaksgjennomforingException("Feil ved mapping av JSON");
+        }
+
+        sendVarsler(varslbarHendelse);
+    }
+
+    private void sendVarsler(VarslbarHendelse varslbarHendelse) {
+        int totalt = varslbarHendelse.getVarsler().size();
+        for (int i = 0; i < totalt; i++) {
+            try {
+                varselService.sendVarsel(varslbarHendelse.getVarsler().get(i));
+                log.info("Varsel {} av {} sendt for avtaleId={}", i, totalt, varslbarHendelse.getAvtaleId());
+            } catch (Exception e) {
+                log.error("Feil ved sending av varsel {} av {} for avtaleId={}", i, totalt, varslbarHendelse.getAvtaleId());
+            }
         }
     }
 }

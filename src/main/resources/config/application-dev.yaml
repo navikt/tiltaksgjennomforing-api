@@ -35,7 +35,8 @@ tiltaksgjennomforing:
     service-code: 42
     service-edition: 1
   altinn-varsel:
-    uri: https://tt02.altinn.no/ServiceEngineExternal/NotificationAgencyExternalBasic.svc
+    uri: http://localhost:8090
   ereg:
-    ereg-uri: http://localhost:8090  axsys:
+    uri: http://localhost:8090
+  axsys:
     axsys-uri: http://localhost:8090

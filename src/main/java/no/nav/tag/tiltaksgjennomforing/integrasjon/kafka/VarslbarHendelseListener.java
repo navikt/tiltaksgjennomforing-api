@@ -37,6 +37,12 @@ public class VarslbarHendelseListener {
     }
 
     @EventListener
+    public void godkjentPaVegneAv(GodkjentPaVegneAv event) {
+        VarslbarHendelse varslbarHendelse = VarslbarHendelseFactory.avtaleGodkjentPaVegneAv(event.getAvtale());
+        producer.sendVarslbarHendelse(varslbarHendelse);
+    }
+
+    @EventListener
     public void godkjenningerOpphevet(GodkjenningerOpphevet event) {
         VarslbarHendelse varslbarHendelse = VarslbarHendelseFactory.godkjenningerOpphevet(event.getAvtale());
         producer.sendVarslbarHendelse(varslbarHendelse);

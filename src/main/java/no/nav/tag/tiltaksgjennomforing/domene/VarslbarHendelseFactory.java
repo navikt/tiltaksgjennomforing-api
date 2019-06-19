@@ -49,6 +49,10 @@ public class VarslbarHendelseFactory {
         return varslerFor(avtale, true, true, false);
     }
 
+    public static VarslbarHendelse avtaleGodkjentPaVegneAv(Avtale avtale) {
+        return varslerFor(avtale, false, true, false);
+    }
+
     public static VarslbarHendelse godkjenningerOpphevet(Avtale avtale) {
         return varslerFor(avtale, true, true, true);
     }

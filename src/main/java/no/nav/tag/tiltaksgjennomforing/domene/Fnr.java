@@ -1,9 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.domene;
 
-import lombok.Value;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
 
-@Value
 public class Fnr extends Identifikator {
 
     public Fnr(String fnr) {

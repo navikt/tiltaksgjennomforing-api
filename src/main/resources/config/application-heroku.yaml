@@ -21,4 +21,4 @@ tiltaksgjennomforing:
     service-code: 42
     service-edition: 1
   ereg:
-    ereg-uri: http://localhost:8090
+    uri: http://localhost:8090

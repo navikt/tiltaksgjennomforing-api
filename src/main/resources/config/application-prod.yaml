@@ -26,6 +26,7 @@ tiltaksgjennomforing:
   altinn-varsel:
     uri: https://www.altinn.no/ServiceEngineExternal/NotificationAgencyExternalBasic.svc
   ereg:
-    ereg-uri: https://modapp.adeo.no  axsys:
+    uri: https://modapp.adeo.no
+  axsys:
     axsys-uri: https://axsys.nais.adeo.no
     nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}
