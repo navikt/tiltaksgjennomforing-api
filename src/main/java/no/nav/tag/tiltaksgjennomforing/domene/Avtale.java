@@ -144,7 +144,7 @@ public class Avtale extends AbstractAggregateRoot {
 
     void sjekkVersjon(Integer versjon) {
         if (versjon == null || !versjon.equals(this.versjon)) {
-            throw new SamtidigeEndringerException("Noen andre har lagret avtalen.");
+            throw new SamtidigeEndringerException("Du må oppdatere siden før du kan lagre eller godkjenne. Det er gjort endringer i avtalen som du ikke har sett.");
         }
     }
 
