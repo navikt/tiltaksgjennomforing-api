@@ -13,5 +13,4 @@ public class AltinnVarselProperties {
     private URI uri;
     private String systemBruker;
     private String systemPassord;
-    private String varseltekst;
 }
