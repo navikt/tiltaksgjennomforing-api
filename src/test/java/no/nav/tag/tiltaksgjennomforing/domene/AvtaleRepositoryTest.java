@@ -18,9 +18,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-@ActiveProfiles("dev")
 @RunWith(SpringRunner.class)
 @SpringBootTest
+@ActiveProfiles("dev")
 @DirtiesContext
 public class AvtaleRepositoryTest {
 

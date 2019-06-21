@@ -30,10 +30,6 @@ no.nav.security.oidc:
 tiltaksgjennomforing:
   altinn-tilgangsstyring:
     uri: http://localhost:8090
-    altinn-api-key: test
-    api-gw-api-key: test
-    service-code: 42
-    service-edition: 1
   altinn-varsel:
     uri: http://localhost:8090
   ereg:
