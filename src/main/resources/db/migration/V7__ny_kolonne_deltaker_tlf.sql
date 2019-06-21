@@ -1,1 +1,0 @@
-alter table avtale add column deltaker_tlf varchar(255);
