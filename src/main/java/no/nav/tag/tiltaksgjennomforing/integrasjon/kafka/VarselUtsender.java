@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@ConditionalOnBean(VarslbarHendelseProducer.class)
 public class VarselUtsender {
     private final VarslbarHendelseProducer producer;
 

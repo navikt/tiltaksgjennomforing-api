@@ -16,14 +16,14 @@ values ('76a83e6d-e668-4073-a1ac-88885ae4df90', current_timestamp, 'Fiskemann', 
         '6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3');
 
 
-insert into avtale (ID, OPPRETTET_TIDSPUNKT, VERSJON, DELTAKER_FORNAVN, DELTAKER_ETTERNAVN, DELTAKER_FNR, BEDRIFT_NAVN,
+insert into avtale (ID, OPPRETTET_TIDSPUNKT, VERSJON, DELTAKER_FORNAVN, DELTAKER_ETTERNAVN, DELTAKER_FNR, DELTAKER_TLF, BEDRIFT_NAVN,
                     BEDRIFT_NR, ARBEIDSGIVER_FNR, ARBEIDSGIVER_FORNAVN, ARBEIDSGIVER_ETTERNAVN, ARBEIDSGIVER_TLF,
                     VEILEDER_NAV_IDENT, VEILEDER_FORNAVN, VEILEDER_ETTERNAVN, VEILEDER_TLF, OPPFOLGING, TILRETTELEGGING,
                     START_DATO, ARBEIDSTRENING_LENGDE, ARBEIDSTRENING_STILLINGPROSENT, GODKJENT_AV_DELTAKER,
                     GODKJENT_AV_ARBEIDSGIVER, GODKJENT_AV_VEILEDER)
-values ('5ae3be81-abcd-477e-a8f3-4a5eb5fe91e3', current_timestamp, 7, 'Dagny', 'Deltaker', '01093434109',
+values ('5ae3be81-abcd-477e-a8f3-4a5eb5fe91e3', current_timestamp, 7, 'Dagny', 'Deltaker', '01093434109', '00000000',
         'Pers butikk', '222222222', '29118923330', 'Per', 'Kremmer', '22334455', 'X123456', 'Vera', 'Veileder',
-        '33445566', 'Telefon hver uke', 'Ingen', '2019-03-25', 2, 100, current_timestamp, current_timestamp, current_timestamp);
+        '33445566', 'Telefon hver uke', 'Ingen', '2019-03-25', 2, 100, current_timestamp, current_timestamp, null);
 
 insert into maal(ID, OPPRETTET_TIDSPUNKT, KATEGORI, BESKRIVELSE, AVTALE)
 values ('e16350f6-27ea-49b3-9fbc-25fcee0dd080', current_timestamp, 'Arbeidserfaring', 'Lære butikkarbeid',

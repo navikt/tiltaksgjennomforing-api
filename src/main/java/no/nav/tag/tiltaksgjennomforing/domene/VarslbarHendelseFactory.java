@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.domene;
 
 import lombok.experimental.UtilityClass;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @UtilityClass
@@ -33,7 +34,7 @@ public class VarslbarHendelseFactory {
         if (veileder) {
             varsler.add(veilederVarsel(avtale));
         }
-        return new VarslbarHendelse(avtale.getId(), hendelse, varsler);
+        return new VarslbarHendelse(LocalDateTime.now(), avtale.getId(), hendelse, varsler);
     }
 
     public static VarslbarHendelse avtaleOpprettet(Avtale avtale) {
