@@ -62,6 +62,6 @@ public class VarslbarHendelseFactoryProducerTest {
         ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.VARSLBAR_HENDELSE_OPPSTAATT);
 
         JSONObject json = new JSONObject(record.value());
-        assertThat(json.getString("id")).isEqualTo(avtale.getId().toString());
+        assertThat(json.getString("avtaleId")).isEqualTo(avtale.getId().toString());
     }
 }

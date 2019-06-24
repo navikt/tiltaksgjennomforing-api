@@ -27,12 +27,6 @@
         "queryParameters" : {
           "subject" : {
             "matches" : "^2\\d{10}$"
-          },
-          "serviceCode": {
-            "equalTo": "42"
-          },
-          "serviceEdition": {
-            "equalTo": "1"
           }
         }
       },

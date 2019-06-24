@@ -6,7 +6,6 @@ import no.nav.tag.tiltaksgjennomforing.integrasjon.WsClient;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.AltinnVarselProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 
 import java.util.Collections;
 
@@ -17,7 +16,6 @@ public class AltinnVarselConfiguration {
     private final AltinnVarselProperties varselProperties;
 
     @Bean
-    @Primary
     public INotificationAgencyExternalBasic iNotificationAgencyExternalBasic() {
         return new WsClient<INotificationAgencyExternalBasic>().createPort(varselProperties.getUri().toString() + TJENESTE_PATH, INotificationAgencyExternalBasic.class, Collections.singletonList(new LogErrorHandler()), false);
     }

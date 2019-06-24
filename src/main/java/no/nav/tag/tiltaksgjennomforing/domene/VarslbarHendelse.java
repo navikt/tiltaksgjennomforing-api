@@ -12,5 +12,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class VarslbarHendelse {
     private UUID avtaleId;
+    private String hendelse;
     private List<Varsel> varsler;
 }

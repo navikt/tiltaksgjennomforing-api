@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.domene.Varsel;
 import no.nav.tag.tiltaksgjennomforing.domene.VarselService;
 import no.nav.tag.tiltaksgjennomforing.domene.VarslbarHendelse;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;

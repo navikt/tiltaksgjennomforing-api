@@ -4,12 +4,14 @@ import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.domene.VarslbarHendelse;
 import no.nav.tag.tiltaksgjennomforing.domene.VarslbarHendelseFactory;
 import no.nav.tag.tiltaksgjennomforing.domene.events.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class VarslbarHendelseListener {
+@ConditionalOnBean(VarslbarHendelseProducer.class)
+public class VarselUtsender {
     private final VarslbarHendelseProducer producer;
 
     @EventListener
