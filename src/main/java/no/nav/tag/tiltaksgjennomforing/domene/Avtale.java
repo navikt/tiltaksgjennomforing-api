@@ -35,6 +35,7 @@ public class Avtale extends AbstractAggregateRoot {
     private Integer versjon;
     private String deltakerFornavn;
     private String deltakerEtternavn;
+    private String deltakerTlf;
     private String bedriftNavn;
     private String arbeidsgiverFornavn;
     private String arbeidsgiverEtternavn;
@@ -83,6 +84,7 @@ public class Avtale extends AbstractAggregateRoot {
 
         setDeltakerFornavn(nyAvtale.getDeltakerFornavn());
         setDeltakerEtternavn(nyAvtale.getDeltakerEtternavn());
+        setDeltakerTlf(nyAvtale.getDeltakerTlf());
 
         setBedriftNavn(nyAvtale.getBedriftNavn());
 
@@ -212,6 +214,7 @@ public class Avtale extends AbstractAggregateRoot {
                 veilederNavIdent,
                 deltakerFornavn,
                 deltakerEtternavn,
+                deltakerTlf,
                 bedriftNavn,
                 arbeidsgiverFornavn,
                 arbeidsgiverEtternavn,

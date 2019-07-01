@@ -41,6 +41,7 @@ public class TestData {
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setDeltakerFornavn("Fornavn");
         endreAvtale.setDeltakerEtternavn("Etternavn");
+        endreAvtale.setDeltakerTlf("22334455");
         endreAvtale.setBedriftNavn("Bedriftnavn");
         endreAvtale.setBedriftNr(new BedriftNr("12345678"));
         endreAvtale.setArbeidsgiverFornavn("AG fornavn");

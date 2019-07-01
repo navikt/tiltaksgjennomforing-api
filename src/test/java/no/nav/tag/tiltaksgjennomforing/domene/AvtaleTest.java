@@ -22,6 +22,7 @@ public class AvtaleTest {
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(avtale.getOpprettetTidspunkt()).isNull();
             softly.assertThat(avtale.getDeltakerFnr()).isEqualTo(deltakerFnr);
+            softly.assertThat(avtale.getDeltakerTlf()).isNull();
             softly.assertThat(avtale.getMaal()).isEmpty();
             softly.assertThat(avtale.getOppgaver()).isEmpty();
             softly.assertThat(avtale.getDeltakerFornavn()).isNull();
@@ -87,6 +88,7 @@ public class AvtaleTest {
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(avtale.getDeltakerFornavn()).isEqualTo(endreAvtale.getDeltakerFornavn());
             softly.assertThat(avtale.getDeltakerEtternavn()).isEqualTo(endreAvtale.getDeltakerEtternavn());
+            softly.assertThat(avtale.getDeltakerTlf()).isEqualTo(endreAvtale.getDeltakerTlf());
             softly.assertThat(avtale.getBedriftNavn()).isEqualTo(endreAvtale.getBedriftNavn());
             softly.assertThat(avtale.getBedriftNr()).isEqualTo(endreAvtale.getBedriftNr());
             softly.assertThat(avtale.getArbeidsgiverFornavn()).isEqualTo(endreAvtale.getArbeidsgiverFornavn());
@@ -131,6 +133,17 @@ public class AvtaleTest {
     @Test(expected = TiltaksgjennomforingException.class)
     public void kanIkkeGodkjennesNaarIkkeAltErUtfylt() {
         Avtale avtale = TestData.enAvtale();
+        avtale.sjekkOmKanGodkjennes();
+    }
+
+    @Test(expected = TiltaksgjennomforingException.class)
+    public void kanIkkeGodkjennesNaarDeltakerTlfMangler() {
+        // Deltaker tlf ble innført etter at avtaler er opprettet. Det kan derfor være
+        // avtaler som er godkjent av deltaker og AG som mangler tlf.
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setDeltakerTlf(null);
         avtale.sjekkOmKanGodkjennes();
     }
 
@@ -197,6 +210,18 @@ public class AvtaleTest {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        assertThat(avtale.status()).isEqualTo("Klar for oppstart");
+    }
+
+    @Test
+    public void status__naar_deltaker_tlf_mangler() {
+        // Deltaker tlf ble innført etter at avtaler er opprettet. Det kan derfor være
+        // avtaler som er inngått som mangler tlf.
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setDeltakerTlf(null);
         assertThat(avtale.status()).isEqualTo("Klar for oppstart");
     }
 }
