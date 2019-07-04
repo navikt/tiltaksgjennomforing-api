@@ -7,8 +7,8 @@ import no.altinn.schemas.services.serviceengine.notification._2009._10.*;
 import no.altinn.schemas.services.serviceengine.standalonenotificationbe._2009._10.StandaloneNotificationBEList;
 import no.altinn.services.serviceengine.notification._2010._10.INotificationAgencyExternalBasic;
 import no.altinn.services.serviceengine.notification._2010._10.INotificationAgencyExternalBasicSendStandaloneNotificationBasicV3AltinnFaultFaultFaultMessage;
-import no.nav.tag.tiltaksgjennomforing.domene.Varsel;
-import no.nav.tag.tiltaksgjennomforing.domene.VarselService;
+import no.nav.tag.tiltaksgjennomforing.domene.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.domene.varsel.VarselService;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.AltinnVarselProperties;
 import org.springframework.stereotype.Service;
@@ -37,7 +37,7 @@ public class AltinnVarselService implements VarselService {
         return new JAXBElement<>(new QName(NAMESPACE, localpart), Boolean.class, value);
     }
 
-    public void sendVarsel(Varsel varsel) {
+    public void sendVarsel(Identifikator avgiver, String telefonnummer, String varseltekst) {
         StandaloneNotificationBEList standaloneNotification = new StandaloneNotificationBEList().withStandaloneNotification(new StandaloneNotification()
                 .withIsReservable(ns("IsReservable", false))
                 .withLanguageID(1044)
@@ -45,11 +45,11 @@ public class AltinnVarselService implements VarselService {
                 .withReceiverEndPoints(ns("ReceiverEndPoints", ReceiverEndPointBEList.class, new ReceiverEndPointBEList()
                         .withReceiverEndPoint(new ReceiverEndPoint()
                                 .withTransportType(ns("TransportType", TransportType.class, TransportType.SMS))
-                                .withReceiverAddress(ns("ReceiverAddress", varsel.getTelefonnummer())))))
-                .withReporteeNumber(ns("ReporteeNumber", varsel.getAvgiver().asString()))
+                                .withReceiverAddress(ns("ReceiverAddress", telefonnummer)))))
+                .withReporteeNumber(ns("ReporteeNumber", avgiver.asString()))
                 .withTextTokens(ns("TextTokens", TextTokenSubstitutionBEList.class, new TextTokenSubstitutionBEList()
                         .withTextToken(new TextToken()
-                                .withTokenValue(ns("TokenValue", varsel.getVarseltekst())))))
+                                .withTokenValue(ns("TokenValue", varseltekst)))))
                 .withUseServiceOwnerShortNameAsSenderOfSms(ns("UseServiceOwnerShortNameAsSenderOfSms", true)));
 
         try {

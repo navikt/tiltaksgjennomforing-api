@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.domene;
 
+import no.nav.tag.tiltaksgjennomforing.domene.varsel.VarslbarHendelse;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,9 @@ public class AvtaleSaveListener {
             if (entity instanceof Avtale) {
                 Avtale avtale = (Avtale) entity;
                 avtale.settIdOgOpprettetTidspunkt();
+            } else if (entity instanceof VarslbarHendelse) {
+                VarslbarHendelse varslbarHendelse = (VarslbarHendelse) entity;
+                varslbarHendelse.settIdOgOpprettetTidspunkt();
             }
         };
     }

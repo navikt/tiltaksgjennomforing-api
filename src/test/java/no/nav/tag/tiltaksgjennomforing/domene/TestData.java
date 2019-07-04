@@ -2,6 +2,8 @@ package no.nav.tag.tiltaksgjennomforing.domene;
 
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
+import no.nav.tag.tiltaksgjennomforing.domene.varsel.VarslbarHendelse;
+import no.nav.tag.tiltaksgjennomforing.domene.varsel.VarslbarHendelseType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -128,5 +130,9 @@ public class TestData {
 
     public static Identifikator enIdentifikator() {
         return new Identifikator("test-id");
+    }
+
+    public static VarslbarHendelse enHendelseMedSmsVarsel(Avtale avtale) {
+        return VarslbarHendelse.nyHendelse(avtale, VarslbarHendelseType.GODKJENT_AV_DELTAKER);
     }
 }

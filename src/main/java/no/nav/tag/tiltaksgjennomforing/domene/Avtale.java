@@ -150,7 +150,7 @@ public class Avtale extends AbstractAggregateRoot {
         }
     }
 
-    void settIdOgOpprettetTidspunkt() {
+    public void settIdOgOpprettetTidspunkt() {
         if (this.id == null) {
             this.id = UUID.randomUUID();
         }

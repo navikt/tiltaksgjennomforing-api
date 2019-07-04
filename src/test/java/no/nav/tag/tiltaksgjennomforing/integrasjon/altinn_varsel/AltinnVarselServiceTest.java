@@ -1,7 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.integrasjon.altinn_varsel;
 
 import no.nav.tag.tiltaksgjennomforing.domene.TestData;
-import no.nav.tag.tiltaksgjennomforing.domene.Varsel;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +19,6 @@ public class AltinnVarselServiceTest {
 
     @Test
     public void sendVarsel() {
-        varselService.sendVarsel(new Varsel(TestData.enIdentifikator(), "12345678", "varseltekst"));
+        varselService.sendVarsel(TestData.enIdentifikator(), "12345678", "varseltekst");
     }
 }

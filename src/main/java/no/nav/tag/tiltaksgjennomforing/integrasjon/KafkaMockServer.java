@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.stereotype.Component;
 
-@Profile("dev")
+@Profile("kafka-test")
 @Slf4j
 @Component
 public class KafkaMockServer implements DisposableBean {
@@ -15,7 +15,7 @@ public class KafkaMockServer implements DisposableBean {
 
     public KafkaMockServer() {
         log.info("Starter embedded Kafka");
-        embeddedKafka = new EmbeddedKafkaBroker(1, true, Topics.alleTopics());
+        embeddedKafka = new EmbeddedKafkaBroker(3, true, Topics.alleTopics());
         embeddedKafka.afterPropertiesSet();
     }
 

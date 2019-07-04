@@ -1,13 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.integrasjon.kafka;
 
 public class Topics {
-    public static final String VARSLBAR_HENDELSE_OPPSTAATT = "privat-tiltaksgjennomforing-varslbarHendelseOppstaatt";
-    public static final String VARSLING_UTFØRT = "privat-tiltaksgjennomforing-varslingUtfoert";
-    public static final String VARSLING_FEILET = "privat-tiltaksgjennomforing-varslingFeilet";
+    public static final String SMS_VARSEL = "privat-tiltaksgjennomforing-smsVarsel";
+    public static final String SMS_VARSEL_RESULTAT = "privat-tiltaksgjennomforing-smsVarselResultat";
 
     public static String[] alleTopics() {
         return new String[]{
-                VARSLBAR_HENDELSE_OPPSTAATT
+                SMS_VARSEL,
+                SMS_VARSEL_RESULTAT
         };
     }
 }

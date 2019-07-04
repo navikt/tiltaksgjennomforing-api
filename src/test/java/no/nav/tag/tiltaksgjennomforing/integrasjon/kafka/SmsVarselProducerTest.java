@@ -2,7 +2,8 @@ package no.nav.tag.tiltaksgjennomforing.integrasjon.kafka;
 
 import no.nav.tag.tiltaksgjennomforing.domene.Avtale;
 import no.nav.tag.tiltaksgjennomforing.domene.TestData;
-import no.nav.tag.tiltaksgjennomforing.domene.events.GodkjentAvDeltaker;
+import no.nav.tag.tiltaksgjennomforing.domene.events.VarslbarHendelseOppstaatt;
+import no.nav.tag.tiltaksgjennomforing.domene.varsel.VarslbarHendelse;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.KafkaMockServer;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -23,17 +24,15 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @DirtiesContext
-@ActiveProfiles("dev")
-public class VarslbarHendelseFactoryProducerTest {
+@ActiveProfiles({"dev", "kafka", "kafka-test"})
+public class SmsVarselProducerTest {
 
     @Autowired
     public KafkaMockServer embeddedKafka;
@@ -43,25 +42,28 @@ public class VarslbarHendelseFactoryProducerTest {
 
     @Before
     public void setUp() {
-        Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "true", embeddedKafka.getEmbeddedKafka());
+        Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "false", embeddedKafka.getEmbeddedKafka());
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 
         ConsumerFactory<String, String> cf = new DefaultKafkaConsumerFactory<>(consumerProps);
         consumer = cf.createConsumer();
-        embeddedKafka.getEmbeddedKafka().consumeFromAnEmbeddedTopic(consumer, Topics.VARSLBAR_HENDELSE_OPPSTAATT);
+        embeddedKafka.getEmbeddedKafka().consumeFromAnEmbeddedTopic(consumer, Topics.SMS_VARSEL);
     }
 
     @Test
-    public void avtaleGodkjent__skal_sendes_på_kafka_topic_med_riktige_felter() throws JSONException {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
-        avtale.setId(UUID.randomUUID());
-        eventPublisher.publishEvent(new GodkjentAvDeltaker(avtale, TestData.enIdentifikator()));
+    public void varslbarHendelseOppstaatt__skal_sendes_på_kafka_topic_med_riktige_felter() throws JSONException {
+        Avtale avtale = TestData.enAvtale();
+        avtale.settIdOgOpprettetTidspunkt();
+        VarslbarHendelse varslbarHendelse = TestData.enHendelseMedSmsVarsel(avtale);
+        varslbarHendelse.settIdOgOpprettetTidspunkt();
+        eventPublisher.publishEvent(new VarslbarHendelseOppstaatt(avtale, varslbarHendelse));
 
-        ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.VARSLBAR_HENDELSE_OPPSTAATT);
+        ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.SMS_VARSEL);
 
         JSONObject json = new JSONObject(record.value());
-        assertThat(json.getString("avtaleId")).isEqualTo(avtale.getId().toString());
+        assertThat(json.getString("smsVarselId"))
+                .isNotNull()
+                .isEqualTo(varslbarHendelse.getSmsVarsler().get(0).getId().toString());
     }
 }
