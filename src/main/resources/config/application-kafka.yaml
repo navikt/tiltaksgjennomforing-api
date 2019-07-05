@@ -6,6 +6,10 @@ spring:
       properties:
         isolation:
           level: read_committed
+        spring:
+          json:
+            trusted:
+              packages: no.nav.tag.tiltaksgjennomforing.*
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
     producer:
