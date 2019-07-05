@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@ActiveProfiles("dev")
+@ActiveProfiles({"dev", "wiremock"})
 @DirtiesContext
 public class AltinnTilgangsstyringServiceTest {
     @Autowired
