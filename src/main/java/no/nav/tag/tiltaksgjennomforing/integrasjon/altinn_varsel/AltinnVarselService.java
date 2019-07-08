@@ -8,8 +8,8 @@ import no.altinn.schemas.services.serviceengine.standalonenotificationbe._2009._
 import no.altinn.services.serviceengine.notification._2010._10.INotificationAgencyExternalBasic;
 import no.altinn.services.serviceengine.notification._2010._10.INotificationAgencyExternalBasicSendStandaloneNotificationBasicV3AltinnFaultFaultFaultMessage;
 import no.nav.tag.tiltaksgjennomforing.domene.Identifikator;
-import no.nav.tag.tiltaksgjennomforing.domene.varsel.VarselService;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.domene.varsel.VarselService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.AltinnVarselProperties;
 import org.springframework.stereotype.Service;
 
@@ -57,8 +57,8 @@ public class AltinnVarselService implements VarselService {
                     varselProperties.getSystemBruker(),
                     varselProperties.getSystemPassord(),
                     standaloneNotification);
-        } catch (INotificationAgencyExternalBasicSendStandaloneNotificationBasicV3AltinnFaultFaultFaultMessage fault) {
-            log.error("Feil ved varsling gjennom Altinn", fault);
+        } catch (INotificationAgencyExternalBasicSendStandaloneNotificationBasicV3AltinnFaultFaultFaultMessage | RuntimeException e) {
+            log.error("Feil ved varsling gjennom Altinn", e);
             throw new TiltaksgjennomforingException("Feil ved varsling gjennom Altinn");
         }
     }
