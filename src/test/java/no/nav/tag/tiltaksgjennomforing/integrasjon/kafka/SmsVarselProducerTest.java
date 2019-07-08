@@ -1,9 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.integrasjon.kafka;
 
-import no.nav.tag.tiltaksgjennomforing.domene.Avtale;
 import no.nav.tag.tiltaksgjennomforing.domene.TestData;
-import no.nav.tag.tiltaksgjennomforing.domene.events.VarslbarHendelseOppstaatt;
 import no.nav.tag.tiltaksgjennomforing.domene.varsel.VarslbarHendelse;
+import no.nav.tag.tiltaksgjennomforing.domene.varsel.VarslbarHendelseRepository;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.KafkaMockServer;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -16,15 +15,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,9 +35,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SmsVarselProducerTest {
 
     @Autowired
-    public KafkaMockServer embeddedKafka;
+    private TransactionTemplate transactionTemplate;
     @Autowired
-    private ApplicationEventPublisher eventPublisher;
+    private KafkaMockServer embeddedKafka;
+    @Autowired
+    private VarslbarHendelseRepository repository;
+
     private Consumer<String, String> consumer;
 
     @Before
@@ -53,17 +56,16 @@ public class SmsVarselProducerTest {
 
     @Test
     public void varslbarHendelseOppstaatt__skal_sendes_på_kafka_topic_med_riktige_felter() throws JSONException {
-        Avtale avtale = TestData.enAvtale();
-        avtale.settIdOgOpprettetTidspunkt();
-        VarslbarHendelse varslbarHendelse = TestData.enHendelseMedSmsVarsel(avtale);
-        varslbarHendelse.settIdOgOpprettetTidspunkt();
-        eventPublisher.publishEvent(new VarslbarHendelseOppstaatt(avtale, varslbarHendelse));
+        VarslbarHendelse varslbarHendelse = TestData.enHendelseMedSmsVarsel(TestData.enAvtaleMedAltUtfylt());
+        transactionTemplate.execute(status -> {
+            repository.save(varslbarHendelse);
+            return status;
+        });
 
         ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.SMS_VARSEL);
-
         JSONObject json = new JSONObject(record.value());
         assertThat(json.getString("smsVarselId"))
                 .isNotNull()
-                .isEqualTo(varslbarHendelse.getSmsVarsler().get(0).getId().toString());
+                .isIn(varslbarHendelse.getSmsVarsler().stream().map(smsVarsel -> smsVarsel.getId().toString()).collect(Collectors.toList()));
     }
 }
