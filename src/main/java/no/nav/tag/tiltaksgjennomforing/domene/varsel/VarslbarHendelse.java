@@ -33,17 +33,17 @@ public class VarslbarHendelse extends AbstractAggregateRoot {
 
     private List<SmsVarsel> lagSmsVarsler(Avtale avtale) {
         SmsVarselFactory factory = new SmsVarselFactory(avtale);
-        switch (varslbarHendelseType) {
-            case GODKJENT_AV_DELTAKER:
-            case GODKJENT_AV_ARBEIDSGIVER:
-                return Arrays.asList(factory.veileder());
-            case GODKJENT_AV_VEILEDER:
+//        switch (varslbarHendelseType) {
+//            case GODKJENT_AV_DELTAKER:
+//            case GODKJENT_AV_ARBEIDSGIVER:
+//                return Arrays.asList(factory.veileder());
+//            case GODKJENT_AV_VEILEDER:
                 return Arrays.asList(factory.deltaker(), factory.arbeidsgiver());
-            case GODKJENT_PAA_VEGNE_AV:
-                return Arrays.asList(factory.arbeidsgiver());
-            default:
-                return Collections.emptyList();
-        }
+//            case GODKJENT_PAA_VEGNE_AV:
+//                return Arrays.asList(factory.arbeidsgiver());
+//            default:
+//                return Collections.emptyList();
+//        }
     }
 
     public void settStatusPaaSmsVarsel(UUID smsVarselId, SmsVarselStatus status) {

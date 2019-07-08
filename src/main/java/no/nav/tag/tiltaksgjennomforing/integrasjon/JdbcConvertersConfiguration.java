@@ -3,12 +3,11 @@ package no.nav.tag.tiltaksgjennomforing.integrasjon;
 import no.nav.tag.tiltaksgjennomforing.domene.Identifikator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.jdbc.core.convert.JdbcCustomConversions;
 import org.springframework.data.jdbc.repository.config.JdbcConfiguration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.kafka.transaction.ChainedKafkaTransactionManager;
-import org.springframework.kafka.transaction.KafkaTransactionManager;
 import org.springframework.lang.Nullable;
 
 import javax.sql.DataSource;
@@ -17,7 +16,8 @@ import java.util.Arrays;
 @Configuration
 public class JdbcConvertersConfiguration extends JdbcConfiguration {
     @Bean
-    public DataSourceTransactionManager dstm(DataSource dataSource) {
+    @Primary
+    public DataSourceTransactionManager dataSourceTransactionManager(DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }
 

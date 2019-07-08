@@ -16,7 +16,7 @@ public class SmsVarselProducer {
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     public void sendSmsVarselMeldingTilKafka(SmsVarselMelding smsVarsel) {
-        kafkaTemplate.send(MessageBuilder.withPayload(smsVarsel).setHeader(KafkaHeaders.TOPIC, Topics.SMS_VARSEL).build());
+        kafkaTemplate.executeInTransaction(operations -> operations.send(MessageBuilder.withPayload(smsVarsel).setHeader(KafkaHeaders.TOPIC, Topics.SMS_VARSEL).build()));
         log.info("SmsVarsel med smsVarselId={} sendt på Kafka topic", smsVarsel.getSmsVarselId());
     }
 }
