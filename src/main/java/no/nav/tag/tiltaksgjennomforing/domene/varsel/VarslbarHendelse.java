@@ -26,7 +26,7 @@ public class VarslbarHendelse extends AbstractAggregateRoot {
         VarslbarHendelse varslbarHendelse = new VarslbarHendelse();
         varslbarHendelse.avtaleId = avtale.getId();
         varslbarHendelse.varslbarHendelseType = varslbarHendelseType;
-        varslbarHendelse.smsVarsler.addAll(varslbarHendelse.lagSmsVarsler(avtale));
+        varslbarHendelse.smsVarsler = varslbarHendelse.lagSmsVarsler(avtale);
         varslbarHendelse.registerEvent(new VarslbarHendelseOppstaatt(avtale, varslbarHendelse));
         return varslbarHendelse;
     }
@@ -55,8 +55,12 @@ public class VarslbarHendelse extends AbstractAggregateRoot {
     }
 
     public void settIdOgOpprettetTidspunkt() {
-        this.id = UUID.randomUUID();
-        this.tidspunkt = LocalDateTime.now();
+        if (id == null) {
+            id = UUID.randomUUID();
+        }
+        if (tidspunkt == null) {
+            tidspunkt = LocalDateTime.now();
+        }
         this.smsVarsler.forEach(SmsVarsel::settId);
     }
 }

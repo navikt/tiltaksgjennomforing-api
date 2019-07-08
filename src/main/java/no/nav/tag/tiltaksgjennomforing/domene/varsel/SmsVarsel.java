@@ -31,6 +31,8 @@ public class SmsVarsel {
     }
 
     public void settId() {
-        this.id = UUID.randomUUID();
+        if (id == null) {
+            id = UUID.randomUUID();
+        }
     }
 }
