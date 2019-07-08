@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.domene.varsel;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import no.nav.tag.tiltaksgjennomforing.domene.Avtale;
 import no.nav.tag.tiltaksgjennomforing.domene.events.VarslbarHendelseOppstaatt;
 import org.springframework.data.annotation.Id;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class VarslbarHendelse extends AbstractAggregateRoot {
     @Id
     private UUID id;
