@@ -9,7 +9,7 @@ spring:
         spring:
           json:
             trusted:
-              packages: no.nav.tag.tiltaksgjennomforing.*
+              packages: "*"
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
     producer:
