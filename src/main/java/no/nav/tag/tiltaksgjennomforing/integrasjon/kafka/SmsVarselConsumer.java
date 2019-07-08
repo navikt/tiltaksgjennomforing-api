@@ -18,13 +18,16 @@ public class SmsVarselConsumer {
 
     @KafkaListener(groupId = "smsVarselConsumer", topics = Topics.SMS_VARSEL)
     public void consume(SmsVarselMelding varselMelding) {
-        SmsVarselResultatMelding resultatMelding;
+        SmsVarselResultatMelding resultatMelding = utfoerVarsling(varselMelding);
+        resultatProducer.sendSmsVarselResultatMeldingTilKafka(resultatMelding);
+    }
+
+    private SmsVarselResultatMelding utfoerVarsling(SmsVarselMelding varselMelding) {
         try {
             varselService.sendVarsel(varselMelding.getIdentifikator(), varselMelding.getTelefonnummer(), varselMelding.getMeldingstekst());
-            resultatMelding = SmsVarselResultatMelding.sendt(varselMelding);
+            return SmsVarselResultatMelding.sendt(varselMelding);
         } catch (TiltaksgjennomforingException e) {
-            resultatMelding = SmsVarselResultatMelding.feil(varselMelding);
+            return SmsVarselResultatMelding.feil(varselMelding);
         }
-        resultatProducer.sendSmsVarselResultatMeldingTilKafka(resultatMelding);
     }
 }
