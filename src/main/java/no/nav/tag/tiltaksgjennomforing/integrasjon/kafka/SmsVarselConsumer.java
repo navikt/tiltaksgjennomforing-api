@@ -20,7 +20,7 @@ public class SmsVarselConsumer {
     public void consume(SmsVarselMelding varselMelding) {
         SmsVarselResultatMelding resultatMelding;
         try {
-            varselService.sendVarsel(varselMelding.getAvgiver(), varselMelding.getTelefonnummer(), varselMelding.getVarseltekst());
+            varselService.sendVarsel(varselMelding.getIdentifikator(), varselMelding.getTelefonnummer(), varselMelding.getMeldingstekst());
             resultatMelding = SmsVarselResultatMelding.sendt(varselMelding);
         } catch (TiltaksgjennomforingException e) {
             resultatMelding = SmsVarselResultatMelding.feil(varselMelding);
