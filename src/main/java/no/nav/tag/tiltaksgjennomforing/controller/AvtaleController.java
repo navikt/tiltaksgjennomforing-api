@@ -24,7 +24,6 @@ import static no.nav.tag.tiltaksgjennomforing.domene.Utils.lagUri;
 @Protected
 @RestController
 @RequestMapping("/avtaler")
-@Transactional
 @Timed
 @RequiredArgsConstructor
 public class AvtaleController {
@@ -56,6 +55,7 @@ public class AvtaleController {
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity opprettAvtale(@RequestBody OpprettAvtale opprettAvtale) {
         InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
         tilgangUnderPilotering.sjekkTilgang(innloggetNavAnsatt.getIdentifikator());
@@ -67,6 +67,7 @@ public class AvtaleController {
     }
 
     @PutMapping(value = "/{avtaleId}")
+    @Transactional
     public ResponseEntity endreAvtale(@PathVariable("avtaleId") UUID avtaleId,
                                       @RequestHeader("If-Match") Integer versjon,
                                       @RequestBody EndreAvtale endreAvtale) {
@@ -90,6 +91,7 @@ public class AvtaleController {
     }
 
     @PostMapping(value = "/{avtaleId}/opphev-godkjenninger")
+    @Transactional
     public ResponseEntity opphevGodkjenninger(@PathVariable("avtaleId") UUID avtaleId) {
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
@@ -101,6 +103,7 @@ public class AvtaleController {
     }
 
     @PostMapping(value = "/{avtaleId}/godkjenn")
+    @Transactional
     public ResponseEntity godkjenn(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader("If-Match") Integer versjon) {
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
@@ -112,6 +115,7 @@ public class AvtaleController {
     }
 
     @PostMapping(value = "/{avtaleId}/godkjenn-paa-vegne-av")
+    @Transactional
     public ResponseEntity godkjennPaVegneAv(@PathVariable("avtaleId") UUID avtaleId, @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn, @RequestHeader("If-Match") Integer versjon) {
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
