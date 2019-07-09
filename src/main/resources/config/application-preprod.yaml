@@ -13,9 +13,6 @@ spring:
       ssl.truststore:
         location: ${javax.net.ssl.trustStore}
         password: ${javax.net.ssl.trustStorePassword}
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 no.nav.security.oidc:
   issuers: selvbetjening, isso
