@@ -20,9 +20,8 @@ public class SmsVarselResultatConsumer {
                 .ifPresentOrElse(hendelse -> {
                             hendelse.settStatusPaaSmsVarsel(resultatMelding.getSmsVarselId(), resultatMelding.getStatus());
                             varslbarHendelseRepository.save(hendelse);
+                            log.info("Oppdaterer SmsVarsel med smsVarselId={} til status={}", resultatMelding.getSmsVarselId(), resultatMelding.getStatus());
                         },
-                        () -> {
-                            log.warn("Finner ikke SmsVarsel med smsVarselId={} og kan ikke oppdatere status til {}", resultatMelding.getSmsVarselId(), resultatMelding.getStatus());
-                        });
+                        () -> log.warn("Finner ikke SmsVarsel med smsVarselId={} og kan ikke oppdatere til status={}", resultatMelding.getSmsVarselId(), resultatMelding.getStatus()));
     }
 }
