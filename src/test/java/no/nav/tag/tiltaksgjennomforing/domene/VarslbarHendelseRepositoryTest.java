@@ -32,5 +32,6 @@ public class VarslbarHendelseRepositoryTest {
         assertThat(lagretVarslbarHendelse.getTidspunkt()).isNotNull();
         assertThat(lagretVarslbarHendelse.getVarslbarHendelseType()).isNotNull().isEqualTo(varslbarHendelse.getVarslbarHendelseType());
         assertThat(lagretVarslbarHendelse.getAvtaleId()).isNotNull().isEqualTo(varslbarHendelse.getAvtaleId());
+        assertThat(lagretVarslbarHendelse.getSmsVarsler()).containsAll(varslbarHendelse.getSmsVarsler());
     }
 }
