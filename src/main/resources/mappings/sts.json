@@ -1,0 +1,30 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/rest/v1/sts/token",
+        "queryParameters": {
+          "grant_type": {
+            "equalTo": "client_credentials"
+          },
+          "scope": {
+            "equalTo": "openid"
+          }
+        },
+        "headers" : {
+          "Authorization" : {
+            "matches" : "Basic .*"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{\"access_token\" : \"eyxXxx\", \"token_type\" : \"Bearer\", \"expires_in\" : \"3600\"}"
+      }
+    }
+  ]
+}

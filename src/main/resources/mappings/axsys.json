@@ -1,0 +1,17 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "urlPattern": "/api/v1/enhet/[0-9]{4}/brukere"
+      },
+      "response": {
+        "status": 200,
+        "body": "[{\"appIdent\": \"Z123456\", \"historiskIdent\": \"100173191\"}, {\"appIdent\": \"Z234567\", \"historiskIdent\": \"200173191\"}, {\"appIdent\": \"Z345678\", \"historiskIdent\": \"300173191\"}]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}

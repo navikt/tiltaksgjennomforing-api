@@ -25,3 +25,9 @@ tiltaksgjennomforing:
     altinn-uri: https://api-gw-q1.adeo.no
   ereg:
     ereg-uri: https://modapp-q1.adeo.no
+  axsys:
+    axsys-uri: https://axsys.nais.preprod.local
+  sts:
+    username: ${tiltaksgjennomforing.serviceuser.username}
+    password: ${tiltaksgjennomforing.serviceuser.password}
+    uri: https://security-token-service.nais.preprod.local
