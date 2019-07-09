@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.domene;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.domene.events.*;
 import org.springframework.context.event.EventListener;
@@ -9,12 +10,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class MetrikkRegistrering {
     private final MeterRegistry meterRegistry;
-
-    public MetrikkRegistrering(MeterRegistry meterRegistry) {
-        this.meterRegistry = meterRegistry;
-    }
 
     @EventListener
     public void avtaleOpprettet(AvtaleOpprettet event) {
@@ -29,9 +27,17 @@ public class MetrikkRegistrering {
     }
 
     @EventListener
-    public void godkjenningerOpphevet(GodkjenningerOpphevet event) {
-        log.info("Avtalens godkjenninger opphevet, avtaleId={} avtalepart={}", event.getAvtale().getId(), event.getUtfortAv());
-        counter("avtale.godkjenning.opphevet", event.getUtfortAv()).increment();
+    public void godkjenningerOpphevetAvArbeidsgiver(GodkjenningerOpphevetAvArbeidsgiver event) {
+        Avtalerolle rolle = Avtalerolle.ARBEIDSGIVER;
+        log.info("Avtalens godkjenninger opphevet, avtaleId={} avtalepart={}", event.getAvtale().getId(), rolle);
+        counter("avtale.godkjenning.opphevet", rolle).increment();
+    }
+
+    @EventListener
+    public void godkjenningerOpphevetAvVeileder(GodkjenningerOpphevetAvVeileder event) {
+        Avtalerolle rolle = Avtalerolle.VEILEDER;
+        log.info("Avtalens godkjenninger opphevet, avtaleId={} avtalepart={}", event.getAvtale().getId(), rolle);
+        counter("avtale.godkjenning.opphevet", rolle).increment();
     }
 
     @EventListener

@@ -158,6 +158,6 @@ public class AvtaleRepositoryTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         TestData.enVeileder(avtale).opphevGodkjenninger();
         avtaleRepository.save(avtale);
-        verify(metrikkRegistrering).godkjenningerOpphevet(any());
+        verify(metrikkRegistrering).godkjenningerOpphevetAvVeileder(any());
     }
 }

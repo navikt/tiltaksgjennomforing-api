@@ -15,7 +15,7 @@ public class KafkaMockServer implements DisposableBean {
 
     public KafkaMockServer() {
         log.info("Starter embedded Kafka");
-        embeddedKafka = new EmbeddedKafkaBroker(3, true, Topics.alleTopics());
+        embeddedKafka = new EmbeddedKafkaBroker(3, false, Topics.alleTopics());
         embeddedKafka.afterPropertiesSet();
     }
 

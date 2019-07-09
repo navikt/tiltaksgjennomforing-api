@@ -131,13 +131,22 @@ public class Avtale extends AbstractAggregateRoot {
         }
     }
 
-    void opphevGodkjenninger(Avtalerolle avtalerolle) {
+    void opphevGodkjenningerSomArbeidsgiver() {
+        opphevGodkjenninger();
+        registerEvent(new GodkjenningerOpphevetAvArbeidsgiver(this));
+    }
+
+    void opphevGodkjenningerSomVeileder() {
+        opphevGodkjenninger();
+        registerEvent(new GodkjenningerOpphevetAvVeileder(this));
+    }
+
+    private void opphevGodkjenninger() {
         setGodkjentAvDeltaker(null);
         setGodkjentAvArbeidsgiver(null);
         setGodkjentAvVeileder(null);
         setGodkjentPaVegneAv(false);
         setGodkjentPaVegneGrunn(null);
-        registerEvent(new GodkjenningerOpphevet(this, avtalerolle));
     }
 
     private void inkrementerVersjonsnummer() {
