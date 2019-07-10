@@ -22,7 +22,7 @@ insert into avtale (ID, OPPRETTET_TIDSPUNKT, VERSJON, DELTAKER_FORNAVN, DELTAKER
                     START_DATO, ARBEIDSTRENING_LENGDE, ARBEIDSTRENING_STILLINGPROSENT, GODKJENT_AV_DELTAKER,
                     GODKJENT_AV_ARBEIDSGIVER, GODKJENT_AV_VEILEDER)
 values ('5ae3be81-abcd-477e-a8f3-4a5eb5fe91e3', current_timestamp, 7, 'Dagny', 'Deltaker', '01093434109', '00000000',
-        'Pers butikk', '222222222', '29118923330', 'Per', 'Kremmer', '22334455', 'X123456', 'Vera', 'Veileder',
+        'Pers butikk', '975959171', '29118923330', 'Per', 'Kremmer', '22334455', 'X123456', 'Vera', 'Veileder',
         '33445566', 'Telefon hver uke', 'Ingen', '2019-03-25', 2, 100, current_timestamp, current_timestamp, null);
 
 insert into maal(ID, OPPRETTET_TIDSPUNKT, KATEGORI, BESKRIVELSE, AVTALE)
