@@ -4,7 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.domene.Avtale;
 import no.nav.tag.tiltaksgjennomforing.domene.BedriftNr;
 
 public class SmsVarselFactory {
-    static final BedriftNr NAV_ORGNR = new BedriftNr("889640782");
+    public static final BedriftNr NAV_ORGNR = new BedriftNr("889640782");
     private static final String SELVBETJENINGSONE_VARSELTEKST = "Du har mottatt et nytt varsel på https://arbeidsgiver.nav.no/tiltaksgjennomforing";
     private static final String FAGSYSTEMSONE_VARSELTEKST = "Du har mottatt et nytt varsel på https://arbeidsgiver.nais.adeo.no/tiltaksgjennomforing";
 
