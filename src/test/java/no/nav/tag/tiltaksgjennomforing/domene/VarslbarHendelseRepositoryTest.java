@@ -17,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("dev")
-@DirtiesContext
 public class VarslbarHendelseRepositoryTest {
     @Autowired
     private VarslbarHendelseRepository varslbarHendelseRepository;

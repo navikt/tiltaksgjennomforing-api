@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.integrasjon;
 
+import kafka.server.KafkaConfig;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.kafka.Topics;
 import org.springframework.beans.factory.DisposableBean;
@@ -15,7 +16,9 @@ public class KafkaMockServer implements DisposableBean {
 
     public KafkaMockServer() {
         log.info("Starter embedded Kafka");
-        embeddedKafka = new EmbeddedKafkaBroker(3, false, Topics.alleTopics());
+        embeddedKafka = new EmbeddedKafkaBroker(1, false, Topics.alleTopics());
+        embeddedKafka.brokerProperty(KafkaConfig.TransactionsTopicReplicationFactorProp(), "1");
+        embeddedKafka.brokerProperty(KafkaConfig.TransactionsTopicMinISRProp(), "1");
         embeddedKafka.afterPropertiesSet();
     }
 

@@ -21,7 +21,6 @@ import static org.mockito.Mockito.verify;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("dev")
-@DirtiesContext
 public class AvtaleRepositoryTest {
 
     @Autowired
