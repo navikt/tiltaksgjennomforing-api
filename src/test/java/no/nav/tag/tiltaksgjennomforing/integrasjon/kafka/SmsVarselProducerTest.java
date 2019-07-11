@@ -57,10 +57,7 @@ public class SmsVarselProducerTest {
     @Test
     public void varslbarHendelseOppstaatt__skal_sendes_på_kafka_topic_med_riktige_felter() throws JSONException {
         VarslbarHendelse varslbarHendelse = TestData.enHendelseMedSmsVarsel(TestData.enAvtaleMedAltUtfylt());
-        transactionTemplate.execute(status -> {
-            repository.save(varslbarHendelse);
-            return status;
-        });
+        transactionTemplate.execute(status -> repository.save(varslbarHendelse));
 
         ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.SMS_VARSEL);
         JSONObject json = new JSONObject(record.value());
