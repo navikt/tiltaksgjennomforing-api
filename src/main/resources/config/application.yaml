@@ -9,6 +9,8 @@ spring:
     name: tiltaksgjennomforing-api
   main:
     banner-mode: "off"
+  jmx:
+    enabled: false
   kafka:
     consumer:
       auto-offset-reset: earliest

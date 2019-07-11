@@ -4,7 +4,6 @@ spring:
     driverClassName: org.postgresql.Driver
   kafka:
     bootstrap-servers: b27apvl00045.preprod.local:8443, b27apvl00046.preprod.local:8443, b27apvl00047.preprod.local:8443
-    client-id: tiltaksgjennomforing-api-prod
     properties:
       security.protocol: SASL_SSL
       sasl:
