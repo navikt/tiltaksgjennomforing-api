@@ -65,14 +65,6 @@ public class VarslbarHendelse extends AbstractAggregateRoot {
         return Collections.emptyList();
     }
 
-    public void settStatusPaaSmsVarsel(UUID smsVarselId, SmsVarselStatus status) {
-        for (SmsVarsel smsVarsel : smsVarsler) {
-            if (smsVarsel.getId().equals(smsVarselId)) {
-                smsVarsel.setStatus(status);
-            }
-        }
-    }
-
     public void settIdOgOpprettetTidspunkt() {
         if (id == null) {
             id = UUID.randomUUID();
