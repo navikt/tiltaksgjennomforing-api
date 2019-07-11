@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class SmsVarselResultatConsumer {
     private final JdbcTemplate jdbcTemplate;
 
-    @KafkaListener(groupId = "smsVarselResultatConsumer", topics = Topics.SMS_VARSEL_RESULTAT)
+    @KafkaListener(groupId = "smsVarselResultatConsumer", clientIdPrefix = "smsVarselResultatConsumer", topics = Topics.SMS_VARSEL_RESULTAT)
     public void consume(SmsVarselResultatMelding resultatMelding) {
         // Bryter prinsippet om aggregate root her ved å gå direkte på sms_varsel og ikke bruke repository til varslbar_hendelse.
         // Grunnen til at sms_varsel oppdateres direkte er å unngå situasjon der resultat av to SMS-varslinger kommer inn fra Kafka samtidig,

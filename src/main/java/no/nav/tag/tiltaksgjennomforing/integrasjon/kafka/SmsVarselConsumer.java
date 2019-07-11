@@ -16,7 +16,7 @@ public class SmsVarselConsumer {
     private final VarselService varselService;
     private final SmsVarselResultatProducer resultatProducer;
 
-    @KafkaListener(groupId = "smsVarselConsumer", topics = Topics.SMS_VARSEL)
+    @KafkaListener(groupId = "smsVarselConsumer", clientIdPrefix = "smsVarselConsumer", topics = Topics.SMS_VARSEL)
     public void consume(SmsVarselMelding varselMelding) {
         SmsVarselResultatMelding resultatMelding = utfoerVarsling(varselMelding);
         resultatProducer.sendSmsVarselResultatMeldingTilKafka(resultatMelding);
