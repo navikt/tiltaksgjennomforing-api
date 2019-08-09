@@ -209,6 +209,13 @@ public class Avtale extends AbstractAggregateRoot {
         }
     }
 
+    @JsonProperty("kanAvbrytes")
+    public Boolean kanAvbrytes(){
+        // Nå regner vi at veileder kan avbryte avtalen hvis veileder ikke har godkjent(kan ogaå være at han kan
+        // avbryte kun de avtalene som ikke er godkjente av deltaker og AG), kan diskuteres om han kan ha mulighet for å avbryte godkjente avtaler senere
+        return !erGodkjentAvVeileder();
+    }
+
     private boolean heleAvtalenErFyltUt() {
         return erIkkeTomme(deltakerFnr,
                 veilederNavIdent,
