@@ -3,7 +3,7 @@
     {
       "request": {
         "method": "GET",
-        "urlPattern": "/ereg/api/v1/organisasjon/9[0-9]{8}"
+        "urlPattern": "/ereg/9[0-9]{8}"
       },
       "response": {
         "status": 200,

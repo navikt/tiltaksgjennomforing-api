@@ -22,7 +22,7 @@ public class EregService {
 
     public Organisasjon hentVirksomhet(BedriftNr bedriftNr) {
         URI uri = UriComponentsBuilder.fromUri(eregProperties.getUri())
-                .pathSegment("ereg", "api", "v1", "organisasjon", bedriftNr.asString())
+                .pathSegment(bedriftNr.asString())
                 .build()
                 .toUri();
         try {
