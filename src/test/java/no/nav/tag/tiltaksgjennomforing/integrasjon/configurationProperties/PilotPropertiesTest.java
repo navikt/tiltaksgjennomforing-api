@@ -27,7 +27,7 @@ public class PilotPropertiesTest {
     @Test
     public void sjekkTilgang__default_skal_ikke_feile() {
         //List<NavIdent> identer = Arrays.asList(new NavIdent("Q000111"));
-        when(axsysService.hentIdenter("0906")).thenReturn(Arrays.asList(new NavIdent("Q000111")));
+        //when(axsysService.hentIdenter("0906")).thenReturn(Arrays.asList(new NavIdent("Q000111")));
         pilotProperties.setEnheter(Collections.singletonList("0906"));
         pilotProperties.sjekkTilgang(new NavIdent("Q000111"));
     }

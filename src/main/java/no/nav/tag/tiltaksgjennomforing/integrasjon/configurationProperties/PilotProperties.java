@@ -1,13 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties;
 
 import lombok.Data;
+import no.nav.tag.tiltaksgjennomforing.domene.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.domene.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.axsys.AxsysService;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,18 +21,12 @@ public class PilotProperties {
     private final AxsysService axsysService;
 
     public void sjekkTilgang(NavIdent ident) {
-
-            for (String enhet : enheter) {
-                List<NavIdent> kontorIdenter = axsysService.hentIdenter(enhet);
-                identer.addAll(kontorIdenter);
-                if (identer.contains(ident)) {
-                    break;
-                }
+        if (enabled && !identer.contains(ident)) {
+            List<NavEnhet> enheterInnloggetVeilederHarTilgangTil = axsysService.hentEnheterVeilederHarTilgangTil(ident);
+            if (!enheter.contains(enheterInnloggetVeilederHarTilgangTil)) {
+                throw new TilgangskontrollException("Ident " + ident.asString() + " er ikke lagt til i lista over brukere med tilgang.");
             }
 
-
-        if (enabled && !identer.contains(ident)) {
-            throw new TilgangskontrollException("Ident " + ident.asString() + " er ikke lagt til i lista over brukere med tilgang.");
         }
     }
 }

@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.integrasjon;
 
+import no.nav.tag.tiltaksgjennomforing.domene.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.domene.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.axsys.AxsysService;
@@ -24,20 +25,21 @@ public class AxsysServiceTest {
     private AxsysService axsysService;
 
     @Test
-    public void hentIdenter__returnerer__riktig__ident() {
-        List<NavIdent> identer = axsysService.hentIdenter("0906");
-        assertThat(identer).contains(new NavIdent("Z123456"));
+    public void hentEnheter__returnerer__enheter() {
+        List<NavEnhet> enheter = axsysService.hentEnheterVeilederHarTilgangTil(new NavIdent("X123456"));
+        assertThat(enheter).isNotEmpty();
     }
 
     @Test
-    public void hentIdenter__returnerer__identer() {
-        List<NavIdent> identer = axsysService.hentIdenter("0906");
-        assertThat(identer).isNotEmpty();
+    public void hentEnheter__returnerer__riktig__enhet() {
+        List<NavEnhet> enheter = axsysService.hentEnheterVeilederHarTilgangTil(new NavIdent("X123456"));
+        assertThat(enheter).contains(new NavEnhet("0906"));
     }
 
-    @Test(expected = TiltaksgjennomforingException.class)
-    public void hentIdenter__ugyldig__kontorId__kaster__feil() {
-        List<NavIdent> identer = axsysService.hentIdenter("09060");
+    @Test
+    public void hentEnheter__ugyldig__ident__skal__ikke__ha__enheter() {
+        List<NavEnhet> enheter = axsysService.hentEnheterVeilederHarTilgangTil(new NavIdent("X999999"));
+        assertThat(enheter).isEmpty();
     }
 
 }

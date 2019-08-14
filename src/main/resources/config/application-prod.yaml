@@ -27,6 +27,7 @@ tiltaksgjennomforing:
     ereg-uri: https://modapp.adeo.no
   axsys:
     axsys-uri: https://axsys.nais.adeo.no
+    nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}
   sts:
     username: ${tiltaksgjennomforing.serviceuser.username}
     password: ${tiltaksgjennomforing.serviceuser.password}
