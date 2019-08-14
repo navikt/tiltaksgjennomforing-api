@@ -33,7 +33,3 @@ tiltaksgjennomforing:
     ereg-uri: http://localhost:8090
   axsys:
     axsys-uri: http://localhost:8090
-  sts:
-    username: test
-    password: test
-    uri: http://localhost:8090
