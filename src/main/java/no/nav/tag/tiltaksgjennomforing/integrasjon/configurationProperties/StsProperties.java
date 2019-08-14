@@ -10,7 +10,6 @@ import java.net.URI;
 @Component
 @ConfigurationProperties(prefix = "tiltaksgjennomforing.sts")
 public class StsProperties {
-
     private URI uri;
     private String username;
     private String password;

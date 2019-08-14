@@ -36,5 +36,9 @@ tiltaksgjennomforing:
     uri: http://localhost:8090/altinn-varsel
   ereg:
     uri: http://localhost:8090/ereg
+  sts:
+    username: foo
+    password: bar
+    uri: http://localhost:8090/sts
   axsys:
     axsys-uri: http://localhost:8090

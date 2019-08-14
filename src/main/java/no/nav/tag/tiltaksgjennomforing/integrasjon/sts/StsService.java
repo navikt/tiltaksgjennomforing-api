@@ -13,16 +13,13 @@ import java.util.Arrays;
 @Service
 public class StsService {
 
-    private static final String PATH = "/rest/v1/sts/token";
     private static final String PARAM_GRANT_TYPE = "grant_type=client_credentials";
     private static final String PARAM_SCOPE = "scope=openid";
-    private URI uri;
     private final HttpHeaders headers = new HttpHeaders();
-    private String token;
+    private URI uri;
 
     public StsService(StsProperties stsProperties) {
         uri = UriComponentsBuilder.fromUri(stsProperties.getUri())
-                .path(PATH)
                 .query(PARAM_GRANT_TYPE)
                 .query(PARAM_SCOPE)
                 .build()
