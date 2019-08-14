@@ -11,10 +11,10 @@ spec:
   port: 8080
   liveness:
     path: /tiltaksgjennomforing-api/internal/healthcheck
-    initialDelay: 30
+    initialDelay: 50
   readiness:
     path: /tiltaksgjennomforing-api/internal/healthcheck
-    initialDelay: 30
+    initialDelay: 50
   ingresses:
     - {{ingress}}
   vault:
