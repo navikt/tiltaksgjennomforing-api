@@ -105,13 +105,9 @@
 
         <!-- OIDC Support -->
         <dependency>
-            <groupId>com.nimbusds</groupId>
-            <artifactId>oauth2-oidc-sdk</artifactId>
-            <version>5.56</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
+            <groupId>no.nav.security</groupId>
+            <artifactId>oidc-spring-support</artifactId>
+            <version>0.2.18</version>
         </dependency>
 
         <!-- Swagger -->
@@ -125,7 +121,8 @@
             <artifactId>springfox-swagger-ui</artifactId>
             <version>2.9.2</version>
         </dependency>
-    </dependencies>
+
+  </dependencies>
 
     <build>
         <plugins>

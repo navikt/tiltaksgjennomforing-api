@@ -15,8 +15,9 @@ import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
 
 public class JwkGenerator {
-    public static String DEFAULT_KEYID = "localhost-signer";
-    public static String DEFAULT_JWKSET_FILE = "/jwkset.json";
+
+    private static final String DEFAULT_KEYID = "localhost-signer";
+    public static final String DEFAULT_JWKSET_FILE = "/jwkset.json";
 
     public JwkGenerator() {
     }
