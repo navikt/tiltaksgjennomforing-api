@@ -11,6 +11,5 @@ import java.net.URI;
 @ConfigurationProperties(prefix = "tiltaksgjennomforing.axsys")
 public class AxsysProperties {
     private URI axsysUri;
-    private String navCallId;
     private String navConsumerId;
 }
