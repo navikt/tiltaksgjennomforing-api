@@ -15,8 +15,9 @@ import java.util.Optional;
 
 @Component
 public class TokenUtils {
-    public final static String ISSUER_ISSO = "isso";
-    public final static String ISSUER_SELVBETJENING = "selvbetjening";
+    
+    final static String ISSUER_ISSO = "isso";
+    final static String ISSUER_SELVBETJENING = "selvbetjening";
 
     private final OIDCRequestContextHolder contextHolder;
 
