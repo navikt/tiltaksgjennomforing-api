@@ -103,6 +103,13 @@
             <version>2.4</version>
         </dependency>
 
+        <!-- Fnr og orngr-validering -->
+        <dependency>
+            <groupId>no.bekk.bekkopen</groupId>
+            <artifactId>nocommons</artifactId>
+            <version>0.8</version>
+        </dependency>
+
         <!-- OIDC Support -->
         <dependency>
             <groupId>no.nav.security</groupId>
