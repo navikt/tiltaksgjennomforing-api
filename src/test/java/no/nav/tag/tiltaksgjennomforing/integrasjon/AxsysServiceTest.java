@@ -2,8 +2,8 @@ package no.nav.tag.tiltaksgjennomforing.integrasjon;
 
 import no.nav.tag.tiltaksgjennomforing.domene.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.domene.NavIdent;
-import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.axsys.AxsysService;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +12,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -43,11 +43,11 @@ public class AxsysServiceTest {
         assertThat(enheter).isEmpty();
     }
 
+    @Test
     public void pilotEnheter__inneholder__hentetEnheter() {
         List<NavEnhet> enheter = axsysService.hentEnheterVeilederHarTilgangTil(new NavIdent("X123456"));
-        List<String> pilotEnheter = new ArrayList<>();
-        pilotEnheter.add("0906");
-        assertThat(pilotEnheter).containsAnyOf(enheter.toString());
+        List<NavEnhet> pilotEnheter = asList(new NavEnhet("0906"));
+        assertThat(pilotEnheter).containsAnyElementsOf(enheter);
     }
 
 }
