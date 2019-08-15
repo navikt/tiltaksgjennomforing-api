@@ -6,6 +6,8 @@ import no.nav.tag.tiltaksgjennomforing.integrasjon.axsys.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
 import org.springframework.stereotype.Component;
 
+import static java.util.Collections.disjoint;
+
 import java.util.List;
 
 
@@ -19,7 +21,7 @@ public class TilgangUnderPilotering {
     public void sjekkTilgang(NavIdent ident) {
         if (pilotProperties.isEnabled() && !pilotProperties.getIdenter().contains(ident)) {
             List<NavEnhet> enheterInnloggetVeilederHarTilgangTil = axsysService.hentEnheterVeilederHarTilgangTil(ident);
-            if (!pilotProperties.getEnheter().contains(enheterInnloggetVeilederHarTilgangTil.toString())) {
+            if (disjoint(pilotProperties.getEnheter(), enheterInnloggetVeilederHarTilgangTil)) {
                 throw new TilgangskontrollException("Ident " + ident.asString() + " er ikke lagt til i lista over brukere med tilgang.");
             }
         }
