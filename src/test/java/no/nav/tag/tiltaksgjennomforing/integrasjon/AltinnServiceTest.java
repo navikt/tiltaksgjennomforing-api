@@ -1,7 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.integrasjon;
 
 import no.nav.tag.tiltaksgjennomforing.domene.BedriftNr;
-import no.nav.tag.tiltaksgjennomforing.domene.Fnr;
 import no.nav.tag.tiltaksgjennomforing.domene.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.domene.TestData;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.altinn.AltinnService;
@@ -29,19 +28,19 @@ public class AltinnServiceTest {
 
     @Test
     public void hentOrganisasjoner__gyldig_fnr_en_forste_bedrift() {
-        List<Organisasjon> organisasjoner = altinnService.hentOrganisasjoner(new Fnr("10000000000"));
+        List<Organisasjon> organisasjoner = altinnService.hentOrganisasjoner(TestData.etFodselsnummerForDato(1990, 10, 10));
         assertThat(organisasjoner).extracting("bedriftNr").containsOnly(new BedriftNr("975959171"));
     }
 
     @Test
     public void hentOrganisasjoner__gyldig_fnr_en_andre_bedrift() {
-        List<Organisasjon> organisasjoner = altinnService.hentOrganisasjoner(new Fnr("20000000000"));
+        List<Organisasjon> organisasjoner = altinnService.hentOrganisasjoner(TestData.etFodselsnummerForDato(1990, 10, 20));
         assertThat(organisasjoner).extracting("bedriftNr").containsOnly(new BedriftNr("910909088"));
     }
 
     @Test
     public void hentOrganisasjoner__gyldig_fnr_tom_liste() {
-        List<Organisasjon> organisasjoner = altinnService.hentOrganisasjoner(new Fnr("00000000000"));
+        List<Organisasjon> organisasjoner = altinnService.hentOrganisasjoner(TestData.etFodselsnummerForDato(1990, 10, 1));
         assertThat(organisasjoner).hasSize(0);
     }
 

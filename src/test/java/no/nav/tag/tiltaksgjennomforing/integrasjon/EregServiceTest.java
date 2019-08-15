@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.integrasjon;
 
 import no.nav.tag.tiltaksgjennomforing.domene.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.domene.Organisasjon;
+import no.nav.tag.tiltaksgjennomforing.domene.TestData;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.EnhetFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.ereg.EregService;
 import org.junit.Test;
@@ -31,6 +32,6 @@ public class EregServiceTest {
 
     @Test(expected = EnhetFinnesIkkeException.class)
     public void hentBedriftNavn__kaster_exception_ved_404() {
-        eregService.hentVirksomhet(new BedriftNr("899999999"));
+        eregService.hentVirksomhet(new BedriftNr(TestData.GYLDIG_BEDRIFTSNR));
     }
 }

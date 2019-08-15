@@ -8,7 +8,6 @@ import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingExc
 
 public class BedriftNrTest {
 
-    
     @Test(expected = TiltaksgjennomforingException.class)
     public void bedriftNrSkalIkkeVaereTomt() {
         new BedriftNr("");
@@ -36,7 +35,6 @@ public class BedriftNrTest {
 
     @Test
     public void gyldigBedriftNr() {
-        String gyldigBedriftNr = "156544825";
-        assertThat(new BedriftNr(gyldigBedriftNr).getBedriftNr()).isEqualTo(gyldigBedriftNr);
+        assertThat(new BedriftNr(TestData.GYLDIG_BEDRIFTSNR).getBedriftNr()).isEqualTo(TestData.GYLDIG_BEDRIFTSNR);
     }
 }

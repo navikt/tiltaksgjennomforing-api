@@ -81,7 +81,7 @@ public class AvtaleControllerTest {
     @Test(expected = TilgangskontrollException.class)
     public void hentSkalKastTilgangskontrollExceptionHvisInnloggetSelvbetjeningBrukerIkkeHarTilgang() {
         Avtale avtale = TestData.enAvtale();
-        vaerInnloggetSom(new InnloggetSelvbetjeningBruker(new Fnr("55555566666")));
+        vaerInnloggetSom(new InnloggetSelvbetjeningBruker(TestData.etFodselsnummer()));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         avtaleController.hent(avtale.getId());
     }
@@ -129,7 +129,7 @@ public class AvtaleControllerTest {
     @Test
     public void hentAlleAvtalerInnloggetBrukerHarTilgangTilSkalIkkeReturnereAvtalerManIkkeHarTilgangTil() {
         Avtale avtaleMedTilgang = TestData.enAvtale();
-        Avtale avtaleUtenTilgang = Avtale.nyAvtale(new OpprettAvtale(new Fnr("89898989898"), new BedriftNr("111222333")), new NavIdent("X643564"));
+        Avtale avtaleUtenTilgang = Avtale.nyAvtale(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr(TestData.GYLDIG_BEDRIFTSNR)), new NavIdent("X643564"));
 
         InnloggetSelvbetjeningBruker selvbetjeningBruker = TestData.innloggetSelvbetjeningBrukerUtenOrganisasjon(TestData.enDeltaker(avtaleMedTilgang));
         vaerInnloggetSom(selvbetjeningBruker);
@@ -183,7 +183,7 @@ public class AvtaleControllerTest {
     public void opprettAvtale__skal_feile_hvis_bruker_ikke_er_i_pilotering() {
         vaerInnloggetSom(TestData.enNavAnsatt());
         doThrow(TilgangskontrollException.class).when(tilgangUnderPilotering).sjekkTilgang(any());
-        avtaleController.opprettAvtale(new OpprettAvtale(new Fnr("11111100000"), new BedriftNr("111222333")));
+        avtaleController.opprettAvtale(new OpprettAvtale(new Fnr(TestData.GYLDIG_FNR), new BedriftNr(TestData.GYLDIG_BEDRIFTSNR)));
     }
 
     private void vaerInnloggetSom(InnloggetBruker innloggetBruker) {

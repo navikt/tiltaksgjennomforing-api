@@ -8,16 +8,17 @@ import org.junit.Test;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import static no.nav.tag.tiltaksgjennomforing.domene.TestData.GYLDIG_BEDRIFTSNR;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AvtaleTest {
 
     @Test
     public void nyAvtaleFactorySkalReturnereRiktigeStandardverdier() {
-        Fnr deltakerFnr = new Fnr("01234567890");
+        Fnr deltakerFnr = TestData.etFodselsnummer();
 
         NavIdent veilederNavIdent = new NavIdent("X123456");
-        BedriftNr bedriftNr = new BedriftNr("000111222");
+        BedriftNr bedriftNr = new BedriftNr(TestData.GYLDIG_BEDRIFTSNR);
         Avtale avtale = Avtale.nyAvtale(new OpprettAvtale(deltakerFnr, bedriftNr), veilederNavIdent);
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(avtale.getOpprettetTidspunkt()).isNull();
@@ -48,17 +49,17 @@ public class AvtaleTest {
 
     @Test(expected = TiltaksgjennomforingException.class)
     public void nyAvtaleSkalFeileHvisManglerDeltaker() {
-        Avtale.nyAvtale(new OpprettAvtale(null, new BedriftNr("111222333")), new NavIdent("X12345"));
+        Avtale.nyAvtale(new OpprettAvtale(null, new BedriftNr(GYLDIG_BEDRIFTSNR)), new NavIdent("X12345"));
     }
 
     @Test(expected = TiltaksgjennomforingException.class)
     public void nyAvtaleSkalFeileHvisManglerArbeidsgiver() {
-        Avtale.nyAvtale(new OpprettAvtale(new Fnr("12345678901"), null), new NavIdent("X12345"));
+        Avtale.nyAvtale(new OpprettAvtale(TestData.etFodselsnummer(), null), new NavIdent("X12345"));
     }
 
     @Test(expected = TiltaksgjennomforingException.class)
     public void nyAvtaleSkalFeileHvisManglerVeileder() {
-        Avtale.nyAvtale(new OpprettAvtale(new Fnr("11223344555"), new BedriftNr("000111222")), null);
+        Avtale.nyAvtale(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr(GYLDIG_BEDRIFTSNR)), null);
     }
 
     @Test(expected = SamtidigeEndringerException.class)

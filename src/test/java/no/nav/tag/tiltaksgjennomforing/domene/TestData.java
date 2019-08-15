@@ -3,12 +3,22 @@ package no.nav.tag.tiltaksgjennomforing.domene;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
 
+import static java.time.LocalDate.of;
+import static no.bekk.bekkopen.person.FodselsnummerCalculator.getFodselsnummerForDate;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class TestData {
+    
+    public static final String GYLDIG_FNR = "12089512415";
+    public static final String GYLDIG_BEDRIFTSNR = "156544825";
+
     public static Avtale enAvtale() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         return Avtale.nyAvtale(lagOpprettAvtale(), veilderNavIdent);
@@ -28,8 +38,8 @@ public class TestData {
     }
 
     private static OpprettAvtale lagOpprettAvtale() {
-        Fnr deltakerFnr = new Fnr("88888899999");
-        BedriftNr bedriftNr = new BedriftNr("12345678");
+        Fnr deltakerFnr = new Fnr(GYLDIG_FNR);
+        BedriftNr bedriftNr = new BedriftNr(GYLDIG_BEDRIFTSNR);
         return new OpprettAvtale(deltakerFnr, bedriftNr);
     }
 
@@ -43,7 +53,7 @@ public class TestData {
         endreAvtale.setDeltakerEtternavn("Etternavn");
         endreAvtale.setDeltakerTlf("22334455");
         endreAvtale.setBedriftNavn("Bedriftnavn");
-        endreAvtale.setBedriftNr(new BedriftNr("12345678"));
+        endreAvtale.setBedriftNr(new BedriftNr(GYLDIG_BEDRIFTSNR));
         endreAvtale.setArbeidsgiverFornavn("AG fornavn");
         endreAvtale.setArbeidsgiverEtternavn("AG etternavn");
         endreAvtale.setArbeidsgiverTlf("AG tlf");
@@ -61,7 +71,7 @@ public class TestData {
     }
 
     static Deltaker enDeltaker() {
-        return new Deltaker(new Fnr("01234567890"), enAvtale());
+        return new Deltaker(etFodselsnummer(), enAvtale());
     }
 
     public static Deltaker enDeltaker(Avtale avtale) {
@@ -69,7 +79,7 @@ public class TestData {
     }
 
     public static InnloggetSelvbetjeningBruker enSelvbetjeningBruker() {
-        return new InnloggetSelvbetjeningBruker(new Fnr("99999999999"));
+        return new InnloggetSelvbetjeningBruker(etFodselsnummer());
     }
 
     public static InnloggetNavAnsatt enNavAnsatt() {
@@ -77,7 +87,7 @@ public class TestData {
     }
 
     public static Arbeidsgiver enArbeidsgiver() {
-        return new Arbeidsgiver(new Fnr("12345678901"), enAvtale());
+        return new Arbeidsgiver(etFodselsnummer(), enAvtale());
     }
 
     public static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
@@ -85,9 +95,12 @@ public class TestData {
     }
 
     public static Fnr etFodselsnummer() {
-        return new Fnr("00000000000");
+        return etFodselsnummerForDato(1992, 9, 17);
     }
 
+    public static Fnr etFodselsnummerForDato(int year, int month, int dayOfMonth) {
+        return new Fnr(getFodselsnummerForDate(new Date((of(year, month, dayOfMonth).toEpochSecond(LocalTime.now(), ZoneOffset.UTC)*1000))).toString());
+    }
     public static Veileder enVeileder() {
         return new Veileder(new NavIdent("X123456"), enAvtale());
     }
@@ -134,4 +147,5 @@ public class TestData {
             }
         };
     }
+
 }

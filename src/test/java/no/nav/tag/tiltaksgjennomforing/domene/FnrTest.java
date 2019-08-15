@@ -39,7 +39,6 @@ public class FnrTest {
     
     @Test
     public void gyldigFnr() {
-        String gyldigFnr = "12089512415";
-        assertThat(new Fnr(gyldigFnr).getFnr()).isEqualTo(gyldigFnr);
+        assertThat(new Fnr(TestData.GYLDIG_FNR).getFnr()).isEqualTo(TestData.GYLDIG_FNR);
     }
 }
