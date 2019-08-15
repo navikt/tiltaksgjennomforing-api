@@ -12,6 +12,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,6 +41,13 @@ public class AxsysServiceTest {
     public void hentEnheter__ugyldig__ident__skal__ikke__ha__enheter() {
         List<NavEnhet> enheter = axsysService.hentEnheterVeilederHarTilgangTil(new NavIdent("X999999"));
         assertThat(enheter).isEmpty();
+    }
+
+    public void pilotEnheter__inneholder__hentetEnheter() {
+        List<NavEnhet> enheter = axsysService.hentEnheterVeilederHarTilgangTil(new NavIdent("X123456"));
+        List<String> pilotEnheter = new ArrayList<>();
+        pilotEnheter.add("0906");
+        assertThat(pilotEnheter).containsAnyOf(enheter.toString());
     }
 
 }

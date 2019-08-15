@@ -28,7 +28,6 @@ public class AxsysService {
         this.axsysProperties = axsysProperties;
         restTemplate = new RestTemplate();
         restTemplate.setInterceptors(Collections.singletonList((request, body, execution) -> {
-            request.getHeaders().add("Authorization", "");
             request.getHeaders().add("Nav-Call-Id", UUID.randomUUID().toString());
             request.getHeaders().add("Nav-Consumer-Id", axsysProperties.getNavConsumerId());
             return execution.execute(request, body);
