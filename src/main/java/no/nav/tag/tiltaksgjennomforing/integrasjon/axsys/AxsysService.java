@@ -52,6 +52,7 @@ public class AxsysService {
             AxsysRespons axsysEnheter = restTemplate.getForObject(uri, AxsysRespons.class);
             return konverterTilDomeneObjekter(axsysEnheter);
         } catch (RestClientException exception) {
+            log.warn("Feil ved henting av tilganger for ident " + ident, exception);
             throw new TiltaksgjennomforingException("Feil ved henting av tilganger for ident " + ident, exception);
         }
     }
