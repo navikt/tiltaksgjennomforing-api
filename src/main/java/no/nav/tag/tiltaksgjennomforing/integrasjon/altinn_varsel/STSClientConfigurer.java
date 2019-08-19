@@ -16,6 +16,7 @@ import org.apache.cxf.ws.policy.attachment.reference.RemoteReferenceResolver;
 import org.apache.cxf.ws.security.trust.STSClient;
 import org.apache.neethi.Policy;
 
+import java.net.URI;
 import java.util.*;
 
 public class STSClientConfigurer {
@@ -23,12 +24,12 @@ public class STSClientConfigurer {
     // when in production.
     private static final String STS_REQUEST_SAML_POLICY = "classpath:sts/policies/requestSamlPolicyNoTransportBinding.xml";
     private static final String STS_CLIENT_AUTHENTICATION_POLICY = "classpath:sts/policies/untPolicy.xml";
-    private String stsUrl;
+    private URI stsUri;
     private String serviceUsername;
     private String servicePassword;
 
-    STSClientConfigurer(String stsUrl, String serviceUsername, String servicePassword) {
-        this.stsUrl = stsUrl;
+    STSClientConfigurer(URI stsUri, String serviceUsername, String servicePassword) {
+        this.stsUri = stsUri;
         this.serviceUsername = serviceUsername;
         this.servicePassword = servicePassword;
     }
@@ -78,7 +79,7 @@ public class STSClientConfigurer {
     private void configureSTSClient(STSClient stsClient) {
         stsClient.setEnableAppliesTo(false);
         stsClient.setAllowRenewing(false);
-        stsClient.setLocation(stsUrl);
+        stsClient.setLocation(stsUri.toString());
         // For debugging
          stsClient.setFeatures(new ArrayList<Feature>(List.of(new LoggingFeature())));
 
