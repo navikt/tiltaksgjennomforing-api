@@ -30,9 +30,9 @@ import static no.nav.tag.tiltaksgjennomforing.domene.Utils.lagUri;
 public class AvtaleController {
 
     private final AvtaleRepository avtaleRepository;
-    private final PilotProperties tilgangUnderPilotering;
     private final InnloggingService innloggingService;
     private final EregService eregService;
+    private final TilgangUnderPilotering tilgangUnderPilotering;
 
     @GetMapping("/{avtaleId}")
     public ResponseEntity<Avtale> hent(@PathVariable("avtaleId") UUID id) {

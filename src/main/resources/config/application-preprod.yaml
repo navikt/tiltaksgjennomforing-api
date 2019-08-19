@@ -25,3 +25,6 @@ tiltaksgjennomforing:
     altinn-uri: https://api-gw-q1.adeo.no
   ereg:
     ereg-uri: https://modapp-q1.adeo.no
+  axsys:
+    axsys-uri: https://axsys.nais.preprod.local
+    nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}
