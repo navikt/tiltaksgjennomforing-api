@@ -42,5 +42,5 @@ tiltaksgjennomforing:
     password: ${tiltaksgjennomforing.serviceuser.password}
     uri: https://security-token-service.nais.adeo.no/rest/v1/sts/token
   axsys:
-    axsys-uri: https://axsys.nais.adeo.no
+    uri: https://axsys.nais.adeo.no/api/v1/tilgang
     nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}

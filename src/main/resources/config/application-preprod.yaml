@@ -42,5 +42,5 @@ tiltaksgjennomforing:
     password: ${tiltaksgjennomforing.serviceuser.password}
     uri: https://sts-q1.preprod.local/SecurityTokenServiceProvider
   axsys:
-    axsys-uri: https://axsys.nais.preprod.local
+    uri: https://axsys.nais.preprod.local/api/v1/tilgang
     nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}

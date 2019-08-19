@@ -40,8 +40,8 @@ public class AxsysService {
     }
 
     public List<NavEnhet> hentEnheterVeilederHarTilgangTil(NavIdent ident) {
-        URI uri = UriComponentsBuilder.fromUri(axsysProperties.getAxsysUri())
-                .pathSegment("api", "v1", "tilgang", ident.asString())
+        URI uri = UriComponentsBuilder.fromUri(axsysProperties.getUri())
+                .pathSegment(ident.asString())
                 .queryParam("inkluderAlleEnheter", "false")
                 .build()
                 .toUri();
@@ -51,7 +51,7 @@ public class AxsysService {
             return konverterTilDomeneObjekter(axsysEnheter);
         } catch (RestClientException exception) {
             log.warn("Feil ved henting av tilganger for ident " + ident, exception);
-            throw new TiltaksgjennomforingException("Feil ved tilgangskontrollsjekk for ident " + ident.getId(), exception);
+            throw new TiltaksgjennomforingException("Feil ved tilgangskontrollsjekk for ident " + ident.asString(), exception);
         }
     }
 }

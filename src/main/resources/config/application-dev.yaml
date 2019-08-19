@@ -41,4 +41,4 @@ tiltaksgjennomforing:
     password: bar
     uri: http://localhost:8090/sts
   axsys:
-    axsys-uri: http://localhost:8090
+    uri: http://localhost:8090/axsys
