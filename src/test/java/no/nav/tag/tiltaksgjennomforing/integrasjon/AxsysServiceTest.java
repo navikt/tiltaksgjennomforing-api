@@ -26,15 +26,9 @@ public class AxsysServiceTest {
     private AxsysService axsysService;
 
     @Test
-    public void hentEnheter__returnerer__enheter() {
-        List<NavEnhet> enheter = axsysService.hentEnheterVeilederHarTilgangTil(new NavIdent("X123456"));
-        assertThat(enheter).isNotEmpty();
-    }
-
-    @Test
     public void hentEnheter__returnerer__riktig__enhet() {
         List<NavEnhet> enheter = axsysService.hentEnheterVeilederHarTilgangTil(new NavIdent("X123456"));
-        assertThat(enheter).contains(new NavEnhet("0906"));
+        assertThat(enheter).containsOnly(new NavEnhet("0906"), new NavEnhet("0904"));
     }
 
     @Test
