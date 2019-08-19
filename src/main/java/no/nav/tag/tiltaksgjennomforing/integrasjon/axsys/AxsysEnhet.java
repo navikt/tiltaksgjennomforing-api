@@ -10,8 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.domene.NavIdent;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 public class AxsysEnhet {
-
-    @JsonProperty("enhetId")
+    
     private String enhetId;
 
     public NavEnhet konverterTilDomeneObjekt() {
