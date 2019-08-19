@@ -6,9 +6,9 @@ import no.nav.tag.tiltaksgjennomforing.integrasjon.axsys.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
 import org.springframework.stereotype.Component;
 
-import static java.util.Collections.disjoint;
-
 import java.util.List;
+
+import static java.util.Collections.disjoint;
 
 
 @Data

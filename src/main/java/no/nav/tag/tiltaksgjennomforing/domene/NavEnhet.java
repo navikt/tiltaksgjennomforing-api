@@ -4,15 +4,16 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Value;
 
 @Value
-public class NavEnhet implements Identifikator{
+public class NavEnhet implements Identifikator {
     private final String enhetId;
 
     public NavEnhet(String enhetId) {
         this.enhetId = enhetId;
     }
 
-
     @JsonValue
     @Override
-    public String asString() {return enhetId;}
+    public String asString() {
+        return enhetId;
+    }
 }
