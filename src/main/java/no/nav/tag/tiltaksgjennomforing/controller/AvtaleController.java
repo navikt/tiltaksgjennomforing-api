@@ -121,4 +121,14 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();
     }
+    @PostMapping(value = "/{avtaleId}/avbryt")
+    public ResponseEntity avbryt(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader("If-Match") Integer versjon) {
+        InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        innloggetBruker.sjekkTilgang(avtale);
+        Veileder veileder = (Veileder) innloggetBruker.avtalepart(avtale);
+        veileder.avbrytAvtaleAvVeileder(versjon);
+        avtaleRepository.save(avtale);
+        return ResponseEntity.ok().build();
+    }
 }

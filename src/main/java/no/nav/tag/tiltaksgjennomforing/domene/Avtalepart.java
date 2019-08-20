@@ -13,6 +13,8 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     abstract void godkjennForAvtalepart();
 
+
+
     abstract boolean kanEndreAvtale();
 
     void sjekkOmAvtaleKanGodkjennes() {
@@ -29,6 +31,7 @@ public abstract class Avtalepart<T extends Identifikator> {
         sjekkOmAvtaleKanGodkjennes();
         godkjennForAvtalepart();
     }
+
 
     public void godkjennPaVegneAvDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn, Integer versjon) {
         avtale.sjekkVersjon(versjon);

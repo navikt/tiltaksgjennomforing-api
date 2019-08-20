@@ -13,6 +13,12 @@ public class Veileder extends Avtalepart<NavIdent> {
         avtale.godkjennForVeileder(getIdentifikator());
     }
 
+
+    public void avbrytAvtaleAvVeileder(Integer versjon) {
+        avtale.sjekkVersjon(versjon);
+        avtale.avbrytAvtale(getIdentifikator());
+    }
+
     @Override
     public boolean kanEndreAvtale() {
         return true;
