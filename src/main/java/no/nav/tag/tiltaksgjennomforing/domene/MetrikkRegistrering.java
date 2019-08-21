@@ -56,7 +56,11 @@ public class MetrikkRegistrering {
 
     @EventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
-        log.info("Avtale godkjent, avtaleId={} avtalepart=VEILEDER", event.getAvtale().getId());
+        boolean pilotFylke = false;
+        if (!pilotProperties.getIdenter().contains(event.getUtfortAv())) {
+            pilotFylke = true;
+        }
+        log.info("Avtale godkjent, avtaleId={} avtalepart=VEILEDER, PilotFylke={}", event.getAvtale().getId(), pilotFylke);
         counter("avtale.godkjenning.godkjent", Avtalerolle.VEILEDER).increment();
     }
 
