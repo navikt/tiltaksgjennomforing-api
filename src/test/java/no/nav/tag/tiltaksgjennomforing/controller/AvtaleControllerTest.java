@@ -36,7 +36,7 @@ public class AvtaleControllerTest {
     private AvtaleRepository avtaleRepository;
 
     @Mock
-    private PilotProperties tilgangUnderPilotering;
+    private TilgangUnderPilotering tilgangUnderPilotering;
 
     @Mock
     private InnloggingService innloggingService;

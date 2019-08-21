@@ -15,8 +15,8 @@ import java.util.concurrent.TimeUnit;
 
 public class JwtTokenGenerator {
 
-    public static String ACR = "Level4";
-    public static long EXPIRY = 60 * 60 * 3600;
+    private static final String ACR = "Level4";
+    public static final long EXPIRY = 60 * 60 * 3600;
 
     private JwtTokenGenerator() {
     }

@@ -7,7 +7,10 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
-@EnableOIDCTokenValidation
+@EnableOIDCTokenValidation(ignore = {
+    "springfox.documentation.swagger.web.ApiResourceController",
+    "org.springframework"
+})
 @EnableConfigurationProperties
 public class TiltaksgjennomforingApplication {
 public static void main(String[] args) {
