@@ -90,6 +90,11 @@
             <version>${cxf.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-features-logging</artifactId>
+            <version>${cxf.version}</version>
+        </dependency>
+        <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
@@ -156,7 +161,7 @@
             <version>2.9.2</version>
         </dependency>
 
-  </dependencies>
+    </dependencies>
 
     <build>
         <plugins>

@@ -8,7 +8,6 @@ import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.InnloggingService;
-import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.ereg.EregService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;

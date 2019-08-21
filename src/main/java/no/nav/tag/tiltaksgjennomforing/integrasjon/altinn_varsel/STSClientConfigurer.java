@@ -4,8 +4,7 @@ import org.apache.cxf.binding.soap.Soap12;
 import org.apache.cxf.binding.soap.SoapMessage;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.endpoint.Endpoint;
-import org.apache.cxf.feature.Feature;
-import org.apache.cxf.feature.LoggingFeature;
+import org.apache.cxf.ext.logging.LoggingFeature;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.service.model.EndpointInfo;
 import org.apache.cxf.ws.policy.EndpointPolicy;
@@ -17,7 +16,8 @@ import org.apache.cxf.ws.security.trust.STSClient;
 import org.apache.neethi.Policy;
 
 import java.net.URI;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
 
 public class STSClientConfigurer {
     // Only use no transportbinding on localhost, should use the requestSamlPolicy.xml with transport binding https
@@ -81,7 +81,7 @@ public class STSClientConfigurer {
         stsClient.setAllowRenewing(false);
         stsClient.setLocation(stsUri.toString());
         // For debugging
-         stsClient.setFeatures(new ArrayList<Feature>(List.of(new LoggingFeature())));
+        stsClient.setFeatures(List.of(new LoggingFeature()));
 
         HashMap<String, Object> properties = new HashMap<>();
         properties.put(org.apache.cxf.rt.security.SecurityConstants.USERNAME, serviceUsername);
