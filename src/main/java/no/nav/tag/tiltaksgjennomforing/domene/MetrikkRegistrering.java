@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.domene;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.domene.events.*;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
@@ -10,15 +11,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class MetrikkRegistrering {
     private final MeterRegistry meterRegistry;
     private final PilotProperties pilotProperties;
-
-
-    public MetrikkRegistrering(MeterRegistry meterRegistry, PilotProperties pilotProperties) {
-        this.meterRegistry = meterRegistry;
-        this.pilotProperties = pilotProperties;
-    }
 
     @EventListener
     public void avtaleOpprettet(AvtaleOpprettet event) {
