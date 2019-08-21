@@ -1,1 +1,1 @@
-alter table avtale add column avbrutt_status boolean default false;
+alter table avtale add column avbrutt boolean default false;

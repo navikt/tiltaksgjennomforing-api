@@ -62,7 +62,7 @@ public class Avtale extends AbstractAggregateRoot {
     private LocalDateTime godkjentAvArbeidsgiver;
     private LocalDateTime godkjentAvVeileder;
     private boolean godkjentPaVegneAv;
-    private boolean avbruttStatus;
+    private boolean avbrutt;
 
     @PersistenceConstructor
     public Avtale(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent) {
@@ -199,7 +199,7 @@ public class Avtale extends AbstractAggregateRoot {
 
     @JsonProperty("status")
     public String status() {
-        if (avbruttStatus) {
+        if (avbrutt) {
             return "Avbrutt";
         } else if (erGodkjentAvVeileder() && (startDato.plusWeeks(arbeidstreningLengde).isBefore(LocalDate.now()))) {
             return "Avsluttet";
@@ -213,18 +213,19 @@ public class Avtale extends AbstractAggregateRoot {
     }
 
     @JsonProperty("kanAvbrytes")
-    public Boolean kanAvbrytes() {
+    public boolean kanAvbrytes() {
         // Nå regner vi at veileder kan avbryte avtalen hvis veileder ikke har godkjent(kan ogaå være at han kan
         // avbryte kun de avtalene som ikke er godkjente av deltaker og AG), kan diskuteres om han kan ha mulighet for å avbryte godkjente avtaler senere
-        return (!erGodkjentAvVeileder())&&(!isAvbruttStatus());
+
+        return (!erGodkjentAvVeileder()) && (!isAvbrutt());
     }
 
-    public void avbrytAvtale(Identifikator utfortAv) {
+    public void avbrytAvtale(Avtalepart avtalepart) {
         if (this.kanAvbrytes()) {
             // this.setAvbruttStatus(true);
             //registerEvent()
             System.out.println("avbrytavtale prøve");
-            this.avbruttStatus=true;
+            this.avbrutt= true;
 
         }
 

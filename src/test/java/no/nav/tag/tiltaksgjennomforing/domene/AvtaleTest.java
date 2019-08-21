@@ -224,4 +224,22 @@ public class AvtaleTest {
         avtale.setDeltakerTlf(null);
         assertThat(avtale.status()).isEqualTo("Klar for oppstart");
     }
+
+    @Test
+    public void tom_avtale_kan_avbrytes() {
+        Avtale tomAvtale = TestData.enAvtale();
+        assertThat(tomAvtale.kanAvbrytes());
+    }
+
+    @Test
+    public void fylt_avtale_kan_avbrytes() {
+        Avtale fyltAvtale = TestData.enAvtaleMedAltUtfylt();
+        assertThat(fyltAvtale.kanAvbrytes());
+    }
+
+    @Test
+    public void godkjent_av_veileder_avtale_kan_ikke_avbrytes() {
+        Avtale godkjentAvtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        assertThat(!godkjentAvtale.kanAvbrytes());
+    }
 }
