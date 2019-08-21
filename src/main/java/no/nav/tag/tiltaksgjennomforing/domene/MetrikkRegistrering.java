@@ -4,6 +4,7 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.domene.events.*;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -11,14 +12,21 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class MetrikkRegistrering {
     private final MeterRegistry meterRegistry;
+    private final PilotProperties pilotProperties;
 
-    public MetrikkRegistrering(MeterRegistry meterRegistry) {
+
+    public MetrikkRegistrering(MeterRegistry meterRegistry, PilotProperties pilotProperties) {
         this.meterRegistry = meterRegistry;
+        this.pilotProperties = pilotProperties;
     }
 
     @EventListener
     public void avtaleOpprettet(AvtaleOpprettet event) {
-        log.info("Avtale opprettet, avtaleId={} ident={}", event.getAvtale().getId(), event.getUtfortAv());
+        boolean pilotFylke = false;
+        if (!pilotProperties.getIdenter().contains(event.getUtfortAv())) {
+            pilotFylke = true;
+        }
+        log.info("Avtale opprettet, avtaleId={} ident={}, PilotFylke={}", event.getAvtale().getId(), event.getUtfortAv(), pilotFylke);
         counter("avtale.opprettet", Avtalerolle.VEILEDER).increment();
     }
 
