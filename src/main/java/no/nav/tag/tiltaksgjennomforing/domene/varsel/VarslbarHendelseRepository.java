@@ -11,4 +11,7 @@ public interface VarslbarHendelseRepository extends CrudRepository<VarslbarHende
 
     @Query("select h.* from varslbar_hendelse h join sms_varsel s on h.id = s.varslbar_hendelse where s.id = :smsVarselId")
     Optional<VarslbarHendelse> finnForSmsVarselId(@Param("smsVarselId") UUID smsVarselId);
+
+    @Query("select count(*) from sms_varsel s where s.status = 'USENDT'")
+    long antallUsendteSmsVarsler();
 }

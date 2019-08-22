@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.integrasjon.kafka;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.domene.MetrikkRegistrering;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class SmsVarselResultatConsumer {
     private final JdbcTemplate jdbcTemplate;
+    private final MetrikkRegistrering metrikkRegistrering;
 
     @KafkaListener(groupId = "smsVarselResultatConsumer", clientIdPrefix = "smsVarselResultatConsumer", topics = Topics.SMS_VARSEL_RESULTAT)
     public void consume(SmsVarselResultatMelding resultatMelding) {
@@ -22,6 +24,14 @@ public class SmsVarselResultatConsumer {
         int oppdaterteRader = jdbcTemplate.update("update sms_varsel set status = ? where id = ?", resultatMelding.getStatus().toString(), resultatMelding.getSmsVarselId());
         if (oppdaterteRader == 1) {
             log.info("Oppdatert SmsVarsel med smsVarselId={} til status={}", resultatMelding.getSmsVarselId(), resultatMelding.getStatus());
+            switch (resultatMelding.getStatus()) {
+                case SENDT:
+                    metrikkRegistrering.smsVarselSendt();
+                    break;
+                case FEIL:
+                    metrikkRegistrering.smsVarselFeil();
+                    break;
+            }
         } else {
             log.warn("Finner ikke SmsVarsel med smsVarselId={} og kan ikke oppdatere til status={}", resultatMelding.getSmsVarselId(), resultatMelding.getStatus());
         }
