@@ -16,14 +16,18 @@ public class MetrikkRegistrering {
     private final MeterRegistry meterRegistry;
     private final PilotProperties pilotProperties;
 
+    public boolean pilotFylke(Identifikator utfortAv) {
+        if (!pilotProperties.getIdenter().contains(utfortAv)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     @EventListener
     public void avtaleOpprettet(AvtaleOpprettet event) {
-        boolean pilotFylke = false;
-        if (!pilotProperties.getIdenter().contains(event.getUtfortAv())) {
-            pilotFylke = true;
-        }
-        log.info("Avtale opprettet, avtaleId={} ident={}, PilotFylke={}", event.getAvtale().getId(), event.getUtfortAv(), pilotFylke);
-        counter("avtale.opprettet", Avtalerolle.VEILEDER).increment();
+        log.info("Avtale opprettet, avtaleId={} ident={}, PilotFylke={}", event.getAvtale().getId(), event.getUtfortAv(), pilotFylke(event.getUtfortAv()));
+        counter("avtale.opprettet", Avtalerolle.VEILEDER, pilotFylke(event.getUtfortAv())).increment();
     }
 
     @EventListener
@@ -52,24 +56,21 @@ public class MetrikkRegistrering {
 
     @EventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
-        boolean pilotFylke = false;
-        if (!pilotProperties.getIdenter().contains(event.getUtfortAv())) {
-            pilotFylke = true;
-        }
-        log.info("Avtale godkjent, avtaleId={} avtalepart=VEILEDER, PilotFylke={}", event.getAvtale().getId(), pilotFylke);
-        counter("avtale.godkjenning.godkjent", Avtalerolle.VEILEDER).increment();
+        log.info("Avtale godkjent, avtaleId={} avtalepart=VEILEDER, PilotFylke={}", event.getAvtale().getId(), pilotFylke(event.getUtfortAv()));
+        counter("avtale.godkjenning.godkjent", Avtalerolle.VEILEDER, pilotFylke(event.getUtfortAv())).increment();
     }
 
     @EventListener
     public void godkjentPaVegneAv(GodkjentPaVegneAv event) {
-        log.info("Avtale godkjent på vegne av deltaker, avtaleId={} avtalepart=VEILEDER", event.getAvtale().getId());
-        counter("avtale.godkjenning.godkjentPaVegneAv", Avtalerolle.VEILEDER).increment();
+        log.info("Avtale godkjent på vegne av deltaker, avtaleId={} avtalepart=VEILEDER, PilotFylke={}", event.getAvtale().getId(), pilotFylke(event.getUtfortAv()));
+        counter("avtale.godkjenning.godkjentPaVegneAv", Avtalerolle.VEILEDER, pilotFylke(event.getUtfortAv())).increment();
     }
 
-    private Counter counter(String navn, Avtalerolle avtalerolle) {
+    private Counter counter(String navn, Avtalerolle avtalerolle, boolean... erPilotFylke) {
         return Counter.builder("tiltaksgjennomforing." + navn)
                 .tag("tiltak", Tiltaktype.ARBEIDSTRENING.name())
                 .tag("avtalepart", avtalerolle.name())
+                .tag("pilotfylke", erPilotFylke.toString())
                 .register(meterRegistry);
     }
 }
