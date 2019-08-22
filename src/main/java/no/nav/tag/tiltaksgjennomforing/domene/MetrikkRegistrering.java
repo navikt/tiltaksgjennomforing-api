@@ -16,12 +16,8 @@ public class MetrikkRegistrering {
     private final MeterRegistry meterRegistry;
     private final PilotProperties pilotProperties;
 
-    public boolean pilotFylke(Identifikator utfortAv) {
-        if (!pilotProperties.getIdenter().contains(utfortAv)) {
-            return true;
-        } else {
-            return false;
-        }
+    private boolean pilotFylke(Identifikator utfortAv) {
+        return !pilotProperties.getIdenter().contains(utfortAv);
     }
 
     @EventListener
