@@ -33,25 +33,25 @@ public class MetrikkRegistrering {
     @EventListener
     public void avtaleEndret(AvtaleEndret event) {
         log.info("Avtale endret, avtaleId={} avtalepart={}", event.getAvtale().getId(), event.getUtfortAv());
-        counter("avtale.endret", event.getUtfortAv()).increment();
+        counter("avtale.endret", event.getUtfortAv(), null).increment();
     }
 
     @EventListener
     public void godkjenningerOpphevet(GodkjenningerOpphevet event) {
         log.info("Avtalens godkjenninger opphevet, avtaleId={} avtalepart={}", event.getAvtale().getId(), event.getUtfortAv());
-        counter("avtale.godkjenning.opphevet", event.getUtfortAv()).increment();
+        counter("avtale.godkjenning.opphevet", event.getUtfortAv(), null).increment();
     }
 
     @EventListener
     public void godkjentAvDeltaker(GodkjentAvDeltaker event) {
         log.info("Avtale godkjent, avtaleId={} avtalepart=DELTAKER", event.getAvtale().getId());
-        counter("avtale.godkjenning.godkjent", Avtalerolle.DELTAKER).increment();
+        counter("avtale.godkjenning.godkjent", Avtalerolle.DELTAKER, null).increment();
     }
 
     @EventListener
     public void godkjentAvArbeidsgiver(GodkjentAvArbeidsgiver event) {
         log.info("Avtale godkjent, avtaleId={} avtalepart=ARBEIDSGIVER", event.getAvtale().getId());
-        counter("avtale.godkjenning.godkjent", Avtalerolle.ARBEIDSGIVER).increment();
+        counter("avtale.godkjenning.godkjent", Avtalerolle.ARBEIDSGIVER, null).increment();
     }
 
     @EventListener
@@ -66,11 +66,15 @@ public class MetrikkRegistrering {
         counter("avtale.godkjenning.godkjentPaVegneAv", Avtalerolle.VEILEDER, pilotFylke(event.getUtfortAv())).increment();
     }
 
-    private Counter counter(String navn, Avtalerolle avtalerolle, boolean... erPilotFylke) {
-        return Counter.builder("tiltaksgjennomforing." + navn)
+    private Counter counter(String navn, Avtalerolle avtalerolle, Boolean erPilotFylke) {
+        var builder = Counter.builder("tiltaksgjennomforing." + navn)
                 .tag("tiltak", Tiltaktype.ARBEIDSTRENING.name())
-                .tag("avtalepart", avtalerolle.name())
-                .tag("pilotfylke", erPilotFylke.toString())
-                .register(meterRegistry);
+                .tag("avtalepart", avtalerolle.name());
+        if (erPilotFylke != null) {
+            builder.tag("pilotfylke", erPilotFylke.toString());
+        }
+        return builder.register(meterRegistry);
     }
+
+
 }
