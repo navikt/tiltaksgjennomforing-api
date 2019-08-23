@@ -1,5 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.domene;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.varsel.VarslbarHendelse;
@@ -11,6 +15,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class TestData {
+
+    private static ObjectMapper avtaleObjectMapper = new ObjectMapper().registerModule(new JavaTimeModule()).disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
     public static Avtale enAvtale() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         return Avtale.nyAvtale(lagOpprettAvtale(), veilderNavIdent);
@@ -25,7 +32,9 @@ public class TestData {
 
     public static Avtale enAvtaleMedAltUtfyltGodkjentAvVeileder() {
         Avtale avtale = enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now().minusDays(2));
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now().minusDays(1));
+        avtale.setGodkjentAvVeileder(LocalDateTime.now());
         return avtale;
     }
 
@@ -99,11 +108,20 @@ public class TestData {
     }
 
     public static Oppgave enOppgave() {
-        return new Oppgave();
+        Oppgave oppgave = new Oppgave();
+        oppgave.settIdOgOpprettetTidspunkt();
+        oppgave.setBeskrivelse("Oppavebeskrivelse");
+        oppgave.setOpplaering("Opplæring i oppgave");
+        oppgave.setTittel("oppgavetittel");
+        return oppgave;
     }
 
     public static Maal etMaal() {
-        return new Maal();
+        Maal maal = new Maal();
+        maal.settIdOgOpprettetTidspunkt();
+        maal.setBeskrivelse("Målets beskrivelse");
+        maal.setKategori("Målets kategori");
+        return maal;
     }
 
     public static GodkjentPaVegneGrunn enGodkjentPaVegneGrunn() {
@@ -134,5 +152,9 @@ public class TestData {
 
     public static VarslbarHendelse enHendelseMedSmsVarsel(Avtale avtale) {
         return VarslbarHendelse.nyHendelse(avtale, VarslbarHendelseType.GODKJENT_AV_DELTAKER);
+    }
+
+    public static String avtaleTilJson(Avtale avtale) throws JsonProcessingException {
+         return avtaleObjectMapper.writeValueAsString(avtale);
     }
 }

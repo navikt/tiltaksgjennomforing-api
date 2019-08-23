@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.domene.varsel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import no.nav.tag.tiltaksgjennomforing.domene.Avtale;
+import no.nav.tag.tiltaksgjennomforing.domene.IdOgTidspunktGenerator;
 import no.nav.tag.tiltaksgjennomforing.domene.events.VarslbarHendelseOppstaatt;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.AbstractAggregateRoot;
@@ -13,7 +14,7 @@ import java.util.*;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class VarslbarHendelse extends AbstractAggregateRoot {
+public class VarslbarHendelse extends AbstractAggregateRoot implements IdOgTidspunktGenerator {
     @Id
     private UUID id;
     private LocalDateTime tidspunkt;
@@ -65,6 +66,7 @@ public class VarslbarHendelse extends AbstractAggregateRoot {
         return Collections.emptyList();
     }
 
+    @Override
     public void settIdOgOpprettetTidspunkt() {
         if (id == null) {
             id = UUID.randomUUID();

@@ -1,9 +1,11 @@
 package no.nav.tag.tiltaksgjennomforing.integrasjon.kafka;
 
+import no.nav.tag.tiltaksgjennomforing.domene.Avtale;
 import no.nav.tag.tiltaksgjennomforing.domene.TestData;
 import no.nav.tag.tiltaksgjennomforing.domene.varsel.VarslbarHendelse;
 import no.nav.tag.tiltaksgjennomforing.domene.varsel.VarslbarHendelseRepository;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.KafkaMockServer;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.kafka.avtale.GodkjentAvtaleProducer;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -24,6 +26,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @DirtiesContext
 @ActiveProfiles({"dev", "kafka", "kafka-test"})
-public class SmsVarselProducerTest {
+public class KafkaProducerTest {
 
     @Autowired
     private TransactionTemplate transactionTemplate;
@@ -40,22 +43,29 @@ public class SmsVarselProducerTest {
     private KafkaMockServer embeddedKafka;
     @Autowired
     private VarslbarHendelseRepository repository;
+    @Autowired
+    GodkjentAvtaleProducer godkjentAvtaleProducer;
 
     private Consumer<String, String> consumer;
 
     @Before
-    public void setUp() {
+    public void setUp(){
         Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "false", embeddedKafka.getEmbeddedKafka());
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-
         ConsumerFactory<String, String> cf = new DefaultKafkaConsumerFactory<>(consumerProps);
         consumer = cf.createConsumer();
-        embeddedKafka.getEmbeddedKafka().consumeFromAnEmbeddedTopic(consumer, Topics.SMS_VARSEL);
     }
 
     @Test
-    public void varslbarHendelseOppstaatt__skal_sendes_på_kafka_topic_med_riktige_felter() throws JSONException {
+    public void sender_på_kafka_topic_med_riktige_felter() throws Exception {
+        varslbarHendelseOppstaatt__skal_sendes_på_kafka_topic_med_riktige_felter();
+        avtaleTilJournalfoering__skal_sendes_på_kafka_topic_med_riktige_felter();
+    }
+
+
+    private void varslbarHendelseOppstaatt__skal_sendes_på_kafka_topic_med_riktige_felter() throws JSONException {
+        embeddedKafka.getEmbeddedKafka().consumeFromAnEmbeddedTopic(consumer, Topics.SMS_VARSEL);
         VarslbarHendelse varslbarHendelse = TestData.enHendelseMedSmsVarsel(TestData.enAvtaleMedAltUtfylt());
         transactionTemplate.execute(status -> repository.save(varslbarHendelse));
 

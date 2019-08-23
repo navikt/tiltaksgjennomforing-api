@@ -85,7 +85,8 @@ public class AvtaleRepositoryTest {
 
     @Test
     public void avtale_godkjent_pa_vegne_av_skal_lagres_med_pa_vegne_av_grunn() {
-        Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
 
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
         godkjentPaVegneGrunn.setIkkeBankId(true);
@@ -99,7 +100,8 @@ public class AvtaleRepositoryTest {
 
     @Test
     public void lagre_pa_vegne_skal_publisere_domainevent() {
-        Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
 
         Veileder veileder = TestData.enVeileder(avtale);
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();

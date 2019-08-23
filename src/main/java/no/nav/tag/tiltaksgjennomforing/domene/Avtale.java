@@ -23,7 +23,7 @@ import static no.nav.tag.tiltaksgjennomforing.domene.Utils.sjekkAtIkkeNull;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class Avtale extends AbstractAggregateRoot {
+public class Avtale extends AbstractAggregateRoot implements IdOgTidspunktGenerator {
 
     private final Fnr deltakerFnr;
     private final BedriftNr bedriftNr;
@@ -159,19 +159,6 @@ public class Avtale extends AbstractAggregateRoot {
         }
     }
 
-    public void settIdOgOpprettetTidspunkt() {
-        if (this.id == null) {
-            this.id = UUID.randomUUID();
-        }
-
-        if (this.getOpprettetTidspunkt() == null) {
-            this.opprettetTidspunkt = LocalDateTime.now();
-        }
-
-        this.getMaal().forEach(Maal::settIdOgOpprettetTidspunkt);
-        this.getOppgaver().forEach(Oppgave::settIdOgOpprettetTidspunkt);
-    }
-
     void godkjennForArbeidsgiver(Identifikator utfortAv) {
         sjekkOmKanGodkjennes();
         this.godkjentAvArbeidsgiver = LocalDateTime.now();
@@ -238,5 +225,19 @@ public class Avtale extends AbstractAggregateRoot {
                 arbeidstreningStillingprosent
         )
                 && !oppgaver.isEmpty() && !maal.isEmpty();
+    }
+
+    @Override
+    public void settIdOgOpprettetTidspunkt() {
+        if (this.id == null) {
+            this.id = UUID.randomUUID();
+        }
+
+        if (this.getOpprettetTidspunkt() == null) {
+            this.opprettetTidspunkt = LocalDateTime.now();
+        }
+
+        this.getMaal().forEach(Maal::settIdOgOpprettetTidspunkt);
+        this.getOppgaver().forEach(Oppgave::settIdOgOpprettetTidspunkt);
     }
 }
