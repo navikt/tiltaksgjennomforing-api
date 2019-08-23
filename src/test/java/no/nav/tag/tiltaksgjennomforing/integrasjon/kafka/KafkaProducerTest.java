@@ -75,4 +75,20 @@ public class KafkaProducerTest {
                 .isNotNull()
                 .isIn(varslbarHendelse.getSmsVarsler().stream().map(smsVarsel -> smsVarsel.getId().toString()).collect(Collectors.toList()));
     }
+
+
+    private void avtaleTilJournalfoering__skal_sendes_på_kafka_topic_med_riktige_felter() throws Exception {
+        embeddedKafka.getEmbeddedKafka().consumeFromAnEmbeddedTopic(consumer, Topics.AVTALE_GODKJENT);
+
+        final UUID AVTALE_ID = UUID.randomUUID();
+        Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        avtale.setId(AVTALE_ID);
+        String avtaleJson = TestData.avtaleTilJson(avtale);
+
+        godkjentAvtaleProducer.sendAvtaleTilJournalfoering(avtale.getId().toString(), avtaleJson);
+
+        ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.AVTALE_GODKJENT);
+        assertThat(record.key()).isEqualTo(AVTALE_ID.toString());
+        assertThat(record.value()).contains(AVTALE_ID.toString());
+    }
 }
