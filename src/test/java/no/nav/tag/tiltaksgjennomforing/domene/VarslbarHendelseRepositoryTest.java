@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.domene;
 
 import no.nav.tag.tiltaksgjennomforing.domene.varsel.VarslbarHendelse;
 import no.nav.tag.tiltaksgjennomforing.domene.varsel.VarslbarHendelseRepository;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +13,16 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(properties = {"spring.datasource.url=jdbc:h2:mem:trxServiceStatus"})
 @ActiveProfiles("dev")
 public class VarslbarHendelseRepositoryTest {
     @Autowired
     private VarslbarHendelseRepository varslbarHendelseRepository;
+
+    @Before
+    public void setUp() {
+        varslbarHendelseRepository.deleteAll();
+    }
 
     @Test
     public void save__lagrer_alle_felter() {
