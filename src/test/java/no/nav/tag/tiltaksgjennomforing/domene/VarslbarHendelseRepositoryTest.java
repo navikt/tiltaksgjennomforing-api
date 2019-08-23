@@ -13,7 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = {"spring.datasource.url=jdbc:h2:mem:trxServiceStatus"})
+@SpringBootTest(properties = {"spring.datasource.url=jdbc:h2:mem:varslbarHendelseRepositoryTest"})
 @ActiveProfiles("dev")
 public class VarslbarHendelseRepositoryTest {
     @Autowired
