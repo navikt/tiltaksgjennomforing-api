@@ -214,19 +214,17 @@ public class Avtale extends AbstractAggregateRoot {
 
     @JsonProperty("kanAvbrytes")
     public boolean kanAvbrytes() {
-        // Nå regner vi at veileder kan avbryte avtalen hvis veileder ikke har godkjent(kan ogaå være at han kan
-        // avbryte kun de avtalene som ikke er godkjente av deltaker og AG), kan diskuteres om han kan ha mulighet for å avbryte godkjente avtaler senere
-
+        // Nå regner vi at veileder kan avbryte avtalen hvis veileder ikke har godkjent(kan også være at han kan
+        // avbryte kun de avtalene som ikke er godkjente av deltaker og AG),
         return (!erGodkjentAvVeileder()) && (!isAvbrutt());
     }
 
     public void avbrytAvtale(Avtalepart avtalepart) {
         if (this.kanAvbrytes()) {
-            // this.setAvbruttStatus(true);
-            //registerEvent()
-            System.out.println("avbrytavtale prøve");
-            this.avbrutt= true;
-
+            if (avtalepart instanceof Veileder) {
+                this.setAvbrutt(true);
+                registerEvent( new AvbruttAvVeileder(this, ((Veileder)avtalepart).getIdentifikator()));
+            }
         }
 
     }
