@@ -37,7 +37,7 @@ public class VarslbarHendelseRepositoryTest {
         Avtale avtale = TestData.enAvtale();
         avtale.settIdOgOpprettetTidspunkt();
         VarslbarHendelse varslbarHendelse = TestData.enHendelseMedSmsVarsel(avtale);
-        VarslbarHendelse lagretVarslbarHendelse = varslbarHendelseRepository.save(varslbarHendelse);
+        varslbarHendelseRepository.save(varslbarHendelse);
         assertThat(varslbarHendelseRepository.antallUsendteSmsVarsler()).isEqualTo(1);
     }
 }
