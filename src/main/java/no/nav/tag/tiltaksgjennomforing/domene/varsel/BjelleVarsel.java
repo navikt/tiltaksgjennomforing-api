@@ -28,6 +28,10 @@ public class BjelleVarsel extends AbstractAggregateRoot {
         return varsel;
     }
 
+    public void settTilLest() {
+        lest = true;
+    }
+
     public void settId() {
         if (id == null) {
             id = UUID.randomUUID();

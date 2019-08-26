@@ -3,17 +3,16 @@ package no.nav.tag.tiltaksgjennomforing.controller;
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import no.nav.security.oidc.api.Protected;
-import no.nav.tag.tiltaksgjennomforing.domene.Avtale;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.varsel.BjelleVarsel;
 import no.nav.tag.tiltaksgjennomforing.domene.varsel.BjelleVarselService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.InnloggingService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Protected
 @RestController
@@ -33,7 +32,14 @@ public class BjelleVarselController {
     @GetMapping("uleste")
     public Iterable<BjelleVarsel> hentAlleUlesteVarsler() {
         InnloggetBruker bruker = innloggingService.hentInnloggetBruker();
-        List<Avtale> avtaler = new ArrayList<>();
         return bjelleVarselService.mineUlesteBjelleVarsler(bruker);
+    }
+
+    @PostMapping("sett-til-lest")
+    @Transactional
+    public ResponseEntity settTilLest() {
+        InnloggetBruker bruker = innloggingService.hentInnloggetBruker();
+        bjelleVarselService.settTilLest(bruker);
+        return ResponseEntity.ok().build();
     }
 }

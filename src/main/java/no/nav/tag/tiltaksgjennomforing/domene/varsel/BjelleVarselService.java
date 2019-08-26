@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -13,18 +14,25 @@ import java.util.stream.Stream;
 public class BjelleVarselService {
     private final BjelleVarselRepository bjelleVarselRepository;
 
-    public Iterable<BjelleVarsel> mineBjelleVarsler(InnloggetBruker innloggetBruker) {
+    public List<BjelleVarsel> mineBjelleVarsler(InnloggetBruker innloggetBruker) {
         return bjelleVarslerForInnloggetBruker(innloggetBruker)
                 .collect(Collectors.toList());
     }
 
-    public Iterable<BjelleVarsel> mineUlesteBjelleVarsler(InnloggetBruker bruker) {
+    public List<BjelleVarsel> mineUlesteBjelleVarsler(InnloggetBruker bruker) {
         return bjelleVarslerForInnloggetBruker(bruker)
                 .filter(Predicate.not(BjelleVarsel::isLest))
                 .collect(Collectors.toList());
     }
 
+    public void settTilLest(InnloggetBruker innloggetBruker) {
+        List<BjelleVarsel> bjelleVarsler = mineUlesteBjelleVarsler(innloggetBruker);
+        bjelleVarsler.forEach(BjelleVarsel::settTilLest);
+        bjelleVarselRepository.saveAll(bjelleVarsler);
+    }
+
     private Stream<BjelleVarsel> bjelleVarslerForInnloggetBruker(InnloggetBruker innloggetBruker) {
-        return bjelleVarselRepository.finnAlleForIdentifikator(innloggetBruker.getIdentifikator().asString()).stream();
+        return bjelleVarselRepository.findAll().stream()
+                .filter(bjelleVarsel -> bjelleVarsel.getIdentifikator().equals(innloggetBruker.getIdentifikator()));
     }
 }
