@@ -7,7 +7,6 @@ import no.nav.tag.tiltaksgjennomforing.domene.Avtale;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.varsel.BjelleVarsel;
 import no.nav.tag.tiltaksgjennomforing.domene.varsel.BjelleVarselService;
-import no.nav.tag.tiltaksgjennomforing.domene.varsel.VarslbarHendelseRepository;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.InnloggingService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +27,6 @@ public class BjelleVarselController {
     @GetMapping
     public Iterable<BjelleVarsel> hentAlleVarsler() {
         InnloggetBruker bruker = innloggingService.hentInnloggetBruker();
-        List<Avtale> avtaler = new ArrayList<>();
         return bjelleVarselService.mineBjelleVarsler(bruker);
     }
 

@@ -18,12 +18,13 @@ public class BjelleVarsel extends AbstractAggregateRoot {
     private boolean lest;
     private Identifikator identifikator;
     private String varslingstekst;
+    private UUID avtaleId;
 
-    public static BjelleVarsel nyttVarsel(Identifikator identifikator,
-                                          VarslbarHendelseType hendelseType) {
+    public static BjelleVarsel nyttVarsel(Identifikator identifikator, VarslbarHendelseType hendelseType, UUID avtaleId) {
         BjelleVarsel varsel = new BjelleVarsel();
         varsel.identifikator = identifikator;
         varsel.varslingstekst = hendelseType.getTekst();
+        varsel.avtaleId = avtaleId;
         return varsel;
     }
 

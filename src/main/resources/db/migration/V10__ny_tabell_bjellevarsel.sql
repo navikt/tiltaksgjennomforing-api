@@ -4,5 +4,6 @@ create table bjelle_varsel
     varslbar_hendelse uuid references varslbar_hendelse (id),
     lest              boolean,
     identifikator     varchar(11),
-    varslingstekst     varchar
+    varslingstekst    varchar,
+    avtale_id         uuid references avtale (id)
 );
