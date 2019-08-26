@@ -134,12 +134,15 @@ public class Avtale extends AbstractAggregateRoot {
     private void sjekkMaalOgOppgaverLengde(List<Maal> maal, List<Oppgave> oppgaver) {
         maal.forEach(etMaal -> {
             if (etMaal.getBeskrivelse().length() > 1000) {
-                throw new TiltaksgjennomforingException("Maks lengde for mål er 1000 tegn, vennligst fjern " + (etMaal.getBeskrivelse().length() - 1000) + " tegn");
+                throw new TiltaksgjennomforingException("Maks lengde for mål er 1000 tegn");
             }
         });
         oppgaver.forEach(enOppgave -> {
             if (enOppgave.getBeskrivelse().length() > 1000) {
-                throw new TiltaksgjennomforingException("Maks lengde for oppgave beskrivelse er 1000 tegn, vennligst fjern " + (enOppgave.getBeskrivelse().length() - 1000) + " tegn");
+                throw new TiltaksgjennomforingException("Maks lengde for oppgavebeskrivelse er 1000 tegn");
+            }
+            if (enOppgave.getOpplaering().length() > 1000) {
+                throw new TiltaksgjennomforingException("Maks lengde for opplæring er 1000 tegn");
             }
         });
     }
