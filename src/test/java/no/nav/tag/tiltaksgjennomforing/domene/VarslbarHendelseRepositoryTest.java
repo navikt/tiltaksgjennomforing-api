@@ -34,16 +34,5 @@ public class VarslbarHendelseRepositoryTest {
         assertThat(lagretVarslbarHendelse.getTidspunkt()).isNotNull();
         assertThat(lagretVarslbarHendelse.getVarslbarHendelseType()).isNotNull().isEqualTo(varslbarHendelse.getVarslbarHendelseType());
         assertThat(lagretVarslbarHendelse.getAvtaleId()).isNotNull().isEqualTo(varslbarHendelse.getAvtaleId());
-        assertThat(lagretVarslbarHendelse.getSmsVarsler()).containsAll(varslbarHendelse.getSmsVarsler());
-    }
-
-    @Test
-    public void antallUsendteSmsVarsler__teller_riktig() {
-        assertThat(varslbarHendelseRepository.antallUsendteSmsVarsler()).isEqualTo(0);
-        Avtale avtale = TestData.enAvtale();
-        avtale.settIdOgOpprettetTidspunkt();
-        VarslbarHendelse varslbarHendelse = TestData.enHendelseMedSmsVarsel(avtale);
-        varslbarHendelseRepository.save(varslbarHendelse);
-        assertThat(varslbarHendelseRepository.antallUsendteSmsVarsler()).isEqualTo(1);
     }
 }

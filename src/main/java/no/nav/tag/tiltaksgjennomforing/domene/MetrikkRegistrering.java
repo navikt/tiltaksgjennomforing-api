@@ -6,7 +6,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.domene.events.*;
-import no.nav.tag.tiltaksgjennomforing.domene.varsel.VarslbarHendelseRepository;
+import no.nav.tag.tiltaksgjennomforing.domene.varsel.SmsVarselRepository;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -19,12 +19,24 @@ import javax.annotation.PostConstruct;
 public class MetrikkRegistrering {
     private final MeterRegistry meterRegistry;
     private final PilotProperties pilotProperties;
-    private final VarslbarHendelseRepository hendelseRepository;
+    private final SmsVarselRepository smsVarselRepository;
 
     @PostConstruct
     public void init() {
-        Gauge.builder("tiltaksgjennomforing.smsvarsel.usendt", hendelseRepository::antallUsendteSmsVarsler)
+        Gauge.builder("tiltaksgjennomforing.smsvarsel.usendt", smsVarselRepository::antallUsendte)
                 .register(meterRegistry);
+    }
+
+    @EventListener
+    public void smsVarselResultatMottatt(SmsVarselResultatMottatt event) {
+        switch (event.getSmsVarsel().getStatus()) {
+            case SENDT:
+                smsVarselSendt();
+                break;
+            case FEIL:
+                smsVarselFeil();
+                break;
+        }
     }
 
     public void smsVarselSendt() {

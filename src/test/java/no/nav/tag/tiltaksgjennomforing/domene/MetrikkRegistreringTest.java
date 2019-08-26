@@ -2,7 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.domene;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import no.nav.tag.tiltaksgjennomforing.domene.events.AvtaleOpprettet;
-import no.nav.tag.tiltaksgjennomforing.domene.varsel.VarslbarHendelseRepository;
+import no.nav.tag.tiltaksgjennomforing.domene.varsel.SmsVarselRepository;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,7 +26,7 @@ public class MetrikkRegistreringTest {
     public void setUp() throws Exception {
         pilotProperties = new PilotProperties();
         pilotProperties.setIdenter(List.of(new NavIdent("X123456")));
-        metrikkRegistrering = new MetrikkRegistrering(mock(MeterRegistry.class, RETURNS_DEEP_STUBS), pilotProperties, mock(VarslbarHendelseRepository.class));
+        metrikkRegistrering = new MetrikkRegistrering(mock(MeterRegistry.class, RETURNS_DEEP_STUBS), pilotProperties, mock(SmsVarselRepository.class));
     }
 
     @Test
