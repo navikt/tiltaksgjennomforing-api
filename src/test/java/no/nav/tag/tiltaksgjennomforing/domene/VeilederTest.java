@@ -33,6 +33,29 @@ public class VeilederTest {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         Veileder veileder = TestData.enVeileder(avtale);
         veileder.opphevGodkjenninger();
+        assertThat(avtale.erGodkjentAvDeltaker()).isFalse();
+        assertThat(avtale.erGodkjentAvArbeidsgiver()).isFalse();
+        assertThat(avtale.erGodkjentAvVeileder()).isFalse();
+    }
 
+    @Test
+    public void avbrytAvtale__kan_ikke_avbryt_avtale_etter_veiledergodkjenning() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        Veileder veileder = TestData.enVeileder(avtale);
+        veileder.avbrytAvtaleAvVeileder(avtale.getVersjon());
+        assertThat(avtale.isAvbrutt()).isFalse();
+    }
+
+    @Test
+    public void avbrytAvtale__kan_avbryt_avtale_foer_veiledergodkjenning() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        Veileder veileder = TestData.enVeileder(avtale);
+        veileder.avbrytAvtaleAvVeileder(avtale.getVersjon());
+        assertThat(avtale.isAvbrutt()).isTrue();
     }
 }

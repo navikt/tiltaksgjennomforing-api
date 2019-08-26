@@ -24,6 +24,8 @@ public class TestData {
     public static Avtale enAvtaleMedAltUtfyltGodkjentAvVeileder() {
         Avtale avtale = enAvtaleMedAltUtfylt();
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvVeileder(LocalDateTime.now());
         return avtale;
     }
 

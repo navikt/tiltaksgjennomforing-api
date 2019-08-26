@@ -228,18 +228,27 @@ public class AvtaleTest {
     @Test
     public void tom_avtale_kan_avbrytes() {
         Avtale tomAvtale = TestData.enAvtale();
-        assertThat(tomAvtale.kanAvbrytes());
+        assertThat(tomAvtale.kanAvbrytes()).isTrue();
     }
 
     @Test
     public void fylt_avtale_kan_avbrytes() {
         Avtale fyltAvtale = TestData.enAvtaleMedAltUtfylt();
-        assertThat(fyltAvtale.kanAvbrytes());
+        assertThat(fyltAvtale.kanAvbrytes()).isTrue();
     }
 
     @Test
     public void godkjent_av_veileder_avtale_kan_ikke_avbrytes() {
         Avtale godkjentAvtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
-        assertThat(!godkjentAvtale.kanAvbrytes());
+        assertThat(godkjentAvtale.kanAvbrytes()).isFalse();
+    }
+
+    @Test
+    public void allerede_avbrutt_avtale_kan_ikke_avbrytes() {
+        Avtale fyltAvtale = TestData.enAvtaleMedAltUtfylt();
+        Avtale tomAvtale = TestData.enAvtale();
+        fyltAvtale.setAvbrutt(true);
+        tomAvtale.setAvbrutt(true);
+        assertThat((!fyltAvtale.kanAvbrytes()) && (!tomAvtale.kanAvbrytes())).isTrue();
     }
 }
