@@ -81,6 +81,7 @@ public class Avtale extends AbstractAggregateRoot {
         sjekkOmAvtalenKanEndres();
         sjekkVersjon(versjon);
         inkrementerVersjonsnummer();
+        sjekkMaalOgOppgaverLengde(nyAvtale.getMaal(), nyAvtale.getOppgaver());
 
         setDeltakerFornavn(nyAvtale.getDeltakerFornavn());
         setDeltakerEtternavn(nyAvtale.getDeltakerEtternavn());
@@ -129,6 +130,18 @@ public class Avtale extends AbstractAggregateRoot {
         if (erGodkjentAvDeltaker() || erGodkjentAvArbeidsgiver() || erGodkjentAvVeileder()) {
             throw new TilgangskontrollException("Godkjenninger må oppheves før avtalen kan endres.");
         }
+    }
+    private void sjekkMaalOgOppgaverLengde(List<Maal> maal, List<Oppgave> oppgaver) {
+        maal.forEach(etMaal -> {
+            if (etMaal.getBeskrivelse().length() > 1000) {
+                throw new TiltaksgjennomforingException("Maks lengde for mål er 1000 tegn, vennligst fjern " + (etMaal.getBeskrivelse().length() - 1000) + " tegn");
+            }
+        });
+        oppgaver.forEach(enOppgave -> {
+            if (enOppgave.getBeskrivelse().length() > 1000) {
+                throw new TiltaksgjennomforingException("Maks lengde for oppgave beskrivelse er 1000 tegn, vennligst fjern " + (enOppgave.getBeskrivelse().length() - 1000) + " tegn");
+            }
+        });
     }
 
     void opphevGodkjenninger(Avtalerolle avtalerolle) {
