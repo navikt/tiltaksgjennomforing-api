@@ -1,7 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.integrasjon.altinn_varsel;
 
 import no.nav.tag.tiltaksgjennomforing.domene.TestData;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 @ActiveProfiles({"dev", "wiremock"})
 @DirtiesContext
-@Ignore
 public class AltinnVarselServiceTest {
     @Autowired
     private AltinnVarselService varselService;
