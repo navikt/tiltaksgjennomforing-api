@@ -131,25 +131,22 @@ public class Avtale extends AbstractAggregateRoot {
             throw new TilgangskontrollException("Godkjenninger må oppheves før avtalen kan endres.");
         }
     }
+
+    private void sjekkAtTekstIkkeOverskrider1000Tegn(String tekst, String feilmelding) {
+        if ((tekst != null) && tekst.length() > 1000) {
+            throw new TiltaksgjennomforingException(feilmelding);
+        }
+    }
+
     private void sjekkMaalOgOppgaverLengde(List<Maal> maal, List<Oppgave> oppgaver) {
-        if (!maal.isEmpty()) {
             maal.forEach(etMaal -> {
-                if (!(etMaal.getBeskrivelse() == null) && etMaal.getBeskrivelse().length() > 1000) {
-                    throw new TiltaksgjennomforingException("Maks lengde for mål er 1000 tegn");
-                }
+                    sjekkAtTekstIkkeOverskrider1000Tegn(etMaal.getBeskrivelse(), "Maks lengde for mål er 1000 tegn");
+            });
+            oppgaver.forEach(enOppgave -> {
+                sjekkAtTekstIkkeOverskrider1000Tegn(enOppgave.getBeskrivelse(), "Maks lengde for oppgavebeskrivelse er 1000 tegn");
+                sjekkAtTekstIkkeOverskrider1000Tegn(enOppgave.getOpplaering(), "Maks lengde for opplæring er 1000 tegn");
             });
 
-        }
-        if (!oppgaver.isEmpty()) {
-            oppgaver.forEach(enOppgave -> {
-                if (!(enOppgave.getBeskrivelse() == null) && enOppgave.getBeskrivelse().length() > 1000) {
-                    throw new TiltaksgjennomforingException("Maks lengde for oppgavebeskrivelse er 1000 tegn");
-                }
-                if (!(enOppgave.getOpplaering() == null) && enOppgave.getOpplaering().length() > 1000) {
-                    throw new TiltaksgjennomforingException("Maks lengde for opplæring er 1000 tegn");
-                }
-            });
-        }
     }
 
     void opphevGodkjenninger(Avtalerolle avtalerolle) {
