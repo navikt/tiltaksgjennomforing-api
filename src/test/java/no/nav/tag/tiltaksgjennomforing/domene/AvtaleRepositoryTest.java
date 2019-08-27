@@ -87,7 +87,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void avtale_godkjent_pa_vegne_av_skal_lagres_med_pa_vegne_av_grunn() {
         Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
-
+        System.out.println(avtale.getGodkjentAvVeileder());
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
         godkjentPaVegneGrunn.setIkkeBankId(true);
         Veileder veileder = TestData.enVeileder(avtale);
