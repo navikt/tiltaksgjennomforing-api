@@ -140,7 +140,7 @@ public class Avtale extends AbstractAggregateRoot {
 
     private static void sjekkMaalOgOppgaverLengde(List<Maal> maal, List<Oppgave> oppgaver) {
             maal.forEach(etMaal -> {
-                    sjekkAtTekstIkkeOverskrider1000Tegn(etMaal.getBeskrivelse(), "Maks lengde for mål er 1000 tegn");
+                sjekkAtTekstIkkeOverskrider1000Tegn(etMaal.getBeskrivelse(), "Maks lengde for mål er 1000 tegn");
             });
             oppgaver.forEach(enOppgave -> {
                 sjekkAtTekstIkkeOverskrider1000Tegn(enOppgave.getBeskrivelse(), "Maks lengde for oppgavebeskrivelse er 1000 tegn");
