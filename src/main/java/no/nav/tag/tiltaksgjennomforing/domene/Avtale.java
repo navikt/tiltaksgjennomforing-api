@@ -132,13 +132,13 @@ public class Avtale extends AbstractAggregateRoot {
         }
     }
 
-    private void sjekkAtTekstIkkeOverskrider1000Tegn(String tekst, String feilmelding) {
+    private static void sjekkAtTekstIkkeOverskrider1000Tegn(String tekst, String feilmelding) {
         if ((tekst != null) && tekst.length() > 1000) {
             throw new TiltaksgjennomforingException(feilmelding);
         }
     }
 
-    private void sjekkMaalOgOppgaverLengde(List<Maal> maal, List<Oppgave> oppgaver) {
+    private static void sjekkMaalOgOppgaverLengde(List<Maal> maal, List<Oppgave> oppgaver) {
             maal.forEach(etMaal -> {
                     sjekkAtTekstIkkeOverskrider1000Tegn(etMaal.getBeskrivelse(), "Maks lengde for mål er 1000 tegn");
             });
