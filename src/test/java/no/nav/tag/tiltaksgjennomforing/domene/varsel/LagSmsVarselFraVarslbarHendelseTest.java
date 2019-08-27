@@ -36,7 +36,7 @@ public class LagSmsVarselFraVarslbarHendelseTest {
     @Test
     public void nyHendelse__skal_opprette_riktige_sms_varsler_GODKJENT_AV_DELTAKER() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelseType.GODKJENT_AV_DELTAKER);
+        List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelse.nyHendelse(avtale, VarslbarHendelseType.GODKJENT_AV_DELTAKER));
         assertThat(smsVarsler).extracting("telefonnummer", "identifikator", "meldingstekst")
                 .contains(veileder(avtale))
                 .doesNotContain(deltaker(avtale), arbeidsgiver(avtale));
@@ -45,7 +45,7 @@ public class LagSmsVarselFraVarslbarHendelseTest {
     @Test
     public void nyHendelse__skal_opprette_riktige_sms_varsler_GODKJENT_AV_ARBEIDSGIVER() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelseType.GODKJENT_AV_ARBEIDSGIVER);
+        List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelse.nyHendelse(avtale, VarslbarHendelseType.GODKJENT_AV_ARBEIDSGIVER));
         assertThat(smsVarsler).extracting("telefonnummer", "identifikator", "meldingstekst")
                 .contains(veileder(avtale))
                 .doesNotContain(deltaker(avtale), arbeidsgiver(avtale));
@@ -54,7 +54,7 @@ public class LagSmsVarselFraVarslbarHendelseTest {
     @Test
     public void nyHendelse__skal_opprette_riktige_sms_varsler_GODKJENT_AV_VEILEDER() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelseType.GODKJENT_AV_VEILEDER);
+        List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelse.nyHendelse(avtale, VarslbarHendelseType.GODKJENT_AV_VEILEDER));
         assertThat(smsVarsler).extracting("telefonnummer", "identifikator", "meldingstekst")
                 .contains(deltaker(avtale), arbeidsgiver(avtale))
                 .doesNotContain(veileder(avtale));
@@ -64,7 +64,7 @@ public class LagSmsVarselFraVarslbarHendelseTest {
     public void nyHendelse__skal_opprette_riktige_sms_varsler_GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER_deltaker_har_godkjent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
-        List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER);
+        List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelse.nyHendelse(avtale, VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER));
         assertThat(smsVarsler).extracting("telefonnummer", "identifikator", "meldingstekst")
                 .contains(deltaker(avtale), veileder(avtale))
                 .doesNotContain(arbeidsgiver(avtale));
@@ -74,7 +74,7 @@ public class LagSmsVarselFraVarslbarHendelseTest {
     public void nyHendelse__skal_opprette_riktige_sms_varsler_GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER_deltaker_har_ikke_godkjent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setGodkjentAvDeltaker(null);
-        List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelseType.GODKJENT_AV_DELTAKER);
+        List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelse.nyHendelse(avtale, VarslbarHendelseType.GODKJENT_AV_DELTAKER));
         assertThat(smsVarsler).extracting("telefonnummer", "identifikator", "meldingstekst")
                 .contains(veileder(avtale))
                 .doesNotContain(deltaker(avtale), arbeidsgiver(avtale));
@@ -85,7 +85,7 @@ public class LagSmsVarselFraVarslbarHendelseTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
-        List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER);
+        List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelse.nyHendelse(avtale, VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER));
         assertThat(smsVarsler).extracting("telefonnummer", "identifikator", "meldingstekst")
                 .contains(deltaker(avtale), arbeidsgiver(avtale))
                 .doesNotContain(veileder(avtale));
@@ -96,7 +96,7 @@ public class LagSmsVarselFraVarslbarHendelseTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvArbeidsgiver(null);
-        List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER);
+        List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelse.nyHendelse(avtale, VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER));
         assertThat(smsVarsler).extracting("telefonnummer", "identifikator", "meldingstekst")
                 .contains(deltaker(avtale))
                 .doesNotContain(arbeidsgiver(avtale), veileder(avtale));
@@ -107,7 +107,7 @@ public class LagSmsVarselFraVarslbarHendelseTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setGodkjentAvDeltaker(null);
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
-        List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER);
+        List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelse.nyHendelse(avtale, VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER));
         assertThat(smsVarsler).extracting("telefonnummer", "identifikator", "meldingstekst")
                 .contains(arbeidsgiver(avtale))
                 .doesNotContain(deltaker(avtale), veileder(avtale));
@@ -116,14 +116,14 @@ public class LagSmsVarselFraVarslbarHendelseTest {
     @Test
     public void nyHendelse__skal_ikke_opprette_sms_varsler_ENDRET() {
         Avtale avtale = TestData.enAvtale();
-        List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelseType.ENDRET);
+        List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelse.nyHendelse(avtale, VarslbarHendelseType.ENDRET));
         assertThat(smsVarsler).isEmpty();
     }
 
     @Test
     public void nyHendelse__skal_ikke_opprette_sms_varsler_OPPRETTET() {
         Avtale avtale = TestData.enAvtale();
-        List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelseType.OPPRETTET);
+        List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelse.nyHendelse(avtale, VarslbarHendelseType.OPPRETTET));
         assertThat(smsVarsler).isEmpty();
     }
 }

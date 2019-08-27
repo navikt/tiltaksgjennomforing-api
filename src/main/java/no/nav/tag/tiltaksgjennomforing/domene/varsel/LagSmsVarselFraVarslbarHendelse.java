@@ -16,9 +16,9 @@ import java.util.List;
 public class LagSmsVarselFraVarslbarHendelse {
     private final SmsVarselRepository smsVarselRepository;
 
-    static List<SmsVarsel> lagSmsVarsler(Avtale avtale, VarslbarHendelseType hendelseType) {
-        SmsVarselFactory factory = new SmsVarselFactory(avtale);
-        switch (hendelseType) {
+    static List<SmsVarsel> lagSmsVarsler(Avtale avtale, VarslbarHendelse hendelse) {
+        SmsVarselFactory factory = new SmsVarselFactory(avtale, hendelse);
+        switch (hendelse.getVarslbarHendelseType()) {
             case OPPRETTET:
                 break;
             case GODKJENT_AV_DELTAKER:
@@ -51,7 +51,7 @@ public class LagSmsVarselFraVarslbarHendelse {
     }
 
     @EventListener
-    public void varslbarHendelseOppstaatt(VarslbarHendelseOppstaatt event) {
-        smsVarselRepository.saveAll(lagSmsVarsler(event.getAvtale(), event.getVarslbarHendelse().getVarslbarHendelseType()));
+    public void lagreSmsVarsler(VarslbarHendelseOppstaatt event) {
+        smsVarselRepository.saveAll(lagSmsVarsler(event.getAvtale(), event.getVarslbarHendelse()));
     }
 }

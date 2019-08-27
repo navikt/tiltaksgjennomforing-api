@@ -12,14 +12,14 @@ public class BjelleVarselFactory {
     }
 
     public BjelleVarsel deltaker() {
-        return BjelleVarsel.nyttVarsel(avtale.getDeltakerFnr(), hendelse.getVarslbarHendelseType(), avtale.getId());
+        return BjelleVarsel.nyttVarsel(avtale.getDeltakerFnr(), hendelse);
     }
 
     public BjelleVarsel arbeidsgiver() {
-        return BjelleVarsel.nyttVarsel(avtale.getBedriftNr(), hendelse.getVarslbarHendelseType(), avtale.getId());
+        return BjelleVarsel.nyttVarsel(avtale.getBedriftNr(), hendelse);
     }
 
     public BjelleVarsel veileder() {
-        return BjelleVarsel.nyttVarsel(avtale.getVeilederNavIdent(), hendelse.getVarslbarHendelseType(), avtale.getId());
+        return BjelleVarsel.nyttVarsel(avtale.getVeilederNavIdent(), hendelse);
     }
 }

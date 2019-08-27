@@ -21,15 +21,18 @@ public class SmsVarsel extends AbstractAggregateRoot {
     private String telefonnummer;
     private Identifikator identifikator;
     private String meldingstekst;
+    private UUID varslbarHendelse;
 
     public static SmsVarsel nyttVarsel(String telefonnummer,
                                        Identifikator identifikator,
-                                       String meldingstekst) {
+                                       String meldingstekst,
+                                       UUID varslbarHendelseId) {
         SmsVarsel varsel = new SmsVarsel();
         varsel.status = SmsVarselStatus.USENDT;
         varsel.telefonnummer = telefonnummer;
         varsel.identifikator = identifikator;
         varsel.meldingstekst = meldingstekst;
+        varsel.varslbarHendelse = varslbarHendelseId;
         varsel.registerEvent(new SmsVarselOpprettet(varsel));
         return varsel;
     }

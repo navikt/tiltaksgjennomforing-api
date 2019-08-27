@@ -55,7 +55,7 @@ public class SmsVarselProducerTest {
 
     @Test
     public void smsVarselOpprettet__skal_sendes_på_kafka_topic_med_riktige_felter() throws JSONException {
-        transactionTemplate.execute(status -> repository.save(SmsVarsel.nyttVarsel("tlf", new Identifikator("id"), "melding")));
+        transactionTemplate.execute(status -> repository.save(SmsVarsel.nyttVarsel("tlf", new Identifikator("id"), "melding", null)));
 
         ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.SMS_VARSEL);
         JSONObject json = new JSONObject(record.value());

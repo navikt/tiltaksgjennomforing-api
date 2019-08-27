@@ -51,7 +51,7 @@ public class LagBjelleVarselFraVarslbarHendelse {
     }
 
     @EventListener
-    public void varslbarHendelseOppstaatt(VarslbarHendelseOppstaatt event) {
+    public void lagreBjelleVarsler(VarslbarHendelseOppstaatt event) {
         bjelleVarselRepository.saveAll(lagBjelleVarsler(event.getAvtale(), event.getVarslbarHendelse()));
     }
 }

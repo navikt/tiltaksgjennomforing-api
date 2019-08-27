@@ -14,11 +14,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = {"spring.datasource.url=jdbc:h2:mem:smsVarselRepositoryTest"})
+@SpringBootTest
 @ActiveProfiles("dev")
-public class SmsVarselRepositoryTest {
+public class BjelleVarselRepositoryTest {
     @Autowired
-    private SmsVarselRepository repository;
+    private BjelleVarselRepository bjelleVarselRepository;
     @Autowired
     private AvtaleRepository avtaleRepository;
     private Avtale avtale;
@@ -31,19 +31,8 @@ public class SmsVarselRepositoryTest {
 
     @Test
     public void save__lagrer_riktig() {
-        SmsVarsel smsVarsel = TestData.etSmsVarsel(avtale);
-        SmsVarsel lagretSmsVarsel = repository.save(smsVarsel);
-        assertThat(lagretSmsVarsel).isEqualToIgnoringNullFields(smsVarsel);
-    }
-
-    @Test
-    public void antallUsendteSmsVarsler__teller_riktig() {
-        repository.deleteAll();
-        assertThat(repository.antallUsendte()).isEqualTo(0);
-        Avtale avtale = TestData.enAvtale();
-        avtale.settIdOgOpprettetTidspunkt();
-        SmsVarsel smsVarsel = TestData.etSmsVarsel(avtale);
-        repository.save(smsVarsel);
-        assertThat(repository.antallUsendte()).isEqualTo(1);
+        BjelleVarsel bjelleVarsel = TestData.etBjelleVarsel(avtale);
+        BjelleVarsel lagretBjelleVarsel = bjelleVarselRepository.save(bjelleVarsel);
+        assertThat(lagretBjelleVarsel).isEqualToIgnoringNullFields(bjelleVarsel);
     }
 }
