@@ -33,6 +33,6 @@ public class BjelleVarselService {
 
     private Stream<BjelleVarsel> bjelleVarslerForInnloggetBruker(InnloggetBruker innloggetBruker) {
         return bjelleVarselRepository.findAll().stream()
-                .filter(bjelleVarsel -> bjelleVarsel.getIdentifikator().equals(innloggetBruker.getIdentifikator()));
+                .filter(bjelleVarsel -> innloggetBruker.identifikatorer().contains(bjelleVarsel.getIdentifikator()));
     }
 }
