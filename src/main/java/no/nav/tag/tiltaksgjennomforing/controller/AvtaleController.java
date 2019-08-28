@@ -10,6 +10,8 @@ import no.nav.tag.tiltaksgjennomforing.domene.exceptions.RessursFinnesIkkeExcept
 import no.nav.tag.tiltaksgjennomforing.integrasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.ereg.EregService;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.veilarbabac.TilgangskontrollService;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +35,7 @@ public class AvtaleController {
     private final InnloggingService innloggingService;
     private final EregService eregService;
     private final TilgangUnderPilotering tilgangUnderPilotering;
+    private final TilgangskontrollService tilgangskontrollService; 
 
     @GetMapping("/{avtaleId}")
     public ResponseEntity<Avtale> hent(@PathVariable("avtaleId") UUID id) {
@@ -59,6 +62,8 @@ public class AvtaleController {
     public ResponseEntity opprettAvtale(@RequestBody OpprettAvtale opprettAvtale) {
         InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
         tilgangUnderPilotering.sjekkTilgang(innloggetNavAnsatt.getIdentifikator());
+        tilgangskontrollService.sjekkSkrivetilgangTilKandidat(opprettAvtale.getDeltakerFnr());
+
         Avtale avtale = innloggetNavAnsatt.opprettAvtale(opprettAvtale);
         avtale.setBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
