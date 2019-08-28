@@ -132,21 +132,9 @@ public class Avtale extends AbstractAggregateRoot {
         }
     }
 
-    private static void sjekkAtTekstIkkeOverskrider1000Tegn(String tekst, String feilmelding) {
-        if ((tekst != null) && tekst.length() > 1000) {
-            throw new TiltaksgjennomforingException(feilmelding);
-        }
-    }
-
     private static void sjekkMaalOgOppgaverLengde(List<Maal> maal, List<Oppgave> oppgaver) {
-            maal.forEach(etMaal -> {
-                sjekkAtTekstIkkeOverskrider1000Tegn(etMaal.getBeskrivelse(), "Maks lengde for mål er 1000 tegn");
-            });
-            oppgaver.forEach(enOppgave -> {
-                sjekkAtTekstIkkeOverskrider1000Tegn(enOppgave.getBeskrivelse(), "Maks lengde for oppgavebeskrivelse er 1000 tegn");
-                sjekkAtTekstIkkeOverskrider1000Tegn(enOppgave.getOpplaering(), "Maks lengde for opplæring er 1000 tegn");
-            });
-
+            maal.forEach(Maal::sjekkMaalLengde);
+            oppgaver.forEach(Oppgave::sjekkOppgaveLengde);
     }
 
     void opphevGodkjenninger(Avtalerolle avtalerolle) {
