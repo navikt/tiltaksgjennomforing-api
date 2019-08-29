@@ -7,6 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.domene.events.*;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.domene.varsel.GamleVerdier;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.domain.AbstractAggregateRoot;
@@ -132,13 +133,16 @@ public class Avtale extends AbstractAggregateRoot {
     }
 
     void opphevGodkjenningerSomArbeidsgiver() {
+        boolean varGodkjentAvDeltaker = erGodkjentAvDeltaker();
         opphevGodkjenninger();
-        registerEvent(new GodkjenningerOpphevetAvArbeidsgiver(this));
+        registerEvent(new GodkjenningerOpphevetAvArbeidsgiver(this, new GamleVerdier(varGodkjentAvDeltaker, false)));
     }
 
     void opphevGodkjenningerSomVeileder() {
+        boolean varGodkjentAvDeltaker = erGodkjentAvDeltaker();
+        boolean varGodkjentAvArbeidsgiver = erGodkjentAvArbeidsgiver();
         opphevGodkjenninger();
-        registerEvent(new GodkjenningerOpphevetAvVeileder(this));
+        registerEvent(new GodkjenningerOpphevetAvVeileder(this, new GamleVerdier(varGodkjentAvDeltaker, varGodkjentAvArbeidsgiver)));
     }
 
     private void opphevGodkjenninger() {

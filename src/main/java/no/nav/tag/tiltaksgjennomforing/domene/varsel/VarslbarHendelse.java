@@ -20,10 +20,14 @@ public class VarslbarHendelse extends AbstractAggregateRoot {
     private VarslbarHendelseType varslbarHendelseType;
 
     public static VarslbarHendelse nyHendelse(Avtale avtale, VarslbarHendelseType varslbarHendelseType) {
+        return nyHendelse(avtale, varslbarHendelseType, new GamleVerdier());
+    }
+
+    public static VarslbarHendelse nyHendelse(Avtale avtale, VarslbarHendelseType varslbarHendelseType, GamleVerdier gamleVerdier) {
         VarslbarHendelse varslbarHendelse = new VarslbarHendelse();
         varslbarHendelse.avtaleId = avtale.getId();
         varslbarHendelse.varslbarHendelseType = varslbarHendelseType;
-        varslbarHendelse.registerEvent(new VarslbarHendelseOppstaatt(avtale, varslbarHendelse));
+        varslbarHendelse.registerEvent(new VarslbarHendelseOppstaatt(avtale, varslbarHendelse, gamleVerdier));
         return varslbarHendelse;
     }
 
@@ -35,4 +39,5 @@ public class VarslbarHendelse extends AbstractAggregateRoot {
             tidspunkt = LocalDateTime.now();
         }
     }
+
 }

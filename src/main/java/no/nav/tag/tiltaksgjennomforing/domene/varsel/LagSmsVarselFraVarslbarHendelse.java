@@ -16,7 +16,7 @@ import java.util.List;
 public class LagSmsVarselFraVarslbarHendelse {
     private final SmsVarselRepository smsVarselRepository;
 
-    static List<SmsVarsel> lagSmsVarsler(Avtale avtale, VarslbarHendelse hendelse) {
+    static List<SmsVarsel> lagSmsVarsler(Avtale avtale, VarslbarHendelse hendelse, GamleVerdier gamleVerdier) {
         SmsVarselFactory factory = new SmsVarselFactory(avtale, hendelse);
         switch (hendelse.getVarslbarHendelseType()) {
             case OPPRETTET:
@@ -30,7 +30,7 @@ public class LagSmsVarselFraVarslbarHendelse {
                 return Arrays.asList(factory.arbeidsgiver());
             case GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER: {
                 var varslinger = new ArrayList<SmsVarsel>();
-                if (avtale.erGodkjentAvDeltaker()) {
+                if (gamleVerdier.isGodkjentAvDeltaker()) {
                     varslinger.add(factory.deltaker());
                 }
                 varslinger.add(factory.veileder());
@@ -38,10 +38,10 @@ public class LagSmsVarselFraVarslbarHendelse {
             }
             case GODKJENNINGER_OPPHEVET_AV_VEILEDER: {
                 var varslinger = new ArrayList<SmsVarsel>();
-                if (avtale.erGodkjentAvDeltaker()) {
+                if (gamleVerdier.isGodkjentAvDeltaker()) {
                     varslinger.add(factory.deltaker());
                 }
-                if (avtale.erGodkjentAvArbeidsgiver()) {
+                if (gamleVerdier.isGodkjentAvArbeidsgiver()) {
                     varslinger.add(factory.arbeidsgiver());
                 }
                 return varslinger;
@@ -52,6 +52,6 @@ public class LagSmsVarselFraVarslbarHendelse {
 
     @EventListener
     public void lagreSmsVarsler(VarslbarHendelseOppstaatt event) {
-        smsVarselRepository.saveAll(lagSmsVarsler(event.getAvtale(), event.getVarslbarHendelse()));
+        smsVarselRepository.saveAll(lagSmsVarsler(event.getAvtale(), event.getVarslbarHendelse(), event.getGamleVerdier()));
     }
 }

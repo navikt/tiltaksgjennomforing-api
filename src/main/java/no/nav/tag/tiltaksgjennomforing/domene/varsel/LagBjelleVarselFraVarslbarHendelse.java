@@ -16,7 +16,7 @@ import java.util.List;
 public class LagBjelleVarselFraVarslbarHendelse {
     private final BjelleVarselRepository bjelleVarselRepository;
 
-    static List<BjelleVarsel> lagBjelleVarsler(Avtale avtale, VarslbarHendelse varslbarHendelse) {
+    static List<BjelleVarsel> lagBjelleVarsler(Avtale avtale, VarslbarHendelse varslbarHendelse, GamleVerdier gamleVerdier) {
         var factory = new BjelleVarselFactory(avtale, varslbarHendelse);
         switch (varslbarHendelse.getVarslbarHendelseType()) {
             case OPPRETTET:
@@ -30,7 +30,7 @@ public class LagBjelleVarselFraVarslbarHendelse {
                 return Arrays.asList(factory.arbeidsgiver());
             case GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER: {
                 var varslinger = new ArrayList<BjelleVarsel>();
-                if (avtale.erGodkjentAvDeltaker()) {
+                if (gamleVerdier.isGodkjentAvDeltaker()) {
                     varslinger.add(factory.deltaker());
                 }
                 varslinger.add(factory.veileder());
@@ -38,10 +38,10 @@ public class LagBjelleVarselFraVarslbarHendelse {
             }
             case GODKJENNINGER_OPPHEVET_AV_VEILEDER: {
                 var varslinger = new ArrayList<BjelleVarsel>();
-                if (avtale.erGodkjentAvDeltaker()) {
+                if (gamleVerdier.isGodkjentAvDeltaker()) {
                     varslinger.add(factory.deltaker());
                 }
-                if (avtale.erGodkjentAvArbeidsgiver()) {
+                if (gamleVerdier.isGodkjentAvArbeidsgiver()) {
                     varslinger.add(factory.arbeidsgiver());
                 }
                 return varslinger;
@@ -52,6 +52,6 @@ public class LagBjelleVarselFraVarslbarHendelse {
 
     @EventListener
     public void lagreBjelleVarsler(VarslbarHendelseOppstaatt event) {
-        bjelleVarselRepository.saveAll(lagBjelleVarsler(event.getAvtale(), event.getVarslbarHendelse()));
+        bjelleVarselRepository.saveAll(lagBjelleVarsler(event.getAvtale(), event.getVarslbarHendelse(), event.getGamleVerdier()));
     }
 }

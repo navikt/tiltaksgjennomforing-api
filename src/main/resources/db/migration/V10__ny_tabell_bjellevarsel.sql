@@ -5,5 +5,6 @@ create table bjelle_varsel
     lest              boolean,
     identifikator     varchar(11),
     varslingstekst    varchar,
-    avtale_id         uuid references avtale (id)
+    avtale_id         uuid references avtale (id),
+    tidspunkt         timestamp without time zone not null default now()
 );
