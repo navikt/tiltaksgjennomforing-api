@@ -9,14 +9,13 @@ import no.nav.tag.tiltaksgjennomforing.domene.varsel.BjelleVarselService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.InnloggingService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @Protected
 @RestController
-@RequestMapping("/varsel")
+@RequestMapping("/varsler")
 @Timed
 @RequiredArgsConstructor
 public class BjelleVarselController {
@@ -24,22 +23,18 @@ public class BjelleVarselController {
     private final BjelleVarselService bjelleVarselService;
 
     @GetMapping
-    public Iterable<BjelleVarsel> hentAlleVarsler() {
+    public Iterable<BjelleVarsel> hentVarsler(
+            @RequestParam(value = "avtaleId", required = false) UUID avtaleId,
+            @RequestParam(value = "lest", required = false) Boolean lest) {
         InnloggetBruker bruker = innloggingService.hentInnloggetBruker();
-        return bjelleVarselService.mineBjelleVarsler(bruker);
+        return bjelleVarselService.varslerForInnloggetBruker(bruker, avtaleId, lest);
     }
 
-    @GetMapping("uleste")
-    public Iterable<BjelleVarsel> hentAlleUlesteVarsler() {
-        InnloggetBruker bruker = innloggingService.hentInnloggetBruker();
-        return bjelleVarselService.mineUlesteBjelleVarsler(bruker);
-    }
-
-    @PostMapping("sett-til-lest")
+    @PostMapping("{varselId}/sett-til-lest")
     @Transactional
-    public ResponseEntity settTilLest() {
+    public ResponseEntity settTilLest(@PathVariable("varselId") UUID varselId) {
         InnloggetBruker bruker = innloggingService.hentInnloggetBruker();
-        bjelleVarselService.settTilLest(bruker);
+        bjelleVarselService.settTilLest(bruker, varselId);
         return ResponseEntity.ok().build();
     }
 }

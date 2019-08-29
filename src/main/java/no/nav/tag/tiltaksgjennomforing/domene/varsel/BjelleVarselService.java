@@ -5,7 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -14,21 +14,24 @@ import java.util.stream.Stream;
 public class BjelleVarselService {
     private final BjelleVarselRepository bjelleVarselRepository;
 
-    public List<BjelleVarsel> mineBjelleVarsler(InnloggetBruker innloggetBruker) {
-        return bjelleVarslerForInnloggetBruker(innloggetBruker)
-                .collect(Collectors.toList());
+    public List<BjelleVarsel> varslerForInnloggetBruker(InnloggetBruker innloggetBruker, UUID avtaleId, Boolean lest) {
+        Stream<BjelleVarsel> stream = bjelleVarslerForInnloggetBruker(innloggetBruker);
+        if (avtaleId != null) {
+            stream = stream.filter(b -> b.getAvtaleId().equals(avtaleId));
+        }
+        if (lest != null) {
+            stream = stream.filter(b -> b.isLest() == lest);
+        }
+        return stream.collect(Collectors.toList());
     }
 
-    public List<BjelleVarsel> mineUlesteBjelleVarsler(InnloggetBruker bruker) {
-        return bjelleVarslerForInnloggetBruker(bruker)
-                .filter(Predicate.not(BjelleVarsel::isLest))
-                .collect(Collectors.toList());
-    }
-
-    public void settTilLest(InnloggetBruker innloggetBruker) {
-        List<BjelleVarsel> bjelleVarsler = mineUlesteBjelleVarsler(innloggetBruker);
-        bjelleVarsler.forEach(BjelleVarsel::settTilLest);
-        bjelleVarselRepository.saveAll(bjelleVarsler);
+    public void settTilLest(InnloggetBruker innloggetBruker, UUID varselId) {
+        bjelleVarslerForInnloggetBruker(innloggetBruker)
+                .filter(b -> b.getId().equals(varselId))
+                .forEach(b -> {
+                    b.settTilLest();
+                    bjelleVarselRepository.save(b);
+                });
     }
 
     private Stream<BjelleVarsel> bjelleVarslerForInnloggetBruker(InnloggetBruker innloggetBruker) {
