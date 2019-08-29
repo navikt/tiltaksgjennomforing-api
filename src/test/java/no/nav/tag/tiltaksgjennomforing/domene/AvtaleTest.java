@@ -127,6 +127,15 @@ public class AvtaleTest {
         endreAvtale.setOppgaver(List.of(enOppgave));
         avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
     }
+    @Test
+    public void endreAvtale__maks_lengde_skal_fungere() {
+        Avtale avtale = TestData.enAvtale();
+        Oppgave enOppgave = TestData.enOppgave();
+        enOppgave.setBeskrivelse("Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er");
+        EndreAvtale endreAvtale = new EndreAvtale();
+        endreAvtale.setOppgaver(List.of(enOppgave));
+        avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
+    }
 
     @Test
     public void endreAvtaleSkalIkkeEndreGodkjenninger() {

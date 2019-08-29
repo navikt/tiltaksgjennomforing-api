@@ -34,7 +34,7 @@ public class Utils {
                 .toUri();
     }
 
-    public static void sjekkAtTekstIkkeOverskrider1000Tegn(String tekst, String feilmelding) {
+    static void sjekkAtTekstIkkeOverskrider1000Tegn(String tekst, String feilmelding) {
         if ((tekst != null) && tekst.length() > 1000) {
             throw new TiltaksgjennomforingException(feilmelding);
         }
