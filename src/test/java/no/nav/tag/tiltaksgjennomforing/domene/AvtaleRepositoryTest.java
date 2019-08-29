@@ -1,11 +1,11 @@
 package no.nav.tag.tiltaksgjennomforing.domene;
 
+import no.nav.tag.tiltaksgjennomforing.domene.events.GodkjenningerOpphevetAvVeileder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -157,6 +157,6 @@ public class AvtaleRepositoryTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         TestData.enVeileder(avtale).opphevGodkjenninger();
         avtaleRepository.save(avtale);
-        verify(metrikkRegistrering).godkjenningerOpphevetAvVeileder(any());
+        verify(metrikkRegistrering).godkjenningerOpphevet(any(GodkjenningerOpphevetAvVeileder.class));
     }
 }
