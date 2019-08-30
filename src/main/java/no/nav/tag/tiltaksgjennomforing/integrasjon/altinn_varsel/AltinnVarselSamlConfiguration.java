@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Profile;
 public class AltinnVarselSamlConfiguration {
     private final StsProperties stsProperties;
 
-    @Bean
+    @Bean("iNotificationAgencyExternalBasicSaml")
     @Primary
     public INotificationAgencyExternalBasic iNotificationAgencyExternalBasic(@Autowired INotificationAgencyExternalBasic port) {
         STSClientConfigurer configurer = new STSClientConfigurer(stsProperties.getUri(), stsProperties.getUsername(), stsProperties.getPassword());
