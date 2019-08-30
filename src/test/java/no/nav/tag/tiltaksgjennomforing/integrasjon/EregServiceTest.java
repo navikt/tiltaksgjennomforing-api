@@ -24,8 +24,8 @@ public class EregServiceTest {
 
     @Test
     public void hentBedriftNavn__returnerer_navn_og_bedriftnr() {
-        Organisasjon organisasjon = eregService.hentVirksomhet(new BedriftNr("910712330"));
-        assertThat(organisasjon.getBedriftNr()).isEqualTo(new BedriftNr("910712330"));
+        Organisasjon organisasjon = eregService.hentVirksomhet(new BedriftNr("999999999"));
+        assertThat(organisasjon.getBedriftNr()).isEqualTo(new BedriftNr("999999999"));
         assertThat(organisasjon.getBedriftNavn()).isEqualTo("Saltrød og Høneby");
     }
 

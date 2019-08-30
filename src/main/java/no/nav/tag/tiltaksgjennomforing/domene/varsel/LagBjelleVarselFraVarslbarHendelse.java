@@ -20,7 +20,7 @@ public class LagBjelleVarselFraVarslbarHendelse {
         var factory = new BjelleVarselFactory(avtale, varslbarHendelse);
         switch (varslbarHendelse.getVarslbarHendelseType()) {
             case OPPRETTET:
-                break;
+                return Arrays.asList(factory.deltaker(), factory.arbeidsgiver());
             case GODKJENT_AV_DELTAKER:
             case GODKJENT_AV_ARBEIDSGIVER:
                 return Arrays.asList(factory.veileder());

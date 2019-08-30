@@ -19,7 +19,7 @@
       },
       "response": {
         "status": 200,
-        "body": "[{\"Name\":\"Saltrød og Høneby\",\"Type\":\"Business\",\"OrganizationNumber\":\"910712330\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}]",
+        "body": "[{\"Name\":\"Saltrød og Høneby\",\"Type\":\"Business\",\"OrganizationNumber\":\"999999999\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}]",
         "headers": {
           "Content-Type": "application/json"
         }
