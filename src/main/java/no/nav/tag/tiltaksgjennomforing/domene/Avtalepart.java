@@ -30,6 +30,7 @@ public abstract class Avtalepart<T extends Identifikator> {
         godkjennForAvtalepart();
     }
 
+
     public void godkjennPaVegneAvDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn, Integer versjon) {
         avtale.sjekkVersjon(versjon);
         godkjennForVeilederOgDeltaker(paVegneAvGrunn);

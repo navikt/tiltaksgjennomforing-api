@@ -8,7 +8,6 @@ import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.InnloggingService;
-import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.ereg.EregService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,6 +117,18 @@ public class AvtaleController {
         innloggetBruker.sjekkTilgang(avtale);
         Avtalepart avtalepart = innloggetBruker.avtalepart(avtale);
         avtalepart.godkjennPaVegneAvDeltaker(paVegneAvGrunn, versjon);
+        avtaleRepository.save(avtale);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(value = "/{avtaleId}/avbryt")
+    public ResponseEntity avbryt(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader("If-Match") Integer versjon) {
+        InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        //kan erstattes når det blir tilgang til Navenhet tilgangsstyring
+        innloggetNavAnsatt.sjekkTilgang(avtale);
+        Veileder veileder = innloggetNavAnsatt.avtalepart(avtale);
+        veileder.avbrytAvtale(versjon);
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();
     }

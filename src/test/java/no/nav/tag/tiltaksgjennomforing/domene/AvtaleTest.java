@@ -224,4 +224,36 @@ public class AvtaleTest {
         avtale.setDeltakerTlf(null);
         assertThat(avtale.status()).isEqualTo("Klar for oppstart");
     }
+
+    @Test
+    public void status__avbrutt() {
+        Avtale avtale = TestData.enAvtale();
+        avtale.avbryt(TestData.enVeileder(avtale));
+        assertThat(avtale.status()).isEqualTo("Avbrutt");
+    }
+
+    @Test
+    public void tom_avtale_kan_avbrytes() {
+        Avtale tomAvtale = TestData.enAvtale();
+        assertThat(tomAvtale.kanAvbrytes()).isTrue();
+    }
+
+    @Test
+    public void fylt_avtale_kan_avbrytes() {
+        Avtale fyltAvtale = TestData.enAvtaleMedAltUtfylt();
+        assertThat(fyltAvtale.kanAvbrytes()).isTrue();
+    }
+
+    @Test
+    public void godkjent_av_veileder_avtale_kan_ikke_avbrytes() {
+        Avtale godkjentAvtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        assertThat(godkjentAvtale.kanAvbrytes()).isFalse();
+    }
+
+    @Test
+    public void allerede_avbrutt_avtale_kan_ikke_avbrytes() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setAvbrutt(true);
+        assertThat(avtale.kanAvbrytes()).isFalse();
+    }
 }
