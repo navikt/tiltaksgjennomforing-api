@@ -18,7 +18,6 @@ public class AltinnVarselSamlConfiguration {
     private final StsProperties stsProperties;
 
     @Bean
-    @Primary
     public INotificationAgencyExternalBasic iNotificationAgencyExternalBasic() {
         var port = new WsClient<INotificationAgencyExternalBasic>().createPort(varselProperties.getUri().toString(),
                 INotificationAgencyExternalBasic.class,
