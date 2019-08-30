@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.domene;
 
-import org.apache.tomcat.jni.Local;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
