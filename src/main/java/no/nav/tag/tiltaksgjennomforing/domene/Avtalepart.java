@@ -13,8 +13,6 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     abstract void godkjennForAvtalepart();
 
-
-
     abstract boolean kanEndreAvtale();
 
     void sjekkOmAvtaleKanGodkjennes() {

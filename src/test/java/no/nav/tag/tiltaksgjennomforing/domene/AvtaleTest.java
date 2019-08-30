@@ -226,6 +226,13 @@ public class AvtaleTest {
     }
 
     @Test
+    public void status__avbrutt() {
+        Avtale avtale = TestData.enAvtale();
+        avtale.avbryt(TestData.enVeileder(avtale));
+        assertThat(avtale.status()).isEqualTo("Avbrutt");
+    }
+
+    @Test
     public void tom_avtale_kan_avbrytes() {
         Avtale tomAvtale = TestData.enAvtale();
         assertThat(tomAvtale.kanAvbrytes()).isTrue();
@@ -245,10 +252,8 @@ public class AvtaleTest {
 
     @Test
     public void allerede_avbrutt_avtale_kan_ikke_avbrytes() {
-        Avtale fyltAvtale = TestData.enAvtaleMedAltUtfylt();
-        Avtale tomAvtale = TestData.enAvtale();
-        fyltAvtale.setAvbrutt(true);
-        tomAvtale.setAvbrutt(true);
-        assertThat((!fyltAvtale.kanAvbrytes()) && (!tomAvtale.kanAvbrytes())).isTrue();
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setAvbrutt(true);
+        assertThat(avtale.kanAvbrytes()).isFalse();
     }
 }

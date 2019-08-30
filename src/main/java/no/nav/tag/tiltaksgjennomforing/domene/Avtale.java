@@ -216,17 +216,14 @@ public class Avtale extends AbstractAggregateRoot {
     public boolean kanAvbrytes() {
         // Nå regner vi at veileder kan avbryte avtalen hvis veileder ikke har godkjent(kan også være at han kan
         // avbryte kun de avtalene som ikke er godkjente av deltaker og AG),
-        return (!erGodkjentAvVeileder()) && (!isAvbrutt());
+        return !erGodkjentAvVeileder() && !isAvbrutt();
     }
 
-    public void avbrytAvtale(Avtalepart avtalepart) {
+    public void avbryt(Veileder veileder) {
         if (this.kanAvbrytes()) {
-            if (avtalepart instanceof Veileder) {
-                this.setAvbrutt(true);
-                registerEvent( new AvbruttAvVeileder(this, ((Veileder)avtalepart).getIdentifikator()));
-            }
+            this.setAvbrutt(true);
+            registerEvent(new AvbruttAvVeileder(this, veileder.getIdentifikator()));
         }
-
     }
 
     private boolean heleAvtalenErFyltUt() {

@@ -17,8 +17,6 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         return true;
     }
 
-
-
     @Override
     boolean kanOppheveGodkjenninger() {
         return !avtale.erGodkjentAvVeileder();

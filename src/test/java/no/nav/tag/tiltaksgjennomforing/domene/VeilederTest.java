@@ -45,7 +45,7 @@ public class VeilederTest {
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.avbrytAvtaleAvVeileder(avtale.getVersjon());
+        veileder.avbrytAvtale(avtale.getVersjon());
         assertThat(avtale.isAvbrutt()).isFalse();
     }
 
@@ -55,7 +55,7 @@ public class VeilederTest {
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.avbrytAvtaleAvVeileder(avtale.getVersjon());
+        veileder.avbrytAvtale(avtale.getVersjon());
         assertThat(avtale.isAvbrutt()).isTrue();
     }
 }
