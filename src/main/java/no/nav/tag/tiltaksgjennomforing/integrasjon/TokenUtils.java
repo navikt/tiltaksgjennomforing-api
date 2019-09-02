@@ -18,6 +18,7 @@ public class TokenUtils {
     
     final static String ISSUER_ISSO = "isso";
     final static String ISSUER_SELVBETJENING = "selvbetjening";
+    final static String ISSUER_SYSTEM = "system";
 
     private final OIDCRequestContextHolder contextHolder;
 
@@ -46,6 +47,11 @@ public class TokenUtils {
         String navIdent = hentClaim(ISSUER_ISSO, "NAVident")
                 .orElseThrow(() -> new TilgangskontrollException("Innlogget bruker er ikke veileder."));
         return new InnloggetNavAnsatt(new NavIdent(navIdent));
+    }
+
+    public String hentInnloggetSystem() {
+        return hentClaim(ISSUER_SYSTEM, "sub")
+                .orElseThrow(() -> new TilgangskontrollException("Innlogget bruker er ikke systembruker."));
     }
 
     private Optional<String> hentClaim(String issuer, String claim) {

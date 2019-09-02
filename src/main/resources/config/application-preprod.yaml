@@ -4,7 +4,7 @@ spring:
     driverClassName: org.postgresql.Driver
 
 no.nav.security.oidc:
-  issuers: selvbetjening, isso
+  issuers: selvbetjening, isso, system
   issuer:
     selvbetjening:
       discoveryurl: https://login.microsoftonline.com/NAVtestB2C.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_idporten_ver1
@@ -12,6 +12,9 @@ no.nav.security.oidc:
     isso:
       discoveryurl: https://login.microsoftonline.com/NAVQ.onmicrosoft.com/.well-known/openid-configuration
       accepted_audience: 38e07d31-659d-4595-939a-f18dce3446c5
+    system:
+      discoveryurl: https://security-token-service.nais.preprod.local/rest/v1/sts/.well-known/openid-configuration
+      accepted_audience: ${tiltaksgjennomforing.audience.system}
 
 tiltaksgjennomforing:
   database:
@@ -28,3 +31,6 @@ tiltaksgjennomforing:
   axsys:
     axsys-uri: https://axsys.nais.preprod.local
     nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}
+  consumer:
+    system:
+      id: ${tiltaksgjennomforing.consumer.system}

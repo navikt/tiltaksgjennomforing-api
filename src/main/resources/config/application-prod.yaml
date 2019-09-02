@@ -28,3 +28,6 @@ tiltaksgjennomforing:
   axsys:
     axsys-uri: https://axsys.nais.adeo.no
     nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}
+  consumer:
+    system:
+      id: ${tiltaksgjennomforing.consumer.system}

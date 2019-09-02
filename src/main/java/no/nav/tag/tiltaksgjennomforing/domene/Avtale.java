@@ -46,6 +46,7 @@ public class Avtale extends AbstractAggregateRoot {
 
     private String oppfolging;
     private String tilrettelegging;
+    private String journalpostId;
 
     private LocalDate startDato;
     private Integer arbeidstreningLengde;

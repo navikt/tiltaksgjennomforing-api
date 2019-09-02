@@ -13,7 +13,7 @@ spring:
     banner-mode: "console"
 
 no.nav.security.oidc:
-  issuers: selvbetjening, isso
+  issuers: selvbetjening, isso, system
   issuer:
     selvbetjening:
       discoveryurl: http://metadata-selvbetjening
@@ -21,6 +21,9 @@ no.nav.security.oidc:
     isso:
       discoveryurl: http://metadata-isso
       accepted_audience: aud-isso
+    system:
+      discoveryurl: http://metadata-system
+      accepted_audience: aud-system
 
 tiltaksgjennomforing:
   altinn:
@@ -33,3 +36,6 @@ tiltaksgjennomforing:
     ereg-uri: http://localhost:8090
   axsys:
     axsys-uri: http://localhost:8090
+  consumer:
+    system:
+      id: ${tiltaksgjennomforing.consumer.system}

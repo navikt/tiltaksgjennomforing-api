@@ -64,6 +64,18 @@ public class TokenUtilsTest {
         tilgangskontroll.hentInnloggetBruker();
     }
 
+    @Test(expected = TilgangskontrollException.class)
+    public void avviser_selvbetjeningBruker_som_systemBruker(){
+        vaerInnloggetSelvbetjening(TestData.enSelvbetjeningBruker());
+        tilgangskontroll.hentInnloggetSystem();
+    }
+
+    @Test(expected = TilgangskontrollException.class)
+    public void avviser_navAnsatt_som_systemBruker(){
+        vaerInnloggetNavAnsatt(TestData.enNavAnsatt());
+        tilgangskontroll.hentInnloggetSystem();
+    }
+
     private void vaerUinnlogget() {
         OIDCValidationContext context = new OIDCValidationContext();
         when(contextHolder.getOIDCValidationContext()).thenReturn(context);
