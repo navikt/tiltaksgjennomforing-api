@@ -28,3 +28,7 @@ tiltaksgjennomforing:
   axsys:
     axsys-uri: https://axsys.nais.preprod.local
     nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}
+  sts:
+    sts-uri: https://security-token-service.nais.preprod.local/rest/v1
+  abac:
+    veilarbabac-uri: https://veilarbabac-q1.nais.preprod.local

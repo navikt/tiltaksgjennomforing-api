@@ -28,3 +28,7 @@ tiltaksgjennomforing:
   axsys:
     axsys-uri: https://axsys.nais.adeo.no
     nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}
+  sts:
+    sts-uri: https://security-token-service.nais.adeo.no/rest/v1
+  abac:
+    veilarbabac-uri: https://veilarbabac.nais.adeo.no
