@@ -18,6 +18,7 @@ public class Deltaker extends Avtalepart<Fnr> {
         return false;
     }
 
+
     @Override
     boolean kanOppheveGodkjenninger() {
         return false;

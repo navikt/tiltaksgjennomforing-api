@@ -124,4 +124,16 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping(value = "/{avtaleId}/avbryt")
+    public ResponseEntity avbryt(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader("If-Match") Integer versjon) {
+        InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        //kan erstattes når det blir tilgang til Navenhet tilgangsstyring
+        innloggetNavAnsatt.sjekkTilgang(avtale);
+        Veileder veileder = innloggetNavAnsatt.avtalepart(avtale);
+        veileder.avbrytAvtale(versjon);
+        avtaleRepository.save(avtale);
+        return ResponseEntity.ok().build();
+    }
 }
