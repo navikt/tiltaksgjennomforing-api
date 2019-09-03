@@ -11,13 +11,13 @@ spec:
   port: 8080
   liveness:
     path: /tiltaksgjennomforing-api/internal/healthcheck
-    initialDelay: 80
+    initialDelay: 50
     timeout: 1
     periodSeconds: 10
     failureThreshold: 3
   readiness:
     path: /tiltaksgjennomforing-api/internal/healthcheck
-    initialDelay: 80
+    initialDelay: 50
     timeout: 1
   resources:
     limits:
@@ -26,10 +26,6 @@ spec:
     requests:
       cpu: 400m
       memory: 400Mi
-  replicas:
-    min: 1
-    max: 2
-    cpuThresholdPercentage: 90
   ingresses:
     - {{ingress}}
   vault:
