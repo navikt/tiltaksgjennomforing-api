@@ -5,16 +5,19 @@ import org.springframework.stereotype.Service;
 import no.nav.tag.tiltaksgjennomforing.domene.Fnr;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.TokenUtils;
 
 @Service
 public class TilgangskontrollService {
     private final TokenUtils tokenUtils;
-    private final VeilarbabacClient  veilarbabacClient;
+    private final VeilarbabacClient veilarbabacClient;
+    private final FeatureToggleService featureToggleService;
 
-    public TilgangskontrollService(TokenUtils tokenUtils, VeilarbabacClient veilarbabacClient) {
+    public TilgangskontrollService(TokenUtils tokenUtils, VeilarbabacClient veilarbabacClient, FeatureToggleService featureToggleService) {
         this.tokenUtils = tokenUtils;
         this.veilarbabacClient = veilarbabacClient;
+        this.featureToggleService = featureToggleService;
     }
 
     public void sjekkLesetilgangTilKandidat(Fnr fnr) {
@@ -32,14 +35,14 @@ public class TilgangskontrollService {
     }
 
     private boolean hentTilgang(Fnr fnr, TilgangskontrollAction action) {
-        return veilarbabacClient.sjekkTilgang(
+        return !featureToggleService.isEnabled("tag.tiltak.ny.veiledertilgang") || veilarbabacClient.sjekkTilgang(
                 hentInnloggetVeileder(),
                 fnr.asString(),
                 action
         );
     }
 
-    public InnloggetNavAnsatt hentInnloggetVeileder() {
+    private InnloggetNavAnsatt hentInnloggetVeileder() {
         return tokenUtils.hentInnloggetNavAnsatt();
     }
 }
