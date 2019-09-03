@@ -12,16 +12,20 @@ spec:
   liveness:
     path: /tiltaksgjennomforing-api/internal/healthcheck
     initialDelay: 80
+    timeout: 1
+    periodSeconds: 10
+    failureThreshold: 3
   readiness:
     path: /tiltaksgjennomforing-api/internal/healthcheck
     initialDelay: 80
+    timeout: 1
   resources:
     limits:
-      cpu: 500m
-      memory: 256Mi
+      cpu: 1000m
+      memory: 800Mi
     requests:
-      cpu: 50m
-      memory: 128Mi
+      cpu: 400m
+      memory: 400Mi
   replicas:
     min: 1
     max: 2
