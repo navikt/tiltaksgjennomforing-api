@@ -1,4 +1,4 @@
 {
   "ingress": "https://arbeidsgiver.nais.adeo.no/tiltaksgjennomforing-api/",
-  "spring-profil": "prod"
+  "spring-profil": "prod,kafka"
 }
