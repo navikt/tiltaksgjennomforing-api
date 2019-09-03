@@ -12,13 +12,25 @@ public abstract class InnloggetBruker<T extends Identifikator> {
 
     public abstract Avtalepart avtalepart(Avtale avtale);
 
-    public boolean harTilgang(Avtale avtale) {
+    public boolean harLeseTilgang(Avtale avtale) {
         return avtalepart(avtale) != null;
     }
 
-    public void sjekkTilgang(Avtale avtale) {
-        if (!harTilgang(avtale)) {
+    public void sjekkLeseTilgang(Avtale avtale) {
+        if (!harLeseTilgang(avtale)) {
             throw new TilgangskontrollException("Har ikke tilgang til avtalen.");
         }
     }
+
+    public boolean harSkriveTilgang(Avtale avtale) {
+        return avtalepart(avtale) != null;
+    }
+    
+    public void sjekkSkriveTilgang(Avtale avtale) {
+        if (!harSkriveTilgang(avtale)) {
+            throw new TilgangskontrollException("Har ikke tilgang til avtalen.");
+        }
+    }
+
+    
 }

@@ -150,7 +150,7 @@ public class AvtaleControllerTest {
             hentedeAvtaler.add(avtale);
         }
 
-        hentedeAvtaler.forEach(avtale -> assertThat(selvbetjeningBruker.harTilgang(avtale)).isTrue());
+        hentedeAvtaler.forEach(avtale -> assertThat(selvbetjeningBruker.harLeseTilgang(avtale)).isTrue());
         assertThat(hentedeAvtaler.size()).isEqualTo(avtalerBrukerHarTilgangTil.size());
     }
 

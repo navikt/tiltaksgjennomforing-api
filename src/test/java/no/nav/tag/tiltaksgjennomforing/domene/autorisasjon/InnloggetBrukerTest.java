@@ -45,33 +45,33 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__deltaker_skal_ha_tilgang_til_avtale() {
-        assertThat(new InnloggetSelvbetjeningBruker(deltaker).harTilgang(avtale)).isTrue();
+        assertThat(new InnloggetSelvbetjeningBruker(deltaker).harLeseTilgang(avtale)).isTrue();
     }
 
     @Test
     public void harTilgang__veileder_skal_ha_tilgang_til_avtale() {
-        assertThat(new InnloggetNavAnsatt(navIdent).harTilgang(avtale)).isTrue();
+        assertThat(new InnloggetNavAnsatt(navIdent).harLeseTilgang(avtale)).isTrue();
     }
 
     @Test
     public void harTilgang__arbeidsgiver_skal_ikke_ha_tilgang_til_avtale() {
-        assertThat(new InnloggetSelvbetjeningBruker(TestData.etFodselsnummer()).harTilgang(avtale)).isFalse();
+        assertThat(new InnloggetSelvbetjeningBruker(TestData.etFodselsnummer()).harLeseTilgang(avtale)).isFalse();
     }
 
     @Test
     public void harTilgang__ikkepart_veileder_skal_ikke_ha_tilgang() {
-        assertThat(new InnloggetNavAnsatt(new NavIdent("X123456")).harTilgang(avtale)).isFalse();
+        assertThat(new InnloggetNavAnsatt(new NavIdent("X123456")).harLeseTilgang(avtale)).isFalse();
     }
 
     @Test
     public void harTilgang__ikkepart_selvbetjeningsbruker_skal_ikke_ha_tilgang() {
-        assertThat(new InnloggetSelvbetjeningBruker(new Fnr("00000000001")).harTilgang(avtale)).isFalse();
+        assertThat(new InnloggetSelvbetjeningBruker(new Fnr("00000000001")).harLeseTilgang(avtale)).isFalse();
     }
 
     @Test
     public void harTilgang__arbeidsgiver_skal_kunne_representere_bedrift_uten_Fnr() {
         InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker = new InnloggetSelvbetjeningBruker(new Fnr("00000000009"));
         innloggetSelvbetjeningBruker.getOrganisasjoner().add(new Organisasjon(bedriftNr, "Testbutikken"));
-        assertThat(innloggetSelvbetjeningBruker.harTilgang(avtale)).isTrue();
+        assertThat(innloggetSelvbetjeningBruker.harLeseTilgang(avtale)).isTrue();
     }
 }

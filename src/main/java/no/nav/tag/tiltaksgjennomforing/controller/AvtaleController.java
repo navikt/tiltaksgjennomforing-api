@@ -41,7 +41,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(id)
                 .orElseThrow(RessursFinnesIkkeException::new);
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
-        innloggetBruker.sjekkTilgang(avtale);
+        innloggetBruker.sjekkLeseTilgang(avtale);
         return ResponseEntity.ok(avtale);
     }
 
@@ -50,7 +50,7 @@ public class AvtaleController {
         InnloggetBruker bruker = innloggingService.hentInnloggetBruker();
         List<Avtale> avtaler = new ArrayList<>();
         for (Avtale avtale : avtaleRepository.findAll()) {
-            if (bruker.harTilgang(avtale)) {
+            if (bruker.harLeseTilgang(avtale)) {
                 avtaler.add(avtale);
             }
         }
@@ -77,7 +77,7 @@ public class AvtaleController {
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
-        innloggetBruker.sjekkTilgang(avtale);
+        innloggetBruker.sjekkSkriveTilgang(avtale);
         Avtalepart avtalepart = innloggetBruker.avtalepart(avtale);
         avtalepart.endreAvtale(versjon, endreAvtale);
         Avtale lagretAvtale = avtaleRepository.save(avtale);
@@ -88,7 +88,7 @@ public class AvtaleController {
     public ResponseEntity<Avtalerolle> hentRolle(@PathVariable("avtaleId") UUID avtaleId) {
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        innloggetBruker.sjekkTilgang(avtale);
+        innloggetBruker.sjekkLeseTilgang(avtale);
         Avtalepart avtalepart = innloggetBruker.avtalepart(avtale);
         return ResponseEntity.ok(avtalepart.rolle());
     }
@@ -97,7 +97,7 @@ public class AvtaleController {
     public ResponseEntity opphevGodkjenninger(@PathVariable("avtaleId") UUID avtaleId) {
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        innloggetBruker.sjekkTilgang(avtale);
+        innloggetBruker.sjekkSkriveTilgang(avtale);
         Avtalepart avtalepart = innloggetBruker.avtalepart(avtale);
         avtalepart.opphevGodkjenninger();
         avtaleRepository.save(avtale);
@@ -108,7 +108,7 @@ public class AvtaleController {
     public ResponseEntity godkjenn(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader("If-Match") Integer versjon) {
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        innloggetBruker.sjekkTilgang(avtale);
+        innloggetBruker.sjekkSkriveTilgang(avtale); 
         Avtalepart avtalepart = innloggetBruker.avtalepart(avtale);
         avtalepart.godkjennAvtale(versjon);
         avtaleRepository.save(avtale);
@@ -119,7 +119,7 @@ public class AvtaleController {
     public ResponseEntity godkjennPaVegneAv(@PathVariable("avtaleId") UUID avtaleId, @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn, @RequestHeader("If-Match") Integer versjon) {
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        innloggetBruker.sjekkTilgang(avtale);
+        innloggetBruker.sjekkSkriveTilgang(avtale);
         Avtalepart avtalepart = innloggetBruker.avtalepart(avtale);
         avtalepart.godkjennPaVegneAvDeltaker(paVegneAvGrunn, versjon);
         avtaleRepository.save(avtale);
