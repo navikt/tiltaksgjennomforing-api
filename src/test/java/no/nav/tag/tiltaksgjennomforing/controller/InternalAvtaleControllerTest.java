@@ -5,7 +5,6 @@ import no.nav.tag.tiltaksgjennomforing.domene.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.domene.TestData;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.domene.journalfoering.AvtaleTilJournalfoering;
-import no.nav.tag.tiltaksgjennomforing.domene.journalfoering.JournalfoerteAvtaler;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.SystembrukerProperties;
 import org.junit.Test;
@@ -15,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.*;
-import java.util.stream.StreamSupport;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -79,11 +77,9 @@ public class InternalAvtaleControllerTest {
         map.put(AVTALE_ID_2, "journalId-2");
         map.put(AVTALE_ID_3, "journalId-3");
 
-        JournalfoerteAvtaler journalfoerteAvtaler = new JournalfoerteAvtaler(map);
-
         doNothing().when(innloggingService).validerSystembruker();
         when(avtaleRepository.findAllById(map.keySet())).thenReturn(godkjenteAvtaler());
-        internalAvtaleController.journalfoerAvtaler(journalfoerteAvtaler);
+        internalAvtaleController.journalfoerAvtaler(map);
         verify(avtaleRepository, atLeastOnce()).saveAll(anyIterable());
     }
 

@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.integrasjon;
 
+import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
@@ -9,18 +10,12 @@ import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.Syste
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class InnloggingService {
-
 
     private final SystembrukerProperties systembrukerProperties;
     private final TokenUtils tokenUtils;
     private final AltinnService altinnService;
-
-    public InnloggingService(TokenUtils tokenUtils, AltinnService altinnService, SystembrukerProperties systembrukerProperties) {
-        this.tokenUtils = tokenUtils;
-        this.altinnService = altinnService;
-        this.systembrukerProperties = systembrukerProperties;
-    }
 
     public InnloggetBruker hentInnloggetBruker() {
         if (tokenUtils.erInnloggetSelvbetjeningBruker()) {

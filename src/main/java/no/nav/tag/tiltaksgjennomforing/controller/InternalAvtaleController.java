@@ -3,14 +3,11 @@ package no.nav.tag.tiltaksgjennomforing.controller;
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import no.nav.security.oidc.api.Protected;
-import no.nav.security.oidc.api.ProtectedWithClaims;
 import no.nav.tag.tiltaksgjennomforing.domene.Avtale;
 import no.nav.tag.tiltaksgjennomforing.domene.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.domene.journalfoering.AvtaleTilJournalfoering;
 import no.nav.tag.tiltaksgjennomforing.domene.journalfoering.AvtaleTilJournalfoeringMapper;
-import no.nav.tag.tiltaksgjennomforing.domene.journalfoering.JournalfoerteAvtaler;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.InnloggingService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -42,15 +39,13 @@ public class InternalAvtaleController {
 
     @PutMapping
     @Transactional
-    public ResponseEntity journalfoerAvtaler(@RequestBody JournalfoerteAvtaler journalfoerAvtaler){
+    public ResponseEntity journalfoerAvtaler(@RequestBody Map<UUID, String> avtalerTilJournalfoert){
         innloggingService.validerSystembruker();
-        Map<UUID, String> avtaleMap = journalfoerAvtaler.getAvtaleJournalpostId();
-        Iterable<Avtale> avtaler = avtaleRepository.findAllById(avtaleMap.keySet());
-        avtaler.forEach(avtale -> avtale.setJournalpostId(avtaleMap.get(avtale.getId())));
+        Iterable<Avtale> avtaler = avtaleRepository.findAllById(avtalerTilJournalfoert.keySet());
+        avtaler.forEach(avtale -> avtale.setJournalpostId(avtalerTilJournalfoert.get(avtale.getId())));
         avtaleRepository.saveAll(avtaler);
         return ResponseEntity.ok().build();
     }
-
 }
 
 
