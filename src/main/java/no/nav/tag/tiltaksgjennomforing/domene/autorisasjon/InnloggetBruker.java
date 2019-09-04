@@ -12,9 +12,7 @@ public abstract class InnloggetBruker<T extends Identifikator> {
 
     public abstract Avtalepart avtalepart(Avtale avtale);
 
-    public boolean harLeseTilgang(Avtale avtale) {
-        return avtalepart(avtale) != null;
-    }
+    public abstract boolean harLeseTilgang(Avtale avtale);
 
     public void sjekkLeseTilgang(Avtale avtale) {
         if (!harLeseTilgang(avtale)) {
@@ -22,9 +20,7 @@ public abstract class InnloggetBruker<T extends Identifikator> {
         }
     }
 
-    public boolean harSkriveTilgang(Avtale avtale) {
-        return avtalepart(avtale) != null;
-    }
+    public abstract boolean harSkriveTilgang(Avtale avtale);
     
     public void sjekkSkriveTilgang(Avtale avtale) {
         if (!harSkriveTilgang(avtale)) {

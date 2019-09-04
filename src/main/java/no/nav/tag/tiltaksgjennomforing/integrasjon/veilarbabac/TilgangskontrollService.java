@@ -1,48 +1,44 @@
 package no.nav.tag.tiltaksgjennomforing.integrasjon.veilarbabac;
 
+import static no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService.NY_VEILEDERTILGANG;
+
 import org.springframework.stereotype.Service;
 
 import no.nav.tag.tiltaksgjennomforing.domene.Fnr;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
-import no.nav.tag.tiltaksgjennomforing.integrasjon.TokenUtils;
 
 @Service
 public class TilgangskontrollService {
-    private final TokenUtils tokenUtils;
     private final VeilarbabacClient veilarbabacClient;
     private final FeatureToggleService featureToggleService;
 
-    public TilgangskontrollService(TokenUtils tokenUtils, VeilarbabacClient veilarbabacClient, FeatureToggleService featureToggleService) {
-        this.tokenUtils = tokenUtils;
+    public TilgangskontrollService(VeilarbabacClient veilarbabacClient, FeatureToggleService featureToggleService) {
         this.veilarbabacClient = veilarbabacClient;
         this.featureToggleService = featureToggleService;
     }
 
-    public void sjekkLesetilgangTilKandidat(Fnr fnr) {
-        sjekkTilgang(fnr, TilgangskontrollAction.read);
+    public void sjekkLesetilgangTilKandidat(InnloggetNavAnsatt innloggetNavAnsatt, Fnr fnr) {
+        sjekkTilgang(innloggetNavAnsatt, fnr, TilgangskontrollAction.read);
     }
 
-    public void sjekkSkrivetilgangTilKandidat(Fnr fnr) {
-        sjekkTilgang(fnr, TilgangskontrollAction.update);
+    public void sjekkSkrivetilgangTilKandidat(InnloggetNavAnsatt innloggetNavAnsatt, Fnr fnr) {
+        sjekkTilgang(innloggetNavAnsatt, fnr, TilgangskontrollAction.update);
     }
 
-    private void sjekkTilgang(Fnr fnr, TilgangskontrollAction action) {
-        if (!hentTilgang(fnr, action)) {
+    private void sjekkTilgang(InnloggetNavAnsatt innloggetNavAnsatt, Fnr fnr, TilgangskontrollAction action) {
+        if (!hentTilgang(innloggetNavAnsatt, fnr, action)) {
             throw new TilgangskontrollException("Veileder har ikke følgende tilgang for kandidat: " + action);
         }
     }
 
-    private boolean hentTilgang(Fnr fnr, TilgangskontrollAction action) {
-        return !featureToggleService.isEnabled("tag.tiltak.ny.veiledertilgang") || veilarbabacClient.sjekkTilgang(
-                hentInnloggetVeileder(),
+    private boolean hentTilgang(InnloggetNavAnsatt innloggetNavAnsatt, Fnr fnr, TilgangskontrollAction action) {
+        return !featureToggleService.isEnabled(NY_VEILEDERTILGANG) || veilarbabacClient.sjekkTilgang(
+                innloggetNavAnsatt,
                 fnr.asString(),
                 action
         );
     }
 
-    private InnloggetNavAnsatt hentInnloggetVeileder() {
-        return tokenUtils.hentInnloggetNavAnsatt();
-    }
 }

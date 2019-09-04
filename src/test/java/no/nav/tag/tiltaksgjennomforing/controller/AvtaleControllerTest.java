@@ -192,9 +192,10 @@ public class AvtaleControllerTest {
 
     @Test(expected = TilgangskontrollException.class)
     public void opprettAvtale__skal_feile_hvis_veileder_ikke_har_tilgang_til_bruker() {
-        vaerInnloggetSom(TestData.enNavAnsatt());
+        InnloggetNavAnsatt enNavAnsatt = TestData.enNavAnsatt();
+        vaerInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = new Fnr("11111100000");
-        doThrow(TilgangskontrollException.class).when(tilgangskontrollService).sjekkSkrivetilgangTilKandidat(deltakerFnr);
+        doThrow(TilgangskontrollException.class).when(tilgangskontrollService).sjekkSkrivetilgangTilKandidat(enNavAnsatt, deltakerFnr);
         avtaleController.opprettAvtale(new OpprettAvtale(deltakerFnr, new BedriftNr("111222333")));
     }
     

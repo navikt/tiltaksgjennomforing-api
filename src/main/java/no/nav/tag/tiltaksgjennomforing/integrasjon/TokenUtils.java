@@ -8,6 +8,9 @@ import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.veilarbabac.TilgangskontrollService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,10 +23,14 @@ public class TokenUtils {
     final static String ISSUER_SELVBETJENING = "selvbetjening";
 
     private final OIDCRequestContextHolder contextHolder;
+    private final FeatureToggleService featureToggleService;
+    private final TilgangskontrollService tilgangskontrollService;
 
     @Autowired
-    public TokenUtils(OIDCRequestContextHolder contextHolder) {
+    public TokenUtils(OIDCRequestContextHolder contextHolder, FeatureToggleService featureToggleService, TilgangskontrollService tilgangskontrollService) {
         this.contextHolder = contextHolder;
+        this.featureToggleService = featureToggleService;
+        this.tilgangskontrollService = tilgangskontrollService;
     }
 
     public InnloggetBruker hentInnloggetBruker() {
@@ -45,7 +52,7 @@ public class TokenUtils {
     public InnloggetNavAnsatt hentInnloggetNavAnsatt() {
         String navIdent = hentClaim(ISSUER_ISSO, "NAVident")
                 .orElseThrow(() -> new TilgangskontrollException("Innlogget bruker er ikke veileder."));
-        return new InnloggetNavAnsatt(new NavIdent(navIdent));
+        return new InnloggetNavAnsatt(new NavIdent(navIdent), featureToggleService, tilgangskontrollService);
     }
 
     private Optional<String> hentClaim(String issuer, String claim) {

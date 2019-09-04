@@ -2,6 +2,10 @@ package no.nav.tag.tiltaksgjennomforing.domene;
 
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.veilarbabac.TilgangskontrollService;
+
+import static org.mockito.Mockito.mock;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -73,7 +77,7 @@ public class TestData {
     }
 
     public static InnloggetNavAnsatt enNavAnsatt() {
-        return new InnloggetNavAnsatt(new NavIdent("F8888888"));
+        return new InnloggetNavAnsatt(new NavIdent("F8888888"), mock(FeatureToggleService.class), mock(TilgangskontrollService.class));
     }
 
     public static Arbeidsgiver enArbeidsgiver() {
@@ -123,7 +127,7 @@ public class TestData {
     }
 
     public static InnloggetNavAnsatt innloggetNavAnsatt(Avtalepart<NavIdent> avtalepartMedNavIdent) {
-        return new InnloggetNavAnsatt(avtalepartMedNavIdent.getIdentifikator());
+        return new InnloggetNavAnsatt(avtalepartMedNavIdent.getIdentifikator(), mock(FeatureToggleService.class), mock(TilgangskontrollService.class));
     }
 
     public static Identifikator enIdentifikator() {

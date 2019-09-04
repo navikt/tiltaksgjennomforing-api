@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class InnloggetSelvbetjeningBruker extends InnloggetBruker<Fnr> {
+    
     private List<Organisasjon> organisasjoner = new ArrayList<>();
 
     public InnloggetSelvbetjeningBruker(Fnr identifikator) {
@@ -25,5 +26,15 @@ public class InnloggetSelvbetjeningBruker extends InnloggetBruker<Fnr> {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public boolean harLeseTilgang(Avtale avtale)  {
+        return avtalepart(avtale) != null;
+    }
+
+    @Override
+    public boolean harSkriveTilgang(Avtale avtale)  {
+        return avtalepart(avtale) != null;
     }
 }
