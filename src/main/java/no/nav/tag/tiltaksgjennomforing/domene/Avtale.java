@@ -79,10 +79,16 @@ public class Avtale extends AbstractAggregateRoot {
         return avtale;
     }
 
+    private static void sjekkMaalOgOppgaverLengde(List<Maal> maal, List<Oppgave> oppgaver) {
+        maal.forEach(Maal::sjekkMaalLengde);
+        oppgaver.forEach(Oppgave::sjekkOppgaveLengde);
+    }
+
     public void endreAvtale(Integer versjon, EndreAvtale nyAvtale, Avtalerolle utfortAv) {
         sjekkOmAvtalenKanEndres();
         sjekkVersjon(versjon);
         inkrementerVersjonsnummer();
+        sjekkMaalOgOppgaverLengde(nyAvtale.getMaal(), nyAvtale.getOppgaver());
 
         setDeltakerFornavn(nyAvtale.getDeltakerFornavn());
         setDeltakerEtternavn(nyAvtale.getDeltakerEtternavn());
