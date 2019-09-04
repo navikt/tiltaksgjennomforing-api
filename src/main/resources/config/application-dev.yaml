@@ -11,6 +11,11 @@ spring:
       path: /h2-console
   main:
     banner-mode: "console"
+  kafka:
+    consumer:
+      bootstrap-servers: ${spring.embedded.kafka.brokers}
+    producer:
+      bootstrap-servers: ${spring.embedded.kafka.brokers}
 
 no.nav.security.oidc:
   issuers: selvbetjening, isso
@@ -23,15 +28,20 @@ no.nav.security.oidc:
       accepted_audience: aud-isso
 
 tiltaksgjennomforing:
-  altinn:
-    altinn-uri: http://localhost:8090
-    altinn-api-key: test
-    api-gw-api-key: test
+  altinn-tilgangsstyring:
+    uri: http://localhost:8090/altinn-tilgangsstyring
     service-code: 42
     service-edition: 1
+  altinn-varsel:
+    uri: http://localhost:8090/altinn-varsel
   ereg:
-    ereg-uri: http://localhost:8090
+    uri: http://localhost:8090/ereg
+  sts:
+    username: foo
+    password: bar
+    uri: http://localhost:8090/sts
   axsys:
+    uri: http://localhost:8090/axsys
     axsys-uri: http://localhost:8090
   sts:
     sts-uri: http://localhost:8090/sts

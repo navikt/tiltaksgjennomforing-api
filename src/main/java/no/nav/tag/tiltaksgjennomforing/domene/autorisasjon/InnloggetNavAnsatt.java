@@ -27,7 +27,7 @@ public class InnloggetNavAnsatt extends InnloggetBruker<NavIdent> {
     }
 
     @Override
-    public Avtalepart avtalepart(Avtale avtale) {
+    public Veileder avtalepart(Avtale avtale) {
         return featureToggleService.isEnabled(NY_VEILEDERTILGANG) || avtale.getVeilederNavIdent().equals(getIdentifikator()) 
                 ? new Veileder(getIdentifikator(), avtale) 
                 : null;

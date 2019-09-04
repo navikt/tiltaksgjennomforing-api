@@ -14,6 +14,7 @@ import no.nav.tag.tiltaksgjennomforing.integrasjon.veilarbabac.TilgangskontrollS
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Component
@@ -68,7 +69,7 @@ public class TokenUtils {
     public boolean erInnloggetNavAnsatt() {
         return hentClaimSet(ISSUER_ISSO)
                 .map(jwtClaimsSet -> (String) jwtClaimsSet.getClaims().get("NAVident"))
-                .map(navIdentString -> NavIdent.erGyldigNavIdent(navIdentString))
+                .map(Objects::nonNull)
                 .orElse(false);
     }
 

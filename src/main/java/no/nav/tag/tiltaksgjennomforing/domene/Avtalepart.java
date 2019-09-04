@@ -24,11 +24,14 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     abstract void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn);
 
+    abstract void opphevGodkjenningerSomAvtalepart();
+
     public void godkjennAvtale(Integer versjon) {
         avtale.sjekkVersjon(versjon);
         sjekkOmAvtaleKanGodkjennes();
         godkjennForAvtalepart();
     }
+
 
     public void godkjennPaVegneAvDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn, Integer versjon) {
         avtale.sjekkVersjon(versjon);
@@ -46,6 +49,7 @@ public abstract class Avtalepart<T extends Identifikator> {
         if (!kanOppheveGodkjenninger()) {
             throw new TiltaksgjennomforingException("Kan ikke oppheve godkjenninger i avtalen.");
         }
-        avtale.opphevGodkjenninger(rolle());
+        opphevGodkjenningerSomAvtalepart();
     }
+
 }

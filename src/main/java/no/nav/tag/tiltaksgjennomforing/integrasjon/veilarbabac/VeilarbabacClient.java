@@ -50,7 +50,7 @@ public class VeilarbabacClient {
                 .toUriString();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("subject", veileder.getIdentifikator().getId());
+        headers.set("subject", veileder.getIdentifikator().asString());
         headers.set("subjectType", "InternBruker");
         headers.setBearerAuth(hentOidcTokenTilSystembruker());
         headers.setContentType(MediaType.APPLICATION_JSON);

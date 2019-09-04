@@ -18,6 +18,7 @@ public class Deltaker extends Avtalepart<Fnr> {
         return false;
     }
 
+
     @Override
     boolean kanOppheveGodkjenninger() {
         return false;
@@ -31,5 +32,10 @@ public class Deltaker extends Avtalepart<Fnr> {
     @Override
     public void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn) {
         throw new TilgangskontrollException("Deltaker kan ikke godkjenne som veileder");
+    }
+
+    @Override
+    void opphevGodkjenningerSomAvtalepart() {
+        throw new TilgangskontrollException("Deltaker kan ikke oppheve godkjenninger");
     }
 }

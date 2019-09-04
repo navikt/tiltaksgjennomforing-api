@@ -89,7 +89,7 @@ public class VeilarbabacClientTest {
         veilarbabacClient.sjekkTilgang(enVeileder(), FNR, TilgangskontrollAction.update);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("subject", veileder.getIdentifikator().getId());
+        headers.set("subject", veileder.getIdentifikator().asString());
         headers.set("subjectType", "InternBruker");
         headers.set("Authorization", "Bearer " + stsToken.getAccessToken());
         headers.setContentType(MediaType.APPLICATION_JSON);

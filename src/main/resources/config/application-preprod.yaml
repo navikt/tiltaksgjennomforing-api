@@ -2,6 +2,16 @@ spring:
   datasource:
     platform: postgres
     driverClassName: org.postgresql.Driver
+  kafka:
+    bootstrap-servers: b27apvl00045.preprod.local:8443, b27apvl00046.preprod.local:8443, b27apvl00047.preprod.local:8443
+    properties:
+      security.protocol: SASL_SSL
+      sasl:
+        mechanism: PLAIN
+        jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="${tiltaksgjennomforing.serviceuser.username}" password="${tiltaksgjennomforing.serviceuser.password}";
+      ssl.truststore:
+        location: ${javax.net.ssl.trustStore}
+        password: ${javax.net.ssl.trustStorePassword}
 
 no.nav.security.oidc:
   issuers: selvbetjening, isso
@@ -21,12 +31,18 @@ tiltaksgjennomforing:
     minimum-idle: 1
     maximum-pool-size: 2
     max-lifetime: 300000
-  altinn:
-    altinn-uri: https://api-gw-q1.adeo.no
+  altinn-tilgangsstyring:
+    uri: https://api-gw-q1.adeo.no/ekstern/altinn/api/serviceowner/reportees
+  altinn-varsel:
+    uri: https://pep-gw-q1.oera-q.local:9443/ekstern/altinn/notificationagencyexternalbasic/v1
   ereg:
-    ereg-uri: https://modapp-q1.adeo.no
+    uri: https://modapp-q1.adeo.no/ereg/api/v1/organisasjon
+  sts:
+    username: ${tiltaksgjennomforing.serviceuser.username}
+    password: ${tiltaksgjennomforing.serviceuser.password}
+    uri: https://sts-q1.preprod.local/SecurityTokenServiceProvider/
   axsys:
-    axsys-uri: https://axsys.nais.preprod.local
+    uri: https://axsys.nais.preprod.local/api/v1/tilgang
     nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}
   sts:
     sts-uri: https://security-token-service.nais.preprod.local/rest/v1
