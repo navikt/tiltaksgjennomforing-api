@@ -12,7 +12,7 @@ public class InnloggetNavAnsatt extends InnloggetBruker<NavIdent> {
     }
 
     @Override
-    public Avtalepart avtalepart(Avtale avtale) {
+    public Veileder avtalepart(Avtale avtale) {
         if (avtale.getVeilederNavIdent().equals(getIdentifikator())) {
             return new Veileder(getIdentifikator(), avtale);
         } else {

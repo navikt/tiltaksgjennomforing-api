@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.domene.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -20,10 +21,22 @@ public class InnloggetSelvbetjeningBruker extends InnloggetBruker<Fnr> {
     public Avtalepart avtalepart(Avtale avtale) {
         if (avtale.getDeltakerFnr().equals(getIdentifikator())) {
             return new Deltaker(getIdentifikator(), avtale);
-        } else if (organisasjoner.stream().anyMatch(o -> o.getBedriftNr().equals(avtale.getBedriftNr()))) {
+        } else if (arbeidsgiverIdentifikatorer().contains(avtale.getBedriftNr())) {
             return new Arbeidsgiver(getIdentifikator(), avtale);
         } else {
             return null;
         }
+    }
+
+    @Override
+    public List<Identifikator> identifikatorer() {
+        var identifikatorer = new ArrayList<Identifikator>();
+        identifikatorer.addAll(super.identifikatorer());
+        identifikatorer.addAll(arbeidsgiverIdentifikatorer());
+        return identifikatorer;
+    }
+
+    private List<BedriftNr> arbeidsgiverIdentifikatorer() {
+        return organisasjoner.stream().map(Organisasjon::getBedriftNr).collect(Collectors.toList());
     }
 }

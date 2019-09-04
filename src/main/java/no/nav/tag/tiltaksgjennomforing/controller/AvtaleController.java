@@ -8,7 +8,6 @@ import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.InnloggingService;
-import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.ereg.EregService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +23,6 @@ import static no.nav.tag.tiltaksgjennomforing.domene.Utils.lagUri;
 @Protected
 @RestController
 @RequestMapping("/avtaler")
-@Transactional
 @Timed
 @RequiredArgsConstructor
 public class AvtaleController {
@@ -56,6 +54,7 @@ public class AvtaleController {
     }
 
     @PostMapping
+    @Transactional
     public ResponseEntity opprettAvtale(@RequestBody OpprettAvtale opprettAvtale) {
         InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
         tilgangUnderPilotering.sjekkTilgang(innloggetNavAnsatt.getIdentifikator());
@@ -67,6 +66,7 @@ public class AvtaleController {
     }
 
     @PutMapping(value = "/{avtaleId}")
+    @Transactional
     public ResponseEntity endreAvtale(@PathVariable("avtaleId") UUID avtaleId,
                                       @RequestHeader("If-Match") Integer versjon,
                                       @RequestBody EndreAvtale endreAvtale) {
@@ -90,6 +90,7 @@ public class AvtaleController {
     }
 
     @PostMapping(value = "/{avtaleId}/opphev-godkjenninger")
+    @Transactional
     public ResponseEntity opphevGodkjenninger(@PathVariable("avtaleId") UUID avtaleId) {
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
@@ -101,6 +102,7 @@ public class AvtaleController {
     }
 
     @PostMapping(value = "/{avtaleId}/godkjenn")
+    @Transactional
     public ResponseEntity godkjenn(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader("If-Match") Integer versjon) {
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
@@ -112,12 +114,25 @@ public class AvtaleController {
     }
 
     @PostMapping(value = "/{avtaleId}/godkjenn-paa-vegne-av")
+    @Transactional
     public ResponseEntity godkjennPaVegneAv(@PathVariable("avtaleId") UUID avtaleId, @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn, @RequestHeader("If-Match") Integer versjon) {
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkTilgang(avtale);
         Avtalepart avtalepart = innloggetBruker.avtalepart(avtale);
         avtalepart.godkjennPaVegneAvDeltaker(paVegneAvGrunn, versjon);
+        avtaleRepository.save(avtale);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(value = "/{avtaleId}/avbryt")
+    public ResponseEntity avbryt(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader("If-Match") Integer versjon) {
+        InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        //kan erstattes når det blir tilgang til Navenhet tilgangsstyring
+        innloggetNavAnsatt.sjekkTilgang(avtale);
+        Veileder veileder = innloggetNavAnsatt.avtalepart(avtale);
+        veileder.avbrytAvtale(versjon);
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();
     }

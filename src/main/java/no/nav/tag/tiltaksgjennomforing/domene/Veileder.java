@@ -13,10 +13,16 @@ public class Veileder extends Avtalepart<NavIdent> {
         avtale.godkjennForVeileder(getIdentifikator());
     }
 
+    public void avbrytAvtale(Integer versjon) {
+        avtale.sjekkVersjon(versjon);
+        avtale.avbryt(this);
+    }
+
     @Override
     public boolean kanEndreAvtale() {
         return true;
     }
+
 
     @Override
     public void sjekkOmAvtaleKanGodkjennes() {
@@ -45,5 +51,10 @@ public class Veileder extends Avtalepart<NavIdent> {
         }
         paVegneAvGrunn.valgtMinstEnGrunn();
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
+    }
+
+    @Override
+    void opphevGodkjenningerSomAvtalepart() {
+        avtale.opphevGodkjenningerSomVeileder();
     }
 }

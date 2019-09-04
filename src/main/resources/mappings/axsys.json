@@ -4,7 +4,7 @@
       "priority": 1,
       "request": {
         "method": "GET",
-        "urlPath": "/api/v1/tilgang/X123456",
+        "urlPath": "/axsys/X123456",
         "queryParameters" : {
           "inkluderAlleEnheter": {
             "equalTo": "false"
@@ -23,7 +23,7 @@
       "priority": 2,
       "request": {
         "method": "GET",
-        "urlPathPattern": "/api/v1/tilgang/[A-Z]{1}[0-9]{6}",
+        "urlPathPattern": "/axsys/[A-Z]{1}[0-9]{6}",
         "queryParameters": {
           "inkluderAlleEnheter": {
             "equalTo": "false"

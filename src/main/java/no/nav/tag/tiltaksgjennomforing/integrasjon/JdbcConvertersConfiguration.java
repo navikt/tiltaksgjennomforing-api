@@ -1,49 +1,39 @@
 package no.nav.tag.tiltaksgjennomforing.integrasjon;
 
-import no.nav.tag.tiltaksgjennomforing.domene.BedriftNr;
-import no.nav.tag.tiltaksgjennomforing.domene.Fnr;
-import no.nav.tag.tiltaksgjennomforing.domene.NavIdent;
+import no.nav.tag.tiltaksgjennomforing.domene.Identifikator;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.jdbc.core.convert.JdbcCustomConversions;
 import org.springframework.data.jdbc.repository.config.JdbcConfiguration;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.lang.Nullable;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
 
 @Configuration
 public class JdbcConvertersConfiguration extends JdbcConfiguration {
+    @Bean
+    @Primary
+    public DataSourceTransactionManager dataSourceTransactionManager(DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
+    }
+
     @Override
     public JdbcCustomConversions jdbcCustomConversions() {
-        return new JdbcCustomConversions(Arrays.asList(new Converter<Fnr, String>() {
+        return new JdbcCustomConversions(Arrays.asList(new Converter<Identifikator, String>() {
             @Nullable
             @Override
-            public String convert(Fnr in) {
-                return in.getFnr();
+            public String convert(Identifikator in) {
+                return in.asString();
             }
-        }, new Converter<NavIdent, String>() {
+        }, new Converter<String, Identifikator>() {
             @Nullable
             @Override
-            public String convert(NavIdent in) {
-                return in.getId();
-            }
-        }, new Converter<String, NavIdent>() {
-            @Nullable
-            @Override
-            public NavIdent convert(String in) {
-                return new NavIdent(in);
-            }
-        }, new Converter<String, BedriftNr>() {
-            @Nullable
-            @Override
-            public BedriftNr convert(String in) {
-                return new BedriftNr(in);
-            }
-        }, new Converter<BedriftNr, String>() {
-            @Nullable
-            @Override
-            public String convert(BedriftNr in) {
-                return in.getBedriftNr();
+            public Identifikator convert(String in) {
+                return new Identifikator(in);
             }
         }));
     }

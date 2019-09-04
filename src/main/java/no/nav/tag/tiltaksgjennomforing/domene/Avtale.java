@@ -7,6 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.domene.events.*;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.domene.varsel.GamleVerdier;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.domain.AbstractAggregateRoot;
@@ -62,6 +63,7 @@ public class Avtale extends AbstractAggregateRoot {
     private LocalDateTime godkjentAvArbeidsgiver;
     private LocalDateTime godkjentAvVeileder;
     private boolean godkjentPaVegneAv;
+    private boolean avbrutt;
 
     @PersistenceConstructor
     public Avtale(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent) {
@@ -75,6 +77,11 @@ public class Avtale extends AbstractAggregateRoot {
         avtale.setVersjon(1);
         avtale.registerEvent(new AvtaleOpprettet(avtale, veilederNavIdent));
         return avtale;
+    }
+
+    private static void sjekkMaalOgOppgaverLengde(List<Maal> maal, List<Oppgave> oppgaver) {
+        maal.forEach(Maal::sjekkMaalLengde);
+        oppgaver.forEach(Oppgave::sjekkOppgaveLengde);
     }
 
     public void endreAvtale(Integer versjon, EndreAvtale nyAvtale, Avtalerolle utfortAv) {
@@ -132,18 +139,25 @@ public class Avtale extends AbstractAggregateRoot {
         }
     }
 
-    private static void sjekkMaalOgOppgaverLengde(List<Maal> maal, List<Oppgave> oppgaver) {
-            maal.forEach(Maal::sjekkMaalLengde);
-            oppgaver.forEach(Oppgave::sjekkOppgaveLengde);
+    void opphevGodkjenningerSomArbeidsgiver() {
+        boolean varGodkjentAvDeltaker = erGodkjentAvDeltaker();
+        opphevGodkjenninger();
+        registerEvent(new GodkjenningerOpphevetAvArbeidsgiver(this, new GamleVerdier(varGodkjentAvDeltaker, false)));
     }
 
-    void opphevGodkjenninger(Avtalerolle avtalerolle) {
+    void opphevGodkjenningerSomVeileder() {
+        boolean varGodkjentAvDeltaker = erGodkjentAvDeltaker();
+        boolean varGodkjentAvArbeidsgiver = erGodkjentAvArbeidsgiver();
+        opphevGodkjenninger();
+        registerEvent(new GodkjenningerOpphevetAvVeileder(this, new GamleVerdier(varGodkjentAvDeltaker, varGodkjentAvArbeidsgiver)));
+    }
+
+    private void opphevGodkjenninger() {
         setGodkjentAvDeltaker(null);
         setGodkjentAvArbeidsgiver(null);
         setGodkjentAvVeileder(null);
         setGodkjentPaVegneAv(false);
         setGodkjentPaVegneGrunn(null);
-        registerEvent(new GodkjenningerOpphevet(this, avtalerolle));
     }
 
     private void inkrementerVersjonsnummer() {
@@ -156,7 +170,7 @@ public class Avtale extends AbstractAggregateRoot {
         }
     }
 
-    void settIdOgOpprettetTidspunkt() {
+    public void settIdOgOpprettetTidspunkt() {
         if (this.id == null) {
             this.id = UUID.randomUUID();
         }
@@ -204,7 +218,9 @@ public class Avtale extends AbstractAggregateRoot {
 
     @JsonProperty("status")
     public String status() {
-        if (erGodkjentAvVeileder() && (startDato.plusWeeks(arbeidstreningLengde).isBefore(LocalDate.now()))) {
+        if (avbrutt) {
+            return "Avbrutt";
+        } else if (erGodkjentAvVeileder() && (startDato.plusWeeks(arbeidstreningLengde).isBefore(LocalDate.now()))) {
             return "Avsluttet";
         } else if (erGodkjentAvVeileder()) {
             return "Klar for oppstart";
@@ -212,6 +228,20 @@ public class Avtale extends AbstractAggregateRoot {
             return "Mangler godkjenning";
         } else {
             return "Påbegynt";
+        }
+    }
+
+    @JsonProperty("kanAvbrytes")
+    public boolean kanAvbrytes() {
+        // Nå regner vi at veileder kan avbryte avtalen hvis veileder ikke har godkjent(kan også være at han kan
+        // avbryte kun de avtalene som ikke er godkjente av deltaker og AG),
+        return !erGodkjentAvVeileder() && !isAvbrutt();
+    }
+
+    public void avbryt(Veileder veileder) {
+        if (this.kanAvbrytes()) {
+            this.setAvbrutt(true);
+            registerEvent(new AvbruttAvVeileder(this, veileder.getIdentifikator()));
         }
     }
 
