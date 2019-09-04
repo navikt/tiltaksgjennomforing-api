@@ -2,6 +2,10 @@ package no.nav.tag.tiltaksgjennomforing.domene;
 
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
+import no.nav.tag.tiltaksgjennomforing.domene.varsel.BjelleVarsel;
+import no.nav.tag.tiltaksgjennomforing.domene.varsel.SmsVarsel;
+import no.nav.tag.tiltaksgjennomforing.domene.varsel.VarslbarHendelse;
+import no.nav.tag.tiltaksgjennomforing.domene.varsel.VarslbarHendelseType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -129,11 +133,18 @@ public class TestData {
     }
 
     public static Identifikator enIdentifikator() {
-        return new Identifikator() {
-            @Override
-            public String asString() {
-                return "test-id";
-            }
-        };
+        return new Identifikator("test-id");
+    }
+
+    public static VarslbarHendelse enHendelse(Avtale avtale) {
+        return VarslbarHendelse.nyHendelse(avtale, VarslbarHendelseType.OPPRETTET);
+    }
+
+    public static BjelleVarsel etBjelleVarsel(Avtale avtale) {
+        return BjelleVarsel.nyttVarsel(TestData.enIdentifikator(), TestData.enHendelse(avtale));
+    }
+
+    public static SmsVarsel etSmsVarsel(Avtale avtale) {
+        return SmsVarsel.nyttVarsel("tlf", TestData.enIdentifikator(), "", null);
     }
 }

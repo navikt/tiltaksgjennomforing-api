@@ -5,7 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.domene.Avtale;
 import no.nav.tag.tiltaksgjennomforing.domene.Identifikator;
 
 @Value
-public class GodkjentAvVeileder {
+public class GodkjentAvVeileder implements AvtaleGodkjent {
     private final Avtale avtale;
     private final Identifikator utfortAv;
 }

@@ -21,8 +21,8 @@ public class EregService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     public Organisasjon hentVirksomhet(BedriftNr bedriftNr) {
-        URI uri = UriComponentsBuilder.fromUri(eregProperties.getEregUri())
-                .pathSegment("ereg", "api", "v1", "organisasjon", bedriftNr.getBedriftNr())
+        URI uri = UriComponentsBuilder.fromUri(eregProperties.getUri())
+                .pathSegment(bedriftNr.asString())
                 .build()
                 .toUri();
         try {

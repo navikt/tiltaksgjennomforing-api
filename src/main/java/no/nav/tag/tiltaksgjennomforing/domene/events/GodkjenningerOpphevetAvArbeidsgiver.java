@@ -2,10 +2,10 @@ package no.nav.tag.tiltaksgjennomforing.domene.events;
 
 import lombok.Value;
 import no.nav.tag.tiltaksgjennomforing.domene.Avtale;
-import no.nav.tag.tiltaksgjennomforing.domene.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.domene.varsel.GamleVerdier;
 
 @Value
-public class GodkjenningerOpphevet {
+public class GodkjenningerOpphevetAvArbeidsgiver {
     private final Avtale avtale;
-    private final Avtalerolle utfortAv;
+    private final GamleVerdier gamleVerdier;
 }
