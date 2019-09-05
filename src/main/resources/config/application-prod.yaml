@@ -40,11 +40,10 @@ tiltaksgjennomforing:
   sts:
     username: ${tiltaksgjennomforing.serviceuser.username}
     password: ${tiltaksgjennomforing.serviceuser.password}
-    uri: https://sts.adeo.no/SecurityTokenServiceProvider/
+    ws-uri: https://sts.adeo.no/SecurityTokenServiceProvider/
+    rest-uri: https://security-token-service.nais.adeo.no/rest/v1/sts/token
   axsys:
     uri: https://axsys.nais.adeo.no/api/v1/tilgang
     nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}
-  sts:
-    sts-uri: https://security-token-service.nais.adeo.no/rest/v1
   abac:
     veilarbabac-uri: https://veilarbabac.nais.adeo.no

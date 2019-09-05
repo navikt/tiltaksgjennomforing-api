@@ -1,6 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.integrasjon.sts;
 
-import org.springframework.beans.factory.annotation.Value;
+import java.net.URI;
+
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -9,22 +11,23 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.StsProperties;
+
 @Component
 public class STSClient {
 
     private final RestTemplate stsBasicAuthRestTemplate;
-    private final String stsUrl;
+    private final URI stsUri;
     
-    public STSClient(
-            RestTemplate stsBasicAuthRestTemplate,
-            @Value("${tiltaksgjennomforing.sts.sts-uri}") String stsUrl
-    ) {
-        this.stsBasicAuthRestTemplate = stsBasicAuthRestTemplate;
-        this.stsUrl = stsUrl;
+    public STSClient(StsProperties stsProperties) {
+        this.stsBasicAuthRestTemplate = new RestTemplateBuilder()
+                .basicAuthentication(stsProperties.getUsername(), stsProperties.getPassword())
+                .build();
+        this.stsUri = stsProperties.getRestUri();
     }
 
     public STSToken hentSTSToken() {
-        String uriString = UriComponentsBuilder.fromHttpUrl(stsUrl + "/sts/token")
+        String uriString = UriComponentsBuilder.fromUri(stsUri)
                 .queryParam("grant_type", "client_credentials")
                 .queryParam("scope", "openid")
                 .toUriString();
