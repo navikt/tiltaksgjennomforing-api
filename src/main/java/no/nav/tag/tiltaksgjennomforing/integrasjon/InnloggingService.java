@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.altinn_tilgangsstyring.AltinnTilgangsstyringService;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.integrasjon.altinn.AltinnService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.SystembrukerProperties;
 import org.springframework.stereotype.Component;
 
@@ -15,12 +15,12 @@ public class InnloggingService {
 
     private final SystembrukerProperties systembrukerProperties;
     private final TokenUtils tokenUtils;
-    private final AltinnService altinnService;
+    private final AltinnTilgangsstyringService altinnTilgangsstyringService;
 
     public InnloggetBruker hentInnloggetBruker() {
         if (tokenUtils.erInnloggetSelvbetjeningBruker()) {
             InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker = tokenUtils.hentInnloggetSelvbetjeningBruker();
-            innloggetSelvbetjeningBruker.setOrganisasjoner(altinnService.hentOrganisasjoner(innloggetSelvbetjeningBruker.getIdentifikator()));
+            innloggetSelvbetjeningBruker.setOrganisasjoner(altinnTilgangsstyringService.hentOrganisasjoner(innloggetSelvbetjeningBruker.getIdentifikator()));
             return innloggetSelvbetjeningBruker;
         } else {
             return tokenUtils.hentInnloggetNavAnsatt();

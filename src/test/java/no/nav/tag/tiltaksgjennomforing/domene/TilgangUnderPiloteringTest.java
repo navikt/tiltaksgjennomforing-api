@@ -1,25 +1,22 @@
 package no.nav.tag.tiltaksgjennomforing.domene;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
-import static org.mockito.Mockito.*;
-
-
-import org.junit.Before;
-import org.junit.Test;
-
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.axsys.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
+import org.junit.Before;
+import org.junit.Test;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class TilgangUnderPiloteringTest {
 
     private AxsysService axsysService;
-
     private PilotProperties pilotProperties;
-
     private TilgangUnderPilotering tilgangUnderPilotering;
-    
+
     @Before
     public void setUp() {
         axsysService = mock(AxsysService.class);

@@ -40,9 +40,9 @@ public class AvtaleTilJournalfoeringMapperTest {
         tilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale);
 
         assertEquals(avtaleId.toString(), tilJournalfoering.getId().toString());
-        assertEquals(avtale.getDeltakerFnr().getFnr(), tilJournalfoering.getDeltakerFnr());
-        assertEquals(avtale.getBedriftNr().getBedriftNr(), tilJournalfoering.getBedriftNr());
-        assertEquals(avtale.getVeilederNavIdent().getId(), tilJournalfoering.getVeilederNavIdent());
+        assertEquals(avtale.getDeltakerFnr().asString(), tilJournalfoering.getDeltakerFnr());
+        assertEquals(avtale.getBedriftNr().asString(), tilJournalfoering.getBedriftNr());
+        assertEquals(avtale.getVeilederNavIdent().asString(), tilJournalfoering.getVeilederNavIdent());
         assertEquals(avtale.getOpprettetTidspunkt().toLocalDate().format(formatter), tilJournalfoering.getOpprettet());
         assertEquals(avtale.getVersjon(), tilJournalfoering.getVersjon());
         assertEquals(avtale.getDeltakerFornavn(), tilJournalfoering.getDeltakerFornavn());

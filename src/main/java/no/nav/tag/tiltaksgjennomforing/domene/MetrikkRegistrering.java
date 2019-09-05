@@ -1,13 +1,17 @@
 package no.nav.tag.tiltaksgjennomforing.domene;
 
 import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.domene.events.*;
+import no.nav.tag.tiltaksgjennomforing.domene.varsel.SmsVarselRepository;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 
 @Component
 @Slf4j
@@ -15,6 +19,33 @@ import org.springframework.stereotype.Component;
 public class MetrikkRegistrering {
     private final MeterRegistry meterRegistry;
     private final PilotProperties pilotProperties;
+    private final SmsVarselRepository smsVarselRepository;
+
+    @PostConstruct
+    public void init() {
+        Gauge.builder("tiltaksgjennomforing.smsvarsel.usendt", smsVarselRepository::antallUsendte)
+                .register(meterRegistry);
+    }
+
+    @EventListener
+    public void smsVarselResultatMottatt(SmsVarselResultatMottatt event) {
+        switch (event.getSmsVarsel().getStatus()) {
+            case SENDT:
+                smsVarselSendt();
+                break;
+            case FEIL:
+                smsVarselFeil();
+                break;
+        }
+    }
+
+    public void smsVarselSendt() {
+        Counter.builder("tiltaksgjennomforing.smsvarsel.sendt").register(meterRegistry).increment();
+    }
+
+    public void smsVarselFeil() {
+        Counter.builder("tiltaksgjennomforing.smsvarsel.feil").register(meterRegistry).increment();
+    }
 
     private boolean pilotFylke(Identifikator utfortAv) {
         return !pilotProperties.getIdenter().contains(utfortAv);
@@ -33,9 +64,17 @@ public class MetrikkRegistrering {
     }
 
     @EventListener
-    public void godkjenningerOpphevet(GodkjenningerOpphevet event) {
-        log.info("Avtalens godkjenninger opphevet, avtaleId={} avtalepart={}", event.getAvtale().getId(), event.getUtfortAv());
-        counter("avtale.godkjenning.opphevet", event.getUtfortAv()).increment();
+    public void godkjenningerOpphevet(GodkjenningerOpphevetAvVeileder event) {
+        Avtalerolle rolle = Avtalerolle.VEILEDER;
+        log.info("Avtalens godkjenninger opphevet, avtaleId={} avtalepart={}", event.getAvtale().getId(), rolle);
+        counter("avtale.godkjenning.opphevet", rolle).increment();
+    }
+
+    @EventListener
+    public void godkjenningerOpphevet(GodkjenningerOpphevetAvArbeidsgiver event) {
+        Avtalerolle rolle = Avtalerolle.ARBEIDSGIVER;
+        log.info("Avtalens godkjenninger opphevet, avtaleId={} avtalepart={}", event.getAvtale().getId(), rolle);
+        counter("avtale.godkjenning.opphevet", rolle).increment();
     }
 
     @EventListener

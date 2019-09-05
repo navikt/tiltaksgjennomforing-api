@@ -1,9 +1,9 @@
-package no.nav.tag.tiltaksgjennomforing.integrasjon.altinn;
+package no.nav.tag.tiltaksgjennomforing.integrasjon.altinn_tilgangsstyring;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.domene.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.domene.Organisasjon;
-import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.AltinnProperties;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.AltinnTilgangsstyringProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -17,16 +17,16 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class AltinnService {
-    private final AltinnProperties altinnProperties;
+public class AltinnTilgangsstyringService {
+    private final AltinnTilgangsstyringProperties altinnTilgangsstyringProperties;
     private final RestTemplate restTemplate;
 
-    public AltinnService(AltinnProperties altinnProperties) {
-        this.altinnProperties = altinnProperties;
+    public AltinnTilgangsstyringService(AltinnTilgangsstyringProperties altinnTilgangsstyringProperties) {
+        this.altinnTilgangsstyringProperties = altinnTilgangsstyringProperties;
         restTemplate = new RestTemplate();
         restTemplate.setInterceptors(Collections.singletonList((request, body, execution) -> {
-            request.getHeaders().add("X-NAV-APIKEY", altinnProperties.getApiGwApiKey());
-            request.getHeaders().add("APIKEY", altinnProperties.getAltinnApiKey());
+            request.getHeaders().add("X-NAV-APIKEY", altinnTilgangsstyringProperties.getApiGwApiKey());
+            request.getHeaders().add("APIKEY", altinnTilgangsstyringProperties.getAltinnApiKey());
             return execution.execute(request, body);
         }));
     }
@@ -38,12 +38,11 @@ public class AltinnService {
     }
 
     public List<Organisasjon> hentOrganisasjoner(Identifikator fnr) {
-        URI uri = UriComponentsBuilder.fromUri(altinnProperties.getAltinnUri())
-                .pathSegment("ekstern", "altinn", "api", "serviceowner", "reportees")
+        URI uri = UriComponentsBuilder.fromUri(altinnTilgangsstyringProperties.getUri())
                 .queryParam("ForceEIAuthentication")
                 .queryParam("subject", fnr.asString())
-                .queryParam("serviceCode", altinnProperties.getServiceCode())
-                .queryParam("serviceEdition", altinnProperties.getServiceEdition())
+                .queryParam("serviceCode", altinnTilgangsstyringProperties.getServiceCode())
+                .queryParam("serviceEdition", altinnTilgangsstyringProperties.getServiceEdition())
                 .build()
                 .toUri();
         try {

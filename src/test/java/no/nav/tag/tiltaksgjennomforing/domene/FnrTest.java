@@ -35,6 +35,6 @@ public class FnrTest {
     @Test
     public void fnrSkalInneholde11Tall() {
         String gyldigFnr = "01234567890";
-        assertThat(new Fnr(gyldigFnr).getFnr()).isEqualTo(gyldigFnr);
+        assertThat(new Fnr(gyldigFnr).asString()).isEqualTo(gyldigFnr);
     }
 }

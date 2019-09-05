@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@ActiveProfiles("dev")
+@ActiveProfiles({"dev", "wiremock"})
 @DirtiesContext
 public class EregServiceTest {
     @Autowired
@@ -24,8 +24,8 @@ public class EregServiceTest {
 
     @Test
     public void hentBedriftNavn__returnerer_navn_og_bedriftnr() {
-        Organisasjon organisasjon = eregService.hentVirksomhet(new BedriftNr("910712330"));
-        assertThat(organisasjon.getBedriftNr()).isEqualTo(new BedriftNr("910712330"));
+        Organisasjon organisasjon = eregService.hentVirksomhet(new BedriftNr("999999999"));
+        assertThat(organisasjon.getBedriftNr()).isEqualTo(new BedriftNr("999999999"));
         assertThat(organisasjon.getBedriftNavn()).isEqualTo("Saltrød og Høneby");
     }
 

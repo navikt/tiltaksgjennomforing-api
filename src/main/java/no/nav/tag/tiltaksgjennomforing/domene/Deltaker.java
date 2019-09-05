@@ -33,4 +33,9 @@ public class Deltaker extends Avtalepart<Fnr> {
     public void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn) {
         throw new TilgangskontrollException("Deltaker kan ikke godkjenne som veileder");
     }
+
+    @Override
+    void opphevGodkjenningerSomAvtalepart() {
+        throw new TilgangskontrollException("Deltaker kan ikke oppheve godkjenninger");
+    }
 }
