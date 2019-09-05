@@ -47,3 +47,6 @@ tiltaksgjennomforing:
     nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}
   abac:
     veilarbabac-uri: https://veilarbabac.nais.adeo.no
+  unleash:
+    unleash-uri: https://unleash.nais.adeo.no/api/
+    
