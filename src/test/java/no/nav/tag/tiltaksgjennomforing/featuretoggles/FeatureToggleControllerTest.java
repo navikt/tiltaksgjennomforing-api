@@ -1,8 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
@@ -20,15 +20,10 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class FeatureToggleControllerTest {
 
-    @Mock HttpServletResponse response;
-    @Mock FeatureToggleServiceImpl featureToggleService;
+    @Mock private HttpServletResponse response;
+    @Mock private FeatureToggleServiceImpl featureToggleService;
 
-    private FeatureToggleController featureToggleController;
-
-    @Before
-    public void setup() {
-        featureToggleController = new FeatureToggleController(featureToggleService);
-    }
+    @InjectMocks private FeatureToggleController featureToggleController;
 
     @Test
     public void feature__skal_returnere_status_200_ved_get() {
