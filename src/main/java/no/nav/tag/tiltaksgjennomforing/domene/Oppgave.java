@@ -23,4 +23,10 @@ public class Oppgave {
             opprettetTidspunkt = LocalDateTime.now();
         }
     }
+
+    public void sjekkOppgaveLengde() {
+        Utils.sjekkAtTekstIkkeOverskrider1000Tegn(this.getBeskrivelse(), "Maks lengde for oppgavebeskrivelse er 1000 tegn");
+        Utils.sjekkAtTekstIkkeOverskrider1000Tegn(this.getOpplaering(), "Maks lengde for opplæring er 1000 tegn");
+    }
+
 }
