@@ -1,6 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.integrasjon;
 
 import com.nimbusds.jwt.JWTClaimsSet;
+
+import lombok.RequiredArgsConstructor;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.tag.tiltaksgjennomforing.domene.Fnr;
 import no.nav.tag.tiltaksgjennomforing.domene.NavIdent;
@@ -11,13 +13,13 @@ import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollExcepti
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.veilarbabac.TilgangskontrollService;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class TokenUtils {
     
     final static String ISSUER_ISSO = "isso";
@@ -26,13 +28,6 @@ public class TokenUtils {
     private final OIDCRequestContextHolder contextHolder;
     private final FeatureToggleService featureToggleService;
     private final TilgangskontrollService tilgangskontrollService;
-
-    @Autowired
-    public TokenUtils(OIDCRequestContextHolder contextHolder, FeatureToggleService featureToggleService, TilgangskontrollService tilgangskontrollService) {
-        this.contextHolder = contextHolder;
-        this.featureToggleService = featureToggleService;
-        this.tilgangskontrollService = tilgangskontrollService;
-    }
 
     public InnloggetBruker hentInnloggetBruker() {
         if (erInnloggetNavAnsatt()) {
