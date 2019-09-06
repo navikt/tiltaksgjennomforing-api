@@ -32,6 +32,7 @@ public class Avtale extends AbstractAggregateRoot {
     private LocalDateTime opprettetTidspunkt;
     @Id
     private UUID id;
+    private UUID baseAvtaleId;
     private Integer versjon;
     private String deltakerFornavn;
     private String deltakerEtternavn;
@@ -65,10 +66,14 @@ public class Avtale extends AbstractAggregateRoot {
     private boolean avbrutt;
 
     @PersistenceConstructor
-    public Avtale(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent) {
+    public Avtale(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent, UUID baseAvtaleId, int versjon) {
         this.deltakerFnr = sjekkAtIkkeNull(deltakerFnr, "Deltakers fnr må være satt.");
         this.bedriftNr = sjekkAtIkkeNull(bedriftNr, "Arbeidsgivers bedriftnr må være satt.");
         this.veilederNavIdent = sjekkAtIkkeNull(veilederNavIdent, "Veileders NAV-ident må være satt.");
+        if (baseAvtaleId != null && versjon > 1) {
+            this.baseAvtaleId=baseAvtaleId;
+            this.versjon=versjon;
+        }
     }
 
     public static Avtale nyAvtale(OpprettAvtale opprettAvtale, NavIdent veilederNavIdent) {
