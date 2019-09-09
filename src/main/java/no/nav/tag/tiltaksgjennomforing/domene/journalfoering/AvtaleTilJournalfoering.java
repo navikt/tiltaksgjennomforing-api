@@ -14,9 +14,6 @@ import java.util.UUID;
 public class AvtaleTilJournalfoering {
 
     public final static String DATE_PATTERN = "dd.MM.yyyy";
-    public static final String IKKE_BANKID = "Ikke bankid";
-    public static final String RESERVERT = "Reservert";
-    public static final String DIGITAL_KOMPETANSE = "Digital kompetanse";
 
     private UUID id;
 
@@ -47,7 +44,7 @@ public class AvtaleTilJournalfoering {
     private List<MaalTilJournalfoering> maal = new ArrayList<>();
     private List<OppgaveTilJournalFoering> oppgaver = new ArrayList<>();
 
-    private String godkjentPaVegneGrunn;
+    private GodkjentPaVegneGrunnTilJournalfoering godkjentPaVegneGrunn;
 
     private String godkjentAvDeltaker;
     private String godkjentAvArbeidsgiver;

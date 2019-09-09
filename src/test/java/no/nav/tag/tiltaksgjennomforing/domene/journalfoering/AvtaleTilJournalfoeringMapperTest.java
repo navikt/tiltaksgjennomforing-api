@@ -18,10 +18,12 @@ public class AvtaleTilJournalfoeringMapperTest {
 
     private Avtale avtale;
     private AvtaleTilJournalfoering tilJournalfoering;
+    private GodkjentPaVegneGrunn grunn;
 
     @Before
     public void setUp() {
         avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        grunn = new GodkjentPaVegneGrunn();
     }
 
     @After
@@ -68,31 +70,47 @@ public class AvtaleTilJournalfoeringMapperTest {
     }
 
     @Test
-    public void mapperAllePaaVegneGrunner() {
-        GodkjentPaVegneGrunn grunn = new GodkjentPaVegneGrunn();
+    public void paaVegneGrunnErIkkeBankId() {
         grunn.setIkkeBankId(true);
-
         avtale.setGodkjentPaVegneGrunn(grunn);
-
         tilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale);
-        assertEquals(AvtaleTilJournalfoering.IKKE_BANKID, tilJournalfoering.getGodkjentPaVegneGrunn());
+        assertTrue(tilJournalfoering.getGodkjentPaVegneGrunn().isIkkeBankId());
+        assertFalse(tilJournalfoering.getGodkjentPaVegneGrunn().isDigitalKompetanse());
+        assertFalse(tilJournalfoering.getGodkjentPaVegneGrunn().isReservert());
+    }
 
-        grunn = new GodkjentPaVegneGrunn();
+    @Test
+    public void paaVegneGrunnErDigitalKompetanse() {
         grunn.setDigitalKompetanse(true);
         avtale.setGodkjentPaVegneGrunn(grunn);
         tilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale);
-        assertEquals(AvtaleTilJournalfoering.DIGITAL_KOMPETANSE, tilJournalfoering.getGodkjentPaVegneGrunn());
+        assertFalse(tilJournalfoering.getGodkjentPaVegneGrunn().isIkkeBankId());
+        assertTrue(tilJournalfoering.getGodkjentPaVegneGrunn().isDigitalKompetanse());
+        assertFalse(tilJournalfoering.getGodkjentPaVegneGrunn().isReservert());
+    }
 
-        grunn = new GodkjentPaVegneGrunn();
+    @Test
+    public void paaVegneGrunnErReservert() {
         grunn.setReservert(true);
         avtale.setGodkjentPaVegneGrunn(grunn);
         tilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale);
-        assertEquals(AvtaleTilJournalfoering.RESERVERT, tilJournalfoering.getGodkjentPaVegneGrunn());
+        assertFalse(tilJournalfoering.getGodkjentPaVegneGrunn().isIkkeBankId());
+        assertFalse(tilJournalfoering.getGodkjentPaVegneGrunn().isDigitalKompetanse());
+        assertTrue(tilJournalfoering.getGodkjentPaVegneGrunn().isReservert());
 
         avtale.setGodkjentPaVegneGrunn(null);
         tilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale);
         assertNull(tilJournalfoering.getGodkjentPaVegneGrunn());
     }
+
+    @Test
+    public void ingenPaaVegneGrunn() {
+        avtale.setGodkjentPaVegneGrunn(null);
+        tilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale);
+        assertNull(tilJournalfoering.getGodkjentPaVegneGrunn());
+    }
+
+
 
     @Test
     public void mapperOppgaver() {

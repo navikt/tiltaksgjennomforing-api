@@ -6,8 +6,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static no.nav.tag.tiltaksgjennomforing.domene.journalfoering.AvtaleTilJournalfoering.*;
-
 public class AvtaleTilJournalfoeringMapper {
 
     public static AvtaleTilJournalfoering tilJournalfoering(Avtale avtale) {
@@ -53,7 +51,7 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setArbeidstreningStillingprosent(avtale.getArbeidstreningStillingprosent());
         avtaleTilJournalfoering.setMaal(maalListToMaalTilJournalfoeringList(avtale.getMaal()));
         avtaleTilJournalfoering.setOppgaver(oppgaveListToOppgaveTilJournalFoeringList(avtale.getOppgaver()));
-        avtaleTilJournalfoering.setGodkjentPaVegneGrunn(godkjentPaVegneGrunnAsString(avtale.getGodkjentPaVegneGrunn()));
+        avtaleTilJournalfoering.setGodkjentPaVegneGrunn(godkjentPaVegneGrunn(avtale.getGodkjentPaVegneGrunn()));
         avtaleTilJournalfoering.setGodkjentPaVegneAv(String.valueOf(avtale.isGodkjentPaVegneAv()));
 
         return avtaleTilJournalfoering;
@@ -63,17 +61,16 @@ public class AvtaleTilJournalfoeringMapper {
         return id.asString();
     }
 
-    private static String godkjentPaVegneGrunnAsString(GodkjentPaVegneGrunn grunn) {
+    private static GodkjentPaVegneGrunnTilJournalfoering godkjentPaVegneGrunn(GodkjentPaVegneGrunn grunn) {
         if (grunn == null) {
             return null;
         }
-        if (grunn.isIkkeBankId()) {
-            return IKKE_BANKID;
-        }
-        if (grunn.isReservert()) {
-            return RESERVERT;
-        }
-        return DIGITAL_KOMPETANSE;
+
+        return new GodkjentPaVegneGrunnTilJournalfoering(
+                grunn.isIkkeBankId(),
+                grunn.isDigitalKompetanse(),
+                grunn.isReservert()
+        );
     }
 
 
@@ -95,7 +92,7 @@ public class AvtaleTilJournalfoeringMapper {
             return null;
         }
 
-        List<MaalTilJournalfoering> list1 = new ArrayList<MaalTilJournalfoering>(list.size());
+        List<MaalTilJournalfoering> list1 = new ArrayList<>(list.size());
         for (Maal maal : list) {
             list1.add(maalToMaalTilJournalfoering(maal));
         }
