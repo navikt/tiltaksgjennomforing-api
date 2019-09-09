@@ -1,12 +1,14 @@
 package no.nav.tag.tiltaksgjennomforing.domene;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.models.auth.In;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import no.nav.tag.tiltaksgjennomforing.domene.events.*;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
+import org.apache.tomcat.jni.Local;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.domain.AbstractAggregateRoot;
@@ -64,23 +66,31 @@ public class Avtale extends AbstractAggregateRoot {
     private LocalDateTime godkjentAvVeileder;
     private boolean godkjentPaVegneAv;
     private boolean avbrutt;
+    private Integer godkjentVersjon;
 
     @PersistenceConstructor
-    public Avtale(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent, UUID baseAvtaleId, int versjon) {
+    public Avtale(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent, UUID baseAvtaleId, int godkjentVersjon) {
         this.deltakerFnr = sjekkAtIkkeNull(deltakerFnr, "Deltakers fnr må være satt.");
         this.bedriftNr = sjekkAtIkkeNull(bedriftNr, "Arbeidsgivers bedriftnr må være satt.");
         this.veilederNavIdent = sjekkAtIkkeNull(veilederNavIdent, "Veileders NAV-ident må være satt.");
-        if (baseAvtaleId != null && versjon > 1) {
-            this.baseAvtaleId=baseAvtaleId;
-            this.versjon=versjon;
+        if (baseAvtaleId != null) {
+            this.baseAvtaleId = baseAvtaleId;
         }
+        this.godkjentVersjon = godkjentVersjon;
     }
 
     public static Avtale nyAvtale(OpprettAvtale opprettAvtale, NavIdent veilederNavIdent) {
-        Avtale avtale = new Avtale(opprettAvtale.getDeltakerFnr(), opprettAvtale.getBedriftNr(), veilederNavIdent);
+        Avtale avtale = new Avtale(opprettAvtale.getDeltakerFnr(), opprettAvtale.getBedriftNr(), veilederNavIdent,
+                null, opprettAvtale.getGodkjentVersjon() != 0 ? opprettAvtale.getGodkjentVersjon() : 1);
         avtale.setVersjon(1);
         avtale.registerEvent(new AvtaleOpprettet(avtale, veilederNavIdent));
         return avtale;
+    }
+
+    public static Avtale nyAvtaleVersjon(OpprettAvtale opprettAvtaleVersjon, NavIdent veilederNavIdent, UUID sisteVersjonID, UUID baseAvtaleId, int godkjentVersjon) {
+        Avtale avtaleVersjon = new Avtale(opprettAvtaleVersjon.getDeltakerFnr(), opprettAvtaleVersjon.getBedriftNr(), veilederNavIdent, opprettAvtaleVersjon.getBaseAvtaleId(), opprettAvtaleVersjon.getGodkjentVersjon());
+        //To do endre avtale og fylle info fra siste versjon og gi baseavtaleId
+        return avtaleVersjon;
     }
 
     public void endreAvtale(Integer versjon, EndreAvtale nyAvtale, Avtalerolle utfortAv) {
@@ -112,6 +122,49 @@ public class Avtale extends AbstractAggregateRoot {
         setOppgaver(nyAvtale.getOppgaver());
 
         registerEvent(new AvtaleEndret(this, utfortAv));
+    }
+
+    public void fylleUtAvtaleVersjonVerdier(Integer nyGodkjentVersjon, Avtale sisteAvtaleVersjon, UUID baseAvtaleId, Avtalerolle utfortAv) {
+        kontrollNyVersjon( sisteAvtaleVersjon);
+        setDeltakerInfo(sisteAvtaleVersjon.getDeltakerFornavn(), sisteAvtaleVersjon.getDeltakerEtternavn(), sisteAvtaleVersjon.getDeltakerTlf());
+        setArbeidsgiverInfo(sisteAvtaleVersjon.getBedriftNavn(), sisteAvtaleVersjon.getArbeidsgiverFornavn(), sisteAvtaleVersjon.getArbeidsgiverEtternavn(), sisteAvtaleVersjon.getArbeidsgiverTlf());
+        setVeilederInfo(sisteAvtaleVersjon.getVeilederFornavn(), sisteAvtaleVersjon.getVeilederEtternavn(), sisteAvtaleVersjon.getVeilederTlf());
+        setTiltakInfo(sisteAvtaleVersjon.getOppfolging(), sisteAvtaleVersjon.getTilrettelegging(),
+                sisteAvtaleVersjon.getStartDato(), sisteAvtaleVersjon.getArbeidstreningLengde(),
+                sisteAvtaleVersjon.getArbeidstreningStillingprosent());
+        setMaal(sisteAvtaleVersjon.getMaal());
+        setOppgaver(sisteAvtaleVersjon.getOppgaver());
+        registerEvent(new AvtaleEndret(this, utfortAv));
+    }
+
+    protected void setDeltakerInfo(String deltakerFornavn, String deltakerEtternavn, String deltakerTlf) {
+        setDeltakerFornavn(deltakerFornavn);
+        setDeltakerEtternavn(deltakerEtternavn);
+        setDeltakerTlf(deltakerTlf);
+    }
+
+    protected void setArbeidsgiverInfo(
+            String bedriftNavn, String arbeidsgiverFornavn, String arbeidsgiverEtternavn, String arbeidsgiverTlf) {
+        setBedriftNavn(bedriftNavn);
+        setArbeidsgiverFornavn(arbeidsgiverFornavn);
+        setArbeidsgiverEtternavn(arbeidsgiverEtternavn);
+        setArbeidsgiverTlf(arbeidsgiverTlf);
+    }
+
+    protected void setVeilederInfo(String veilederFornavn, String veilederEtternavn, String veilederTlf) {
+        setVeilederFornavn(veilederFornavn);
+        setVeilederEtternavn(veilederEtternavn);
+        setVeilederTlf(veilederTlf);
+    }
+
+    protected void setTiltakInfo(
+            String oppfolging, String tilrettelegging, LocalDate startDato,
+            Integer arbeidstreningLengde, Integer arbeidstreningStillingprosent) {
+        setOppfolging(oppfolging);
+        setTilrettelegging(tilrettelegging);
+        setStartDato(startDato);
+        setArbeidstreningLengde(arbeidstreningLengde);
+        setArbeidstreningStillingprosent(arbeidstreningStillingprosent);
     }
 
     @JsonProperty("erLaast")
@@ -156,6 +209,19 @@ public class Avtale extends AbstractAggregateRoot {
         }
     }
 
+    void kontrollNyVersjon(Avtale sisteAvtaleVersjon) {
+        sjekkOmAvtalenKanEndres();
+        if (sisteAvtaleVersjon.godkjentVersjon == null) {
+            throw new SamtidigeEndringerException("Det står en feil ved kotrllering av oppretting ny versjon av avtale. Sjekk om siste avtalen er godkjent av veileder før du oppretter en ny versjon.");
+        }
+        if (sisteAvtaleVersjon.baseAvtaleId == null) {
+            this.baseAvtaleId = sisteAvtaleVersjon.id;
+        } else {
+            this.baseAvtaleId = sisteAvtaleVersjon.baseAvtaleId;
+        }
+        this.godkjentVersjon = sisteAvtaleVersjon.godkjentVersjon + 1;
+    }
+
     void settIdOgOpprettetTidspunkt() {
         if (this.id == null) {
             this.id = UUID.randomUUID();
@@ -178,6 +244,7 @@ public class Avtale extends AbstractAggregateRoot {
     void godkjennForVeileder(Identifikator utfortAv) {
         sjekkOmKanGodkjennes();
         this.godkjentAvVeileder = LocalDateTime.now();
+        this.godkjentVersjon += 1;
         registerEvent(new GodkjentAvVeileder(this, utfortAv));
     }
 
@@ -230,6 +297,7 @@ public class Avtale extends AbstractAggregateRoot {
             registerEvent(new AvbruttAvVeileder(this, veileder.getIdentifikator()));
         }
     }
+
 
     private boolean heleAvtalenErFyltUt() {
         return erIkkeTomme(deltakerFnr,

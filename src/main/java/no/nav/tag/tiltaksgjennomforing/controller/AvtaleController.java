@@ -65,6 +65,23 @@ public class AvtaleController {
         return ResponseEntity.created(uri).build();
     }
 
+    @PostMapping
+    public ResponseEntity opprettAvtaleVersjon(@RequestBody OpprettAvtale opprettAvtaleVersjon,
+                                               @PathVariable("avtaleId") UUID sisteVersjonAvtaleId
+            /*, @RequestBody int versjon, @RequestBody UUID baseAvtaleId*/) {
+        InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
+        tilgangUnderPilotering.sjekkTilgang(innloggetNavAnsatt.getIdentifikator());
+        Avtale sisteAvtaleVersjon =avtaleRepository.findById(sisteVersjonAvtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        Avtale avtaleVersjon = innloggetNavAnsatt.opprettAvtale(opprettAvtaleVersjon, sisteVersjonAvtaleId,
+                sisteAvtaleVersjon.getBaseAvtaleId(),sisteAvtaleVersjon.getGodkjentVersjon());
+        Avtale opprettetAvtaleVersjon = avtaleRepository.save(avtaleVersjon);
+        Avtalepart avtalepart=innloggetNavAnsatt.avtalepart(opprettetAvtaleVersjon);
+        //avtalepart.endreAvtale(versjon,sisteVersjonAvtale);
+        avtalepart.fylleUtAvtaleVersjonVerdier(sisteAvtaleVersjon.getGodkjentVersjon(),sisteAvtaleVersjon,sisteAvtaleVersjon.getBaseAvtaleId());
+        URI uri = lagUri("/avtaler/" + opprettetAvtaleVersjon.getId());
+        return ResponseEntity.created(uri).build();
+    }
+
     @PutMapping(value = "/{avtaleId}")
     public ResponseEntity endreAvtale(@PathVariable("avtaleId") UUID avtaleId,
                                       @RequestHeader("If-Match") Integer versjon,

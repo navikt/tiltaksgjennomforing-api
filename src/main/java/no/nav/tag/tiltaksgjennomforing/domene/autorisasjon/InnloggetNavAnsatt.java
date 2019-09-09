@@ -2,6 +2,8 @@ package no.nav.tag.tiltaksgjennomforing.domene.autorisasjon;
 
 import no.nav.tag.tiltaksgjennomforing.domene.*;
 
+import java.util.UUID;
+
 public class InnloggetNavAnsatt extends InnloggetBruker<NavIdent> {
     public InnloggetNavAnsatt(NavIdent identifikator) {
         super(identifikator);
@@ -9,6 +11,10 @@ public class InnloggetNavAnsatt extends InnloggetBruker<NavIdent> {
 
     public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
         return Avtale.nyAvtale(opprettAvtale, getIdentifikator());
+    }
+    public Avtale opprettAvtale(OpprettAvtale opprettAvtale, UUID sisteVersjonID, UUID baseAvtaleID, int godkjentVersjon)
+    {
+        return Avtale.nyAvtaleVersjon(opprettAvtale,getIdentifikator(),sisteVersjonID,baseAvtaleID,godkjentVersjon);
     }
 
     @Override

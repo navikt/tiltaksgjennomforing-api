@@ -13,5 +13,5 @@ public class OpprettAvtale {
     private Fnr deltakerFnr;
     private BedriftNr bedriftNr;
     private UUID baseAvtaleId;
-    private int versjon;
+    private int godkjentVersjon;
 }

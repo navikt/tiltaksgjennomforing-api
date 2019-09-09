@@ -5,6 +5,8 @@ import lombok.Data;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
 
+import java.util.UUID;
+
 @AllArgsConstructor
 @Data
 public abstract class Avtalepart<T extends Identifikator> {
@@ -41,6 +43,13 @@ public abstract class Avtalepart<T extends Identifikator> {
             throw new TilgangskontrollException("Kan ikke endre avtale.");
         }
         avtale.endreAvtale(versjon, endreAvtale, rolle());
+    }
+
+    public void fylleUtAvtaleVersjonVerdier(Integer versjon, Avtale sisteAvtaleVersjon, UUID baseAvtaleId) {
+        if (!kanEndreAvtale()) {
+            throw new TilgangskontrollException("Kan ikke fylle ut informasjon for ny versjon av avtale.");
+        }
+        avtale.fylleUtAvtaleVersjonVerdier(versjon, sisteAvtaleVersjon, baseAvtaleId, rolle());
     }
 
     public void opphevGodkjenninger() {
