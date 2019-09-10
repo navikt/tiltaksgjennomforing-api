@@ -34,4 +34,8 @@ public class ByEnvironmentStrategy implements Strategy {
                 .map(env -> asList(env.split(",")).contains(environment))
                 .orElse(false);
     }
+    
+    String getEnvironment() {
+        return environment;
+    }
 }

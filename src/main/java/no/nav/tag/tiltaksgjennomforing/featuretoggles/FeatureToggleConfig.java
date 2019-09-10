@@ -16,13 +16,14 @@ public class FeatureToggleConfig {
 
     private final String APP_NAME = "tiltaksgjennomforing-api";
     private final ByEnvironmentStrategy byEnvironmentStrategy;
+    private final String profile;
 
     @Value("${tiltaksgjennomforing.unleash.unleash-uri}") private String unleashUrl;
-    @Value("${spring.profiles.active}") private String profile;
 
     @Autowired
     public FeatureToggleConfig(ByEnvironmentStrategy byEnvironmentStrategy) {
         this.byEnvironmentStrategy = byEnvironmentStrategy;
+        this.profile = byEnvironmentStrategy.getEnvironment();
     }
 
     @Bean
