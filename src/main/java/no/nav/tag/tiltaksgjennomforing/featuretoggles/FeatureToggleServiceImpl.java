@@ -2,7 +2,8 @@ package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 
 import no.finn.unleash.Unleash;
 import no.finn.unleash.UnleashContext;
-import no.nav.tag.tiltaksgjennomforing.integrasjon.InnloggingService;
+import no.finn.unleash.UnleashContext.Builder;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.TokenUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -17,13 +18,12 @@ import java.util.stream.Collectors;
 public class FeatureToggleServiceImpl implements FeatureToggleService {
 
     private final Unleash unleash;
-    private final InnloggingService innloggingService;
+    private final TokenUtils tokenUtils;
 
     @Autowired
-    public FeatureToggleServiceImpl(Unleash unleash, InnloggingService innloggingService) {
+    public FeatureToggleServiceImpl(Unleash unleash, TokenUtils tokenUtils) {
         this.unleash = unleash;
-        this.innloggingService = innloggingService;
-        
+        this.tokenUtils = tokenUtils;        
     }
 
     public Map<String, Boolean> hentFeatureToggles(List<String> features) {
@@ -39,13 +39,8 @@ public class FeatureToggleServiceImpl implements FeatureToggleService {
     }
 
     private UnleashContext contextMedInnloggetBruker() {
-        String bruker = null;
-        try {
-            bruker  = innloggingService.hentInnloggetBruker().getIdentifikator().asString();
-        } catch (Exception e) {
-        }
-        
-        UnleashContext unleashContext = UnleashContext.builder().userId(bruker).build();
-        return unleashContext;
+        Builder builder = UnleashContext.builder();
+        tokenUtils.hentBrukerOgIssuer().map(a -> builder.userId(a.getBrukerIdent()));
+        return builder.build();
     }
 }

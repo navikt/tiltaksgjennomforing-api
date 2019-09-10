@@ -6,11 +6,13 @@ import no.nav.tag.tiltaksgjennomforing.integrasjon.veilarbabac.TilgangskontrollS
 import org.junit.Before;
 import org.junit.Test;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 
+import java.util.Arrays;
 
 public class InnloggetBrukerTest {
 
@@ -52,7 +54,7 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__deltaker_skal_ha_tilgang_til_avtale() {
-        assertThat(new InnloggetSelvbetjeningBruker(deltaker).harLeseTilgang(avtale)).isTrue();
+        assertThat(new InnloggetSelvbetjeningBruker(deltaker, emptyList()).harLeseTilgang(avtale)).isTrue();
     }
 
     @Test
@@ -105,7 +107,7 @@ public class InnloggetBrukerTest {
     
     @Test
     public void harTilgang__arbeidsgiver_skal_ikke_ha_tilgang_til_avtale() {
-        assertThat(new InnloggetSelvbetjeningBruker(TestData.etFodselsnummer()).harLeseTilgang(avtale)).isFalse();
+        assertThat(new InnloggetSelvbetjeningBruker(TestData.etFodselsnummer(), emptyList()).harLeseTilgang(avtale)).isFalse();
     }
 
     @Test
@@ -120,13 +122,12 @@ public class InnloggetBrukerTest {
     
     @Test
     public void harTilgang__ikkepart_selvbetjeningsbruker_skal_ikke_ha_tilgang() {
-        assertThat(new InnloggetSelvbetjeningBruker(new Fnr("00000000001")).harLeseTilgang(avtale)).isFalse();
+        assertThat(new InnloggetSelvbetjeningBruker(new Fnr("00000000001"), emptyList()).harLeseTilgang(avtale)).isFalse();
     }
 
     @Test
     public void harTilgang__arbeidsgiver_skal_kunne_representere_bedrift_uten_Fnr() {
-        InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker = new InnloggetSelvbetjeningBruker(new Fnr("00000000009"));
-        innloggetSelvbetjeningBruker.getOrganisasjoner().add(new Organisasjon(bedriftNr, "Testbutikken"));
+        InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker = new InnloggetSelvbetjeningBruker(new Fnr("00000000009"), Arrays.asList(new Organisasjon(bedriftNr, "Testbutikken")));
         assertThat(innloggetSelvbetjeningBruker.harLeseTilgang(avtale)).isTrue();
     }
 }

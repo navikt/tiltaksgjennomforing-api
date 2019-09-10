@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -85,7 +86,7 @@ public class AvtaleControllerTest {
     @Test(expected = TilgangskontrollException.class)
     public void hentSkalKastTilgangskontrollExceptionHvisInnloggetSelvbetjeningBrukerIkkeHarTilgang() {
         Avtale avtale = TestData.enAvtale();
-        vaerInnloggetSom(new InnloggetSelvbetjeningBruker(new Fnr("55555566666")));
+        vaerInnloggetSom(new InnloggetSelvbetjeningBruker(new Fnr("55555566666"), emptyList()));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         avtaleController.hent(avtale.getId());
     }

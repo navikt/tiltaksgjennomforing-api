@@ -4,6 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.veilarbabac.TilgangskontrollService;
 
+import static java.util.Collections.emptyList;
 import static org.mockito.Mockito.mock;
 import no.nav.tag.tiltaksgjennomforing.domene.varsel.BjelleVarsel;
 import no.nav.tag.tiltaksgjennomforing.domene.varsel.SmsVarsel;
@@ -78,7 +79,7 @@ public class TestData {
     }
 
     public static InnloggetSelvbetjeningBruker enSelvbetjeningBruker() {
-        return new InnloggetSelvbetjeningBruker(new Fnr("99999999999"));
+        return new InnloggetSelvbetjeningBruker(new Fnr("99999999999"), emptyList());
     }
 
     public static InnloggetNavAnsatt enNavAnsatt() {
@@ -120,15 +121,12 @@ public class TestData {
     }
 
     public static InnloggetSelvbetjeningBruker innloggetSelvbetjeningBrukerMedOrganisasjon(Avtalepart<Fnr> avtalepartMedFnr) {
-        InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker = new InnloggetSelvbetjeningBruker(avtalepartMedFnr.getIdentifikator());
         Organisasjon organisasjon = new Organisasjon(avtalepartMedFnr.getAvtale().getBedriftNr(), avtalepartMedFnr.getAvtale().getBedriftNavn());
-        innloggetSelvbetjeningBruker.setOrganisasjoner(Arrays.asList(organisasjon));
-        return innloggetSelvbetjeningBruker;
+        return new InnloggetSelvbetjeningBruker(avtalepartMedFnr.getIdentifikator(), Arrays.asList(organisasjon));
     }
 
     public static InnloggetSelvbetjeningBruker innloggetSelvbetjeningBrukerUtenOrganisasjon(Avtalepart<Fnr> avtalepartMedFnr) {
-        InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker = new InnloggetSelvbetjeningBruker(avtalepartMedFnr.getIdentifikator());
-        return innloggetSelvbetjeningBruker;
+        return new InnloggetSelvbetjeningBruker(avtalepartMedFnr.getIdentifikator(), emptyList());
     }
 
     public static InnloggetNavAnsatt innloggetNavAnsatt(Avtalepart<NavIdent> avtalepartMedNavIdent) {

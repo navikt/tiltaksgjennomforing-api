@@ -2,11 +2,11 @@ package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 
 import no.finn.unleash.Unleash;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleServiceImpl;
-import no.nav.tag.tiltaksgjennomforing.integrasjon.InnloggingService;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.TokenUtils;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -23,15 +23,10 @@ import static org.mockito.Mockito.when;
 public class FeatureToggleServiceTest {
 
     @Mock private Unleash unleash;
-    @Mock private InnloggingService innloggingService;
+    @Mock private TokenUtils innloggingService;
 
+    @InjectMocks
     private FeatureToggleServiceImpl featureToggleService;
-
-
-    @Before
-    public void setUp() {
-        featureToggleService = new FeatureToggleServiceImpl(unleash, innloggingService);
-    }
 
     @Test
     public void hentFeatureToggles__skal_returnere_true_hvis_feature_er_på() {
