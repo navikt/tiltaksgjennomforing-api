@@ -65,20 +65,20 @@ public class AvtaleController {
         return ResponseEntity.created(uri).build();
     }
 
-    @PostMapping("/opprettAvtaleVersjon")
-    public ResponseEntity opprettAvtaleVersjon(@RequestBody OpprettAvtale opprettAvtaleVersjon,
+    @PostMapping("/opprettAvtaleRevisjon")
+    public ResponseEntity opprettAvtaleRevisjon(@RequestBody OpprettAvtale opprettAvtaleRevisjon,
                                                @PathVariable("avtaleId") UUID sisteVersjonAvtaleId
             /*, @RequestBody int versjon, @RequestBody UUID baseAvtaleId*/) {
         InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
         tilgangUnderPilotering.sjekkTilgang(innloggetNavAnsatt.getIdentifikator());
         Avtale sisteAvtaleVersjon =avtaleRepository.findById(sisteVersjonAvtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        Avtale avtaleVersjon = innloggetNavAnsatt.opprettAvtale(opprettAvtaleVersjon, sisteVersjonAvtaleId,
-                sisteAvtaleVersjon.getBaseAvtaleId(),sisteAvtaleVersjon.getGodkjentVersjon());
-        Avtale opprettetAvtaleVersjon = avtaleRepository.save(avtaleVersjon);
-        Avtalepart avtalepart=innloggetNavAnsatt.avtalepart(opprettetAvtaleVersjon);
+        Avtale avtaleRevisjon = innloggetNavAnsatt.opprettAvtale(opprettAvtaleRevisjon, sisteVersjonAvtaleId,
+                sisteAvtaleVersjon.getBaseAvtaleId(),sisteAvtaleVersjon.getRevisjon());
+        Avtale opprettetAvtaleRevisjon= avtaleRepository.save(avtaleRevisjon);
+        Avtalepart avtalepart=innloggetNavAnsatt.avtalepart(opprettetAvtaleRevisjon);
         //avtalepart.endreAvtale(versjon,sisteVersjonAvtale);
-        avtalepart.fylleUtAvtaleVersjonVerdier(sisteAvtaleVersjon.getGodkjentVersjon(),sisteAvtaleVersjon,sisteAvtaleVersjon.getBaseAvtaleId());
-        URI uri = lagUri("/avtaler/" + opprettetAvtaleVersjon.getId());
+        avtalepart.fylleUtAvtaleRevisjonVerdier(sisteAvtaleVersjon.getRevisjon(),sisteAvtaleVersjon,sisteAvtaleVersjon.getBaseAvtaleId());
+        URI uri = lagUri("/avtaler/" + opprettetAvtaleRevisjon.getId());
         return ResponseEntity.created(uri).build();
     }
 

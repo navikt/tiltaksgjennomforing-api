@@ -47,11 +47,11 @@ public abstract class Avtalepart<T extends Identifikator> {
         avtale.endreAvtale(versjon, endreAvtale, rolle());
     }
 
-    public void fylleUtAvtaleVersjonVerdier(Integer versjon, Avtale sisteAvtaleVersjon, UUID baseAvtaleId) {
+    public void fylleUtAvtaleRevisjonVerdier(Integer versjon, Avtale sisteAvtaleVersjon, UUID baseAvtaleId) {
         if (!kanEndreAvtale()) {
             throw new TilgangskontrollException("Kan ikke fylle ut informasjon for ny versjon av avtale.");
         }
-        avtale.fylleUtAvtaleVersjonVerdier(versjon, sisteAvtaleVersjon, baseAvtaleId, rolle());
+        avtale.fylleUtAvtaleRevisjonVerdier(versjon, sisteAvtaleVersjon, baseAvtaleId, rolle());
     }
 
     public void opphevGodkjenninger() {

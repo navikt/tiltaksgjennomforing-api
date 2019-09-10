@@ -1,14 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.domene;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.models.auth.In;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import no.nav.tag.tiltaksgjennomforing.domene.events.*;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
-import org.apache.tomcat.jni.Local;
 import no.nav.tag.tiltaksgjennomforing.domene.varsel.GamleVerdier;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
@@ -67,17 +65,17 @@ public class Avtale extends AbstractAggregateRoot {
     private LocalDateTime godkjentAvVeileder;
     private boolean godkjentPaVegneAv;
     private boolean avbrutt;
-    private Integer godkjentVersjon;
+    private Integer revisjon;
 
     @PersistenceConstructor
-    public Avtale(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent, UUID baseAvtaleId, int godkjentVersjon) {
+    public Avtale(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent, UUID baseAvtaleId, int revisjon) {
         this.deltakerFnr = sjekkAtIkkeNull(deltakerFnr, "Deltakers fnr må være satt.");
         this.bedriftNr = sjekkAtIkkeNull(bedriftNr, "Arbeidsgivers bedriftnr må være satt.");
         this.veilederNavIdent = sjekkAtIkkeNull(veilederNavIdent, "Veileders NAV-ident må være satt.");
         if (baseAvtaleId != null) {
             this.baseAvtaleId = baseAvtaleId;
         }
-        this.godkjentVersjon = godkjentVersjon;
+        this.revisjon = revisjon;
     }
 
     public static Avtale nyAvtale(OpprettAvtale opprettAvtale, NavIdent veilederNavIdent) {
@@ -131,8 +129,8 @@ public class Avtale extends AbstractAggregateRoot {
         registerEvent(new AvtaleEndret(this, utfortAv));
     }
 
-    public void fylleUtAvtaleVersjonVerdier(Integer nyGodkjentVersjon, Avtale sisteAvtaleVersjon, UUID baseAvtaleId, Avtalerolle utfortAv) {
-        kontrollNyVersjon( sisteAvtaleVersjon);
+    public void fylleUtAvtaleRevisjonVerdier(Integer nyGodkjentVersjon, Avtale sisteAvtaleVersjon, UUID baseAvtaleId, Avtalerolle utfortAv) {
+        kontrollNyRevisjon(sisteAvtaleVersjon);
         setDeltakerInfo(sisteAvtaleVersjon.getDeltakerFornavn(), sisteAvtaleVersjon.getDeltakerEtternavn(), sisteAvtaleVersjon.getDeltakerTlf());
         setArbeidsgiverInfo(sisteAvtaleVersjon.getBedriftNavn(), sisteAvtaleVersjon.getArbeidsgiverFornavn(), sisteAvtaleVersjon.getArbeidsgiverEtternavn(), sisteAvtaleVersjon.getArbeidsgiverTlf());
         setVeilederInfo(sisteAvtaleVersjon.getVeilederFornavn(), sisteAvtaleVersjon.getVeilederEtternavn(), sisteAvtaleVersjon.getVeilederTlf());
@@ -228,10 +226,9 @@ public class Avtale extends AbstractAggregateRoot {
         }
     }
 
-    public void settIdOgOpprettetTidspunkt() {
-    void kontrollNyVersjon(Avtale sisteAvtaleVersjon) {
+    void kontrollNyRevisjon(Avtale sisteAvtaleVersjon) {
         sjekkOmAvtalenKanEndres();
-        if (sisteAvtaleVersjon.godkjentVersjon == null) {
+        if (sisteAvtaleVersjon.revisjon == null) {
             throw new SamtidigeEndringerException("Det står en feil ved kotrllering av oppretting ny versjon av avtale. Sjekk om siste avtalen er godkjent av veileder før du oppretter en ny versjon.");
         }
         if (sisteAvtaleVersjon.baseAvtaleId == null) {
@@ -239,10 +236,10 @@ public class Avtale extends AbstractAggregateRoot {
         } else {
             this.baseAvtaleId = sisteAvtaleVersjon.baseAvtaleId;
         }
-        this.godkjentVersjon = sisteAvtaleVersjon.godkjentVersjon + 1;
+        this.revisjon = sisteAvtaleVersjon.revisjon + 1;
     }
 
-    void settIdOgOpprettetTidspunkt() {
+    public void settIdOgOpprettetTidspunkt() {
         if (this.id == null) {
             this.id = UUID.randomUUID();
         }
@@ -264,7 +261,7 @@ public class Avtale extends AbstractAggregateRoot {
     void godkjennForVeileder(Identifikator utfortAv) {
         sjekkOmKanGodkjennes();
         this.godkjentAvVeileder = LocalDateTime.now();
-        this.godkjentVersjon += 1;
+        this.revisjon += 1;
         registerEvent(new GodkjentAvVeileder(this, utfortAv));
     }
 
