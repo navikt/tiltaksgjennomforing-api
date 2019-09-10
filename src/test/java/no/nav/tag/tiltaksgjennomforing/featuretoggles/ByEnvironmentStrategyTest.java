@@ -17,6 +17,11 @@ public class ByEnvironmentStrategyTest {
     }
 
     @Test
+    public void strategiSkalHandtereFlereProfiler() {
+        assertThat(new ByEnvironmentStrategy("local,test").isEnabled(Map.of("miljø", "local,dev"))).isEqualTo(true);
+    }
+
+    @Test
     public void featureIsDisabledWhenEnvironmentNotInList() {
         assertThat(new ByEnvironmentStrategy("dev").isEnabled(Map.of("miljø", "prod"))).isEqualTo(false);
     }
