@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-@Profile(value= {"heroku"})
+@Profile(value= {"dev", "heroku"})
 public class FeatureToggleServiceMock implements FeatureToggleService {
 
     private static final Map<String, Boolean> TOGGLES = Map.of("test1", true, "test2", false);
