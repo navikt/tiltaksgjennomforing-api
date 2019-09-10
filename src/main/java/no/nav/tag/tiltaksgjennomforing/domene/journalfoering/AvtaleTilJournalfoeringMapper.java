@@ -44,9 +44,7 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setVeilederTlf(avtale.getVeilederTlf());
         avtaleTilJournalfoering.setOppfolging(avtale.getOppfolging());
         avtaleTilJournalfoering.setTilrettelegging(avtale.getTilrettelegging());
-        if (avtale.getStartDato() != null) {
-            avtaleTilJournalfoering.setStartDato(DateTimeFormatter.ofPattern("dd.MM.yyyy").format(avtale.getStartDato()));
-        }
+        avtaleTilJournalfoering.setStartDato(avtale.getStartDato());
         avtaleTilJournalfoering.setArbeidstreningLengde(avtale.getArbeidstreningLengde());
         avtaleTilJournalfoering.setArbeidstreningStillingprosent(avtale.getArbeidstreningStillingprosent());
         avtaleTilJournalfoering.setMaal(maalListToMaalTilJournalfoeringList(avtale.getMaal()));

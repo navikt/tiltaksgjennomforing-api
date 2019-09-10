@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -37,7 +38,7 @@ public class AvtaleTilJournalfoering {
     private String oppfolging;
     private String tilrettelegging;
 
-    private String startDato;
+    private LocalDate startDato;
     private Integer arbeidstreningLengde;
     private Integer arbeidstreningStillingprosent;
 
