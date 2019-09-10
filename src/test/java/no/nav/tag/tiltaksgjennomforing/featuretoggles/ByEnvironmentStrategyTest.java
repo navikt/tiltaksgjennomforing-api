@@ -13,20 +13,14 @@ public class ByEnvironmentStrategyTest {
 
     @Test
     public void featureIsEnabledWhenEnvironmentInList() {
-        Map<String, String> parametre = new HashMap<>();
-
-        parametre.put("miljø", "local,dev");
-        assertThat(new ByEnvironmentStrategy("local").isEnabled(parametre)).isEqualTo(true);
+        assertThat(new ByEnvironmentStrategy("local").isEnabled(Map.of("miljø", "local,dev"))).isEqualTo(true);
     }
 
     @Test
     public void featureIsDisabledWhenEnvironmentNotInList() {
-        Map<String, String> parametre = new HashMap<>();
-
-        parametre.put("miljø", "prod");
-        assertThat(new ByEnvironmentStrategy("dev").isEnabled(parametre)).isEqualTo(false);
+        assertThat(new ByEnvironmentStrategy("dev").isEnabled(Map.of("miljø", "prod"))).isEqualTo(false);
     }
-
+    
     @Test
     public void skalReturnereFalseHvisParametreErNull() {
         assertThat(new ByEnvironmentStrategy("dev").isEnabled(null)).isEqualTo(false);
@@ -34,7 +28,6 @@ public class ByEnvironmentStrategyTest {
 
     @Test
     public void skalReturnereFalseHvisMiljøIkkeErSatt() {
-        Map<String, String> parametre = new HashMap<>();
-        assertThat(new ByEnvironmentStrategy("dev").isEnabled(parametre)).isEqualTo(false);
+        assertThat(new ByEnvironmentStrategy("dev").isEnabled(new HashMap<>())).isEqualTo(false);
     }
 }
