@@ -13,7 +13,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 })
 @EnableConfigurationProperties
 public class TiltaksgjennomforingApplication {
-public static void main(String[] args) {
+    public static void main(String[] args) {
         SpringApplication application = new SpringApplicationBuilder(TiltaksgjennomforingApplication.class)
                 .initializers(new SjekkAktiveProfilerInitializer())
                 .build();

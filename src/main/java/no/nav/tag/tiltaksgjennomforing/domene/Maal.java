@@ -2,7 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.domene;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -22,4 +21,10 @@ public class Maal {
             opprettetTidspunkt = LocalDateTime.now();
         }
     }
+
+
+    public void sjekkMaalLengde() {
+        Utils.sjekkAtTekstIkkeOverskrider1000Tegn(this.getBeskrivelse(), "Maks lengde for mål er 1000 tegn");
+    }
+
 }

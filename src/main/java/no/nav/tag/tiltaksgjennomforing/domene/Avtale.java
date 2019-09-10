@@ -9,6 +9,7 @@ import no.nav.tag.tiltaksgjennomforing.domene.exceptions.SamtidigeEndringerExcep
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
 import org.apache.tomcat.jni.Local;
+import no.nav.tag.tiltaksgjennomforing.domene.varsel.GamleVerdier;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.domain.AbstractAggregateRoot;
@@ -87,6 +88,11 @@ public class Avtale extends AbstractAggregateRoot {
         return avtale;
     }
 
+    private static void sjekkMaalOgOppgaverLengde(List<Maal> maal, List<Oppgave> oppgaver) {
+        maal.forEach(Maal::sjekkMaalLengde);
+        oppgaver.forEach(Oppgave::sjekkOppgaveLengde);
+    }
+
     public static Avtale nyAvtaleVersjon(OpprettAvtale opprettAvtaleVersjon, NavIdent veilederNavIdent, UUID sisteVersjonID, UUID baseAvtaleId, int godkjentVersjon) {
         Avtale avtaleVersjon = new Avtale(opprettAvtaleVersjon.getDeltakerFnr(), opprettAvtaleVersjon.getBedriftNr(), veilederNavIdent, opprettAvtaleVersjon.getBaseAvtaleId(), opprettAvtaleVersjon.getGodkjentVersjon());
         //To do endre avtale og fylle info fra siste versjon og gi baseavtaleId
@@ -97,6 +103,7 @@ public class Avtale extends AbstractAggregateRoot {
         sjekkOmAvtalenKanEndres();
         sjekkVersjon(versjon);
         inkrementerVersjonsnummer();
+        sjekkMaalOgOppgaverLengde(nyAvtale.getMaal(), nyAvtale.getOppgaver());
 
         setDeltakerFornavn(nyAvtale.getDeltakerFornavn());
         setDeltakerEtternavn(nyAvtale.getDeltakerEtternavn());
@@ -190,13 +197,25 @@ public class Avtale extends AbstractAggregateRoot {
         }
     }
 
-    void opphevGodkjenninger(Avtalerolle avtalerolle) {
+    void opphevGodkjenningerSomArbeidsgiver() {
+        boolean varGodkjentAvDeltaker = erGodkjentAvDeltaker();
+        opphevGodkjenninger();
+        registerEvent(new GodkjenningerOpphevetAvArbeidsgiver(this, new GamleVerdier(varGodkjentAvDeltaker, false)));
+    }
+
+    void opphevGodkjenningerSomVeileder() {
+        boolean varGodkjentAvDeltaker = erGodkjentAvDeltaker();
+        boolean varGodkjentAvArbeidsgiver = erGodkjentAvArbeidsgiver();
+        opphevGodkjenninger();
+        registerEvent(new GodkjenningerOpphevetAvVeileder(this, new GamleVerdier(varGodkjentAvDeltaker, varGodkjentAvArbeidsgiver)));
+    }
+
+    private void opphevGodkjenninger() {
         setGodkjentAvDeltaker(null);
         setGodkjentAvArbeidsgiver(null);
         setGodkjentAvVeileder(null);
         setGodkjentPaVegneAv(false);
         setGodkjentPaVegneGrunn(null);
-        registerEvent(new GodkjenningerOpphevet(this, avtalerolle));
     }
 
     private void inkrementerVersjonsnummer() {
@@ -209,6 +228,7 @@ public class Avtale extends AbstractAggregateRoot {
         }
     }
 
+    public void settIdOgOpprettetTidspunkt() {
     void kontrollNyVersjon(Avtale sisteAvtaleVersjon) {
         sjekkOmAvtalenKanEndres();
         if (sisteAvtaleVersjon.godkjentVersjon == null) {

@@ -10,5 +10,5 @@ import java.net.URI;
 @Component
 @ConfigurationProperties(prefix = "tiltaksgjennomforing.ereg")
 public class EregProperties {
-    private URI eregUri;
+    private URI uri;
 }

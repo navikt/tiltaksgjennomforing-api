@@ -52,4 +52,9 @@ public class Veileder extends Avtalepart<NavIdent> {
         paVegneAvGrunn.valgtMinstEnGrunn();
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
     }
+
+    @Override
+    void opphevGodkjenningerSomAvtalepart() {
+        avtale.opphevGodkjenningerSomVeileder();
+    }
 }

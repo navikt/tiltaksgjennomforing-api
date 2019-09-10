@@ -10,6 +10,6 @@ import java.net.URI;
 @Component
 @ConfigurationProperties(prefix = "tiltaksgjennomforing.axsys")
 public class AxsysProperties {
-    private URI axsysUri;
+    private URI uri;
     private String navConsumerId;
 }
