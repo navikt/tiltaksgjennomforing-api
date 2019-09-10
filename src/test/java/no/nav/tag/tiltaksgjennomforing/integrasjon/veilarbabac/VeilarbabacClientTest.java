@@ -63,7 +63,7 @@ public class VeilarbabacClientTest {
     }
 
     private static InnloggetNavAnsatt enVeileder() {
-        return new InnloggetNavAnsatt(new NavIdent("X123456"), null, null);
+        return new InnloggetNavAnsatt(new NavIdent("X123456"), null);
     }
 
     @Test

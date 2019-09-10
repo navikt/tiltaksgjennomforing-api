@@ -2,6 +2,8 @@ package no.nav.tag.tiltaksgjennomforing.integrasjon.veilarbabac;
 
 import static no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService.NY_VEILEDERTILGANG;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 import no.nav.tag.tiltaksgjennomforing.domene.Fnr;
@@ -19,10 +21,22 @@ public class TilgangskontrollService {
         this.featureToggleService = featureToggleService;
     }
 
+    public Optional<Boolean> harLesetilgangTilKandidat(InnloggetNavAnsatt innloggetNavAnsatt, Fnr fnr) {
+        return featureToggleService.isEnabled(NY_VEILEDERTILGANG) ? 
+                Optional.of(hentTilgang(innloggetNavAnsatt, fnr, TilgangskontrollAction.read)) 
+                : Optional.empty();
+    }
+
+    public Optional<Boolean> harSkrivetilgangTilKandidat(InnloggetNavAnsatt innloggetNavAnsatt, Fnr fnr) {
+        return featureToggleService.isEnabled(NY_VEILEDERTILGANG) ? 
+                Optional.of(hentTilgang(innloggetNavAnsatt, fnr, TilgangskontrollAction.update)) 
+                : Optional.empty();
+    }
+
     public void sjekkLesetilgangTilKandidat(InnloggetNavAnsatt innloggetNavAnsatt, Fnr fnr) {
         sjekkTilgang(innloggetNavAnsatt, fnr, TilgangskontrollAction.read);
     }
-
+        
     public void sjekkSkrivetilgangTilKandidat(InnloggetNavAnsatt innloggetNavAnsatt, Fnr fnr) {
         sjekkTilgang(innloggetNavAnsatt, fnr, TilgangskontrollAction.update);
     }

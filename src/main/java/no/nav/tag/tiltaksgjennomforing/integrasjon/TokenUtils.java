@@ -10,7 +10,6 @@ import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.veilarbabac.TilgangskontrollService;
 
 import org.springframework.stereotype.Component;
@@ -26,7 +25,6 @@ public class TokenUtils {
     final static String ISSUER_SELVBETJENING = "selvbetjening";
 
     private final OIDCRequestContextHolder contextHolder;
-    private final FeatureToggleService featureToggleService;
     private final TilgangskontrollService tilgangskontrollService;
 
     public InnloggetBruker hentInnloggetBruker() {
@@ -48,7 +46,7 @@ public class TokenUtils {
     public InnloggetNavAnsatt hentInnloggetNavAnsatt() {
         String navIdent = hentClaim(ISSUER_ISSO, "NAVident")
                 .orElseThrow(() -> new TilgangskontrollException("Innlogget bruker er ikke veileder."));
-        return new InnloggetNavAnsatt(new NavIdent(navIdent), featureToggleService, tilgangskontrollService);
+        return new InnloggetNavAnsatt(new NavIdent(navIdent), tilgangskontrollService);
     }
 
     private Optional<String> hentClaim(String issuer, String claim) {

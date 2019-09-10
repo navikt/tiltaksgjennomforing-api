@@ -1,24 +1,14 @@
 package no.nav.tag.tiltaksgjennomforing.domene.autorisasjon;
 
-import static no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService.NY_VEILEDERTILGANG;
-
-import java.util.function.Consumer;
-
-import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.domene.*;
-import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.veilarbabac.TilgangskontrollService;
 
-@Slf4j
 public class InnloggetNavAnsatt extends InnloggetBruker<NavIdent> {
 
-    private final FeatureToggleService featureToggleService;
     private final TilgangskontrollService tilgangskontrollService;
 
-    public InnloggetNavAnsatt(NavIdent identifikator, FeatureToggleService featureToggleService, TilgangskontrollService tilgangskontrollService) {
+    public InnloggetNavAnsatt(NavIdent identifikator, TilgangskontrollService tilgangskontrollService) {
         super(identifikator);
-        this.featureToggleService = featureToggleService;
         this.tilgangskontrollService = tilgangskontrollService;
     }
 
@@ -28,32 +18,20 @@ public class InnloggetNavAnsatt extends InnloggetBruker<NavIdent> {
 
     @Override
     public Veileder avtalepart(Avtale avtale) {
-        return featureToggleService.isEnabled(NY_VEILEDERTILGANG) || avtale.getVeilederNavIdent().equals(getIdentifikator()) 
-                ? new Veileder(getIdentifikator(), avtale) 
-                : null;
+        return new Veileder(getIdentifikator(), avtale);
     }
 
     @Override
     public boolean harLeseTilgang(Avtale avtale)  {
-        return featureToggleService.isEnabled(NY_VEILEDERTILGANG) 
-                ? sjekkNyVeiledertilgang(avtale, f -> tilgangskontrollService.sjekkLesetilgangTilKandidat(this, f)) 
-                : avtalepart(avtale) != null;
+        return tilgangskontrollService.harLesetilgangTilKandidat(this, avtale.getDeltakerFnr()).orElseGet(() -> harOpprettetAvtale(avtale));
     }
 
-    private boolean sjekkNyVeiledertilgang(Avtale avtale, Consumer<Fnr> callback) {
-        try {
-            callback.accept(avtale.getDeltakerFnr());
-            return true;
-        } catch (TilgangskontrollException e) {
-            log.warn("Har ikke lesetilgang: {}", e.getMessage());
-            return false;
-        }
+    private boolean harOpprettetAvtale(Avtale avtale) {
+        return avtale.getVeilederNavIdent().equals(getIdentifikator());
     }
 
     @Override
     public boolean harSkriveTilgang(Avtale avtale) {
-        return featureToggleService.isEnabled(NY_VEILEDERTILGANG) 
-                ? sjekkNyVeiledertilgang(avtale, f -> tilgangskontrollService.sjekkSkrivetilgangTilKandidat(this, f)) 
-                : avtalepart(avtale) != null;
+        return tilgangskontrollService.harSkrivetilgangTilKandidat(this, avtale.getDeltakerFnr()).orElseGet(() -> harOpprettetAvtale(avtale));
     }
 }
