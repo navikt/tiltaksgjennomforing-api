@@ -19,7 +19,7 @@ public class InnloggetBrukerTest {
         deltaker = new Fnr("10000000000");
         navIdent = new NavIdent("X100000");
         bedriftNr = new BedriftNr("12345678901");
-        avtale = Avtale.nyAvtale(new OpprettAvtale(deltaker, bedriftNr), navIdent);
+        avtale = Avtale.nyAvtale(new OpprettAvtale(deltaker, bedriftNr, null, 0), navIdent);
     }
 
     @Test

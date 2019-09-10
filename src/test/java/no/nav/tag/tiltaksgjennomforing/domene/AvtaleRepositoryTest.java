@@ -112,7 +112,7 @@ public class AvtaleRepositoryTest {
 
     @Test
     public void opprettAvtale__skal_publisere_domainevent() {
-        Avtale nyAvtale = Avtale.nyAvtale(new OpprettAvtale(new Fnr("10101033333"), new BedriftNr("101033333")), new NavIdent("Q000111"));
+        Avtale nyAvtale = Avtale.nyAvtale(new OpprettAvtale(new Fnr("10101033333"), new BedriftNr("101033333"), null, 0), new NavIdent("Q000111"));
         avtaleRepository.save(nyAvtale);
         verify(metrikkRegistrering).avtaleOpprettet(any());
     }

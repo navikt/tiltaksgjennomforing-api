@@ -65,7 +65,7 @@ public class AvtaleController {
         return ResponseEntity.created(uri).build();
     }
 
-    @PostMapping
+    @PostMapping("/opprettAvtaleVersjon")
     public ResponseEntity opprettAvtaleVersjon(@RequestBody OpprettAvtale opprettAvtaleVersjon,
                                                @PathVariable("avtaleId") UUID sisteVersjonAvtaleId
             /*, @RequestBody int versjon, @RequestBody UUID baseAvtaleId*/) {
