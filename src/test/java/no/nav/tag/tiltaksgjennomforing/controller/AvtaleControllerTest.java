@@ -7,8 +7,9 @@ import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjenin
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.InnloggingService;
-import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.ereg.EregService;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.veilarbabac.TilgangskontrollService;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -38,6 +40,9 @@ public class AvtaleControllerTest {
     @Mock
     private TilgangUnderPilotering tilgangUnderPilotering;
 
+    @Mock
+    private TilgangskontrollService tilgangskontrollService;
+    
     @Mock
     private InnloggingService innloggingService;
 
@@ -81,7 +86,7 @@ public class AvtaleControllerTest {
     @Test(expected = TilgangskontrollException.class)
     public void hentSkalKastTilgangskontrollExceptionHvisInnloggetSelvbetjeningBrukerIkkeHarTilgang() {
         Avtale avtale = TestData.enAvtale();
-        vaerInnloggetSom(new InnloggetSelvbetjeningBruker(new Fnr("55555566666")));
+        vaerInnloggetSom(new InnloggetSelvbetjeningBruker(new Fnr("55555566666"), emptyList()));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         avtaleController.hent(avtale.getId());
     }
@@ -146,7 +151,7 @@ public class AvtaleControllerTest {
             hentedeAvtaler.add(avtale);
         }
 
-        hentedeAvtaler.forEach(avtale -> assertThat(selvbetjeningBruker.harTilgang(avtale)).isTrue());
+        hentedeAvtaler.forEach(avtale -> assertThat(selvbetjeningBruker.harLeseTilgang(avtale)).isTrue());
         assertThat(hentedeAvtaler.size()).isEqualTo(avtalerBrukerHarTilgangTil.size());
     }
 
@@ -180,16 +185,26 @@ public class AvtaleControllerTest {
     }
 
     @Test(expected = TilgangskontrollException.class)
-    public void opprettAvtale__skal_feile_hvis_bruker_ikke_er_i_pilotering() {
+    public void opprettAvtale__skal_feile_hvis_veileder_ikke_er_i_pilotering() {
         vaerInnloggetSom(TestData.enNavAnsatt());
         doThrow(TilgangskontrollException.class).when(tilgangUnderPilotering).sjekkTilgang(any());
         avtaleController.opprettAvtale(new OpprettAvtale(new Fnr("11111100000"), new BedriftNr("111222333")));
     }
 
+    @Test(expected = TilgangskontrollException.class)
+    public void opprettAvtale__skal_feile_hvis_veileder_ikke_har_tilgang_til_bruker() {
+        InnloggetNavAnsatt enNavAnsatt = TestData.enNavAnsatt();
+        vaerInnloggetSom(enNavAnsatt);
+        Fnr deltakerFnr = new Fnr("11111100000");
+        doThrow(TilgangskontrollException.class).when(tilgangskontrollService).sjekkSkrivetilgangTilKandidat(enNavAnsatt, deltakerFnr);
+        avtaleController.opprettAvtale(new OpprettAvtale(deltakerFnr, new BedriftNr("111222333")));
+    }
+    
     private void vaerInnloggetSom(InnloggetBruker innloggetBruker) {
         when(innloggingService.hentInnloggetBruker()).thenReturn(innloggetBruker);
         if (innloggetBruker instanceof InnloggetNavAnsatt) {
             when(innloggingService.hentInnloggetNavAnsatt()).thenReturn((InnloggetNavAnsatt) innloggetBruker);
         }
     }
+    
 }

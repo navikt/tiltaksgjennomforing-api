@@ -39,6 +39,8 @@ tiltaksgjennomforing:
   sts:
     username: foo
     password: bar
-    uri: http://localhost:8090/sts
+    rest-uri: http://localhost:8090/sts/sts/token
   axsys:
     uri: http://localhost:8090/axsys
+  abac:
+    veilarbabac-uri: http://localhost:8090/veilarbabac
