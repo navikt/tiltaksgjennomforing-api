@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.integrasjon.axsys;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.CorrelationIdSupplier;
 import no.nav.tag.tiltaksgjennomforing.domene.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.domene.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TiltaksgjennomforingException;
@@ -13,7 +14,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -26,7 +26,7 @@ public class AxsysService {
         this.axsysProperties = axsysProperties;
         restTemplate = new RestTemplate();
         restTemplate.setInterceptors(Collections.singletonList((request, body, execution) -> {
-            request.getHeaders().add("Nav-Call-Id", UUID.randomUUID().toString());
+            request.getHeaders().add("Nav-Call-Id", CorrelationIdSupplier.get());
             request.getHeaders().add("Nav-Consumer-Id", axsysProperties.getNavConsumerId());
             return execution.execute(request, body);
         }));
