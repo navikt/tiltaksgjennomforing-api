@@ -22,3 +22,10 @@ tiltaksgjennomforing:
     service-edition: 1
   ereg:
     uri: http://localhost:8090
+  sts:
+    username: foo
+    password: bar
+    ws-uri: http://foo.bar
+    rest-uri: http://localhost:8090/sts/sts/token
+  abac:
+    veilarbabac-uri: http://localhost:8090/veilarbabac

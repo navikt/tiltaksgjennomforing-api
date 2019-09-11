@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.domene.autorisasjon;
 
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import no.nav.tag.tiltaksgjennomforing.domene.*;
 
@@ -8,13 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Data
 @EqualsAndHashCode(callSuper = true)
 public class InnloggetSelvbetjeningBruker extends InnloggetBruker<Fnr> {
-    private List<Organisasjon> organisasjoner = new ArrayList<>();
+    
+    private final List<Organisasjon> organisasjoner;
 
-    public InnloggetSelvbetjeningBruker(Fnr identifikator) {
+    public InnloggetSelvbetjeningBruker(Fnr identifikator, List<Organisasjon> organisasjoner) {
         super(identifikator);
+        this.organisasjoner = organisasjoner != null ? organisasjoner : new ArrayList<Organisasjon>();
     }
 
     @Override
@@ -26,6 +26,16 @@ public class InnloggetSelvbetjeningBruker extends InnloggetBruker<Fnr> {
         } else {
             return null;
         }
+    }
+
+    @Override
+    public boolean harLeseTilgang(Avtale avtale)  {
+        return avtalepart(avtale) != null;
+    }
+
+    @Override
+    public boolean harSkriveTilgang(Avtale avtale)  {
+        return avtalepart(avtale) != null;
     }
 
     @Override

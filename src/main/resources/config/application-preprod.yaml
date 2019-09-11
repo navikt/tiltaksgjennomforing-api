@@ -43,10 +43,15 @@ tiltaksgjennomforing:
   sts:
     username: ${tiltaksgjennomforing.serviceuser.username}
     password: ${tiltaksgjennomforing.serviceuser.password}
-    uri: https://sts-q1.preprod.local/SecurityTokenServiceProvider/
+    ws-uri: https://sts-q1.preprod.local/SecurityTokenServiceProvider/
+    rest-uri: http://security-token-service.default.svc.nais.local/rest/v1/sts/token
   axsys:
     uri: https://axsys.nais.preprod.local/api/v1/tilgang
     nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}
+  abac:
+    veilarbabac-uri: https://veilarbabac-q1.nais.preprod.local
+  unleash:
+    unleash-uri: https://unleash.nais.adeo.no/api/
   consumer:
     system:
       id: ${tiltaksgjennomforing.consumer.system}
