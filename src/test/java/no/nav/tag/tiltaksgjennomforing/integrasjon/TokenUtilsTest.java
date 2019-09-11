@@ -7,7 +7,6 @@ import no.nav.security.oidc.context.TokenContext;
 import no.nav.tag.tiltaksgjennomforing.domene.TestData;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjeningBruker;
-import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.TokenUtils.BrukerOgIssuer;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.TokenUtils.Issuer;
 
@@ -17,13 +16,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import static no.nav.security.oidc.test.support.JwtTokenGenerator.createSignedJWT;
 import static no.nav.tag.tiltaksgjennomforing.integrasjon.TokenUtils.Issuer.ISSUER_ISSO;
 import static no.nav.tag.tiltaksgjennomforing.integrasjon.TokenUtils.Issuer.ISSUER_SELVBETJENING;
+import static no.nav.tag.tiltaksgjennomforing.integrasjon.TokenUtils.Issuer.ISSUER_SYSTEM;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -51,39 +50,37 @@ public class TokenUtilsTest {
     }
 
     @Test
+    public void hentInnloggetBruker__er_system() {
+        vaerInnloggetSystem("systemId");
+        assertThat(tokenUtils.hentBrukerOgIssuer().get()).isEqualTo(new BrukerOgIssuer(Issuer.ISSUER_SYSTEM, "systemId"));
+    }
+
+    @Test
     public void hentInnloggetBruker__er_uinnlogget() {
         vaerUinnlogget();
         assertThat(tokenUtils.hentBrukerOgIssuer().isEmpty()).isTrue();
-    }
-
-    @Test(expected = TilgangskontrollException.class)
-    public void avviser_selvbetjeningBruker_som_systemBruker(){
-        vaerInnloggetSelvbetjening(TestData.enSelvbetjeningBruker());
-        tokenUtils.hentInnloggetSystem();
-    }
-
-    @Test(expected = TilgangskontrollException.class)
-    public void avviser_navAnsatt_som_systemBruker(){
-        vaerInnloggetNavAnsatt(TestData.enNavAnsatt());
-        tokenUtils.hentInnloggetSystem();
     }
 
     private void vaerUinnlogget() {
         when(contextHolder.getOIDCValidationContext()).thenReturn(new OIDCValidationContext());
     }
 
+    private void vaerInnloggetSystem(String systemId) {
+        lagOidcContext(ISSUER_SYSTEM, systemId, new HashMap<>());
+    }
+
     private void vaerInnloggetSelvbetjening(InnloggetSelvbetjeningBruker bruker) {
-        lagOidcContext(ISSUER_SELVBETJENING, bruker.getIdentifikator().asString(), new HashMap<>(), "aud-selvbetjening");
+        lagOidcContext(ISSUER_SELVBETJENING, bruker.getIdentifikator().asString(), new HashMap<>());
     }
 
     private void vaerInnloggetNavAnsatt(InnloggetNavAnsatt innloggetBruker) {
-        lagOidcContext(ISSUER_ISSO, "blablabla", Collections.singletonMap("NAVident", innloggetBruker.getIdentifikator().asString()), "aud-isso");
+        lagOidcContext(ISSUER_ISSO, "blablabla", Map.of("NAVident", innloggetBruker.getIdentifikator().asString()));
     }
 
-    private void lagOidcContext(Issuer issuer, String subject, Map<String, Object> claims, String audience) {
+    private void lagOidcContext(Issuer issuer, String subject, Map<String, Object> claims) {
         OIDCValidationContext context = new OIDCValidationContext();
         TokenContext tokenContext = new TokenContext(issuer.issuerName, "");
-        OIDCClaims oidcClaims = new OIDCClaims(createSignedJWT(subject, 0, claims, issuer.issuerName, audience));
+        OIDCClaims oidcClaims = new OIDCClaims(createSignedJWT(subject, 0, claims, issuer.issuerName, "audience"));
         context.addValidatedToken(issuer.issuerName, tokenContext, oidcClaims);
 
         when(contextHolder.getOIDCValidationContext()).thenReturn(context);

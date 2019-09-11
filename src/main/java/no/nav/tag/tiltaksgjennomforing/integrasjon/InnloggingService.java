@@ -10,13 +10,10 @@ import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollExcepti
 import no.nav.tag.tiltaksgjennomforing.integrasjon.TokenUtils.BrukerOgIssuer;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.TokenUtils.Issuer;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.altinn_tilgangsstyring.AltinnTilgangsstyringService;
-import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.SystembrukerProperties;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.veilarbabac.TilgangskontrollService;
 
 import org.springframework.stereotype.Component;
-
-import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -43,9 +40,9 @@ public class InnloggingService {
     }
 
     public void validerSystembruker() {
-      if(!tokenUtils.hentInnloggetSystem().equals(systembrukerProperties.getId())) {
-          throw new TilgangskontrollException("Systemet har ikke tilgang til tjenesten");
-      }
-
+        tokenUtils.hentBrukerOgIssuer()
+            .filter(t -> (Issuer.ISSUER_SYSTEM == t.getIssuer() && systembrukerProperties.getId().equals(t.getBrukerIdent())))
+            .orElseThrow(() -> new TilgangskontrollException("Systemet har ikke tilgang til tjenesten"));
     }
+
 }

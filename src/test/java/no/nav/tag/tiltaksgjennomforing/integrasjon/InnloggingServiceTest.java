@@ -22,6 +22,7 @@ import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjenin
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.TokenUtils.Issuer;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.altinn_tilgangsstyring.AltinnTilgangsstyringService;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.SystembrukerProperties;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InnloggingServiceTest {
@@ -34,6 +35,9 @@ public class InnloggingServiceTest {
 
     @Mock
     private AltinnTilgangsstyringService altinnTilgangsstyringService;
+
+    @Mock
+    private SystembrukerProperties systembrukerProperties;
 
     @Test
     public void hentInnloggetBruker__er_selvbetjeningbruker() {
@@ -70,6 +74,35 @@ public class InnloggingServiceTest {
     public void hentInnloggetBruker__er_uinnlogget() {
         when(tokenUtils.hentBrukerOgIssuer()).thenReturn(Optional.empty());
         innloggingService.hentInnloggetNavAnsatt();
+    }
+
+    @Test(expected = TilgangskontrollException.class)
+    public void avviser_selvbetjeningBruker_som_systemBruker(){
+        vaerInnloggetSelvbetjening(TestData.enSelvbetjeningBruker());
+        innloggingService.validerSystembruker();
+    }
+
+    @Test(expected = TilgangskontrollException.class)
+    public void avviser_navAnsatt_som_systemBruker(){
+        vaerInnloggetNavAnsatt(TestData.enNavAnsatt());
+        innloggingService.validerSystembruker();
+    }
+
+    @Test(expected = TilgangskontrollException.class)
+    public void avviser_ukjent_systemBruker(){
+        vaerInnloggetSystem("ukjent");
+        innloggingService.validerSystembruker();
+    }    
+
+    @Test
+    public void godtar_forventet_systemBruker(){
+        vaerInnloggetSystem("forventet");
+        innloggingService.validerSystembruker();
+    }    
+
+    private void vaerInnloggetSystem(String systemId) {
+        when(tokenUtils.hentBrukerOgIssuer()).thenReturn(Optional.of(new TokenUtils.BrukerOgIssuer(Issuer.ISSUER_SYSTEM, systemId)));
+        when(systembrukerProperties.getId()).thenReturn("forventet");
     }
 
     private void vaerInnloggetSelvbetjening(InnloggetSelvbetjeningBruker bruker) {
