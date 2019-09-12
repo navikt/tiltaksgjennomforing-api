@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 import no.finn.unleash.DefaultUnleash;
 import no.finn.unleash.Unleash;
 import no.finn.unleash.util.UnleashConfig;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,23 +13,15 @@ import org.springframework.context.annotation.Profile;
 @Profile(value= {"prod", "preprod"})
 public class FeatureToggleConfig {
 
-    private final String APP_NAME = "tiltaksgjennomforing-api";
-    private final ByEnvironmentStrategy byEnvironmentStrategy;
-    private final String profile;
-
-    @Value("${tiltaksgjennomforing.unleash.unleash-uri}") private String unleashUrl;
-
-    @Autowired
-    public FeatureToggleConfig(ByEnvironmentStrategy byEnvironmentStrategy) {
-        this.byEnvironmentStrategy = byEnvironmentStrategy;
-        this.profile = byEnvironmentStrategy.getEnvironment();
-    }
+    private static final String APP_NAME = "tiltaksgjennomforing-api";
 
     @Bean
-    public Unleash initializeUnleash() {
+    public Unleash initializeUnleash(@Value(
+            "${tiltaksgjennomforing.unleash.unleash-uri}") String unleashUrl, 
+            ByEnvironmentStrategy byEnvironmentStrategy) {
         UnleashConfig config = UnleashConfig.builder()
                 .appName(APP_NAME)
-                .instanceId(APP_NAME + "-" + profile)
+                .instanceId(APP_NAME + "-" + byEnvironmentStrategy.getEnvironment())
                 .unleashAPI(unleashUrl)
                 .build();
 
