@@ -16,12 +16,12 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class TokenUtils {
-    
-    
+        
     static enum Issuer {
         
         ISSUER_ISSO("isso"),
-        ISSUER_SELVBETJENING("selvbetjening");
+        ISSUER_SELVBETJENING("selvbetjening"),
+        ISSUER_SYSTEM("system");
 
         final String issuerName;
         
@@ -44,12 +44,12 @@ public class TokenUtils {
 
     public Optional<BrukerOgIssuer> hentBrukerOgIssuer() {
         return hentClaim(ISSUER_SELVBETJENING.issuerName, "sub").map(sub -> new BrukerOgIssuer(ISSUER_SELVBETJENING, sub))
-                .or(() -> hentClaim(ISSUER_ISSO.issuerName, "NAVident").map(sub -> new BrukerOgIssuer(ISSUER_ISSO, sub)));
+                .or(() -> hentClaim(ISSUER_ISSO.issuerName, "NAVident").map(sub -> new BrukerOgIssuer(ISSUER_ISSO, sub)))
+                .or(() -> hentClaim(ISSUER_SYSTEM.issuerName, "sub").map(sub -> new BrukerOgIssuer(ISSUER_SYSTEM, sub)));
     }
 
     private Optional<String> hentClaim(String issuer, String claim) {
-        Optional<JWTClaimsSet> claimSet = hentClaimSet(issuer);
-        return claimSet.map(jwtClaimsSet -> String.valueOf(jwtClaimsSet.getClaim(claim)));
+        return hentClaimSet(issuer).map(jwtClaimsSet -> String.valueOf(jwtClaimsSet.getClaim(claim)));
     }
 
     private Optional<JWTClaimsSet> hentClaimSet(String issuer) {
@@ -58,3 +58,4 @@ public class TokenUtils {
     }
 
 }
+    

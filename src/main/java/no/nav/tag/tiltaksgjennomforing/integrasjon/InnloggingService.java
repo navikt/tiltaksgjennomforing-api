@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.integrasjon;
 
+import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.domene.Fnr;
 import no.nav.tag.tiltaksgjennomforing.domene.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetBruker;
@@ -9,15 +10,16 @@ import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollExcepti
 import no.nav.tag.tiltaksgjennomforing.integrasjon.TokenUtils.BrukerOgIssuer;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.TokenUtils.Issuer;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.altinn_tilgangsstyring.AltinnTilgangsstyringService;
+import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.SystembrukerProperties;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.veilarbabac.TilgangskontrollService;
 
 import org.springframework.stereotype.Component;
 
-import lombok.RequiredArgsConstructor;
-
 @Component
 @RequiredArgsConstructor
 public class InnloggingService {
+
+    private final SystembrukerProperties systembrukerProperties;
     private final TokenUtils tokenUtils;
     private final AltinnTilgangsstyringService altinnTilgangsstyringService;
     private final TilgangskontrollService tilgangskontrollService;
@@ -36,4 +38,11 @@ public class InnloggingService {
             throw new TilgangskontrollException("Innlogget bruker er ikke veileder.");
         }
     }
+
+    public void validerSystembruker() {
+        tokenUtils.hentBrukerOgIssuer()
+            .filter(t -> (Issuer.ISSUER_SYSTEM == t.getIssuer() && systembrukerProperties.getId().equals(t.getBrukerIdent())))
+            .orElseThrow(() -> new TilgangskontrollException("Systemet har ikke tilgang til tjenesten"));
+    }
+
 }

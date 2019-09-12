@@ -63,6 +63,13 @@ public class TokenGeneratorController {
     }
 
     @Unprotected
+    @GetMapping("/system-jwt")
+    public String issueSystemToken(@RequestParam(value = "subject", defaultValue = "00000000000") String subject) {
+        return JwtTokenGenerator.createSignedJWT(subject, "system", "aud-system").serialize();
+    }
+
+
+    @Unprotected
     @GetMapping("/claims")
     public SignedJWT jwtClaims(@RequestParam(value = "subject", defaultValue = "00000000000") String subject) {
         return JwtTokenGenerator.createSignedJWT(subject, "iss-localhost", "aud-localhost");
@@ -129,6 +136,13 @@ public class TokenGeneratorController {
     @GetMapping("/metadata-selvbetjening")
     public String metadataSelvbetjening() throws IOException {
         return IOUtils.readInputStreamToString(getClass().getResourceAsStream("/metadata-selvbetjening.json"),
+                Charset.defaultCharset());
+    }
+
+    @Unprotected
+    @GetMapping("/metadata-system")
+    public String metadataSystem() throws IOException {
+        return IOUtils.readInputStreamToString(getClass().getResourceAsStream("/metadata-system.json"),
                 Charset.defaultCharset());
     }
 

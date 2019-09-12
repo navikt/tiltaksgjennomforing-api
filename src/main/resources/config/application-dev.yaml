@@ -18,7 +18,7 @@ spring:
       bootstrap-servers: ${spring.embedded.kafka.brokers}
 
 no.nav.security.oidc:
-  issuers: selvbetjening, isso
+  issuers: selvbetjening, isso, system
   issuer:
     selvbetjening:
       discoveryurl: http://metadata-selvbetjening
@@ -26,6 +26,9 @@ no.nav.security.oidc:
     isso:
       discoveryurl: http://metadata-isso
       accepted_audience: aud-isso
+    system:
+      discoveryurl: http://metadata-system
+      accepted_audience: aud-system
 
 tiltaksgjennomforing:
   altinn-tilgangsstyring:
@@ -44,3 +47,6 @@ tiltaksgjennomforing:
     uri: http://localhost:8090/axsys
   abac:
     veilarbabac-uri: http://localhost:8090/veilarbabac
+  consumer:
+    system:
+      id: ${tiltaksgjennomforing.consumer.system}
