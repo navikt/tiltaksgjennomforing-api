@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import static java.util.Arrays.asList;
-import static no.nav.tag.tiltaksgjennomforing.SjekkAktiveProfilerInitializer.MILJOER;
+import static no.nav.tag.tiltaksgjennomforing.infrastruktur.SjekkAktiveProfilerInitializer.MILJOER;
 
 import java.util.Map;
 import java.util.Optional;

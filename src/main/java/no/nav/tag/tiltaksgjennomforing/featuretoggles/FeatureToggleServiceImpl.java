@@ -3,7 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 import no.finn.unleash.Unleash;
 import no.finn.unleash.UnleashContext;
 import no.finn.unleash.UnleashContext.Builder;
-import no.nav.tag.tiltaksgjennomforing.integrasjon.TokenUtils;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
