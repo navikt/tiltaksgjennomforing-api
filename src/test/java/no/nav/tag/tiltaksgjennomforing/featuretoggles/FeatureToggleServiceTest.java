@@ -1,8 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 
 import no.finn.unleash.Unleash;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleServiceImpl;
-import no.nav.tag.tiltaksgjennomforing.integrasjon.TokenUtils;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
