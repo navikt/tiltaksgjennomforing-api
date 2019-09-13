@@ -7,8 +7,6 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 import static java.util.Collections.disjoint;
 
 
@@ -36,10 +34,7 @@ public class TilgangUnderPilotering {
 
     private boolean sjekkPilottilgangMedVault(NavIdent ident) {
         if (pilotProperties.isEnabled() && !pilotProperties.getIdenter().contains(ident)) {
-            List<NavEnhet> enheterInnloggetVeilederHarTilgangTil = axsysService.hentEnheterVeilederHarTilgangTil(ident);
-            if (disjoint(pilotProperties.getEnheter(), enheterInnloggetVeilederHarTilgangTil)) {
-                return false;
-            }
+            return axsysService.hentEnheterVeilederHarTilgangTil(ident).map(enheter -> !disjoint(pilotProperties.getEnheter(), enheter)).orElse(false);
         }
         return true;
     }

@@ -7,6 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.pilottilgang.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.pilottilgang.AxsysService;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyMap;
@@ -44,19 +45,19 @@ public class ByEnhetStrategyTest {
 
     @Test
     public void skal_være_disablet_hvis_bruker_har_definerte_enheter_men_ingen_er_i_listen() {
-        when(axsysService.hentEnheterVeilederHarTilgangTil(any())).thenReturn(newArrayList(new NavEnhet("1111"), new NavEnhet("2222")));
+        when(axsysService.hentEnheterVeilederHarTilgangTil(any())).thenReturn(Optional.of(newArrayList(new NavEnhet("1111"), new NavEnhet("2222"))));
         assertThat(new ByEnhetStrategy(axsysService).isEnabled(Map.of(PARAM, "1234"), unleashContext)).isEqualTo(false);
     }
     
     @Test
     public void skal_være_enablet_hvis_bruker_har_definert_enhet() {
-        when(axsysService.hentEnheterVeilederHarTilgangTil(any())).thenReturn(newArrayList(new NavEnhet("1234")));
+        when(axsysService.hentEnheterVeilederHarTilgangTil(any())).thenReturn(Optional.of(newArrayList(new NavEnhet("1234"))));
         assertThat(new ByEnhetStrategy(axsysService).isEnabled(Map.of(PARAM, "1234"), unleashContext)).isEqualTo(true);
     }
 
     @Test
     public void skal_være_enablet_hvis_en_av_brukers_enheter_er_i_listen() {
-        when(axsysService.hentEnheterVeilederHarTilgangTil(any())).thenReturn(newArrayList(new NavEnhet("1111"), new NavEnhet("1234")));
+        when(axsysService.hentEnheterVeilederHarTilgangTil(any())).thenReturn(Optional.of(newArrayList(new NavEnhet("1111"), new NavEnhet("1234"))));
         assertThat(new ByEnhetStrategy(axsysService).isEnabled(Map.of(PARAM, "1234,5678"), unleashContext)).isEqualTo(true);
     }
     

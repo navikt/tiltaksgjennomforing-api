@@ -15,6 +15,8 @@ import static java.util.Collections.emptyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
+
 public class TilgangUnderPiloteringTest {
 
     private AxsysService axsysService;
@@ -51,19 +53,19 @@ public class TilgangUnderPiloteringTest {
 
     @Test(expected = TilgangskontrollException.class)
     public void sjekkTilgang__enabled__og_gitt_bruker_har_ikke_tilgang_til_kontor_skal_feile() {
-        when(axsysService.hentEnheterVeilederHarTilgangTil(new NavIdent("Q000111"))).thenReturn(asList(new NavEnhet("1234"), new NavEnhet("5678")));
+        when(axsysService.hentEnheterVeilederHarTilgangTil(new NavIdent("Q000111"))).thenReturn(Optional.of(asList(new NavEnhet("1234"), new NavEnhet("5678"))));
         tilgangUnderPilotering.sjekkTilgang(new NavIdent("Q000111"));
     }
 
     @Test(expected = TilgangskontrollException.class)
     public void sjekkTilgang__enabled__og_gitt_bruker_har_ingen_kontor_skal_feile() {
-        when(axsysService.hentEnheterVeilederHarTilgangTil(new NavIdent("Q000111"))).thenReturn(emptyList());
+        when(axsysService.hentEnheterVeilederHarTilgangTil(new NavIdent("Q000111"))).thenReturn(Optional.of(emptyList()));
         tilgangUnderPilotering.sjekkTilgang(new NavIdent("Q000111"));
     }
 
     @Test
     public void sjekkTilgang__enabled__og_gitt_bruker_har_tilgang_til_kontor() {
-        when(axsysService.hentEnheterVeilederHarTilgangTil(new NavIdent("Q000111"))).thenReturn(asList(new NavEnhet("1111"), new NavEnhet("5678")));
+        when(axsysService.hentEnheterVeilederHarTilgangTil(new NavIdent("Q000111"))).thenReturn(Optional.of(asList(new NavEnhet("1111"), new NavEnhet("5678"))));
         tilgangUnderPilotering.sjekkTilgang(new NavIdent("Q000111"));
     }
     
