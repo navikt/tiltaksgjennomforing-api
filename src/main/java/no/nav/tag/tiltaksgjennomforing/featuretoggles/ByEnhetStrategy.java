@@ -38,10 +38,9 @@ public class ByEnhetStrategy implements Strategy {
     @Override
     public boolean isEnabled(Map<String, String> parameters, UnleashContext unleashContext) {
         return unleashContext.getUserId()
-                .map(currentUserId -> Optional.ofNullable(parameters.get(PARAM))
+                .flatMap(currentUserId -> Optional.ofNullable(parameters.get(PARAM))
                         .map(enheterString -> Set.of(enheterString.split(",\\s?")))
                         .map(enabledeEnheter -> !Collections.disjoint(enabledeEnheter, brukersEnheter(currentUserId))))
-                .orElse(Optional.of(false))
                 .orElse(false);
 
     }
