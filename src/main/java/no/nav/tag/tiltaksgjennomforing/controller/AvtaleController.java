@@ -72,22 +72,26 @@ public class AvtaleController {
             /*, @RequestBody int versjon, @RequestBody UUID baseAvtaleId*/) {
         InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
         tilgangUnderPilotering.sjekkTilgang(innloggetNavAnsatt.getIdentifikator());
-        //Avtale sisteAvtaleVersjon =avtaleRepository.findById(sisteVersjonAvtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        Avtale sisteAvtaleVersjon = new Avtale(opprettAvtaleRevisjon.getDeltakerFnr(),opprettAvtaleRevisjon.getBedriftNr(),
+        //Avtale sisteAvtaleVersjon = avtaleRepository.findById(sisteVersjonAvtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        Avtale sisteAvtaleVersjon = new Avtale(opprettAvtaleRevisjon.getDeltakerFnr(), opprettAvtaleRevisjon.getBedriftNr(),
                 innloggetNavAnsatt.getIdentifikator(), opprettAvtaleRevisjon.getBaseAvtaleId(), opprettAvtaleRevisjon.getRevisjon());//(RessursFinnesIkkeException::new);
         try {
-            sisteAvtaleVersjon = avtaleRepository.findAll().iterator().next();
+            sisteAvtaleVersjon = avtaleRepository.findById(sisteVersjonAvtaleId).get();
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
+            System.out.println("sisteVersjonAvtaleId " + sisteVersjonAvtaleId.toString());
+            System.out.println("sisteAvtaleVersjon.getId()");
+            System.out.println(sisteAvtaleVersjon.getId());
         }
        /* Avtale avtaleRevisjon = innloggetNavAnsatt.opprettAvtale(opprettAvtaleRevisjon, sisteVersjonAvtaleId,
                 sisteAvtaleVersjon.getBaseAvtaleId(), sisteAvtaleVersjon.getRevisjon());*/
-        Avtale avtaleRevisjon = innloggetNavAnsatt.opprettAvtale(opprettAvtaleRevisjon);
+        Avtale avtaleRevisjon = innloggetNavAnsatt.opprettAvtale(opprettAvtaleRevisjon, sisteVersjonAvtaleId, opprettAvtaleRevisjon.getBaseAvtaleId(), opprettAvtaleRevisjon.getRevisjon());
         Avtale opprettetAvtaleRevisjon = avtaleRepository.save(avtaleRevisjon);
         Avtalepart avtalepart = innloggetNavAnsatt.avtalepart(opprettetAvtaleRevisjon);
         //avtalepart.endreAvtale(versjon,sisteVersjonAvtale);
         avtalepart.fylleUtAvtaleRevisjonVerdier(sisteAvtaleVersjon.getRevisjon(), sisteAvtaleVersjon, sisteAvtaleVersjon.getId().toString());
+        avtaleRepository.save(opprettetAvtaleRevisjon);
         URI uri = lagUri("/avtaler/" + opprettetAvtaleRevisjon.getId());
         return ResponseEntity.created(uri).build();
     }

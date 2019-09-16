@@ -15,6 +15,7 @@ public class Oppgave {
     private String beskrivelse;
     private String opplaering;
 
+
     public void settIdOgOpprettetTidspunkt() {
         if (id == null) {
             id = UUID.randomUUID();
@@ -22,6 +23,10 @@ public class Oppgave {
         if (opprettetTidspunkt == null) {
             opprettetTidspunkt = LocalDateTime.now();
         }
+    }
+    public void settNewIdOgOpprettetTidspunkt() {
+        this.setId(UUID.randomUUID());
+        this.setOpprettetTidspunkt(LocalDateTime.now());
     }
 
     public void sjekkOppgaveLengde() {

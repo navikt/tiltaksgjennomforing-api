@@ -93,6 +93,7 @@ public class Avtale extends AbstractAggregateRoot {
 
     public static Avtale nyAvtaleVersjon(OpprettAvtale opprettAvtaleVersjon, NavIdent veilederNavIdent, UUID sisteVersjonID, String baseAvtaleId, int godkjentVersjon) {
         Avtale avtaleVersjon = new Avtale(opprettAvtaleVersjon.getDeltakerFnr(), opprettAvtaleVersjon.getBedriftNr(), veilederNavIdent, opprettAvtaleVersjon.getBaseAvtaleId(), opprettAvtaleVersjon.getRevisjon());
+        avtaleVersjon.setVersjon(1);
         //To do endre avtale og fylle info fra siste versjon og gi baseavtaleId
         return avtaleVersjon;
     }
@@ -237,7 +238,7 @@ public class Avtale extends AbstractAggregateRoot {
             this.baseAvtaleId = sisteAvtaleVersjon.baseAvtaleId;
         }
         this.revisjon = sisteAvtaleVersjon.revisjon + 1;
-        this.versjon=1;
+        this.versjon = 1;
 
     }
 
@@ -249,9 +250,13 @@ public class Avtale extends AbstractAggregateRoot {
         if (this.getOpprettetTidspunkt() == null) {
             this.opprettetTidspunkt = LocalDateTime.now();
         }
-
-        this.getMaal().forEach(Maal::settIdOgOpprettetTidspunkt);
-        this.getOppgaver().forEach(Oppgave::settIdOgOpprettetTidspunkt);
+        if (this.baseAvtaleId != null && (!this.id.toString().equals(this.baseAvtaleId))) {
+            this.getMaal().forEach(Maal::settNewIdOgOpprettetTidspunkt);
+            this.getOppgaver().forEach(Oppgave::settNewIdOgOpprettetTidspunkt);
+        } else {
+            this.getMaal().forEach(Maal::settIdOgOpprettetTidspunkt);
+            this.getOppgaver().forEach(Oppgave::settIdOgOpprettetTidspunkt);
+        }
     }
 
     void godkjennForArbeidsgiver(Identifikator utfortAv) {

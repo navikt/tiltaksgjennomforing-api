@@ -21,6 +21,10 @@ public class Maal {
             opprettetTidspunkt = LocalDateTime.now();
         }
     }
+    public void settNewIdOgOpprettetTidspunkt() {
+        id=UUID.randomUUID();
+        setOpprettetTidspunkt(LocalDateTime.now());
+    }
 
 
     public void sjekkMaalLengde() {
