@@ -65,19 +65,29 @@ public class AvtaleController {
         return ResponseEntity.created(uri).build();
     }
 
-    @PostMapping("/opprettAvtaleRevisjon")
+    @PostMapping("/opprettAvtaleRevisjon/{avtaleId}")
+    @Transactional
     public ResponseEntity opprettAvtaleRevisjon(@RequestBody OpprettAvtale opprettAvtaleRevisjon,
-                                               @PathVariable("avtaleId") UUID sisteVersjonAvtaleId
+                                                @PathVariable("avtaleId") UUID sisteVersjonAvtaleId
             /*, @RequestBody int versjon, @RequestBody UUID baseAvtaleId*/) {
         InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
         tilgangUnderPilotering.sjekkTilgang(innloggetNavAnsatt.getIdentifikator());
-        Avtale sisteAvtaleVersjon =avtaleRepository.findById(sisteVersjonAvtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        Avtale avtaleRevisjon = innloggetNavAnsatt.opprettAvtale(opprettAvtaleRevisjon, sisteVersjonAvtaleId,
-                sisteAvtaleVersjon.getBaseAvtaleId(),sisteAvtaleVersjon.getRevisjon());
-        Avtale opprettetAvtaleRevisjon= avtaleRepository.save(avtaleRevisjon);
-        Avtalepart avtalepart=innloggetNavAnsatt.avtalepart(opprettetAvtaleRevisjon);
+        //Avtale sisteAvtaleVersjon =avtaleRepository.findById(sisteVersjonAvtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        Avtale sisteAvtaleVersjon = new Avtale(opprettAvtaleRevisjon.getDeltakerFnr(),opprettAvtaleRevisjon.getBedriftNr(),
+                innloggetNavAnsatt.getIdentifikator(), opprettAvtaleRevisjon.getBaseAvtaleId(), opprettAvtaleRevisjon.getRevisjon());//(RessursFinnesIkkeException::new);
+        try {
+            sisteAvtaleVersjon = avtaleRepository.findAll().iterator().next();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+       /* Avtale avtaleRevisjon = innloggetNavAnsatt.opprettAvtale(opprettAvtaleRevisjon, sisteVersjonAvtaleId,
+                sisteAvtaleVersjon.getBaseAvtaleId(), sisteAvtaleVersjon.getRevisjon());*/
+        Avtale avtaleRevisjon = innloggetNavAnsatt.opprettAvtale(opprettAvtaleRevisjon);
+        Avtale opprettetAvtaleRevisjon = avtaleRepository.save(avtaleRevisjon);
+        Avtalepart avtalepart = innloggetNavAnsatt.avtalepart(opprettetAvtaleRevisjon);
         //avtalepart.endreAvtale(versjon,sisteVersjonAvtale);
-        avtalepart.fylleUtAvtaleRevisjonVerdier(sisteAvtaleVersjon.getRevisjon(),sisteAvtaleVersjon,sisteAvtaleVersjon.getBaseAvtaleId());
+        avtalepart.fylleUtAvtaleRevisjonVerdier(sisteAvtaleVersjon.getRevisjon(), sisteAvtaleVersjon, sisteAvtaleVersjon.getId().toString());
         URI uri = lagUri("/avtaler/" + opprettetAvtaleRevisjon.getId());
         return ResponseEntity.created(uri).build();
     }

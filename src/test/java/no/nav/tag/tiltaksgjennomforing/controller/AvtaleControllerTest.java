@@ -7,7 +7,6 @@ import no.nav.tag.tiltaksgjennomforing.domene.autorisasjon.InnloggetSelvbetjenin
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.domene.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.InnloggingService;
-import no.nav.tag.tiltaksgjennomforing.integrasjon.configurationProperties.PilotProperties;
 import no.nav.tag.tiltaksgjennomforing.integrasjon.ereg.EregService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -97,6 +97,26 @@ public class AvtaleControllerTest {
 
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(svar.getHeaders().getLocation().getPath()).isEqualTo("/avtaler/" + avtale.getId());
+    }
+
+    @Test
+    public void opprettNyAvtaleRevisjonSkalReturnereCreatedOgOpprettetLokasjon() {
+        Avtale avtale = TestData.enAvtale();
+        vaerInnloggetSom(TestData.innloggetNavAnsatt(TestData.enVeileder(avtale)));
+        when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
+        when(eregService.hentVirksomhet(avtale.getBedriftNr())).thenReturn(new Organisasjon(avtale.getBedriftNr(), avtale.getBedriftNavn()));
+
+        ResponseEntity svar = avtaleController.opprettAvtale(new OpprettAvtale(avtale.getDeltakerFnr(), avtale.getBedriftNr(), null, 0));
+        avtale.setId((UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3")));
+        avtale.setBaseAvtaleId(("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
+        Avtale nyAvtaleRevisjon = TestData.enAvtale();
+        vaerInnloggetSom(TestData.innloggetNavAnsatt(TestData.enVeileder(nyAvtaleRevisjon)));
+        when(avtaleRepository.save(any(Avtale.class))).thenReturn(nyAvtaleRevisjon);
+        when(eregService.hentVirksomhet(avtale.getBedriftNr())).thenReturn(new Organisasjon(nyAvtaleRevisjon.getBedriftNr(), nyAvtaleRevisjon.getBedriftNavn()));
+        ResponseEntity svarRevisjon = avtaleController.opprettAvtaleRevisjon(new OpprettAvtale(nyAvtaleRevisjon.getDeltakerFnr(), nyAvtaleRevisjon.getBedriftNr(), avtale.getId().toString(), 2), avtale.getId());
+
+        assertThat(svarRevisjon.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(svarRevisjon.getHeaders().getLocation().getPath()).isEqualTo("/avtaler/" + avtale.getId());
     }
 
     @Test(expected = RessursFinnesIkkeException.class)

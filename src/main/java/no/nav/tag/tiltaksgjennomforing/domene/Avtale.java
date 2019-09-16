@@ -33,7 +33,7 @@ public class Avtale extends AbstractAggregateRoot {
     private LocalDateTime opprettetTidspunkt;
     @Id
     private UUID id;
-    private UUID baseAvtaleId;
+    private String baseAvtaleId;
     private Integer versjon;
     private String deltakerFornavn;
     private String deltakerEtternavn;
@@ -68,7 +68,7 @@ public class Avtale extends AbstractAggregateRoot {
     private Integer revisjon;
 
     @PersistenceConstructor
-    public Avtale(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent, UUID baseAvtaleId, int revisjon) {
+    public Avtale(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent, String baseAvtaleId, int revisjon) {
         this.deltakerFnr = sjekkAtIkkeNull(deltakerFnr, "Deltakers fnr må være satt.");
         this.bedriftNr = sjekkAtIkkeNull(bedriftNr, "Arbeidsgivers bedriftnr må være satt.");
         this.veilederNavIdent = sjekkAtIkkeNull(veilederNavIdent, "Veileders NAV-ident må være satt.");
@@ -80,7 +80,7 @@ public class Avtale extends AbstractAggregateRoot {
 
     public static Avtale nyAvtale(OpprettAvtale opprettAvtale, NavIdent veilederNavIdent) {
         Avtale avtale = new Avtale(opprettAvtale.getDeltakerFnr(), opprettAvtale.getBedriftNr(), veilederNavIdent,
-                null, opprettAvtale.getGodkjentVersjon() != 0 ? opprettAvtale.getGodkjentVersjon() : 1);
+                null, opprettAvtale.getRevisjon() != 0 ? opprettAvtale.getRevisjon() : 1);
         avtale.setVersjon(1);
         avtale.registerEvent(new AvtaleOpprettet(avtale, veilederNavIdent));
         return avtale;
@@ -91,8 +91,8 @@ public class Avtale extends AbstractAggregateRoot {
         oppgaver.forEach(Oppgave::sjekkOppgaveLengde);
     }
 
-    public static Avtale nyAvtaleVersjon(OpprettAvtale opprettAvtaleVersjon, NavIdent veilederNavIdent, UUID sisteVersjonID, UUID baseAvtaleId, int godkjentVersjon) {
-        Avtale avtaleVersjon = new Avtale(opprettAvtaleVersjon.getDeltakerFnr(), opprettAvtaleVersjon.getBedriftNr(), veilederNavIdent, opprettAvtaleVersjon.getBaseAvtaleId(), opprettAvtaleVersjon.getGodkjentVersjon());
+    public static Avtale nyAvtaleVersjon(OpprettAvtale opprettAvtaleVersjon, NavIdent veilederNavIdent, UUID sisteVersjonID, String baseAvtaleId, int godkjentVersjon) {
+        Avtale avtaleVersjon = new Avtale(opprettAvtaleVersjon.getDeltakerFnr(), opprettAvtaleVersjon.getBedriftNr(), veilederNavIdent, opprettAvtaleVersjon.getBaseAvtaleId(), opprettAvtaleVersjon.getRevisjon());
         //To do endre avtale og fylle info fra siste versjon og gi baseavtaleId
         return avtaleVersjon;
     }
@@ -129,7 +129,7 @@ public class Avtale extends AbstractAggregateRoot {
         registerEvent(new AvtaleEndret(this, utfortAv));
     }
 
-    public void fylleUtAvtaleRevisjonVerdier(Integer nyGodkjentVersjon, Avtale sisteAvtaleVersjon, UUID baseAvtaleId, Avtalerolle utfortAv) {
+    public void fylleUtAvtaleRevisjonVerdier(Integer nyGodkjentVersjon, Avtale sisteAvtaleVersjon, String baseAvtaleId, Avtalerolle utfortAv) {
         kontrollNyRevisjon(sisteAvtaleVersjon);
         setDeltakerInfo(sisteAvtaleVersjon.getDeltakerFornavn(), sisteAvtaleVersjon.getDeltakerEtternavn(), sisteAvtaleVersjon.getDeltakerTlf());
         setArbeidsgiverInfo(sisteAvtaleVersjon.getBedriftNavn(), sisteAvtaleVersjon.getArbeidsgiverFornavn(), sisteAvtaleVersjon.getArbeidsgiverEtternavn(), sisteAvtaleVersjon.getArbeidsgiverTlf());
@@ -232,11 +232,13 @@ public class Avtale extends AbstractAggregateRoot {
             throw new SamtidigeEndringerException("Det står en feil ved kotrllering av oppretting ny versjon av avtale. Sjekk om siste avtalen er godkjent av veileder før du oppretter en ny versjon.");
         }
         if (sisteAvtaleVersjon.baseAvtaleId == null) {
-            this.baseAvtaleId = sisteAvtaleVersjon.id;
+            this.baseAvtaleId = sisteAvtaleVersjon.id.toString();
         } else {
             this.baseAvtaleId = sisteAvtaleVersjon.baseAvtaleId;
         }
         this.revisjon = sisteAvtaleVersjon.revisjon + 1;
+        this.versjon=1;
+
     }
 
     public void settIdOgOpprettetTidspunkt() {

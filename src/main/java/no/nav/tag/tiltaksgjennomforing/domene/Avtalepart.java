@@ -47,7 +47,7 @@ public abstract class Avtalepart<T extends Identifikator> {
         avtale.endreAvtale(versjon, endreAvtale, rolle());
     }
 
-    public void fylleUtAvtaleRevisjonVerdier(Integer versjon, Avtale sisteAvtaleVersjon, UUID baseAvtaleId) {
+    public void fylleUtAvtaleRevisjonVerdier(Integer versjon, Avtale sisteAvtaleVersjon, String baseAvtaleId) {
         if (!kanEndreAvtale()) {
             throw new TilgangskontrollException("Kan ikke fylle ut informasjon for ny versjon av avtale.");
         }

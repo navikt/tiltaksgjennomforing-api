@@ -115,7 +115,14 @@ public class AvtaleRepositoryTest {
         avtaleRepository.save(nyAvtale);
         verify(metrikkRegistrering).avtaleOpprettet(any());
     }
+/*
+@Test
+public void opprettAvtaleRevisjon(){
+        Avtale avtale=TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        avtaleRepository.save(avtale);
 
+}
+*/
     @Test
     public void endreAvtale__skal_publisere_domainevent() {
         Avtale avtale = TestData.enAvtale();
