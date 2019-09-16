@@ -136,7 +136,7 @@ public class Avtale extends AbstractAggregateRoot {
         setArbeidsgiverInfo(sisteAvtaleVersjon.getBedriftNavn(), sisteAvtaleVersjon.getArbeidsgiverFornavn(), sisteAvtaleVersjon.getArbeidsgiverEtternavn(), sisteAvtaleVersjon.getArbeidsgiverTlf());
         setVeilederInfo(sisteAvtaleVersjon.getVeilederFornavn(), sisteAvtaleVersjon.getVeilederEtternavn(), sisteAvtaleVersjon.getVeilederTlf());
         setTiltakInfo(sisteAvtaleVersjon.getOppfolging(), sisteAvtaleVersjon.getTilrettelegging(),
-                sisteAvtaleVersjon.getStartDato(), sisteAvtaleVersjon.getArbeidstreningLengde(),
+                LocalDate.now(), sisteAvtaleVersjon.getArbeidstreningLengde(),
                 sisteAvtaleVersjon.getArbeidstreningStillingprosent());
         setMaal(sisteAvtaleVersjon.getMaal());
         setOppgaver(sisteAvtaleVersjon.getOppgaver());

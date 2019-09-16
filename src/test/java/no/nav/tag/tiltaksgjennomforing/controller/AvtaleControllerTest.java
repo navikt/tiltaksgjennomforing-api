@@ -101,14 +101,22 @@ public class AvtaleControllerTest {
 
     @Test
     public void opprettNyAvtaleRevisjonSkalReturnereCreatedOgOpprettetLokasjon() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         vaerInnloggetSom(TestData.innloggetNavAnsatt(TestData.enVeileder(avtale)));
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
         when(eregService.hentVirksomhet(avtale.getBedriftNr())).thenReturn(new Organisasjon(avtale.getBedriftNr(), avtale.getBedriftNavn()));
 
         ResponseEntity svar = avtaleController.opprettAvtale(new OpprettAvtale(avtale.getDeltakerFnr(), avtale.getBedriftNr(), null, 0));
-        avtale.setId((UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3")));
-        avtale.setBaseAvtaleId(("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
+        avtaleRepository.save(avtale);
+        try {
+            avtale.setId(avtaleRepository.findAll().iterator().next().getId());
+            avtale.setBaseAvtaleId(avtaleRepository.findAll().iterator().next().getId().toString());
+        } catch (Exception e) {
+            System.out.println(e.getMessage() + "cause " + e.getCause());
+            e.printStackTrace();
+            avtale.setId(UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
+            avtale.setBaseAvtaleId("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3");
+        }
         Avtale nyAvtaleRevisjon = TestData.enAvtale();
         vaerInnloggetSom(TestData.innloggetNavAnsatt(TestData.enVeileder(nyAvtaleRevisjon)));
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(nyAvtaleRevisjon);
@@ -116,7 +124,7 @@ public class AvtaleControllerTest {
         ResponseEntity svarRevisjon = avtaleController.opprettAvtaleRevisjon(new OpprettAvtale(nyAvtaleRevisjon.getDeltakerFnr(), nyAvtaleRevisjon.getBedriftNr(), avtale.getId().toString(), 2), avtale.getId());
 
         assertThat(svarRevisjon.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(svarRevisjon.getHeaders().getLocation().getPath()).isEqualTo("/avtaler/" + avtale.getId());
+        assertThat(svarRevisjon.getHeaders().getLocation().getPath()).isEqualTo("/avtaler/" + nyAvtaleRevisjon.getId());
     }
 
     @Test(expected = RessursFinnesIkkeException.class)
