@@ -70,16 +70,22 @@ public class TilgangUnderPiloteringTest {
     }
     
     @Test
-    public void sjekkTilgang_enablet_i_unleash_skal_gi_tilgang() {
+    public void sjekkTilgang_enablet_i_unleash_skal_gi_tilgang_for_ident() {
         when(featureToggleService.isEnabled(TilgangUnderPilotering.TAG_TILTAK_BRUK_UNLEASH_FOR_PILOTTILGANG)).thenReturn(true);
-        when(featureToggleService.isEnabled(TilgangUnderPilotering.TAG_TILTAK_PILOTTILGANG)).thenReturn(true);
+        when(featureToggleService.isEnabled(TilgangUnderPilotering.TAG_TILTAK_PILOTTILGANG_IDENT)).thenReturn(true);
+        tilgangUnderPilotering.sjekkTilgang(new NavIdent("Q000111"));
+    }
+    
+    @Test
+    public void sjekkTilgang_enablet_i_unleash_skal_gi_tilgang_for_kontor() {
+        when(featureToggleService.isEnabled(TilgangUnderPilotering.TAG_TILTAK_BRUK_UNLEASH_FOR_PILOTTILGANG)).thenReturn(true);
+        when(featureToggleService.isEnabled(TilgangUnderPilotering.TAG_TILTAK_PILOTTILGANG_KONTOR)).thenReturn(true);
         tilgangUnderPilotering.sjekkTilgang(new NavIdent("Q000111"));
     }
     
     @Test(expected = TilgangskontrollException.class)
     public void sjekkTilgang_enablet_i_unleash_skal_feile() {
         when(featureToggleService.isEnabled(TilgangUnderPilotering.TAG_TILTAK_BRUK_UNLEASH_FOR_PILOTTILGANG)).thenReturn(true);
-        when(featureToggleService.isEnabled(TilgangUnderPilotering.TAG_TILTAK_PILOTTILGANG)).thenReturn(false);
         tilgangUnderPilotering.sjekkTilgang(new NavIdent("Q000111"));
     }
 }
