@@ -90,7 +90,7 @@ public class AvtaleController {
         Avtale opprettetAvtaleRevisjon = avtaleRepository.save(avtaleRevisjon);
         Avtalepart avtalepart = innloggetNavAnsatt.avtalepart(opprettetAvtaleRevisjon);
         //avtalepart.endreAvtale(versjon,sisteVersjonAvtale);
-        avtalepart.fylleUtAvtaleRevisjonVerdier(sisteAvtaleVersjon.getRevisjon(), sisteAvtaleVersjon, sisteAvtaleVersjon.getId() != null ? sisteAvtaleVersjon.getId().toString() : sisteVersjonAvtaleId.toString());
+        avtalepart.fylleUtAvtaleRevisjonVerdier(sisteAvtaleVersjon.getRevisjon(), sisteAvtaleVersjon, sisteAvtaleVersjon.getBaseAvtaleId() != null ? sisteAvtaleVersjon.getBaseAvtaleId(): sisteVersjonAvtaleId);
         avtaleRepository.save(opprettetAvtaleRevisjon);
         URI uri = lagUri("/avtaler/" + opprettetAvtaleRevisjon.getId());
         return ResponseEntity.created(uri).build();

@@ -12,6 +12,6 @@ import java.util.UUID;
 public class OpprettAvtale {
     private Fnr deltakerFnr;
     private BedriftNr bedriftNr;
-    private String baseAvtaleId;
+    private UUID baseAvtaleId;
     private int revisjon;
 }

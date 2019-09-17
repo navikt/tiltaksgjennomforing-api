@@ -33,7 +33,7 @@ public class Avtale extends AbstractAggregateRoot {
     private LocalDateTime opprettetTidspunkt;
     @Id
     private UUID id;
-    private String baseAvtaleId;
+    private UUID baseAvtaleId;
     private Integer versjon;
     private String deltakerFornavn;
     private String deltakerEtternavn;
@@ -68,7 +68,7 @@ public class Avtale extends AbstractAggregateRoot {
     private Integer revisjon;
 
     @PersistenceConstructor
-    public Avtale(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent, String baseAvtaleId, int revisjon) {
+    public Avtale(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent, UUID baseAvtaleId, int revisjon) {
         this.deltakerFnr = sjekkAtIkkeNull(deltakerFnr, "Deltakers fnr må være satt.");
         this.bedriftNr = sjekkAtIkkeNull(bedriftNr, "Arbeidsgivers bedriftnr må være satt.");
         this.veilederNavIdent = sjekkAtIkkeNull(veilederNavIdent, "Veileders NAV-ident må være satt.");
@@ -91,7 +91,7 @@ public class Avtale extends AbstractAggregateRoot {
         oppgaver.forEach(Oppgave::sjekkOppgaveLengde);
     }
 
-    public static Avtale nyAvtaleVersjon(OpprettAvtale opprettAvtaleVersjon, NavIdent veilederNavIdent, UUID sisteVersjonID, String baseAvtaleId, int godkjentVersjon) {
+    public static Avtale nyAvtaleVersjon(OpprettAvtale opprettAvtaleVersjon, NavIdent veilederNavIdent, UUID sisteVersjonID, UUID baseAvtaleId, int godkjentVersjon) {
         Avtale avtaleVersjon = new Avtale(opprettAvtaleVersjon.getDeltakerFnr(), opprettAvtaleVersjon.getBedriftNr(), veilederNavIdent, opprettAvtaleVersjon.getBaseAvtaleId(), opprettAvtaleVersjon.getRevisjon());
         avtaleVersjon.setVersjon(1);
         //To do endre avtale og fylle info fra siste versjon og gi baseavtaleId
@@ -130,7 +130,7 @@ public class Avtale extends AbstractAggregateRoot {
         registerEvent(new AvtaleEndret(this, utfortAv));
     }
 
-    public void fylleUtAvtaleRevisjonVerdier(Integer nyGodkjentVersjon, Avtale sisteAvtaleVersjon, String baseAvtaleId, Avtalerolle utfortAv) {
+    public void fylleUtAvtaleRevisjonVerdier(Integer nyGodkjentVersjon, Avtale sisteAvtaleVersjon, UUID baseAvtaleId, Avtalerolle utfortAv) {
         kontrollNyRevisjon(sisteAvtaleVersjon);
         setDeltakerInfo(sisteAvtaleVersjon.getDeltakerFornavn(), sisteAvtaleVersjon.getDeltakerEtternavn(), sisteAvtaleVersjon.getDeltakerTlf());
         setArbeidsgiverInfo(sisteAvtaleVersjon.getBedriftNavn(), sisteAvtaleVersjon.getArbeidsgiverFornavn(), sisteAvtaleVersjon.getArbeidsgiverEtternavn(), sisteAvtaleVersjon.getArbeidsgiverTlf());
@@ -233,7 +233,7 @@ public class Avtale extends AbstractAggregateRoot {
             throw new SamtidigeEndringerException("Det står en feil ved kotrllering av oppretting ny versjon av avtale. Sjekk om siste avtalen er godkjent av veileder før du oppretter en ny versjon.");
         }
         if (sisteAvtaleVersjon.baseAvtaleId == null) {
-            this.baseAvtaleId = sisteAvtaleVersjon.id.toString();
+            this.baseAvtaleId = sisteAvtaleVersjon.id;
         } else {
             this.baseAvtaleId = sisteAvtaleVersjon.baseAvtaleId;
         }
@@ -250,7 +250,7 @@ public class Avtale extends AbstractAggregateRoot {
         if (this.getOpprettetTidspunkt() == null) {
             this.opprettetTidspunkt = LocalDateTime.now();
         }
-        if (this.baseAvtaleId != null && (!this.id.toString().equals(this.baseAvtaleId))) {
+        if (this.baseAvtaleId != null && (!this.id.equals(this.baseAvtaleId))) {
             this.getMaal().forEach(Maal::settNewIdOgOpprettetTidspunkt);
             this.getOppgaver().forEach(Oppgave::settNewIdOgOpprettetTidspunkt);
         } else {

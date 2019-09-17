@@ -12,7 +12,7 @@ public class InnloggetNavAnsatt extends InnloggetBruker<NavIdent> {
     public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
         return Avtale.nyAvtale(opprettAvtale, getIdentifikator());
     }
-    public Avtale opprettAvtale(OpprettAvtale opprettAvtale, UUID sisteVersjonID, String baseAvtaleID, int godkjentVersjon)
+    public Avtale opprettAvtale(OpprettAvtale opprettAvtale, UUID sisteVersjonID, UUID baseAvtaleID, int godkjentVersjon)
     {
         return Avtale.nyAvtaleVersjon(opprettAvtale,getIdentifikator(),sisteVersjonID,baseAvtaleID,godkjentVersjon);
     }

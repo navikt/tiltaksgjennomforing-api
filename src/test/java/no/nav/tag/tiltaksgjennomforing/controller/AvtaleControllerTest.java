@@ -110,18 +110,18 @@ public class AvtaleControllerTest {
         avtaleRepository.save(avtale);
         try {
             avtale.setId(avtaleRepository.findAll().iterator().next().getId());
-            avtale.setBaseAvtaleId(avtaleRepository.findAll().iterator().next().getId().toString());
+            avtale.setBaseAvtaleId(avtaleRepository.findAll().iterator().next().getId());
         } catch (Exception e) {
             System.out.println(e.getMessage() + "cause " + e.getCause());
             e.printStackTrace();
             avtale.setId(UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
-            avtale.setBaseAvtaleId("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3");
+            avtale.setBaseAvtaleId(UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
         }
         Avtale nyAvtaleRevisjon = TestData.enAvtale();
         vaerInnloggetSom(TestData.innloggetNavAnsatt(TestData.enVeileder(nyAvtaleRevisjon)));
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(nyAvtaleRevisjon);
         when(eregService.hentVirksomhet(avtale.getBedriftNr())).thenReturn(new Organisasjon(nyAvtaleRevisjon.getBedriftNr(), nyAvtaleRevisjon.getBedriftNavn()));
-        ResponseEntity svarRevisjon = avtaleController.opprettAvtaleRevisjon(new OpprettAvtale(nyAvtaleRevisjon.getDeltakerFnr(), nyAvtaleRevisjon.getBedriftNr(), avtale.getId().toString(), 2), avtale.getId());
+        ResponseEntity svarRevisjon = avtaleController.opprettAvtaleRevisjon(new OpprettAvtale(nyAvtaleRevisjon.getDeltakerFnr(), nyAvtaleRevisjon.getBedriftNr(), avtale.getId(), 2), avtale.getId());
 
         assertThat(svarRevisjon.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(svarRevisjon.getHeaders().getLocation().getPath()).isEqualTo("/avtaler/" + nyAvtaleRevisjon.getId());
