@@ -61,7 +61,7 @@ public class AvtaleControllerTest {
     private static OpprettAvtale lagOpprettAvtale() {
         Fnr deltakerFnr = new Fnr("88888899999");
         BedriftNr bedriftNr = new BedriftNr("12345678");
-        return new OpprettAvtale(deltakerFnr, bedriftNr);
+        return new OpprettAvtale(deltakerFnr, bedriftNr, Tiltakstype.ARBEIDSTRENING);
     }
 
     @Test
@@ -93,8 +93,8 @@ public class AvtaleControllerTest {
     @Test
     public void hentAvtalerOpprettetAvVeileder_skal_returnere_avtaler_dersom_veileder_har_tilgang() {
         NavIdent veilederNavIdent = new NavIdent("Z222222");
-        Avtale avtaleForVeilederSomSøkesEtter = Avtale.nyAvtale(lagOpprettAvtale(), veilederNavIdent);
-        Avtale avtaleForAnnenVeilder = Avtale.nyAvtale(lagOpprettAvtale(), new NavIdent("Z111111"));
+        Avtale avtaleForVeilederSomSøkesEtter = AvtaleFactory.nyAvtale(lagOpprettAvtale(), veilederNavIdent);
+        Avtale avtaleForAnnenVeilder = AvtaleFactory.nyAvtale(lagOpprettAvtale(), new NavIdent("Z111111"));
         InnloggetNavAnsatt innloggetBruker = new InnloggetNavAnsatt(new NavIdent("Z333333"), tilgangskontrollService);
         vaerInnloggetSom(innloggetBruker);
         when(avtaleRepository.findAll()).thenReturn(asList(avtaleForVeilederSomSøkesEtter, avtaleForAnnenVeilder));
@@ -108,7 +108,7 @@ public class AvtaleControllerTest {
     @Test
     public void hentAvtalerOpprettetAvVeileder_skal_returnere_tom_liste_dersom_veileder_ikke_har_tilgang() {
         NavIdent veilederNavIdent = new NavIdent("Z222222");
-        Avtale avtaleForVeilederSomSøkesEtter = Avtale.nyAvtale(lagOpprettAvtale(), veilederNavIdent);
+        Avtale avtaleForVeilederSomSøkesEtter = AvtaleFactory.nyAvtale(lagOpprettAvtale(), veilederNavIdent);
         InnloggetNavAnsatt innloggetBruker = new InnloggetNavAnsatt(new NavIdent("Z333333"), tilgangskontrollService);
         vaerInnloggetSom(innloggetBruker);
         when(avtaleRepository.findAll()).thenReturn(asList(avtaleForVeilederSomSøkesEtter));
@@ -120,10 +120,8 @@ public class AvtaleControllerTest {
     @Test
     public void hentAvtalerOpprettetAvInnloggetVeileder_skal_returnere_avtaler_dersom_veileder_har_tilgang() {
         NavIdent innloggetVeileder = new NavIdent("Z333333");
-        Avtale avtaleForInnloggetVeileder = Avtale.nyAvtale(lagOpprettAvtale(), innloggetVeileder);
-        avtaleForInnloggetVeileder.setOpprettetTidspunkt(LocalDateTime.now());
-        Avtale avtaleForAnnenVeilder = Avtale.nyAvtale(lagOpprettAvtale(), new NavIdent("Z111111"));
-        avtaleForAnnenVeilder.setOpprettetTidspunkt(LocalDateTime.now());
+        Avtale avtaleForInnloggetVeileder = AvtaleFactory.nyAvtale(lagOpprettAvtale(), innloggetVeileder);
+        Avtale avtaleForAnnenVeilder = AvtaleFactory.nyAvtale(lagOpprettAvtale(), new NavIdent("Z111111"));
         InnloggetNavAnsatt innloggetBruker = new InnloggetNavAnsatt(innloggetVeileder, tilgangskontrollService);
         vaerInnloggetSom(innloggetBruker);
         when(avtaleRepository.findAll()).thenReturn(asList(avtaleForInnloggetVeileder, avtaleForAnnenVeilder));
@@ -149,7 +147,7 @@ public class AvtaleControllerTest {
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
         when(eregService.hentVirksomhet(avtale.getBedriftNr())).thenReturn(new Organisasjon(avtale.getBedriftNr(), avtale.getBedriftNavn()));
 
-        ResponseEntity svar = avtaleController.opprettAvtale(new OpprettAvtale(avtale.getDeltakerFnr(), avtale.getBedriftNr()));
+        ResponseEntity svar = avtaleController.opprettAvtale(new OpprettAvtale(avtale.getDeltakerFnr(), avtale.getBedriftNr(), Tiltakstype.ARBEIDSTRENING));
 
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(svar.getHeaders().getLocation().getPath()).isEqualTo("/avtaler/" + avtale.getId());
@@ -185,9 +183,7 @@ public class AvtaleControllerTest {
     @Test
     public void hentAlleAvtalerInnloggetBrukerHarTilgangTilSkalIkkeReturnereAvtalerManIkkeHarTilgangTil() {
         Avtale avtaleMedTilgang = TestData.enAvtale();
-        avtaleMedTilgang.setOpprettetTidspunkt(LocalDateTime.now());
-        Avtale avtaleUtenTilgang = Avtale.nyAvtale(new OpprettAvtale(new Fnr("89898989898"), new BedriftNr("111222333")), new NavIdent("X643564"));
-        avtaleUtenTilgang.setOpprettetTidspunkt(LocalDateTime.now());
+        Avtale avtaleUtenTilgang = AvtaleFactory.nyAvtale(new OpprettAvtale(new Fnr("89898989898"), new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), new NavIdent("X643564"));
 
         InnloggetSelvbetjeningBruker selvbetjeningBruker = TestData.innloggetSelvbetjeningBrukerUtenOrganisasjon(TestData.enDeltaker(avtaleMedTilgang));
         vaerInnloggetSom(selvbetjeningBruker);
@@ -241,7 +237,7 @@ public class AvtaleControllerTest {
     public void opprettAvtale__skal_feile_hvis_veileder_ikke_er_i_pilotering() {
         vaerInnloggetSom(TestData.enNavAnsatt());
         doThrow(TilgangskontrollException.class).when(tilgangUnderPilotering).sjekkTilgang(any());
-        avtaleController.opprettAvtale(new OpprettAvtale(new Fnr("11111100000"), new BedriftNr("111222333")));
+        avtaleController.opprettAvtale(new OpprettAvtale(new Fnr("11111100000"), new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING));
     }
 
     @Test(expected = TilgangskontrollException.class)
@@ -250,7 +246,7 @@ public class AvtaleControllerTest {
         vaerInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = new Fnr("11111100000");
         doThrow(TilgangskontrollException.class).when(tilgangskontrollService).sjekkSkrivetilgangTilKandidat(enNavAnsatt, deltakerFnr);
-        avtaleController.opprettAvtale(new OpprettAvtale(deltakerFnr, new BedriftNr("111222333")));
+        avtaleController.opprettAvtale(new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING));
     }
 
     private void vaerInnloggetSom(InnloggetBruker innloggetBruker) {

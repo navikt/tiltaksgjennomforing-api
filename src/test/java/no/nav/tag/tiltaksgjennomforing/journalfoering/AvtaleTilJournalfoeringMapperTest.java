@@ -1,10 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.journalfoering;
 
 import no.nav.tag.tiltaksgjennomforing.*;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
-import no.nav.tag.tiltaksgjennomforing.avtale.Maal;
-import no.nav.tag.tiltaksgjennomforing.avtale.Oppgave;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,13 +17,13 @@ public class AvtaleTilJournalfoeringMapperTest {
 
     final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(AvtaleTilJournalfoering.DATE_PATTERN);
 
-    private Avtale avtale;
+    private Arbeidstrening avtale;
     private AvtaleTilJournalfoering tilJournalfoering;
     private GodkjentPaVegneGrunn grunn;
 
     @Before
     public void setUp() {
-        avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        avtale = (Arbeidstrening) TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         grunn = new GodkjentPaVegneGrunn();
     }
 
