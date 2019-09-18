@@ -8,6 +8,4 @@ import java.util.UUID;
 public interface BjelleVarselRepository extends CrudRepository<BjelleVarsel, UUID> {
     @Override
     List<BjelleVarsel> findAll();
-    //    @Query("select b.* from bjelle_varsel b where b.identifikator = :identifikator)")
-//    List<BjelleVarsel> finnAlleForIdentifikator(@Param("identifikator") Identifikator identfikator);
 }

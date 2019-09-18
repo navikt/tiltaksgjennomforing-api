@@ -21,7 +21,7 @@ public class AvtaleTest {
         BedriftNr bedriftNr = new BedriftNr("000111222");
         Avtale avtale = Avtale.nyAvtale(new OpprettAvtale(deltakerFnr, bedriftNr), veilederNavIdent);
         SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(avtale.getOpprettetTidspunkt()).isNull();
+            softly.assertThat(avtale.getOpprettetTidspunkt()).isNotNull();
             softly.assertThat(avtale.getDeltakerFnr()).isEqualTo(deltakerFnr);
             softly.assertThat(avtale.getDeltakerTlf()).isNull();
             softly.assertThat(avtale.getMaal()).isEmpty();

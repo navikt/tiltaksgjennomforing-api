@@ -1,33 +1,30 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.ToString;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
-import org.springframework.data.annotation.Id;
 
-import java.time.LocalDateTime;
+import javax.persistence.*;
 import java.util.UUID;
 
 @Data
+@Entity
 public class Oppgave {
     @Id
+    @GeneratedValue
     private UUID id;
-    private LocalDateTime opprettetTidspunkt;
     private String tittel;
     private String beskrivelse;
     private String opplaering;
-
-    public void settIdOgOpprettetTidspunkt() {
-        if (id == null) {
-            id = UUID.randomUUID();
-        }
-        if (opprettetTidspunkt == null) {
-            opprettetTidspunkt = LocalDateTime.now();
-        }
-    }
+    @ManyToOne
+    @JoinColumn(name = "avtale")
+    @JsonIgnore
+    @ToString.Exclude
+    private Avtale avtale;
 
     public void sjekkOppgaveLengde() {
         Utils.sjekkAtTekstIkkeOverskrider1000Tegn(this.getBeskrivelse(), "Maks lengde for oppgavebeskrivelse er 1000 tegn");
         Utils.sjekkAtTekstIkkeOverskrider1000Tegn(this.getOpplaering(), "Maks lengde for opplæring er 1000 tegn");
     }
-
 }
