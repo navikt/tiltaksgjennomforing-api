@@ -5,6 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -31,6 +32,7 @@ public class VeilarbabacClient {
         this.veilarbabacUrl = veilarbabacUrl;
     }
 
+    @Cacheable(AbacCacheConfig.ABAC_CACHE)
     public boolean sjekkTilgang(InnloggetNavAnsatt veileder, String fnr, TilgangskontrollAction action) {
         String response;
         try {
