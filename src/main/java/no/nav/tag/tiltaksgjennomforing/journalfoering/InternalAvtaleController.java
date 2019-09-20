@@ -2,7 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.journalfoering;
 
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
-import no.nav.security.oidc.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
@@ -15,7 +14,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-@Protected
 @RestController
 @RequestMapping("/internal/avtaler")
 @Timed
