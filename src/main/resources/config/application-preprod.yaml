@@ -23,7 +23,7 @@ no.nav.security.oidc:
       discoveryurl: https://login.microsoftonline.com/NAVQ.onmicrosoft.com/.well-known/openid-configuration
       accepted_audience: 38e07d31-659d-4595-939a-f18dce3446c5
     system:
-      discoveryurl: http://security-token-service.default.svc.nais.local/rest/v1/sts/.well-known/openid-configuration
+      discoveryurl: http://security-token-service/v1/sts/.well-known/openid-configuration/rest/v1/sts/.well-known/openid-configuration
       accepted_audience: ${tiltaksgjennomforing.audience.system}
 
 tiltaksgjennomforing:
