@@ -137,8 +137,54 @@ public class AvtaleControllerTest {
     }
 
     @Test
-    public void KanLaaseOppAvtalenSkalFeileHvisDetFinnesVersjonSomIkkeErGodkjentAvVeileder() {
-        assertThat(avtaleRepository.findAllByBaseAvtaleIdAndGodkjentAvVeileder(UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"), null)).isEqualTo(false);
+    public void kanLaaseOppAvtalenSkalReturnereAngaaendeIkkeGodkjenteAvtalen() {
+        Avtale avtaleGodkjent = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        Avtale avtaleIkkeGodkjent = TestData.enAvtaleMedAltUtfylt();
+        vaerInnloggetSom(TestData.innloggetNavAnsatt(TestData.enVeileder(avtaleGodkjent)));
+        //avtaleOpent.setId(UUID.fromString("5ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
+        avtaleGodkjent.setBaseAvtaleId(UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
+        avtaleGodkjent.setId(UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
+        List<Avtale> avtaler = new ArrayList<>();
+        avtaler.add(avtaleGodkjent);
+        avtaleIkkeGodkjent.setId(UUID.fromString("5ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
+        avtaleIkkeGodkjent.setBaseAvtaleId(UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
+        avtaler.add(avtaleIkkeGodkjent);
+        when(avtaleRepository.findAll()).thenReturn(avtaler);
+        assertThat(avtaleController.kanLaasesOpp(UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3")).getId()).isEqualTo(UUID.fromString("5ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
+    }
+
+    @Test
+    public void kanLaaseOppAvtalenSkalReturnereSammeAvtaleIDHvisDetKanOpprettes() {
+        Avtale avtaleGodkjent1 = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        Avtale avtaleGodkjent2 = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        vaerInnloggetSom(TestData.innloggetNavAnsatt(TestData.enVeileder(avtaleGodkjent1)));
+        UUID id1= UUID.randomUUID();
+        avtaleGodkjent1.setId(id1);
+        avtaleGodkjent1.setBaseAvtaleId(id1);
+        UUID id2= UUID.randomUUID();
+        avtaleGodkjent2.setId(id2);
+        avtaleGodkjent2.setBaseAvtaleId(id2);
+        List<Avtale> avtalerIkkeGodkjente = new ArrayList<>();
+        avtalerIkkeGodkjente.add(avtaleGodkjent1);
+        avtalerIkkeGodkjente.add(avtaleGodkjent2);
+        when(avtaleRepository.findAll()).thenReturn(avtalerIkkeGodkjente);
+        avtaleRepository.saveAll(avtalerIkkeGodkjente);
+        assertThat(avtaleController.kanLaasesOpp(id1).getId()).isEqualTo(id1);
+    }
+
+    @Test
+    public void kanOpprettNyRevisjonAvAvtale() {
+        Avtale avtaleGodkjent = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+
+        vaerInnloggetSom(TestData.innloggetNavAnsatt(TestData.enVeileder(avtaleGodkjent)));
+        //avtaleOpent.setId(UUID.fromString("5ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
+        avtaleGodkjent.setBaseAvtaleId(UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
+        avtaleGodkjent.setId(UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
+        List<Avtale> avtaler = new ArrayList<>();
+        avtaler.add(avtaleGodkjent);
+        when(avtaleRepository.findAll()).thenReturn(avtaler);
+        ResponseEntity svar = avtaleController.opprettAvtaleRevisjon(new OpprettAvtale(), UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
+        assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test(expected = RessursFinnesIkkeException.class)

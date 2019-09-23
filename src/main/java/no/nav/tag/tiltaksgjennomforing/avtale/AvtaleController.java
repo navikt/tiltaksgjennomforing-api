@@ -3,14 +3,13 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import no.nav.security.oidc.api.Protected;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.pilottilgang.TilgangUnderPilotering;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetNavAnsatt;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.pilottilgang.TilgangUnderPilotering;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -56,10 +55,21 @@ public class AvtaleController {
         return avtaler;
     }
 
-    @GetMapping
-    public boolean kanLaasesOpp(@PathVariable("avtaleId") UUID id) {
-        return avtaleRepository.findAllByBaseAvtaleIdAndGodkjentAvVeileder(id, null).size() > 0 ? false : true;
-
+    @GetMapping("/{avtaleId}/kanLaasesOpp")
+    public Avtale kanLaasesOpp(@PathVariable("avtaleId") UUID id) {
+        for (Avtale avtale : avtaleRepository.findAll()) {
+            InnloggetNavAnsatt veileder = innloggingService.hentInnloggetNavAnsatt();
+            veileder.sjekkLeseTilgang(avtale);
+            if ((!avtale.erGodkjentAvVeileder()) && avtale.getBaseAvtaleId().equals(id)) {
+                return avtale;
+            }
+        }
+        for (Avtale avtale : avtaleRepository.findAll()) {
+            if (avtale.getId().equals(id)) {
+                return avtale;
+            }
+        }
+        return avtaleRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
     }
 
     @PostMapping
@@ -83,13 +93,16 @@ public class AvtaleController {
             /*, @RequestBody int versjon, @RequestBody UUID baseAvtaleId*/) {
         InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
         tilgangUnderPilotering.sjekkTilgang(innloggetNavAnsatt.getIdentifikator());
-
+     /*   if (kanLaasesOpp(sisteVersjonAvtaleId).getId() != sisteVersjonAvtaleId) {
+            throw new TiltaksgjennomforingException("Du kan ikke låse opp/opprette en ny versjon av den avtalen. Avtalen er allerede låst opp. Sjekk avtale versjoner! " + kanLaasesOpp(sisteVersjonAvtaleId).getId());
+        }*/
         Avtale sisteAvtaleVersjon = avtaleRepository.findById(sisteVersjonAvtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetNavAnsatt.sjekkSkriveTilgang(sisteAvtaleVersjon);
 
        /* Avtale avtaleRevisjon = innloggetNavAnsatt.opprettAvtale(opprettAvtaleRevisjon, sisteVersjonAvtaleId,
                 sisteAvtaleVersjon.getBaseAvtaleId(), sisteAvtaleVersjon.getRevisjon());*/
         Veileder veileder = innloggetNavAnsatt.avtalepart(sisteAvtaleVersjon);
+
         Avtale avtaleRevisjon = veileder.nyAvtaleRevisjon();
         Avtale opprettetAvtaleRevisjon = avtaleRepository.save(avtaleRevisjon);
         URI uri = lagUri("/avtaler/" + opprettetAvtaleRevisjon.getId());
