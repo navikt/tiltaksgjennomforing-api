@@ -10,8 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -22,22 +21,28 @@ import java.util.stream.StreamSupport;
 @Unprotected
 public class InternalAvtaleController {
 
+    private final static List<AvtaleTilJournalfoering> TOM_LISTE = Collections.emptyList();
+
     private final AvtaleRepository avtaleRepository;
     private final InnloggingService innloggingService;
 
     @GetMapping
     public Iterable<AvtaleTilJournalfoering> hentIkkeJournalfoerteAvtaler() {
         innloggingService.validerSystembruker();
-            return StreamSupport.stream(avtaleRepository.findAll().spliterator(), true)
-                .filter(avtale -> avtale.getJournalpostId() == null)
-                .filter(avtale -> avtale.erGodkjentAvVeileder())
+        Iterable<UUID> avtaleIdList = avtaleRepository.finnAvtaleIdTilJournalfoering();
+
+        if(!avtaleIdList.iterator().hasNext()){
+            return TOM_LISTE;
+        }
+
+        return StreamSupport.stream(avtaleRepository.findAllById(avtaleIdList).spliterator(), false)
                 .map(avtale -> AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale))
                 .collect(Collectors.toList());
     }
 
     @PutMapping
     @Transactional
-    public ResponseEntity journalfoerAvtaler(@RequestBody Map<UUID, String> avtalerTilJournalfoert){
+    public ResponseEntity journalfoerAvtaler(@RequestBody Map<UUID, String> avtalerTilJournalfoert) {
         innloggingService.validerSystembruker();
         Iterable<Avtale> avtaler = avtaleRepository.findAllById(avtalerTilJournalfoert.keySet());
         avtaler.forEach(avtale -> avtale.setJournalpostId(avtalerTilJournalfoert.get(avtale.getId())));

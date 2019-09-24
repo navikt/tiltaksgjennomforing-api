@@ -2,11 +2,11 @@ package no.nav.tag.tiltaksgjennomforing.varsel;
 
 import no.nav.tag.tiltaksgjennomforing.TestData;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.SystembrukerProperties;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.journalfoering.AvtaleTilJournalfoering;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.SystembrukerProperties;
 import no.nav.tag.tiltaksgjennomforing.journalfoering.InternalAvtaleController;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,8 +15,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Mockito.*;
 
@@ -41,12 +42,20 @@ public class InternalAvtaleControllerTest {
 
     @Test
     public void henterAvtalerTilJournalfoering() {
-        Iterable<Avtale> alleAvtaler = godkjenteAvtaler();
-        Avtale journalfoert = alleAvtaler.iterator().next();
+        List<Avtale> avtaleList = StreamSupport.stream(godkjenteAvtaler().spliterator(), false).collect(Collectors.toList());
+
+        Avtale ikkeJournalfoert1 = avtaleList.get(0);
+        Avtale ikkeJournalfoert2 = avtaleList.get(1);
+        Avtale journalfoert = avtaleList.get(2);
         journalfoert.setJournalpostId("1");
 
+        UUID idIkkeJournalfoert1 = ikkeJournalfoert1.getId();
+        UUID idIkkeJournalfoert2 = ikkeJournalfoert2.getId();
+        List<UUID> idIkkeJournalfoertList = Arrays.asList(idIkkeJournalfoert1, idIkkeJournalfoert2);
+
         doNothing().when(innloggingService).validerSystembruker();
-        when(avtaleRepository.findAll()).thenReturn(alleAvtaler);
+        when(avtaleRepository.finnAvtaleIdTilJournalfoering()).thenReturn(idIkkeJournalfoertList);
+        when(avtaleRepository.findAllById(idIkkeJournalfoertList)).thenReturn(Arrays.asList(ikkeJournalfoert1, ikkeJournalfoert2));
 
         Iterable<AvtaleTilJournalfoering> avtalerTilJournalfoering = internalAvtaleController.hentIkkeJournalfoerteAvtaler();
         avtalerTilJournalfoering.forEach(avtaleTilJournalfoering -> assertNotEquals(journalfoert.getId(), avtaleTilJournalfoering.getId()));
@@ -54,13 +63,11 @@ public class InternalAvtaleControllerTest {
 
     @Test
     public void ingenAvtaleTilJournalfoering() {
-        Iterable<Avtale> alleAvtaler = godkjenteAvtaler();
-        alleAvtaler.forEach(avtale -> avtale.setJournalpostId("DONE"));
-
         doNothing().when(innloggingService).validerSystembruker();
-        when(avtaleRepository.findAll()).thenReturn(alleAvtaler);
+        when(avtaleRepository.finnAvtaleIdTilJournalfoering()).thenReturn(Arrays.asList());
 
-        assertFalse(internalAvtaleController.hentIkkeJournalfoerteAvtaler().iterator().hasNext());
+        internalAvtaleController.hentIkkeJournalfoerteAvtaler();
+        verify(avtaleRepository, never()).findAllById(anyIterable());
     }
 
     @Test(expected = TilgangskontrollException.class)
