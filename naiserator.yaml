@@ -21,11 +21,11 @@ spec:
     timeout: 1
   resources:
     limits:
-      cpu: 1000m
-      memory: 2000Mi
+      cpu: 2000m
+      memory: 3000Mi
     requests:
-      cpu: 400m
-      memory: 400Mi
+      cpu: 500m
+      memory: 600Mi
   ingresses:
     - {{ingress}}
   vault:
