@@ -16,8 +16,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -176,8 +174,8 @@ public class AvtaleRepositoryTest {
         journalfoert.setJournalpostId("done");
         avtaleRepository.saveAll(Arrays.asList(klarTilJournalforing, ikkeKlar, journalfoert));
 
-        List<UUID> avtaleIds = StreamSupport.stream(avtaleRepository.finnAvtaleIdTilJournalfoering().spliterator(), false).collect(Collectors.toList());
-        List<Avtale> faktiskAvtList = StreamSupport.stream(avtaleRepository.findAllById(avtaleIds).spliterator(), false).collect(Collectors.toList());
+        List<UUID> avtaleIds = avtaleRepository.finnAvtaleIdTilJournalfoering();
+        List<Avtale> faktiskAvtList = avtaleRepository.findAllById(avtaleIds);
 
         assertEquals(avtaleIds.size(), faktiskAvtList.size());
         boolean allMatch = faktiskAvtList.stream()

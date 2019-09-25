@@ -57,7 +57,7 @@ public class InternalAvtaleControllerTest {
         when(avtaleRepository.finnAvtaleIdTilJournalfoering()).thenReturn(idIkkeJournalfoertList);
         when(avtaleRepository.findAllById(idIkkeJournalfoertList)).thenReturn(Arrays.asList(ikkeJournalfoert1, ikkeJournalfoert2));
 
-        Iterable<AvtaleTilJournalfoering> avtalerTilJournalfoering = internalAvtaleController.hentIkkeJournalfoerteAvtaler();
+        List<AvtaleTilJournalfoering> avtalerTilJournalfoering = internalAvtaleController.hentIkkeJournalfoerteAvtaler();
         avtalerTilJournalfoering.forEach(avtaleTilJournalfoering -> assertNotEquals(journalfoert.getId(), avtaleTilJournalfoering.getId()));
     }
 

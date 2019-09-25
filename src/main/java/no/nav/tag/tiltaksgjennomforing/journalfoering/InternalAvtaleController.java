@@ -10,9 +10,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/internal/avtaler")
@@ -27,16 +29,16 @@ public class InternalAvtaleController {
     private final InnloggingService innloggingService;
 
     @GetMapping
-    public Iterable<AvtaleTilJournalfoering> hentIkkeJournalfoerteAvtaler() {
+    public List<AvtaleTilJournalfoering> hentIkkeJournalfoerteAvtaler() {
         innloggingService.validerSystembruker();
-        Iterable<UUID> avtaleIdList = avtaleRepository.finnAvtaleIdTilJournalfoering();
+        List<UUID> avtaleIdList = avtaleRepository.finnAvtaleIdTilJournalfoering();
 
-        if(!avtaleIdList.iterator().hasNext()){
+        if(avtaleIdList.isEmpty()){
             return TOM_LISTE;
         }
 
-        return StreamSupport.stream(avtaleRepository.findAllById(avtaleIdList).spliterator(), false)
-                .map(avtale -> AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale))
+        return avtaleRepository.findAllById(avtaleIdList).stream()
+                .map(AvtaleTilJournalfoeringMapper::tilJournalfoering)
                 .collect(Collectors.toList());
     }
 
