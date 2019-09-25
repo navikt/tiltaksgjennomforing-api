@@ -14,7 +14,7 @@ spring:
         password: ${javax.net.ssl.trustStorePassword}
 
 no.nav.security.oidc:
-  issuers: selvbetjening, isso
+  issuers: selvbetjening, isso, system
   issuer:
     selvbetjening:
       discoveryurl: https://login.microsoftonline.com/navnob2c.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_idporten
@@ -22,6 +22,9 @@ no.nav.security.oidc:
     isso:
       discoveryurl: https://login.microsoftonline.com/navno.onmicrosoft.com/.well-known/openid-configuration
       accepted_audience: 9b4e07a3-4f4c-4bab-b866-87f62dff480d
+    system:
+      discoveryurl: http://security-token-service.default.svc.nais.local/rest/v1/sts/.well-known/openid-configuration
+      accepted_audience: ${tiltaksgjennomforing.audience.system}
 
 tiltaksgjennomforing:
   database:
@@ -40,7 +43,19 @@ tiltaksgjennomforing:
   sts:
     username: ${tiltaksgjennomforing.serviceuser.username}
     password: ${tiltaksgjennomforing.serviceuser.password}
-    uri: https://sts.adeo.no/SecurityTokenServiceProvider/
+    ws-uri: https://sts.adeo.no/SecurityTokenServiceProvider/
+    rest-uri: http://security-token-service.default.svc.nais.local/rest/v1/sts/token
   axsys:
     uri: https://axsys.nais.adeo.no/api/v1/tilgang
     nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}
+  abac:
+    veilarbabac-uri: https://veilarbabac.nais.adeo.no
+  unleash:
+    unleash-uri: https://unleash.nais.adeo.no/api/
+  consumer:
+    system:
+      id: ${tiltaksgjennomforing.consumer.system}
+
+http:
+  proxy:
+    parametername: nothing

@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing;
 
 import no.nav.security.spring.oidc.api.EnableOIDCTokenValidation;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.SjekkAktiveProfilerInitializer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;

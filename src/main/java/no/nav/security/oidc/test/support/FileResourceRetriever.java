@@ -20,11 +20,13 @@ public class FileResourceRetriever extends OIDCResourceRetriever {
 
     private final String metadataSelvbetjeningFile;
     private final String metadataIssoFile;
+    private final String metadataSystemFile;
     private final String jwksFile;
 
-    public FileResourceRetriever(String metadataSelvbetjeningFile, String metadataIssoFile, String jwksFile) {
+    public FileResourceRetriever(String metadataSystemFile, String metadataSelvbetjeningFile, String metadataIssoFile, String jwksFile) {
         this.metadataSelvbetjeningFile = metadataSelvbetjeningFile;
         this.metadataIssoFile = metadataIssoFile;
+        this.metadataSystemFile = metadataSystemFile;
         this.jwksFile = jwksFile;
     }
 
@@ -41,6 +43,9 @@ public class FileResourceRetriever extends OIDCResourceRetriever {
             }
             if (url.toString().contains("metadata-selvbetjening")) {
                 return IOUtils.readInputStreamToString(getInputStream(metadataSelvbetjeningFile), Charset.forName("UTF-8"));
+            }
+            if (url.toString().contains("metadata-system")) {
+                return IOUtils.readInputStreamToString(getInputStream(metadataSystemFile), Charset.forName("UTF-8"));
             }
             if (url.toString().contains("jwks")) {
                 return IOUtils.readInputStreamToString(getInputStream(jwksFile), Charset.forName("UTF-8"));
