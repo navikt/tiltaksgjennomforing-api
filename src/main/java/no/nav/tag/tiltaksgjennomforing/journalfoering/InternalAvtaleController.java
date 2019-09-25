@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -23,8 +22,6 @@ import java.util.stream.Collectors;
 @Unprotected
 public class InternalAvtaleController {
 
-    private final static List<AvtaleTilJournalfoering> TOM_LISTE = Collections.emptyList();
-
     private final AvtaleRepository avtaleRepository;
     private final InnloggingService innloggingService;
 
@@ -32,11 +29,6 @@ public class InternalAvtaleController {
     public List<AvtaleTilJournalfoering> hentIkkeJournalfoerteAvtaler() {
         innloggingService.validerSystembruker();
         List<UUID> avtaleIdList = avtaleRepository.finnAvtaleIdTilJournalfoering();
-
-        if(avtaleIdList.isEmpty()){
-            return TOM_LISTE;
-        }
-
         return avtaleRepository.findAllById(avtaleIdList).stream()
                 .map(AvtaleTilJournalfoeringMapper::tilJournalfoering)
                 .collect(Collectors.toList());

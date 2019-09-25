@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.varsel;
+package no.nav.tag.tiltaksgjennomforing.journalfoering;
 
 import no.nav.tag.tiltaksgjennomforing.TestData;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
@@ -6,8 +6,6 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.SystembrukerProperties;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.journalfoering.AvtaleTilJournalfoering;
-import no.nav.tag.tiltaksgjennomforing.journalfoering.InternalAvtaleController;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -19,6 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -65,9 +64,7 @@ public class InternalAvtaleControllerTest {
     public void ingenAvtaleTilJournalfoering() {
         doNothing().when(innloggingService).validerSystembruker();
         when(avtaleRepository.finnAvtaleIdTilJournalfoering()).thenReturn(Arrays.asList());
-
-        internalAvtaleController.hentIkkeJournalfoerteAvtaler();
-        verify(avtaleRepository, never()).findAllById(anyIterable());
+        assertTrue(internalAvtaleController.hentIkkeJournalfoerteAvtaler().isEmpty());
     }
 
     @Test(expected = TilgangskontrollException.class)
