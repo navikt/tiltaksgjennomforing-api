@@ -38,7 +38,6 @@ public class InnloggingService {
     }
 
     public void validerSystembruker() {
-        TokenUtils.BrukerOgIssuer issuer =  tokenUtils.hentBrukerOgIssuer().get();
         tokenUtils.hentBrukerOgIssuer()
             .filter(t -> (Issuer.ISSUER_SYSTEM == t.getIssuer() && systembrukerProperties.getId().equals(t.getBrukerIdent())))
             .orElseThrow(() -> new TilgangskontrollException("Systemet har ikke tilgang til tjenesten"));
