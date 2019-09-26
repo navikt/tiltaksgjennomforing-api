@@ -43,9 +43,9 @@ public class TokenUtils {
     private final OIDCRequestContextHolder contextHolder;
 
     public Optional<BrukerOgIssuer> hentBrukerOgIssuer() {
-        return hentClaim(ISSUER_SELVBETJENING.issuerName, "sub").map(sub -> new BrukerOgIssuer(ISSUER_SELVBETJENING, sub))
-                .or(() -> hentClaim(ISSUER_ISSO.issuerName, "NAVident").map(sub -> new BrukerOgIssuer(ISSUER_ISSO, sub)))
-                .or(() -> hentClaim(ISSUER_SYSTEM.issuerName, "sub").map(sub -> new BrukerOgIssuer(ISSUER_SYSTEM, sub)));
+        return hentClaim(ISSUER_SYSTEM.issuerName, "sub").map(sub -> new BrukerOgIssuer(ISSUER_SYSTEM, sub))
+                .or(() -> hentClaim(ISSUER_SELVBETJENING.issuerName, "sub").map(sub -> new BrukerOgIssuer(ISSUER_SELVBETJENING, sub)))
+                .or(() -> hentClaim(ISSUER_ISSO.issuerName, "NAVident").map(sub -> new BrukerOgIssuer(ISSUER_ISSO, sub)));
     }
 
     private Optional<String> hentClaim(String issuer, String claim) {
