@@ -14,8 +14,9 @@ import static java.util.Collections.disjoint;
 @Component
 public class TilgangUnderPilotering {
 
-    static final String TAG_TILTAK_PILOTTILGANG = "tag.tiltak.pilottilgang";
-    static final String TAG_TILTAK_BRUK_UNLEASH_FOR_PILOTTILGANG = "tag.tiltak.bruk.unleash.for.pilottilgang";
+    public static final String TAG_TILTAK_PILOTTILGANG_IDENT = "tag.tiltak.pilottilgang.ident";
+    public static final String TAG_TILTAK_PILOTTILGANG_KONTOR = "tag.tiltak.pilottilgang.kontor";
+    public static final String TAG_TILTAK_BRUK_UNLEASH_FOR_PILOTTILGANG = "tag.tiltak.bruk.unleash.for.pilottilgang";
 
     private final PilotProperties pilotProperties;
     private final AxsysService axsysService;
@@ -29,7 +30,7 @@ public class TilgangUnderPilotering {
     }
 
     private boolean sjekkPilotTilgangMedUnleash() {
-        return featureToggleService.isEnabled(TAG_TILTAK_PILOTTILGANG);
+        return featureToggleService.isEnabled(TAG_TILTAK_PILOTTILGANG_IDENT) || featureToggleService.isEnabled(TAG_TILTAK_PILOTTILGANG_KONTOR);
     }
 
     private boolean sjekkPilottilgangMedVault(NavIdent ident) {

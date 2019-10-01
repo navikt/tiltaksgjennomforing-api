@@ -18,7 +18,8 @@ public class FeatureToggleConfig {
     @Bean
     public Unleash initializeUnleash(@Value(
             "${tiltaksgjennomforing.unleash.unleash-uri}") String unleashUrl, 
-            ByEnvironmentStrategy byEnvironmentStrategy) {
+            ByEnvironmentStrategy byEnvironmentStrategy,
+            ByEnhetStrategy byEnhetStrategy) {
         UnleashConfig config = UnleashConfig.builder()
                 .appName(APP_NAME)
                 .instanceId(APP_NAME + "-" + byEnvironmentStrategy.getEnvironment())
@@ -27,7 +28,8 @@ public class FeatureToggleConfig {
 
         return new DefaultUnleash(
                 config,
-                byEnvironmentStrategy
+                byEnvironmentStrategy,
+                byEnhetStrategy
         );
     }
 }
