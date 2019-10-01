@@ -56,6 +56,7 @@ tiltaksgjennomforing:
     system:
       id: ${tiltaksgjennomforing.consumer.system}
 
+
 http:
   proxy:
     parametername: nothing
