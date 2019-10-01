@@ -1,7 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class InnloggingService {
 
     private final SystembrukerProperties systembrukerProperties;
@@ -38,7 +36,6 @@ public class InnloggingService {
     }
 
     public void validerSystembruker() {
-        TokenUtils.BrukerOgIssuer issuer =  tokenUtils.hentBrukerOgIssuer().get();
         tokenUtils.hentBrukerOgIssuer()
             .filter(t -> (Issuer.ISSUER_SYSTEM == t.getIssuer() && systembrukerProperties.getId().equals(t.getBrukerIdent())))
             .orElseThrow(() -> new TilgangskontrollException("Systemet har ikke tilgang til tjenesten"));
