@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import static no.nav.security.oidc.test.support.JwtTokenGenerator.ACR_LEVEL_4;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Collections;
@@ -32,10 +35,11 @@ public class TokenGeneratorController {
             HttpServletResponse response,
             Map<String, Object> claims,
             String issuer,
-            String audience
+            String audience, 
+            String acrLevel
     ) throws IOException {
         long expiryTime = expiry != null ? Long.parseLong(expiry) : JwtTokenGenerator.EXPIRY;
-        SignedJWT token = JwtTokenGenerator.createSignedJWT(subject, expiryTime, claims, issuer, audience);
+        SignedJWT token = JwtTokenGenerator.createSignedJWT(subject, expiryTime, claims, issuer, audience, acrLevel);
         Cookie cookie = new Cookie(cookieName, token.serialize());
         cookie.setPath("/");
         response.addCookie(cookie);
@@ -79,10 +83,11 @@ public class TokenGeneratorController {
     @GetMapping("/selvbetjening-login")
     public void addSelvbetjeningCookie(@RequestHeader(value = "selvbetjening-id", defaultValue = "00000000000") String subject,
                                        @RequestParam(value = "cookiename", defaultValue = SELVBETJENING_IDTOKEN) String cookieName,
+                                       @RequestParam(value = "acr-level", defaultValue = ACR_LEVEL_4) String acrLevel,
                                        @RequestParam(value = "redirect", required = false) String redirect,
                                        @RequestParam(value = "expiry", required = false) String expiry,
                                        HttpServletResponse response) throws IOException {
-        bakeCookie(subject, cookieName, redirect, expiry, response, new HashMap<>(), "selvbetjening", "aud-selvbetjening");
+        bakeCookie(subject, cookieName, redirect, expiry, response, new HashMap<>(), "selvbetjening", "aud-selvbetjening", acrLevel);
     }
 
     @Unprotected
@@ -94,7 +99,7 @@ public class TokenGeneratorController {
                              @RequestParam(value = "expiry", required = false) String expiry,
                              HttpServletResponse response
     ) throws IOException {
-        bakeCookie(subject, cookieName, redirect, expiry, response, Collections.singletonMap("NAVident", navIdent), "isso", "aud-isso");
+        bakeCookie(subject, cookieName, redirect, expiry, response, Collections.singletonMap("NAVident", navIdent), "isso", "aud-isso", null);
     }
 
     @Unprotected

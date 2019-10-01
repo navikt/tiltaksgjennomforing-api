@@ -9,8 +9,10 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltaktype;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.varsel.SmsVarselRepository;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.pilottilgang.PilotProperties;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.pilottilgang.TilgangUnderPilotering;
 import no.nav.tag.tiltaksgjennomforing.varsel.events.SmsVarselResultatMottatt;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -24,6 +26,7 @@ public class MetrikkRegistrering {
     private final MeterRegistry meterRegistry;
     private final PilotProperties pilotProperties;
     private final SmsVarselRepository smsVarselRepository;
+    private final FeatureToggleService featureToggleService;
 
     @PostConstruct
     public void init() {
@@ -52,7 +55,9 @@ public class MetrikkRegistrering {
     }
 
     private boolean pilotFylke(Identifikator utfortAv) {
-        return !pilotProperties.getIdenter().contains(utfortAv);
+        return featureToggleService.isEnabled(TilgangUnderPilotering.TAG_TILTAK_BRUK_UNLEASH_FOR_PILOTTILGANG)
+                ? featureToggleService.isEnabled(TilgangUnderPilotering.TAG_TILTAK_PILOTTILGANG_KONTOR)
+                : !pilotProperties.getIdenter().contains(utfortAv);
     }
 
     @EventListener

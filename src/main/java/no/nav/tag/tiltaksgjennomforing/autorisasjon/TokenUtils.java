@@ -17,6 +17,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TokenUtils {
         
+    private static final String ACR = "acr";
+    private static final String LEVEL4 = "Level4";
+
     static enum Issuer {
         
         ISSUER_ISSO("isso"),
@@ -43,17 +46,21 @@ public class TokenUtils {
     private final OIDCRequestContextHolder contextHolder;
 
     public Optional<BrukerOgIssuer> hentBrukerOgIssuer() {
-        return hentClaim(ISSUER_SYSTEM.issuerName, "sub").map(sub -> new BrukerOgIssuer(ISSUER_SYSTEM, sub))
-                .or(() -> hentClaim(ISSUER_SELVBETJENING.issuerName, "sub").map(sub -> new BrukerOgIssuer(ISSUER_SELVBETJENING, sub)))
-                .or(() -> hentClaim(ISSUER_ISSO.issuerName, "NAVident").map(sub -> new BrukerOgIssuer(ISSUER_ISSO, sub)));
+        return hentClaim(ISSUER_SYSTEM, "sub").map(sub -> new BrukerOgIssuer(ISSUER_SYSTEM, sub))
+                .or(() -> hentClaim(ISSUER_SELVBETJENING, "sub").map(sub -> new BrukerOgIssuer(ISSUER_SELVBETJENING, sub)))
+                .or(() -> hentClaim(ISSUER_ISSO, "NAVident").map(sub -> new BrukerOgIssuer(ISSUER_ISSO, sub)));
     }
 
-    private Optional<String> hentClaim(String issuer, String claim) {
-        return hentClaimSet(issuer).map(jwtClaimsSet -> String.valueOf(jwtClaimsSet.getClaim(claim)));
+    private Optional<String> hentClaim(Issuer issuer, String claim) {
+        return hentClaimSet(issuer).filter(jwtClaimsSet -> innloggingsNivaOK(issuer, jwtClaimsSet)).map(jwtClaimsSet -> String.valueOf(jwtClaimsSet.getClaim(claim)));
     }
 
-    private Optional<JWTClaimsSet> hentClaimSet(String issuer) {
-        return Optional.ofNullable(contextHolder.getOIDCValidationContext().getClaims(issuer))
+    private boolean innloggingsNivaOK(Issuer issuer, JWTClaimsSet jwtClaimsSet) {
+        return issuer != ISSUER_SELVBETJENING || LEVEL4.equals(jwtClaimsSet.getClaim(ACR));
+    }
+
+    private Optional<JWTClaimsSet> hentClaimSet(Issuer issuer) {
+        return Optional.ofNullable(contextHolder.getOIDCValidationContext().getClaims(issuer.issuerName))
                 .map(claims -> claims.getClaimSet());
     }
 
