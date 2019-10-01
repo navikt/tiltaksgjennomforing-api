@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 public class JwtTokenGenerator {
 
-    private static final String ACR = "Level4";
+    public static final String ACR_LEVEL_4 = "Level4";
     public static final long EXPIRY = 60 * 60 * 3600;
 
     private JwtTokenGenerator() {
@@ -26,11 +26,11 @@ public class JwtTokenGenerator {
     }
 
     public static SignedJWT createSignedJWT(String subject, String issuer, String audience) {
-        return createSignedJWT(subject, EXPIRY, new HashMap<>(), issuer, audience);
+        return createSignedJWT(subject, EXPIRY, new HashMap<>(), issuer, audience, ACR_LEVEL_4);
     }
 
-    public static SignedJWT createSignedJWT(String subject, long expiryInMinutes, Map<String, Object> claims, String issuer, String audience) {
-        JWTClaimsSet claimsSet = buildClaimSet(subject, issuer, audience, ACR, TimeUnit.MINUTES.toMillis(expiryInMinutes), claims);
+    public static SignedJWT createSignedJWT(String subject, long expiryInMinutes, Map<String, Object> claims, String issuer, String audience, String acrLevel) {
+        JWTClaimsSet claimsSet = buildClaimSet(subject, issuer, audience, acrLevel, TimeUnit.MINUTES.toMillis(expiryInMinutes), claims);
         return createSignedJWT(JwkGenerator.getDefaultRSAKey(), claimsSet);
     }
 
