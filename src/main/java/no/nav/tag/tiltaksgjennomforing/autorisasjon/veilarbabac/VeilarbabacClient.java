@@ -19,6 +19,7 @@ public class VeilarbabacClient {
     private final STSClient stsClient;
     private final String veilarbabacUrl;
 
+    private final static String ABAC_CACHE = "abac_cache";
     static final String PERMIT_RESPONSE = "permit";
     static final String DENY_RESPONSE = "deny";
 
@@ -32,7 +33,7 @@ public class VeilarbabacClient {
         this.veilarbabacUrl = veilarbabacUrl;
     }
 
-    @Cacheable(AbacCacheConfig.ABAC_CACHE)
+    @Cacheable(ABAC_CACHE)
     public boolean sjekkTilgang(InnloggetNavAnsatt veileder, String fnr, TilgangskontrollAction action) {
         String response;
         try {

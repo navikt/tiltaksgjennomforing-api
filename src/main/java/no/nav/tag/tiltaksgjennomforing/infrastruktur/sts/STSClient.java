@@ -18,6 +18,7 @@ public class STSClient {
 
     private final RestTemplate stsBasicAuthRestTemplate;
     private final URI stsUri;
+    private final static String STS_CACHE = "sts_cache";
     
     public STSClient(StsProperties stsProperties) {
         this.stsBasicAuthRestTemplate = new RestTemplateBuilder()
@@ -26,7 +27,7 @@ public class STSClient {
         this.stsUri = stsProperties.getRestUri();
     }
 
-    @Cacheable(StsCacheConfig.STS_CACHE)
+    @Cacheable(STS_CACHE)
     public STSToken hentSTSToken() {
         String uriString = UriComponentsBuilder.fromUri(stsUri)
                 .queryParam("grant_type", "client_credentials")
@@ -48,7 +49,7 @@ public class STSClient {
         return new HttpEntity<>(headers);
     }
 
-    @CacheEvict(StsCacheConfig.STS_CACHE)
+    @CacheEvict(STS_CACHE)
     public void evictToken() {
     }
 
