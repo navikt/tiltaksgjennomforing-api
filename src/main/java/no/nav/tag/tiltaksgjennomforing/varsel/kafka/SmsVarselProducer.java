@@ -16,7 +16,7 @@ public class SmsVarselProducer {
     private final KafkaTemplate<String, SmsVarselMelding> kafkaTemplate;
 
     public void sendSmsVarselMeldingTilKafka(SmsVarselMelding smsVarsel) {
-        kafkaTemplate.send(Topics.SMS_VARSEL, smsVarsel.getSmsVarselId().toString(), smsVarsel).addCallback(new ListenableFutureCallback<SendResult<String, SmsVarselMelding>>() {
+        kafkaTemplate.send(Topics.SMS_VARSEL, smsVarsel.getSmsVarselId().toString(), smsVarsel).addCallback(new ListenableFutureCallback<>() {
             @Override
             public void onFailure(Throwable ex) {
                 log.warn("SmsVarsel med smsVarselId={} kunne ikke sendes til Kafka topic", smsVarsel.getSmsVarselId());
