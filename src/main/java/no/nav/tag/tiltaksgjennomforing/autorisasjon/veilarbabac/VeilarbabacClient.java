@@ -5,6 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -76,4 +77,9 @@ public class VeilarbabacClient {
     private String hentOidcTokenTilSystembruker() {
         return stsClient.hentSTSToken().getAccessToken();
     }
+    
+    @CacheEvict(cacheNames=ABAC_CACHE, allEntries=true)
+    public void cacheEvict() {
+    }
+
 }
