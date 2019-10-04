@@ -6,6 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cache.annotation.EnableCaching;
 
 @SpringBootApplication
 @EnableOIDCTokenValidation(ignore = {
@@ -13,6 +14,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
     "org.springframework"
 })
 @EnableConfigurationProperties
+@EnableCaching
 public class TiltaksgjennomforingApplication {
     public static void main(String[] args) {
         SpringApplication application = new SpringApplicationBuilder(TiltaksgjennomforingApplication.class)
