@@ -30,6 +30,4 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       client-id: ''
   cache:
-    cache-names: sts_cache,abac_cache
-    type: ehcache
-    ehcache.config: classpath:ehcache.xml
+    jcache.config: classpath:ehcache.xml
