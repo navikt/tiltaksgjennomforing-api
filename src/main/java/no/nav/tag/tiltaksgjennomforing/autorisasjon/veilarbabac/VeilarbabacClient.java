@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac;
 
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.CacheConfiguration;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +21,6 @@ public class VeilarbabacClient {
     private final STSClient stsClient;
     private final String veilarbabacUrl;
 
-    private final static String ABAC_CACHE = "abac_cache";
     static final String PERMIT_RESPONSE = "permit";
     static final String DENY_RESPONSE = "deny";
 
@@ -34,7 +34,7 @@ public class VeilarbabacClient {
         this.veilarbabacUrl = veilarbabacUrl;
     }
 
-    @Cacheable(ABAC_CACHE)
+    @Cacheable(CacheConfiguration.ABAC_CACHE)
     public boolean sjekkTilgang(InnloggetNavAnsatt veileder, String fnr, TilgangskontrollAction action) {
         String response;
         try {
@@ -78,7 +78,7 @@ public class VeilarbabacClient {
         return stsClient.hentSTSToken().getAccessToken();
     }
     
-    @CacheEvict(cacheNames=ABAC_CACHE, allEntries=true)
+    @CacheEvict(cacheNames=CacheConfiguration.ABAC_CACHE, allEntries=true)
     public void cacheEvict() {
     }
 
