@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.*;
+import no.nav.tag.tiltaksgjennomforing.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.metrikker.MetrikkRegistrering;
 import org.junit.Test;
@@ -8,14 +8,19 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -23,6 +28,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles("dev")
+@DirtiesContext
 public class AvtaleRepositoryTest {
 
     @Autowired
@@ -167,5 +173,27 @@ public void opprettAvtaleRevisjon(){
         TestData.enVeileder(avtale).opphevGodkjenninger();
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).godkjenningerOpphevet(any(GodkjenningerOpphevetAvVeileder.class));
+    }
+
+    @Test
+    public void henter_avtaler_til_journalfoering(){
+        Avtale ikkeKlar = TestData.enAvtaleMedAltUtfylt();
+        Avtale klarTilJournalforing = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        Avtale journalfoert = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        journalfoert.setJournalpostId("done");
+        avtaleRepository.saveAll(Arrays.asList(klarTilJournalforing, ikkeKlar, journalfoert));
+
+        List<UUID> avtaleIds = avtaleRepository.finnAvtaleIdTilJournalfoering();
+        List<Avtale> faktiskAvtList = avtaleRepository.findAllById(avtaleIds);
+
+        assertEquals(avtaleIds.size(), faktiskAvtList.size());
+        boolean allMatch = faktiskAvtList.stream()
+                .allMatch(avtale ->
+                     avtale.erGodkjentAvVeileder()
+                            && avtale.getJournalpostId() == null
+                            && avtaleIds.stream().anyMatch(uuid ->
+                             uuid.equals(avtale.getId()) && !uuid.equals(ikkeKlar.getId()) && !uuid.equals(journalfoert.getId()))
+                );
+        assertTrue(allMatch);
     }
 }

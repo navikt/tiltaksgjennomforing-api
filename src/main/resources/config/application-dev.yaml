@@ -49,4 +49,4 @@ tiltaksgjennomforing:
     veilarbabac-uri: http://localhost:8090/veilarbabac
   consumer:
     system:
-      id: ${tiltaksgjennomforing.consumer.system}
+      id: testsystem

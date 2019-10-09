@@ -2,18 +2,22 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac;
 
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.CacheConfiguration;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 public class VeilarbabacClient {
     
-    private final RestTemplate restTemplate;
+	private final RestTemplate restTemplate;
     private final STSClient stsClient;
     private final String veilarbabacUrl;
 
@@ -30,8 +34,15 @@ public class VeilarbabacClient {
         this.veilarbabacUrl = veilarbabacUrl;
     }
 
+    @Cacheable(CacheConfiguration.ABAC_CACHE)
     public boolean sjekkTilgang(InnloggetNavAnsatt veileder, String fnr, TilgangskontrollAction action) {
-        String response = hentTilgang(veileder, fnr, action);
+        String response;
+        try {
+            response = hentTilgang(veileder, fnr, action);
+        } catch (HttpClientErrorException e) {
+            stsClient.evictToken();
+            response = hentTilgang(veileder, fnr, action);
+        }
 
         if (PERMIT_RESPONSE.equals(response)) {
             return true;
@@ -66,4 +77,9 @@ public class VeilarbabacClient {
     private String hentOidcTokenTilSystembruker() {
         return stsClient.hentSTSToken().getAccessToken();
     }
+    
+    @CacheEvict(cacheNames=CacheConfiguration.ABAC_CACHE, allEntries=true)
+    public void cacheEvict() {
+    }
+
 }

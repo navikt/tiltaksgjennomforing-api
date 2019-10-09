@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static no.nav.security.oidc.test.support.JwtTokenGenerator.createSignedJWT;
+import static no.nav.security.oidc.test.support.JwtTokenGenerator.ACR_LEVEL_4;
 import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISSUER_ISSO;
 import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISSUER_SELVBETJENING;
 import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISSUER_SYSTEM;
@@ -40,6 +41,15 @@ public class TokenUtilsTest {
         assertThat(tokenUtils.hentBrukerOgIssuer().get()).isEqualTo(new BrukerOgIssuer(ISSUER_SELVBETJENING, selvbetjeningBruker.getIdentifikator().asString()));
     }
 
+    @Test
+    public void hentInnloggetBruker__er_selvbetjeningbruker_må_være_nivå_4() {
+        InnloggetSelvbetjeningBruker selvbetjeningBruker = TestData.enSelvbetjeningBruker();
+        vaerInnloggetSelvbetjening(selvbetjeningBruker);
+        assertThat(tokenUtils.hentBrukerOgIssuer().get()).isEqualTo(new BrukerOgIssuer(ISSUER_SELVBETJENING, selvbetjeningBruker.getIdentifikator().asString()));
+        vaerInnloggetSelvbetjeningNiva3(selvbetjeningBruker);
+        assertThat(tokenUtils.hentBrukerOgIssuer().isEmpty()).isTrue();
+    }
+    
     @Test
     public void hentInnloggetBruker__er_nav_ansatt() {
         InnloggetNavAnsatt navAnsatt = TestData.enNavAnsatt();
@@ -64,21 +74,25 @@ public class TokenUtilsTest {
     }
 
     private void vaerInnloggetSystem(String systemId) {
-        lagOidcContext(ISSUER_SYSTEM, systemId, new HashMap<>());
+        lagOidcContext(ISSUER_SYSTEM, systemId, new HashMap<>(), null);
     }
 
     private void vaerInnloggetSelvbetjening(InnloggetSelvbetjeningBruker bruker) {
-        lagOidcContext(ISSUER_SELVBETJENING, bruker.getIdentifikator().asString(), new HashMap<>());
+        lagOidcContext(ISSUER_SELVBETJENING, bruker.getIdentifikator().asString(), new HashMap<>(), ACR_LEVEL_4);
     }
 
+    private void vaerInnloggetSelvbetjeningNiva3(InnloggetSelvbetjeningBruker bruker) {
+        lagOidcContext(ISSUER_SELVBETJENING, bruker.getIdentifikator().asString(), new HashMap<>(), "Level3");
+    }
+    
     private void vaerInnloggetNavAnsatt(InnloggetNavAnsatt innloggetBruker) {
-        lagOidcContext(ISSUER_ISSO, "blablabla", Map.of("NAVident", innloggetBruker.getIdentifikator().asString()));
+        lagOidcContext(ISSUER_ISSO, "blablabla", Map.of("NAVident", innloggetBruker.getIdentifikator().asString()), null);
     }
 
-    private void lagOidcContext(Issuer issuer, String subject, Map<String, Object> claims) {
+    private void lagOidcContext(Issuer issuer, String subject, Map<String, Object> claims, String acrLevel) {
         OIDCValidationContext context = new OIDCValidationContext();
         TokenContext tokenContext = new TokenContext(issuer.issuerName, "");
-        OIDCClaims oidcClaims = new OIDCClaims(createSignedJWT(subject, 0, claims, issuer.issuerName, "audience"));
+        OIDCClaims oidcClaims = new OIDCClaims(createSignedJWT(subject, 0, claims, issuer.issuerName, "audience", acrLevel));
         context.addValidatedToken(issuer.issuerName, tokenContext, oidcClaims);
 
         when(contextHolder.getOIDCValidationContext()).thenReturn(context);
