@@ -26,7 +26,7 @@ public class InnloggetNavAnsatt extends InnloggetBruker<NavIdent> {
 
     @Override
     public boolean harLeseTilgang(Avtale avtale)  {
-        return tilgangskontrollService.harLesetilgangTilKandidat(this, avtale.getDeltakerFnr()).orElseGet(() -> harOpprettetAvtale(avtale));
+        return tilgangskontrollService.harLesetilgangTilKandidat(getIdentifikator(), avtale.getDeltakerFnr()).orElseGet(() -> harOpprettetAvtale(avtale));
     }
 
     private boolean harOpprettetAvtale(Avtale avtale) {
@@ -35,6 +35,6 @@ public class InnloggetNavAnsatt extends InnloggetBruker<NavIdent> {
 
     @Override
     public boolean harSkriveTilgang(Avtale avtale) {
-        return tilgangskontrollService.harSkrivetilgangTilKandidat(this, avtale.getDeltakerFnr()).orElseGet(() -> harOpprettetAvtale(avtale));
+        return tilgangskontrollService.harSkrivetilgangTilKandidat(getIdentifikator(), avtale.getDeltakerFnr()).orElseGet(() -> harOpprettetAvtale(avtale));
     }
 }

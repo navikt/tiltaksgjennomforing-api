@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetNavAnsatt;
+import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 
@@ -21,37 +21,38 @@ public class TilgangskontrollService {
         this.featureToggleService = featureToggleService;
     }
 
-    public Optional<Boolean> harLesetilgangTilKandidat(InnloggetNavAnsatt innloggetNavAnsatt, Fnr fnr) {
+    public Optional<Boolean> harLesetilgangTilKandidat(Identifikator identifikator, Fnr fnr) {
         return featureToggleService.isEnabled(NY_VEILEDERTILGANG) ? 
-                Optional.of(hentTilgang(innloggetNavAnsatt, fnr, TilgangskontrollAction.read)) 
+                Optional.of(hentTilgang(identifikator, fnr, TilgangskontrollAction.read)) 
                 : Optional.empty();
     }
 
-    public Optional<Boolean> harSkrivetilgangTilKandidat(InnloggetNavAnsatt innloggetNavAnsatt, Fnr fnr) {
+    public Optional<Boolean> harSkrivetilgangTilKandidat(Identifikator identifikator, Fnr fnr) {
         return featureToggleService.isEnabled(NY_VEILEDERTILGANG) ? 
-                Optional.of(hentTilgang(innloggetNavAnsatt, fnr, TilgangskontrollAction.update)) 
+                Optional.of(hentTilgang(identifikator, fnr, TilgangskontrollAction.update)) 
                 : Optional.empty();
     }
 
-    public void sjekkLesetilgangTilKandidat(InnloggetNavAnsatt innloggetNavAnsatt, Fnr fnr) {
-        sjekkTilgang(innloggetNavAnsatt, fnr, TilgangskontrollAction.read);
+    public void sjekkLesetilgangTilKandidat(Identifikator identifikator, Fnr fnr) {
+        sjekkTilgang(identifikator, fnr, TilgangskontrollAction.read);
     }
         
-    public void sjekkSkrivetilgangTilKandidat(InnloggetNavAnsatt innloggetNavAnsatt, Fnr fnr) {
-        sjekkTilgang(innloggetNavAnsatt, fnr, TilgangskontrollAction.update);
+    public void sjekkSkrivetilgangTilKandidat(Identifikator identifikator, Fnr fnr) {
+        sjekkTilgang(identifikator, fnr, TilgangskontrollAction.update);
     }
 
-    private void sjekkTilgang(InnloggetNavAnsatt innloggetNavAnsatt, Fnr fnr, TilgangskontrollAction action) {
-        if (!hentTilgang(innloggetNavAnsatt, fnr, action)) {
+    private void sjekkTilgang(Identifikator identifikator, Fnr fnr, TilgangskontrollAction action) {
+        if (!hentTilgang(identifikator, fnr, action)) {
             throw new TilgangskontrollException("Veileder har ikke følgende tilgang for kandidat: " + action);
         }
     }
 
-    private boolean hentTilgang(InnloggetNavAnsatt innloggetNavAnsatt, Fnr fnr, TilgangskontrollAction action) {
-        return !featureToggleService.isEnabled(NY_VEILEDERTILGANG) || veilarbabacClient.sjekkTilgang(
-                innloggetNavAnsatt,
-                fnr.asString(),
-                action
+    private boolean hentTilgang(Identifikator identifikator, Fnr fnr, TilgangskontrollAction action) {
+        return !featureToggleService.isEnabled(NY_VEILEDERTILGANG) 
+                || veilarbabacClient.sjekkTilgang(
+                        identifikator,
+                        fnr.asString(),
+                        action
         );
     }
 

@@ -198,7 +198,7 @@ public class AvtaleControllerTest {
         InnloggetNavAnsatt enNavAnsatt = TestData.enNavAnsatt();
         vaerInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = new Fnr("11111100000");
-        doThrow(TilgangskontrollException.class).when(tilgangskontrollService).sjekkSkrivetilgangTilKandidat(enNavAnsatt, deltakerFnr);
+        doThrow(TilgangskontrollException.class).when(tilgangskontrollService).sjekkSkrivetilgangTilKandidat(enNavAnsatt.getIdentifikator(), deltakerFnr);
         avtaleController.opprettAvtale(new OpprettAvtale(deltakerFnr, new BedriftNr("111222333")));
     }
     

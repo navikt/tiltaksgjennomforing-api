@@ -61,7 +61,7 @@ public class AvtaleController {
     public ResponseEntity opprettAvtale(@RequestBody OpprettAvtale opprettAvtale) {
         InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
         tilgangUnderPilotering.sjekkTilgang(innloggetNavAnsatt.getIdentifikator());
-        tilgangskontrollService.sjekkSkrivetilgangTilKandidat(innloggetNavAnsatt, opprettAvtale.getDeltakerFnr());
+        tilgangskontrollService.sjekkSkrivetilgangTilKandidat(innloggetNavAnsatt.getIdentifikator(), opprettAvtale.getDeltakerFnr());
 
         Avtale avtale = innloggetNavAnsatt.opprettAvtale(opprettAvtale);
         avtale.setBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());

@@ -62,23 +62,23 @@ public class InnloggetBrukerTest {
     @Test
     public void harTilgang__veileder_skal_ha_lesetilgang_til_avtale_hvis_toggle_er_av() {
         InnloggetNavAnsatt innloggetNavAnsatt = new InnloggetNavAnsatt(navIdent, tilgangskontrollService);
-        when(tilgangskontrollService.harLesetilgangTilKandidat(innloggetNavAnsatt, avtale.getDeltakerFnr())).thenReturn(Optional.empty());
+        when(tilgangskontrollService.harLesetilgangTilKandidat(innloggetNavAnsatt.getIdentifikator(), avtale.getDeltakerFnr())).thenReturn(Optional.empty());
         assertThat(innloggetNavAnsatt.harLeseTilgang(avtale)).isTrue();
     }
 
     @Test
     public void harTilgang__veileder_skal_ha_lesetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_er_ok() {
         InnloggetNavAnsatt innloggetNavAnsatt = new InnloggetNavAnsatt(navIdent, tilgangskontrollService);
-        when(tilgangskontrollService.harLesetilgangTilKandidat(innloggetNavAnsatt, avtale.getDeltakerFnr())).thenReturn(Optional.of(true));
+        when(tilgangskontrollService.harLesetilgangTilKandidat(innloggetNavAnsatt.getIdentifikator(), avtale.getDeltakerFnr())).thenReturn(Optional.of(true));
 
         assertThat(innloggetNavAnsatt.harLeseTilgang(avtale)).isTrue();
-        verify(tilgangskontrollService).harLesetilgangTilKandidat(innloggetNavAnsatt, avtale.getDeltakerFnr());
+        verify(tilgangskontrollService).harLesetilgangTilKandidat(innloggetNavAnsatt.getIdentifikator(), avtale.getDeltakerFnr());
     }
     
     @Test
     public void harTilgang__veileder_skal_ikke_ha_lesetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_feiler() {
         InnloggetNavAnsatt innloggetNavAnsatt = new InnloggetNavAnsatt(navIdent, tilgangskontrollService);
-        when(tilgangskontrollService.harLesetilgangTilKandidat(innloggetNavAnsatt, avtale.getDeltakerFnr())).thenReturn(Optional.of(false));
+        when(tilgangskontrollService.harLesetilgangTilKandidat(innloggetNavAnsatt.getIdentifikator(), avtale.getDeltakerFnr())).thenReturn(Optional.of(false));
 
         assertThat(innloggetNavAnsatt.harLeseTilgang(avtale)).isFalse();
     }
@@ -86,23 +86,23 @@ public class InnloggetBrukerTest {
     @Test
     public void harTilgang__veileder_skal_ha_skrivetilgang_til_avtale_hvis_toggle_er_av() {
         InnloggetNavAnsatt innloggetNavAnsatt = new InnloggetNavAnsatt(navIdent, tilgangskontrollService);
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(innloggetNavAnsatt, avtale.getDeltakerFnr())).thenReturn(Optional.empty());
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(innloggetNavAnsatt.getIdentifikator(), avtale.getDeltakerFnr())).thenReturn(Optional.empty());
         assertThat(innloggetNavAnsatt.harSkriveTilgang(avtale)).isTrue();
     }
 
     @Test
     public void harTilgang__veileder_skal_ha_skrivetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_er_ok() {
         InnloggetNavAnsatt innloggetNavAnsatt = new InnloggetNavAnsatt(navIdent, tilgangskontrollService);
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(innloggetNavAnsatt, avtale.getDeltakerFnr())).thenReturn(Optional.of(true));
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(innloggetNavAnsatt.getIdentifikator(), avtale.getDeltakerFnr())).thenReturn(Optional.of(true));
 
         assertThat(innloggetNavAnsatt.harSkriveTilgang(avtale)).isTrue();
-        verify(tilgangskontrollService).harSkrivetilgangTilKandidat(innloggetNavAnsatt, avtale.getDeltakerFnr());
+        verify(tilgangskontrollService).harSkrivetilgangTilKandidat(innloggetNavAnsatt.getIdentifikator(), avtale.getDeltakerFnr());
     }
     
     @Test
     public void harTilgang__veileder_skal_ikke_ha_skrivetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_feiler() {
         InnloggetNavAnsatt innloggetNavAnsatt = new InnloggetNavAnsatt(navIdent, tilgangskontrollService);
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(innloggetNavAnsatt, avtale.getDeltakerFnr())).thenReturn(Optional.of(false));
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(innloggetNavAnsatt.getIdentifikator(), avtale.getDeltakerFnr())).thenReturn(Optional.of(false));
         
         assertThat(innloggetNavAnsatt.harSkriveTilgang(avtale)).isFalse();
     }

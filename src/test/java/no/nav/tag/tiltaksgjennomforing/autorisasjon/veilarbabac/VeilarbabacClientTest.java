@@ -1,7 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSToken;
@@ -60,8 +59,8 @@ public class VeilarbabacClientTest {
                 .thenReturn(ResponseEntity.ok().body(response));
     }
 
-    private static InnloggetNavAnsatt enVeileder() {
-        return new InnloggetNavAnsatt(new NavIdent("X123456"), null);
+    private static NavIdent enVeileder() {
+        return new NavIdent("X123456");
     }
 
     @Test
@@ -80,14 +79,14 @@ public class VeilarbabacClientTest {
     public void harSkrivetilgangTilKandidat__skal_gjøre_kall_med_riktige_parametre() {
         STSToken stsToken = etStsToken();
 
-        InnloggetNavAnsatt veileder = enVeileder();
+        NavIdent veileder = enVeileder();
 
         when(stsClient.hentSTSToken()).thenReturn(stsToken);
 
-        veilarbabacClient.sjekkTilgang(enVeileder(), FNR, TilgangskontrollAction.update);
+        veilarbabacClient.sjekkTilgang(veileder, FNR, TilgangskontrollAction.update);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("subject", veileder.getIdentifikator().asString());
+        headers.set("subject", veileder.asString());
         headers.set("subjectType", "InternBruker");
         headers.set("Authorization", "Bearer " + stsToken.getAccessToken());
         headers.setContentType(MediaType.APPLICATION_JSON);
