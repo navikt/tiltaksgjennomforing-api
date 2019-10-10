@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.featuretoggles;
+package no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet;
 
 import org.junit.Test;
 
@@ -12,7 +12,7 @@ import java.util.Optional;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
-import static no.nav.tag.tiltaksgjennomforing.featuretoggles.ByEnhetStrategy.PARAM;
+import static no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.ByEnhetStrategy.PARAM;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 

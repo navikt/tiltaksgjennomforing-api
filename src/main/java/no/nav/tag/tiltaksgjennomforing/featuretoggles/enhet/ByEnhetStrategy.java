@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.featuretoggles;
+package no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet;
 
 import no.finn.unleash.UnleashContext;
 import no.finn.unleash.strategy.Strategy;
