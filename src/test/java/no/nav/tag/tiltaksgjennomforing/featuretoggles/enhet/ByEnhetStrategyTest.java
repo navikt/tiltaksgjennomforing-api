@@ -3,8 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet;
 import org.junit.Test;
 
 import no.finn.unleash.UnleashContext;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.pilottilgang.NavEnhet;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.pilottilgang.AxsysService;
 
 import java.util.Map;
 import java.util.Optional;
