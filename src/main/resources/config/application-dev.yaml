@@ -12,10 +12,7 @@ spring:
   main:
     banner-mode: "console"
   kafka:
-    consumer:
-      bootstrap-servers: ${spring.embedded.kafka.brokers}
-    producer:
-      bootstrap-servers: ${spring.embedded.kafka.brokers}
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
 
 no.nav.security.oidc:
   issuers: selvbetjening, isso, system
@@ -35,8 +32,6 @@ tiltaksgjennomforing:
     uri: http://localhost:8090/altinn-tilgangsstyring
     service-code: 42
     service-edition: 1
-  altinn-varsel:
-    uri: http://localhost:8090/altinn-varsel
   ereg:
     uri: http://localhost:8090/ereg
   sts:
