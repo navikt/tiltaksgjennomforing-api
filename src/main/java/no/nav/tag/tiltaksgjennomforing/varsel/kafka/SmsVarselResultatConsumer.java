@@ -16,13 +16,13 @@ import org.springframework.stereotype.Component;
 public class SmsVarselResultatConsumer {
     private final SmsVarselRepository smsVarselRepository;
 
-    @KafkaListener(groupId = "smsVarselResultatConsumer", clientIdPrefix = "smsVarselResultatConsumer", topics = Topics.SMS_VARSEL_RESULTAT)
+    @KafkaListener(topics = Topics.SMS_VARSEL_RESULTAT)
     public void consume(SmsVarselResultatMelding resultatMelding) {
         smsVarselRepository.findById(resultatMelding.getSmsVarselId())
                 .ifPresentOrElse(smsVarsel -> lagreStatus(smsVarsel, resultatMelding.getStatus()), () -> loggFeil(resultatMelding));
     }
 
-    private void loggFeil(SmsVarselResultatMelding resultatMelding) {
+    private static void loggFeil(SmsVarselResultatMelding resultatMelding) {
         log.warn("Finner ikke SmsVarsel med smsVarselId={} og kan ikke oppdatere til status={}", resultatMelding.getSmsVarselId(), resultatMelding.getStatus());
     }
 

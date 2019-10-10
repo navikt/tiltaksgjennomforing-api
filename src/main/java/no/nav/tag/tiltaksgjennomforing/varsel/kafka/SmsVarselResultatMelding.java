@@ -15,12 +15,4 @@ import java.util.UUID;
 public class SmsVarselResultatMelding {
     private UUID smsVarselId;
     private SmsVarselStatus status;
-
-    public static SmsVarselResultatMelding feil(SmsVarselMelding smsVarsel) {
-        return new SmsVarselResultatMelding(smsVarsel.getSmsVarselId(), SmsVarselStatus.FEIL);
-    }
-
-    public static SmsVarselResultatMelding sendt(SmsVarselMelding smsVarsel) {
-        return new SmsVarselResultatMelding(smsVarsel.getSmsVarselId(), SmsVarselStatus.SENDT);
-    }
 }
