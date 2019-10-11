@@ -6,7 +6,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
@@ -16,7 +15,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 })
 @EnableConfigurationProperties
 @EnableJpaRepositories
-@EnableCaching
 public class TiltaksgjennomforingApplication {
     public static void main(String[] args) {
         SpringApplication application = new SpringApplicationBuilder(TiltaksgjennomforingApplication.class)
