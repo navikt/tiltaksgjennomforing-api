@@ -86,9 +86,9 @@ public class AvtaleController {
         return ResponseEntity.created(uri).build();
     }
 
-    @PostMapping("/opprettAvtaleRevisjon/{avtaleId}")
+    @PostMapping("/opprettAvtaleGodkjentVersjon/{avtaleId}")
     @Transactional
-    public ResponseEntity opprettAvtaleRevisjon(@RequestBody OpprettAvtale opprettAvtaleRevisjon,
+    public ResponseEntity opprettAvtaleGodkjentVersjon(@RequestBody OpprettAvtale opprettAvtaleGodkjentVersjon,
                                                 @PathVariable("avtaleId") UUID sisteVersjonAvtaleId
             /*, @RequestBody int versjon, @RequestBody UUID baseAvtaleId*/) {
         InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
@@ -99,13 +99,13 @@ public class AvtaleController {
         Avtale sisteAvtaleVersjon = avtaleRepository.findById(sisteVersjonAvtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetNavAnsatt.sjekkSkriveTilgang(sisteAvtaleVersjon);
 
-       /* Avtale avtaleRevisjon = innloggetNavAnsatt.opprettAvtale(opprettAvtaleRevisjon, sisteVersjonAvtaleId,
-                sisteAvtaleVersjon.getBaseAvtaleId(), sisteAvtaleVersjon.getRevisjon());*/
+       /* Avtale avtaleGodkjentVersjon = innloggetNavAnsatt.opprettAvtale(opprettAvtaleGodkjentVersjon, sisteVersjonAvtaleId,
+                sisteAvtaleVersjon.getBaseAvtaleId(), sisteAvtaleVersjon.getGodkjentVersjon());*/
         Veileder veileder = innloggetNavAnsatt.avtalepart(sisteAvtaleVersjon);
 
-        Avtale avtaleRevisjon = veileder.nyAvtaleRevisjon();
-        Avtale opprettetAvtaleRevisjon = avtaleRepository.save(avtaleRevisjon);
-        URI uri = lagUri("/avtaler/" + opprettetAvtaleRevisjon.getId());
+        Avtale avtaleGodkjentVersjon = veileder.nyAvtaleGodkjentVersjon();
+        Avtale opprettetAvtaleGodkjentVersjon = avtaleRepository.save(avtaleGodkjentVersjon);
+        URI uri = lagUri("/avtaler/" + opprettetAvtaleGodkjentVersjon.getId());
         return ResponseEntity.created(uri).build();
     }
 

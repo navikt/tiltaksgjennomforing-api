@@ -65,7 +65,7 @@ public class Avtale extends AbstractAggregateRoot {
     private LocalDateTime godkjentAvVeileder;
     private boolean godkjentPaVegneAv;
     private boolean avbrutt;
-    private Integer revisjon;
+    private Integer godkjentVersjon;
 
     @PersistenceConstructor
     public Avtale(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent) {
@@ -87,14 +87,14 @@ public class Avtale extends AbstractAggregateRoot {
         oppgaver.forEach(Oppgave::sjekkOppgaveLengde);
     }
 
-    public Avtale nyAvtaleRevisjon(Avtalerolle utfortAv) {
+    public Avtale nyAvtaleGodkjentVersjon(Avtalerolle utfortAv) {
         // sjekkOmKanLaasesOpp();
         Avtale avtaleVersjon = new Avtale(this.getDeltakerFnr(), this.getBedriftNr(), veilederNavIdent);
 
         avtaleVersjon.setVersjon(1);
 
-        //avtaleVersjon.setRevisjon(this.getRevisjon() + 1);
-        avtaleVersjon.fylleUtAvtaleRevisjonVerdier(this,utfortAv);
+        //avtaleVersjon.setGodkjentVersjon(this.getGodkjentVersjon() + 1);
+        avtaleVersjon.fylleUtAvtaleGodkjentVersjonVerdier(this,utfortAv);
         //To do endre avtale og fylle info fra siste versjon og gi baseavtaleId
         return avtaleVersjon;
     }
@@ -131,8 +131,8 @@ public class Avtale extends AbstractAggregateRoot {
         registerEvent(new AvtaleEndret(this, utfortAv));
     }
 
-    public void fylleUtAvtaleRevisjonVerdier( Avtale sisteAvtaleVersjon,Avtalerolle utfortAv) {
-        kontrollNyRevisjon(sisteAvtaleVersjon);
+    public void fylleUtAvtaleGodkjentVersjonVerdier( Avtale sisteAvtaleVersjon,Avtalerolle utfortAv) {
+        kontrollNyGodkjentVersjon(sisteAvtaleVersjon);
         setDeltakerInfo(sisteAvtaleVersjon.getDeltakerFornavn(), sisteAvtaleVersjon.getDeltakerEtternavn(), sisteAvtaleVersjon.getDeltakerTlf());
         setArbeidsgiverInfo(sisteAvtaleVersjon.getBedriftNavn(), sisteAvtaleVersjon.getArbeidsgiverFornavn(), sisteAvtaleVersjon.getArbeidsgiverEtternavn(), sisteAvtaleVersjon.getArbeidsgiverTlf());
         setVeilederInfo(sisteAvtaleVersjon.getVeilederFornavn(), sisteAvtaleVersjon.getVeilederEtternavn(), sisteAvtaleVersjon.getVeilederTlf());
@@ -228,10 +228,10 @@ public class Avtale extends AbstractAggregateRoot {
         }
     }
 
-    void kontrollNyRevisjon(Avtale sisteAvtaleVersjon) {
+    void kontrollNyGodkjentVersjon(Avtale sisteAvtaleVersjon) {
         sjekkOmAvtalenKanEndres();
 
-        if (sisteAvtaleVersjon.revisjon == null) {
+        if (sisteAvtaleVersjon.godkjentVersjon == null) {
             throw new SamtidigeEndringerException("Det står en feil ved kotrllering av oppretting ny versjon av avtale. Sjekk om siste avtalen er godkjent av veileder før du oppretter en ny versjon.");
         }
         if (sisteAvtaleVersjon.baseAvtaleId == null) {
@@ -239,7 +239,7 @@ public class Avtale extends AbstractAggregateRoot {
         } else {
             this.baseAvtaleId = sisteAvtaleVersjon.baseAvtaleId;
         }
-        this.revisjon = sisteAvtaleVersjon.revisjon + 1;
+        this.godkjentVersjon = sisteAvtaleVersjon.godkjentVersjon + 1;
         this.versjon = 1;
 
     }
@@ -270,7 +270,7 @@ public class Avtale extends AbstractAggregateRoot {
     void godkjennForVeileder(Identifikator utfortAv) {
         sjekkOmKanGodkjennes();
         this.godkjentAvVeileder = LocalDateTime.now();
-        this.revisjon += 1;
+        this.godkjentVersjon += 1;
         registerEvent(new GodkjentAvVeileder(this, utfortAv));
     }
 

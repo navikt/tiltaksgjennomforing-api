@@ -58,7 +58,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         avtale.opphevGodkjenningerSomVeileder();
     }
 
-    public Avtale nyAvtaleRevisjon() {
-        return avtale.nyAvtaleRevisjon(this.rolle());
+    public Avtale nyAvtaleGodkjentVersjon() {
+        return avtale.nyAvtaleGodkjentVersjon(this.rolle());
     }
 }

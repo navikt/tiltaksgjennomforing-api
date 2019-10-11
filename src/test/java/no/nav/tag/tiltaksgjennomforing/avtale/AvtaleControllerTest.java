@@ -109,7 +109,7 @@ public class AvtaleControllerTest {
     }
 
     @Test
-    public void opprettNyAvtaleRevisjonSkalReturnereCreatedOgOpprettetLokasjon() {
+    public void opprettNyAvtaleGodkjentVersjonSkalReturnereCreatedOgOpprettetLokasjon() {
         Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         vaerInnloggetSom(TestData.innloggetNavAnsatt(TestData.enVeileder(avtale)));
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
@@ -126,14 +126,14 @@ public class AvtaleControllerTest {
             avtale.setId(UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
             avtale.setBaseAvtaleId(UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
         }
-        Avtale nyAvtaleRevisjon = TestData.enAvtale();
-        vaerInnloggetSom(TestData.innloggetNavAnsatt(TestData.enVeileder(nyAvtaleRevisjon)));
-        when(avtaleRepository.save(any(Avtale.class))).thenReturn(nyAvtaleRevisjon);
-        when(eregService.hentVirksomhet(avtale.getBedriftNr())).thenReturn(new Organisasjon(nyAvtaleRevisjon.getBedriftNr(), nyAvtaleRevisjon.getBedriftNavn()));
-        ResponseEntity svarRevisjon = avtaleController.opprettAvtaleRevisjon(new OpprettAvtale(nyAvtaleRevisjon.getDeltakerFnr(), nyAvtaleRevisjon.getBedriftNr()), avtale.getId());
+        Avtale nyAvtaleGodkjentVersjon = TestData.enAvtale();
+        vaerInnloggetSom(TestData.innloggetNavAnsatt(TestData.enVeileder(nyAvtaleGodkjentVersjon)));
+        when(avtaleRepository.save(any(Avtale.class))).thenReturn(nyAvtaleGodkjentVersjon);
+        when(eregService.hentVirksomhet(avtale.getBedriftNr())).thenReturn(new Organisasjon(nyAvtaleGodkjentVersjon.getBedriftNr(), nyAvtaleGodkjentVersjon.getBedriftNavn()));
+        ResponseEntity svarGodkjentVersjon = avtaleController.opprettAvtaleGodkjentVersjon(new OpprettAvtale(nyAvtaleGodkjentVersjon.getDeltakerFnr(), nyAvtaleGodkjentVersjon.getBedriftNr()), avtale.getId());
 
-        assertThat(svarRevisjon.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(svarRevisjon.getHeaders().getLocation().getPath()).isEqualTo("/avtaler/" + nyAvtaleRevisjon.getId());
+        assertThat(svarGodkjentVersjon.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(svarGodkjentVersjon.getHeaders().getLocation().getPath()).isEqualTo("/avtaler/" + nyAvtaleGodkjentVersjon.getId());
     }
 
     @Test
@@ -173,7 +173,7 @@ public class AvtaleControllerTest {
     }
 
     @Test
-    public void kanOpprettNyRevisjonAvAvtale() {
+    public void kanOpprettNyGodkjentVersjonAvAvtale() {
         Avtale avtaleGodkjent = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
 
         vaerInnloggetSom(TestData.innloggetNavAnsatt(TestData.enVeileder(avtaleGodkjent)));
@@ -183,7 +183,7 @@ public class AvtaleControllerTest {
         List<Avtale> avtaler = new ArrayList<>();
         avtaler.add(avtaleGodkjent);
         when(avtaleRepository.findAll()).thenReturn(avtaler);
-        ResponseEntity svar = avtaleController.opprettAvtaleRevisjon(new OpprettAvtale(), UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
+        ResponseEntity svar = avtaleController.opprettAvtaleGodkjentVersjon(new OpprettAvtale(), UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 

@@ -125,7 +125,7 @@ public class AvtaleRepositoryTest {
     }
 /*
 @Test
-public void opprettAvtaleRevisjon(){
+public void opprettAvtaleGodkjentVersjon(){
         Avtale avtale=TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         avtaleRepository.save(avtale);
 
