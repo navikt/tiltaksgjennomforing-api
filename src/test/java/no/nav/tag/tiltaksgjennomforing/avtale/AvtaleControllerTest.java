@@ -24,11 +24,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AvtaleControllerTest {
@@ -83,6 +82,52 @@ public class AvtaleControllerTest {
         vaerInnloggetSom(TestData.innloggetNavAnsatt(TestData.enVeileder()));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         avtaleController.hent(avtale.getId());
+    }
+
+    @Test
+    public void hentAvtalerOpprettetAvVeileder_skal_returnere_avtaler_dersom_veileder_har_tilgang() {
+        String veilederSomSøkesEtter = "Z222222";
+        Avtale avtaleForVeilederSomSøkesEtter = Avtale.nyAvtale(lagOpprettAvtale(), new NavIdent(veilederSomSøkesEtter));
+        Avtale avtaleForAnnenVeilder = Avtale.nyAvtale(lagOpprettAvtale(), new NavIdent("Z111111"));
+        InnloggetNavAnsatt innloggetBruker = new InnloggetNavAnsatt(new NavIdent("Z333333"), tilgangskontrollService);
+        vaerInnloggetSom(innloggetBruker);
+        when(avtaleRepository.findAll()).thenReturn(asList(avtaleForVeilederSomSøkesEtter, avtaleForAnnenVeilder));
+        when(tilgangskontrollService.harLesetilgangTilKandidat(eq(innloggetBruker), any(Fnr.class))).thenReturn(Optional.of(true));
+        Iterable<Avtale> avtaler = avtaleController.hentAvtalerOpprettetAvVeileder(veilederSomSøkesEtter);
+        assertThat(avtaler).contains(avtaleForVeilederSomSøkesEtter);
+        assertThat(avtaler).doesNotContain(avtaleForAnnenVeilder);
+    }
+    
+    @Test
+    public void hentAvtalerOpprettetAvVeileder_skal_returnere_tom_liste_dersom_veileder_ikke_har_tilgang() {
+        String veilederSomSøkesEtter = "Z222222";
+        Avtale avtaleForVeilederSomSøkesEtter = Avtale.nyAvtale(lagOpprettAvtale(), new NavIdent(veilederSomSøkesEtter));
+        InnloggetNavAnsatt innloggetBruker = new InnloggetNavAnsatt(new NavIdent("Z333333"), tilgangskontrollService);
+        vaerInnloggetSom(innloggetBruker);
+        when(avtaleRepository.findAll()).thenReturn(asList(avtaleForVeilederSomSøkesEtter));
+        when(tilgangskontrollService.harLesetilgangTilKandidat(eq(innloggetBruker), any(Fnr.class))).thenReturn(Optional.of(false));
+        Iterable<Avtale> avtaler = avtaleController.hentAvtalerOpprettetAvVeileder(veilederSomSøkesEtter);
+        assertThat(avtaler).doesNotContain(avtaleForVeilederSomSøkesEtter);
+    }
+    
+    @Test
+    public void hentAvtalerOpprettetAvInnloggetVeileder_skal_returnere_avtaler_dersom_veileder_har_tilgang() {
+        NavIdent innloggetVeileder = new NavIdent("Z333333");
+        Avtale avtaleForInnloggetVeileder = Avtale.nyAvtale(lagOpprettAvtale(), innloggetVeileder);
+        Avtale avtaleForAnnenVeilder = Avtale.nyAvtale(lagOpprettAvtale(), new NavIdent("Z111111"));
+        InnloggetNavAnsatt innloggetBruker = new InnloggetNavAnsatt(innloggetVeileder, tilgangskontrollService);
+        vaerInnloggetSom(innloggetBruker);
+        when(avtaleRepository.findAll()).thenReturn(asList(avtaleForInnloggetVeileder, avtaleForAnnenVeilder));
+        when(tilgangskontrollService.harLesetilgangTilKandidat(eq(innloggetBruker), any(Fnr.class))).thenReturn(Optional.of(true));
+        Iterable<Avtale> avtaler = avtaleController.hentAvtalerOpprettetAvInnloggetVeileder();
+        assertThat(avtaler).contains(avtaleForInnloggetVeileder);
+        assertThat(avtaler).doesNotContain(avtaleForAnnenVeilder);
+    }
+    
+    private OpprettAvtale lagOpprettAvtale() {
+        Fnr deltakerFnr = new Fnr("88888899999");
+        BedriftNr bedriftNr = new BedriftNr("12345678");
+        return new OpprettAvtale(deltakerFnr, bedriftNr);
     }
 
     @Test(expected = TilgangskontrollException.class)
