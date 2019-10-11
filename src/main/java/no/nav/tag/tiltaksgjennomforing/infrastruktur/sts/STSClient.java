@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.CacheConfiguration;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.restservicecache.CacheConfiguration;
 
 @Component
 public class STSClient {

@@ -35,7 +35,11 @@ public class TilgangUnderPilotering {
 
     private boolean sjekkPilottilgangMedVault(NavIdent ident) {
         if (pilotProperties.isEnabled() && !pilotProperties.getIdenter().contains(ident)) {
-            return axsysService.hentEnheterVeilederHarTilgangTil(ident).map(enheter -> !disjoint(pilotProperties.getEnheter(), enheter)).orElse(false);
+            try {
+                return !disjoint(pilotProperties.getEnheter(), axsysService.hentEnheterVeilederHarTilgangTil(ident));
+            } catch (Exception e) {
+                return false;
+            }
         }
         return true;
     }

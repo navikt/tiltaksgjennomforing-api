@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 
-import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
 import java.util.Collections;
@@ -46,7 +45,7 @@ public class ByEnhetStrategy implements Strategy {
     }
 
     private List<String> brukersEnheter(String currentUserId) {
-        return axsysService.hentEnheterVeilederHarTilgangTil(new NavIdent(currentUserId)).orElse(emptyList()).stream()
+        return axsysService.hentEnheterVeilederHarTilgangTil(new NavIdent(currentUserId)).stream()
                 .map(enhet -> enhet.getVerdi()).collect(toList());
     }
 

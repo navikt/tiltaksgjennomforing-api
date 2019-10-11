@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.infrastruktur;
+package no.nav.tag.tiltaksgjennomforing.infrastruktur.restservicecache;
 
 import static java.util.Arrays.asList;
 
@@ -17,22 +17,21 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.AbacCacheEventLogger;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.StsCacheEventLogger;
- 
-
 @Configuration
 @EnableCaching
 public class CacheConfiguration {
 
     public final static String STS_CACHE = "sts_cache";
     public final static String ABAC_CACHE = "abac_cache";
+    public static final String AXSYS_CACHE = "axsys_cache";
 
     @Bean
     public JCacheManagerCustomizer cacheConfigurationCustomizer() {
         return cm -> {
-            cm.createCache(ABAC_CACHE, cacheConfiguration(new AbacCacheEventLogger(), 10000, Duration.ofMinutes(30)));
-            cm.createCache(STS_CACHE, cacheConfiguration(new StsCacheEventLogger(), 1, Duration.ofMinutes(59)));
+            EventAndKeyHashEventLogger eventAndKeyHashEventLogger = new EventAndKeyHashEventLogger();
+            cm.createCache(ABAC_CACHE, cacheConfiguration(eventAndKeyHashEventLogger, 10000, Duration.ofMinutes(30)));
+            cm.createCache(STS_CACHE, cacheConfiguration(new EventTypeEventLogger(), 1, Duration.ofMinutes(59)));
+            cm.createCache(AXSYS_CACHE, cacheConfiguration(eventAndKeyHashEventLogger, 1000, Duration.ofMinutes(60)));
         };
     }
 
