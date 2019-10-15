@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.autorisasjon.pilottilgang;
+package no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet;
 
 import lombok.Value;
 
