@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.junit.Test;
 
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.pilottilgang.AxsysService;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;;
 
 public class ClearCacheInterceptorTest {
     
