@@ -12,7 +12,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import lombok.RequiredArgsConstructor;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.pilottilgang.AxsysService;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;;
 
 @Component
 @RequiredArgsConstructor

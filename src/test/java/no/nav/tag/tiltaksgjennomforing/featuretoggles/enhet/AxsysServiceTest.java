@@ -1,6 +1,8 @@
-package no.nav.tag.tiltaksgjennomforing.autorisasjon.pilottilgang;
+package no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

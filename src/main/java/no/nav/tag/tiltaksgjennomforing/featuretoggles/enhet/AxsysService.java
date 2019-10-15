@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.autorisasjon.pilottilgang;
+package no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;

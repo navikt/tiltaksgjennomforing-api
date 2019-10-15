@@ -1,9 +1,8 @@
-package no.nav.tag.tiltaksgjennomforing.featuretoggles;
+package no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet;
 
 import no.finn.unleash.UnleashContext;
 import no.finn.unleash.strategy.Strategy;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.pilottilgang.AxsysService;
 
 import org.springframework.stereotype.Component;
 

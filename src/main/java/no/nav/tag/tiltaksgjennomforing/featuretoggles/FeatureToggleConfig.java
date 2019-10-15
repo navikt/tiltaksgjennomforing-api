@@ -3,6 +3,8 @@ package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 import no.finn.unleash.DefaultUnleash;
 import no.finn.unleash.Unleash;
 import no.finn.unleash.util.UnleashConfig;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.ByEnhetStrategy;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
