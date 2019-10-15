@@ -56,7 +56,24 @@ public class AvtaleController {
     }
 
     @GetMapping("/{avtaleId}/kanLaasesOpp")
-    public Avtale kanLaasesOpp(@PathVariable("avtaleId") UUID id) {
+    public boolean kanLaasesOpp(@PathVariable("avtaleId") UUID id) {
+        for (Avtale avtale : avtaleRepository.findAll()) {
+            InnloggetNavAnsatt veileder = innloggingService.hentInnloggetNavAnsatt();
+            veileder.sjekkLeseTilgang(avtale);
+            if ((!avtale.erGodkjentAvVeileder()) && avtale.getBaseAvtaleId().equals(id)) {
+                return false;
+            }
+        }
+      /*  for (Avtale avtale : avtaleRepository.findAll()) {
+            if (avtale.getId().equals(id)) {
+                return false;
+            }
+        }*/
+        return true;
+    }
+
+    @GetMapping("/{avtaleId}/hentSisteVersjonForGodkjenning")
+    public Avtale hentSisteVersjonForGodkjenning(@PathVariable("avtaleId") UUID id) {
         for (Avtale avtale : avtaleRepository.findAll()) {
             InnloggetNavAnsatt veileder = innloggingService.hentInnloggetNavAnsatt();
             veileder.sjekkLeseTilgang(avtale);
