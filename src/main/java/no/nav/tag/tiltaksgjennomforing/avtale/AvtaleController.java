@@ -72,8 +72,8 @@ public class AvtaleController {
         return true;
     }
 
-    @GetMapping("/{avtaleId}/hentSisteVersjonForGodkjenning")
-    public Avtale hentSisteVersjonForGodkjenning(@PathVariable("avtaleId") UUID id) {
+    @GetMapping("/{avtaleId}/hentSisteLaastOppVersjon")
+    public Avtale hentSisteLaastOppVersjon(@PathVariable("avtaleId") UUID id) {
         for (Avtale avtale : avtaleRepository.findAll()) {
             InnloggetNavAnsatt veileder = innloggingService.hentInnloggetNavAnsatt();
             veileder.sjekkLeseTilgang(avtale);

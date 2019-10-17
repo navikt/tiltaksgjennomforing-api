@@ -154,7 +154,7 @@ public class AvtaleControllerTest {
     }
 
     @Test
-    public void kanLaaseOppAvtalenSkalReturnereSammeAvtaleIDHvisDetKanOpprettes() {
+    public void kanLaaseOppAvtalenSkalReturnereFalse() {
         Avtale avtaleGodkjent1 = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         Avtale avtaleGodkjent2 = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         vaerInnloggetSom(TestData.innloggetNavAnsatt(TestData.enVeileder(avtaleGodkjent1)));
@@ -172,8 +172,8 @@ public class AvtaleControllerTest {
         assertThat(avtaleController.kanLaasesOpp(id1)).isTrue();
     }
 
-   /* @Test
-    public void kanLaaseOppAvtalenSkalReturnereAngaaendeIkkeGodkjenteAvtalen() {
+    @Test
+    public void skalHenteSisteLåstOppVersjon() {
         Avtale avtaleGodkjent = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         Avtale avtaleIkkeGodkjent = TestData.enAvtaleMedAltUtfylt();
         vaerInnloggetSom(TestData.innloggetNavAnsatt(TestData.enVeileder(avtaleGodkjent)));
@@ -186,11 +186,11 @@ public class AvtaleControllerTest {
         avtaleIkkeGodkjent.setBaseAvtaleId(UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
         avtaler.add(avtaleIkkeGodkjent);
         when(avtaleRepository.findAll()).thenReturn(avtaler);
-        assertThat(avtaleController.kanLaasesOpp(UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3")).getId()).isEqualTo(UUID.fromString("5ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
+        assertThat(avtaleController.hentSisteLaastOppVersjon(UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3")).getId()).isEqualTo(UUID.fromString("5ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
     }
 
     @Test
-    public void kanLaaseOppAvtalenSkalReturnereSammeAvtaleIDHvisDetKanOpprettes() {
+    public void skalReturnereSammeID() {
         Avtale avtaleGodkjent1 = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         Avtale avtaleGodkjent2 = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         vaerInnloggetSom(TestData.innloggetNavAnsatt(TestData.enVeileder(avtaleGodkjent1)));
@@ -205,8 +205,8 @@ public class AvtaleControllerTest {
         avtalerIkkeGodkjente.add(avtaleGodkjent2);
         when(avtaleRepository.findAll()).thenReturn(avtalerIkkeGodkjente);
         avtaleRepository.saveAll(avtalerIkkeGodkjente);
-        assertThat(avtaleController.kanLaasesOpp(id1).getId()).isEqualTo(id1);
-    }*/
+        assertThat(avtaleController.hentSisteLaastOppVersjon(id1).getId()).isEqualTo(id1);
+    }
     @Test
     public void kanOpprettNyGodkjentVersjonAvAvtale() {
         Avtale avtaleGodkjent = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
