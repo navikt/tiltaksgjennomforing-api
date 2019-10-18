@@ -196,4 +196,28 @@ public void opprettAvtaleGodkjentVersjon(){
                 );
         assertTrue(allMatch);
     }
+
+    @Test
+    public void henterAvtaleVersjoner(){
+        Avtale ikkeKlar = TestData.enAvtaleMedAltUtfylt();
+        Avtale klarTilJournalforing = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        Avtale journalfoert = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        ikkeKlar.setBaseAvtaleId(UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
+        klarTilJournalforing.setBaseAvtaleId(UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
+
+        journalfoert.setJournalpostId("done");
+        avtaleRepository.saveAll(Arrays.asList(klarTilJournalforing, ikkeKlar, journalfoert));
+
+        List<UUID> avtaleIds=avtaleRepository.finnAvtaleIdVersjoner(ikkeKlar.getBaseAvtaleId());
+        List<Avtale> faktiskAvtList=avtaleRepository.findAllById(avtaleIds);
+        assertEquals(avtaleIds.size(),faktiskAvtList.size());
+        boolean allMatch = faktiskAvtList.stream()
+                .allMatch(avtale ->
+                        avtale.erGodkjentAvVeileder()
+                                && avtale.getJournalpostId() == null
+                                && avtaleIds.stream().anyMatch(uuid ->
+                                uuid.equals(avtale.getId()) && !uuid.equals(ikkeKlar.getId()) && !uuid.equals(journalfoert.getId()))
+                );
+        assertTrue(allMatch);
+    }
 }

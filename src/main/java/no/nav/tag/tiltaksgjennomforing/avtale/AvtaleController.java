@@ -72,21 +72,33 @@ public class AvtaleController {
         return true;
     }
 
-    @GetMapping("/{avtaleId}/hentSisteLaastOppVersjon")
-    public Avtale hentSisteLaastOppVersjon(@PathVariable("avtaleId") UUID id) {
+    /* @GetMapping("/{avtaleId}/hentSisteLaastOppVersjon")
+     public Avtale hentSisteLaastOppVersjon(@PathVariable("avtaleId") UUID id) {
+         for (Avtale avtale : avtaleRepository.findAll()) {
+             InnloggetNavAnsatt veileder = innloggingService.hentInnloggetNavAnsatt();
+             veileder.sjekkLeseTilgang(avtale);
+             if ((!avtale.erGodkjentAvVeileder()) && avtale.getBaseAvtaleId().equals(id)) {
+                 return avtale;
+             }
+         }
+         for (Avtale avtale : avtaleRepository.findAll()) {
+             if (avtale.getId().equals(id)) {
+                 return avtale;
+             }
+         }
+         return avtaleRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
+     }*/
+    @GetMapping("/{avtaleId}/hentAlleAvtaleVersjoner")
+    public Iterable<Avtale> hentAlleAvtaleVersjoner(@PathVariable("avtaleId") UUID id) {
+        List<Avtale> avtaler = new ArrayList<>();
         for (Avtale avtale : avtaleRepository.findAll()) {
             InnloggetNavAnsatt veileder = innloggingService.hentInnloggetNavAnsatt();
             veileder.sjekkLeseTilgang(avtale);
-            if ((!avtale.erGodkjentAvVeileder()) && avtale.getBaseAvtaleId().equals(id)) {
-                return avtale;
+            if ((avtale.getBaseAvtaleId().equals(id) || avtaleRepository.findById(id).get().getBaseAvtaleId().equals(avtale.getBaseAvtaleId()))) {
+                avtaler.add(avtale);
             }
         }
-        for (Avtale avtale : avtaleRepository.findAll()) {
-            if (avtale.getId().equals(id)) {
-                return avtale;
-            }
-        }
-        return avtaleRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
+        return avtaler;
     }
 
     @PostMapping
@@ -106,7 +118,7 @@ public class AvtaleController {
     @PostMapping("/opprettAvtaleGodkjentVersjon/{avtaleId}")
     @Transactional
     public ResponseEntity opprettAvtaleGodkjentVersjon(@RequestBody OpprettAvtale opprettAvtaleGodkjentVersjon,
-                                                @PathVariable("avtaleId") UUID sisteVersjonAvtaleId
+                                                       @PathVariable("avtaleId") UUID sisteVersjonAvtaleId
             /*, @RequestBody int versjon, @RequestBody UUID baseAvtaleId*/) {
         InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
         tilgangUnderPilotering.sjekkTilgang(innloggetNavAnsatt.getIdentifikator());
