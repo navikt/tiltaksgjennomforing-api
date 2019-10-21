@@ -20,14 +20,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.setRemoveAssertJRelatedElementsFromStackTrace;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -194,10 +193,10 @@ public class AvtaleControllerTest {
         Avtale avtaleGodkjent1 = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         Avtale avtaleGodkjent2 = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         vaerInnloggetSom(TestData.innloggetNavAnsatt(TestData.enVeileder(avtaleGodkjent1)));
-        UUID id1= UUID.randomUUID();
+        UUID id1 = UUID.randomUUID();
         avtaleGodkjent1.setId(id1);
         avtaleGodkjent1.setBaseAvtaleId(id1);
-        UUID id2= UUID.randomUUID();
+        UUID id2 = UUID.randomUUID();
         avtaleGodkjent2.setId(id2);
         avtaleGodkjent2.setBaseAvtaleId(id2);
         List<Avtale> avtalerIkkeGodkjente = new ArrayList<>();
@@ -207,6 +206,29 @@ public class AvtaleControllerTest {
         avtaleRepository.saveAll(avtalerIkkeGodkjente);
         //assertThat(avtaleController.hentSisteLaastOppVersjon(id1).getId()).isEqualTo(id1);
     }
+
+    @Test
+    public void skalHenteAlleAvtaleVersjoner() {
+        Avtale firstAvtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        Avtale secondAvtaleVersjon = TestData.enAvtaleMedAltUtfylt();
+        Avtale ikkeRelevant = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        firstAvtale.setBaseAvtaleId(UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
+        secondAvtaleVersjon.setBaseAvtaleId(UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
+
+        ikkeRelevant.setJournalpostId("done");
+        avtaleRepository.saveAll(Arrays.asList(firstAvtale, secondAvtaleVersjon, ikkeRelevant));
+
+        List<UUID> avtaleIds = avtaleRepository.finnAvtaleIdVersjoner(firstAvtale.getBaseAvtaleId());
+        List<Avtale> faktiskAvtList = avtaleRepository.findAllById(avtaleIds);
+        assertEquals(avtaleIds.size(), faktiskAvtList.size());
+        boolean allMatch = faktiskAvtList.stream()
+                .allMatch(avtale -> avtale.getBaseAvtaleId().equals(firstAvtale.getBaseAvtaleId()) &&
+                        avtaleIds.stream().anyMatch(uuid ->
+                                uuid.equals(avtale.getId()))
+                );
+        assertTrue(allMatch);
+    }
+
     @Test
     public void kanOpprettNyGodkjentVersjonAvAvtale() {
         Avtale avtaleGodkjent = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();

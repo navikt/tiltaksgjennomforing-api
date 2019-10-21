@@ -57,8 +57,9 @@ public class AvtaleController {
 
     @GetMapping("/{avtaleId}/kanLaasesOpp")
     public boolean kanLaasesOpp(@PathVariable("avtaleId") UUID id) {
+
+        InnloggetNavAnsatt veileder = innloggingService.hentInnloggetNavAnsatt();
         for (Avtale avtale : avtaleRepository.findAll()) {
-            InnloggetNavAnsatt veileder = innloggingService.hentInnloggetNavAnsatt();
             veileder.sjekkLeseTilgang(avtale);
             if ((!avtale.erGodkjentAvVeileder()) && avtale.getBaseAvtaleId().equals(id)) {
                 return false;
@@ -89,8 +90,8 @@ public class AvtaleController {
          return avtaleRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
      }*/
     @GetMapping("/{avtaleId}/hentAlleAvtaleVersjoner")
-    public Iterable<Avtale> hentAlleAvtaleVersjoner(@PathVariable("avtaleId") UUID id) {
-        List<Avtale> avtaler = new ArrayList<>();
+    public List<Avtale> hentAlleAvtaleVersjoner(@PathVariable("avtaleId") UUID baseAvtaleId) {
+        /*List<Avtale> avtaler = new ArrayList<>();
         for (Avtale avtale : avtaleRepository.findAll()) {
             InnloggetNavAnsatt veileder = innloggingService.hentInnloggetNavAnsatt();
             veileder.sjekkLeseTilgang(avtale);
@@ -98,7 +99,8 @@ public class AvtaleController {
                 avtaler.add(avtale);
             }
         }
-        return avtaler;
+        return avtaler;*/
+        return avtaleRepository.findAllById(avtaleRepository.finnAvtaleIdVersjoner(baseAvtaleId));
     }
 
     @PostMapping

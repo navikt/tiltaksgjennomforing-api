@@ -123,14 +123,15 @@ public class AvtaleRepositoryTest {
         avtaleRepository.save(nyAvtale);
         verify(metrikkRegistrering).avtaleOpprettet(any());
     }
-/*
-@Test
-public void opprettAvtaleGodkjentVersjon(){
-        Avtale avtale=TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
-        avtaleRepository.save(avtale);
 
-}
-*/
+    /*
+    @Test
+    public void opprettAvtaleGodkjentVersjon(){
+            Avtale avtale=TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+            avtaleRepository.save(avtale);
+
+    }
+    */
     @Test
     public void endreAvtale__skal_publisere_domainevent() {
         Avtale avtale = TestData.enAvtale();
@@ -176,7 +177,7 @@ public void opprettAvtaleGodkjentVersjon(){
     }
 
     @Test
-    public void henter_avtaler_til_journalfoering(){
+    public void henter_avtaler_til_journalfoering() {
         Avtale ikkeKlar = TestData.enAvtaleMedAltUtfylt();
         Avtale klarTilJournalforing = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         Avtale journalfoert = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
@@ -189,34 +190,32 @@ public void opprettAvtaleGodkjentVersjon(){
         assertEquals(avtaleIds.size(), faktiskAvtList.size());
         boolean allMatch = faktiskAvtList.stream()
                 .allMatch(avtale ->
-                     avtale.erGodkjentAvVeileder()
-                            && avtale.getJournalpostId() == null
-                            && avtaleIds.stream().anyMatch(uuid ->
-                             uuid.equals(avtale.getId()) && !uuid.equals(ikkeKlar.getId()) && !uuid.equals(journalfoert.getId()))
+                        avtale.erGodkjentAvVeileder()
+                                && avtale.getJournalpostId() == null
+                                && avtaleIds.stream().anyMatch(uuid ->
+                                uuid.equals(avtale.getId()) && !uuid.equals(ikkeKlar.getId()) && !uuid.equals(journalfoert.getId()))
                 );
         assertTrue(allMatch);
     }
 
     @Test
-    public void henterAvtaleVersjoner(){
-        Avtale ikkeKlar = TestData.enAvtaleMedAltUtfylt();
-        Avtale klarTilJournalforing = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
-        Avtale journalfoert = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
-        ikkeKlar.setBaseAvtaleId(UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
-        klarTilJournalforing.setBaseAvtaleId(UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
+    public void henterAvtaleVersjoner() {
+        Avtale firstAvtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        Avtale secondAvtaleVersjon = TestData.enAvtaleMedAltUtfylt();
+        Avtale ikkeRelevant = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        firstAvtale.setBaseAvtaleId(UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
+        secondAvtaleVersjon.setBaseAvtaleId(UUID.fromString("6ae3be81-abcd-477e-a8f3-4a5eb5fe91e3"));
 
-        journalfoert.setJournalpostId("done");
-        avtaleRepository.saveAll(Arrays.asList(klarTilJournalforing, ikkeKlar, journalfoert));
+        ikkeRelevant.setJournalpostId("done");
+        avtaleRepository.saveAll(Arrays.asList(firstAvtale, secondAvtaleVersjon, ikkeRelevant));
 
-        List<UUID> avtaleIds=avtaleRepository.finnAvtaleIdVersjoner(ikkeKlar.getBaseAvtaleId());
-        List<Avtale> faktiskAvtList=avtaleRepository.findAllById(avtaleIds);
-        assertEquals(avtaleIds.size(),faktiskAvtList.size());
+        List<UUID> avtaleIds = avtaleRepository.finnAvtaleIdVersjoner(firstAvtale.getBaseAvtaleId());
+        List<Avtale> faktiskAvtList = avtaleRepository.findAllById(avtaleIds);
+        assertEquals(avtaleIds.size(), faktiskAvtList.size());
         boolean allMatch = faktiskAvtList.stream()
-                .allMatch(avtale ->
-                        avtale.erGodkjentAvVeileder()
-                                && avtale.getJournalpostId() == null
-                                && avtaleIds.stream().anyMatch(uuid ->
-                                uuid.equals(avtale.getId()) && !uuid.equals(ikkeKlar.getId()) && !uuid.equals(journalfoert.getId()))
+                .allMatch(avtale -> avtale.getBaseAvtaleId().equals(firstAvtale.getBaseAvtaleId()) &&
+                        avtaleIds.stream().anyMatch(uuid ->
+                                uuid.equals(avtale.getId()))
                 );
         assertTrue(allMatch);
     }
