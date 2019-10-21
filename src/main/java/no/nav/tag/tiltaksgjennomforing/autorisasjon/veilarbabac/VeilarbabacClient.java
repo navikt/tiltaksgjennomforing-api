@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac;
 
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetNavAnsatt;
+import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.CacheConfiguration;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
@@ -35,13 +35,13 @@ public class VeilarbabacClient {
     }
 
     @Cacheable(CacheConfiguration.ABAC_CACHE)
-    public boolean sjekkTilgang(InnloggetNavAnsatt veileder, String fnr, TilgangskontrollAction action) {
+    public boolean sjekkTilgang(NavIdent navIdent, String fnr, TilgangskontrollAction action) {
         String response;
         try {
-            response = hentTilgang(veileder, fnr, action);
+            response = hentTilgang(navIdent, fnr, action);
         } catch (HttpClientErrorException e) {
             stsClient.evictToken();
-            response = hentTilgang(veileder, fnr, action);
+            response = hentTilgang(navIdent, fnr, action);
         }
 
         if (PERMIT_RESPONSE.equals(response)) {
@@ -53,7 +53,7 @@ public class VeilarbabacClient {
         throw new TilgangskontrollException("Ukjent respons fra veilarbabac: " + response);
     }
 
-    private String hentTilgang(InnloggetNavAnsatt veileder, String fnr, TilgangskontrollAction action) {
+    private String hentTilgang(NavIdent navIdent, String fnr, TilgangskontrollAction action) {
         String uriString = UriComponentsBuilder.fromHttpUrl(veilarbabacUrl)
                 .path("/person")
                 .queryParam("fnr", fnr)
@@ -61,7 +61,7 @@ public class VeilarbabacClient {
                 .toUriString();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("subject", veileder.getIdentifikator().asString());
+        headers.set("subject", navIdent.asString());
         headers.set("subjectType", "InternBruker");
         headers.setBearerAuth(hentOidcTokenTilSystembruker());
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -79,7 +79,11 @@ public class VeilarbabacClient {
     }
     
     @CacheEvict(cacheNames=CacheConfiguration.ABAC_CACHE, allEntries=true)
-    public void cacheEvict() {
+    public void evictAlle() {
+    }
+
+    @CacheEvict(cacheNames=CacheConfiguration.ABAC_CACHE)
+    public void evict(NavIdent navIdent, String fnr, TilgangskontrollAction action) {
     }
 
 }

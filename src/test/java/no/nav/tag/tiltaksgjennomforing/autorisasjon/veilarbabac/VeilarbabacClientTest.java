@@ -52,7 +52,7 @@ public class VeilarbabacClientTest {
     @Test
     public void harSkrivetilgangTilKandidat__skal_returnere_false_hvis_deny() {
         mockReturverdiFraVeilarbabac(DENY_RESPONSE);
-        assertThat(veilarbabacClient.sjekkTilgang(enVeileder(), "1000000000001", TilgangskontrollAction.update)).isFalse();
+        assertThat(veilarbabacClient.sjekkTilgang(enVeileder().getIdentifikator(), "1000000000001", TilgangskontrollAction.update)).isFalse();
     }
 
     private void mockReturverdiFraVeilarbabac(String response) {
@@ -67,13 +67,13 @@ public class VeilarbabacClientTest {
     @Test
     public void harSkrivetilgangTilKandidat__skal_returnere_true_hvis_permit() {
         mockReturverdiFraVeilarbabac(PERMIT_RESPONSE);
-        assertThat(veilarbabacClient.sjekkTilgang(enVeileder(), FNR, TilgangskontrollAction.update)).isTrue();
+        assertThat(veilarbabacClient.sjekkTilgang(enVeileder().getIdentifikator(), FNR, TilgangskontrollAction.update)).isTrue();
     }
 
     @Test(expected=TilgangskontrollException.class)
     public void harSkrivetilgangTilKandidat__skal_kaste_exception_hvis_ikke_allow_eller_deny() {
         mockReturverdiFraVeilarbabac("blabla");
-        veilarbabacClient.sjekkTilgang(enVeileder(), FNR, TilgangskontrollAction.update);
+        veilarbabacClient.sjekkTilgang(enVeileder().getIdentifikator(), FNR, TilgangskontrollAction.update);
     }
 
     @Test
@@ -84,7 +84,7 @@ public class VeilarbabacClientTest {
 
         when(stsClient.hentSTSToken()).thenReturn(stsToken);
 
-        veilarbabacClient.sjekkTilgang(enVeileder(), FNR, TilgangskontrollAction.update);
+        veilarbabacClient.sjekkTilgang(veileder.getIdentifikator(), FNR, TilgangskontrollAction.update);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("subject", veileder.getIdentifikator().asString());
