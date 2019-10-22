@@ -1,25 +1,16 @@
 package no.nav.tag.tiltaksgjennomforing.infrastruktur.database;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.jdbc.core.convert.JdbcCustomConversions;
-import org.springframework.data.jdbc.repository.config.JdbcConfiguration;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.data.jdbc.repository.config.AbstractJdbcConfiguration;
 import org.springframework.lang.Nullable;
 
-import javax.sql.DataSource;
 import java.util.Arrays;
 
 @Configuration
-public class JdbcConvertersConfiguration extends JdbcConfiguration {
-    @Bean
-    @Primary
-    public DataSourceTransactionManager dataSourceTransactionManager(DataSource dataSource) {
-        return new DataSourceTransactionManager(dataSource);
-    }
+public class JdbcConvertersConfiguration extends AbstractJdbcConfiguration {
 
     @Override
     public JdbcCustomConversions jdbcCustomConversions() {
