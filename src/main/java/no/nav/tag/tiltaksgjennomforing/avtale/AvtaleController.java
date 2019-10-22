@@ -100,7 +100,8 @@ public class AvtaleController {
             }
         }
         return avtaler;*/
-        return avtaleRepository.findAllById(avtaleRepository.finnAvtaleIdVersjoner(baseAvtaleId));
+        //return avtaleRepository.findAllById(avtaleRepository.finnAvtaleIdVersjoner(baseAvtaleId));
+        return avtaleRepository.finnAvtaleVersjoner(baseAvtaleId);
     }
 
     @PostMapping

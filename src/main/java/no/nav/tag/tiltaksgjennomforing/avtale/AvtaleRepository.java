@@ -11,8 +11,11 @@ public interface AvtaleRepository extends CrudRepository<Avtale, UUID> {
 
     @Query("select a.id from avtale a where a.journalpost_id is null and a.godkjent_av_veileder is not null")
     List<UUID> finnAvtaleIdTilJournalfoering();
-    @Query("select a.id from avtale a where a.base_avtale_id=:base_avtale_id")
+    @Query("select a.id from avtale a where a.base_avtale_id=:base_avtale_id order by opprettet_tidspunkt desc")
     List<UUID> finnAvtaleIdVersjoner(@Param("base_avtale_id") UUID base_avtale_id);
+
+    @Query("select * from avtale a where a.base_avtale_id=:base_avtale_id order by opprettet_tidspunkt desc")
+    List<Avtale> finnAvtaleVersjoner(@Param("base_avtale_id") UUID base_avtale_id);
 
     @Query("select a.Id from avtale a")
     List<Avtale> fetchAvtaler(/*@Param("base_avtale_id") UUID baseAvtaleId*/);
