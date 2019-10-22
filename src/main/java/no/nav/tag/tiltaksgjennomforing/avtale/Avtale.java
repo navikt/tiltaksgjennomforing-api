@@ -23,7 +23,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class Avtale extends AbstractAggregateRoot {
+public class Avtale extends AbstractAggregateRoot implements Comparable<Avtale> {
 
     private final Fnr deltakerFnr;
     private final BedriftNr bedriftNr;
@@ -94,7 +94,7 @@ public class Avtale extends AbstractAggregateRoot {
         avtaleVersjon.setVersjon(1);
 
         //avtaleVersjon.setGodkjentVersjon(this.getGodkjentVersjon() + 1);
-        avtaleVersjon.fylleUtAvtaleGodkjentVersjonVerdier(this,utfortAv);
+        avtaleVersjon.fylleUtAvtaleGodkjentVersjonVerdier(this, utfortAv);
         //To do endre avtale og fylle info fra siste versjon og gi baseavtaleId
         return avtaleVersjon;
     }
@@ -131,7 +131,7 @@ public class Avtale extends AbstractAggregateRoot {
         registerEvent(new AvtaleEndret(this, utfortAv));
     }
 
-    public void fylleUtAvtaleGodkjentVersjonVerdier( Avtale sisteAvtaleVersjon,Avtalerolle utfortAv) {
+    public void fylleUtAvtaleGodkjentVersjonVerdier(Avtale sisteAvtaleVersjon, Avtalerolle utfortAv) {
         kontrollNyGodkjentVersjon(sisteAvtaleVersjon);
         setDeltakerInfo(sisteAvtaleVersjon.getDeltakerFornavn(), sisteAvtaleVersjon.getDeltakerEtternavn(), sisteAvtaleVersjon.getDeltakerTlf());
         setArbeidsgiverInfo(sisteAvtaleVersjon.getBedriftNavn(), sisteAvtaleVersjon.getArbeidsgiverFornavn(), sisteAvtaleVersjon.getArbeidsgiverEtternavn(), sisteAvtaleVersjon.getArbeidsgiverTlf());
@@ -355,5 +355,11 @@ return true;
                 arbeidstreningStillingprosent
         )
                 && !oppgaver.isEmpty() && !maal.isEmpty();
+    }
+
+    @Override
+    public int compareTo(Avtale avtale) {
+        return (this.getOpprettetTidspunkt().isAfter(avtale.getOpprettetTidspunkt()) ? -1 :
+                (this.getOpprettetTidspunkt() == avtale.getOpprettetTidspunkt() ? 0 : 1));
     }
 }

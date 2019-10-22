@@ -100,8 +100,11 @@ public class AvtaleController {
             }
         }
         return avtaler;*/
+        AvtaleSorter avtaleSorter =new AvtaleSorter ((ArrayList<Avtale>) avtaleRepository.findAllById(avtaleRepository.finnAvtaleIdVersjoner(baseAvtaleId)));
+        ArrayList<Avtale> sortedAvtaler=avtaleSorter.getSortedAvtalerByOpprettetTidspunkt();
+        return sortedAvtaler;
         //return avtaleRepository.findAllById(avtaleRepository.finnAvtaleIdVersjoner(baseAvtaleId));
-        return avtaleRepository.finnAvtaleVersjoner(baseAvtaleId);
+        //return avtaleRepository.finnAvtaleVersjoner(baseAvtaleId);
     }
 
     @PostMapping
