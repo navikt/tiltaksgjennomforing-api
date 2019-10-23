@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 @EqualsAndHashCode(callSuper = true)
 public class InnloggetSelvbetjeningBruker extends InnloggetBruker<Fnr> {
-    
+
     private final List<Organisasjon> organisasjoner;
 
     public InnloggetSelvbetjeningBruker(Fnr identifikator, List<Organisasjon> organisasjoner) {
@@ -30,12 +30,12 @@ public class InnloggetSelvbetjeningBruker extends InnloggetBruker<Fnr> {
     }
 
     @Override
-    public boolean harLeseTilgang(Avtale avtale)  {
+    public boolean harLeseTilgang(Avtale avtale) {
         return avtalepart(avtale) != null;
     }
 
     @Override
-    public boolean harSkriveTilgang(Avtale avtale)  {
+    public boolean harSkriveTilgang(Avtale avtale) {
         return avtalepart(avtale) != null;
     }
 
@@ -47,7 +47,14 @@ public class InnloggetSelvbetjeningBruker extends InnloggetBruker<Fnr> {
         return identifikatorer;
     }
 
+    @Override
+    public boolean erNavAnsatt() {
+        return false;
+    }
+
     private List<BedriftNr> arbeidsgiverIdentifikatorer() {
         return organisasjoner.stream().map(Organisasjon::getBedriftNr).collect(Collectors.toList());
     }
+
+
 }

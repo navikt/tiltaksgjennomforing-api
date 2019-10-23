@@ -1,10 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 
 public class InnloggetNavAnsatt extends InnloggetBruker<NavIdent> {
 
@@ -25,7 +25,7 @@ public class InnloggetNavAnsatt extends InnloggetBruker<NavIdent> {
     }
 
     @Override
-    public boolean harLeseTilgang(Avtale avtale)  {
+    public boolean harLeseTilgang(Avtale avtale) {
         return tilgangskontrollService.harLesetilgangTilKandidat(this, avtale.getDeltakerFnr()).orElseGet(() -> harOpprettetAvtale(avtale));
     }
 
@@ -36,5 +36,9 @@ public class InnloggetNavAnsatt extends InnloggetBruker<NavIdent> {
     @Override
     public boolean harSkriveTilgang(Avtale avtale) {
         return tilgangskontrollService.harSkrivetilgangTilKandidat(this, avtale.getDeltakerFnr()).orElseGet(() -> harOpprettetAvtale(avtale));
+    }
+
+    public boolean erNavAnsatt() {
+        return true;
     }
 }

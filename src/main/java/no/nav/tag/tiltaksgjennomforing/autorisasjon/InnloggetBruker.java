@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalepart;
@@ -23,7 +24,7 @@ public abstract class InnloggetBruker<T extends Identifikator> {
     }
 
     public abstract boolean harSkriveTilgang(Avtale avtale);
-    
+
     public void sjekkSkriveTilgang(Avtale avtale) {
         if (!harSkriveTilgang(avtale)) {
             throw new TilgangskontrollException("Har ikke tilgang til avtalen.");
@@ -33,4 +34,7 @@ public abstract class InnloggetBruker<T extends Identifikator> {
     public List<Identifikator> identifikatorer() {
         return List.of(identifikator);
     }
+
+    @JsonProperty("erNavAnsatt")
+    public abstract boolean erNavAnsatt();
 }
