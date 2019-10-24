@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.infrastruktur.sts;
+package no.nav.tag.tiltaksgjennomforing.infrastruktur.restservicecache;
 
 import org.ehcache.event.CacheEvent;
 import org.ehcache.event.CacheEventListener;
@@ -6,7 +6,7 @@ import org.ehcache.event.CacheEventListener;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class StsCacheEventLogger implements CacheEventListener<Object, Object> {
+public class EventTypeEventLogger implements CacheEventListener<Object, Object> {
 
   @Override
   public void onEvent(

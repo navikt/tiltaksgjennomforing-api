@@ -2,7 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac;
 
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.CacheConfiguration;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.restservicecache.CacheConfiguration;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
 
 import org.springframework.beans.factory.annotation.Value;

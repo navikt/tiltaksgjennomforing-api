@@ -12,19 +12,22 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import lombok.RequiredArgsConstructor;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;;
 
 @Component
 @RequiredArgsConstructor
 @Profile(value= {"dev", "preprod"})
-public class AbacCacheInterceptor implements HandlerInterceptor, WebMvcConfigurer {
+public class ClearCacheInterceptor implements HandlerInterceptor, WebMvcConfigurer {
 
-    private static final String CLEAR_CACHE_HEADER = "x-abac-clear-cache";
+    static final String CLEAR_CACHE_HEADER = "x-clear-cache";
     private final VeilarbabacClient veilarbabacClient;
+    private final AxsysService axsysService;    
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if(ofNullable(request.getHeader(CLEAR_CACHE_HEADER)).map(Boolean::valueOf).orElse(false)) {
             veilarbabacClient.cacheEvict();
+            axsysService.cacheEvict();
         }
         return HandlerInterceptor.super.preHandle(request, response, handler);
     }
