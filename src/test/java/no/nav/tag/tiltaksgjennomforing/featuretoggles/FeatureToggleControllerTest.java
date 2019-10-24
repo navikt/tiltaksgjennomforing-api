@@ -7,8 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleServiceImpl;
-
 import javax.servlet.http.HttpServletResponse;
 
 import java.util.*;
@@ -21,7 +19,7 @@ import static org.mockito.Mockito.*;
 public class FeatureToggleControllerTest {
 
     @Mock private HttpServletResponse response;
-    @Mock private FeatureToggleServiceImpl featureToggleService;
+    @Mock private FeatureToggleService featureToggleService;
 
     @InjectMocks private FeatureToggleController featureToggleController;
 
