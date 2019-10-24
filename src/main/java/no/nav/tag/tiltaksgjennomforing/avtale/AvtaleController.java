@@ -2,7 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import no.nav.security.oidc.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetNavAnsatt;
@@ -45,7 +44,6 @@ public class AvtaleController {
     }
 
     @GetMapping
-    @SneakyThrows
     public Iterable<Avtale> hentAlleAvtalerInnloggetBrukerHarTilgangTil(AvtalePredicate queryParametre) {
         InnloggetBruker bruker = innloggingService.hentInnloggetBruker();
         return avtaleRepository.findAll().stream()
