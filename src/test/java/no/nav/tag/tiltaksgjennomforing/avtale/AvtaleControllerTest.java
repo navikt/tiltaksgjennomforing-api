@@ -1,17 +1,16 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.*;
+import no.nav.tag.tiltaksgjennomforing.TestData;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetSelvbetjeningBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
-import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.pilottilgang.TilgangUnderPilotering;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.pilottilgang.TilgangUnderPilotering;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
-
+import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -20,15 +19,15 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AvtaleControllerTest {
@@ -44,7 +43,7 @@ public class AvtaleControllerTest {
 
     @Mock
     private TilgangskontrollService tilgangskontrollService;
-    
+
     @Mock
     private InnloggingService innloggingService;
 
@@ -57,6 +56,12 @@ public class AvtaleControllerTest {
             avtaler.add(avtale);
         }
         return avtaler;
+    }
+
+    private static OpprettAvtale lagOpprettAvtale() {
+        Fnr deltakerFnr = new Fnr("88888899999");
+        BedriftNr bedriftNr = new BedriftNr("12345678");
+        return new OpprettAvtale(deltakerFnr, bedriftNr);
     }
 
     @Test
@@ -83,6 +88,50 @@ public class AvtaleControllerTest {
         vaerInnloggetSom(TestData.innloggetNavAnsatt(TestData.enVeileder()));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         avtaleController.hent(avtale.getId());
+    }
+
+    @Test
+    public void hentAvtalerOpprettetAvVeileder_skal_returnere_avtaler_dersom_veileder_har_tilgang() {
+        NavIdent veilederNavIdent = new NavIdent("Z222222");
+        Avtale avtaleForVeilederSomSøkesEtter = Avtale.nyAvtale(lagOpprettAvtale(), veilederNavIdent);
+        Avtale avtaleForAnnenVeilder = Avtale.nyAvtale(lagOpprettAvtale(), new NavIdent("Z111111"));
+        InnloggetNavAnsatt innloggetBruker = new InnloggetNavAnsatt(new NavIdent("Z333333"), tilgangskontrollService);
+        vaerInnloggetSom(innloggetBruker);
+        when(avtaleRepository.findAll()).thenReturn(asList(avtaleForVeilederSomSøkesEtter, avtaleForAnnenVeilder));
+        when(tilgangskontrollService.harLesetilgangTilKandidat(eq(innloggetBruker), any(Fnr.class))).thenReturn(Optional.of(true));
+        Iterable<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(new AvtalePredicate().setVeilederNavIdent(veilederNavIdent));
+        assertThat(avtaler)
+                .contains(avtaleForVeilederSomSøkesEtter)
+                .doesNotContain(avtaleForAnnenVeilder);
+    }
+
+    @Test
+    public void hentAvtalerOpprettetAvVeileder_skal_returnere_tom_liste_dersom_veileder_ikke_har_tilgang() {
+        NavIdent veilederNavIdent = new NavIdent("Z222222");
+        Avtale avtaleForVeilederSomSøkesEtter = Avtale.nyAvtale(lagOpprettAvtale(), veilederNavIdent);
+        InnloggetNavAnsatt innloggetBruker = new InnloggetNavAnsatt(new NavIdent("Z333333"), tilgangskontrollService);
+        vaerInnloggetSom(innloggetBruker);
+        when(avtaleRepository.findAll()).thenReturn(asList(avtaleForVeilederSomSøkesEtter));
+        when(tilgangskontrollService.harLesetilgangTilKandidat(eq(innloggetBruker), any(Fnr.class))).thenReturn(Optional.of(false));
+        Iterable<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(new AvtalePredicate().setVeilederNavIdent(veilederNavIdent));
+        assertThat(avtaler).doesNotContain(avtaleForVeilederSomSøkesEtter);
+    }
+
+    @Test
+    public void hentAvtalerOpprettetAvInnloggetVeileder_skal_returnere_avtaler_dersom_veileder_har_tilgang() {
+        NavIdent innloggetVeileder = new NavIdent("Z333333");
+        Avtale avtaleForInnloggetVeileder = Avtale.nyAvtale(lagOpprettAvtale(), innloggetVeileder);
+        avtaleForInnloggetVeileder.setOpprettetTidspunkt(LocalDateTime.now());
+        Avtale avtaleForAnnenVeilder = Avtale.nyAvtale(lagOpprettAvtale(), new NavIdent("Z111111"));
+        avtaleForAnnenVeilder.setOpprettetTidspunkt(LocalDateTime.now());
+        InnloggetNavAnsatt innloggetBruker = new InnloggetNavAnsatt(innloggetVeileder, tilgangskontrollService);
+        vaerInnloggetSom(innloggetBruker);
+        when(avtaleRepository.findAll()).thenReturn(asList(avtaleForInnloggetVeileder, avtaleForAnnenVeilder));
+        when(tilgangskontrollService.harLesetilgangTilKandidat(eq(innloggetBruker), any(Fnr.class))).thenReturn(Optional.of(true));
+        Iterable<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(new AvtalePredicate().setVeilederNavIdent(innloggetVeileder));
+        assertThat(avtaler)
+                .contains(avtaleForInnloggetVeileder)
+                .doesNotContain(avtaleForAnnenVeilder);
     }
 
     @Test(expected = TilgangskontrollException.class)
@@ -136,7 +185,9 @@ public class AvtaleControllerTest {
     @Test
     public void hentAlleAvtalerInnloggetBrukerHarTilgangTilSkalIkkeReturnereAvtalerManIkkeHarTilgangTil() {
         Avtale avtaleMedTilgang = TestData.enAvtale();
+        avtaleMedTilgang.setOpprettetTidspunkt(LocalDateTime.now());
         Avtale avtaleUtenTilgang = Avtale.nyAvtale(new OpprettAvtale(new Fnr("89898989898"), new BedriftNr("111222333")), new NavIdent("X643564"));
+        avtaleUtenTilgang.setOpprettetTidspunkt(LocalDateTime.now());
 
         InnloggetSelvbetjeningBruker selvbetjeningBruker = TestData.innloggetSelvbetjeningBrukerUtenOrganisasjon(TestData.enDeltaker(avtaleMedTilgang));
         vaerInnloggetSom(selvbetjeningBruker);
@@ -149,7 +200,7 @@ public class AvtaleControllerTest {
         when(avtaleRepository.findAll()).thenReturn(alleAvtaler);
 
         List<Avtale> hentedeAvtaler = new ArrayList<>();
-        for (Avtale avtale : avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil()) {
+        for (Avtale avtale : avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(new AvtalePredicate())) {
             hentedeAvtaler.add(avtale);
         }
 
@@ -201,12 +252,12 @@ public class AvtaleControllerTest {
         doThrow(TilgangskontrollException.class).when(tilgangskontrollService).sjekkSkrivetilgangTilKandidat(enNavAnsatt, deltakerFnr);
         avtaleController.opprettAvtale(new OpprettAvtale(deltakerFnr, new BedriftNr("111222333")));
     }
-    
+
     private void vaerInnloggetSom(InnloggetBruker innloggetBruker) {
         when(innloggingService.hentInnloggetBruker()).thenReturn(innloggetBruker);
         if (innloggetBruker instanceof InnloggetNavAnsatt) {
             when(innloggingService.hentInnloggetNavAnsatt()).thenReturn((InnloggetNavAnsatt) innloggetBruker);
         }
     }
-    
+
 }

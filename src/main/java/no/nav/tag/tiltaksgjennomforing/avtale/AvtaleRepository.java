@@ -13,5 +13,8 @@ public interface AvtaleRepository extends CrudRepository<Avtale, UUID> {
 
     @Override
     List<Avtale> findAllById(Iterable<UUID> idAvtaleTilJournalfoering);
+
+    @Override
+    List<Avtale> findAll();
 }
 
