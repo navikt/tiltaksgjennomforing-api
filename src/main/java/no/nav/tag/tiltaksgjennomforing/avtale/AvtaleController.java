@@ -3,22 +3,21 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import no.nav.security.oidc.api.Protected;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.pilottilgang.TilgangUnderPilotering;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetNavAnsatt;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.pilottilgang.TilgangUnderPilotering;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Comparator;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
 
@@ -33,7 +32,7 @@ public class AvtaleController {
     private final InnloggingService innloggingService;
     private final EregService eregService;
     private final TilgangUnderPilotering tilgangUnderPilotering;
-    private final TilgangskontrollService tilgangskontrollService; 
+    private final TilgangskontrollService tilgangskontrollService;
 
     @GetMapping("/{avtaleId}")
     public ResponseEntity<Avtale> hent(@PathVariable("avtaleId") UUID id) {
@@ -45,15 +44,13 @@ public class AvtaleController {
     }
 
     @GetMapping
-    public Iterable<Avtale> hentAlleAvtalerInnloggetBrukerHarTilgangTil() {
+    public Iterable<Avtale> hentAlleAvtalerInnloggetBrukerHarTilgangTil(AvtalePredicate queryParametre) {
         InnloggetBruker bruker = innloggingService.hentInnloggetBruker();
-        List<Avtale> avtaler = new ArrayList<>();
-        for (Avtale avtale : avtaleRepository.findAll()) {
-            if (bruker.harLeseTilgang(avtale)) {
-                avtaler.add(avtale);
-            }
-        }
-        return avtaler;
+        return avtaleRepository.findAll().stream()
+                .filter(queryParametre)
+                .filter(bruker::harLeseTilgang)
+                .sorted(Comparator.nullsLast(Comparator.comparing(Avtale::getOpprettetTidspunkt).reversed()))
+                .collect(Collectors.toList());
     }
 
     @PostMapping
@@ -111,7 +108,7 @@ public class AvtaleController {
     public ResponseEntity godkjenn(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader("If-Match") Integer versjon) {
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        innloggetBruker.sjekkSkriveTilgang(avtale); 
+        innloggetBruker.sjekkSkriveTilgang(avtale);
         Avtalepart avtalepart = innloggetBruker.avtalepart(avtale);
         avtalepart.godkjennAvtale(versjon);
         avtaleRepository.save(avtale);
