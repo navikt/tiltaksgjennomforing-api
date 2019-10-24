@@ -25,7 +25,7 @@ public class FeatureToggleServiceTest {
     @Mock private TokenUtils innloggingService;
 
     @InjectMocks
-    private FeatureToggleServiceImpl featureToggleService;
+    private FeatureToggleService featureToggleService;
 
     @Test
     public void hentFeatureToggles__skal_returnere_true_hvis_feature_er_på() {
