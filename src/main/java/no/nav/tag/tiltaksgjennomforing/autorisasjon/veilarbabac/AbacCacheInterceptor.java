@@ -24,7 +24,7 @@ public class AbacCacheInterceptor implements HandlerInterceptor, WebMvcConfigure
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if(ofNullable(request.getHeader(CLEAR_CACHE_HEADER)).map(Boolean::valueOf).orElse(false)) {
-            veilarbabacClient.cacheEvict();
+            veilarbabacClient.evictAlle();
         }
         return HandlerInterceptor.super.preHandle(request, response, handler);
     }
