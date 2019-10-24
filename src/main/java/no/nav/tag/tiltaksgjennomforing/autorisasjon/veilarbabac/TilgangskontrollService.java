@@ -49,7 +49,7 @@ public class TilgangskontrollService {
 
     private boolean hentTilgang(InnloggetNavAnsatt innloggetNavAnsatt, Fnr fnr, TilgangskontrollAction action) {
         return !featureToggleService.isEnabled(NY_VEILEDERTILGANG) || veilarbabacClient.sjekkTilgang(
-                innloggetNavAnsatt.getIdentifikator(),
+                innloggetNavAnsatt,
                 fnr.asString(),
                 action
         );
