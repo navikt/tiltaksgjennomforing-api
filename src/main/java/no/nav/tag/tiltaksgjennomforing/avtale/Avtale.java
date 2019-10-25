@@ -6,12 +6,9 @@ import lombok.EqualsAndHashCode;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GamleVerdier;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.domain.AbstractAggregateRoot;
-import org.springframework.data.relational.core.mapping.Column;
 
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,11 +20,15 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
+@Entity
 public class Avtale extends AbstractAggregateRoot {
 
-    private final Fnr deltakerFnr;
-    private final BedriftNr bedriftNr;
-    private final NavIdent veilederNavIdent;
+    @Convert(converter = FnrConverter.class)
+    private Fnr deltakerFnr;
+    @Convert(converter = BedriftNrConverter.class)
+    private BedriftNr bedriftNr;
+    @Convert(converter = NavIdentConverter.class)
+    private NavIdent veilederNavIdent;
 
     private LocalDateTime opprettetTidspunkt;
     @Id
@@ -52,11 +53,12 @@ public class Avtale extends AbstractAggregateRoot {
     private Integer arbeidstreningLengde;
     private Integer arbeidstreningStillingprosent;
 
-    @Column(keyColumn = "id")
+    @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Maal> maal = new ArrayList<>();
-    @Column(keyColumn = "id")
+    @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Oppgave> oppgaver = new ArrayList<>();
 
+    @OneToOne(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true)
     private GodkjentPaVegneGrunn godkjentPaVegneGrunn;
 
     private LocalDateTime godkjentAvDeltaker;
@@ -65,8 +67,12 @@ public class Avtale extends AbstractAggregateRoot {
     private boolean godkjentPaVegneAv;
     private boolean avbrutt;
 
-    @PersistenceConstructor
+    public Avtale() {
+    }
+
     public Avtale(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent) {
+        this.id = UUID.randomUUID();
+        this.opprettetTidspunkt = LocalDateTime.now();
         this.deltakerFnr = sjekkAtIkkeNull(deltakerFnr, "Deltakers fnr må være satt.");
         this.bedriftNr = sjekkAtIkkeNull(bedriftNr, "Arbeidsgivers bedriftnr må være satt.");
         this.veilederNavIdent = sjekkAtIkkeNull(veilederNavIdent, "Veileders NAV-ident må være satt.");
@@ -110,8 +116,13 @@ public class Avtale extends AbstractAggregateRoot {
         setArbeidstreningLengde(nyAvtale.getArbeidstreningLengde());
         setArbeidstreningStillingprosent(nyAvtale.getArbeidstreningStillingprosent());
 
-        setMaal(nyAvtale.getMaal());
-        setOppgaver(nyAvtale.getOppgaver());
+        maal.clear();
+        maal.addAll(nyAvtale.getMaal());
+        maal.forEach(m -> m.setAvtale(this));
+
+        oppgaver.clear();
+        oppgaver.addAll(nyAvtale.getOppgaver());
+        oppgaver.forEach(o -> o.setAvtale(this));
 
         registerEvent(new AvtaleEndret(this, utfortAv));
     }
@@ -170,19 +181,6 @@ public class Avtale extends AbstractAggregateRoot {
         }
     }
 
-    public void settIdOgOpprettetTidspunkt() {
-        if (this.id == null) {
-            this.id = UUID.randomUUID();
-        }
-
-        if (this.getOpprettetTidspunkt() == null) {
-            this.opprettetTidspunkt = LocalDateTime.now();
-        }
-
-        this.getMaal().forEach(Maal::settIdOgOpprettetTidspunkt);
-        this.getOppgaver().forEach(Oppgave::settIdOgOpprettetTidspunkt);
-    }
-
     void godkjennForArbeidsgiver(Identifikator utfortAv) {
         sjekkOmKanGodkjennes();
         this.godkjentAvArbeidsgiver = LocalDateTime.now();
@@ -197,6 +195,8 @@ public class Avtale extends AbstractAggregateRoot {
 
     void godkjennForVeilederOgDeltaker(Identifikator utfortAv, GodkjentPaVegneGrunn paVegneAvGrunn) {
         sjekkOmKanGodkjennes();
+        paVegneAvGrunn.setId(this.id);
+        paVegneAvGrunn.setAvtale(this);
         this.godkjentAvVeileder = LocalDateTime.now();
         this.godkjentAvDeltaker = LocalDateTime.now();
         this.godkjentPaVegneAv = true;

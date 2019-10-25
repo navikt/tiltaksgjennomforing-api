@@ -1,16 +1,27 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.ToString;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
-import org.springframework.data.annotation.Id;
 
+import javax.persistence.*;
 import java.util.UUID;
 
-
 @Data
+@Entity
 public class GodkjentPaVegneGrunn {
     @Id
-    private UUID avtale;
+    @Column(name = "avtale")
+    @JsonIgnore
+    private UUID id;
+
+    @OneToOne
+    @JoinColumn(name = "avtale")
+    @JsonIgnore
+    @ToString.Exclude
+    private Avtale avtale;
+
     private boolean ikkeBankId;
     private boolean reservert;
     private boolean digitalKompetanse;
