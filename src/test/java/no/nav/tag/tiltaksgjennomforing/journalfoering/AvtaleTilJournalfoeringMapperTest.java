@@ -64,7 +64,7 @@ public class AvtaleTilJournalfoeringMapperTest {
         assertEquals(avtale.getOppfolging(), tilJournalfoering.getOppfolging());
         assertEquals(avtale.getTilrettelegging(), tilJournalfoering.getTilrettelegging());
         assertEquals(avtale.getStartDato(), tilJournalfoering.getStartDato());
-        assertEquals(avtale.getArbeidstreningLengde(), tilJournalfoering.getArbeidstreningLengde());
+        assertEquals(avtale.getSluttDato(), tilJournalfoering.getSluttDato());
         assertEquals(avtale.getArbeidstreningStillingprosent(), tilJournalfoering.getArbeidstreningStillingprosent());
         assertEquals(avtale.getGodkjentAvDeltaker().toLocalDate().format(formatter), tilJournalfoering.getGodkjentAvDeltaker());
         assertEquals(avtale.getGodkjentAvArbeidsgiver().toLocalDate().format(formatter), tilJournalfoering.getGodkjentAvArbeidsgiver());

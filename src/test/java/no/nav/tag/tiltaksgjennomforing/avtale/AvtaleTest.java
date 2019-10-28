@@ -39,7 +39,7 @@ public class AvtaleTest {
             softly.assertThat(avtale.getOppfolging()).isNull();
             softly.assertThat(avtale.getTilrettelegging()).isNull();
             softly.assertThat(avtale.getStartDato()).isNull();
-            softly.assertThat(avtale.getArbeidstreningLengde()).isNull();
+            softly.assertThat(avtale.getSluttDato()).isNull();
             softly.assertThat(avtale.getArbeidstreningStillingprosent()).isNull();
             softly.assertThat(avtale.erGodkjentAvDeltaker()).isFalse();
             softly.assertThat(avtale.erGodkjentAvArbeidsgiver()).isFalse();
@@ -101,7 +101,7 @@ public class AvtaleTest {
             softly.assertThat(avtale.getOppfolging()).isEqualTo(endreAvtale.getOppfolging());
             softly.assertThat(avtale.getTilrettelegging()).isEqualTo(endreAvtale.getTilrettelegging());
             softly.assertThat(avtale.getStartDato()).isEqualTo(endreAvtale.getStartDato());
-            softly.assertThat(avtale.getArbeidstreningLengde()).isEqualTo(endreAvtale.getArbeidstreningLengde());
+            softly.assertThat(avtale.getSluttDato()).isEqualTo(endreAvtale.getSluttDato());
             softly.assertThat(avtale.getArbeidstreningStillingprosent()).isEqualTo(endreAvtale.getArbeidstreningStillingprosent());
             softly.assertThat(avtale.getMaal()).isEqualTo(endreAvtale.getMaal());
             softly.assertThat(avtale.getOppgaver()).isEqualTo(endreAvtale.getOppgaver());
@@ -193,7 +193,7 @@ public class AvtaleTest {
     public void status__null_startdato() {
         Avtale avtale = TestData.enAvtale();
         avtale.setStartDato(null);
-        avtale.setArbeidstreningLengde(null);
+        avtale.setSluttDato(null);
         assertThat(avtale.status()).isEqualTo("Påbegynt");
     }
 
@@ -201,7 +201,7 @@ public class AvtaleTest {
     public void status__noe_fylt_ut() {
         Avtale avtale = TestData.enAvtale();
         avtale.setStartDato(LocalDate.now().plusDays(5));
-        avtale.setArbeidstreningLengde(12);
+        avtale.setSluttDato(avtale.getStartDato().plusMonths(3));
         avtale.setBedriftNavn("testbedriftsnavn");
         assertThat(avtale.status()).isEqualTo("Påbegynt");
     }
@@ -210,7 +210,7 @@ public class AvtaleTest {
     public void status__avsluttet_i_gaar() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setStartDato(LocalDate.now().minusWeeks(4).minusDays(1));
-        avtale.setArbeidstreningLengde(4);
+        avtale.setSluttDato(avtale.getStartDato().plusWeeks(4));
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
@@ -221,7 +221,7 @@ public class AvtaleTest {
     public void status__avslutter_i_dag() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setStartDato(LocalDate.now().minusWeeks(4));
-        avtale.setArbeidstreningLengde(4);
+        avtale.setSluttDato(avtale.getStartDato().plusWeeks(4));
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());

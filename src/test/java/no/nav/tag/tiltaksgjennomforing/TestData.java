@@ -65,7 +65,7 @@ public class TestData {
         endreAvtale.setOppfolging("Oppfolging");
         endreAvtale.setTilrettelegging("Tilrettelegging");
         endreAvtale.setStartDato(LocalDate.now());
-        endreAvtale.setArbeidstreningLengde(2);
+        endreAvtale.setSluttDato(endreAvtale.getStartDato().plusWeeks(2));
         endreAvtale.setArbeidstreningStillingprosent(50);
         endreAvtale.setMaal(List.of(TestData.etMaal(), TestData.etMaal()));
         endreAvtale.setOppgaver(List.of(TestData.enOppgave(), TestData.enOppgave()));
