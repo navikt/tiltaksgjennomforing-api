@@ -13,7 +13,7 @@ import java.util.List;
 public abstract class InnloggetBruker<T extends Identifikator> {
     private final T identifikator;
 
-    public abstract Avtalepart avtalepart(Avtale avtale);
+    public abstract Avtalepart<T> avtalepart(Avtale avtale);
 
     public abstract boolean harLeseTilgang(Avtale avtale);
 

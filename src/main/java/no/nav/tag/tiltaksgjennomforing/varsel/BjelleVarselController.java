@@ -24,14 +24,14 @@ public class BjelleVarselController {
     public Iterable<BjelleVarsel> hentVarsler(
             @RequestParam(value = "avtaleId", required = false) UUID avtaleId,
             @RequestParam(value = "lest", required = false) Boolean lest) {
-        InnloggetBruker bruker = innloggingService.hentInnloggetBruker();
+        InnloggetBruker<?> bruker = innloggingService.hentInnloggetBruker();
         return bjelleVarselService.varslerForInnloggetBruker(bruker, avtaleId, lest);
     }
 
     @PostMapping("{varselId}/sett-til-lest")
     @Transactional
-    public ResponseEntity settTilLest(@PathVariable("varselId") UUID varselId) {
-        InnloggetBruker bruker = innloggingService.hentInnloggetBruker();
+    public ResponseEntity<?> settTilLest(@PathVariable("varselId") UUID varselId) {
+        InnloggetBruker<?> bruker = innloggingService.hentInnloggetBruker();
         bjelleVarselService.settTilLest(bruker, varselId);
         return ResponseEntity.ok().build();
     }

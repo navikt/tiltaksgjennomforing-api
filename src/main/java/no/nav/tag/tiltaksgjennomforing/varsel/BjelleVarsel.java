@@ -19,7 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-public class BjelleVarsel extends AbstractAggregateRoot {
+public class BjelleVarsel extends AbstractAggregateRoot<BjelleVarsel> {
     @Id
     private UUID id;
     private boolean lest;

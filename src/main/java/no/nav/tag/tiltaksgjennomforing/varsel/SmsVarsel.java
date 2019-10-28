@@ -20,7 +20,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-public class SmsVarsel extends AbstractAggregateRoot {
+public class SmsVarsel extends AbstractAggregateRoot<SmsVarsel> {
     @Id
     private UUID id;
     private SmsVarselStatus status;
