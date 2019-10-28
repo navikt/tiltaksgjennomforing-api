@@ -234,6 +234,7 @@ public class Avtale extends AbstractAggregateRoot implements Comparable<Avtale> 
         if (sisteAvtaleVersjon.godkjentVersjon == null) {
             throw new SamtidigeEndringerException("Det står en feil ved kotrllering av oppretting ny versjon av avtale. Sjekk om siste avtalen er godkjent av veileder før du oppretter en ny versjon.");
         }
+        // todo bør flyttes til test
         if (sisteAvtaleVersjon.baseAvtaleId == null) {
             this.baseAvtaleId = sisteAvtaleVersjon.id;
         } else {
