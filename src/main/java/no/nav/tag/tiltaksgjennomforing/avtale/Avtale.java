@@ -245,7 +245,7 @@ public class Avtale extends AbstractAggregateRoot {
         }
     }
 
-    private boolean heleAvtalenErFyltUt() {
+    protected boolean heleAvtalenErFyltUt() {
         return erIkkeTomme(deltakerFnr,
                 veilederNavIdent,
                 deltakerFornavn,
