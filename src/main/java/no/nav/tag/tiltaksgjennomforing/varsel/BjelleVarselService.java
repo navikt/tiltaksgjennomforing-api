@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 public class BjelleVarselService {
     private final BjelleVarselRepository bjelleVarselRepository;
 
-    public List<BjelleVarsel> varslerForInnloggetBruker(InnloggetBruker innloggetBruker, UUID avtaleId, Boolean lest) {
+    public List<BjelleVarsel> varslerForInnloggetBruker(InnloggetBruker<?> innloggetBruker, UUID avtaleId, Boolean lest) {
         Stream<BjelleVarsel> stream = bjelleVarslerForInnloggetBruker(innloggetBruker);
         if (avtaleId != null) {
             stream = stream.filter(b -> b.getAvtaleId().equals(avtaleId));
@@ -26,7 +26,7 @@ public class BjelleVarselService {
         return stream.collect(Collectors.toList());
     }
 
-    public void settTilLest(InnloggetBruker innloggetBruker, UUID varselId) {
+    public void settTilLest(InnloggetBruker<?> innloggetBruker, UUID varselId) {
         bjelleVarslerForInnloggetBruker(innloggetBruker)
                 .filter(b -> b.getId().equals(varselId))
                 .forEach(b -> {
@@ -35,7 +35,7 @@ public class BjelleVarselService {
                 });
     }
 
-    private Stream<BjelleVarsel> bjelleVarslerForInnloggetBruker(InnloggetBruker innloggetBruker) {
+    private Stream<BjelleVarsel> bjelleVarslerForInnloggetBruker(InnloggetBruker<?> innloggetBruker) {
         return bjelleVarselRepository.findAll().stream()
                 .filter(bjelleVarsel -> innloggetBruker.identifikatorer().contains(bjelleVarsel.getIdentifikator()))
                 .sorted(Comparator.comparing(BjelleVarsel::getTidspunkt).reversed());

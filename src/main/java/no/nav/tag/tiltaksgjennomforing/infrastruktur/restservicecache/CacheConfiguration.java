@@ -35,9 +35,9 @@ public class CacheConfiguration {
         };
     }
 
-    private javax.cache.configuration.Configuration<Object, Object> cacheConfiguration(CacheEventListener eventListener, int size, Duration duration) {
+    private javax.cache.configuration.Configuration<Object, Object> cacheConfiguration(CacheEventListener<?, ?> eventListener, int size, Duration duration) {
       org.ehcache.config.CacheConfiguration<Object, Object> config = CacheConfigurationBuilder.newCacheConfigurationBuilder(Object.class, Object.class, ResourcePoolsBuilder.heap(size))
-                .add(CacheEventListenerConfigurationBuilder.newEventListenerConfiguration(eventListener, new HashSet<EventType>(asList(EventType.values()))))
+                .withService(CacheEventListenerConfigurationBuilder.newEventListenerConfiguration(eventListener, new HashSet<EventType>(asList(EventType.values()))))
                 .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(duration))
                 .build();
         return Eh107Configuration.fromEhcacheCacheConfiguration(config);

@@ -19,7 +19,7 @@ public class InnloggetSelvbetjeningBruker extends InnloggetBruker<Fnr> {
     }
 
     @Override
-    public Avtalepart avtalepart(Avtale avtale) {
+    public Avtalepart<Fnr> avtalepart(Avtale avtale) {
         if (avtale.getDeltakerFnr().equals(getIdentifikator())) {
             return new Deltaker(getIdentifikator(), avtale);
         } else if (arbeidsgiverIdentifikatorer().contains(avtale.getBedriftNr())) {

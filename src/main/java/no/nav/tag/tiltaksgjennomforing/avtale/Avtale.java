@@ -21,7 +21,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Entity
-public class Avtale extends AbstractAggregateRoot {
+public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     @Convert(converter = FnrConverter.class)
     private Fnr deltakerFnr;

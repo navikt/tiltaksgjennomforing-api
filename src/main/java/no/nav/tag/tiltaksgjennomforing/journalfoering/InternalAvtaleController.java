@@ -36,7 +36,7 @@ public class InternalAvtaleController {
 
     @PutMapping
     @Transactional
-    public ResponseEntity journalfoerAvtaler(@RequestBody Map<UUID, String> avtalerTilJournalfoert) {
+    public ResponseEntity<?> journalfoerAvtaler(@RequestBody Map<UUID, String> avtalerTilJournalfoert) {
         innloggingService.validerSystembruker();
         Iterable<Avtale> avtaler = avtaleRepository.findAllById(avtalerTilJournalfoert.keySet());
         avtaler.forEach(avtale -> avtale.setJournalpostId(avtalerTilJournalfoert.get(avtale.getId())));

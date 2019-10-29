@@ -15,7 +15,7 @@ import java.util.UUID;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Entity
-public class VarslbarHendelse extends AbstractAggregateRoot {
+public class VarslbarHendelse extends AbstractAggregateRoot<VarslbarHendelse> {
     @Id
     private UUID id;
     private LocalDateTime tidspunkt;
