@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AvtalensLengdeErMerEnn3MndException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.AvtalensVarighetMerEnnMaksimaltAntallMånederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
@@ -24,6 +24,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 @EqualsAndHashCode(callSuper = false)
 @Entity
 public class Avtale extends AbstractAggregateRoot<Avtale> {
+    private static final int MAKSIMALT_ANTALL_MÅNEDER_VARIGHET = 3;
 
     @Convert(converter = FnrConverter.class)
     private Fnr deltakerFnr;
@@ -134,8 +135,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (startDato != null && sluttDato != null) {
             if (startDato.isAfter(sluttDato)) {
                 throw new StartDatoErEtterSluttDatoException();
-            } else if (sluttDato.isAfter(startDato.plusMonths(3))) {
-                throw new AvtalensLengdeErMerEnn3MndException();
+            } else if (sluttDato.isAfter(startDato.plusMonths(MAKSIMALT_ANTALL_MÅNEDER_VARIGHET))) {
+                throw new AvtalensVarighetMerEnnMaksimaltAntallMånederException(MAKSIMALT_ANTALL_MÅNEDER_VARIGHET);
             }
         }
     }

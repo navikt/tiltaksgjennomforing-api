@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.*;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AvtalensLengdeErMerEnn3MndException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.AvtalensVarighetMerEnnMaksimaltAntallMånederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import org.assertj.core.api.SoftAssertions;
@@ -172,7 +172,7 @@ public class AvtaleTest {
         assertThat(avtale.getSluttDato()).isEqualTo(sluttDato);
     }
 
-    @Test(expected = AvtalensLengdeErMerEnn3MndException.class)
+    @Test(expected = AvtalensVarighetMerEnnMaksimaltAntallMånederException.class)
     public void endreAvtale__startdato_og_sluttdato_satt_over_3mnd() {
         Avtale avtale = TestData.enAvtale();
         EndreAvtale endreAvtale = new EndreAvtale();
