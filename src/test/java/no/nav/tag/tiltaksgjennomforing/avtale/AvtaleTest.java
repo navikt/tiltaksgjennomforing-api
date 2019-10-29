@@ -1,6 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.*;
+import no.nav.tag.tiltaksgjennomforing.exceptions.AvtalensLengdeErMerEnn3MndException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
@@ -134,6 +136,61 @@ public class AvtaleTest {
         enOppgave.setBeskrivelse("Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er");
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setOppgaver(List.of(enOppgave));
+        avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
+    }
+
+    @Test
+    public void endreAvtale__startdato_satt_men_ikke_sluttdato() {
+        Avtale avtale = TestData.enAvtale();
+        EndreAvtale endreAvtale = new EndreAvtale();
+        LocalDate startDato = LocalDate.now();
+        endreAvtale.setStartDato(startDato);
+        avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
+        assertThat(avtale.getStartDato()).isEqualTo(startDato);
+    }
+
+    @Test
+    public void endreAvtale__sluttdato_satt_men_ikke_startdato() {
+        Avtale avtale = TestData.enAvtale();
+        EndreAvtale endreAvtale = new EndreAvtale();
+        LocalDate sluttDato = LocalDate.now();
+        endreAvtale.setSluttDato(sluttDato);
+        avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
+        assertThat(avtale.getSluttDato()).isEqualTo(sluttDato);
+    }
+
+    @Test
+    public void endreAvtale__startdato_og_sluttdato_satt_3mnd() {
+        Avtale avtale = TestData.enAvtale();
+        EndreAvtale endreAvtale = new EndreAvtale();
+        LocalDate startDato = LocalDate.now();
+        LocalDate sluttDato = startDato.plusMonths(3);
+        endreAvtale.setStartDato(startDato);
+        endreAvtale.setSluttDato(sluttDato);
+        avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
+        assertThat(avtale.getStartDato()).isEqualTo(startDato);
+        assertThat(avtale.getSluttDato()).isEqualTo(sluttDato);
+    }
+
+    @Test(expected = AvtalensLengdeErMerEnn3MndException.class)
+    public void endreAvtale__startdato_og_sluttdato_satt_over_3mnd() {
+        Avtale avtale = TestData.enAvtale();
+        EndreAvtale endreAvtale = new EndreAvtale();
+        LocalDate startDato = LocalDate.now();
+        LocalDate sluttDato = startDato.plusMonths(3).plusDays(1);
+        endreAvtale.setStartDato(startDato);
+        endreAvtale.setSluttDato(sluttDato);
+        avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
+    }
+
+    @Test(expected = StartDatoErEtterSluttDatoException.class)
+    public void endreAvtale__startdato_er_etter_sluttdato() {
+        Avtale avtale = TestData.enAvtale();
+        EndreAvtale endreAvtale = new EndreAvtale();
+        LocalDate startDato = LocalDate.now();
+        LocalDate sluttDato = startDato.minusDays(1);
+        endreAvtale.setStartDato(startDato);
+        endreAvtale.setSluttDato(sluttDato);
         avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
     }
 
