@@ -11,9 +11,9 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     public Veileder(NavIdent identifikator, Avtale avtale) {
         super(identifikator, avtale);
-        this.venteListeForVeileder = " Du må vente for " + (!avtale.erGodkjentAvArbeidsgiver() ? "arbeidsgiver, " : "");
+        this.venteListeForVeileder = "Du må vente for " + (!avtale.erGodkjentAvArbeidsgiver() ? "arbeidsgiver" : "");
         this.venteListeForVeileder = this.venteListeForVeileder +
-                (!avtale.erGodkjentAvDeltaker() ? "deltaker" : this.venteListeForVeileder.substring(0, this.venteListeForVeileder.length() - 2) + " godkjenner avtale");
+                ((!avtale.erGodkjentAvDeltaker() ? " og deltaker" : "") + " godkjenner avtale");
     }
 
     @Override
@@ -43,7 +43,8 @@ public class Veileder extends Avtalepart<NavIdent> {
                 avtaleStatusDetaljer.setInnloggetBrukerStatus
                         (tekstHeaderAvtaleVenterPaaDinGodkjenning, tekstAvtaleVenterPaaDinGodkjenning, ekstraTekstAvtaleVenterPaaDinGodkjenning);
             } else {
-                avtaleStatusDetaljer.setInnloggetBrukerStatus(this.venteListeForVeileder, tekstForklarerVenting, tekstGodkjenneForDeltaker);
+                avtaleStatusDetaljer.setInnloggetBrukerStatus
+                        (this.venteListeForVeileder, tekstForklarerVenting, !avtale.erGodkjentAvDeltaker() ? tekstGodkjenneForDeltaker : "");
             }
         } else {
             avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErIkkkeFyltUt, tekstAvtaleErIkkkeFyltUt, "");

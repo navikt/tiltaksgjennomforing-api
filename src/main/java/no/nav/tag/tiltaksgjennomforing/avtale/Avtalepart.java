@@ -10,7 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 public abstract class Avtalepart<T extends Identifikator> {
     private final T identifikator;
     final Avtale avtale;
-    static String tekstHeaderAvtaleErIkkkeFyltUt = "Avtalen har ikke fylt ut enda";
+    static String tekstHeaderAvtaleErIkkkeFyltUt = "Avtalen har ikke blitt fylt ut enda";
     static String tekstHeaderAvtaleErGodkjentAvInnloggetBruker = "Du har godkjent avtalen.";
     static String tekstAvtaleErGodkjentAvAllePartner = "Alle partner har godkjent avtalen og den er klar for oppstart nå.";
     static String ekstraTekstAvtaleErGodkjentAvAllePartner = " Her er det ekstra tekst om alle partner har godkjent avtalen ....";
