@@ -42,7 +42,7 @@ public class AvtaleTest {
             softly.assertThat(avtale.getTilrettelegging()).isNull();
             softly.assertThat(avtale.getStartDato()).isNull();
             softly.assertThat(avtale.getSluttDato()).isNull();
-            softly.assertThat(avtale.getArbeidstreningStillingprosent()).isNull();
+            softly.assertThat(avtale.getStillingprosent()).isNull();
             softly.assertThat(avtale.erGodkjentAvDeltaker()).isFalse();
             softly.assertThat(avtale.erGodkjentAvArbeidsgiver()).isFalse();
             softly.assertThat(avtale.erGodkjentAvVeileder()).isFalse();
@@ -104,7 +104,7 @@ public class AvtaleTest {
             softly.assertThat(avtale.getTilrettelegging()).isEqualTo(endreAvtale.getTilrettelegging());
             softly.assertThat(avtale.getStartDato()).isEqualTo(endreAvtale.getStartDato());
             softly.assertThat(avtale.getSluttDato()).isEqualTo(endreAvtale.getSluttDato());
-            softly.assertThat(avtale.getArbeidstreningStillingprosent()).isEqualTo(endreAvtale.getArbeidstreningStillingprosent());
+            softly.assertThat(avtale.getStillingprosent()).isEqualTo(endreAvtale.getStillingprosent());
             softly.assertThat(avtale.getMaal()).isEqualTo(endreAvtale.getMaal());
             softly.assertThat(avtale.getOppgaver()).isEqualTo(endreAvtale.getOppgaver());
         });

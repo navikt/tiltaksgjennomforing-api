@@ -30,7 +30,7 @@ public class EndreAvtale {
 
     private LocalDate startDato;
     private LocalDate sluttDato;
-    private Integer arbeidstreningStillingprosent;
+    private Integer stillingprosent;
 
     private List<Maal> maal = new ArrayList<>();
     private List<Oppgave> oppgaver = new ArrayList<>();

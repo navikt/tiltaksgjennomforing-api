@@ -54,7 +54,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     private LocalDate startDato;
     private LocalDate sluttDato;
-    private Integer arbeidstreningStillingprosent;
+    private Integer stillingprosent;
 
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Maal> maal = new ArrayList<>();
@@ -118,7 +118,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         setTilrettelegging(nyAvtale.getTilrettelegging());
         setStartDato(nyAvtale.getStartDato());
         setSluttDato(nyAvtale.getSluttDato());
-        setArbeidstreningStillingprosent(nyAvtale.getArbeidstreningStillingprosent());
+        setStillingprosent(nyAvtale.getStillingprosent());
 
         maal.clear();
         maal.addAll(nyAvtale.getMaal());
@@ -276,7 +276,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
                 tilrettelegging,
                 startDato,
                 sluttDato,
-                arbeidstreningStillingprosent
+                stillingprosent
         )
                 && !oppgaver.isEmpty() && !maal.isEmpty();
     }

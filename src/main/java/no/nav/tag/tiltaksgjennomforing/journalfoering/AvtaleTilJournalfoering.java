@@ -40,7 +40,7 @@ public class AvtaleTilJournalfoering {
 
     private LocalDate startDato;
     private LocalDate sluttDato;
-    private Integer arbeidstreningStillingprosent;
+    private Integer stillingprosent;
 
     private List<MaalTilJournalfoering> maal = new ArrayList<>();
     private List<OppgaveTilJournalFoering> oppgaver = new ArrayList<>();
