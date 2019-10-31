@@ -35,6 +35,7 @@ public class InnloggetNavAnsatt extends InnloggetBruker<NavIdent> {
         return tilgangskontrollService.harSkrivetilgangTilKandidat(this, avtale.getDeltakerFnr()).orElseGet(() -> harOpprettetAvtale(avtale));
     }
 
+    @Override
     public boolean erNavAnsatt() {
         return true;
     }

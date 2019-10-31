@@ -227,7 +227,7 @@ public class AvtaleControllerTest {
         vaerInnloggetSom(selvbetjeningBruker);
 
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        ResponseEntity svar = avtaleController.hentRolle(avtale.getId());
+        ResponseEntity<Avtalerolle> svar = avtaleController.hentRolle(avtale.getId());
 
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(svar.getBody()).isEqualTo(Avtalerolle.DELTAKER);
