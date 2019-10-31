@@ -13,12 +13,12 @@ insert into avtale (id, opprettet_tidspunkt, versjon, deltaker_fornavn, deltaker
                     bedrift_navn,
                     bedrift_nr, arbeidsgiver_fnr, arbeidsgiver_fornavn, arbeidsgiver_etternavn, arbeidsgiver_tlf,
                     veileder_nav_ident, veileder_fornavn, veileder_etternavn, veileder_tlf, oppfolging, tilrettelegging,
-                    godkjent_av_deltaker, godkjent_av_arbeidsgiver, godkjent_av_veileder)
+                    godkjent_av_deltaker, godkjent_av_arbeidsgiver, godkjent_av_veileder, start_dato, slutt_dato, stillingprosent)
 values ('5ae3be81-abcd-477e-a8f3-4a5eb5fe91e3', current_timestamp, 7, 'Dagny', 'Deltaker', '01093434109', '00000000',
         'Pers butikk', '975959171', '29118923330', 'Per', 'Kremmer', '22334455', 'X123456', 'Vera', 'Veileder',
-        '33445566', 'Telefon hver uke', 'Ingen', current_timestamp, current_timestamp, null);
-insert into arbeidstrening (id, start_dato, arbeidstrening_lengde, arbeidstrening_stillingprosent)
-values ('5ae3be81-abcd-477e-a8f3-4a5eb5fe91e3', '2019-03-25', 2, 100);
+        '33445566', 'Telefon hver uke', 'Ingen', current_timestamp, current_timestamp, null, '2019-03-25', '2019-05-25', 100);
+insert into arbeidstrening (id)
+values ('5ae3be81-abcd-477e-a8f3-4a5eb5fe91e3');
 
 
 insert into maal(id, kategori, beskrivelse, avtale)
@@ -33,13 +33,13 @@ insert into avtale (id, opprettet_tidspunkt, versjon, deltaker_fornavn, deltaker
                     bedrift_navn, bedrift_nr, arbeidsgiver_fnr, arbeidsgiver_fornavn, arbeidsgiver_etternavn,
                     arbeidsgiver_tlf, veileder_nav_ident, veileder_fornavn, veileder_etternavn, veileder_tlf,
                     oppfolging, tilrettelegging, godkjent_av_deltaker, godkjent_av_arbeidsgiver, godkjent_av_veileder,
-                    journalpost_id)
+                    journalpost_id, start_dato, slutt_dato, stillingprosent)
 values ('ca3d7189-0852-4693-a3dd-d518b4ec42e4', current_timestamp, 7, 'Ronny', 'Deltaker', '01093434109', '00000000',
         'Ronnys butikk', '975959171', '29118923330', 'Ronnys', 'Kremmer', '22334455', 'X123456', 'Ronny', 'Veileder',
-        '33445566', 'Telefon hver uke', 'Ingen', current_timestamp, current_timestamp, current_timestamp, null);
+        '33445566', 'Telefon hver uke', 'Ingen', current_timestamp, current_timestamp, current_timestamp, null, '2019-03-25', '2019-05-25', 100);
 
-insert into arbeidstrening (id, start_dato, arbeidstrening_lengde, arbeidstrening_stillingprosent)
-values ('ca3d7189-0852-4693-a3dd-d518b4ec42e4', '2019-03-25', 2, 100);
+insert into arbeidstrening (id)
+values ('ca3d7189-0852-4693-a3dd-d518b4ec42e4');
 
 insert into maal(id, kategori, beskrivelse, avtale)
 values ('ca3d7189-0852-4693-a3dd-d518b4ec42e4', 'Arbeidserfaring', 'Lære butikkarbeid',
@@ -53,13 +53,13 @@ insert into avtale (id, opprettet_tidspunkt, versjon, deltaker_fornavn, deltaker
                     bedrift_navn, bedrift_nr, arbeidsgiver_fnr, arbeidsgiver_fornavn, arbeidsgiver_etternavn,
                     arbeidsgiver_tlf, veileder_nav_ident, veileder_fornavn, veileder_etternavn, veileder_tlf,
                     oppfolging, tilrettelegging, godkjent_av_deltaker, godkjent_av_arbeidsgiver, godkjent_av_veileder,
-                    journalpost_id)
+                    journalpost_id, start_dato, slutt_dato, stillingprosent)
 values ('8238bedf-d6d9-4145-bcdc-cf857f4bc63f', current_timestamp, 7, 'Kenneth', 'Deltaker', '01093434109', '00000000',
         'Kenneths butikk', '975959171', '29118923330', 'Kenneths', 'Kremmer', '22334455', 'X123456', 'Kenneth',
         'Veileder', '33445566', 'Telefon hver uke', 'Ingen', current_timestamp, current_timestamp, current_timestamp,
-        null);
-insert into arbeidstrening (id, start_dato, arbeidstrening_lengde, arbeidstrening_stillingprosent)
-values ('8238bedf-d6d9-4145-bcdc-cf857f4bc63f', '2019-03-25', 2, 100);
+        null, '2019-03-25', '2019-05-25', 100);
+insert into arbeidstrening (id)
+values ('8238bedf-d6d9-4145-bcdc-cf857f4bc63f');
 
 insert into maal(id, kategori, beskrivelse, avtale)
 values ('2cd6fd24-9369-44cd-b8e3-10c4f53762f2', 'Arbeidserfaring', 'Lære butikkarbeid',

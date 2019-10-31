@@ -18,9 +18,6 @@ import java.util.List;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class Arbeidstrening extends Avtale {
-    private LocalDate startDato;
-    private Integer arbeidstreningLengde;
-    private Integer arbeidstreningStillingprosent;
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Maal> maal = new ArrayList<>();
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -33,9 +30,6 @@ public class Arbeidstrening extends Avtale {
     @Override
     public void endreAvtale(Integer versjon, EndreAvtale nyAvtale, Avtalerolle utfortAv) {
         super.endreAvtale(versjon, nyAvtale, utfortAv);
-        setStartDato(nyAvtale.getStartDato());
-        setArbeidstreningLengde(nyAvtale.getArbeidstreningLengde());
-        setArbeidstreningStillingprosent(nyAvtale.getArbeidstreningStillingprosent());
 
         maal.clear();
         maal.addAll(nyAvtale.getMaal());
@@ -48,22 +42,7 @@ public class Arbeidstrening extends Avtale {
 
     @Override
     boolean heleAvtalenErFyltUt() {
-        return super.heleAvtalenErFyltUt() && Utils.erIkkeTomme(startDato, arbeidstreningLengde, arbeidstreningStillingprosent) && !oppgaver.isEmpty() && !maal.isEmpty();
-    }
-
-    @JsonProperty("status")
-    public String status() {
-        if (isAvbrutt()) {
-            return "Avbrutt";
-        } else if (erGodkjentAvVeileder() && (startDato.plusWeeks(arbeidstreningLengde).isBefore(LocalDate.now()))) {
-            return "Avsluttet";
-        } else if (erGodkjentAvVeileder()) {
-            return "Klar for oppstart";
-        } else if (heleAvtalenErFyltUt()) {
-            return "Mangler godkjenning";
-        } else {
-            return "Påbegynt";
-        }
+        return super.heleAvtalenErFyltUt() && !oppgaver.isEmpty() && !maal.isEmpty();
     }
 
     @Override

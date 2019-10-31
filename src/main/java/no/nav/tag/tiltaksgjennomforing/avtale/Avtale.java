@@ -5,11 +5,14 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
+import no.nav.tag.tiltaksgjennomforing.exceptions.AvtalensVarighetMerEnnMaksimaltAntallMånederException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -23,6 +26,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 @Inheritance(strategy = InheritanceType.JOINED)
 @NoArgsConstructor
 public class Avtale extends AbstractAggregateRoot<Avtale> {
+    private static final int MAKSIMALT_ANTALL_MÅNEDER_VARIGHET = 3;
 
     @Convert(converter = FnrConverter.class)
     private Fnr deltakerFnr;
@@ -49,6 +53,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private String oppfolging;
     private String tilrettelegging;
     private String journalpostId;
+
+    private LocalDate startDato;
+    private LocalDate sluttDato;
+    private Integer stillingprosent;
 
     @OneToOne(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true)
     private GodkjentPaVegneGrunn godkjentPaVegneGrunn;
@@ -79,6 +87,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         sjekkVersjon(versjon);
         inkrementerVersjonsnummer();
         sjekkMaalOgOppgaverLengde(nyAvtale.getMaal(), nyAvtale.getOppgaver());
+        sjekkStartOgSluttDato(nyAvtale.getStartDato(), nyAvtale.getSluttDato());
 
         setDeltakerFornavn(nyAvtale.getDeltakerFornavn());
         setDeltakerEtternavn(nyAvtale.getDeltakerEtternavn());
@@ -96,8 +105,21 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
         setOppfolging(nyAvtale.getOppfolging());
         setTilrettelegging(nyAvtale.getTilrettelegging());
+        setStartDato(nyAvtale.getStartDato());
+        setSluttDato(nyAvtale.getSluttDato());
+        setStillingprosent(nyAvtale.getStillingprosent());
 
         registerEvent(new AvtaleEndret(this, utfortAv));
+    }
+
+    private static void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
+        if (startDato != null && sluttDato != null) {
+            if (startDato.isAfter(sluttDato)) {
+                throw new StartDatoErEtterSluttDatoException();
+            } else if (sluttDato.isAfter(startDato.plusMonths(MAKSIMALT_ANTALL_MÅNEDER_VARIGHET))) {
+                throw new AvtalensVarighetMerEnnMaksimaltAntallMånederException(MAKSIMALT_ANTALL_MÅNEDER_VARIGHET);
+            }
+        }
     }
 
     @JsonProperty("erLaast")
@@ -191,7 +213,17 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     @JsonProperty("status")
     public String status() {
-        return null;
+        if (isAvbrutt()) {
+            return "Avbrutt";
+        } else if (erGodkjentAvVeileder() && (sluttDato.isBefore(LocalDate.now()))) {
+            return "Avsluttet";
+        } else if (erGodkjentAvVeileder()) {
+            return "Klar for oppstart";
+        } else if (heleAvtalenErFyltUt()) {
+            return "Mangler godkjenning";
+        } else {
+            return "Påbegynt";
+        }
     }
 
     @JsonProperty("kanAvbrytes")
@@ -222,7 +254,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
                 veilederEtternavn,
                 veilederTlf,
                 oppfolging,
-                tilrettelegging
+                tilrettelegging,
+                startDato,
+                sluttDato,
+                stillingprosent
         );
     }
 

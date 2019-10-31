@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MaalTilJournalfoering {
-
     private String kategori;
     private String beskrivelse;
 }
