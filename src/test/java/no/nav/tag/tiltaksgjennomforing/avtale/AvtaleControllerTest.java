@@ -267,7 +267,7 @@ public class AvtaleControllerTest {
         InnloggetBruker enNavAnsatt = TestData.enNavAnsatt();
         vaerInnloggetSom(enNavAnsatt);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        when(avtaleRepository.save(avtale)).thenReturn(avtale);
+        //when(avtaleRepository.save(avtale)).thenReturn(avtale);
         AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId());
         assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderAvtaleErIkkkeFyltUt);
         assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo(Veileder.tekstAvtaleErIkkkeFyltUt);
@@ -280,7 +280,7 @@ public class AvtaleControllerTest {
         InnloggetBruker innloggetArbeidsgiver = TestData.innloggetSelvbetjeningBrukerMedOrganisasjon(TestData.enArbeidsgiver(avtale));
         vaerInnloggetSom(innloggetArbeidsgiver);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        when(avtaleRepository.save(avtale)).thenReturn(avtale);
+        //when(avtaleRepository.save(avtale)).thenReturn(avtale);
         AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId());
         assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderAvtaleErIkkkeFyltUt);
         assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo(Arbeidsgiver.tekstAvtaleErIkkkeFyltUt);
@@ -293,7 +293,7 @@ public class AvtaleControllerTest {
         InnloggetBruker innloggetDeltaker = TestData.innloggetSelvbetjeningBrukerUtenOrganisasjon(TestData.enDeltaker(avtale));
         vaerInnloggetSom(innloggetDeltaker);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        when(avtaleRepository.save(avtale)).thenReturn(avtale);
+        //when(avtaleRepository.save(avtale)).thenReturn(avtale);
         AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId());
         assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderAvtaleErIkkkeFyltUt);
         assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo(Deltaker.tekstAvtaleErIkkkeFyltUt);
@@ -306,7 +306,7 @@ public class AvtaleControllerTest {
         InnloggetBruker innloggetDeltaker = TestData.innloggetSelvbetjeningBrukerUtenOrganisasjon(TestData.enDeltaker(avtale));
         vaerInnloggetSom(innloggetDeltaker);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        when(avtaleRepository.save(avtale)).thenReturn(avtale);
+        //when(avtaleRepository.save(avtale)).thenReturn(avtale);
         AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId());
         assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderAvtaleVenterPaaDinGodkjenning);
         assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo(Avtalepart.tekstAvtaleVenterPaaDinGodkjenning);
@@ -325,7 +325,7 @@ public class AvtaleControllerTest {
         InnloggetNavAnsatt innloggetNavAnsatt = TestData.innloggetNavAnsatt(veileder);
         vaerInnloggetSom(innloggetNavAnsatt);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        when(avtaleRepository.save(avtale)).thenReturn(avtale);
+       // when(avtaleRepository.save(avtale)).thenReturn(avtale);
         AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId());
         assertThat(avtaleStatusDetaljer.header).isEqualTo(veileder.venteListeForVeileder);
         assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo(Veileder.tekstForklarerVenting);
@@ -340,7 +340,7 @@ public class AvtaleControllerTest {
         InnloggetNavAnsatt innloggetNavAnsatt = TestData.innloggetNavAnsatt(veileder);
         vaerInnloggetSom(innloggetNavAnsatt);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        when(avtaleRepository.save(avtale)).thenReturn(avtale);
+       // when(avtaleRepository.save(avtale)).thenReturn(avtale);
         AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId());
         assertThat(avtaleStatusDetaljer.header).isEqualTo(veileder.venteListeForVeileder);
         assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo(Veileder.tekstForklarerVenting);
@@ -355,7 +355,7 @@ public class AvtaleControllerTest {
         InnloggetBruker innloggetDeltaker = TestData.innloggetSelvbetjeningBrukerUtenOrganisasjon(TestData.enDeltaker(avtale));
         vaerInnloggetSom(innloggetDeltaker);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        when(avtaleRepository.save(avtale)).thenReturn(avtale);
+        //when(avtaleRepository.save(avtale)).thenReturn(avtale);
         AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId());
         assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderAvtaleErGodkjentAvInnloggetBruker);
         assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo(Avtalepart.tekstAvtaleVenterPaaVeilederGodkjenning);
@@ -371,7 +371,7 @@ public class AvtaleControllerTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         vaerInnloggetSom(TestData.enNavAnsatt());
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        when(avtaleRepository.save(avtale)).thenReturn(avtale);
+       // when(avtaleRepository.save(avtale)).thenReturn(avtale);
         AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId());
         assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderAvtaleErGodkjentAvInnloggetBruker);
         assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo(Avtalepart.tekstAvtaleErGodkjentAvAllePartner);
