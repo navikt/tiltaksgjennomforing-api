@@ -1,6 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.*;
+import no.nav.tag.tiltaksgjennomforing.exceptions.AvtalensVarighetMerEnnMaksimaltAntallMånederException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
@@ -39,8 +41,8 @@ public class AvtaleTest {
             softly.assertThat(avtale.getOppfolging()).isNull();
             softly.assertThat(avtale.getTilrettelegging()).isNull();
             softly.assertThat(avtale.getStartDato()).isNull();
-            softly.assertThat(avtale.getArbeidstreningLengde()).isNull();
-            softly.assertThat(avtale.getArbeidstreningStillingprosent()).isNull();
+            softly.assertThat(avtale.getSluttDato()).isNull();
+            softly.assertThat(avtale.getStillingprosent()).isNull();
             softly.assertThat(avtale.erGodkjentAvDeltaker()).isFalse();
             softly.assertThat(avtale.erGodkjentAvArbeidsgiver()).isFalse();
             softly.assertThat(avtale.erGodkjentAvVeileder()).isFalse();
@@ -101,8 +103,8 @@ public class AvtaleTest {
             softly.assertThat(avtale.getOppfolging()).isEqualTo(endreAvtale.getOppfolging());
             softly.assertThat(avtale.getTilrettelegging()).isEqualTo(endreAvtale.getTilrettelegging());
             softly.assertThat(avtale.getStartDato()).isEqualTo(endreAvtale.getStartDato());
-            softly.assertThat(avtale.getArbeidstreningLengde()).isEqualTo(endreAvtale.getArbeidstreningLengde());
-            softly.assertThat(avtale.getArbeidstreningStillingprosent()).isEqualTo(endreAvtale.getArbeidstreningStillingprosent());
+            softly.assertThat(avtale.getSluttDato()).isEqualTo(endreAvtale.getSluttDato());
+            softly.assertThat(avtale.getStillingprosent()).isEqualTo(endreAvtale.getStillingprosent());
             softly.assertThat(avtale.getMaal()).isEqualTo(endreAvtale.getMaal());
             softly.assertThat(avtale.getOppgaver()).isEqualTo(endreAvtale.getOppgaver());
         });
@@ -134,6 +136,61 @@ public class AvtaleTest {
         enOppgave.setBeskrivelse("Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er");
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setOppgaver(List.of(enOppgave));
+        avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
+    }
+
+    @Test
+    public void endreAvtale__startdato_satt_men_ikke_sluttdato() {
+        Avtale avtale = TestData.enAvtale();
+        EndreAvtale endreAvtale = new EndreAvtale();
+        LocalDate startDato = LocalDate.now();
+        endreAvtale.setStartDato(startDato);
+        avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
+        assertThat(avtale.getStartDato()).isEqualTo(startDato);
+    }
+
+    @Test
+    public void endreAvtale__sluttdato_satt_men_ikke_startdato() {
+        Avtale avtale = TestData.enAvtale();
+        EndreAvtale endreAvtale = new EndreAvtale();
+        LocalDate sluttDato = LocalDate.now();
+        endreAvtale.setSluttDato(sluttDato);
+        avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
+        assertThat(avtale.getSluttDato()).isEqualTo(sluttDato);
+    }
+
+    @Test
+    public void endreAvtale__startdato_og_sluttdato_satt_3mnd() {
+        Avtale avtale = TestData.enAvtale();
+        EndreAvtale endreAvtale = new EndreAvtale();
+        LocalDate startDato = LocalDate.now();
+        LocalDate sluttDato = startDato.plusMonths(3);
+        endreAvtale.setStartDato(startDato);
+        endreAvtale.setSluttDato(sluttDato);
+        avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
+        assertThat(avtale.getStartDato()).isEqualTo(startDato);
+        assertThat(avtale.getSluttDato()).isEqualTo(sluttDato);
+    }
+
+    @Test(expected = AvtalensVarighetMerEnnMaksimaltAntallMånederException.class)
+    public void endreAvtale__startdato_og_sluttdato_satt_over_3mnd() {
+        Avtale avtale = TestData.enAvtale();
+        EndreAvtale endreAvtale = new EndreAvtale();
+        LocalDate startDato = LocalDate.now();
+        LocalDate sluttDato = startDato.plusMonths(3).plusDays(1);
+        endreAvtale.setStartDato(startDato);
+        endreAvtale.setSluttDato(sluttDato);
+        avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
+    }
+
+    @Test(expected = StartDatoErEtterSluttDatoException.class)
+    public void endreAvtale__startdato_er_etter_sluttdato() {
+        Avtale avtale = TestData.enAvtale();
+        EndreAvtale endreAvtale = new EndreAvtale();
+        LocalDate startDato = LocalDate.now();
+        LocalDate sluttDato = startDato.minusDays(1);
+        endreAvtale.setStartDato(startDato);
+        endreAvtale.setSluttDato(sluttDato);
         avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
     }
 
@@ -193,7 +250,7 @@ public class AvtaleTest {
     public void status__null_startdato() {
         Avtale avtale = TestData.enAvtale();
         avtale.setStartDato(null);
-        avtale.setArbeidstreningLengde(null);
+        avtale.setSluttDato(null);
         assertThat(avtale.status()).isEqualTo("Påbegynt");
     }
 
@@ -201,7 +258,7 @@ public class AvtaleTest {
     public void status__noe_fylt_ut() {
         Avtale avtale = TestData.enAvtale();
         avtale.setStartDato(LocalDate.now().plusDays(5));
-        avtale.setArbeidstreningLengde(12);
+        avtale.setSluttDato(avtale.getStartDato().plusMonths(3));
         avtale.setBedriftNavn("testbedriftsnavn");
         assertThat(avtale.status()).isEqualTo("Påbegynt");
     }
@@ -210,7 +267,7 @@ public class AvtaleTest {
     public void status__avsluttet_i_gaar() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setStartDato(LocalDate.now().minusWeeks(4).minusDays(1));
-        avtale.setArbeidstreningLengde(4);
+        avtale.setSluttDato(avtale.getStartDato().plusWeeks(4));
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
@@ -221,7 +278,7 @@ public class AvtaleTest {
     public void status__avslutter_i_dag() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setStartDato(LocalDate.now().minusWeeks(4));
-        avtale.setArbeidstreningLengde(4);
+        avtale.setSluttDato(avtale.getStartDato().plusWeeks(4));
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());

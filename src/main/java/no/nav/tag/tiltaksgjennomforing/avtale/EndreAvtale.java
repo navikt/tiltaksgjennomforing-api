@@ -29,8 +29,8 @@ public class EndreAvtale {
     private String tilrettelegging;
 
     private LocalDate startDato;
-    private Integer arbeidstreningLengde;
-    private Integer arbeidstreningStillingprosent;
+    private LocalDate sluttDato;
+    private Integer stillingprosent;
 
     private List<Maal> maal = new ArrayList<>();
     private List<Oppgave> oppgaver = new ArrayList<>();

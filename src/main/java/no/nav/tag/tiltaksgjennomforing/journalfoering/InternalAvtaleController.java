@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/internal/avtaler")
 @Timed
 @RequiredArgsConstructor
-@ProtectedWithClaims(issuer="system")
+@ProtectedWithClaims(issuer = "system")
 public class InternalAvtaleController {
 
     private final AvtaleRepository avtaleRepository;
