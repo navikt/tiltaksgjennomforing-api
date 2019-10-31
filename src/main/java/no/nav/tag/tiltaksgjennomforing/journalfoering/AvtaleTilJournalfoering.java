@@ -13,16 +13,13 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AvtaleTilJournalfoering {
-
-    public final static String DATE_PATTERN = "dd.MM.yyyy";
-
     private UUID id;
 
     private String deltakerFnr;
     private String bedriftNr;
     private String veilederNavIdent;
 
-    private String opprettet;
+    private LocalDate opprettet;
     private Integer versjon;
     private String deltakerFornavn;
     private String deltakerEtternavn;
@@ -47,8 +44,8 @@ public class AvtaleTilJournalfoering {
 
     private GodkjentPaVegneGrunnTilJournalfoering godkjentPaVegneGrunn;
 
-    private String godkjentAvDeltaker;
-    private String godkjentAvArbeidsgiver;
-    private String godkjentAvVeileder;
-    private String godkjentPaVegneAv;
+    private LocalDate godkjentAvDeltaker;
+    private LocalDate godkjentAvArbeidsgiver;
+    private LocalDate godkjentAvVeileder;
+    private boolean godkjentPaVegneAv;
 }

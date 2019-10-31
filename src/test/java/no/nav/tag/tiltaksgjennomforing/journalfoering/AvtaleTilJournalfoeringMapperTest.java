@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.journalfoering;
 
-import no.nav.tag.tiltaksgjennomforing.*;
+import no.nav.tag.tiltaksgjennomforing.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.Maal;
@@ -10,15 +10,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
 
 public class AvtaleTilJournalfoeringMapperTest {
-
-    final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(AvtaleTilJournalfoering.DATE_PATTERN);
 
     private Avtale avtale;
     private AvtaleTilJournalfoering tilJournalfoering;
@@ -49,7 +46,7 @@ public class AvtaleTilJournalfoeringMapperTest {
         assertEquals(avtale.getDeltakerFnr().asString(), tilJournalfoering.getDeltakerFnr());
         assertEquals(avtale.getBedriftNr().asString(), tilJournalfoering.getBedriftNr());
         assertEquals(avtale.getVeilederNavIdent().asString(), tilJournalfoering.getVeilederNavIdent());
-        assertEquals(avtale.getOpprettetTidspunkt().toLocalDate().format(formatter), tilJournalfoering.getOpprettet());
+        assertEquals(avtale.getOpprettetTidspunkt().toLocalDate(), tilJournalfoering.getOpprettet());
         assertEquals(avtale.getVersjon(), tilJournalfoering.getVersjon());
         assertEquals(avtale.getDeltakerFornavn(), tilJournalfoering.getDeltakerFornavn());
         assertEquals(avtale.getDeltakerEtternavn(), tilJournalfoering.getDeltakerEtternavn());
@@ -66,11 +63,10 @@ public class AvtaleTilJournalfoeringMapperTest {
         assertEquals(avtale.getStartDato(), tilJournalfoering.getStartDato());
         assertEquals(avtale.getSluttDato(), tilJournalfoering.getSluttDato());
         assertEquals(avtale.getStillingprosent(), tilJournalfoering.getStillingprosent());
-        assertEquals(avtale.getGodkjentAvDeltaker().toLocalDate().format(formatter), tilJournalfoering.getGodkjentAvDeltaker());
-        assertEquals(avtale.getGodkjentAvArbeidsgiver().toLocalDate().format(formatter), tilJournalfoering.getGodkjentAvArbeidsgiver());
-        assertEquals(avtale.getGodkjentAvVeileder().toLocalDate().format(formatter), tilJournalfoering.getGodkjentAvVeileder());
-        assertEquals(Boolean.toString(avtale.isGodkjentPaVegneAv()), tilJournalfoering.getGodkjentPaVegneAv());
-
+        assertEquals(avtale.getGodkjentAvDeltaker().toLocalDate(), tilJournalfoering.getGodkjentAvDeltaker());
+        assertEquals(avtale.getGodkjentAvArbeidsgiver().toLocalDate(), tilJournalfoering.getGodkjentAvArbeidsgiver());
+        assertEquals(avtale.getGodkjentAvVeileder().toLocalDate(), tilJournalfoering.getGodkjentAvVeileder());
+        assertEquals(avtale.isGodkjentPaVegneAv(), tilJournalfoering.isGodkjentPaVegneAv());
     }
 
     @Test
@@ -114,8 +110,6 @@ public class AvtaleTilJournalfoeringMapperTest {
         assertNull(tilJournalfoering.getGodkjentPaVegneGrunn());
     }
 
-
-
     @Test
     public void mapperOppgaver() {
         Oppgave oppgave = new Oppgave();
@@ -156,9 +150,9 @@ public class AvtaleTilJournalfoeringMapperTest {
         tilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale);
 
         tilJournalfoering.getMaal().forEach(maalet -> {
-            if (maalet.getKategori().equals("Kategori"))  {
+            if (maalet.getKategori().equals("Kategori")) {
                 assertEquals("Beskrivelse", maalet.getBeskrivelse());
-            } else if(maalet.getKategori().equals("Kategori-2")){
+            } else if (maalet.getKategori().equals("Kategori-2")) {
                 assertEquals("Beskrivelse-2", maalet.getBeskrivelse());
             } else {
                 fail("Mål; " + maalet);
