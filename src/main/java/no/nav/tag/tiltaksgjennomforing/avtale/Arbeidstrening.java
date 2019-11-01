@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 
 import javax.persistence.CascadeType;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import java.time.LocalDate;
@@ -17,6 +18,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+@DiscriminatorValue(Tiltakstype.ARBEIDSTRENING_VERDI)
 public class Arbeidstrening extends Avtale {
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Maal> maal = new ArrayList<>();
@@ -25,6 +27,7 @@ public class Arbeidstrening extends Avtale {
 
     public Arbeidstrening(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent) {
         super(deltakerFnr, bedriftNr, veilederNavIdent);
+        setTiltakstype(Tiltakstype.ARBEIDSTRENING);
     }
 
     @Override
@@ -43,10 +46,5 @@ public class Arbeidstrening extends Avtale {
     @Override
     boolean heleAvtalenErFyltUt() {
         return super.heleAvtalenErFyltUt() && !oppgaver.isEmpty() && !maal.isEmpty();
-    }
-
-    @Override
-    public Tiltakstype tiltakstype() {
-        return Tiltakstype.ARBEIDSTRENING;
     }
 }

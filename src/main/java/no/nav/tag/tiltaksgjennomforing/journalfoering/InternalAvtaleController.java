@@ -32,7 +32,7 @@ public class InternalAvtaleController {
         innloggingService.validerSystembruker();
         List<UUID> avtaleIdList = avtaleRepository.finnAvtaleIdTilJournalfoering();
         return avtaleRepository.findAllById(avtaleIdList).stream()
-                .filter(avtale -> avtale.tiltakstype() == Tiltakstype.ARBEIDSTRENING)
+                .filter(avtale -> avtale.getTiltakstype() == Tiltakstype.ARBEIDSTRENING)
                 .map(avtale -> AvtaleTilJournalfoeringMapper.tilJournalfoering((Arbeidstrening) avtale))
                 .collect(Collectors.toList());
     }

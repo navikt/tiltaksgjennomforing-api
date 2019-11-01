@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.AvtalensVarighetMerEnnMaksimaltAntallMånederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
@@ -23,8 +24,10 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = Avtale.Fields.tiltakstype)
 @NoArgsConstructor
+@FieldNameConstants
 public class Avtale extends AbstractAggregateRoot<Avtale> {
     private static final int MAKSIMALT_ANTALL_MÅNEDER_VARIGHET = 3;
 
@@ -35,6 +38,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     @Convert(converter = NavIdentConverter.class)
     private NavIdent veilederNavIdent;
 
+    @Column(updatable = false, insertable = false)
+    @Enumerated(value = EnumType.STRING)
+    private Tiltakstype tiltakstype;
     private LocalDateTime opprettetTidspunkt;
     @Id
     private UUID id;
@@ -259,10 +265,5 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
                 sluttDato,
                 stillingprosent
         );
-    }
-
-    @JsonProperty("tiltakstype")
-    public Tiltakstype tiltakstype() {
-        return null;
     }
 }

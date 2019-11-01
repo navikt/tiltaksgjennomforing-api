@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import java.math.BigDecimal;
 
@@ -12,6 +13,7 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+@DiscriminatorValue(Tiltakstype.VARIG_LONNSTILSKUDD_VERDI)
 public class VarigLonnstilskudd extends Avtale {
     private String arbeidsgiverKontonummer;
     private String stillingtype;
@@ -23,6 +25,19 @@ public class VarigLonnstilskudd extends Avtale {
 
     public VarigLonnstilskudd(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent) {
         super(deltakerFnr, bedriftNr, veilederNavIdent);
+        setTiltakstype(Tiltakstype.VARIG_LONNSTILSKUDD);
+    }
+
+    @Override
+    public void endreAvtale(Integer versjon, EndreAvtale nyAvtale, Avtalerolle utfortAv) {
+        super.endreAvtale(versjon, nyAvtale, utfortAv);
+        arbeidsgiverKontonummer = nyAvtale.getArbeidsgiverKontonummer();
+        stillingtype = nyAvtale.getStillingtype();
+        stillingbeskrivelse = nyAvtale.getStillingbeskrivelse();
+        lonnstilskuddProsent = nyAvtale.getLonnstilskuddProsent();
+        manedslonn = nyAvtale.getManedslonn();
+        feriepengesats = nyAvtale.getFeriepengesats();
+        arbeidsgiveravgift = nyAvtale.getArbeidsgiveravgift();
     }
 
     @Override
@@ -34,10 +49,5 @@ public class VarigLonnstilskudd extends Avtale {
                 manedslonn,
                 feriepengesats,
                 arbeidsgiveravgift);
-    }
-
-    @Override
-    public Tiltakstype tiltakstype() {
-        return Tiltakstype.VARIG_LONNSTILSKUDD;
     }
 }

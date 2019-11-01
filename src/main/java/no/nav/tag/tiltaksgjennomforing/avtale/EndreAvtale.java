@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,16 @@ public class EndreAvtale {
     private LocalDate sluttDato;
     private Integer stillingprosent;
 
+    // Arbeidstreningsfelter
     private List<Maal> maal = new ArrayList<>();
     private List<Oppgave> oppgaver = new ArrayList<>();
+
+    // Lønnstilskuddsfelter
+    private String arbeidsgiverKontonummer;
+    private String stillingtype;
+    private String stillingbeskrivelse;
+    private Integer lonnstilskuddProsent;
+    private String manedslonn;
+    private BigDecimal feriepengesats;
+    private BigDecimal arbeidsgiveravgift;
 }

@@ -1,25 +1,10 @@
-create table arbeidstrening as select id from avtale;
+alter table avtale add column tiltakstype                   varchar;
+alter table avtale add column arbeidsgiver_kontonummer      varchar(11);
+alter table avtale add column stillingtype                  varchar;
+alter table avtale add column stillingbeskrivelse           varchar;
+alter table avtale add column lonnstilskudd_prosent         integer;
+alter table avtale add column manedslonn                    integer;
+alter table avtale add column feriepengesats                decimal;
+alter table avtale add column arbeidsgiveravgift            decimal;
 
-create table varig_lonnstilskudd
-(
-    id                            uuid,
-    arbeidsgiver_kontonummer      varchar(11),
-    stillingtype                  varchar,
-    stillingbeskrivelse           varchar,
-    lonnstilskudd_prosent         integer,
-    manedslonn                    integer,
-    feriepengesats                decimal,
-    arbeidsgiveravgift            decimal
-);
-
-create table midlertidig_lonnstilskudd
-(
-    id                            uuid,
-    arbeidsgiver_kontonummer      varchar(11),
-    stillingtype                  varchar,
-    stillingbeskrivelse           varchar,
-    lonnstilskudd_prosent         integer,
-    manedslonn                    integer,
-    feriepengesats                decimal,
-    arbeidsgiveravgift            decimal
-);
+update avtale set tiltakstype = 'ARBEIDSTRENING';

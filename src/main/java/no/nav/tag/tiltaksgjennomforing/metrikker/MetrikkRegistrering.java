@@ -58,14 +58,14 @@ public class MetrikkRegistrering {
 
     @EventListener
     public void avtaleOpprettet(AvtaleOpprettet event) {
-        Tiltakstype tiltakstype = event.getAvtale().tiltakstype();
+        Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
         log.info("Avtale opprettet, avtaleId={} ident={}, PilotFylke={}, tiltakstype={}", event.getAvtale().getId(), event.getUtfortAv(), pilotFylke(event.getUtfortAv()), tiltakstype);
         counter("avtale.opprettet", Avtalerolle.VEILEDER, tiltakstype).increment();
     }
 
     @EventListener
     public void avtaleEndret(AvtaleEndret event) {
-        Tiltakstype tiltakstype = event.getAvtale().tiltakstype();
+        Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
         log.info("Avtale endret, avtaleId={}, avtalepart={}, tiltakstype={}", event.getAvtale().getId(), event.getUtfortAv(), tiltakstype);
         counter("avtale.endret", event.getUtfortAv(), tiltakstype).increment();
     }
@@ -73,7 +73,7 @@ public class MetrikkRegistrering {
     @EventListener
     public void godkjenningerOpphevet(GodkjenningerOpphevetAvVeileder event) {
         Avtalerolle rolle = Avtalerolle.VEILEDER;
-        Tiltakstype tiltakstype = event.getAvtale().tiltakstype();
+        Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
         log.info("Avtalens godkjenninger opphevet, avtaleId={}, avtalepart={}, tiltakstype={}", event.getAvtale().getId(), rolle, tiltakstype);
         counter("avtale.godkjenning.opphevet", rolle, tiltakstype).increment();
     }
@@ -81,7 +81,7 @@ public class MetrikkRegistrering {
     @EventListener
     public void godkjenningerOpphevet(GodkjenningerOpphevetAvArbeidsgiver event) {
         Avtalerolle rolle = Avtalerolle.ARBEIDSGIVER;
-        Tiltakstype tiltakstype = event.getAvtale().tiltakstype();
+        Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
         log.info("Avtalens godkjenninger opphevet, avtaleId={}, avtalepart={}, tiltakstype={}", event.getAvtale().getId(), rolle, tiltakstype);
         counter("avtale.godkjenning.opphevet", rolle, tiltakstype).increment();
     }
@@ -89,7 +89,7 @@ public class MetrikkRegistrering {
     @EventListener
     public void godkjentAvDeltaker(GodkjentAvDeltaker event) {
         Avtalerolle rolle = Avtalerolle.DELTAKER;
-        Tiltakstype tiltakstype = event.getAvtale().tiltakstype();
+        Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
         log.info("Avtale godkjent, avtaleId={}, avtalepart={}, tiltakstype={}", event.getAvtale().getId(), rolle, tiltakstype);
         counter("avtale.godkjenning.godkjent", rolle, tiltakstype).increment();
     }
@@ -97,7 +97,7 @@ public class MetrikkRegistrering {
     @EventListener
     public void godkjentAvArbeidsgiver(GodkjentAvArbeidsgiver event) {
         Avtalerolle rolle = Avtalerolle.ARBEIDSGIVER;
-        Tiltakstype tiltakstype = event.getAvtale().tiltakstype();
+        Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
         log.info("Avtale godkjent, avtaleId={}, avtalepart={}, tiltakstype={}", event.getAvtale().getId(), rolle, tiltakstype);
         counter("avtale.godkjenning.godkjent", rolle, tiltakstype).increment();
     }
@@ -105,7 +105,7 @@ public class MetrikkRegistrering {
     @EventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
         Avtalerolle rolle = Avtalerolle.VEILEDER;
-        Tiltakstype tiltakstype = event.getAvtale().tiltakstype();
+        Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
         log.info("Avtale godkjent, avtaleId={}, avtalepart={}, PilotFylke={}, tiltakstype={}", event.getAvtale().getId(), rolle, pilotFylke(event.getUtfortAv()), tiltakstype);
         counter("avtale.godkjenning.godkjent", rolle, tiltakstype).increment();
     }
@@ -113,7 +113,7 @@ public class MetrikkRegistrering {
     @EventListener
     public void godkjentPaVegneAv(GodkjentPaVegneAv event) {
         Avtalerolle rolle = Avtalerolle.VEILEDER;
-        Tiltakstype tiltakstype = event.getAvtale().tiltakstype();
+        Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
         log.info("Avtale godkjent på vegne av deltaker, avtaleId={}, avtalepart={}, PilotFylke={}, tiltakstype={}", event.getAvtale().getId(), rolle, pilotFylke(event.getUtfortAv()), tiltakstype);
         counter("avtale.godkjenning.godkjentPaVegneAv", rolle, tiltakstype).increment();
     }
