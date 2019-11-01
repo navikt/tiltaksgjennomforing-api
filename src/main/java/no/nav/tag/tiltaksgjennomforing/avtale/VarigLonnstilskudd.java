@@ -3,9 +3,11 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -15,5 +17,14 @@ import javax.persistence.Entity;
 public class VarigLonnstilskudd extends Lonnstilskudd {
     public VarigLonnstilskudd(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent) {
         super(deltakerFnr, bedriftNr, veilederNavIdent, Tiltakstype.VARIG_LONNSTILSKUDD);
+    }
+
+    @Override
+    void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
+        if (startDato != null && sluttDato != null) {
+            if (startDato.isAfter(sluttDato)) {
+                throw new StartDatoErEtterSluttDatoException();
+            }
+        }
     }
 }

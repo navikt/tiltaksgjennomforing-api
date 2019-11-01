@@ -119,7 +119,7 @@ public abstract class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new AvtaleEndret(this, utfortAv));
     }
 
-    private static void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
+    void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
         if (startDato != null && sluttDato != null) {
             if (startDato.isAfter(sluttDato)) {
                 throw new StartDatoErEtterSluttDatoException();
