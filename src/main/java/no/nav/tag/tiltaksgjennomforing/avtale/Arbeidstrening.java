@@ -1,16 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,8 +23,7 @@ public class Arbeidstrening extends Avtale {
     private List<Oppgave> oppgaver = new ArrayList<>();
 
     public Arbeidstrening(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent) {
-        super(deltakerFnr, bedriftNr, veilederNavIdent);
-        setTiltakstype(Tiltakstype.ARBEIDSTRENING);
+        super(deltakerFnr, bedriftNr, veilederNavIdent, Tiltakstype.ARBEIDSTRENING);
     }
 
     @Override

@@ -28,7 +28,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 @DiscriminatorColumn(name = Avtale.Fields.tiltakstype)
 @NoArgsConstructor
 @FieldNameConstants
-public class Avtale extends AbstractAggregateRoot<Avtale> {
+public abstract class Avtale extends AbstractAggregateRoot<Avtale> {
     private static final int MAKSIMALT_ANTALL_MÅNEDER_VARIGHET = 3;
 
     @Convert(converter = FnrConverter.class)
@@ -73,12 +73,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private boolean godkjentPaVegneAv;
     private boolean avbrutt;
 
-    public Avtale(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent) {
+    public Avtale(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent, Tiltakstype tiltakstype) {
         this.id = UUID.randomUUID();
         this.opprettetTidspunkt = LocalDateTime.now();
         this.deltakerFnr = sjekkAtIkkeNull(deltakerFnr, "Deltakers fnr må være satt.");
         this.bedriftNr = sjekkAtIkkeNull(bedriftNr, "Arbeidsgivers bedriftnr må være satt.");
         this.veilederNavIdent = sjekkAtIkkeNull(veilederNavIdent, "Veileders NAV-ident må være satt.");
+        this.tiltakstype = tiltakstype;
         this.versjon = 1;
         registerEvent(new AvtaleOpprettet(this, veilederNavIdent));
     }
