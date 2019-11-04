@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
 
 import javax.persistence.DiscriminatorValue;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @DiscriminatorValue(Tiltakstype.VARIG_LONNSTILSKUDD_VERDI)
 @NoArgsConstructor
 public class VarigLonnstilskudd extends Lonnstilskudd {

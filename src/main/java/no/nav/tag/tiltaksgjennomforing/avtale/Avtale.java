@@ -22,7 +22,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = Avtale.Fields.tiltakstype)
@@ -43,6 +43,7 @@ public abstract class Avtale extends AbstractAggregateRoot<Avtale> {
     private Tiltakstype tiltakstype;
     private LocalDateTime opprettetTidspunkt;
     @Id
+    @EqualsAndHashCode.Include
     private UUID id;
     private Integer versjon;
     private String deltakerFornavn;

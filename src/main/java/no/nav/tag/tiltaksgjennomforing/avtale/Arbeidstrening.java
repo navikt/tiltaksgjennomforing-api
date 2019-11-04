@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
@@ -15,6 +16,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @DiscriminatorValue(Tiltakstype.ARBEIDSTRENING_VERDI)
 public class Arbeidstrening extends Avtale {
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true)
