@@ -1,17 +1,22 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 
+import javax.persistence.Entity;
 import java.math.BigDecimal;
 
+
 @NoArgsConstructor
+@Data
+@Entity
 public abstract class Lonnstilskudd extends Avtale {
     private String arbeidsgiverKontonummer;
     private String stillingtype;
     private String stillingbeskrivelse;
     private Integer lonnstilskuddProsent;
-    private String manedslonn;
+    private Integer manedslonn;
     private BigDecimal feriepengesats;
     private BigDecimal arbeidsgiveravgift;
 
@@ -22,13 +27,14 @@ public abstract class Lonnstilskudd extends Avtale {
     @Override
     public void endreAvtale(Integer versjon, EndreAvtale nyAvtale, Avtalerolle utfortAv) {
         super.endreAvtale(versjon, nyAvtale, utfortAv);
-        arbeidsgiverKontonummer = nyAvtale.getArbeidsgiverKontonummer();
-        stillingtype = nyAvtale.getStillingtype();
-        stillingbeskrivelse = nyAvtale.getStillingbeskrivelse();
-        lonnstilskuddProsent = nyAvtale.getLonnstilskuddProsent();
-        manedslonn = nyAvtale.getManedslonn();
-        feriepengesats = nyAvtale.getFeriepengesats();
-        arbeidsgiveravgift = nyAvtale.getArbeidsgiveravgift();
+        setArbeidsgiverKontonummer(nyAvtale.getArbeidsgiverKontonummer());
+        setStillingtype(nyAvtale.getStillingtype());
+        setStillingbeskrivelse(nyAvtale.getStillingbeskrivelse());
+        setLonnstilskuddProsent(nyAvtale.getLonnstilskuddProsent());
+        setManedslonn(nyAvtale.getManedslonn());
+        setFeriepengesats(nyAvtale.getFeriepengesats());
+        setArbeidsgiveravgift(nyAvtale.getArbeidsgiveravgift());
+
     }
 
     @Override
