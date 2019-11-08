@@ -7,7 +7,10 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         super(identifikator, avtale);
     }
 
-    static String tekstAvtaleErIkkkeFyltUt = "Som arbeidsgiver kan du fylle ut avtalen i samarbeid med Nav/veileder. Avtalen kan godkjennes etter at den er fylt ut.\n mer tekst";
+    //static String tekstAvtalePaabegynt = "Som arbeidsgiver kan du fylle ut avtalen i samarbeid med Nav/veileder. Avtalen kan godkjennes etter at den er fylt ut.\n mer tekst";
+    static String tekstAvtaleVenterPaaDinGodkjenning = "Deltakeren må ikke godkjenne avtalen før du gjør det. ";
+
+    static String ekstraTekstAvtaleVenterPaaDinGodkjenning = "Veilederen skal godkjenne til slutt.";
 
     @Override
     public void godkjennForAvtalepart() {
@@ -37,11 +40,12 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
                 }
             } else {
                 avtaleStatusDetaljer.setInnloggetBrukerStatus(
+                        //TODO må det stemme at arbeidsgiver må godkjenne før deltaker og at deltaker ikke kan godkjenne først  
                         tekstHeaderAvtaleVenterPaaDinGodkjenning, tekstAvtaleVenterPaaDinGodkjenning, ekstraTekstAvtaleVenterPaaDinGodkjenning);
                 //"Hele avtalen er nå fylt ut og klar for godkjenning av deg. Les hele avtalen først. Hvis du er uenig i innholdet, eller har spørsmål til avtalen, bør du kontakte din veileder via Aktivitetsplanen før du godkjenner.";
             }
         } else {
-            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErIkkkeFyltUt, tekstAvtaleErIkkkeFyltUt, "");
+            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtalePaabegynt, "", "");
         }
         avtaleStatusDetaljer.setPart1Detaljer(avtale.getDeltakerFornavn() + " " + avtale.getDeltakerEtternavn(), avtale.erGodkjentAvDeltaker());
         avtaleStatusDetaljer.setPart2Detaljer(avtale.getVeilederFornavn() + " " + avtale.getVeilederEtternavn(), avtale.erGodkjentAvVeileder());

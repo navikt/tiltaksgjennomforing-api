@@ -10,13 +10,13 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 public abstract class Avtalepart<T extends Identifikator> {
     private final T identifikator;
     final Avtale avtale;
-    static String tekstHeaderAvtaleErIkkkeFyltUt = "Avtalen har ikke blitt fylt ut enda";
+    static String tekstHeaderAvtalePaabegynt = "Du må fylle ut avtalen";
     static String tekstHeaderAvtaleErGodkjentAvInnloggetBruker = "Du har godkjent avtalen.";
     static String tekstAvtaleErGodkjentAvAllePartner = "Alle partner har godkjent avtalen og den er klar for oppstart nå.";
     static String ekstraTekstAvtaleErGodkjentAvAllePartner = " Her er det ekstra tekst om alle partner har godkjent avtalen ....";
-    static String tekstHeaderAvtaleVenterPaaDinGodkjenning = "Du må godkjenne avtalen ";
-    static String tekstAvtaleVenterPaaDinGodkjenning = "Hele avtalen er nå fylt ut og klar for godkjenning av deg. Les hele avtalen først. Hvis du er uenig i innholdet, eller har spørsmål til avtalen, bør du kontakte din veileder via Aktivitetsplanen før du godkjenner.";
-    static String ekstraTekstAvtaleVenterPaaDinGodkjenning = "Vennligst godkjenn avtalen så fort som mulig";
+    static String tekstHeaderAvtaleVenterPaaDinGodkjenning = "Du må godkjenne ";
+    //static String tekstAvtaleVenterPaaDinGodkjenning = "Hele avtalen er nå fylt ut og klar for godkjenning av deg. Les hele avtalen først. Hvis du er uenig i innholdet, eller har spørsmål til avtalen, bør du kontakte din veileder via Aktivitetsplanen før du godkjenner.";
+    //static String ekstraTekstAvtaleVenterPaaDinGodkjenning = "Vennligst godkjenn avtalen så fort som mulig";
     static String tekstAvtaleVenterPaaVeilederGodkjenning = "Veileder må godkjenne avtalen";
     static String ekstraTekstAvtaleVenterPaaVeilederGodkjenning = "Avtalen kan ikke tas i bruk før at veileder har godkjent avtalen, be veildere for å godkjenne avtalen.";
     static String tekstAvtaleVenterPaaAndrepartnerGodkjenning = "Andre partner må godkjenne avtalen";

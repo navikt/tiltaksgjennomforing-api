@@ -269,8 +269,8 @@ public class AvtaleControllerTest {
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         //when(avtaleRepository.save(avtale)).thenReturn(avtale);
         AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId());
-        assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderAvtaleErIkkkeFyltUt);
-        assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo(Veileder.tekstAvtaleErIkkkeFyltUt);
+        assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderAvtalePaabegynt);
+        assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo("");
         assertThat(avtaleStatusDetaljer.infoDel2).isEqualTo("");
     }
 
@@ -282,8 +282,8 @@ public class AvtaleControllerTest {
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         //when(avtaleRepository.save(avtale)).thenReturn(avtale);
         AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId());
-        assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderAvtaleErIkkkeFyltUt);
-        assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo(Arbeidsgiver.tekstAvtaleErIkkkeFyltUt);
+        assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderAvtalePaabegynt);
+        assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo("");
         assertThat(avtaleStatusDetaljer.infoDel2).isEqualTo("");
     }
 
@@ -295,8 +295,8 @@ public class AvtaleControllerTest {
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         //when(avtaleRepository.save(avtale)).thenReturn(avtale);
         AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId());
-        assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderAvtaleErIkkkeFyltUt);
-        assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo(Deltaker.tekstAvtaleErIkkkeFyltUt);
+        assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderAvtalePaabegynt);
+        assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo(Deltaker.tekstAvtalePaabegynt);
         assertThat(avtaleStatusDetaljer.infoDel2).isEqualTo("");
     }
 

@@ -3,11 +3,12 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 
 public class Veileder extends Avtalepart<NavIdent> {
-    static String tekstAvtaleErIkkkeFyltUt = "Som veileder kan du fylle ut avtalen i samarbeid med arbeidsgiver. Avtalen kan godkjennes etter at den er fylt ut.";
+    static String tekstAvtalePaabegynt = "Som veileder kan du fylle ut avtalen i samarbeid med arbeidsgiver. Avtalen kan godkjennes etter at den er fylt ut.";
     String venteListeForVeileder;
     static String tekstForklarerVenting = "Som veileder, er det du som godkjenner sist. Det er på grun av at etter dign godkjenning er vel avtalen låst og klar for oppstart, " +
             "Dette bør skjer før dagen for tiltak starter.....";
     static String tekstGodkjenneForDeltaker = "Som veileder, kan du også godkjenne på vegne av deltaker hvis det er behov for det... Dette kan sje etter at arbeidsgiver har godkjent avtalen";
+    static String tekstAvtaleVenterPaaDinGodkjenning = "Før du godkjenner avtalen må du sjekke at alt er i orden og innholdet er riktig.";
 
     public Veileder(NavIdent identifikator, Avtale avtale) {
         super(identifikator, avtale);
@@ -41,13 +42,13 @@ public class Veileder extends Avtalepart<NavIdent> {
                         (tekstHeaderAvtaleErGodkjentAvInnloggetBruker, tekstAvtaleErGodkjentAvAllePartner, ekstraTekstAvtaleErGodkjentAvAllePartner);
             } else if (avtale.erGodkjentAvArbeidsgiver() && avtale.erGodkjentAvDeltaker()) {
                 avtaleStatusDetaljer.setInnloggetBrukerStatus
-                        (tekstHeaderAvtaleVenterPaaDinGodkjenning, tekstAvtaleVenterPaaDinGodkjenning, ekstraTekstAvtaleVenterPaaDinGodkjenning);
+                        (tekstHeaderAvtaleVenterPaaDinGodkjenning, tekstAvtaleVenterPaaDinGodkjenning, "");
             } else {
                 avtaleStatusDetaljer.setInnloggetBrukerStatus
                         (this.venteListeForVeileder, tekstForklarerVenting, !avtale.erGodkjentAvDeltaker() ? tekstGodkjenneForDeltaker : "");
             }
         } else {
-            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErIkkkeFyltUt, tekstAvtaleErIkkkeFyltUt, "");
+            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtalePaabegynt, "", "");
         }
         avtaleStatusDetaljer.setPart1Detaljer(avtale.getBedriftNavn() + " /v " + avtale.getArbeidsgiverFornavn(), avtale.erGodkjentAvArbeidsgiver());
         avtaleStatusDetaljer.setPart2Detaljer(avtale.getDeltakerFornavn() + " " + avtale.getDeltakerEtternavn(), avtale.erGodkjentAvDeltaker());
