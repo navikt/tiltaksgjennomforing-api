@@ -55,6 +55,8 @@ tiltaksgjennomforing:
   consumer:
     system:
       id: ${tiltaksgjennomforing.consumer.system}
+  persondata:
+    uri: https://pdl-api.nais.preprod.local/graphql
 
 
 http:
