@@ -59,7 +59,12 @@ public class PersondataService {
                 log.error(message);
                 throw new RuntimeException(message);
             }
+            if (result.getBody() != null) {
             return result.getBody().getData().getHentPerson().getAdressebeskyttelse()[0];
+            } else {
+                log.error("PDL Kall feil, result:  " + result);
+                throw new TiltaksgjennomforingException("Feil fra PDL oppslag");
+            }
         } catch (RestClientException exception) {
             log.error("Feil fra PDL med spørring: " + pdlUrl + " Exception: " + exception.getMessage());
             throw new TiltaksgjennomforingException("Feil fra PDL", exception);
