@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.*;
+import no.nav.tag.tiltaksgjennomforing.TestData;
 import no.nav.tag.tiltaksgjennomforing.exceptions.AvtalensVarighetMerEnnMaksimaltAntallMånederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
@@ -21,7 +21,7 @@ public class AvtaleTest {
 
         NavIdent veilederNavIdent = new NavIdent("X123456");
         BedriftNr bedriftNr = new BedriftNr("000111222");
-        Avtale avtale = Avtale.nyAvtale(new OpprettAvtale(deltakerFnr, bedriftNr), veilederNavIdent);
+        Arbeidstrening avtale = (Arbeidstrening) AvtaleFactory.nyAvtale(new OpprettAvtale(deltakerFnr, bedriftNr, Tiltakstype.ARBEIDSTRENING), veilederNavIdent);
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(avtale.getOpprettetTidspunkt()).isNotNull();
             softly.assertThat(avtale.getDeltakerFnr()).isEqualTo(deltakerFnr);
@@ -51,17 +51,17 @@ public class AvtaleTest {
 
     @Test(expected = TiltaksgjennomforingException.class)
     public void nyAvtaleSkalFeileHvisManglerDeltaker() {
-        Avtale.nyAvtale(new OpprettAvtale(null, new BedriftNr("111222333")), new NavIdent("X12345"));
+        AvtaleFactory.nyAvtale(new OpprettAvtale(null, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), new NavIdent("X12345"));
     }
 
     @Test(expected = TiltaksgjennomforingException.class)
     public void nyAvtaleSkalFeileHvisManglerArbeidsgiver() {
-        Avtale.nyAvtale(new OpprettAvtale(new Fnr("12345678901"), null), new NavIdent("X12345"));
+        AvtaleFactory.nyAvtale(new OpprettAvtale(new Fnr("12345678901"), null, Tiltakstype.ARBEIDSTRENING), new NavIdent("X12345"));
     }
 
     @Test(expected = TiltaksgjennomforingException.class)
     public void nyAvtaleSkalFeileHvisManglerVeileder() {
-        Avtale.nyAvtale(new OpprettAvtale(new Fnr("11223344555"), new BedriftNr("000111222")), null);
+        AvtaleFactory.nyAvtale(new OpprettAvtale(new Fnr("11223344555"), new BedriftNr("000111222"), Tiltakstype.ARBEIDSTRENING), null);
     }
 
     @Test(expected = SamtidigeEndringerException.class)
@@ -84,7 +84,7 @@ public class AvtaleTest {
 
     @Test
     public void endreAvtaleSkalOppdatereRiktigeFelt() {
-        Avtale avtale = TestData.enAvtale();
+        Arbeidstrening avtale = TestData.enAvtale();
         EndreAvtale endreAvtale = TestData.endringPaAlleFelt();
         avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
 
@@ -129,6 +129,7 @@ public class AvtaleTest {
         endreAvtale.setOppgaver(List.of(enOppgave));
         avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
     }
+
     @Test
     public void endreAvtale__maks_lengde_skal_fungere() {
         Avtale avtale = TestData.enAvtale();
@@ -248,7 +249,7 @@ public class AvtaleTest {
 
     @Test
     public void status__null_startdato() {
-        Avtale avtale = TestData.enAvtale();
+        Arbeidstrening avtale = TestData.enAvtale();
         avtale.setStartDato(null);
         avtale.setSluttDato(null);
         assertThat(avtale.status()).isEqualTo("Påbegynt");
@@ -256,7 +257,7 @@ public class AvtaleTest {
 
     @Test
     public void status__noe_fylt_ut() {
-        Avtale avtale = TestData.enAvtale();
+        Arbeidstrening avtale = TestData.enAvtale();
         avtale.setStartDato(LocalDate.now().plusDays(5));
         avtale.setSluttDato(avtale.getStartDato().plusMonths(3));
         avtale.setBedriftNavn("testbedriftsnavn");
@@ -265,7 +266,7 @@ public class AvtaleTest {
 
     @Test
     public void status__avsluttet_i_gaar() {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        Arbeidstrening avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setStartDato(LocalDate.now().minusWeeks(4).minusDays(1));
         avtale.setSluttDato(avtale.getStartDato().plusWeeks(4));
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
@@ -276,7 +277,7 @@ public class AvtaleTest {
 
     @Test
     public void status__avslutter_i_dag() {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        Arbeidstrening avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setStartDato(LocalDate.now().minusWeeks(4));
         avtale.setSluttDato(avtale.getStartDato().plusWeeks(4));
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
