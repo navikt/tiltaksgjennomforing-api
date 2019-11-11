@@ -4,8 +4,10 @@ import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import no.nav.security.oidc.api.ProtectedWithClaims;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
+import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidstrening;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +32,8 @@ public class InternalAvtaleController {
         innloggingService.validerSystembruker();
         List<UUID> avtaleIdList = avtaleRepository.finnAvtaleIdTilJournalfoering();
         return avtaleRepository.findAllById(avtaleIdList).stream()
-                .map(AvtaleTilJournalfoeringMapper::tilJournalfoering)
+                .filter(avtale -> avtale.getTiltakstype() == Tiltakstype.ARBEIDSTRENING)
+                .map(avtale -> AvtaleTilJournalfoeringMapper.tilJournalfoering((Arbeidstrening) avtale))
                 .collect(Collectors.toList());
     }
 

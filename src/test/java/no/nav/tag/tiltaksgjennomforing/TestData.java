@@ -2,12 +2,9 @@ package no.nav.tag.tiltaksgjennomforing;
 
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetSelvbetjeningBruker;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
-
-import static java.util.Collections.emptyList;
-import static org.mockito.Mockito.mock;
 import no.nav.tag.tiltaksgjennomforing.varsel.BjelleVarsel;
 import no.nav.tag.tiltaksgjennomforing.varsel.SmsVarsel;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelse;
@@ -18,17 +15,20 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Collections.emptyList;
+import static org.mockito.Mockito.mock;
+
 public class TestData {
-    public static Avtale enAvtale() {
+    public static Arbeidstrening enAvtale() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        return Avtale.nyAvtale(lagOpprettAvtale(), veilderNavIdent);
+        return (Arbeidstrening) AvtaleFactory.nyAvtale(lagOpprettAvtale(), veilderNavIdent);
     }
 
-    public static Avtale enAvtaleMedAltUtfylt() {
+    public static Arbeidstrening enAvtaleMedAltUtfylt() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        Avtale avtale = Avtale.nyAvtale(lagOpprettAvtale(), veilderNavIdent);
+        Avtale avtale = AvtaleFactory.nyAvtale(lagOpprettAvtale(), veilderNavIdent);
         avtale.endreAvtale(avtale.getVersjon(), endringPaAlleFelt(), Avtalerolle.VEILEDER);
-        return avtale;
+        return (Arbeidstrening) avtale;
     }
 
     public static Avtale enAvtaleMedAltUtfyltGodkjentAvVeileder() {
@@ -42,7 +42,7 @@ public class TestData {
     private static OpprettAvtale lagOpprettAvtale() {
         Fnr deltakerFnr = new Fnr("88888899999");
         BedriftNr bedriftNr = new BedriftNr("12345678");
-        return new OpprettAvtale(deltakerFnr, bedriftNr);
+        return new OpprettAvtale(deltakerFnr, bedriftNr, Tiltakstype.ARBEIDSTRENING);
     }
 
     public static EndreAvtale ingenEndring() {

@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.journalfoering;
 
 import no.nav.tag.tiltaksgjennomforing.TestData;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidstrening;
 import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.Maal;
 import no.nav.tag.tiltaksgjennomforing.avtale.Oppgave;
@@ -17,13 +17,13 @@ import static org.junit.Assert.*;
 
 public class AvtaleTilJournalfoeringMapperTest {
 
-    private Avtale avtale;
+    private Arbeidstrening avtale;
     private AvtaleTilJournalfoering tilJournalfoering;
     private GodkjentPaVegneGrunn grunn;
 
     @Before
     public void setUp() {
-        avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        avtale = (Arbeidstrening) TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         grunn = new GodkjentPaVegneGrunn();
     }
 

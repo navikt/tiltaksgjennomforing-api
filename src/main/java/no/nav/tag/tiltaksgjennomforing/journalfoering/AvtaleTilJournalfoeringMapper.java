@@ -7,7 +7,7 @@ import java.util.List;
 
 public class AvtaleTilJournalfoeringMapper {
 
-    public static AvtaleTilJournalfoering tilJournalfoering(Avtale avtale) {
+    public static AvtaleTilJournalfoering tilJournalfoering(Arbeidstrening avtale) {
         if (avtale == null) {
             return null;
         }

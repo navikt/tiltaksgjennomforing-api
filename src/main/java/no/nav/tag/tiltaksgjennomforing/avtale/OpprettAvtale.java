@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class OpprettAvtale {
     private Fnr deltakerFnr;
     private BedriftNr bedriftNr;
+    private Tiltakstype tiltakstype;
 }
