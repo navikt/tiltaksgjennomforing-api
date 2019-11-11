@@ -44,8 +44,7 @@ public class PersondataService {
     }
 
     private String createQuery(Fnr fnr) {
-        return String.format("{\"query\" : \"query{ hentPerson( ident: \\\"%s\\\") {adressebeskyttelse {gradering} } }\"}", fnr.asString());
-
+        return "{\"query\" : query{ hentPerson( ident: \" "+fnr.asString() +"\") {adressebeskyttelse {gradering} } }}";
     }
 
     private Adressebeskyttelse getFraPdl(Fnr fnr){
