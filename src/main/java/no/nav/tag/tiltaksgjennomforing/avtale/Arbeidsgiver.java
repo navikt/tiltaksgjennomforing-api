@@ -2,15 +2,19 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 
+import java.time.LocalDate;
+
+
 public class Arbeidsgiver extends Avtalepart<Fnr> {
     public Arbeidsgiver(Fnr identifikator, Avtale avtale) {
         super(identifikator, avtale);
     }
 
     //static String tekstAvtalePaabegynt = "Som arbeidsgiver kan du fylle ut avtalen i samarbeid med Nav/veileder. Avtalen kan godkjennes etter at den er fylt ut.\n mer tekst";
-    static String tekstAvtaleVenterPaaDinGodkjenning = "Deltakeren må ikke godkjenne avtalen før du gjør det. ";
+    static String tekstAvtaleVenterPaaDinGodkjenning = "Deltakeren trenger ikke å godkjenne avtalen før du gjør det. ";
 
     static String ekstraTekstAvtaleVenterPaaDinGodkjenning = "Veilederen skal godkjenne til slutt.";
+    static String tekstTiltaketErAvsluttet = "Hvis du har spørsmål må du kontakte NAV.";
 
     @Override
     public void godkjennForAvtalepart() {
@@ -25,27 +29,36 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     @Override
     public AvtaleStatusDetaljer statusDetaljerForAvtale() {
         AvtaleStatusDetaljer avtaleStatusDetaljer = new AvtaleStatusDetaljer();
-        if (avtale.heleAvtalenErFyltUt()) {
-            if (avtale.erGodkjentAvArbeidsgiver()) {
-                avtaleStatusDetaljer.header = tekstHeaderAvtaleErGodkjentAvInnloggetBruker;
-                if (avtale.erGodkjentAvVeileder()) {
-                    avtaleStatusDetaljer.infoDel1 = tekstAvtaleErGodkjentAvAllePartner;
-                    avtaleStatusDetaljer.infoDel2 = ekstraTekstAvtaleErGodkjentAvAllePartner;
-                } else if (avtale.erGodkjentAvDeltaker()) {
-                    avtaleStatusDetaljer.setInnloggetBrukerStatus(
-                            tekstHeaderAvtaleErGodkjentAvInnloggetBruker, tekstAvtaleVenterPaaVeilederGodkjenning, ekstraTekstAvtaleVenterPaaVeilederGodkjenning);
+        if (!avtale.isAvbrutt()) {
+            if (avtale.heleAvtalenErFyltUt()) {
+                if (avtale.erGodkjentAvArbeidsgiver()) {
+                    //avtaleStatusDetaljer.header = tekstHeaderAvtaleErGodkjentAvInnloggetBruker;
+                    if (avtale.erGodkjentAvVeileder()) {
+                        if (avtale.getStartDato().isAfter(LocalDate.now())) {
+                            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato(),"");
+                        } else if (avtale.getStartDato().plusWeeks(avtale.getArbeidstreningLengde()).isAfter(LocalDate.now())) {
+                            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleGjennomfores, "", "");
+                        } else {
+                            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErAvsluttet, tekstTiltaketErAvsluttet, "");
+                        }
+
+                    } else if (avtale.erGodkjentAvDeltaker()) {
+                        avtaleStatusDetaljer.setInnloggetBrukerStatus(
+                                tekstHeaderVentAndreGodkjenning, "", "");
+                    } else {
+                        avtaleStatusDetaljer.setInnloggetBrukerStatus(
+                                tekstHeaderVentAndreGodkjenning, "", "");
+                    }
                 } else {
                     avtaleStatusDetaljer.setInnloggetBrukerStatus(
-                            tekstHeaderAvtaleErGodkjentAvInnloggetBruker, tekstAvtaleVenterPaaAndrepartnerGodkjenning, ekstraTekstAvtaleVenterPaaAndrePartnerGodkjenning);
+                            tekstHeaderAvtaleVenterPaaDinGodkjenning, tekstAvtaleVenterPaaDinGodkjenning, ekstraTekstAvtaleVenterPaaDinGodkjenning);
+                    //"Hele avtalen er nå fylt ut og klar for godkjenning av deg. Les hele avtalen først. Hvis du er uenig i innholdet, eller har spørsmål til avtalen, bør du kontakte din veileder via Aktivitetsplanen før du godkjenner.";
                 }
             } else {
-                avtaleStatusDetaljer.setInnloggetBrukerStatus(
-                        //TODO må det stemme at arbeidsgiver må godkjenne før deltaker og at deltaker ikke kan godkjenne først  
-                        tekstHeaderAvtaleVenterPaaDinGodkjenning, tekstAvtaleVenterPaaDinGodkjenning, ekstraTekstAvtaleVenterPaaDinGodkjenning);
-                //"Hele avtalen er nå fylt ut og klar for godkjenning av deg. Les hele avtalen først. Hvis du er uenig i innholdet, eller har spørsmål til avtalen, bør du kontakte din veileder via Aktivitetsplanen før du godkjenner.";
+                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtalePaabegynt, "", "");
             }
         } else {
-            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtalePaabegynt, "", "");
+            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleAvbrutt, tekstAvtaleAvbrutt, "");
         }
         avtaleStatusDetaljer.setPart1Detaljer(avtale.getDeltakerFornavn() + " " + avtale.getDeltakerEtternavn(), avtale.erGodkjentAvDeltaker());
         avtaleStatusDetaljer.setPart2Detaljer(avtale.getVeilederFornavn() + " " + avtale.getVeilederEtternavn(), avtale.erGodkjentAvVeileder());

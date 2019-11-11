@@ -2,6 +2,8 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 
+import java.time.LocalDate;
+
 public class Deltaker extends Avtalepart<Fnr> {
 
     public Deltaker(Fnr identifikator, Avtale avtale) {
@@ -12,6 +14,7 @@ public class Deltaker extends Avtalepart<Fnr> {
     static String tekstAvtalePaabegynt = "Du kan først godkjenne avtalen når arbeidsgiveren og veilederen har fylt ut avtalen.";
     static String tekstAvtaleVenterPaaDinGodkjenning = "Les hele avtalen først. Du kan ikke endre teksten i avtalen. ";
     static String ekstraTekstAvtaleVenterPaaDinGodkjenning = "Hvis du er uenig i innholdet, eller har spørsmål til avtalen, må du kontakte din veilederen din via Aktivitetsplanen før du godkjenner.";
+    static String tekstTiltaketErAvsluttet = "Hvis du har spørsmål må du kontakte veilederen din.";
 
     @Override
     public void godkjennForAvtalepart() {
@@ -27,24 +30,34 @@ public class Deltaker extends Avtalepart<Fnr> {
     public AvtaleStatusDetaljer statusDetaljerForAvtale() {
         AvtaleStatusDetaljer avtaleStatusDetaljer = new AvtaleStatusDetaljer();
         avtaleStatusDetaljer.setGodkjentAvInnloggetBruker(erGodkjentAvInnloggetBruker());
-        if (avtale.heleAvtalenErFyltUt()) {
-            if (avtale.erGodkjentAvDeltaker()) {
-                if (avtale.erGodkjentAvVeileder()) {
-                    avtaleStatusDetaljer.setInnloggetBrukerStatus(
-                            tekstHeaderAvtaleErGodkjentAvInnloggetBruker, tekstAvtaleErGodkjentAvAllePartner, ekstraTekstAvtaleErGodkjentAvAllePartner);
-                } else if (avtale.erGodkjentAvArbeidsgiver()) {
-                    avtaleStatusDetaljer.setInnloggetBrukerStatus(
-                            tekstHeaderAvtaleErGodkjentAvInnloggetBruker, tekstAvtaleVenterPaaVeilederGodkjenning, ekstraTekstAvtaleVenterPaaVeilederGodkjenning);
+        if (!avtale.isAvbrutt()) {
+            if (avtale.heleAvtalenErFyltUt()) {
+                if (avtale.erGodkjentAvDeltaker()) {
+                    if (avtale.erGodkjentAvVeileder()) {
+                        if (avtale.getStartDato().isAfter(LocalDate.now())) {
+                            avtaleStatusDetaljer.setInnloggetBrukerStatus(
+                                    tekstHeaderAvvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato(), "");
+                        } else if (avtale.getStartDato().plusWeeks(avtale.getArbeidstreningLengde()).isAfter(LocalDate.now())) {
+                            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleGjennomfores, " ", "");
+                        } else {
+                            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErAvsluttet, tekstTiltaketErAvsluttet, "");
+                        }
+                    } else if (avtale.erGodkjentAvArbeidsgiver()) {
+                        avtaleStatusDetaljer.setInnloggetBrukerStatus(
+                                tekstHeaderVentAndreGodkjenning, "", "");
+                    } else {
+                        avtaleStatusDetaljer.setInnloggetBrukerStatus(
+                                tekstHeaderVentAndreGodkjenning, tekstAvtaleVenterPaaAndrepartnerGodkjenning, ekstraTekstAvtaleVenterPaaAndrePartnerGodkjenning);
+                    }
                 } else {
                     avtaleStatusDetaljer.setInnloggetBrukerStatus(
-                            tekstHeaderAvtaleErGodkjentAvInnloggetBruker, tekstAvtaleVenterPaaAndrepartnerGodkjenning, ekstraTekstAvtaleVenterPaaAndrePartnerGodkjenning);
+                            tekstHeaderAvtaleVenterPaaDinGodkjenning, tekstAvtaleVenterPaaDinGodkjenning, ekstraTekstAvtaleVenterPaaDinGodkjenning);
                 }
             } else {
-                avtaleStatusDetaljer.setInnloggetBrukerStatus(
-                        tekstHeaderAvtaleVenterPaaDinGodkjenning, tekstAvtaleVenterPaaDinGodkjenning, ekstraTekstAvtaleVenterPaaDinGodkjenning);
+                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtalePaabegynt, tekstAvtalePaabegynt, "");
             }
         } else {
-            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtalePaabegynt, tekstAvtalePaabegynt, "");
+            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleAvbrutt,tekstAvtaleAvbrutt,"");
         }
         avtaleStatusDetaljer.setPart1Detaljer(avtale.getBedriftNavn() + " /v" + avtale.getArbeidsgiverFornavn(), avtale.erGodkjentAvArbeidsgiver());
         avtaleStatusDetaljer.setPart2Detaljer(avtale.getVeilederFornavn() + " " + avtale.getVeilederEtternavn(), avtale.erGodkjentAvVeileder());
