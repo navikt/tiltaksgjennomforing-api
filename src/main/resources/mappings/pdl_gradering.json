@@ -5,6 +5,12 @@
       "request": {
         "method": "POST",
         "urlPath": "/persondata",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json",
+            "caseInsensitive": true
+          }
+        },
         "bodyPatterns" : [ {
           "equalToJson" : "{\"query\" : \"query{ hentPerson( ident: \\\"16053900422\\\") {adressebeskyttelse {gradering} } }\"}"
         } ]
@@ -22,6 +28,12 @@
       "request": {
         "method": "POST",
         "urlPath": "/persondata",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json",
+            "caseInsensitive": true
+          }
+        },
         "bodyPatterns" : [ {
           "equalToJson" : "{\"query\" : \"query{ hentPerson( ident: \\\"00000000000\\\") {adressebeskyttelse {gradering} } }\" }"
         } ]
@@ -39,6 +51,12 @@
       "request": {
         "method": "POST",
         "urlPath": "/persondata",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json",
+            "caseInsensitive": true
+          }
+        },
         "bodyPatterns" : [ {
           "equalToJson" : "{\"query\" : \"query{ hentPerson( ident: \\\"26067114433\\\") {adressebeskyttelse {gradering} } }\" }"
         } ]
@@ -56,6 +74,12 @@
       "request": {
         "method": "POST",
         "urlPath": "/persondata",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json",
+            "caseInsensitive": true
+          }
+        },
         "bodyPatterns" : [ {
           "equalToJson" : "{\"query\" : \"query{ hentPerson( ident: \\\"18076641842\\\") {adressebeskyttelse {gradering} } }\" }"
         } ]

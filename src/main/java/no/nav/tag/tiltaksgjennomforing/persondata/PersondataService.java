@@ -10,6 +10,9 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import scala.Console;
+
+import java.util.logging.ConsoleHandler;
 
 @Slf4j
 @Service
@@ -40,11 +43,12 @@ public class PersondataService {
         headers.set("Authorization", "Bearer " + stsClient.hentSTSToken().getAccessToken());
         headers.set("Tema", "GEN");
         headers.set("Nav-Consumer-Token", stsClient.hentSTSToken().getAccessToken());
+        headers.set("Content-Type", "application/json");
         return new HttpEntity<>(createQuery(fnr),headers);
     }
 
     private String createQuery(Fnr fnr) {
-        return "{\"query\" : query{ hentPerson( ident: \" "+fnr.asString() +"\") {adressebeskyttelse {gradering} } }}";
+        return String.format("{\"query\" : \"query{ hentPerson( ident: \\\"%s\\\") {adressebeskyttelse {gradering} } }\"}", fnr.asString());
     }
 
     private Adressebeskyttelse getFraPdl(Fnr fnr){
