@@ -26,7 +26,6 @@ public abstract class Lonnstilskudd extends Avtale {
 
     @Override
     public void endreAvtale(Integer versjon, EndreAvtale nyAvtale, Avtalerolle utfortAv) {
-        super.endreAvtale(versjon, nyAvtale, utfortAv);
         setArbeidsgiverKontonummer(nyAvtale.getArbeidsgiverKontonummer());
         setStillingtype(nyAvtale.getStillingtype());
         setStillingbeskrivelse(nyAvtale.getStillingbeskrivelse());
@@ -34,7 +33,7 @@ public abstract class Lonnstilskudd extends Avtale {
         setManedslonn(nyAvtale.getManedslonn());
         setFeriepengesats(nyAvtale.getFeriepengesats());
         setArbeidsgiveravgift(nyAvtale.getArbeidsgiveravgift());
-
+        super.endreAvtale(versjon, nyAvtale, utfortAv);
     }
 
     @Override

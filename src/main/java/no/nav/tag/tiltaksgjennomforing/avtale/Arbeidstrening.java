@@ -30,8 +30,6 @@ public class Arbeidstrening extends Avtale {
 
     @Override
     public void endreAvtale(Integer versjon, EndreAvtale nyAvtale, Avtalerolle utfortAv) {
-        super.endreAvtale(versjon, nyAvtale, utfortAv);
-
         maal.clear();
         maal.addAll(nyAvtale.getMaal());
         maal.forEach(m -> m.setAvtale(this));
@@ -39,6 +37,8 @@ public class Arbeidstrening extends Avtale {
         oppgaver.clear();
         oppgaver.addAll(nyAvtale.getOppgaver());
         oppgaver.forEach(o -> o.setAvtale(this));
+
+        super.endreAvtale(versjon, nyAvtale, utfortAv);
     }
 
     @Override
