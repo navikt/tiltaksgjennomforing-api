@@ -1,5 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.persondata;
 
+import lombok.Value;
+
+@Value
 public class PdlPerson {
-    public Data data;
+    private final Data data;
 }

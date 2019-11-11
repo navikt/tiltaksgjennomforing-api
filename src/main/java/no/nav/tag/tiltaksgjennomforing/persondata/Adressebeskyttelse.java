@@ -1,5 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.persondata;
 
+import lombok.Value;
+
+@Value
 public class Adressebeskyttelse {
-    public String gradering;
+    private final String gradering;
 }

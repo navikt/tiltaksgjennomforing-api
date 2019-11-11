@@ -28,25 +28,25 @@ public class PersondataServiceTest {
     @Test
     public void hentGradering__returnerer_strengt_fortrolig_person() {
         Adressebeskyttelse adressebeskyttelse = persondataService.hentGradering(strengtFortroligPerson);
-        assertThat(adressebeskyttelse.gradering).isEqualTo("STRENGT_FORTROLIG");
+        assertThat(adressebeskyttelse.getGradering()).isEqualTo("STRENGT_FORTROLIG");
     }
 
     @Test
     public void hentGradering__returnerer_fortrolig_person() {
         Adressebeskyttelse adressebeskyttelse = persondataService.hentGradering(fortroligPerson);
-        assertThat(adressebeskyttelse.gradering).isEqualTo("FORTROLIG");
+        assertThat(adressebeskyttelse.getGradering()).isEqualTo("FORTROLIG");
     }
 
     @Test
     public void hentGradering__returnerer_ugradert_person() {
         Adressebeskyttelse adressebeskyttelse = persondataService.hentGradering(new Fnr("00000000000"));
-        assertThat(adressebeskyttelse.gradering).isEqualTo("UGRADERT");
+        assertThat(adressebeskyttelse.getGradering()).isEqualTo("UGRADERT");
     }
 
     @Test
     public void hentGradering__returnerer_tom_gradering() {
         Adressebeskyttelse adressebeskyttelse = persondataService.hentGradering(new Fnr("18076641842"));
-        assertThat(adressebeskyttelse.gradering).isBlank();
+        assertThat(adressebeskyttelse.getGradering()).isBlank();
     }
 
     @Test(expected = TilgangskontrollException.class)

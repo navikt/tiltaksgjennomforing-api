@@ -24,12 +24,12 @@ public class PersondataService {
         this.stsClient = stsClient;
     }
 
-    public Adressebeskyttelse hentGradering(Fnr fnr) {
+    Adressebeskyttelse hentGradering(Fnr fnr) {
         return getFraPdl(fnr);
     }
 
     public void sjekkGradering(Fnr fnr) {
-        String gradering = hentGradering(fnr).gradering;
+        String gradering = hentGradering(fnr).getGradering();
         if (gradering.equals("FORTROLIG") || gradering.equals("STRENGT_FORTROLIG")) {
             throw new TilgangskontrollException("Du har ikke tilgang til deltaker");
         }
@@ -56,7 +56,7 @@ public class PersondataService {
                 log.error(message);
                 throw new RuntimeException(message);
             }
-            return result.getBody().data.hentPerson.adressebeskyttelse[0];
+            return result.getBody().getData().getHentPerson().getAdressebeskyttelse()[0];
         } catch (RestClientException exception) {
             log.error("Feil fra PDL med spørring: " + pdlUrl + " Exception: " + exception.getMessage());
             throw new TiltaksgjennomforingException("Feil fra PDL", exception);
