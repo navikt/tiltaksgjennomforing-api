@@ -35,7 +35,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
                     //avtaleStatusDetaljer.header = tekstHeaderAvtaleErGodkjentAvInnloggetBruker;
                     if (avtale.erGodkjentAvVeileder()) {
                         if (avtale.getStartDato().isAfter(LocalDate.now())) {
-                            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato(),"");
+                            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato(), "");
                         } else if (avtale.getStartDato().plusWeeks(avtale.getArbeidstreningLengde()).isAfter(LocalDate.now())) {
                             avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleGjennomfores, "", "");
                         } else {
@@ -51,7 +51,8 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
                     }
                 } else {
                     avtaleStatusDetaljer.setInnloggetBrukerStatus(
-                            tekstHeaderAvtaleVenterPaaDinGodkjenning, tekstAvtaleVenterPaaDinGodkjenning, ekstraTekstAvtaleVenterPaaDinGodkjenning);
+                            tekstHeaderAvtaleVenterPaaDinGodkjenning,
+                            Arbeidsgiver.tekstAvtaleVenterPaaDinGodkjenning, ekstraTekstAvtaleVenterPaaDinGodkjenning);
                     //"Hele avtalen er nå fylt ut og klar for godkjenning av deg. Les hele avtalen først. Hvis du er uenig i innholdet, eller har spørsmål til avtalen, bør du kontakte din veileder via Aktivitetsplanen før du godkjenner.";
                 }
             } else {

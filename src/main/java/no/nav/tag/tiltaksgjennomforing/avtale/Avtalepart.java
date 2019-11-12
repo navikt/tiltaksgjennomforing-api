@@ -13,7 +13,7 @@ public abstract class Avtalepart<T extends Identifikator> {
     static String tekstHeaderAvtalePaabegynt = "Du må fylle ut avtalen";
     //static String tekstHeaderAvtaleErGodkjentAvInnloggetBruker = "Du har godkjent avtalen.";
     static String tekstHeaderVentAndreGodkjenning = "Vent til de andre har godkjent";
-    static String tekstHeaderAvvtaleErGodkjentAvAllePartner = "Avtalen er ferdig og godkjent";
+    static String tekstHeaderAvtaleErGodkjentAvAllePartner = "Avtalen er ferdig og godkjent";
     static String tekstAvtaleErGodkjentAvAllePartner = "Tiltaket starter ";
     //static String ekstraTekstAvtaleErGodkjentAvAllePartner = " Her er det ekstra tekst om alle partner har godkjent avtalen ....";
     static String tekstHeaderAvtaleVenterPaaDinGodkjenning = "Du må godkjenne ";

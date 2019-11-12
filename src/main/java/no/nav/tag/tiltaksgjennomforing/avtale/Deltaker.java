@@ -36,7 +36,7 @@ public class Deltaker extends Avtalepart<Fnr> {
                     if (avtale.erGodkjentAvVeileder()) {
                         if (avtale.getStartDato().isAfter(LocalDate.now())) {
                             avtaleStatusDetaljer.setInnloggetBrukerStatus(
-                                    tekstHeaderAvvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato(), "");
+                                    tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato(), "");
                         } else if (avtale.getStartDato().plusWeeks(avtale.getArbeidstreningLengde()).isAfter(LocalDate.now())) {
                             avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleGjennomfores, " ", "");
                         } else {
