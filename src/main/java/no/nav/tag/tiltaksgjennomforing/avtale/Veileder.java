@@ -7,7 +7,7 @@ import java.time.LocalDate;
 public class Veileder extends Avtalepart<NavIdent> {
     //static String tekstAvtalePaabegynt = "Som veileder kan du fylle ut avtalen i samarbeid med arbeidsgiver. Avtalen kan godkjennes etter at den er fylt ut.";
     String venteListeForVeileder;
-    static String tekstForklarerVenting = "Som veileder, er det du som godkjenner sist. Det er på grun av at etter dign godkjenning er vel avtalen låst og klar for oppstart, " +            "Dette bør skjer før dagen for tiltak starter.....";
+    static String tekstForklarerVenting = "Som veileder, er det du som godkjenner sist. Det er på grun av at etter dign godkjenning er vel avtalen låst og klar for oppstart, " + "Dette bør skjer før dagen for tiltak starter.....";
     static String tekstAvtaleVenterPaaDinGodkjenning = "Før du godkjenner avtalen må du sjekke at alt er i orden og innholdet er riktig.";
 
     static String ekstraTekstAvtleErGodkjentAvAllePartner = "Du må fullføre registreringen i Arena. Avtalen journalføres automatisk i Gosys.";
@@ -43,7 +43,7 @@ public class Veileder extends Avtalepart<NavIdent> {
             if (avtale.heleAvtalenErFyltUt()) {
                 if (avtale.erGodkjentAvVeileder()) {
                     if (avtale.getStartDato().isAfter(LocalDate.now())) {
-                        avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato(), ekstraTekstAvtleErGodkjentAvAllePartner);
+                        avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato().format(formatter), Veileder.ekstraTekstAvtleErGodkjentAvAllePartner);
                     } else if (avtale.getSluttDato().isAfter(LocalDate.now())) {
                         avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleGjennomfores, "", "");
                     } else {
@@ -62,8 +62,9 @@ public class Veileder extends Avtalepart<NavIdent> {
         } else {
             avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleAvbrutt, tekstAvtaleAvbrutt, "");
         }
-        avtaleStatusDetaljer.setPart1Detaljer(avtale.getBedriftNavn() + " /v " + avtale.getArbeidsgiverFornavn(), avtale.erGodkjentAvArbeidsgiver());
-        avtaleStatusDetaljer.setPart2Detaljer(avtale.getDeltakerFornavn() + " " + avtale.getDeltakerEtternavn(), avtale.erGodkjentAvDeltaker());
+        avtaleStatusDetaljer.setPart1Detaljer(avtale.getBedriftNavn() + " /v " + (avtale.getArbeidsgiverFornavn() != null && !avtale.getArbeidsgiverFornavn().equals("") ? avtale.getArbeidsgiverFornavn() : " Kontakt person"), avtale.erGodkjentAvArbeidsgiver());
+        avtaleStatusDetaljer.setPart2Detaljer((avtale.getDeltakerFornavn() != null && !avtale.getDeltakerFornavn().equals("") ? avtale.getDeltakerFornavn() : "Deltaker") + " " +
+                (avtale.getDeltakerEtternavn() != null && !avtale.getDeltakerEtternavn().equals("") ? avtale.getDeltakerEtternavn() : ""), avtale.erGodkjentAvDeltaker());
         //avtaleStatusDetaljer.info=)
         return avtaleStatusDetaljer;
     }

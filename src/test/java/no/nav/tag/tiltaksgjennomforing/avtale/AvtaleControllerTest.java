@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -282,6 +283,8 @@ public class AvtaleControllerTest {
         assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderAvtalePaabegynt);
         assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo("");
         assertThat(avtaleStatusDetaljer.infoDel2).isEqualTo("");
+        assertThat(avtaleStatusDetaljer.part1).isEqualTo("Deltaker ");
+        assertThat(avtaleStatusDetaljer.part2).isEqualTo("Veileder ");
     }
 
     @Test
@@ -292,9 +295,10 @@ public class AvtaleControllerTest {
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         //when(avtaleRepository.save(avtale)).thenReturn(avtale);
         AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId());
-        assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderAvtalePaabegynt);
+        assertThat(avtaleStatusDetaljer.header).isEqualTo(Deltaker.tekstHeaderAvtalePaabegynt);
         assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo(Deltaker.tekstAvtalePaabegynt);
         assertThat(avtaleStatusDetaljer.infoDel2).isEqualTo("");
+
     }
 
     @Test
@@ -382,7 +386,7 @@ public class AvtaleControllerTest {
         // when(avtaleRepository.save(avtale)).thenReturn(avtale);
         AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId());
         assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderAvtaleErGodkjentAvAllePartner);
-        assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo(Avtalepart.tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato());
+        assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo(Avtalepart.tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato().format(Avtalepart.formatter));
         assertThat(avtaleStatusDetaljer.infoDel2).isEqualTo(Veileder.ekstraTekstAvtleErGodkjentAvAllePartner);
     }
 

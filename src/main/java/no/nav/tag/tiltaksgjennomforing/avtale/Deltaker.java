@@ -36,7 +36,7 @@ public class Deltaker extends Avtalepart<Fnr> {
                     if (avtale.erGodkjentAvVeileder()) {
                         if (avtale.getStartDato().isAfter(LocalDate.now())) {
                             avtaleStatusDetaljer.setInnloggetBrukerStatus(
-                                    tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato(), "");
+                                    tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato().format(formatter), "");
                         } else if (avtale.getSluttDato().isAfter(LocalDate.now())) {
                             avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleGjennomfores, " ", "");
                         } else {
@@ -57,10 +57,11 @@ public class Deltaker extends Avtalepart<Fnr> {
                 avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtalePaabegynt, tekstAvtalePaabegynt, "");
             }
         } else {
-            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleAvbrutt,tekstAvtaleAvbrutt,"");
+            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleAvbrutt, tekstAvtaleAvbrutt, "");
         }
-        avtaleStatusDetaljer.setPart1Detaljer(avtale.getBedriftNavn() + " /v" + avtale.getArbeidsgiverFornavn(), avtale.erGodkjentAvArbeidsgiver());
-        avtaleStatusDetaljer.setPart2Detaljer(avtale.getVeilederFornavn() + " " + avtale.getVeilederEtternavn(), avtale.erGodkjentAvVeileder());
+        avtaleStatusDetaljer.setPart1Detaljer(avtale.getBedriftNavn() + " /v" + (avtale.getArbeidsgiverFornavn() != null && !avtale.getArbeidsgiverFornavn().equals("") ? avtale.getArbeidsgiverFornavn() : "Kontakt person"), avtale.erGodkjentAvArbeidsgiver());
+        avtaleStatusDetaljer.setPart2Detaljer((avtale.getVeilederFornavn() != null && !avtale.getVeilederFornavn().equals("") ? avtale.getVeilederFornavn() : "Veileder") + " "
+                + (avtale.getVeilederEtternavn() != null && !avtale.getVeilederEtternavn().equals("") ? avtale.getVeilederEtternavn() : ""), avtale.erGodkjentAvVeileder());
         //avtaleStatusDetaljer.info",)
         return avtaleStatusDetaljer;
     }
