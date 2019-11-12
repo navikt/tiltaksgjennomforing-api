@@ -65,7 +65,7 @@ public abstract class Avtale extends AbstractAggregateRoot<Avtale> {
     private LocalDate sluttDato;
     private Integer stillingprosent;
 
-    @OneToOne(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Embedded
     private GodkjentPaVegneGrunn godkjentPaVegneGrunn;
 
     private LocalDateTime godkjentAvDeltaker;
@@ -198,8 +198,6 @@ public abstract class Avtale extends AbstractAggregateRoot<Avtale> {
 
     void godkjennForVeilederOgDeltaker(Identifikator utfortAv, GodkjentPaVegneGrunn paVegneAvGrunn) {
         sjekkOmKanGodkjennes();
-        paVegneAvGrunn.setId(this.id);
-        paVegneAvGrunn.setAvtale(this);
         this.godkjentAvVeileder = LocalDateTime.now();
         this.godkjentAvDeltaker = LocalDateTime.now();
         this.godkjentPaVegneAv = true;
