@@ -43,7 +43,7 @@ public class PersondataService {
         headers.setBearerAuth(stsClient.hentSTSToken().getAccessToken());
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Tema", "GEN");
-        headers.set("Nav-Consumer-Token", stsClient.hentSTSToken().getAccessToken());
+        headers.set("Nav-Consumer-Token", "Bearer " + stsClient.hentSTSToken().getAccessToken());
         return new HttpEntity<>(createQuery(fnr),headers);
     }
 
@@ -60,7 +60,6 @@ public class PersondataService {
                 throw new RuntimeException(message);
             }
             if (result.getBody() != null) {
-                log.info(String.valueOf(result.getBody()));
                 return result.getBody().getData().getHentPerson().getAdressebeskyttelse()[0];
             } else {
                 log.error("PDL Kall feil, result:  " + result);
