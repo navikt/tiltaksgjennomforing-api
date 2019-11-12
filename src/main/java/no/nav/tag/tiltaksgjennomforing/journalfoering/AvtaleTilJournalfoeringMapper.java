@@ -2,31 +2,22 @@ package no.nav.tag.tiltaksgjennomforing.journalfoering;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AvtaleTilJournalfoeringMapper {
 
-    public static AvtaleTilJournalfoering tilJournalfoering(Avtale avtale) {
+    public static AvtaleTilJournalfoering tilJournalfoering(Arbeidstrening avtale) {
         if (avtale == null) {
             return null;
         }
 
         AvtaleTilJournalfoering avtaleTilJournalfoering = new AvtaleTilJournalfoering();
 
-        if (avtale.getGodkjentAvArbeidsgiver() != null) {
-            avtaleTilJournalfoering.setGodkjentAvArbeidsgiver(DateTimeFormatter.ofPattern("dd.MM.yyyy").format(avtale.getGodkjentAvArbeidsgiver()));
-        }
-        if (avtale.getGodkjentAvVeileder() != null) {
-            avtaleTilJournalfoering.setGodkjentAvVeileder(DateTimeFormatter.ofPattern("dd.MM.yyyy").format(avtale.getGodkjentAvVeileder()));
-        }
-        if (avtale.getGodkjentAvDeltaker() != null) {
-            avtaleTilJournalfoering.setGodkjentAvDeltaker(DateTimeFormatter.ofPattern("dd.MM.yyyy").format(avtale.getGodkjentAvDeltaker()));
-        }
-        if (avtale.getOpprettetTidspunkt() != null) {
-            avtaleTilJournalfoering.setOpprettet(DateTimeFormatter.ofPattern("dd.MM.yyyy").format(avtale.getOpprettetTidspunkt()));
-        }
+        avtaleTilJournalfoering.setGodkjentAvArbeidsgiver(avtale.getGodkjentAvArbeidsgiver().toLocalDate());
+        avtaleTilJournalfoering.setGodkjentAvVeileder(avtale.getGodkjentAvVeileder().toLocalDate());
+        avtaleTilJournalfoering.setGodkjentAvDeltaker(avtale.getGodkjentAvDeltaker().toLocalDate());
+        avtaleTilJournalfoering.setOpprettet(avtale.getOpprettetTidspunkt().toLocalDate());
         avtaleTilJournalfoering.setId(avtale.getId());
         avtaleTilJournalfoering.setDeltakerFnr(identifikatorAsString(avtale.getDeltakerFnr()));
         avtaleTilJournalfoering.setBedriftNr(identifikatorAsString(avtale.getBedriftNr()));
@@ -45,12 +36,12 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setOppfolging(avtale.getOppfolging());
         avtaleTilJournalfoering.setTilrettelegging(avtale.getTilrettelegging());
         avtaleTilJournalfoering.setStartDato(avtale.getStartDato());
-        avtaleTilJournalfoering.setArbeidstreningLengde(avtale.getArbeidstreningLengde());
-        avtaleTilJournalfoering.setArbeidstreningStillingprosent(avtale.getArbeidstreningStillingprosent());
+        avtaleTilJournalfoering.setSluttDato(avtale.getSluttDato());
+        avtaleTilJournalfoering.setStillingprosent(avtale.getStillingprosent());
         avtaleTilJournalfoering.setMaal(maalListToMaalTilJournalfoeringList(avtale.getMaal()));
         avtaleTilJournalfoering.setOppgaver(oppgaveListToOppgaveTilJournalFoeringList(avtale.getOppgaver()));
         avtaleTilJournalfoering.setGodkjentPaVegneGrunn(godkjentPaVegneGrunn(avtale.getGodkjentPaVegneGrunn()));
-        avtaleTilJournalfoering.setGodkjentPaVegneAv(String.valueOf(avtale.isGodkjentPaVegneAv()));
+        avtaleTilJournalfoering.setGodkjentPaVegneAv(avtale.isGodkjentPaVegneAv());
 
         return avtaleTilJournalfoering;
     }

@@ -38,14 +38,14 @@ public class AvtaleController {
     public ResponseEntity<Avtale> hent(@PathVariable("avtaleId") UUID id) {
         Avtale avtale = avtaleRepository.findById(id)
                 .orElseThrow(RessursFinnesIkkeException::new);
-        InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
+        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker();
         innloggetBruker.sjekkLeseTilgang(avtale);
         return ResponseEntity.ok(avtale);
     }
 
     @GetMapping
     public Iterable<Avtale> hentAlleAvtalerInnloggetBrukerHarTilgangTil(AvtalePredicate queryParametre) {
-        InnloggetBruker bruker = innloggingService.hentInnloggetBruker();
+        InnloggetBruker<?> bruker = innloggingService.hentInnloggetBruker();
         return avtaleRepository.findAll().stream()
                 .filter(queryParametre)
                 .filter(bruker::harLeseTilgang)
@@ -55,7 +55,7 @@ public class AvtaleController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity opprettAvtale(@RequestBody OpprettAvtale opprettAvtale) {
+    public ResponseEntity<?> opprettAvtale(@RequestBody OpprettAvtale opprettAvtale) {
         InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
         tilgangUnderPilotering.sjekkTilgang(innloggetNavAnsatt.getIdentifikator());
         tilgangskontrollService.sjekkSkrivetilgangTilKandidat(innloggetNavAnsatt, opprettAvtale.getDeltakerFnr());
@@ -77,14 +77,14 @@ public class AvtaleController {
 
     @PutMapping(value = "/{avtaleId}")
     @Transactional
-    public ResponseEntity endreAvtale(@PathVariable("avtaleId") UUID avtaleId,
+    public ResponseEntity<?> endreAvtale(@PathVariable("avtaleId") UUID avtaleId,
                                       @RequestHeader("If-Match") Integer versjon,
                                       @RequestBody EndreAvtale endreAvtale) {
-        InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
+        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
-        Avtalepart avtalepart = innloggetBruker.avtalepart(avtale);
+        Avtalepart<?> avtalepart = innloggetBruker.avtalepart(avtale);
         avtalepart.endreAvtale(versjon, endreAvtale);
         Avtale lagretAvtale = avtaleRepository.save(avtale);
         return ResponseEntity.ok().header("eTag", lagretAvtale.getVersjon().toString()).build();
@@ -92,20 +92,20 @@ public class AvtaleController {
 
     @GetMapping(value = "/{avtaleId}/rolle")
     public ResponseEntity<Avtalerolle> hentRolle(@PathVariable("avtaleId") UUID avtaleId) {
-        InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
+        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkLeseTilgang(avtale);
-        Avtalepart avtalepart = innloggetBruker.avtalepart(avtale);
+        Avtalepart<?> avtalepart = innloggetBruker.avtalepart(avtale);
         return ResponseEntity.ok(avtalepart.rolle());
     }
 
     @PostMapping(value = "/{avtaleId}/opphev-godkjenninger")
     @Transactional
-    public ResponseEntity opphevGodkjenninger(@PathVariable("avtaleId") UUID avtaleId) {
-        InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
+    public ResponseEntity<?> opphevGodkjenninger(@PathVariable("avtaleId") UUID avtaleId) {
+        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
-        Avtalepart avtalepart = innloggetBruker.avtalepart(avtale);
+        Avtalepart<?> avtalepart = innloggetBruker.avtalepart(avtale);
         avtalepart.opphevGodkjenninger();
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();
@@ -113,11 +113,11 @@ public class AvtaleController {
 
     @PostMapping(value = "/{avtaleId}/godkjenn")
     @Transactional
-    public ResponseEntity godkjenn(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader("If-Match") Integer versjon) {
-        InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
+    public ResponseEntity<?> godkjenn(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader("If-Match") Integer versjon) {
+        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
-        Avtalepart avtalepart = innloggetBruker.avtalepart(avtale);
+        Avtalepart<?> avtalepart = innloggetBruker.avtalepart(avtale);
         avtalepart.godkjennAvtale(versjon);
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();
@@ -125,18 +125,18 @@ public class AvtaleController {
 
     @PostMapping(value = "/{avtaleId}/godkjenn-paa-vegne-av")
     @Transactional
-    public ResponseEntity godkjennPaVegneAv(@PathVariable("avtaleId") UUID avtaleId, @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn, @RequestHeader("If-Match") Integer versjon) {
-        InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
+    public ResponseEntity<?> godkjennPaVegneAv(@PathVariable("avtaleId") UUID avtaleId, @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn, @RequestHeader("If-Match") Integer versjon) {
+        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
-        Avtalepart avtalepart = innloggetBruker.avtalepart(avtale);
+        Avtalepart<?> avtalepart = innloggetBruker.avtalepart(avtale);
         avtalepart.godkjennPaVegneAvDeltaker(paVegneAvGrunn, versjon);
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping(value = "/{avtaleId}/avbryt")
-    public ResponseEntity avbryt(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader("If-Match") Integer versjon) {
+    public ResponseEntity<?> avbryt(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader("If-Match") Integer versjon) {
         InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetNavAnsatt.sjekkSkriveTilgang(avtale);

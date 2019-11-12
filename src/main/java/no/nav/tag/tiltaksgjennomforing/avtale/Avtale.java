@@ -3,7 +3,11 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldNameConstants;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
+import no.nav.tag.tiltaksgjennomforing.exceptions.AvtalensVarighetMerEnnMaksimaltAntallMånederException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import org.springframework.data.domain.AbstractAggregateRoot;
@@ -11,7 +15,6 @@ import org.springframework.data.domain.AbstractAggregateRoot;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,9 +22,14 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-public class Avtale extends AbstractAggregateRoot {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = Avtale.Fields.tiltakstype)
+@NoArgsConstructor
+@FieldNameConstants
+public abstract class Avtale extends AbstractAggregateRoot<Avtale> {
+    private static final int MAKSIMALT_ANTALL_MÅNEDER_VARIGHET = 3;
 
     @Convert(converter = FnrConverter.class)
     private Fnr deltakerFnr;
@@ -30,8 +38,12 @@ public class Avtale extends AbstractAggregateRoot {
     @Convert(converter = NavIdentConverter.class)
     private NavIdent veilederNavIdent;
 
+    @Column(updatable = false, insertable = false)
+    @Enumerated(value = EnumType.STRING)
+    private Tiltakstype tiltakstype;
     private LocalDateTime opprettetTidspunkt;
     @Id
+    @EqualsAndHashCode.Include
     private UUID id;
     private Integer versjon;
     private String deltakerFornavn;
@@ -50,13 +62,8 @@ public class Avtale extends AbstractAggregateRoot {
     private String journalpostId;
 
     private LocalDate startDato;
-    private Integer arbeidstreningLengde;
-    private Integer arbeidstreningStillingprosent;
-
-    @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Maal> maal = new ArrayList<>();
-    @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Oppgave> oppgaver = new ArrayList<>();
+    private LocalDate sluttDato;
+    private Integer stillingprosent;
 
     @OneToOne(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true)
     private GodkjentPaVegneGrunn godkjentPaVegneGrunn;
@@ -67,22 +74,15 @@ public class Avtale extends AbstractAggregateRoot {
     private boolean godkjentPaVegneAv;
     private boolean avbrutt;
 
-    public Avtale() {
-    }
-
-    public Avtale(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent) {
+    public Avtale(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent, Tiltakstype tiltakstype) {
         this.id = UUID.randomUUID();
         this.opprettetTidspunkt = LocalDateTime.now();
         this.deltakerFnr = sjekkAtIkkeNull(deltakerFnr, "Deltakers fnr må være satt.");
         this.bedriftNr = sjekkAtIkkeNull(bedriftNr, "Arbeidsgivers bedriftnr må være satt.");
         this.veilederNavIdent = sjekkAtIkkeNull(veilederNavIdent, "Veileders NAV-ident må være satt.");
-    }
-
-    public static Avtale nyAvtale(OpprettAvtale opprettAvtale, NavIdent veilederNavIdent) {
-        Avtale avtale = new Avtale(opprettAvtale.getDeltakerFnr(), opprettAvtale.getBedriftNr(), veilederNavIdent);
-        avtale.setVersjon(1);
-        avtale.registerEvent(new AvtaleOpprettet(avtale, veilederNavIdent));
-        return avtale;
+        this.tiltakstype = tiltakstype;
+        this.versjon = 1;
+        registerEvent(new AvtaleOpprettet(this, veilederNavIdent));
     }
 
     private static void sjekkMaalOgOppgaverLengde(List<Maal> maal, List<Oppgave> oppgaver) {
@@ -95,6 +95,7 @@ public class Avtale extends AbstractAggregateRoot {
         sjekkVersjon(versjon);
         inkrementerVersjonsnummer();
         sjekkMaalOgOppgaverLengde(nyAvtale.getMaal(), nyAvtale.getOppgaver());
+        sjekkStartOgSluttDato(nyAvtale.getStartDato(), nyAvtale.getSluttDato());
 
         setDeltakerFornavn(nyAvtale.getDeltakerFornavn());
         setDeltakerEtternavn(nyAvtale.getDeltakerEtternavn());
@@ -113,18 +114,20 @@ public class Avtale extends AbstractAggregateRoot {
         setOppfolging(nyAvtale.getOppfolging());
         setTilrettelegging(nyAvtale.getTilrettelegging());
         setStartDato(nyAvtale.getStartDato());
-        setArbeidstreningLengde(nyAvtale.getArbeidstreningLengde());
-        setArbeidstreningStillingprosent(nyAvtale.getArbeidstreningStillingprosent());
-
-        maal.clear();
-        maal.addAll(nyAvtale.getMaal());
-        maal.forEach(m -> m.setAvtale(this));
-
-        oppgaver.clear();
-        oppgaver.addAll(nyAvtale.getOppgaver());
-        oppgaver.forEach(o -> o.setAvtale(this));
+        setSluttDato(nyAvtale.getSluttDato());
+        setStillingprosent(nyAvtale.getStillingprosent());
 
         registerEvent(new AvtaleEndret(this, utfortAv));
+    }
+
+    void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
+        if (startDato != null && sluttDato != null) {
+            if (startDato.isAfter(sluttDato)) {
+                throw new StartDatoErEtterSluttDatoException();
+            } else if (sluttDato.isAfter(startDato.plusMonths(MAKSIMALT_ANTALL_MÅNEDER_VARIGHET))) {
+                throw new AvtalensVarighetMerEnnMaksimaltAntallMånederException(MAKSIMALT_ANTALL_MÅNEDER_VARIGHET);
+            }
+        }
     }
 
     @JsonProperty("erLaast")
@@ -218,9 +221,9 @@ public class Avtale extends AbstractAggregateRoot {
 
     @JsonProperty("status")
     public String status() {
-        if (avbrutt) {
+        if (isAvbrutt()) {
             return "Avbrutt";
-        } else if (erGodkjentAvVeileder() && (startDato.plusWeeks(arbeidstreningLengde).isBefore(LocalDate.now()))) {
+        } else if (erGodkjentAvVeileder() && (sluttDato.isBefore(LocalDate.now()))) {
             return "Avsluttet";
         } else if (erGodkjentAvVeileder()) {
             return "Klar for oppstart";
@@ -245,7 +248,7 @@ public class Avtale extends AbstractAggregateRoot {
         }
     }
 
-    protected boolean heleAvtalenErFyltUt() {
+    boolean heleAvtalenErFyltUt() {
         return erIkkeTomme(deltakerFnr,
                 veilederNavIdent,
                 deltakerFornavn,
@@ -261,9 +264,8 @@ public class Avtale extends AbstractAggregateRoot {
                 oppfolging,
                 tilrettelegging,
                 startDato,
-                arbeidstreningLengde,
-                arbeidstreningStillingprosent
-        )
-                && !oppgaver.isEmpty() && !maal.isEmpty();
+                sluttDato,
+                stillingprosent
+        );
     }
 }

@@ -44,7 +44,7 @@ public class Veileder extends Avtalepart<NavIdent> {
                 if (avtale.erGodkjentAvVeileder()) {
                     if (avtale.getStartDato().isAfter(LocalDate.now())) {
                         avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato(), ekstraTekstAvtleErGodkjentAvAllePartner);
-                    } else if (avtale.getStartDato().plusWeeks(avtale.getArbeidstreningLengde()).isAfter(LocalDate.now())) {
+                    } else if (avtale.getSluttDato().isAfter(LocalDate.now())) {
                         avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleGjennomfores, "", "");
                     } else {
                         avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErAvsluttet, "", "");

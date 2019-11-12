@@ -4,8 +4,10 @@ import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import no.nav.security.oidc.api.ProtectedWithClaims;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
+import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidstrening;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +21,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/internal/avtaler")
 @Timed
 @RequiredArgsConstructor
-@ProtectedWithClaims(issuer="system")
+@ProtectedWithClaims(issuer = "system")
 public class InternalAvtaleController {
 
     private final AvtaleRepository avtaleRepository;
@@ -30,13 +32,14 @@ public class InternalAvtaleController {
         innloggingService.validerSystembruker();
         List<UUID> avtaleIdList = avtaleRepository.finnAvtaleIdTilJournalfoering();
         return avtaleRepository.findAllById(avtaleIdList).stream()
-                .map(AvtaleTilJournalfoeringMapper::tilJournalfoering)
+                .filter(avtale -> avtale.getTiltakstype() == Tiltakstype.ARBEIDSTRENING)
+                .map(avtale -> AvtaleTilJournalfoeringMapper.tilJournalfoering((Arbeidstrening) avtale))
                 .collect(Collectors.toList());
     }
 
     @PutMapping
     @Transactional
-    public ResponseEntity journalfoerAvtaler(@RequestBody Map<UUID, String> avtalerTilJournalfoert) {
+    public ResponseEntity<?> journalfoerAvtaler(@RequestBody Map<UUID, String> avtalerTilJournalfoert) {
         innloggingService.validerSystembruker();
         Iterable<Avtale> avtaler = avtaleRepository.findAllById(avtalerTilJournalfoert.keySet());
         avtaler.forEach(avtale -> avtale.setJournalpostId(avtalerTilJournalfoert.get(avtale.getId())));
