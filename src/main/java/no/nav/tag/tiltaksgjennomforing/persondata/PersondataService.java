@@ -40,10 +40,10 @@ public class PersondataService {
 
     private HttpEntity<String> createRequestEntity(Fnr fnr) {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + stsClient.hentSTSToken().getAccessToken());
+        headers.setBearerAuth(stsClient.hentSTSToken().getAccessToken());
+        headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Tema", "GEN");
         headers.set("Nav-Consumer-Token", stsClient.hentSTSToken().getAccessToken());
-        headers.set("Content-Type", "application/json");
         return new HttpEntity<>(createQuery(fnr),headers);
     }
 
@@ -60,7 +60,8 @@ public class PersondataService {
                 throw new RuntimeException(message);
             }
             if (result.getBody() != null) {
-            return result.getBody().getData().getHentPerson().getAdressebeskyttelse()[0];
+                log.info(String.valueOf(result.getBody()));
+                return result.getBody().getData().getHentPerson().getAdressebeskyttelse()[0];
             } else {
                 log.error("PDL Kall feil, result:  " + result);
                 throw new TiltaksgjennomforingException("Feil fra PDL oppslag");
