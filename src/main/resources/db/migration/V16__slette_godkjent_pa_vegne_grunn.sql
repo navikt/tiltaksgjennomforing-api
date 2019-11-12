@@ -1,0 +1,1 @@
+drop table godkjent_pa_vegne_grunn;
