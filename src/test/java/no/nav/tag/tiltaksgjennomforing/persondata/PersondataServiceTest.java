@@ -24,6 +24,7 @@ public class PersondataServiceTest {
     private Fnr fortroligPerson = new Fnr("26067114433");
     private Fnr ugradertPErson = new Fnr("00000000000");
     private Fnr uspesifisertGradertPerson = new Fnr("18076641842");
+    private Fnr personFinnesIkke = new Fnr("24080687881");
 
     @Test
     public void hentGradering__returnerer_strengt_fortrolig_person() {
@@ -49,21 +50,31 @@ public class PersondataServiceTest {
         assertThat(adressebeskyttelse.getGradering()).isBlank();
     }
 
-    @Test(expected = TilgangskontrollException.class)
-    public void sjekkGradering__skal_kaste_feile__strengt_fortrolig() {
-        persondataService.sjekkGradering(strengtFortroligPerson);
+    @Test
+    public void hentGradering__person_finnes_ikke_er_ok() {
+        Adressebeskyttelse adressebeskyttelse = persondataService.hentGradering(personFinnesIkke);
+        assertThat(adressebeskyttelse.getGradering().equals("null"));
     }
+
+    @Test(expected = TilgangskontrollException.class)
+    public void sjekkGradering__skal_kaste_feile__strengt_fortrolig() { persondataService.sjekkGradering(strengtFortroligPerson); }
+
     @Test(expected = TilgangskontrollException.class)
     public void sjekkGradering__skal_kaste_feile__fortrolig() {
         persondataService.sjekkGradering(fortroligPerson);
     }
+
     @Test
     public void sjekkGradering__skal_ikke_kaste_feil_ugradert() {
         persondataService.sjekkGradering(ugradertPErson);
     }
+
     @Test
-    public void sjekkGradering__skal_ikke_kaste_feil_uspesifisert_gradering() {
-        persondataService.sjekkGradering(uspesifisertGradertPerson);
+    public void sjekkGradering__skal_ikke_kaste_feil_uspesifisert_gradering() { persondataService.sjekkGradering(uspesifisertGradertPerson); }
+
+    @Test
+    public void sjekkGradering_person_finnes_ikke_er_ok() {
+        persondataService.sjekkGradering(personFinnesIkke);
     }
 
 }

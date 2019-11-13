@@ -100,7 +100,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\"data\": {\"hentPerson\": {\"adressebeskyttelse\": [{\"gradering\": \"\"}]}}}≤",
+        "body": "{\"errors\": [{\"message\": \"Fant ikke person\", \"locations\": [{\"line\": 1, \"column\": 8}], \"path\": [\"hentPerson\"], \"extensions\": {\"code\": \"not_found\", \"classification\": \"ExecutionAborted\"}}], \"data\": {\"hentPerson\": null}}",
         "headers": {
           "Content-Type": "application/json"
         }

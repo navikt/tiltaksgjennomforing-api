@@ -5,26 +5,23 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import scala.Console;
-
-import java.util.logging.ConsoleHandler;
 
 @Slf4j
 @Service
 public class PersondataService {
     private final RestTemplate restTemplate;
     private final STSClient stsClient;
-    @Value("${tiltaksgjennomforing.persondata.uri}")
-    private String pdlUrl;
+    private final PersondataProperties persondataProperties;
 
-    public PersondataService(RestTemplate restTemplate, STSClient stsClient) {
+    public PersondataService(RestTemplate restTemplate, STSClient stsClient, PersondataProperties persondataProperties) {
         this.restTemplate = restTemplate;
         this.stsClient = stsClient;
+        this.persondataProperties = persondataProperties;
     }
 
     Adressebeskyttelse hentGradering(Fnr fnr) {
@@ -53,20 +50,20 @@ public class PersondataService {
 
     private Adressebeskyttelse getFraPdl(Fnr fnr){
         try {
-            ResponseEntity<PdlPerson> result = restTemplate.exchange(pdlUrl, HttpMethod.POST, createRequestEntity(fnr), PdlPerson.class);
+            ResponseEntity<PdlPerson> result = restTemplate.exchange(persondataProperties.getUri(), HttpMethod.POST, createRequestEntity(fnr), PdlPerson.class);
             if (result.getStatusCode()!= HttpStatus.OK){
                 String message = "Kall mot pdl feiler med HTTP-" + result.getStatusCode();
                 log.error(message);
                 throw new RuntimeException(message);
             }
-            if (result.getBody() != null) {
-                return result.getBody().getData().getHentPerson().getAdressebeskyttelse()[0];
-            } else {
-                log.error("PDL Kall feil, result:  " + result);
-                throw new TiltaksgjennomforingException("Feil fra PDL oppslag");
+            if (result.getBody().getData().getHentPerson() == null) {
+                return new Adressebeskyttelse("");
             }
+            
+            return result.getBody().getData().getHentPerson().getAdressebeskyttelse()[0];
+
         } catch (RestClientException exception) {
-            log.error("Feil fra PDL med spørring: " + pdlUrl + " Exception: " + exception.getMessage());
+            log.error("Feil fra PDL med spørring: " + persondataProperties.getUri() + " Exception: " + exception.getMessage());
             throw new TiltaksgjennomforingException("Feil fra PDL", exception);
         }
     }
