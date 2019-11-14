@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import javax.validation.constraints.Null;
+
 @Slf4j
 @Service
 public class PersondataService {
@@ -48,19 +50,29 @@ public class PersondataService {
         return String.format("{\"query\" : \"query{ hentPerson( ident: \\\"%s\\\") {adressebeskyttelse {gradering} } }\"}", fnr.asString());
     }
 
+    private Adressebeskyttelse hentGraderingFraPdlRespons(ResponseEntity<PdlPerson> response) {
+        try{
+            if (response.getBody().getData().getHentPerson() == null) {
+                return new Adressebeskyttelse("");
+            } else {
+                return response.getBody().getData().getHentPerson().getAdressebeskyttelse()[0];
+            }
+        } catch (NullPointerException e) {
+            log.error("nullpointer exception: {} ", e.getMessage());
+            throw new TiltaksgjennomforingException("Feil fra PDL");
+        }
+    }
+
     private Adressebeskyttelse getFraPdl(Fnr fnr){
         try {
-            ResponseEntity<PdlPerson> result = restTemplate.exchange(persondataProperties.getUri(), HttpMethod.POST, createRequestEntity(fnr), PdlPerson.class);
-            if (result.getStatusCode()!= HttpStatus.OK){
-                String message = "Kall mot pdl feiler med HTTP-" + result.getStatusCode();
+            ResponseEntity<PdlPerson> response = restTemplate.exchange(persondataProperties.getUri(), HttpMethod.POST, createRequestEntity(fnr), PdlPerson.class);
+            if (response.getStatusCode()!= HttpStatus.OK){
+                String message = "Kall mot pdl feiler med HTTP-" + response.getStatusCode();
                 log.error(message);
                 throw new RuntimeException(message);
             }
-            if (result.getBody().getData().getHentPerson() == null) {
-                return new Adressebeskyttelse("");
-            }
-            
-            return result.getBody().getData().getHentPerson().getAdressebeskyttelse()[0];
+
+            return hentGraderingFraPdlRespons(response);
 
         } catch (RestClientException exception) {
             log.error("Feil fra PDL med spørring: " + persondataProperties.getUri() + " Exception: " + exception.getMessage());

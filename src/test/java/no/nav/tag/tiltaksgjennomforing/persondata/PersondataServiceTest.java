@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.persondata;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ public class PersondataServiceTest {
     private Fnr ugradertPErson = new Fnr("00000000000");
     private Fnr uspesifisertGradertPerson = new Fnr("18076641842");
     private Fnr personFinnesIkke = new Fnr("24080687881");
+    private Fnr personForResponsUtenData = new Fnr("23097010706");
 
     @Test
     public void hentGradering__returnerer_strengt_fortrolig_person() {
@@ -54,6 +56,11 @@ public class PersondataServiceTest {
     public void hentGradering__person_finnes_ikke_er_ok() {
         Adressebeskyttelse adressebeskyttelse = persondataService.hentGradering(personFinnesIkke);
         assertThat(adressebeskyttelse.getGradering().equals("null"));
+    }
+
+    @Test(expected = TiltaksgjennomforingException.class)
+    public void hentGradering_person_far_respons_uten_Data() {
+        Adressebeskyttelse adressebeskyttelse = persondataService.hentGradering(personForResponsUtenData);
     }
 
     @Test(expected = TilgangskontrollException.class)

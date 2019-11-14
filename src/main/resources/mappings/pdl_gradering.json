@@ -96,6 +96,29 @@
       "priority": 5,
       "request": {
         "method": "POST",
+        "urlPath": "/persondata",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json",
+            "caseInsensitive": true
+          }
+        },
+        "bodyPatterns" : [ {
+          "equalToJson" : "{\"query\" : \"query{ hentPerson( ident: \\\"23097010706\\\") {adressebeskyttelse {gradering} } }\" }"
+        } ]
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"errors\": [{\"message\": \"Fant ikke person\", \"locations\": [{\"line\": 1, \"column\": 8}], \"path\": [\"hentPerson\"], \"extensions\": {\"code\": \"not_found\", \"classification\": \"ExecutionAborted\"}}]}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 6,
+      "request": {
+        "method": "POST",
         "urlPath": "/persondata"
       },
       "response": {
