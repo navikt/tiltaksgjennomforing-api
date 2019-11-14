@@ -70,4 +70,5 @@ public abstract class Avtalepart<T extends Identifikator> {
         opphevGodkjenningerSomAvtalepart();
     }
 
+    public abstract void låsOppAvtale(Integer versjon);
 }

@@ -106,4 +106,10 @@ public class Veileder extends Avtalepart<NavIdent> {
     void opphevGodkjenningerSomAvtalepart() {
         avtale.opphevGodkjenningerSomVeileder();
     }
+
+    @Override
+    public void låsOppAvtale(Integer versjon) {
+        avtale.sjekkOmKanLåsesOpp();
+        avtale.låsOppAvtale();
+    }
 }

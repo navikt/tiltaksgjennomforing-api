@@ -91,4 +91,9 @@ public class Deltaker extends Avtalepart<Fnr> {
     void opphevGodkjenningerSomAvtalepart() {
         throw new TilgangskontrollException("Deltaker kan ikke oppheve godkjenninger");
     }
+
+    @Override
+    public void låsOppAvtale(Integer versjon) {
+        throw new TilgangskontrollException("Deltaker kan ikke låse opp avtale");
+    }
 }

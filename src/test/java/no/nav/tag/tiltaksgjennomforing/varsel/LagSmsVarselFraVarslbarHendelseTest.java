@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.TestData;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GamleVerdier;
 import org.assertj.core.groups.Tuple;
 import org.junit.Test;

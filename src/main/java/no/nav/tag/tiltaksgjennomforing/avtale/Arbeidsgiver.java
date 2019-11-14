@@ -91,4 +91,9 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     void opphevGodkjenningerSomAvtalepart() {
         avtale.opphevGodkjenningerSomArbeidsgiver();
     }
+
+    @Override
+    public void låsOppAvtale(Integer versjon) {
+        throw new TilgangskontrollException("Arbeidsgiver kan ikke låse opp avtale");
+    }
 }

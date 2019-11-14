@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.time.Instant;
 import java.util.Comparator;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -47,6 +48,15 @@ public class AvtaleController {
         return ResponseEntity.ok(avtale);
     }
 
+    @GetMapping("/{avtaleId}/versjoner")
+    public ResponseEntity<List<AvtaleInnhold>> hentHistorikk(@PathVariable("avtaleId") UUID id) {
+        Avtale avtale = avtaleRepository.findById(id)
+                .orElseThrow(RessursFinnesIkkeException::new);
+        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker();
+        innloggetBruker.sjekkLeseTilgang(avtale);
+        return ResponseEntity.ok(avtale.getVersjoner());
+    }
+
     @GetMapping
     public Iterable<Avtale> hentAlleAvtalerInnloggetBrukerHarTilgangTil(AvtalePredicate queryParametre) {
         InnloggetBruker<?> bruker = innloggingService.hentInnloggetBruker();
@@ -65,7 +75,7 @@ public class AvtaleController {
         tilgangskontrollService.sjekkSkrivetilgangTilKandidat(innloggetNavAnsatt, opprettAvtale.getDeltakerFnr());
         persondataService.sjekkGradering(opprettAvtale.getDeltakerFnr());
         Avtale avtale = innloggetNavAnsatt.opprettAvtale(opprettAvtale);
-        avtale.setBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
+        avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
@@ -146,6 +156,18 @@ public class AvtaleController {
         innloggetNavAnsatt.sjekkSkriveTilgang(avtale);
         Veileder veileder = innloggetNavAnsatt.avtalepart(avtale);
         veileder.avbrytAvtale(versjon);
+        avtaleRepository.save(avtale);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(value = "/{avtaleId}/laas-opp")
+    @Transactional
+    public ResponseEntity<?> laasOpp(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader("If-Match") Integer versjon) {
+        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        innloggetBruker.sjekkSkriveTilgang(avtale);
+        Avtalepart<?> avtalepart = innloggetBruker.avtalepart(avtale);
+        avtalepart.låsOppAvtale(versjon);
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();
     }
