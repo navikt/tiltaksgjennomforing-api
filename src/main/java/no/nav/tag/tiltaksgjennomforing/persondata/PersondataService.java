@@ -38,11 +38,12 @@ public class PersondataService {
     }
 
     private HttpEntity<String> createRequestEntity(Fnr fnr) {
+        String stsToken = stsClient.hentSTSToken().getAccessToken();
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(stsClient.hentSTSToken().getAccessToken());
+        headers.setBearerAuth(stsToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("Tema", "GEN");
-        headers.set("Nav-Consumer-Token", "Bearer " + stsClient.hentSTSToken().getAccessToken());
+        headers.set("Nav-Consumer-Token", "Bearer " + stsToken);
         return new HttpEntity<>(createQuery(fnr),headers);
     }
 
