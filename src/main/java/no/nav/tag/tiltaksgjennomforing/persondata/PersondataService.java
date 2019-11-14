@@ -32,7 +32,7 @@ public class PersondataService {
 
     public void sjekkGradering(Fnr fnr) {
         String gradering = hentGradering(fnr).getGradering();
-        if (gradering.equals("FORTROLIG") || gradering.equals("STRENGT_FORTROLIG")) {
+        if ("FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG".equals(gradering)) {
             throw new TilgangskontrollException("Du har ikke tilgang til deltaker");
         }
     }
