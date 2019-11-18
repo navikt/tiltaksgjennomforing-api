@@ -131,10 +131,6 @@ public class TestData {
         return new InnloggetSelvbetjeningBruker(avtalepartMedFnr.getIdentifikator(), emptyList());
     }
 
-    public static InnloggetNavAnsatt innloggetNavAnsatt(Avtalepart<NavIdent> avtalepartMedNavIdent) {
-        return new InnloggetNavAnsatt(avtalepartMedNavIdent.getIdentifikator(), mock(TilgangskontrollService.class));
-    }
-
     public static Identifikator enIdentifikator() {
         return new Identifikator("test-id");
     }

@@ -48,7 +48,7 @@ public class InnloggetBrukerTest {
     @Test
     public void veilederKnyttetTilAvtaleSkalHaVeilederRolle() {
         Avtale avtale = TestData.enAvtale();
-        InnloggetNavAnsatt navAnsatt = TestData.innloggetNavAnsatt(TestData.enVeileder(avtale));
+        InnloggetNavAnsatt navAnsatt = new InnloggetNavAnsatt(avtale.getVeilederNavIdent(), tilgangskontrollService);
         assertThat(navAnsatt.avtalepart(avtale)).isInstanceOf(Veileder.class);
     }
 
