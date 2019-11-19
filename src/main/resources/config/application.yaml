@@ -29,4 +29,4 @@ spring:
 
 tiltaksgjennomforing:
   persondata:
-    uri: http://${PDL_API_SERVICE_HOST}/graphql
+    uri: http://pdl-api.default.svc.nais.local/graphql
