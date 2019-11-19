@@ -11,10 +11,12 @@ insert into avtale (id, opprettet_tidspunkt, versjon, deltaker_fornavn, deltaker
                     bedrift_navn,
                     bedrift_nr, arbeidsgiver_fnr, arbeidsgiver_fornavn, arbeidsgiver_etternavn, arbeidsgiver_tlf,
                     veileder_nav_ident, veileder_fornavn, veileder_etternavn, veileder_tlf, oppfolging, tilrettelegging,
-                    godkjent_av_deltaker, godkjent_av_arbeidsgiver, godkjent_av_veileder, start_dato, slutt_dato, stillingprosent, tiltakstype)
+                    godkjent_av_deltaker, godkjent_av_arbeidsgiver, godkjent_av_veileder, start_dato, slutt_dato,
+                    stillingprosent, tiltakstype)
 values ('5ae3be81-abcd-477e-a8f3-4a5eb5fe91e3', current_timestamp, 7, 'Dagny', 'Deltaker', '01093434109', '00000000',
         'Pers butikk', '975959171', '29118923330', 'Per', 'Kremmer', '22334455', 'X123456', 'Vera', 'Veileder',
-        '33445566', 'Telefon hver uke', 'Ingen', current_timestamp, current_timestamp, null, '2019-03-25', '2019-05-25', 100, 'ARBEIDSTRENING');
+        '33445566', 'Telefon hver uke', 'Ingen', null, current_timestamp, null, '2019-03-25', '2019-05-25', 100,
+        'ARBEIDSTRENING');
 
 
 insert into maal(id, kategori, beskrivelse, avtale)
@@ -32,7 +34,8 @@ insert into avtale (id, opprettet_tidspunkt, versjon, deltaker_fornavn, deltaker
                     journalpost_id, start_dato, slutt_dato, stillingprosent, tiltakstype)
 values ('ca3d7189-0852-4693-a3dd-d518b4ec42e4', current_timestamp, 7, 'Ronny', 'Deltaker', '01093434109', '00000000',
         'Ronnys butikk', '975959171', '29118923330', 'Ronnys', 'Kremmer', '22334455', 'X123456', 'Ronny', 'Veileder',
-        '33445566', 'Telefon hver uke', 'Ingen', current_timestamp, current_timestamp, current_timestamp, null, '2019-03-25', '2019-05-25', 100, 'ARBEIDSTRENING');
+        '33445566', 'Telefon hver uke', 'Ingen', current_timestamp, current_timestamp, current_timestamp, null,
+        '2019-03-25', '2019-05-25', 100, 'ARBEIDSTRENING');
 
 insert into maal(id, kategori, beskrivelse, avtale)
 values ('ca3d7189-0852-4693-a3dd-d518b4ec42e4', 'Arbeidserfaring', 'Lære butikkarbeid',
@@ -46,11 +49,12 @@ insert into avtale (id, opprettet_tidspunkt, versjon, deltaker_fornavn, deltaker
                     bedrift_navn, bedrift_nr, arbeidsgiver_fnr, arbeidsgiver_fornavn, arbeidsgiver_etternavn,
                     arbeidsgiver_tlf, veileder_nav_ident, veileder_fornavn, veileder_etternavn, veileder_tlf,
                     oppfolging, tilrettelegging, godkjent_av_deltaker, godkjent_av_arbeidsgiver, godkjent_av_veileder,
-                    journalpost_id, start_dato, slutt_dato, stillingprosent, tiltakstype)
+                    godkjent_pa_vegne_av,
+                    journalpost_id, start_dato, slutt_dato, stillingprosent, tiltakstype, digital_kompetanse, ikke_bank_id, reservert)
 values ('8238bedf-d6d9-4145-bcdc-cf857f4bc63f', current_timestamp, 7, 'Kenneth', 'Deltaker', '01093434109', '00000000',
         'Kenneths butikk', '975959171', '29118923330', 'Kenneths', 'Kremmer', '22334455', 'X123456', 'Kenneth',
         'Veileder', '33445566', 'Telefon hver uke', 'Ingen', current_timestamp, current_timestamp, current_timestamp,
-        null, '2019-03-25', '2019-05-25', 100, 'MIDLERTIDIG_LONNSTILSKUDD');
+        true, null, '2019-03-25', '2019-05-25', 100, 'MIDLERTIDIG_LONNSTILSKUDD', true, true, true);
 
 insert into maal(id, kategori, beskrivelse, avtale)
 values ('2cd6fd24-9369-44cd-b8e3-10c4f53762f2', 'Arbeidserfaring', 'Lære butikkarbeid',
@@ -59,6 +63,3 @@ values ('2cd6fd24-9369-44cd-b8e3-10c4f53762f2', 'Arbeidserfaring', 'Lære butikk
 insert into oppgave (id, tittel, beskrivelse, opplaering, avtale)
 values ('2cd6fd24-9369-44cd-b8e3-10c4f53762f2', 'Lager', 'Rydde på lageret', 'Ryddekurs',
         '8238bedf-d6d9-4145-bcdc-cf857f4bc63f');
-
-insert into godkjent_pa_vegne_grunn (avtale, digital_kompetanse, ikke_bank_id, reservert)
-values ('8238bedf-d6d9-4145-bcdc-cf857f4bc63f', true, true, false);
