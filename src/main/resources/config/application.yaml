@@ -29,4 +29,4 @@ spring:
 
 tiltaksgjennomforing:
   persondata:
-    uri: http://pdl-api/graphql
+    uri: https://pdl-api/graphql
