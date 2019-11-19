@@ -11,14 +11,13 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import static no.nav.security.oidc.test.support.JwtTokenGenerator.ACR_LEVEL_4;
-
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import static no.nav.security.oidc.test.support.JwtTokenGenerator.ACR_LEVEL_4;
 
 @RestController
 @RequestMapping("/local")
@@ -93,7 +92,7 @@ public class TokenGeneratorController {
     @Unprotected
     @GetMapping("/isso-login")
     public void addNavCookie(@RequestParam(value = "subject", defaultValue = "00000000000") String subject,
-                             @RequestHeader(value = "isso-id", defaultValue = "X123456") String navIdent,
+                             @RequestHeader(value = "isso-id", defaultValue = "Z123456") String navIdent,
                              @RequestParam(value = "cookiename", defaultValue = ISSO_IDTOKEN) String cookieName,
                              @RequestParam(value = "redirect", required = false) String redirect,
                              @RequestParam(value = "expiry", required = false) String expiry,
