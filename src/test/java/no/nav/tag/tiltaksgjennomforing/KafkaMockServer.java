@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
+package no.nav.tag.tiltaksgjennomforing;
 
 import kafka.server.KafkaConfig;
 import lombok.extern.slf4j.Slf4j;
