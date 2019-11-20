@@ -58,7 +58,7 @@ public class PersondataServiceTest {
         assertThat(adressebeskyttelse.getGradering().equals("null"));
     }
 
-    @Test(expected = TiltaksgjennomforingException.class)
+    @Test(expected = NullPointerException.class)
     public void hentGradering_person_far_respons_uten_Data() {
         Adressebeskyttelse adressebeskyttelse = persondataService.hentGradering(personForResponsUtenData);
     }
