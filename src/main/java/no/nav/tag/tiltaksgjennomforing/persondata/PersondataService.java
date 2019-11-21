@@ -61,6 +61,7 @@ public class PersondataService {
             ResponseEntity<PdlPerson> response = restTemplate.exchange(persondataProperties.getUri(), HttpMethod.POST, createRequestEntity(fnr), PdlPerson.class);
             return hentGraderingFraPdlRespons(response);
         } catch (RestClientException exception) {
+            stsClient.evictToken();
             log.error("Feil fra PDL med request-url: " + persondataProperties.getUri(), exception);
             throw exception;
         }
