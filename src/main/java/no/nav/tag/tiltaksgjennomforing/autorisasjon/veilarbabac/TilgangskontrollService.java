@@ -43,7 +43,7 @@ public class TilgangskontrollService {
 
     private void sjekkTilgang(InnloggetNavAnsatt innloggetNavAnsatt, Fnr fnr, TilgangskontrollAction action) {
         if (!hentTilgang(innloggetNavAnsatt, fnr, action)) {
-            throw new TilgangskontrollException("Veileder har ikke følgende tilgang for kandidat: " + action);
+            throw new TilgangskontrollException("Du har ikke tilgang til deltaker");
         }
     }
 
