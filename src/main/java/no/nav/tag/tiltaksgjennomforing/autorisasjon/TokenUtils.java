@@ -1,46 +1,38 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
 import com.nimbusds.jwt.JWTClaimsSet;
-
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
-
+import no.nav.security.oidc.context.OIDCValidationContext;
 import org.springframework.stereotype.Component;
 
-import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.*;
-
 import java.util.Optional;
+
+import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.*;
 
 @Component
 @RequiredArgsConstructor
 public class TokenUtils {
-        
     private static final String ACR = "acr";
     private static final String LEVEL4 = "Level4";
 
-    static enum Issuer {
-        
+    enum Issuer {
         ISSUER_ISSO("isso"),
         ISSUER_SELVBETJENING("selvbetjening"),
         ISSUER_SYSTEM("system");
 
         final String issuerName;
-        
+
         Issuer(String issuerName) {
             this.issuerName = issuerName;
         }
     }
-    
-    @RequiredArgsConstructor
-    @EqualsAndHashCode
-    @Getter
+
+    @Value
     public static class BrukerOgIssuer {
-        
-        private final Issuer issuer;
-        private final String brukerIdent;
-        
+        Issuer issuer;
+        String brukerIdent;
     }
 
     private final OIDCRequestContextHolder contextHolder;
@@ -60,7 +52,14 @@ public class TokenUtils {
     }
 
     private Optional<JWTClaimsSet> hentClaimSet(Issuer issuer) {
-        return Optional.ofNullable(contextHolder.getOIDCValidationContext().getClaims(issuer.issuerName))
+        OIDCValidationContext oidcValidationContext;
+        try {
+            oidcValidationContext = contextHolder.getOIDCValidationContext();
+        } catch (IllegalStateException e) {
+            // Er ikke i kontekst av en request
+            return Optional.empty();
+        }
+        return Optional.ofNullable(oidcValidationContext.getClaims(issuer.issuerName))
                 .map(claims -> claims.getClaimSet());
     }
 

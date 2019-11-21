@@ -8,12 +8,16 @@ import java.util.List;
 
 public class SjekkAktiveProfilerInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
-    public static final List<String> MILJOER = Arrays.asList("dev", "heroku", "preprod", "prod");
+    public static final List<String> MILJOER = Arrays.asList("preprod", "prod");
 
     @Override
     public void initialize(ConfigurableApplicationContext applicationContext) {
         if (ugyldigKjoremiljo(applicationContext.getEnvironment().getActiveProfiles())) {
-            throw new IllegalStateException("Applikasjonen må startes med én av profilene aktivert: " + MILJOER.toString());
+            String feilmelding = "For å starte applikasjonen lokalt må du kjøre LokalTiltaksgjennomforingApplication. På NAIS må én av profilene være aktivert: " + MILJOER.toString();
+            System.out.println("--------------------------------------------------");
+            System.out.println(feilmelding);
+            System.out.println("--------------------------------------------------");
+            throw new IllegalStateException(feilmelding);
         }
     }
 

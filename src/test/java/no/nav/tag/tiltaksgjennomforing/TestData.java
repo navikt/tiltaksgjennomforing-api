@@ -41,7 +41,7 @@ public class TestData {
 
     private static OpprettAvtale lagOpprettAvtale() {
         Fnr deltakerFnr = new Fnr("88888899999");
-        BedriftNr bedriftNr = new BedriftNr("12345678");
+        BedriftNr bedriftNr = new BedriftNr("999999999");
         return new OpprettAvtale(deltakerFnr, bedriftNr, Tiltakstype.ARBEIDSTRENING);
     }
 
@@ -51,24 +51,23 @@ public class TestData {
 
     public static EndreAvtale endringPaAlleFelt() {
         EndreAvtale endreAvtale = new EndreAvtale();
-        endreAvtale.setDeltakerFornavn("Fornavn");
-        endreAvtale.setDeltakerEtternavn("Etternavn");
+        endreAvtale.setDeltakerFornavn("Dagny");
+        endreAvtale.setDeltakerEtternavn("Deltaker");
         endreAvtale.setDeltakerTlf("22334455");
-        endreAvtale.setBedriftNavn("Bedriftnavn");
-        endreAvtale.setBedriftNr(new BedriftNr("12345678"));
-        endreAvtale.setArbeidsgiverFornavn("AG fornavn");
-        endreAvtale.setArbeidsgiverEtternavn("AG etternavn");
-        endreAvtale.setArbeidsgiverTlf("AG tlf");
-        endreAvtale.setVeilederFornavn("Veilederfornavn");
-        endreAvtale.setVeilederEtternavn("Veilederetternavn");
-        endreAvtale.setVeilederTlf("Veiledertlf");
-        endreAvtale.setOppfolging("Oppfolging");
-        endreAvtale.setTilrettelegging("Tilrettelegging");
+        endreAvtale.setBedriftNavn("Pers butikk");
+        endreAvtale.setArbeidsgiverFornavn("Per");
+        endreAvtale.setArbeidsgiverEtternavn("Kremmer");
+        endreAvtale.setArbeidsgiverTlf("33333333");
+        endreAvtale.setVeilederFornavn("Vera");
+        endreAvtale.setVeilederEtternavn("Veileder");
+        endreAvtale.setVeilederTlf("44444444");
+        endreAvtale.setOppfolging("Telefon hver uke");
+        endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(LocalDate.now());
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusWeeks(2));
         endreAvtale.setStillingprosent(50);
-        endreAvtale.setMaal(List.of(TestData.etMaal(), TestData.etMaal()));
-        endreAvtale.setOppgaver(List.of(TestData.enOppgave(), TestData.enOppgave()));
+        endreAvtale.setMaal(List.of(TestData.etMaal()));
+        endreAvtale.setOppgaver(List.of(TestData.enOppgave()));
         return endreAvtale;
     }
 
@@ -109,11 +108,18 @@ public class TestData {
     }
 
     public static Oppgave enOppgave() {
-        return new Oppgave();
+        Oppgave oppgave = new Oppgave();
+        oppgave.setTittel("Lagerarbeid");
+        oppgave.setBeskrivelse("Rydde på lageret");
+        oppgave.setOpplaering("Ryddekurs");
+        return oppgave;
     }
 
     public static Maal etMaal() {
-        return new Maal();
+        Maal maal = new Maal();
+        maal.setKategori("Få jobb i bedriften");
+        maal.setBeskrivelse("Lære butikkarbeid");
+        return maal;
     }
 
     public static GodkjentPaVegneGrunn enGodkjentPaVegneGrunn() {

@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 
+import no.nav.tag.tiltaksgjennomforing.KafkaMockServer;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.varsel.SmsVarsel;
 import no.nav.tag.tiltaksgjennomforing.varsel.SmsVarselRepository;

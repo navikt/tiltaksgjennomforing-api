@@ -1,25 +1,23 @@
 package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 
 import no.finn.unleash.strategy.Strategy;
-
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-
-import static java.util.Arrays.asList;
-import static no.nav.tag.tiltaksgjennomforing.infrastruktur.SjekkAktiveProfilerInitializer.MILJOER;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
+
+import static java.util.Arrays.asList;
+import static no.nav.tag.tiltaksgjennomforing.infrastruktur.SjekkAktiveProfilerInitializer.MILJOER;
 
 @Component
 public class ByEnvironmentStrategy implements Strategy {
 
     private final String environment;
 
-    public ByEnvironmentStrategy(
-            @Value("${spring.profiles.active}") String environmentList
-    ) {
-        this.environment = asList(environmentList.split(",")).stream().filter(a -> MILJOER.contains(a)).findFirst().orElse("dev");;
+    public ByEnvironmentStrategy(Environment environment) {
+        this.environment = Stream.of(environment.getActiveProfiles()).filter(a -> MILJOER.contains(a)).findFirst().orElse("dev");
     }
 
     @Override
@@ -34,7 +32,7 @@ public class ByEnvironmentStrategy implements Strategy {
                 .map(env -> asList(env.split(",")).contains(environment))
                 .orElse(false);
     }
-    
+
     String getEnvironment() {
         return environment;
     }
