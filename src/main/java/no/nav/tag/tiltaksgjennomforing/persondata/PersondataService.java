@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.persondata;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
@@ -11,19 +12,14 @@ import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class PersondataService {
     private final RestTemplate restTemplate;
     private final STSClient stsClient;
     private final PersondataProperties persondataProperties;
 
-    public PersondataService(RestTemplate restTemplate, STSClient stsClient, PersondataProperties persondataProperties) {
-        this.restTemplate = restTemplate;
-        this.stsClient = stsClient;
-        this.persondataProperties = persondataProperties;
-    }
-
-    Adressebeskyttelse hentGradering(Fnr fnr) {
-        return getFraPdl(fnr);
+    private static String createQuery(Fnr fnr) {
+        return String.format("{\"query\" : \"query{ hentPerson( ident: \\\"%s\\\") {adressebeskyttelse {gradering} } }\"}", fnr.asString());
     }
 
     public void sjekkGradering(Fnr fnr) {
@@ -43,23 +39,19 @@ public class PersondataService {
         return new HttpEntity<>(createQuery(fnr), headers);
     }
 
-    private String createQuery(Fnr fnr) {
-        return String.format("{\"query\" : \"query{ hentPerson( ident: \\\"%s\\\") {adressebeskyttelse {gradering} } }\"}", fnr.asString());
-    }
-
-    private Adressebeskyttelse hentGraderingFraPdlRespons(ResponseEntity<PdlPerson> response) {
-        if (response.getBody().getData().getHentPerson() == null) {
+    private Adressebeskyttelse hentGraderingFraPdlRespons(PdlPerson pdlPerson) {
+        if (pdlPerson.getData().getHentPerson() == null) {
             // Person finnes ikke
             return new Adressebeskyttelse("");
         } else {
-            return response.getBody().getData().getHentPerson().getAdressebeskyttelse()[0];
+            return pdlPerson.getData().getHentPerson().getAdressebeskyttelse()[0];
         }
     }
 
-    private Adressebeskyttelse getFraPdl(Fnr fnr) {
+    Adressebeskyttelse hentGradering(Fnr fnr) {
         try {
-            ResponseEntity<PdlPerson> response = restTemplate.exchange(persondataProperties.getUri(), HttpMethod.POST, createRequestEntity(fnr), PdlPerson.class);
-            return hentGraderingFraPdlRespons(response);
+            PdlPerson pdlPerson = restTemplate.postForObject(persondataProperties.getUri(), createRequestEntity(fnr), PdlPerson.class);
+            return hentGraderingFraPdlRespons(pdlPerson);
         } catch (RestClientException exception) {
             stsClient.evictToken();
             log.error("Feil fra PDL med request-url: " + persondataProperties.getUri(), exception);
