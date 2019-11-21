@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.utils;
 
-import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

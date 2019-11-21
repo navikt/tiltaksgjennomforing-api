@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.pilottilgang.TilgangUnderPilotering;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
-import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
@@ -52,14 +51,14 @@ public class MetrikkRegistrering {
         Counter.builder("tiltaksgjennomforing.smsvarsel.feil").register(meterRegistry).increment();
     }
 
-    private boolean pilotFylke(Identifikator utfortAv) {
+    private boolean pilotFylke() {
         return featureToggleService.isEnabled(TilgangUnderPilotering.TAG_TILTAK_PILOTTILGANG_KONTOR);
     }
 
     @EventListener
     public void avtaleOpprettet(AvtaleOpprettet event) {
         Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
-        log.info("Avtale opprettet, avtaleId={} ident={}, PilotFylke={}, tiltakstype={}", event.getAvtale().getId(), event.getUtfortAv(), pilotFylke(event.getUtfortAv()), tiltakstype);
+        log.info("Avtale opprettet, avtaleId={} ident={}, PilotFylke={}, tiltakstype={}", event.getAvtale().getId(), event.getUtfortAv(), pilotFylke(), tiltakstype);
         counter("avtale.opprettet", Avtalerolle.VEILEDER, tiltakstype).increment();
     }
 
@@ -106,7 +105,7 @@ public class MetrikkRegistrering {
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
         Avtalerolle rolle = Avtalerolle.VEILEDER;
         Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
-        log.info("Avtale godkjent, avtaleId={}, avtalepart={}, PilotFylke={}, tiltakstype={}", event.getAvtale().getId(), rolle, pilotFylke(event.getUtfortAv()), tiltakstype);
+        log.info("Avtale godkjent, avtaleId={}, avtalepart={}, PilotFylke={}, tiltakstype={}", event.getAvtale().getId(), rolle, pilotFylke(), tiltakstype);
         counter("avtale.godkjenning.godkjent", rolle, tiltakstype).increment();
     }
 
@@ -114,7 +113,7 @@ public class MetrikkRegistrering {
     public void godkjentPaVegneAv(GodkjentPaVegneAv event) {
         Avtalerolle rolle = Avtalerolle.VEILEDER;
         Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
-        log.info("Avtale godkjent på vegne av deltaker, avtaleId={}, avtalepart={}, PilotFylke={}, tiltakstype={}", event.getAvtale().getId(), rolle, pilotFylke(event.getUtfortAv()), tiltakstype);
+        log.info("Avtale godkjent på vegne av deltaker, avtaleId={}, avtalepart={}, PilotFylke={}, tiltakstype={}", event.getAvtale().getId(), rolle, pilotFylke(), tiltakstype);
         counter("avtale.godkjenning.godkjentPaVegneAv", rolle, tiltakstype).increment();
     }
 
