@@ -283,9 +283,28 @@ public class AvtaleTest {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        assertThat(avtale.status()).isEqualTo("Gjennomføres");
+    }
+@Test
+public void status__startet_i_dag(){
+    Arbeidstrening avtale = TestData.enAvtaleMedAltUtfylt();
+    avtale.setStartDato(LocalDate.now());
+    avtale.setSluttDato(avtale.getStartDato().plusWeeks(4));
+    avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+    avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+    avtale.setGodkjentAvVeileder(LocalDateTime.now());
+    assertThat(avtale.status()).isEqualTo("Gjennomføres");
+}
+@Test
+    public void status__starter_i_morgen(){
+        Arbeidstrening avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setStartDato(LocalDate.now().plusDays(1));
+        avtale.setSluttDato(avtale.getStartDato().plusWeeks(4));
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvVeileder(LocalDateTime.now());
         assertThat(avtale.status()).isEqualTo("Klar for oppstart");
     }
-
     @Test
     public void status__klar_for_godkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();

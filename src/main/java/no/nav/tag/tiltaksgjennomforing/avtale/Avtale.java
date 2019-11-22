@@ -223,6 +223,8 @@ public abstract class Avtale extends AbstractAggregateRoot<Avtale> {
             return "Avbrutt";
         } else if (erGodkjentAvVeileder() && (sluttDato.isBefore(LocalDate.now()))) {
             return "Avsluttet";
+        } else if (erGodkjentAvVeileder() && (startDato.isBefore(LocalDate.now().plusDays(1)))) {
+            return "Gjennomføres";
         } else if (erGodkjentAvVeileder()) {
             return "Klar for oppstart";
         } else if (heleAvtalenErFyltUt()) {
