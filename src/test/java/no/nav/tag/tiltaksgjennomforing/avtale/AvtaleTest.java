@@ -371,4 +371,59 @@ public class AvtaleTest {
         avtale.setAvbrutt(true);
         assertThat(avtale.kanAvbrytes()).isFalse();
     }
+
+    @Test
+    public void kanLåsesOpp__skal_være_true_når_godkjent_av_veileder() {
+        assertThat(TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder().kanLåsesOpp()).isTrue();
+    }
+
+    @Test
+    public void kanLåsesOpp__skal_være_false_når_ikke_godkjent_av_veileder() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        avtale.setGodkjentAvVeileder(null);
+        assertThat(avtale.kanLåsesOpp()).isFalse();
+    }
+
+    @Test
+    public void låsOppAvtale__skal_ha_riktig_innhold() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        Avtale avtaleKopi = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+
+        avtale.låsOppAvtale();
+        assertThat(avtale).isEqualToIgnoringGivenFields(avtaleKopi,
+                Avtale.Fields.id,
+                Avtale.Fields.opprettetTidspunkt,
+                Avtale.Fields.versjoner,
+                AvtaleInnhold.Fields.godkjentAvDeltaker,
+                AvtaleInnhold.Fields.godkjentAvArbeidsgiver,
+                AvtaleInnhold.Fields.godkjentAvVeileder,
+                "domainEvents");
+        assertThat(avtale.getGodkjentAvDeltaker()).isNull();
+        assertThat(avtale.getGodkjentAvArbeidsgiver()).isNull();
+        assertThat(avtale.getGodkjentAvVeileder()).isNull();
+    }
+
+    @Test
+    public void låsOppAvtale__skal_lage_ny_versjon() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        avtale.låsOppAvtale();
+        List<AvtaleInnhold> versjoner = avtale.getVersjoner();
+
+        assertThat(versjoner).hasSize(2);
+        AvtaleInnhold førsteVersjon = versjoner.get(0);
+        AvtaleInnhold andreVersjon = versjoner.get(1);
+        assertThat(andreVersjon.getMaal())
+                .usingElementComparatorOnFields(Maal.Fields.kategori, Maal.Fields.beskrivelse)
+                .isEqualTo(førsteVersjon.getMaal());
+        assertThat(andreVersjon.getOppgaver())
+                .usingElementComparatorOnFields(Oppgave.Fields.tittel, Oppgave.Fields.beskrivelse, Oppgave.Fields.opplaering)
+                .isEqualTo(førsteVersjon.getOppgaver());
+        assertThat(andreVersjon).isEqualToIgnoringGivenFields(førsteVersjon,
+                AvtaleInnhold.Fields.id,
+                AvtaleInnhold.Fields.maal,
+                AvtaleInnhold.Fields.oppgaver,
+                AvtaleInnhold.Fields.godkjentAvDeltaker,
+                AvtaleInnhold.Fields.godkjentAvArbeidsgiver,
+                AvtaleInnhold.Fields.godkjentAvVeileder);
+    }
 }

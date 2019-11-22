@@ -231,10 +231,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void låsOppAvtale() {
-        if (kanLåsesOpp()) {
-            versjoner.add(this.gjeldendeInnhold().nyVersjon());
-            registerEvent(new AvtaleLåstOpp(this));
-        }
+        sjekkOmKanLåsesOpp();
+        versjoner.add(this.gjeldendeInnhold().nyVersjon());
+        registerEvent(new AvtaleLåstOpp(this));
     }
 
     public boolean skalJournalfores() {

@@ -109,7 +109,6 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     @Override
     public void låsOppAvtale(Integer versjon) {
-        avtale.sjekkOmKanLåsesOpp();
         avtale.låsOppAvtale();
     }
 }

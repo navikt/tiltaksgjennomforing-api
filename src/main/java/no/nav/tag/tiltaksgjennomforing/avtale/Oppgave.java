@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import lombok.experimental.FieldNameConstants;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 
 import javax.persistence.*;
@@ -12,6 +13,7 @@ import java.util.UUID;
 @Data
 @Entity
 @Accessors(chain = true)
+@FieldNameConstants
 public class Oppgave {
     @Id
     @GeneratedValue
