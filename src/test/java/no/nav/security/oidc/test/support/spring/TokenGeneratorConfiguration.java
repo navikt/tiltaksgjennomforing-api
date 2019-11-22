@@ -19,7 +19,7 @@ public class TokenGeneratorConfiguration implements WebMvcConfigurer {
     @Bean
     @Primary
     OIDCResourceRetriever overrideOidcResourceRetriever() {
-        return new FileResourceRetriever("/metadata-system.json","/metadata-selvbetjening.json", "/metadata-isso.json", "/jwkset.json");
+        return new FileResourceRetriever("/metadata-system.json", "/metadata-selvbetjening.json", "/metadata-isso.json", "/jwkset.json");
     }
 
     @Bean

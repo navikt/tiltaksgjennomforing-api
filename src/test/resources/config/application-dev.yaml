@@ -45,3 +45,5 @@ tiltaksgjennomforing:
   consumer:
     system:
       id: testsystem
+  persondata:
+    uri: http://localhost:8090/persondata

@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.infrastruktur;
 
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.SjekkAktiveProfilerInitializer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -28,13 +27,13 @@ public class SjekkAktiveProfilerInitializerTest {
 
     @Test(expected = Exception.class)
     public void initialize__feilaktig_profil() {
-        aktiveProfiler("foo");
+        aktiveProfiler("dev");
         new SjekkAktiveProfilerInitializer().initialize(applicationContext);
     }
 
     @Test(expected = Exception.class)
     public void initialize__for_mange_profiler() {
-        aktiveProfiler("dev", "prod");
+        aktiveProfiler("preprod", "prod");
         new SjekkAktiveProfilerInitializer().initialize(applicationContext);
     }
 
