@@ -7,9 +7,7 @@ import java.time.LocalDate;
 public class Veileder extends Avtalepart<NavIdent> {
     //static String tekstAvtalePaabegynt = "Som veileder kan du fylle ut avtalen i samarbeid med arbeidsgiver. Avtalen kan godkjennes etter at den er fylt ut.";
     String venteListeForVeileder;
-    static String tekstForklarerVenting = "Som veileder, er det du som godkjenner sist. Det er på grun av at etter dign godkjenning er vel avtalen låst og klar for oppstart, " + "Dette bør skjer før dagen for tiltak starter.....";
     static String tekstAvtaleVenterPaaDinGodkjenning = "Før du godkjenner avtalen må du sjekke at alt er i orden og innholdet er riktig.";
-
     static String ekstraTekstAvtleErGodkjentAvAllePartner = "Du må fullføre registreringen i Arena. Avtalen journalføres automatisk i Gosys.";
     static String tekstAvtaleAvbrutt = "Du eller en annen veileder har avbrutt tiltaket.";
 

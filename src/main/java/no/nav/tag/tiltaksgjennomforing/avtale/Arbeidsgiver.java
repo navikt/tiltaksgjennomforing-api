@@ -10,7 +10,6 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         super(identifikator, avtale);
     }
 
-    //static String tekstAvtalePaabegynt = "Som arbeidsgiver kan du fylle ut avtalen i samarbeid med Nav/veileder. Avtalen kan godkjennes etter at den er fylt ut.\n mer tekst";
     static String tekstAvtaleVenterPaaDinGodkjenning = "Deltakeren trenger ikke å godkjenne avtalen før du gjør det. ";
 
     static String ekstraTekstAvtaleVenterPaaDinGodkjenning = "Veilederen skal godkjenne til slutt.";
