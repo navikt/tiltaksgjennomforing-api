@@ -13,6 +13,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -45,7 +46,7 @@ public abstract class Avtale extends AbstractAggregateRoot<Avtale> {
     @Id
     @EqualsAndHashCode.Include
     private UUID id;
-    private Integer versjon;
+    private Instant sistEndret;
     private String deltakerFornavn;
     private String deltakerEtternavn;
     private String deltakerTlf;
@@ -81,7 +82,7 @@ public abstract class Avtale extends AbstractAggregateRoot<Avtale> {
         this.bedriftNr = sjekkAtIkkeNull(bedriftNr, "Arbeidsgivers bedriftnr må være satt.");
         this.veilederNavIdent = sjekkAtIkkeNull(veilederNavIdent, "Veileders NAV-ident må være satt.");
         this.tiltakstype = tiltakstype;
-        this.versjon = 1;
+        this.sistEndret = Instant.now();
         registerEvent(new AvtaleOpprettet(this, veilederNavIdent));
     }
 
@@ -90,10 +91,9 @@ public abstract class Avtale extends AbstractAggregateRoot<Avtale> {
         oppgaver.forEach(Oppgave::sjekkOppgaveLengde);
     }
 
-    public void endreAvtale(Integer versjon, EndreAvtale nyAvtale, Avtalerolle utfortAv) {
+    public void endreAvtale(Instant sistEndret, EndreAvtale nyAvtale, Avtalerolle utfortAv) {
         sjekkOmAvtalenKanEndres();
-        sjekkVersjon(versjon);
-        inkrementerVersjonsnummer();
+        sjekkSistEndret(sistEndret);
         sjekkMaalOgOppgaverLengde(nyAvtale.getMaal(), nyAvtale.getOppgaver());
         sjekkStartOgSluttDato(nyAvtale.getStartDato(), nyAvtale.getSluttDato());
 
@@ -116,6 +116,8 @@ public abstract class Avtale extends AbstractAggregateRoot<Avtale> {
         setStartDato(nyAvtale.getStartDato());
         setSluttDato(nyAvtale.getSluttDato());
         setStillingprosent(nyAvtale.getStillingprosent());
+
+        settSistEndret();
 
         registerEvent(new AvtaleEndret(this, utfortAv));
     }
@@ -174,12 +176,12 @@ public abstract class Avtale extends AbstractAggregateRoot<Avtale> {
         setGodkjentPaVegneGrunn(null);
     }
 
-    private void inkrementerVersjonsnummer() {
-        versjon += 1;
+    private void settSistEndret() {
+        this.sistEndret = Instant.now();
     }
 
-    void sjekkVersjon(Integer versjon) {
-        if (versjon == null || !versjon.equals(this.versjon)) {
+    void sjekkSistEndret(Instant sistEndret) {
+        if (sistEndret == null || sistEndret.isBefore(this.sistEndret)) {
             throw new SamtidigeEndringerException("Du må oppdatere siden før du kan lagre eller godkjenne. Det er gjort endringer i avtalen som du ikke har sett.");
         }
     }

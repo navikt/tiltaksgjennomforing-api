@@ -10,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.varsel.SmsVarsel;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelse;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -27,7 +28,7 @@ public class TestData {
     public static Arbeidstrening enAvtaleMedAltUtfylt() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         Avtale avtale = AvtaleFactory.nyAvtale(lagOpprettAvtale(), veilderNavIdent);
-        avtale.endreAvtale(avtale.getVersjon(), endringPaAlleFelt(), Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endringPaAlleFelt(), Avtalerolle.VEILEDER);
         return (Arbeidstrening) avtale;
     }
 

@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 
+import java.time.Instant;
 import java.time.LocalDate;
 
 public class Veileder extends Avtalepart<NavIdent> {
@@ -22,8 +23,8 @@ public class Veileder extends Avtalepart<NavIdent> {
         avtale.godkjennForVeileder(getIdentifikator());
     }
 
-    public void avbrytAvtale(Integer versjon) {
-        avtale.sjekkVersjon(versjon);
+    public void avbrytAvtale(Instant sistEndret) {
+        avtale.sjekkSistEndret(sistEndret);
         avtale.avbryt(this);
     }
 

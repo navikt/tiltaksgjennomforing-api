@@ -1,8 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.TestData;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import org.junit.Test;
 
@@ -15,7 +13,7 @@ public class VeilederTest {
     public void godkjennAvtale__kan_ikke_godkjenne_foerst() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.godkjennAvtale(avtale.getVersjon());
+        veileder.godkjennAvtale(avtale.getSistEndret());
     }
 
     @Test
@@ -24,7 +22,7 @@ public class VeilederTest {
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.godkjennAvtale(avtale.getVersjon());
+        veileder.godkjennAvtale(avtale.getSistEndret());
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
     }
 
@@ -48,7 +46,7 @@ public class VeilederTest {
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.avbrytAvtale(avtale.getVersjon());
+        veileder.avbrytAvtale(avtale.getSistEndret());
         assertThat(avtale.isAvbrutt()).isFalse();
     }
 
@@ -58,7 +56,7 @@ public class VeilederTest {
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.avbrytAvtale(avtale.getVersjon());
+        veileder.avbrytAvtale(avtale.getSistEndret());
         assertThat(avtale.isAvbrutt()).isTrue();
     }
 }
