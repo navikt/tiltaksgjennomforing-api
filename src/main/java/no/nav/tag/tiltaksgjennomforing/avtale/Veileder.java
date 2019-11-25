@@ -60,8 +60,8 @@ public class Veileder extends Avtalepart<NavIdent> {
             avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleAvbrutt, tekstAvtaleAvbrutt, "");
         }
         avtaleStatusDetaljer.setPart1Detaljer(avtale.getBedriftNavn()+(avtale.erGodkjentAvArbeidsgiver()?" har godkjent":" har ikke godkjet") , avtale.erGodkjentAvArbeidsgiver());
-        avtaleStatusDetaljer.setPart2Detaljer((avtale.getDeltakerFornavn() != null && !avtale.getDeltakerFornavn().equals("") ? avtale.getDeltakerFornavn() : "Deltaker") + " " +
-                (avtale.getDeltakerEtternavn() != null && !avtale.getDeltakerEtternavn().equals("") ? avtale.getDeltakerEtternavn() : "")+(avtale.erGodkjentAvDeltaker()?" har godkjent":" har ikke godkjet"), avtale.erGodkjentAvDeltaker());
+        avtaleStatusDetaljer.setPart2Detaljer((avtale.getDeltakerFornavn() != null && !avtale.getDeltakerFornavn().trim().equals("") ? avtale.getDeltakerFornavn() : "Deltaker") + " " +
+                (avtale.getDeltakerEtternavn() != null && !avtale.getDeltakerEtternavn().trim().equals("") ? avtale.getDeltakerEtternavn() : "")+(avtale.erGodkjentAvDeltaker()?" har godkjent":" har ikke godkjet"), avtale.erGodkjentAvDeltaker());
         return avtaleStatusDetaljer;
     }
 

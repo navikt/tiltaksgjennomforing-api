@@ -59,10 +59,10 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
             avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleAvbrutt, tekstAvtaleAvbrutt, "");
         }
         avtaleStatusDetaljer.setPart1Detaljer((avtale.getDeltakerFornavn() != null && !avtale.getDeltakerFornavn().equals("") ? avtale.getDeltakerFornavn() : "Deltaker") + " " +
-                (avtale.getDeltakerEtternavn() != null && !avtale.getDeltakerEtternavn().equals("") ? avtale.getDeltakerEtternavn() : "")
+                (avtale.getDeltakerEtternavn() != null && !avtale.getDeltakerEtternavn().trim().equals("") ? avtale.getDeltakerEtternavn() : "")
                 +(avtale.erGodkjentAvDeltaker()?" har godkjent":" har ikke godkjet"), avtale.erGodkjentAvDeltaker());
-        avtaleStatusDetaljer.setPart2Detaljer((avtale.getVeilederFornavn() != null && !avtale.getVeilederFornavn().equals("") ? avtale.getVeilederFornavn() : "Veileder") + " "
-                + (avtale.getVeilederEtternavn() != null && !avtale.getVeilederEtternavn().equals("") ? avtale.getVeilederEtternavn() : "")
+        avtaleStatusDetaljer.setPart2Detaljer((avtale.getVeilederFornavn() != null && !avtale.getVeilederFornavn().trim().equals("") ? avtale.getVeilederFornavn() : "Veileder") + " "
+                + (avtale.getVeilederEtternavn() != null && !avtale.getVeilederEtternavn().trim().equals("") ? avtale.getVeilederEtternavn() : "")
                 +(avtale.erGodkjentAvVeileder()?" har godkjent":" venter på din godkjenning"), avtale.erGodkjentAvVeileder());
         return avtaleStatusDetaljer;
     }
