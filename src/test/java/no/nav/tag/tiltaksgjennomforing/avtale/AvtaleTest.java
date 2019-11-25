@@ -282,6 +282,28 @@ public class AvtaleTest {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        assertThat(avtale.status()).isEqualTo("Gjennomføres");
+    }
+
+    @Test
+    public void status__startet_i_dag() {
+        Arbeidstrening avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setStartDato(LocalDate.now());
+        avtale.setSluttDato(avtale.getStartDato().plusWeeks(4));
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        assertThat(avtale.status()).isEqualTo("Gjennomføres");
+    }
+
+    @Test
+    public void status__starter_i_morgen() {
+        Arbeidstrening avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setStartDato(LocalDate.now().plusDays(1));
+        avtale.setSluttDato(avtale.getStartDato().plusWeeks(4));
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvVeileder(LocalDateTime.now());
         assertThat(avtale.status()).isEqualTo("Klar for oppstart");
     }
 
@@ -294,6 +316,8 @@ public class AvtaleTest {
     @Test
     public void status__veileder_har_godkjent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setStartDato(LocalDate.now().plusDays(1));
+        avtale.setSluttDato(LocalDate.now().plusDays(1).plusMonths(1));
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
@@ -305,11 +329,13 @@ public class AvtaleTest {
         // Deltaker tlf ble innført etter at avtaler er opprettet. Det kan derfor være
         // avtaler som er inngått som mangler tlf.
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setStartDato(LocalDate.now().minusDays(1));
+        avtale.setSluttDato(LocalDate.now().minusDays(1).plusMonths(1));
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
         avtale.setDeltakerTlf(null);
-        assertThat(avtale.status()).isEqualTo("Klar for oppstart");
+        assertThat(avtale.status()).isEqualTo("Gjennomføres");
     }
 
     @Test

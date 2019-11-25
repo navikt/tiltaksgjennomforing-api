@@ -69,6 +69,14 @@ public class AvtaleController {
         return ResponseEntity.created(uri).build();
     }
 
+    @GetMapping(value = "/{avtaleId}/status-detaljer")
+    public AvtaleStatusDetaljer hentAvtaleStatusDetaljer(@PathVariable("avtaleId") UUID avtaleId) {
+        InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        Avtalepart avtalepart = innloggetBruker.avtalepart(avtale);
+        return avtalepart.statusDetaljerForAvtale();
+    }
+
     @PutMapping(value = "/{avtaleId}")
     @Transactional
     public ResponseEntity<?> endreAvtale(@PathVariable("avtaleId") UUID avtaleId,
