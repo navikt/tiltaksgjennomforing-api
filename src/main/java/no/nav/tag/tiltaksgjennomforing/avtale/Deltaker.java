@@ -59,9 +59,10 @@ public class Deltaker extends Avtalepart<Fnr> {
         } else {
             avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleAvbrutt, tekstAvtaleAvbrutt, "");
         }
-        avtaleStatusDetaljer.setPart1Detaljer(avtale.getBedriftNavn() + " /v" + (avtale.getArbeidsgiverFornavn() != null && !avtale.getArbeidsgiverFornavn().equals("") ? avtale.getArbeidsgiverFornavn() : "Kontakt person"), avtale.erGodkjentAvArbeidsgiver());
+        avtaleStatusDetaljer.setPart1Detaljer(avtale.getBedriftNavn() + (avtale.erGodkjentAvArbeidsgiver() ? " har godkjent" : " har ikke godkjet"), avtale.erGodkjentAvArbeidsgiver());
         avtaleStatusDetaljer.setPart2Detaljer((avtale.getVeilederFornavn() != null && !avtale.getVeilederFornavn().equals("") ? avtale.getVeilederFornavn() : "Veileder") + " "
-                + (avtale.getVeilederEtternavn() != null && !avtale.getVeilederEtternavn().equals("") ? avtale.getVeilederEtternavn() : ""), avtale.erGodkjentAvVeileder());
+                + (avtale.getVeilederEtternavn() != null && !avtale.getVeilederEtternavn().equals("") ? avtale.getVeilederEtternavn() : "")
+                + (avtale.erGodkjentAvVeileder() ? " har godkjent" : " venter på din godkjenning"), avtale.erGodkjentAvVeileder());
         //avtaleStatusDetaljer.info",)
         return avtaleStatusDetaljer;
     }
