@@ -31,7 +31,7 @@ public class Deltaker extends Avtalepart<Fnr> {
         AvtaleStatusDetaljer avtaleStatusDetaljer = new AvtaleStatusDetaljer();
         avtaleStatusDetaljer.setGodkjentAvInnloggetBruker(erGodkjentAvInnloggetBruker());
         if (!avtale.isAvbrutt()) {
-            if (avtale.heleAvtalenErFyltUt()) {
+            if (avtale.erAltUtfylt()) {
                 if (avtale.erGodkjentAvDeltaker()) {
                     if (avtale.erGodkjentAvVeileder()) {
                         if (avtale.getStartDato().isAfter(LocalDate.now())) {

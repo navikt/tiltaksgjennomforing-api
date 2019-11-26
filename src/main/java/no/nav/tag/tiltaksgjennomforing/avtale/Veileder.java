@@ -38,7 +38,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         AvtaleStatusDetaljer avtaleStatusDetaljer = new AvtaleStatusDetaljer();
         avtaleStatusDetaljer.setGodkjentAvInnloggetBruker(erGodkjentAvInnloggetBruker());
         if (!avtale.isAvbrutt()) {
-            if (avtale.heleAvtalenErFyltUt()) {
+            if (avtale.erAltUtfylt()) {
                 if (avtale.erGodkjentAvVeileder()) {
                     if (avtale.getStartDato().isAfter(LocalDate.now())) {
                         avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato().format(formatter), Veileder.ekstraTekstAvtleErGodkjentAvAllePartner);

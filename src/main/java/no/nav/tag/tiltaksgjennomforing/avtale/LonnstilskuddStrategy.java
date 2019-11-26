@@ -20,8 +20,8 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
     }
 
     @Override
-    public boolean heleAvtaleUtfylt() {
-        return super.heleAvtaleUtfylt() && erIkkeTomme(
+    public boolean erAltUtfylt() {
+        return super.erAltUtfylt() && erIkkeTomme(
                 avtaleInnhold.getArbeidsgiverKontonummer(),
                 avtaleInnhold.getStillingtype(),
                 avtaleInnhold.getStillingbeskrivelse(),

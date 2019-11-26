@@ -30,7 +30,7 @@ public class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy {
     }
 
     @Override
-    public boolean heleAvtaleUtfylt() {
+    public boolean erAltUtfylt() {
         return erIkkeTomme(
                 avtaleInnhold.getDeltakerFornavn(),
                 avtaleInnhold.getDeltakerEtternavn(),

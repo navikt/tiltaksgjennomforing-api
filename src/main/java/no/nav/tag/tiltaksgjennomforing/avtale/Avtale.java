@@ -16,7 +16,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,6 +45,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private UUID id;
 
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OrderBy(AvtaleInnhold.Fields.versjon)
     private List<AvtaleInnhold> versjoner = new ArrayList<>();
 
     private Instant sistEndret;
@@ -86,7 +86,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     @Delegate(excludes = MetoderSomIkkeSkalDelegeresFraAvtaleInnhold.class)
     private AvtaleInnhold gjeldendeInnhold() {
-        return versjoner.stream().max(Comparator.comparingInt(AvtaleInnhold::getVersjon)).get();
+        return versjoner.get(versjoner.size() - 1);
     }
 
     @JsonProperty
@@ -171,7 +171,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     void sjekkOmKanGodkjennes() {
-        if (!heleAvtalenErFyltUt()) {
+        if (!erAltUtfylt()) {
             throw new TiltaksgjennomforingException("Alt må være utfylt før avtalen kan godkjennes.");
         }
     }
@@ -186,7 +186,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             return "Gjennomføres";
         } else if (erGodkjentAvVeileder()) {
             return "Klar for oppstart";
-        } else if (heleAvtalenErFyltUt()) {
+        } else if (erAltUtfylt()) {
             return "Mangler godkjenning";
         } else {
             return "Påbegynt";
@@ -207,8 +207,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
     }
 
-    boolean heleAvtalenErFyltUt() {
-        return gjeldendeInnhold().heleAvtalenErFyltUt();
+    boolean erAltUtfylt() {
+        return gjeldendeInnhold().erAltUtfylt();
     }
 
     public void leggTilBedriftNavn(String bedriftNavn) {

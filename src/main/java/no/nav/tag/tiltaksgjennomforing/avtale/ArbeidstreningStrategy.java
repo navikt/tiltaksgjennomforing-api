@@ -19,8 +19,8 @@ public class ArbeidstreningStrategy extends BaseAvtaleInnholdStrategy {
     }
 
     @Override
-    public boolean heleAvtaleUtfylt() {
-        return super.heleAvtaleUtfylt()
+    public boolean erAltUtfylt() {
+        return super.erAltUtfylt()
                 && !avtaleInnhold.getMaal().isEmpty()
                 && !avtaleInnhold.getOppgaver().isEmpty();
     }

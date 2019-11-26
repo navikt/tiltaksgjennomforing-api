@@ -410,9 +410,10 @@ public class AvtaleTest {
         avtale.låsOppAvtale();
         List<AvtaleInnhold> versjoner = avtale.getVersjoner();
 
-        assertThat(versjoner).hasSize(2);
         AvtaleInnhold førsteVersjon = versjoner.get(0);
         AvtaleInnhold andreVersjon = versjoner.get(1);
+        assertThat(førsteVersjon.getVersjon()).isEqualTo(1);
+        assertThat(andreVersjon.getVersjon()).isEqualTo(2);
         assertThat(andreVersjon.getMaal())
                 .usingElementComparatorOnFields(Maal.Fields.kategori, Maal.Fields.beskrivelse)
                 .isEqualTo(førsteVersjon.getMaal());
@@ -421,6 +422,7 @@ public class AvtaleTest {
                 .isEqualTo(førsteVersjon.getOppgaver());
         assertThat(andreVersjon).isEqualToIgnoringGivenFields(førsteVersjon,
                 AvtaleInnhold.Fields.id,
+                AvtaleInnhold.Fields.versjon,
                 AvtaleInnhold.Fields.maal,
                 AvtaleInnhold.Fields.oppgaver,
                 AvtaleInnhold.Fields.godkjentAvDeltaker,

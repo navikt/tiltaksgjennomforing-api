@@ -3,7 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class AvtaletypeStrategyFactory {
+public class AvtaleInnholdStrategyFactory {
     public AvtaleInnholdStrategy create(AvtaleInnhold avtaleInnhold, Tiltakstype tiltakstype) {
         switch (tiltakstype) {
             case ARBEIDSTRENING:

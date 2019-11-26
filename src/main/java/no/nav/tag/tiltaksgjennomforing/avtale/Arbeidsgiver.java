@@ -29,7 +29,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     public AvtaleStatusDetaljer statusDetaljerForAvtale() {
         AvtaleStatusDetaljer avtaleStatusDetaljer = new AvtaleStatusDetaljer();
         if (!avtale.isAvbrutt()) {
-            if (avtale.heleAvtalenErFyltUt()) {
+            if (avtale.erAltUtfylt()) {
                 if (avtale.erGodkjentAvArbeidsgiver()) {
                     if (avtale.erGodkjentAvVeileder()) {
                         if (avtale.getStartDato().isAfter(LocalDate.now())) {

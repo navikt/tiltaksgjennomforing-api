@@ -123,15 +123,15 @@ public class AvtaleInnhold {
     }
 
     void endreAvtale(EndreAvtale nyAvtale) {
-        getStrategy().endre(nyAvtale);
+        innholdStrategi().endre(nyAvtale);
     }
 
-    boolean heleAvtalenErFyltUt() {
-        return getStrategy().heleAvtaleUtfylt();
+    boolean erAltUtfylt() {
+        return innholdStrategi().erAltUtfylt();
     }
 
-    private AvtaleInnholdStrategy getStrategy() {
-        return AvtaletypeStrategyFactory.create(this, avtale.getTiltakstype());
+    private AvtaleInnholdStrategy innholdStrategi() {
+        return AvtaleInnholdStrategyFactory.create(this, avtale.getTiltakstype());
     }
 }
 
