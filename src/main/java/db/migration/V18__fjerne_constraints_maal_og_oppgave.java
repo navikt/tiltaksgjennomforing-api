@@ -5,7 +5,7 @@ import org.flywaydb.core.api.migration.Context;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
-// Nødvendig
+// Nødvendig å gjøre denne migreringen i Java fordi constraint-navn ikke kan settes inn i alter table-spørring som tekststreng
 public class V18__fjerne_constraints_maal_og_oppgave extends BaseJavaMigration {
     public void migrate(Context context) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(new SingleConnectionDataSource(context.getConnection(), true));
