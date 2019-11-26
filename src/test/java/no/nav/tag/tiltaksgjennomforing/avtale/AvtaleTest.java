@@ -393,6 +393,7 @@ public class AvtaleTest {
         assertThat(avtale).isEqualToIgnoringGivenFields(avtaleKopi,
                 Avtale.Fields.id,
                 Avtale.Fields.opprettetTidspunkt,
+                Avtale.Fields.sistEndret,
                 Avtale.Fields.versjoner,
                 AvtaleInnhold.Fields.godkjentAvDeltaker,
                 AvtaleInnhold.Fields.godkjentAvArbeidsgiver,

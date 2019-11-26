@@ -16,6 +16,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -69,7 +70,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         sjekkSistEndret(sistEndret);
 
         gjeldendeInnhold().endreAvtale(nyAvtale);
-        settSistEndret();
 
         settSistEndret();
 
@@ -86,11 +86,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     @Delegate(excludes = MetoderSomIkkeSkalDelegeresFraAvtaleInnhold.class)
     private AvtaleInnhold gjeldendeInnhold() {
-        /* TODO: Bruk en tryggere måte å hente gjeldende versjon. Alternativer:
-            - Lagre en gjeldende versjon på Avtale, og gjøre oppslag i versjoner-lista
-            - Sortere versjoner etter versjonsnummer, kan dermed plukke siste element
-        */
-        return versjoner.get(versjoner.size() - 1);
+        return versjoner.stream().max(Comparator.comparingInt(AvtaleInnhold::getVersjon)).get();
     }
 
     @JsonProperty

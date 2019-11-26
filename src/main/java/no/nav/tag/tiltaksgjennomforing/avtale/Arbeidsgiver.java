@@ -93,7 +93,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     @Override
-    public void låsOppAvtale(Integer versjon) {
+    public void låsOppAvtale() {
         throw new TilgangskontrollException("Arbeidsgiver kan ikke låse opp avtale");
     }
 }

@@ -139,35 +139,35 @@ public class AvtaleController {
 
     @PostMapping(value = "/{avtaleId}/godkjenn-paa-vegne-av")
     @Transactional
-    public ResponseEntity<?> godkjennPaVegneAv(@PathVariable("avtaleId") UUID avtaleId, @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn, @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant versjon) {
+    public ResponseEntity<?> godkjennPaVegneAv(@PathVariable("avtaleId") UUID avtaleId, @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn) {
         InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
         Avtalepart<?> avtalepart = innloggetBruker.avtalepart(avtale);
-        avtalepart.godkjennPaVegneAvDeltaker(paVegneAvGrunn, versjon);
+        avtalepart.godkjennPaVegneAvDeltaker(paVegneAvGrunn);
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping(value = "/{avtaleId}/avbryt")
-    public ResponseEntity<?> avbryt(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant versjon) {
+    public ResponseEntity<?> avbryt(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret) {
         InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetNavAnsatt.sjekkSkriveTilgang(avtale);
         Veileder veileder = innloggetNavAnsatt.avtalepart(avtale);
-        veileder.avbrytAvtale(versjon);
+        veileder.avbrytAvtale(sistEndret);
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping(value = "/{avtaleId}/laas-opp")
     @Transactional
-    public ResponseEntity<?> laasOpp(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader("If-Match") Integer versjon) {
+    public ResponseEntity<?> laasOpp(@PathVariable("avtaleId") UUID avtaleId) {
         InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
         Avtalepart<?> avtalepart = innloggetBruker.avtalepart(avtale);
-        avtalepart.låsOppAvtale(versjon);
+        avtalepart.låsOppAvtale();
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();
     }

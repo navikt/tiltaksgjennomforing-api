@@ -33,6 +33,9 @@ select id,
        arbeidsgiveravgift
 from avtale;
 
+alter table avtale_innhold add column versjon integer;
+update avtale_innhold set versjon = 1;
+
 alter table avtale drop column
     deltaker_fornavn,
     deltaker_etternavn,

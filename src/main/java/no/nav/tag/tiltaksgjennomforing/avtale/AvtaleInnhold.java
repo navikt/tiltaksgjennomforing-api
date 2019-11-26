@@ -37,6 +37,8 @@ public class AvtaleInnhold {
     @ToString.Exclude
     private Avtale avtale;
 
+    private Integer versjon;
+
     private String deltakerFornavn;
     private String deltakerEtternavn;
     private String deltakerTlf;
@@ -81,6 +83,7 @@ public class AvtaleInnhold {
     public static AvtaleInnhold nyttTomtInnhold() {
         var innhold = new AvtaleInnhold();
         innhold.setId(UUID.randomUUID());
+        innhold.setVersjon(1);
         return innhold;
     }
 
@@ -94,6 +97,7 @@ public class AvtaleInnhold {
                 .godkjentAvVeileder(null)
                 .godkjentPaVegneAv(false)
                 .godkjentPaVegneGrunn(null)
+                .versjon(versjon + 1)
                 .build();
         nyVersjon.getMaal().forEach(m -> m.setAvtaleInnhold(nyVersjon));
         nyVersjon.getOppgaver().forEach(o -> o.setAvtaleInnhold(nyVersjon));

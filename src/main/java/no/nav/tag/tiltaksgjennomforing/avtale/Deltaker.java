@@ -93,7 +93,7 @@ public class Deltaker extends Avtalepart<Fnr> {
     }
 
     @Override
-    public void låsOppAvtale(Integer versjon) {
+    public void låsOppAvtale() {
         throw new TilgangskontrollException("Deltaker kan ikke låse opp avtale");
     }
 }

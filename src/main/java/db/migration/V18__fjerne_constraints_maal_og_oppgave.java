@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 // Nødvendig
-public class V16__fjerne_constraints_maal_og_oppgave extends BaseJavaMigration {
+public class V18__fjerne_constraints_maal_og_oppgave extends BaseJavaMigration {
     public void migrate(Context context) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(new SingleConnectionDataSource(context.getConnection(), true));
 
