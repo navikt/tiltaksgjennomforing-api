@@ -21,8 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -161,7 +159,7 @@ public class AvtaleControllerTest {
         Avtale avtale = TestData.enAvtale();
         vaerInnloggetSom(TestData.innloggetNavAnsatt(TestData.enVeileder(avtale)));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.empty());
-        avtaleController.endreAvtale(avtale.getId(), avtale.getVersjon(), TestData.ingenEndring());
+        avtaleController.endreAvtale(avtale.getId(), avtale.getSistEndret(), TestData.ingenEndring());
     }
 
     @Test
@@ -170,7 +168,7 @@ public class AvtaleControllerTest {
         vaerInnloggetSom(TestData.innloggetNavAnsatt(TestData.enVeileder(avtale)));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         when(avtaleRepository.save(avtale)).thenReturn(avtale);
-        ResponseEntity svar = avtaleController.endreAvtale(avtale.getId(), avtale.getVersjon(), TestData.ingenEndring());
+        ResponseEntity svar = avtaleController.endreAvtale(avtale.getId(), avtale.getSistEndret(), TestData.ingenEndring());
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -179,7 +177,7 @@ public class AvtaleControllerTest {
         Avtale avtale = TestData.enAvtale();
         vaerInnloggetSom(TestData.enSelvbetjeningBruker());
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        avtaleController.endreAvtale(avtale.getId(), avtale.getVersjon(), TestData.ingenEndring());
+        avtaleController.endreAvtale(avtale.getId(), avtale.getSistEndret(), TestData.ingenEndring());
     }
 
     @Test
@@ -323,7 +321,7 @@ public class AvtaleControllerTest {
         vaerInnloggetSom(innloggetNavAnsatt);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId());
-        assertThat(avtaleStatusDetaljer.header).isEqualTo(veileder.tekstHeaderVentAndreGodkjenning);
+        assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderVentAndreGodkjenning);
         assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo("");
         assertThat(avtaleStatusDetaljer.infoDel2).isEqualTo("");
     }
@@ -337,7 +335,7 @@ public class AvtaleControllerTest {
         vaerInnloggetSom(innloggetNavAnsatt);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId());
-        assertThat(avtaleStatusDetaljer.header).isEqualTo(veileder.tekstHeaderVentAndreGodkjenning);
+        assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderVentAndreGodkjenning);
         assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo("");
         assertThat(avtaleStatusDetaljer.infoDel2).isEqualTo("");
     }

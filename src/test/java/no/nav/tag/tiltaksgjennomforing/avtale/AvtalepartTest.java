@@ -5,6 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import org.junit.Test;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,7 +15,7 @@ public class AvtalepartTest {
     public void endreAvtale__skal_feile_for_deltaker() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Deltaker deltaker = TestData.enDeltaker(avtale);
-        deltaker.endreAvtale(avtale.getVersjon(), TestData.ingenEndring());
+        deltaker.endreAvtale(avtale.getSistEndret(), TestData.ingenEndring());
     }
 
     @Test(expected = TilgangskontrollException.class)
@@ -58,28 +59,28 @@ public class AvtalepartTest {
     public void endreAvtale__skal_fungere_for_arbeidsgiver() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.endreAvtale(avtale.getVersjon(), TestData.ingenEndring());
+        arbeidsgiver.endreAvtale(Instant.now(), TestData.ingenEndring());
     }
 
     @Test
     public void endreAvtale__skal_fungere_for_veileder() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.endreAvtale(avtale.getVersjon(), TestData.ingenEndring());
+        veileder.endreAvtale(Instant.now(), TestData.ingenEndring());
     }
 
     @Test(expected = SamtidigeEndringerException.class)
     public void godkjennForAvtalepart__skal_ikke_fungere_hvis_versjon_er_feil() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Deltaker deltaker = TestData.enDeltaker(avtale);
-        deltaker.godkjennAvtale(-1);
+        deltaker.godkjennAvtale(avtale.getSistEndret().minusMillis(1));
     }
 
     @Test
     public void godkjennForAvtalepart__skal_fungere_for_deltaker() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Deltaker deltaker = TestData.enDeltaker(avtale);
-        deltaker.godkjennAvtale(avtale.getVersjon());
+        deltaker.godkjennAvtale(avtale.getSistEndret());
         assertThat(avtale.erGodkjentAvDeltaker()).isTrue();
         assertThat(avtale.erGodkjentAvArbeidsgiver()).isFalse();
         assertThat(avtale.erGodkjentAvVeileder()).isFalse();
@@ -89,7 +90,7 @@ public class AvtalepartTest {
     public void godkjennForAvtalepart__skal_fungere_for_arbeidsgiver() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.godkjennAvtale(avtale.getVersjon());
+        arbeidsgiver.godkjennAvtale(avtale.getSistEndret());
         assertThat(avtale.erGodkjentAvArbeidsgiver()).isTrue();
         assertThat(avtale.erGodkjentAvVeileder()).isFalse();
         assertThat(avtale.erGodkjentAvDeltaker()).isFalse();
@@ -101,7 +102,7 @@ public class AvtalepartTest {
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.godkjennAvtale(avtale.getVersjon());
+        veileder.godkjennAvtale(avtale.getSistEndret());
         assertThat(avtale.erGodkjentAvArbeidsgiver()).isTrue();
     }
 

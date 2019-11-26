@@ -7,6 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -67,26 +68,26 @@ public class AvtaleTest {
     @Test(expected = SamtidigeEndringerException.class)
     public void sjekkVersjon__ugyldig_versjon() {
         Avtale avtale = TestData.enAvtale();
-        avtale.sjekkVersjon(-1);
+        avtale.sjekkSistEndret(Instant.MIN);
     }
 
     @Test(expected = SamtidigeEndringerException.class)
     public void sjekkVersjon__null() {
         Avtale avtale = TestData.enAvtale();
-        avtale.sjekkVersjon(null);
+        avtale.sjekkSistEndret(null);
     }
 
     @Test
     public void sjekkVersjon__gyldig_versjon() {
         Avtale avtale = TestData.enAvtale();
-        avtale.sjekkVersjon(avtale.getVersjon());
+        avtale.sjekkSistEndret(Instant.now());
     }
 
     @Test
     public void endreAvtaleSkalOppdatereRiktigeFelt() {
         Arbeidstrening avtale = TestData.enAvtale();
         EndreAvtale endreAvtale = TestData.endringPaAlleFelt();
-        avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
 
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(avtale.getDeltakerFornavn()).isEqualTo(endreAvtale.getDeltakerFornavn());
@@ -116,7 +117,7 @@ public class AvtaleTest {
         etMaal.setBeskrivelse("Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.");
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setMaal(List.of(etMaal));
-        avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
     }
 
     @Test(expected = TiltaksgjennomforingException.class)
@@ -126,7 +127,7 @@ public class AvtaleTest {
         enOppgave.setBeskrivelse("Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.");
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setOppgaver(List.of(enOppgave));
-        avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
     }
 
     @Test
@@ -136,7 +137,7 @@ public class AvtaleTest {
         enOppgave.setBeskrivelse("Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er");
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setOppgaver(List.of(enOppgave));
-        avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
     }
 
     @Test
@@ -145,7 +146,7 @@ public class AvtaleTest {
         EndreAvtale endreAvtale = new EndreAvtale();
         LocalDate startDato = LocalDate.now();
         endreAvtale.setStartDato(startDato);
-        avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
         assertThat(avtale.getStartDato()).isEqualTo(startDato);
     }
 
@@ -155,7 +156,7 @@ public class AvtaleTest {
         EndreAvtale endreAvtale = new EndreAvtale();
         LocalDate sluttDato = LocalDate.now();
         endreAvtale.setSluttDato(sluttDato);
-        avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
         assertThat(avtale.getSluttDato()).isEqualTo(sluttDato);
     }
 
@@ -167,7 +168,7 @@ public class AvtaleTest {
         LocalDate sluttDato = startDato.plusMonths(3);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
-        avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
         assertThat(avtale.getStartDato()).isEqualTo(startDato);
         assertThat(avtale.getSluttDato()).isEqualTo(sluttDato);
     }
@@ -180,7 +181,7 @@ public class AvtaleTest {
         LocalDate sluttDato = startDato.plusMonths(3).plusDays(1);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
-        avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
     }
 
     @Test(expected = StartDatoErEtterSluttDatoException.class)
@@ -191,7 +192,7 @@ public class AvtaleTest {
         LocalDate sluttDato = startDato.minusDays(1);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
-        avtale.endreAvtale(avtale.getVersjon(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
     }
 
     @Test
@@ -201,7 +202,7 @@ public class AvtaleTest {
         boolean arbeidsgiverGodkjenningFoerEndring = avtale.erGodkjentAvArbeidsgiver();
         boolean veilederGodkjenningFoerEndring = avtale.erGodkjentAvVeileder();
 
-        avtale.endreAvtale(avtale.getVersjon(), TestData.endringPaAlleFelt(), Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), TestData.endringPaAlleFelt(), Avtalerolle.VEILEDER);
 
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(deltakerGodkjenningFoerEndring).isEqualTo(avtale.erGodkjentAvDeltaker());
@@ -213,8 +214,9 @@ public class AvtaleTest {
     @Test
     public void endreAvtaleSkalInkrementereVersjon() {
         Avtale avtale = TestData.enAvtale();
-        avtale.endreAvtale(avtale.getVersjon(), TestData.ingenEndring(), Avtalerolle.VEILEDER);
-        assertThat(avtale.getVersjon()).isEqualTo(2);
+        Instant førstEndret = avtale.getSistEndret();
+        avtale.endreAvtale(førstEndret, TestData.ingenEndring(), Avtalerolle.VEILEDER);
+        assertThat(avtale.getSistEndret()).isAfter(førstEndret);
     }
 
     @Test(expected = TiltaksgjennomforingException.class)
