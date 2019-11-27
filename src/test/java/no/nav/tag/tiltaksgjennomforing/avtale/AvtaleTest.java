@@ -429,4 +429,76 @@ public class AvtaleTest {
                 AvtaleInnhold.Fields.godkjentAvArbeidsgiver,
                 AvtaleInnhold.Fields.godkjentAvVeileder);
     }
+
+    @Test
+    public void sistEndretNå__kalles_ved_endreAvtale() {
+        Instant førEndringen = Instant.now();
+        Avtale avtale = TestData.enAvtale();
+        avtale.endreAvtale(Instant.MAX, TestData.ingenEndring(), Avtalerolle.VEILEDER);
+        assertThat(avtale.getSistEndret()).isAfter(førEndringen);
+    }
+
+    @Test
+    public void sistEndretNå__kalles_ved_godkjennForDeltaker() {
+        Instant førEndringen = Instant.now();
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.godkjennForDeltaker(TestData.enIdentifikator());
+        assertThat(avtale.getSistEndret()).isAfter(førEndringen);
+    }
+
+    @Test
+    public void sistEndretNå__kalles_ved_godkjennForArbeidsgiver() {
+        Instant førEndringen = Instant.now();
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
+        assertThat(avtale.getSistEndret()).isAfter(førEndringen);
+    }
+
+    @Test
+    public void sistEndretNå__kalles_ved_godkjennForVeileder() {
+        Instant førEndringen = Instant.now();
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
+        assertThat(avtale.getSistEndret()).isAfter(førEndringen);
+    }
+
+    @Test
+    public void sistEndretNå__kalles_ved_godkjennForVeilederOgDeltaker() {
+        Instant førEndringen = Instant.now();
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.godkjennForVeilederOgDeltaker(TestData.enIdentifikator(), TestData.enGodkjentPaVegneGrunn());
+        assertThat(avtale.getSistEndret()).isAfter(førEndringen);
+    }
+
+    @Test
+    public void sistEndretNå__kalles_ved_opphevGodkjenningerSomArbeidsgiver() {
+        Instant førEndringen = Instant.now();
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.opphevGodkjenningerSomArbeidsgiver();
+        assertThat(avtale.getSistEndret()).isAfter(førEndringen);
+    }
+
+    @Test
+    public void sistEndretNå__kalles_ved_opphevGodkjenningerSomVeileder() {
+        Instant førEndringen = Instant.now();
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.opphevGodkjenningerSomVeileder();
+        assertThat(avtale.getSistEndret()).isAfter(førEndringen);
+    }
+
+    @Test
+    public void sistEndretNå__kalles_ved_avbryt() {
+        Instant førEndringen = Instant.now();
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.avbryt(TestData.enVeileder(avtale));
+        assertThat(avtale.getSistEndret()).isAfter(førEndringen);
+    }
+
+    @Test
+    public void sistEndretNå__kalles_ved_låsOppAvtale() {
+        Instant førEndringen = Instant.now();
+        Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        avtale.låsOppAvtale();
+        assertThat(avtale.getSistEndret()).isAfter(førEndringen);
+    }
 }

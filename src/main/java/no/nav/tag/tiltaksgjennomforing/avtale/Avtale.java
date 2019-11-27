@@ -68,19 +68,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     public void endreAvtale(Instant sistEndret, EndreAvtale nyAvtale, Avtalerolle utfortAv) {
         sjekkOmAvtalenKanEndres();
         sjekkSistEndret(sistEndret);
-
         gjeldendeInnhold().endreAvtale(nyAvtale);
-
-        settSistEndret();
-
+        sistEndretNå();
         registerEvent(new AvtaleEndret(this, utfortAv));
     }
 
     private interface MetoderSomIkkeSkalDelegeresFraAvtaleInnhold {
         UUID getId();
-
         void setId(UUID id);
-
         Avtale getAvtale();
     }
 
@@ -131,9 +126,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         setGodkjentAvVeileder(null);
         setGodkjentPaVegneAv(false);
         setGodkjentPaVegneGrunn(null);
+        sistEndretNå();
     }
 
-    private void settSistEndret() {
+    private void sistEndretNå() {
         this.sistEndret = Instant.now();
     }
 
@@ -146,12 +142,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     void godkjennForArbeidsgiver(Identifikator utfortAv) {
         sjekkOmKanGodkjennes();
         this.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        sistEndretNå();
         registerEvent(new GodkjentAvArbeidsgiver(this, utfortAv));
     }
 
     void godkjennForVeileder(Identifikator utfortAv) {
         sjekkOmKanGodkjennes();
         this.setGodkjentAvVeileder(LocalDateTime.now());
+        sistEndretNå();
         registerEvent(new GodkjentAvVeileder(this, utfortAv));
     }
 
@@ -161,12 +159,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         this.setGodkjentAvDeltaker(LocalDateTime.now());
         this.setGodkjentPaVegneAv(true);
         this.setGodkjentPaVegneGrunn(paVegneAvGrunn);
+        sistEndretNå();
         registerEvent(new GodkjentPaVegneAv(this, utfortAv));
     }
 
     void godkjennForDeltaker(Identifikator utfortAv) {
         sjekkOmKanGodkjennes();
         this.setGodkjentAvDeltaker(LocalDateTime.now());
+        sistEndretNå();
         registerEvent(new GodkjentAvDeltaker(this, utfortAv));
     }
 
@@ -203,6 +203,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     public void avbryt(Veileder veileder) {
         if (this.kanAvbrytes()) {
             this.setAvbrutt(true);
+            sistEndretNå();
             registerEvent(new AvbruttAvVeileder(this, veileder.getIdentifikator()));
         }
     }
@@ -229,6 +230,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     public void låsOppAvtale() {
         sjekkOmKanLåsesOpp();
         versjoner.add(this.gjeldendeInnhold().nyVersjon());
+        sistEndretNå();
         registerEvent(new AvtaleLåstOpp(this));
     }
 
