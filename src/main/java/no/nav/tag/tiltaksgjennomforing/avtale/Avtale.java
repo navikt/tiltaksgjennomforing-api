@@ -36,7 +36,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private NavIdent veilederNavIdent;
 
     @Enumerated(value = EnumType.STRING)
-    @Column(updatable = false, insertable = false)
+    @Column(updatable = false)
     private Tiltakstype tiltakstype;
 
     private LocalDateTime opprettetTidspunkt;
