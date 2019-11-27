@@ -3,6 +3,19 @@
     {
       "request": {
         "method": "POST",
+        "urlPath": "/persondata"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"errors\": [{\"message\": \"Fant ikke person\", \"locations\": [{\"line\": 1, \"column\": 8}], \"path\": [\"hentPerson\"], \"extensions\": {\"code\": \"not_found\", \"classification\": \"ExecutionAborted\"}}], \"data\": {\"hentPerson\": null}}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
         "urlPath": "/persondata",
         "headers": {
           "Content-Type": {
@@ -105,19 +118,6 @@
       "response": {
         "status": 200,
         "body": "{\"errors\": [{\"message\": \"Fant ikke person\", \"locations\": [{\"line\": 1, \"column\": 8}], \"path\": [\"hentPerson\"], \"extensions\": {\"code\": \"not_found\", \"classification\": \"ExecutionAborted\"}}]}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      }
-    },
-    {
-      "request": {
-        "method": "POST",
-        "urlPath": "/persondata"
-      },
-      "response": {
-        "status": 200,
-        "body": "{\"errors\": [{\"message\": \"Fant ikke person\", \"locations\": [{\"line\": 1, \"column\": 8}], \"path\": [\"hentPerson\"], \"extensions\": {\"code\": \"not_found\", \"classification\": \"ExecutionAborted\"}}], \"data\": {\"hentPerson\": null}}",
         "headers": {
           "Content-Type": "application/json"
         }
