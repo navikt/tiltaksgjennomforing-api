@@ -63,7 +63,7 @@ public class AvtaleController {
         InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
         tilgangUnderPilotering.sjekkTilgang(innloggetNavAnsatt.getIdentifikator());
         tilgangskontrollService.sjekkSkrivetilgangTilKandidat(innloggetNavAnsatt, opprettAvtale.getDeltakerFnr());
-        persondataService.sjekkGradering(opprettAvtale.getDeltakerFnr());
+        // persondataService.sjekkGradering(opprettAvtale.getDeltakerFnr());
         Avtale avtale = innloggetNavAnsatt.opprettAvtale(opprettAvtale);
         avtale.setBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
