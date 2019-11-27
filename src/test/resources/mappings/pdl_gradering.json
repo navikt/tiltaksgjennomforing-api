@@ -1,7 +1,6 @@
 {
   "mappings": [
     {
-      "priority": 1,
       "request": {
         "method": "POST",
         "urlPath": "/persondata",
@@ -24,7 +23,6 @@
       }
     },
     {
-      "priority": 2,
       "request": {
         "method": "POST",
         "urlPath": "/persondata",
@@ -40,14 +38,13 @@
       },
       "response": {
         "status": 200,
-        "body": "{\"data\": {\"hentPerson\": {\"adressebeskyttelse\": [{\"gradering\": \"UGRADERT\"}]}}}≤",
+        "body": "{\"data\": {\"hentPerson\": {\"adressebeskyttelse\": [{\"gradering\": \"UGRADERT\"}]}}}",
         "headers": {
           "Content-Type": "application/json"
         }
       }
     },
     {
-      "priority": 3,
       "request": {
         "method": "POST",
         "urlPath": "/persondata",
@@ -63,14 +60,13 @@
       },
       "response": {
         "status": 200,
-        "body": "{\"data\": {\"hentPerson\": {\"adressebeskyttelse\": [{\"gradering\": \"FORTROLIG\"}]}}}≤",
+        "body": "{\"data\": {\"hentPerson\": {\"adressebeskyttelse\": [{\"gradering\": \"FORTROLIG\"}]}}}",
         "headers": {
           "Content-Type": "application/json"
         }
       }
     },
     {
-      "priority": 4,
       "request": {
         "method": "POST",
         "urlPath": "/persondata",
@@ -86,14 +82,13 @@
       },
       "response": {
         "status": 200,
-        "body": "{\"data\": {\"hentPerson\": {\"adressebeskyttelse\": [{\"gradering\": \"\"}]}}}≤",
+        "body": "{\"data\": {\"hentPerson\": {\"adressebeskyttelse\": [{\"gradering\": \"\"}]}}}",
         "headers": {
           "Content-Type": "application/json"
         }
       }
     },
     {
-      "priority": 5,
       "request": {
         "method": "POST",
         "urlPath": "/persondata",
@@ -116,7 +111,6 @@
       }
     },
     {
-      "priority": 6,
       "request": {
         "method": "POST",
         "urlPath": "/persondata"
@@ -130,7 +124,6 @@
       }
     },
     {
-      "priority": 7,
       "request": {
         "method": "POST",
         "urlPath": "/persondata",
@@ -141,12 +134,12 @@
           }
         },
         "bodyPatterns" : [ {
-          "equalToJson" : "{\"query\" : \"query{ hentPerson( ident: \\\"27030960020\\\") {adressebeskyttelse {gradering} } }\" }"
+          "equalToJson" : "{\"query\" : \"query{ hentPerson( ident: \\\"00000000000\\\") {adressebeskyttelse {gradering} } }\" }"
         } ]
       },
       "response": {
         "status": 200,
-        "body": "{\"data\": {\"hentPerson\": {\"adressebeskyttelse\": []}}}≤",
+        "body": "{\"data\": {\"hentPerson\": {\"adressebeskyttelse\": [{\"gradering\": \"UGRADERT\"}]}}}",
         "headers": {
           "Content-Type": "application/json"
         }
