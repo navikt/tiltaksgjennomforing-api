@@ -44,7 +44,7 @@
       },
       "response": {
         "status": 200,
-        "body": "[{\"Name\":\"SOPRA STERIA AS\",\"Type\":\"Business\",\"OrganizationNumber\":\"910909088\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}]",
+        "body": "[{\"Name\":\"SOPRA STERIA AS\",\"Type\":\"Business\",\"OrganizationNumber\":\"910909088\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}, {\"Name\":\"KIWI LØREN AS\",\"Type\":\"Business\",\"OrganizationNumber\":\"981121465\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}]",
         "headers": {
           "Content-Type": "application/json"
         }
