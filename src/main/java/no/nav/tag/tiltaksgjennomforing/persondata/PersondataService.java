@@ -43,7 +43,11 @@ public class PersondataService {
         if (pdlPerson.getData().getHentPerson() == null) {
             // Person finnes ikke
             return new Adressebeskyttelse("");
-        } else {
+        } else if (pdlPerson.getData().getHentPerson().getAdressebeskyttelse().length == 0) {
+            // Ugradert
+            return new Adressebeskyttelse("");
+        }
+        else {
             return pdlPerson.getData().getHentPerson().getAdressebeskyttelse()[0];
         }
     }
