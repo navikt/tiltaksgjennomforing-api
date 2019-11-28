@@ -22,7 +22,6 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setDeltakerFnr(identifikatorAsString(avtale.getDeltakerFnr()));
         avtaleTilJournalfoering.setBedriftNr(identifikatorAsString(avtale.getBedriftNr()));
         avtaleTilJournalfoering.setVeilederNavIdent(identifikatorAsString(avtale.getVeilederNavIdent()));
-        avtaleTilJournalfoering.setVersjon(avtale.getVersjon());
         avtaleTilJournalfoering.setDeltakerFornavn(avtale.getDeltakerFornavn());
         avtaleTilJournalfoering.setDeltakerEtternavn(avtale.getDeltakerEtternavn());
         avtaleTilJournalfoering.setDeltakerTlf(avtale.getDeltakerTlf());

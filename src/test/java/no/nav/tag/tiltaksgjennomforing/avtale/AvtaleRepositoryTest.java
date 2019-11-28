@@ -12,6 +12,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -54,7 +55,7 @@ public class AvtaleRepositoryTest {
         EndreAvtale endreAvtale = new EndreAvtale();
         Maal maal = TestData.etMaal();
         endreAvtale.setMaal(List.of(maal));
-        lagretAvtale.endreAvtale(1, endreAvtale, Avtalerolle.VEILEDER);
+        lagretAvtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
         avtaleRepository.save(lagretAvtale);
 
         // Lage ny avtale
@@ -64,7 +65,7 @@ public class AvtaleRepositoryTest {
         EndreAvtale endreAvtale2 = new EndreAvtale();
         Maal maal2 = TestData.etMaal();
         endreAvtale2.setMaal(List.of(maal2));
-        lagretAvtale2.endreAvtale(1, endreAvtale2, Avtalerolle.VEILEDER);
+        lagretAvtale2.endreAvtale(Instant.now(), endreAvtale2, Avtalerolle.VEILEDER);
         avtaleRepository.save(lagretAvtale2);
     }
 
@@ -77,7 +78,7 @@ public class AvtaleRepositoryTest {
         EndreAvtale endreAvtale = new EndreAvtale();
         Oppgave oppgave = TestData.enOppgave();
         endreAvtale.setOppgaver(List.of(oppgave));
-        lagretAvtale.endreAvtale(1, endreAvtale, Avtalerolle.VEILEDER);
+        lagretAvtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
         avtaleRepository.save(lagretAvtale);
 
         // Lage ny avtale
@@ -87,7 +88,7 @@ public class AvtaleRepositoryTest {
         EndreAvtale endreAvtale2 = new EndreAvtale();
         Oppgave oppgave2 = TestData.enOppgave();
         endreAvtale2.setOppgaver(List.of(oppgave2));
-        lagretAvtale2.endreAvtale(1, endreAvtale2, Avtalerolle.VEILEDER);
+        lagretAvtale2.endreAvtale(Instant.now(), endreAvtale2, Avtalerolle.VEILEDER);
         avtaleRepository.save(lagretAvtale2);
     }
 
@@ -129,7 +130,7 @@ public class AvtaleRepositoryTest {
         Avtale avtale = TestData.enAvtale();
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering, never()).avtaleEndret(any());
-        avtale.endreAvtale(avtale.getVersjon(), TestData.ingenEndring(), Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), TestData.ingenEndring(), Avtalerolle.VEILEDER);
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).avtaleEndret(any());
     }
@@ -137,7 +138,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void godkjennForArbeidsgiver__skal_publisere_domainevent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        TestData.enArbeidsgiver(avtale).godkjennAvtale(avtale.getVersjon());
+        TestData.enArbeidsgiver(avtale).godkjennAvtale(avtale.getSistEndret());
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).godkjentAvArbeidsgiver(any());
     }
@@ -145,7 +146,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void godkjennForDeltaker__skal_publisere_domainevent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        TestData.enDeltaker(avtale).godkjennAvtale(avtale.getVersjon());
+        TestData.enDeltaker(avtale).godkjennAvtale(avtale.getSistEndret());
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).godkjentAvDeltaker(any());
     }
@@ -155,7 +156,7 @@ public class AvtaleRepositoryTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
-        TestData.enVeileder(avtale).godkjennAvtale(avtale.getVersjon());
+        TestData.enVeileder(avtale).godkjennAvtale(avtale.getSistEndret());
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).godkjentAvVeileder(any());
     }
@@ -169,7 +170,7 @@ public class AvtaleRepositoryTest {
     }
 
     @Test
-    public void henter_avtaler_til_journalfoering(){
+    public void henter_avtaler_til_journalfoering() {
         Avtale ikkeKlar = TestData.enAvtaleMedAltUtfylt();
         Avtale klarTilJournalforing = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         Avtale journalfoert = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
@@ -182,10 +183,10 @@ public class AvtaleRepositoryTest {
         assertEquals(avtaleIds.size(), faktiskAvtList.size());
         boolean allMatch = faktiskAvtList.stream()
                 .allMatch(avtale ->
-                     avtale.erGodkjentAvVeileder()
-                            && avtale.getJournalpostId() == null
-                            && avtaleIds.stream().anyMatch(uuid ->
-                             uuid.equals(avtale.getId()) && !uuid.equals(ikkeKlar.getId()) && !uuid.equals(journalfoert.getId()))
+                        avtale.erGodkjentAvVeileder()
+                                && avtale.getJournalpostId() == null
+                                && avtaleIds.stream().anyMatch(uuid ->
+                                uuid.equals(avtale.getId()) && !uuid.equals(ikkeKlar.getId()) && !uuid.equals(journalfoert.getId()))
                 );
         assertTrue(allMatch);
     }

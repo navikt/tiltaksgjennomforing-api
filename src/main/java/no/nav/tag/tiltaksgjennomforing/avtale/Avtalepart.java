@@ -5,6 +5,7 @@ import lombok.Data;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 
+import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
 @AllArgsConstructor
@@ -24,6 +25,7 @@ public abstract class Avtalepart<T extends Identifikator> {
     static String tekstHeaderAvtaleAvbrutt = "Tiltaket er avbrutt";
     static String tekstAvtaleAvbrutt = "Veilederen har bestemt at tiltaket og avtalen skal avbrytes.";
     static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.LLL.yyyy");
+
     abstract void godkjennForAvtalepart();
 
     abstract boolean kanEndreAvtale();
@@ -43,23 +45,22 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     abstract void opphevGodkjenningerSomAvtalepart();
 
-    public void godkjennAvtale(Integer versjon) {
-        avtale.sjekkVersjon(versjon);
+    public void godkjennAvtale(Instant sistEndret) {
+        avtale.sjekkSistEndret(sistEndret);
         sjekkOmAvtaleKanGodkjennes();
         godkjennForAvtalepart();
     }
 
-
-    public void godkjennPaVegneAvDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn, Integer versjon) {
-        avtale.sjekkVersjon(versjon);
+    public void godkjennPaVegneAvDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn, Instant sistEndret) {
+        avtale.sjekkSistEndret(sistEndret);
         godkjennForVeilederOgDeltaker(paVegneAvGrunn);
     }
 
-    public void endreAvtale(Integer versjon, EndreAvtale endreAvtale) {
+    public void endreAvtale(Instant sistEndret, EndreAvtale endreAvtale) {
         if (!kanEndreAvtale()) {
             throw new TilgangskontrollException("Kan ikke endre avtale.");
         }
-        avtale.endreAvtale(versjon, endreAvtale, rolle());
+        avtale.endreAvtale(sistEndret, endreAvtale, rolle());
     }
 
     public void opphevGodkjenninger() {
