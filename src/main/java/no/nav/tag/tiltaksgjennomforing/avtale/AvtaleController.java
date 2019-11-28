@@ -63,7 +63,7 @@ public class AvtaleController {
         return avtaleRepository.findAll().stream()
                 .filter(queryParametre)
                 .filter(bruker::harLeseTilgang)
-                .sorted(Comparator.nullsLast(Comparator.comparing(Avtale::getOpprettetTidspunkt).reversed()))
+                .sorted(Comparator.nullsLast(Comparator.comparing(Avtale::getSistEndret).reversed()))
                 .collect(Collectors.toList());
     }
 
