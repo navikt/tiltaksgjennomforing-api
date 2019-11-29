@@ -2,7 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.persondata;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,8 @@ public class PersondataServiceTest {
 
     private Fnr strengtFortroligPerson = new Fnr("16053900422");
     private Fnr fortroligPerson = new Fnr("26067114433");
-    private Fnr ugradertPErson = new Fnr("00000000000");
+    private Fnr ugradertPerson = new Fnr("00000000000");
+    private Fnr getUgradertPersonTomResponse = new Fnr("27030960020");
     private Fnr uspesifisertGradertPerson = new Fnr("18076641842");
     private Fnr personFinnesIkke = new Fnr("24080687881");
     private Fnr personForResponsUtenData = new Fnr("23097010706");
@@ -58,6 +58,12 @@ public class PersondataServiceTest {
         assertThat(adressebeskyttelse.getGradering().equals("null"));
     }
 
+    @Test
+    public void hentGradering__returnerer_ugradert_tom_gradering() {
+        Adressebeskyttelse adressebeskyttelse = persondataService.hentGradering(getUgradertPersonTomResponse);
+        assertThat(adressebeskyttelse.getGradering().equals(""));
+    }
+
     @Test(expected = NullPointerException.class)
     public void hentGradering_person_far_respons_uten_Data() {
         Adressebeskyttelse adressebeskyttelse = persondataService.hentGradering(personForResponsUtenData);
@@ -73,8 +79,11 @@ public class PersondataServiceTest {
 
     @Test
     public void sjekkGradering__skal_ikke_kaste_feil_ugradert() {
-        persondataService.sjekkGradering(ugradertPErson);
+        persondataService.sjekkGradering(ugradertPerson);
     }
+
+    @Test
+    public void sjekkGradering_skal_ikke_kaste_feil_ugradertTom() { persondataService.sjekkGradering(getUgradertPersonTomResponse); }
 
     @Test
     public void sjekkGradering__skal_ikke_kaste_feil_uspesifisert_gradering() { persondataService.sjekkGradering(uspesifisertGradertPerson); }
