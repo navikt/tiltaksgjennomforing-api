@@ -42,6 +42,7 @@ public class AltinnTilgangsstyringService {
                 .queryParam("subject", fnr.asString())
                 .queryParam("serviceCode", altinnTilgangsstyringProperties.getServiceCode())
                 .queryParam("serviceEdition", altinnTilgangsstyringProperties.getServiceEdition())
+                .queryParam("%24filter", "Type%20ne%20%27Person%27")
                 .build()
                 .toUri();
         try {
