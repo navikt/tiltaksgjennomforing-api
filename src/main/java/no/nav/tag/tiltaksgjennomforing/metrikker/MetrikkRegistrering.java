@@ -117,6 +117,14 @@ public class MetrikkRegistrering {
         counter("avtale.godkjenning.godkjentPaVegneAv", rolle, tiltakstype).increment();
     }
 
+    @EventListener
+    public void avtaleLåstOpp(AvtaleLåstOpp event) {
+        Avtalerolle rolle = Avtalerolle.VEILEDER;
+        Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
+        log.info("Avtale låst opp, avtaleId={}, avtalepart={}, PilotFylke={}, tiltakstype={}", event.getAvtale().getId(), rolle, pilotFylke(), tiltakstype);
+        counter("avtale.laastOpp", rolle, tiltakstype).increment();
+    }
+
     private Counter counter(String navn, Avtalerolle avtalerolle, Tiltakstype tiltakstype) {
         var builder = Counter.builder("tiltaksgjennomforing." + navn)
                 .tag("tiltak", tiltakstype.name())
