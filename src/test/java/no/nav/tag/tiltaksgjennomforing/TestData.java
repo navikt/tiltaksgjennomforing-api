@@ -10,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.varsel.SmsVarsel;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelse;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -155,5 +156,19 @@ public class TestData {
 
     public static SmsVarsel etSmsVarsel(Avtale avtale) {
         return SmsVarsel.nyttVarsel("tlf", TestData.enIdentifikator(), "", null);
+    }
+
+    public static Avtale enAvtaleMedFlereVersjoner() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        avtale.låsOppAvtale();
+        EndreAvtale endreAvtale = TestData.endringPaAlleFelt();
+        endreAvtale.setDeltakerFornavn("Atle");
+        endreAvtale.setDeltakerEtternavn("Jørgensen");
+        endreAvtale.setOppfolging("Trenger mer oppfølging");
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        return avtale;
     }
 }

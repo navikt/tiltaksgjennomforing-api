@@ -2,7 +2,7 @@ package no.nav.tag.tiltaksgjennomforing;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
@@ -21,5 +21,6 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         avtaleRepository.save(TestData.enAvtale());
         avtaleRepository.save(TestData.enAvtaleMedAltUtfylt());
         avtaleRepository.save(TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder());
+        avtaleRepository.save(TestData.enAvtaleMedFlereVersjoner());
     }
 }
