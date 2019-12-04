@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.time.Instant;
 import java.util.Comparator;
-import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -46,15 +45,6 @@ public class AvtaleController {
         InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker();
         innloggetBruker.sjekkLeseTilgang(avtale);
         return ResponseEntity.ok(avtale);
-    }
-
-    @GetMapping("/{avtaleId}/versjoner")
-    public ResponseEntity<List<AvtaleInnhold>> hentHistorikk(@PathVariable("avtaleId") UUID id) {
-        Avtale avtale = avtaleRepository.findById(id)
-                .orElseThrow(RessursFinnesIkkeException::new);
-        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker();
-        innloggetBruker.sjekkLeseTilgang(avtale);
-        return ResponseEntity.ok(avtale.getVersjoner());
     }
 
     @GetMapping
