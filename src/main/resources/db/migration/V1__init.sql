@@ -37,7 +37,7 @@ CREATE TABLE maal (
   opprettet_tidspunkt timestamp without time zone not null default now(),
   kategori varchar(255),
   beskrivelse varchar(255),
-  avtale uuid references avtale(id)
+  avtale uuid
 );
 
 
@@ -47,5 +47,5 @@ CREATE TABLE oppgave (
   tittel varchar(255),
   beskrivelse varchar(255),
   opplaering varchar(255),
-  avtale uuid references avtale(id)
+  avtale uuid
 );
