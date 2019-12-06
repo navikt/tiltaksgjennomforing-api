@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 // Hibernate
 @Entity
 public class AvtaleInnhold {
-    private static final int MAKSIMALT_ANTALL_MÅNEDER_VARIGHET = 3;
+    private static final int MAKSIMALT_ANTALL_MÅNEDER_VARIGHET = 12;
 
     @Id
     @JsonIgnore
