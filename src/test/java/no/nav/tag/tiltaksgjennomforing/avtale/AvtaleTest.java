@@ -174,11 +174,11 @@ public class AvtaleTest {
     }
 
     @Test(expected = AvtalensVarighetMerEnnMaksimaltAntallMånederException.class)
-    public void endreAvtale__startdato_og_sluttdato_satt_over_3mnd() {
+    public void endreAvtale__startdato_og_sluttdato_satt_over_12mnd() {
         Avtale avtale = TestData.enAvtale();
         EndreAvtale endreAvtale = new EndreAvtale();
         LocalDate startDato = LocalDate.now();
-        LocalDate sluttDato = startDato.plusMonths(3).plusDays(1);
+        LocalDate sluttDato = startDato.plusMonths(12).plusDays(1);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
