@@ -66,6 +66,7 @@ public class AvtaleTilJournalfoeringMapperTest {
         assertEquals(avtale.getGodkjentAvArbeidsgiver().toLocalDate(), tilJournalfoering.getGodkjentAvArbeidsgiver());
         assertEquals(avtale.getGodkjentAvVeileder().toLocalDate(), tilJournalfoering.getGodkjentAvVeileder());
         assertEquals(avtale.isGodkjentPaVegneAv(), tilJournalfoering.isGodkjentPaVegneAv());
+        assertEquals(avtale.getVersjon(), tilJournalfoering.getVersjon());
     }
 
     @Test

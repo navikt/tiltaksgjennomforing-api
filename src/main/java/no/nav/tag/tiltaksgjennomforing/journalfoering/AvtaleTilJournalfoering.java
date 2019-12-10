@@ -30,6 +30,7 @@ public class AvtaleTilJournalfoering {
     private String veilederFornavn;
     private String veilederEtternavn;
     private String veilederTlf;
+    private Integer versjon;
 
     private String oppfolging;
     private String tilrettelegging;
