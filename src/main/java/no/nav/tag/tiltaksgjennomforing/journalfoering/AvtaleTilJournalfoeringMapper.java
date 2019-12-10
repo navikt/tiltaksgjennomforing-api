@@ -41,7 +41,7 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setOppgaver(oppgaveListToOppgaveTilJournalFoeringList(avtale.getOppgaver()));
         avtaleTilJournalfoering.setGodkjentPaVegneGrunn(godkjentPaVegneGrunn(avtale.getGodkjentPaVegneGrunn()));
         avtaleTilJournalfoering.setGodkjentPaVegneAv(avtale.isGodkjentPaVegneAv());
-
+        avtaleTilJournalfoering.setVersjon(avtale.getVersjon());
         return avtaleTilJournalfoering;
     }
 
