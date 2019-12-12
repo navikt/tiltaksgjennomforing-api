@@ -107,3 +107,4 @@ public class InternalAvtaleControllerTest {
         return Arrays.asList(avtale, avtale2, avtale3);
     }
 }
+
