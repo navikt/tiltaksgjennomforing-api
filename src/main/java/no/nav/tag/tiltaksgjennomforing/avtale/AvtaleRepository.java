@@ -1,18 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.UUID;
 
-public interface AvtaleRepository extends CrudRepository<Avtale, UUID> {
-
-    @Query(value = "select a.id from Avtale a where a.journalpostId is null and a.godkjentAvVeileder is not null")
-    List<UUID> finnAvtaleIdTilJournalfoering();
-
+public interface AvtaleRepository extends JpaRepository<Avtale, UUID> {
     @Override
-    List<Avtale> findAllById(Iterable<UUID> idAvtaleTilJournalfoering);
+    List<Avtale> findAllById(Iterable<UUID> ids);
 
     @Override
     List<Avtale> findAll();

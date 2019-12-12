@@ -36,7 +36,7 @@ public class AltinnTilgangsstyringServiceTest {
     @Test
     public void hentOrganisasjoner__gyldig_fnr_en_andre_bedrift() {
         List<Organisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(new Fnr("20000000000"));
-        assertThat(organisasjoner).extracting("bedriftNr").containsOnly(new BedriftNr("910909088"));
+        assertThat(organisasjoner).extracting("bedriftNr").containsOnly(new BedriftNr("981121465"), new BedriftNr("910909088"));
     }
 
     @Test

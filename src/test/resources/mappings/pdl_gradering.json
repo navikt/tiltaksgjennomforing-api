@@ -1,0 +1,149 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/persondata"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"errors\": [{\"message\": \"Fant ikke person\", \"locations\": [{\"line\": 1, \"column\": 8}], \"path\": [\"hentPerson\"], \"extensions\": {\"code\": \"not_found\", \"classification\": \"ExecutionAborted\"}}], \"data\": {\"hentPerson\": null}}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/persondata",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json",
+            "caseInsensitive": true
+          }
+        },
+        "bodyPatterns" : [ {
+          "equalToJson" : "{\"query\" : \"query{ hentPerson( ident: \\\"16053900422\\\") {adressebeskyttelse {gradering} } }\"}"
+        } ]
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"data\": {\"hentPerson\": {\"adressebeskyttelse\": [{\"gradering\": \"STRENGT_FORTROLIG\"}]}}}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/persondata",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json",
+            "caseInsensitive": true
+          }
+        },
+        "bodyPatterns" : [ {
+          "equalToJson" : "{\"query\" : \"query{ hentPerson( ident: \\\"00000000000\\\") {adressebeskyttelse {gradering} } }\" }"
+        } ]
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"data\": {\"hentPerson\": {\"adressebeskyttelse\": [{\"gradering\": \"UGRADERT\"}]}}}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/persondata",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json",
+            "caseInsensitive": true
+          }
+        },
+        "bodyPatterns" : [ {
+          "equalToJson" : "{\"query\" : \"query{ hentPerson( ident: \\\"26067114433\\\") {adressebeskyttelse {gradering} } }\" }"
+        } ]
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"data\": {\"hentPerson\": {\"adressebeskyttelse\": [{\"gradering\": \"FORTROLIG\"}]}}}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/persondata",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json",
+            "caseInsensitive": true
+          }
+        },
+        "bodyPatterns" : [ {
+          "equalToJson" : "{\"query\" : \"query{ hentPerson( ident: \\\"18076641842\\\") {adressebeskyttelse {gradering} } }\" }"
+        } ]
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"data\": {\"hentPerson\": {\"adressebeskyttelse\": [{\"gradering\": \"\"}]}}}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/persondata",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json",
+            "caseInsensitive": true
+          }
+        },
+        "bodyPatterns" : [ {
+          "equalToJson" : "{\"query\" : \"query{ hentPerson( ident: \\\"23097010706\\\") {adressebeskyttelse {gradering} } }\" }"
+        } ]
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"errors\": [{\"message\": \"Fant ikke person\", \"locations\": [{\"line\": 1, \"column\": 8}], \"path\": [\"hentPerson\"], \"extensions\": {\"code\": \"not_found\", \"classification\": \"ExecutionAborted\"}}]}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/persondata",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json",
+            "caseInsensitive": true
+          }
+        },
+        "bodyPatterns" : [ {
+          "equalToJson" : "{\"query\" : \"query{ hentPerson( ident: \\\"00000000000\\\") {adressebeskyttelse {gradering} } }\" }"
+        } ]
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"data\": {\"hentPerson\": {\"adressebeskyttelse\": [{\"gradering\": \"UGRADERT\"}]}}}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Data
 @EqualsAndHashCode(callSuper = true)
 public class InnloggetSelvbetjeningBruker extends InnloggetBruker<Fnr> {
 

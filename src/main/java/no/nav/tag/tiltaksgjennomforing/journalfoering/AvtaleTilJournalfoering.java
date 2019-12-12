@@ -13,14 +13,14 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AvtaleTilJournalfoering {
-    private UUID id;
+    private UUID avtaleId;
+    private UUID avtaleVersjonId;
 
     private String deltakerFnr;
     private String bedriftNr;
     private String veilederNavIdent;
 
     private LocalDate opprettet;
-    private Integer versjon;
     private String deltakerFornavn;
     private String deltakerEtternavn;
     private String deltakerTlf;
@@ -31,6 +31,7 @@ public class AvtaleTilJournalfoering {
     private String veilederFornavn;
     private String veilederEtternavn;
     private String veilederTlf;
+    private Integer versjon;
 
     private String oppfolging;
     private String tilrettelegging;
