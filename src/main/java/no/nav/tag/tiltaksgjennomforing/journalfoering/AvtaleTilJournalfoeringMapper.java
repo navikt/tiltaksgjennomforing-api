@@ -7,41 +7,42 @@ import java.util.List;
 
 public class AvtaleTilJournalfoeringMapper {
 
-    public static AvtaleTilJournalfoering tilJournalfoering(Avtale avtale) {
+    public static AvtaleTilJournalfoering tilJournalfoering(Avtale avtale, AvtaleInnhold avtaleInnhold) {
         if (avtale == null) {
             return null;
         }
 
         AvtaleTilJournalfoering avtaleTilJournalfoering = new AvtaleTilJournalfoering();
 
-        avtaleTilJournalfoering.setGodkjentAvArbeidsgiver(avtale.getGodkjentAvArbeidsgiver().toLocalDate());
-        avtaleTilJournalfoering.setGodkjentAvVeileder(avtale.getGodkjentAvVeileder().toLocalDate());
-        avtaleTilJournalfoering.setGodkjentAvDeltaker(avtale.getGodkjentAvDeltaker().toLocalDate());
+        avtaleTilJournalfoering.setGodkjentAvArbeidsgiver(avtaleInnhold.getGodkjentAvArbeidsgiver().toLocalDate());
+        avtaleTilJournalfoering.setGodkjentAvVeileder(avtaleInnhold.getGodkjentAvVeileder().toLocalDate());
+        avtaleTilJournalfoering.setGodkjentAvDeltaker(avtaleInnhold.getGodkjentAvDeltaker().toLocalDate());
         avtaleTilJournalfoering.setOpprettet(avtale.getOpprettetTidspunkt().toLocalDate());
-        avtaleTilJournalfoering.setId(avtale.getId());
+        avtaleTilJournalfoering.setAvtaleId(avtale.getId());
+        avtaleTilJournalfoering.setAvtaleVersjonId(avtaleInnhold.getId());
         avtaleTilJournalfoering.setDeltakerFnr(identifikatorAsString(avtale.getDeltakerFnr()));
         avtaleTilJournalfoering.setBedriftNr(identifikatorAsString(avtale.getBedriftNr()));
         avtaleTilJournalfoering.setVeilederNavIdent(identifikatorAsString(avtale.getVeilederNavIdent()));
-        avtaleTilJournalfoering.setDeltakerFornavn(avtale.getDeltakerFornavn());
-        avtaleTilJournalfoering.setDeltakerEtternavn(avtale.getDeltakerEtternavn());
-        avtaleTilJournalfoering.setDeltakerTlf(avtale.getDeltakerTlf());
-        avtaleTilJournalfoering.setBedriftNavn(avtale.getBedriftNavn());
-        avtaleTilJournalfoering.setArbeidsgiverFornavn(avtale.getArbeidsgiverFornavn());
-        avtaleTilJournalfoering.setArbeidsgiverEtternavn(avtale.getArbeidsgiverEtternavn());
-        avtaleTilJournalfoering.setArbeidsgiverTlf(avtale.getArbeidsgiverTlf());
-        avtaleTilJournalfoering.setVeilederFornavn(avtale.getVeilederFornavn());
-        avtaleTilJournalfoering.setVeilederEtternavn(avtale.getVeilederEtternavn());
-        avtaleTilJournalfoering.setVeilederTlf(avtale.getVeilederTlf());
-        avtaleTilJournalfoering.setOppfolging(avtale.getOppfolging());
-        avtaleTilJournalfoering.setTilrettelegging(avtale.getTilrettelegging());
-        avtaleTilJournalfoering.setStartDato(avtale.getStartDato());
-        avtaleTilJournalfoering.setSluttDato(avtale.getSluttDato());
-        avtaleTilJournalfoering.setStillingprosent(avtale.getStillingprosent());
-        avtaleTilJournalfoering.setMaal(maalListToMaalTilJournalfoeringList(avtale.getMaal()));
-        avtaleTilJournalfoering.setOppgaver(oppgaveListToOppgaveTilJournalFoeringList(avtale.getOppgaver()));
-        avtaleTilJournalfoering.setGodkjentPaVegneGrunn(godkjentPaVegneGrunn(avtale.getGodkjentPaVegneGrunn()));
-        avtaleTilJournalfoering.setGodkjentPaVegneAv(avtale.isGodkjentPaVegneAv());
-        avtaleTilJournalfoering.setVersjon(avtale.getVersjon());
+        avtaleTilJournalfoering.setDeltakerFornavn(avtaleInnhold.getDeltakerFornavn());
+        avtaleTilJournalfoering.setDeltakerEtternavn(avtaleInnhold.getDeltakerEtternavn());
+        avtaleTilJournalfoering.setDeltakerTlf(avtaleInnhold.getDeltakerTlf());
+        avtaleTilJournalfoering.setBedriftNavn(avtaleInnhold.getBedriftNavn());
+        avtaleTilJournalfoering.setArbeidsgiverFornavn(avtaleInnhold.getArbeidsgiverFornavn());
+        avtaleTilJournalfoering.setArbeidsgiverEtternavn(avtaleInnhold.getArbeidsgiverEtternavn());
+        avtaleTilJournalfoering.setArbeidsgiverTlf(avtaleInnhold.getArbeidsgiverTlf());
+        avtaleTilJournalfoering.setVeilederFornavn(avtaleInnhold.getVeilederFornavn());
+        avtaleTilJournalfoering.setVeilederEtternavn(avtaleInnhold.getVeilederEtternavn());
+        avtaleTilJournalfoering.setVeilederTlf(avtaleInnhold.getVeilederTlf());
+        avtaleTilJournalfoering.setOppfolging(avtaleInnhold.getOppfolging());
+        avtaleTilJournalfoering.setTilrettelegging(avtaleInnhold.getTilrettelegging());
+        avtaleTilJournalfoering.setStartDato(avtaleInnhold.getStartDato());
+        avtaleTilJournalfoering.setSluttDato(avtaleInnhold.getSluttDato());
+        avtaleTilJournalfoering.setStillingprosent(avtaleInnhold.getStillingprosent());
+        avtaleTilJournalfoering.setMaal(maalListToMaalTilJournalfoeringList(avtaleInnhold.getMaal()));
+        avtaleTilJournalfoering.setOppgaver(oppgaveListToOppgaveTilJournalFoeringList(avtaleInnhold.getOppgaver()));
+        avtaleTilJournalfoering.setGodkjentPaVegneGrunn(godkjentPaVegneGrunn(avtaleInnhold.getGodkjentPaVegneGrunn()));
+        avtaleTilJournalfoering.setGodkjentPaVegneAv(avtaleInnhold.isGodkjentPaVegneAv());
+        avtaleTilJournalfoering.setVersjon(avtaleInnhold.getVersjon());
         return avtaleTilJournalfoering;
     }
 

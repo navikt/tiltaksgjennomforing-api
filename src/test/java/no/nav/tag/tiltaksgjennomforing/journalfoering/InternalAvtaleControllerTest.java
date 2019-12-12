@@ -3,6 +3,8 @@ package no.nav.tag.tiltaksgjennomforing.journalfoering;
 import no.nav.tag.tiltaksgjennomforing.TestData;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnholdRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import org.junit.Test;
@@ -11,10 +13,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -23,6 +26,8 @@ public class InternalAvtaleControllerTest {
     private static final UUID AVTALE_ID_1 = UUID.randomUUID();
     private static final UUID AVTALE_ID_2 = UUID.randomUUID();
     private static final UUID AVTALE_ID_3 = UUID.randomUUID();
+    private List<Avtale> avtaleList = avtalerMedFemGodkjenteVersjoner();
+    private List<UUID> avtaleIds = Arrays.asList(AVTALE_ID_1, AVTALE_ID_2, AVTALE_ID_3);
 
     @InjectMocks
     private InternalAvtaleController internalAvtaleController;
@@ -33,26 +38,32 @@ public class InternalAvtaleControllerTest {
     @Mock
     private AvtaleRepository avtaleRepository;
 
+    @Mock
+    private AvtaleInnholdRepository avtaleInnholdRepository;
+
     @Test
     public void henterAvtalerTilJournalfoering() {
-        List<Avtale> avtaleList = godkjenteAvtaler();
-
-        Avtale journalfoert = avtaleList.get(2);
-        journalfoert.setJournalpostId("1");
+        //Setter en versjon til journalført
+        Avtale avtaleMedEnJournalfortVersjon = avtaleList.get(1);
+        AvtaleInnhold journalfort = avtaleMedEnJournalfortVersjon.getVersjoner().get(0);
+        journalfort.setJournalpostId("1");
 
         doNothing().when(innloggingService).validerSystembruker();
-        when(avtaleRepository.findAll()).thenReturn(avtaleList);
-
+        when(avtaleInnholdRepository.finnAvtaleIdTilJournalfoering()).thenReturn(avtaleIds);
+        when(avtaleRepository.findAllById(eq(avtaleIds))).thenReturn(avtaleList);
         List<AvtaleTilJournalfoering> avtalerTilJournalfoering = internalAvtaleController.hentIkkeJournalfoerteAvtaler();
-        avtalerTilJournalfoering.forEach(avtaleTilJournalfoering -> assertNotEquals(journalfoert.getId(), avtaleTilJournalfoering.getId()));
+
+        assertEquals(4, avtalerTilJournalfoering.size());
+        avtalerTilJournalfoering.forEach(avtaleTilJournalfoering -> assertNotEquals(journalfort.getId(), avtaleTilJournalfoering.getAvtaleVersjonId()));
     }
 
     @Test
     public void ingenAvtaleTilJournalfoering() {
         doNothing().when(innloggingService).validerSystembruker();
-        List<Avtale> avtaler = godkjenteAvtaler();
-        avtaler.forEach(avtale -> avtale.setJournalpostId("1"));
-        when(avtaleRepository.findAll()).thenReturn(avtaler);
+        avtaleList.stream().flatMap(avtale -> avtale.getVersjoner().stream()).forEach(avtale -> avtale.setJournalpostId("1"));
+        when(avtaleInnholdRepository.finnAvtaleIdTilJournalfoering()).thenReturn(avtaleIds);
+        when(avtaleRepository.findAllById(avtaleIds)).thenReturn(avtaleList);
+
         assertTrue(internalAvtaleController.hentIkkeJournalfoerteAvtaler().isEmpty());
     }
 
@@ -66,15 +77,14 @@ public class InternalAvtaleControllerTest {
 
     @Test
     public void journalfoererAvtaler() {
+        List<AvtaleInnhold> godkjenteAvtaleVersjoner = avtalerMedFemGodkjenteVersjoner().stream().flatMap(avtale ->avtale.getVersjoner().stream()).collect(Collectors.toList());
         Map<UUID, String> map = new HashMap<>();
-        map.put(AVTALE_ID_1, "journalId-1");
-        map.put(AVTALE_ID_2, "journalId-2");
-        map.put(AVTALE_ID_3, "journalId-3");
+        godkjenteAvtaleVersjoner.forEach(avtaleInnhold -> map.put(avtaleInnhold.getId(), "1"));
 
         doNothing().when(innloggingService).validerSystembruker();
-        when(avtaleRepository.findAllById(map.keySet())).thenReturn(godkjenteAvtaler());
+        when(avtaleInnholdRepository.findAllById(map.keySet())).thenReturn(godkjenteAvtaleVersjoner);
         internalAvtaleController.journalfoerAvtaler(map);
-        verify(avtaleRepository, atLeastOnce()).saveAll(anyIterable());
+        verify(avtaleInnholdRepository, atLeastOnce()).saveAll(anyIterable());
     }
 
     @Test(expected = TilgangskontrollException.class)
@@ -85,13 +95,16 @@ public class InternalAvtaleControllerTest {
         verify(avtaleRepository, never()).saveAll(anyIterable());
     }
 
-    private static List<Avtale> godkjenteAvtaler() {
+    private static List<Avtale> avtalerMedFemGodkjenteVersjoner() {
         Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         avtale.setId(AVTALE_ID_1);
-        Avtale avtale2 = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        Avtale avtale2 = TestData.enAvtaleMedFlereVersjoner();
+        avtale2.getVersjoner().get(0).setGodkjentAvVeileder(LocalDateTime.now());
         avtale2.setId(AVTALE_ID_2);
-        Avtale avtale3 = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        Avtale avtale3 = TestData.enAvtaleMedFlereVersjoner();
+        avtale3.getVersjoner().get(0).setGodkjentAvVeileder(LocalDateTime.now());
         avtale3.setId(AVTALE_ID_3);
         return Arrays.asList(avtale, avtale2, avtale3);
     }
 }
+

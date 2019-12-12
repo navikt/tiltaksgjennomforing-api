@@ -13,7 +13,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AvtaleTilJournalfoering {
-    private UUID id;
+    private UUID avtaleId;
+    private UUID avtaleVersjonId;
 
     private String deltakerFnr;
     private String bedriftNr;

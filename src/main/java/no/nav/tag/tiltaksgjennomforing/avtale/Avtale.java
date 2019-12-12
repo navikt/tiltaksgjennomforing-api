@@ -233,10 +233,4 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         sistEndretNå();
         registerEvent(new AvtaleLåstOpp(this));
     }
-
-    public boolean skalJournalfores() {
-        return tiltakstype == Tiltakstype.ARBEIDSTRENING
-                && erGodkjentAvVeileder()
-                && this.getJournalpostId() == null;
-    }
 }

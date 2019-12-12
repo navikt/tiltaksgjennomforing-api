@@ -4,8 +4,7 @@ import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import no.nav.security.oidc.api.ProtectedWithClaims;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -23,24 +22,28 @@ import java.util.stream.Collectors;
 public class InternalAvtaleController {
 
     private final AvtaleRepository avtaleRepository;
+    private final AvtaleInnholdRepository avtaleInnholdRepository;
     private final InnloggingService innloggingService;
 
     @GetMapping
     public List<AvtaleTilJournalfoering> hentIkkeJournalfoerteAvtaler() {
         innloggingService.validerSystembruker();
-        return avtaleRepository.findAll().stream()
-                .filter(Avtale::skalJournalfores)
-                .map(AvtaleTilJournalfoeringMapper::tilJournalfoering)
+        List<UUID> uuidList = avtaleInnholdRepository.finnAvtaleIdTilJournalfoering();
+        return avtaleRepository.findAllById(uuidList).stream()
+                .filter(avtale -> avtale.getTiltakstype() == Tiltakstype.ARBEIDSTRENING)
+                .flatMap(avtale -> avtale.getVersjoner().stream()
+                        .filter(AvtaleInnhold::skalJournalfores)
+                        .map(avtaleInnhold -> AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale, avtaleInnhold)))
                 .collect(Collectors.toList());
     }
 
     @PutMapping
     @Transactional
-    public ResponseEntity<?> journalfoerAvtaler(@RequestBody Map<UUID, String> avtalerTilJournalfoert) {
+    public ResponseEntity<?> journalfoerAvtaler(@RequestBody Map<UUID, String> avtaleVersjonerTilJournalfoert) {
         innloggingService.validerSystembruker();
-        Iterable<Avtale> avtaler = avtaleRepository.findAllById(avtalerTilJournalfoert.keySet());
-        avtaler.forEach(avtale -> avtale.setJournalpostId(avtalerTilJournalfoert.get(avtale.getId())));
-        avtaleRepository.saveAll(avtaler);
+        Iterable<AvtaleInnhold> avtaleVersjoner = avtaleInnholdRepository.findAllById(avtaleVersjonerTilJournalfoert.keySet());
+        avtaleVersjoner.forEach(avtale -> avtale.setJournalpostId(avtaleVersjonerTilJournalfoert.get(avtale.getId())));
+        avtaleInnholdRepository.saveAll(avtaleVersjoner);
         return ResponseEntity.ok().build();
     }
 }
