@@ -7,8 +7,9 @@ import java.util.List;
 
 public class AvtaleTilJournalfoeringMapper {
 
-    public static AvtaleTilJournalfoering tilJournalfoering(Avtale avtale, AvtaleInnhold avtaleInnhold) {
-        if (avtale == null) {
+    public static AvtaleTilJournalfoering tilJournalfoering(AvtaleInnhold avtaleInnhold) {
+        Avtale avtale = avtaleInnhold.getAvtale();
+        if (!avtale.erArbeidstrening() ) {
             return null;
         }
 

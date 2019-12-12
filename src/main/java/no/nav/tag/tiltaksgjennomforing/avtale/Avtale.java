@@ -233,4 +233,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         sistEndretNå();
         registerEvent(new AvtaleLåstOpp(this));
     }
+
+    public boolean erArbeidstrening(){
+        return this.getTiltakstype() == Tiltakstype.ARBEIDSTRENING;
+    }
 }
