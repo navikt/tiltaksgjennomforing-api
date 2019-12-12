@@ -133,6 +133,10 @@ public class AvtaleInnhold {
     private AvtaleInnholdStrategy innholdStrategi() {
         return AvtaleInnholdStrategyFactory.create(this, avtale.getTiltakstype());
     }
+
+    public boolean skalJournalfores() {
+        return this.godkjentAvVeileder != null && this.getJournalpostId() == null;
+    }
 }
 
 
