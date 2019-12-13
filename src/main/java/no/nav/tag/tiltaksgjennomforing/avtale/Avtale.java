@@ -9,7 +9,9 @@ import lombok.experimental.FieldNameConstants;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import org.springframework.data.domain.AbstractAggregateRoot;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -214,6 +216,15 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     public void leggTilBedriftNavn(String bedriftNavn) {
         this.setBedriftNavn(bedriftNavn);
+    }
+
+    public void leggTilDeltakerNavn(Navn navn) {
+        if (StringUtils.hasLength(navn.getMellomnavn())) {
+            this.setDeltakerFornavn(navn.getFornavn() + " " + navn.getMellomnavn());
+        } else {
+            this.setDeltakerFornavn(navn.getFornavn());
+        }
+        this.setDeltakerEtternavn(navn.getEtternavn());
     }
 
     @JsonProperty
