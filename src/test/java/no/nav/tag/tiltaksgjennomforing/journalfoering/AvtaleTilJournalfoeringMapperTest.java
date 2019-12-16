@@ -39,7 +39,7 @@ public class AvtaleTilJournalfoeringMapperTest {
         avtale.setGodkjentPaVegneAv(true);
         avtale.setOpprettetTidspunkt(LocalDateTime.now());
 
-        tilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale, avtaleInnhold);
+        tilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtaleInnhold);
 
         assertEquals(avtaleId.toString(), tilJournalfoering.getAvtaleId().toString());
         assertEquals(avtaleInnhold.getId().toString(), tilJournalfoering.getAvtaleVersjonId().toString());
@@ -73,7 +73,7 @@ public class AvtaleTilJournalfoeringMapperTest {
     public void paaVegneGrunnErIkkeBankId() {
         grunn.setIkkeBankId(true);
         avtale.setGodkjentPaVegneGrunn(grunn);
-        tilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale, avtaleInnhold);
+        tilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtaleInnhold);
         assertTrue(tilJournalfoering.getGodkjentPaVegneGrunn().isIkkeBankId());
         assertFalse(tilJournalfoering.getGodkjentPaVegneGrunn().isDigitalKompetanse());
         assertFalse(tilJournalfoering.getGodkjentPaVegneGrunn().isReservert());
@@ -83,7 +83,7 @@ public class AvtaleTilJournalfoeringMapperTest {
     public void paaVegneGrunnErDigitalKompetanse() {
         grunn.setDigitalKompetanse(true);
         avtale.setGodkjentPaVegneGrunn(grunn);
-        tilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale, avtaleInnhold);
+        tilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtaleInnhold);
         assertFalse(tilJournalfoering.getGodkjentPaVegneGrunn().isIkkeBankId());
         assertTrue(tilJournalfoering.getGodkjentPaVegneGrunn().isDigitalKompetanse());
         assertFalse(tilJournalfoering.getGodkjentPaVegneGrunn().isReservert());
@@ -93,20 +93,20 @@ public class AvtaleTilJournalfoeringMapperTest {
     public void paaVegneGrunnErReservert() {
         grunn.setReservert(true);
         avtale.setGodkjentPaVegneGrunn(grunn);
-        tilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale, avtaleInnhold);
+        tilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtaleInnhold);
         assertFalse(tilJournalfoering.getGodkjentPaVegneGrunn().isIkkeBankId());
         assertFalse(tilJournalfoering.getGodkjentPaVegneGrunn().isDigitalKompetanse());
         assertTrue(tilJournalfoering.getGodkjentPaVegneGrunn().isReservert());
 
         avtale.setGodkjentPaVegneGrunn(null);
-        tilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale, avtaleInnhold);
+        tilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtaleInnhold);
         assertNull(tilJournalfoering.getGodkjentPaVegneGrunn());
     }
 
     @Test
     public void ingenPaaVegneGrunn() {
         avtale.setGodkjentPaVegneGrunn(null);
-        tilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale, avtaleInnhold);
+        tilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtaleInnhold);
         assertNull(tilJournalfoering.getGodkjentPaVegneGrunn());
     }
 
@@ -123,7 +123,7 @@ public class AvtaleTilJournalfoeringMapperTest {
         oppgave2.setBeskrivelse("Beskrivelse-2");
         avtale.setOppgaver(Arrays.asList(oppgave, oppgave2));
 
-        tilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale, avtaleInnhold);
+        tilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtaleInnhold);
 
         tilJournalfoering.getOppgaver().forEach(oppg -> {
             if (oppg.getTittel().equals("Tittel")) {
@@ -146,8 +146,9 @@ public class AvtaleTilJournalfoeringMapperTest {
         maal2.setKategori("Kategori-2");
         maal2.setBeskrivelse("Beskrivelse-2");
 
-        avtale.setMaal(Arrays.asList(maal, maal2));
-        tilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale, avtaleInnhold);
+        avtaleInnhold.setMaal(Arrays.asList(maal, maal2));
+
+        tilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtaleInnhold);
 
         tilJournalfoering.getMaal().forEach(maalet -> {
             if (maalet.getKategori().equals("Kategori")) {
