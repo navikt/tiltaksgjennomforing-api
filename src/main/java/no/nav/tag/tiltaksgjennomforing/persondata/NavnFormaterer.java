@@ -11,19 +11,18 @@ public class NavnFormaterer {
     }
 
     public String getEtternavn() {
-        return storeBokstaver(navn.getEtternavn());
+        return storeForbokstaver(navn.getEtternavn());
     }
 
-
     public String getFornavn() {
-        var fornavnOgMellomnavn = navn.getFornavn();
+        String fornavnOgMellomnavn = navn.getFornavn();
         if (StringUtils.hasLength(navn.getMellomnavn())) {
             fornavnOgMellomnavn += " " + navn.getMellomnavn();
         }
-        return storeBokstaver(fornavnOgMellomnavn);
+        return storeForbokstaver(fornavnOgMellomnavn);
     }
 
-    private static String storeBokstaver(String navn) {
+    private static String storeForbokstaver(String navn) {
         return WordUtils.capitalizeFully(navn, '-', ' ');
     }
 }
