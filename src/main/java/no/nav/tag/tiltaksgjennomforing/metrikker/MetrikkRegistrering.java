@@ -5,11 +5,9 @@ import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.pilottilgang.TilgangUnderPilotering;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.varsel.SmsVarselRepository;
 import no.nav.tag.tiltaksgjennomforing.varsel.events.SmsVarselResultatMottatt;
 import org.springframework.context.event.EventListener;
@@ -23,7 +21,6 @@ import javax.annotation.PostConstruct;
 public class MetrikkRegistrering {
     private final MeterRegistry meterRegistry;
     private final SmsVarselRepository smsVarselRepository;
-    private final FeatureToggleService featureToggleService;
 
     @PostConstruct
     public void init() {
@@ -51,14 +48,10 @@ public class MetrikkRegistrering {
         Counter.builder("tiltaksgjennomforing.smsvarsel.feil").register(meterRegistry).increment();
     }
 
-    private boolean pilotFylke() {
-        return featureToggleService.isEnabled(TilgangUnderPilotering.TAG_TILTAK_PILOTTILGANG_KONTOR);
-    }
-
     @EventListener
     public void avtaleOpprettet(AvtaleOpprettet event) {
         Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
-        log.info("Avtale opprettet, avtaleId={} ident={}, PilotFylke={}, tiltakstype={}", event.getAvtale().getId(), event.getUtfortAv(), pilotFylke(), tiltakstype);
+        log.info("Avtale opprettet, avtaleId={} ident={}, tiltakstype={}", event.getAvtale().getId(), event.getUtfortAv(), tiltakstype);
         counter("avtale.opprettet", Avtalerolle.VEILEDER, tiltakstype).increment();
     }
 
@@ -105,7 +98,7 @@ public class MetrikkRegistrering {
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
         Avtalerolle rolle = Avtalerolle.VEILEDER;
         Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
-        log.info("Avtale godkjent, avtaleId={}, avtalepart={}, PilotFylke={}, tiltakstype={}", event.getAvtale().getId(), rolle, pilotFylke(), tiltakstype);
+        log.info("Avtale godkjent, avtaleId={}, avtalepart={}, tiltakstype={}", event.getAvtale().getId(), rolle, tiltakstype);
         counter("avtale.godkjenning.godkjent", rolle, tiltakstype).increment();
     }
 
@@ -113,7 +106,7 @@ public class MetrikkRegistrering {
     public void godkjentPaVegneAv(GodkjentPaVegneAv event) {
         Avtalerolle rolle = Avtalerolle.VEILEDER;
         Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
-        log.info("Avtale godkjent på vegne av deltaker, avtaleId={}, avtalepart={}, PilotFylke={}, tiltakstype={}", event.getAvtale().getId(), rolle, pilotFylke(), tiltakstype);
+        log.info("Avtale godkjent på vegne av deltaker, avtaleId={}, avtalepart={}, tiltakstype={}", event.getAvtale().getId(), rolle, tiltakstype);
         counter("avtale.godkjenning.godkjentPaVegneAv", rolle, tiltakstype).increment();
     }
 
@@ -121,7 +114,7 @@ public class MetrikkRegistrering {
     public void avtaleLåstOpp(AvtaleLåstOpp event) {
         Avtalerolle rolle = Avtalerolle.VEILEDER;
         Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
-        log.info("Avtale låst opp, avtaleId={}, avtalepart={}, PilotFylke={}, tiltakstype={}", event.getAvtale().getId(), rolle, pilotFylke(), tiltakstype);
+        log.info("Avtale låst opp, avtaleId={}, avtalepart={}, tiltakstype={}", event.getAvtale().getId(), rolle, tiltakstype);
         counter("avtale.laastOpp", rolle, tiltakstype).increment();
     }
 
