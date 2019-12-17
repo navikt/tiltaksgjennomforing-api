@@ -37,7 +37,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     @Convert(converter = NavIdentConverter.class)
     private NavIdent veilederNavIdent;
 
-    @Enumerated(value = EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     @Column(updatable = false)
     private Tiltakstype tiltakstype;
 
