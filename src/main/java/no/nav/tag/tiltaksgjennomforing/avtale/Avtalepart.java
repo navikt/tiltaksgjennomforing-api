@@ -24,7 +24,7 @@ public abstract class Avtalepart<T extends Identifikator> {
     static String tekstHeaderAvtaleErAvsluttet = "Tiltaket er avsluttet";
     static String tekstHeaderAvtaleAvbrutt = "Tiltaket er avbrutt";
     static String tekstAvtaleAvbrutt = "Veilederen har bestemt at tiltaket og avtalen skal avbrytes.";
-    static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.LLL.yyyy");
+    static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd. LLL. yyyy");
 
     abstract void godkjennForAvtalepart();
 
