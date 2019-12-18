@@ -97,6 +97,7 @@ public class AvtaleInnhold {
                 .godkjentAvVeileder(null)
                 .godkjentPaVegneAv(false)
                 .godkjentPaVegneGrunn(null)
+                .journalpostId(null)
                 .versjon(versjon + 1)
                 .build();
         nyVersjon.getMaal().forEach(m -> m.setAvtaleInnhold(nyVersjon));
