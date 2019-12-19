@@ -5,7 +5,6 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetSelvbetjeningBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.pilottilgang.TilgangUnderPilotering;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
@@ -40,9 +39,6 @@ public class AvtaleControllerTest {
 
     @Mock
     private AvtaleRepository avtaleRepository;
-
-    @Mock
-    private TilgangUnderPilotering tilgangUnderPilotering;
 
     @Mock
     private TilgangskontrollService tilgangskontrollService;
@@ -233,13 +229,6 @@ public class AvtaleControllerTest {
         ResponseEntity<Avtalerolle> svar = avtaleController.hentRolle(avtale.getId());
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(svar.getBody()).isEqualTo(Avtalerolle.DELTAKER);
-    }
-
-    @Test(expected = TilgangskontrollException.class)
-    public void opprettAvtale__skal_feile_hvis_veileder_ikke_er_i_pilotering() {
-        vaerInnloggetSom(TestData.enNavAnsatt());
-        doThrow(TilgangskontrollException.class).when(tilgangUnderPilotering).sjekkTilgang(any());
-        avtaleController.opprettAvtale(new OpprettAvtale(new Fnr("11111100000"), new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING));
     }
 
     @Test(expected = TilgangskontrollException.class)

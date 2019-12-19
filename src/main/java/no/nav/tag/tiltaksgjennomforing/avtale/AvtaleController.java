@@ -6,7 +6,6 @@ import no.nav.security.oidc.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.pilottilgang.TilgangUnderPilotering;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
@@ -34,7 +33,6 @@ public class AvtaleController {
     private final AvtaleRepository avtaleRepository;
     private final InnloggingService innloggingService;
     private final EregService eregService;
-    private final TilgangUnderPilotering tilgangUnderPilotering;
     private final TilgangskontrollService tilgangskontrollService;
     private final PersondataService persondataService;
 
@@ -61,7 +59,6 @@ public class AvtaleController {
     @Transactional
     public ResponseEntity<?> opprettAvtale(@RequestBody OpprettAvtale opprettAvtale) {
         InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
-        tilgangUnderPilotering.sjekkTilgang(innloggetNavAnsatt.getIdentifikator());
         tilgangskontrollService.sjekkSkrivetilgangTilKandidat(innloggetNavAnsatt, opprettAvtale.getDeltakerFnr());
         persondataService.sjekkGradering(opprettAvtale.getDeltakerFnr());
         Avtale avtale = innloggetNavAnsatt.opprettAvtale(opprettAvtale);
