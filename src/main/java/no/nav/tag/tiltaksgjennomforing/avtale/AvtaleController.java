@@ -66,6 +66,7 @@ public class AvtaleController {
         persondataService.sjekkGradering(opprettAvtale.getDeltakerFnr());
         Avtale avtale = innloggetNavAnsatt.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
+        avtale.leggTilDeltakerNavn(persondataService.hentNavn(avtale.getDeltakerFnr()));
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
