@@ -20,16 +20,16 @@ import static java.util.Collections.emptyList;
 import static org.mockito.Mockito.mock;
 
 public class TestData {
-    public static Arbeidstrening enAvtale() {
+    public static Avtale enAvtale() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        return (Arbeidstrening) AvtaleFactory.nyAvtale(lagOpprettAvtale(), veilderNavIdent);
+        return AvtaleFactory.nyAvtale(lagOpprettAvtale(), veilderNavIdent);
     }
 
-    public static Arbeidstrening enAvtaleMedAltUtfylt() {
+    public static Avtale enAvtaleMedAltUtfylt() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         Avtale avtale = AvtaleFactory.nyAvtale(lagOpprettAvtale(), veilderNavIdent);
-        avtale.endreAvtale(Instant.now(), endringPaAlleFelt(), Avtalerolle.VEILEDER);
-        return (Arbeidstrening) avtale;
+        avtale.endreAvtale(avtale.getSistEndret(), endringPaAlleFelt(), Avtalerolle.VEILEDER);
+        return avtale;
     }
 
     public static Avtale enAvtaleMedAltUtfyltGodkjentAvVeileder() {
@@ -37,6 +37,7 @@ public class TestData {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setJournalpostId("1");
         return avtale;
     }
 
@@ -138,10 +139,6 @@ public class TestData {
         return new InnloggetSelvbetjeningBruker(avtalepartMedFnr.getIdentifikator(), emptyList());
     }
 
-    public static InnloggetNavAnsatt innloggetNavAnsatt(Avtalepart<NavIdent> avtalepartMedNavIdent) {
-        return new InnloggetNavAnsatt(avtalepartMedNavIdent.getIdentifikator(), mock(TilgangskontrollService.class));
-    }
-
     public static Identifikator enIdentifikator() {
         return new Identifikator("test-id");
     }
@@ -156,5 +153,19 @@ public class TestData {
 
     public static SmsVarsel etSmsVarsel(Avtale avtale) {
         return SmsVarsel.nyttVarsel("tlf", TestData.enIdentifikator(), "", null);
+    }
+
+    public static Avtale enAvtaleMedFlereVersjoner() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        avtale.låsOppAvtale();
+        EndreAvtale endreAvtale = TestData.endringPaAlleFelt();
+        endreAvtale.setDeltakerFornavn("Atle");
+        endreAvtale.setDeltakerEtternavn("Jørgensen");
+        endreAvtale.setOppfolging("Trenger mer oppfølging");
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        return avtale;
     }
 }

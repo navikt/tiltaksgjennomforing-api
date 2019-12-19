@@ -6,7 +6,6 @@ import no.nav.security.oidc.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.pilottilgang.TilgangUnderPilotering;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
@@ -34,7 +33,6 @@ public class AvtaleController {
     private final AvtaleRepository avtaleRepository;
     private final InnloggingService innloggingService;
     private final EregService eregService;
-    private final TilgangUnderPilotering tilgangUnderPilotering;
     private final TilgangskontrollService tilgangskontrollService;
     private final PersondataService persondataService;
 
@@ -53,7 +51,7 @@ public class AvtaleController {
         return avtaleRepository.findAll().stream()
                 .filter(queryParametre)
                 .filter(bruker::harLeseTilgang)
-                .sorted(Comparator.nullsLast(Comparator.comparing(Avtale::getOpprettetTidspunkt).reversed()))
+                .sorted(Comparator.nullsLast(Comparator.comparing(Avtale::getSistEndret).reversed()))
                 .collect(Collectors.toList());
     }
 
@@ -61,17 +59,17 @@ public class AvtaleController {
     @Transactional
     public ResponseEntity<?> opprettAvtale(@RequestBody OpprettAvtale opprettAvtale) {
         InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
-        tilgangUnderPilotering.sjekkTilgang(innloggetNavAnsatt.getIdentifikator());
         tilgangskontrollService.sjekkSkrivetilgangTilKandidat(innloggetNavAnsatt, opprettAvtale.getDeltakerFnr());
         persondataService.sjekkGradering(opprettAvtale.getDeltakerFnr());
         Avtale avtale = innloggetNavAnsatt.opprettAvtale(opprettAvtale);
-        avtale.setBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
+        avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
+        avtale.leggTilDeltakerNavn(persondataService.hentNavn(avtale.getDeltakerFnr()));
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
     }
 
-    @GetMapping(value = "/{avtaleId}/status-detaljer")
+    @GetMapping("/{avtaleId}/status-detaljer")
     public AvtaleStatusDetaljer hentAvtaleStatusDetaljer(@PathVariable("avtaleId") UUID avtaleId) {
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
@@ -79,7 +77,7 @@ public class AvtaleController {
         return avtalepart.statusDetaljerForAvtale();
     }
 
-    @PutMapping(value = "/{avtaleId}")
+    @PutMapping("/{avtaleId}")
     @Transactional
     public ResponseEntity<?> endreAvtale(@PathVariable("avtaleId") UUID avtaleId,
                                          @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
@@ -94,7 +92,7 @@ public class AvtaleController {
         return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
     }
 
-    @GetMapping(value = "/{avtaleId}/rolle")
+    @GetMapping("/{avtaleId}/rolle")
     public ResponseEntity<Avtalerolle> hentRolle(@PathVariable("avtaleId") UUID avtaleId) {
         InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
@@ -103,7 +101,7 @@ public class AvtaleController {
         return ResponseEntity.ok(avtalepart.rolle());
     }
 
-    @PostMapping(value = "/{avtaleId}/opphev-godkjenninger")
+    @PostMapping("/{avtaleId}/opphev-godkjenninger")
     @Transactional
     public ResponseEntity<?> opphevGodkjenninger(@PathVariable("avtaleId") UUID avtaleId) {
         InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker();
@@ -115,7 +113,7 @@ public class AvtaleController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping(value = "/{avtaleId}/godkjenn")
+    @PostMapping("/{avtaleId}/godkjenn")
     @Transactional
     public ResponseEntity<?> godkjenn(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret) {
         InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker();
@@ -127,25 +125,37 @@ public class AvtaleController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping(value = "/{avtaleId}/godkjenn-paa-vegne-av")
+    @PostMapping("/{avtaleId}/godkjenn-paa-vegne-av")
     @Transactional
-    public ResponseEntity<?> godkjennPaVegneAv(@PathVariable("avtaleId") UUID avtaleId, @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn, @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant versjon) {
+    public ResponseEntity<?> godkjennPaVegneAv(@PathVariable("avtaleId") UUID avtaleId, @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn) {
         InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
         Avtalepart<?> avtalepart = innloggetBruker.avtalepart(avtale);
-        avtalepart.godkjennPaVegneAvDeltaker(paVegneAvGrunn, versjon);
+        avtalepart.godkjennPaVegneAvDeltaker(paVegneAvGrunn);
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping(value = "/{avtaleId}/avbryt")
-    public ResponseEntity<?> avbryt(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant versjon) {
+    @PostMapping("/{avtaleId}/avbryt")
+    public ResponseEntity<?> avbryt(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret) {
         InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetNavAnsatt.sjekkSkriveTilgang(avtale);
         Veileder veileder = innloggetNavAnsatt.avtalepart(avtale);
-        veileder.avbrytAvtale(versjon);
+        veileder.avbrytAvtale(sistEndret);
+        avtaleRepository.save(avtale);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{avtaleId}/laas-opp")
+    @Transactional
+    public ResponseEntity<?> laasOpp(@PathVariable("avtaleId") UUID avtaleId) {
+        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        innloggetBruker.sjekkSkriveTilgang(avtale);
+        Avtalepart<?> avtalepart = innloggetBruker.avtalepart(avtale);
+        avtalepart.låsOppAvtale();
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();
     }

@@ -22,7 +22,7 @@ public class AvtaleTest {
 
         NavIdent veilederNavIdent = new NavIdent("X123456");
         BedriftNr bedriftNr = new BedriftNr("000111222");
-        Arbeidstrening avtale = (Arbeidstrening) AvtaleFactory.nyAvtale(new OpprettAvtale(deltakerFnr, bedriftNr, Tiltakstype.ARBEIDSTRENING), veilederNavIdent);
+        Avtale avtale = AvtaleFactory.nyAvtale(new OpprettAvtale(deltakerFnr, bedriftNr, Tiltakstype.ARBEIDSTRENING), veilederNavIdent);
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(avtale.getOpprettetTidspunkt()).isNotNull();
             softly.assertThat(avtale.getDeltakerFnr()).isEqualTo(deltakerFnr);
@@ -85,7 +85,7 @@ public class AvtaleTest {
 
     @Test
     public void endreAvtaleSkalOppdatereRiktigeFelt() {
-        Arbeidstrening avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enAvtale();
         EndreAvtale endreAvtale = TestData.endringPaAlleFelt();
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
 
@@ -161,11 +161,11 @@ public class AvtaleTest {
     }
 
     @Test
-    public void endreAvtale__startdato_og_sluttdato_satt_3mnd() {
+    public void endreAvtale__startdato_og_sluttdato_satt_18mnd() {
         Avtale avtale = TestData.enAvtale();
         EndreAvtale endreAvtale = new EndreAvtale();
         LocalDate startDato = LocalDate.now();
-        LocalDate sluttDato = startDato.plusMonths(3);
+        LocalDate sluttDato = startDato.plusMonths(18);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
@@ -174,11 +174,11 @@ public class AvtaleTest {
     }
 
     @Test(expected = AvtalensVarighetMerEnnMaksimaltAntallMånederException.class)
-    public void endreAvtale__startdato_og_sluttdato_satt_over_3mnd() {
+    public void endreAvtale__startdato_og_sluttdato_satt_over_18mnd() {
         Avtale avtale = TestData.enAvtale();
         EndreAvtale endreAvtale = new EndreAvtale();
         LocalDate startDato = LocalDate.now();
-        LocalDate sluttDato = startDato.plusMonths(3).plusDays(1);
+        LocalDate sluttDato = startDato.plusMonths(18).plusDays(1);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
@@ -250,7 +250,7 @@ public class AvtaleTest {
 
     @Test
     public void status__null_startdato() {
-        Arbeidstrening avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enAvtale();
         avtale.setStartDato(null);
         avtale.setSluttDato(null);
         assertThat(avtale.status()).isEqualTo("Påbegynt");
@@ -258,7 +258,7 @@ public class AvtaleTest {
 
     @Test
     public void status__noe_fylt_ut() {
-        Arbeidstrening avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enAvtale();
         avtale.setStartDato(LocalDate.now().plusDays(5));
         avtale.setSluttDato(avtale.getStartDato().plusMonths(3));
         avtale.setBedriftNavn("testbedriftsnavn");
@@ -267,7 +267,7 @@ public class AvtaleTest {
 
     @Test
     public void status__avsluttet_i_gaar() {
-        Arbeidstrening avtale = TestData.enAvtaleMedAltUtfylt();
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setStartDato(LocalDate.now().minusWeeks(4).minusDays(1));
         avtale.setSluttDato(avtale.getStartDato().plusWeeks(4));
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
@@ -278,7 +278,7 @@ public class AvtaleTest {
 
     @Test
     public void status__avslutter_i_dag() {
-        Arbeidstrening avtale = TestData.enAvtaleMedAltUtfylt();
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setStartDato(LocalDate.now().minusWeeks(4));
         avtale.setSluttDato(avtale.getStartDato().plusWeeks(4));
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
@@ -289,7 +289,7 @@ public class AvtaleTest {
 
     @Test
     public void status__startet_i_dag() {
-        Arbeidstrening avtale = TestData.enAvtaleMedAltUtfylt();
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setStartDato(LocalDate.now());
         avtale.setSluttDato(avtale.getStartDato().plusWeeks(4));
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
@@ -300,7 +300,7 @@ public class AvtaleTest {
 
     @Test
     public void status__starter_i_morgen() {
-        Arbeidstrening avtale = TestData.enAvtaleMedAltUtfylt();
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setStartDato(LocalDate.now().plusDays(1));
         avtale.setSluttDato(avtale.getStartDato().plusWeeks(4));
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
@@ -370,5 +370,137 @@ public class AvtaleTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setAvbrutt(true);
         assertThat(avtale.kanAvbrytes()).isFalse();
+    }
+
+    @Test
+    public void kanLåsesOpp__skal_være_true_når_godkjent_av_veileder() {
+        assertThat(TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder().kanLåsesOpp()).isTrue();
+    }
+
+    @Test
+    public void kanLåsesOpp__skal_være_false_når_ikke_godkjent_av_veileder() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        avtale.setGodkjentAvVeileder(null);
+        assertThat(avtale.kanLåsesOpp()).isFalse();
+    }
+
+    @Test
+    public void låsOppAvtale__skal_ha_riktig_innhold() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        Avtale avtaleKopi = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+
+        avtale.låsOppAvtale();
+        assertThat(avtale).isEqualToIgnoringGivenFields(avtaleKopi,
+                Avtale.Fields.id,
+                Avtale.Fields.opprettetTidspunkt,
+                Avtale.Fields.sistEndret,
+                Avtale.Fields.versjoner,
+                AvtaleInnhold.Fields.godkjentAvDeltaker,
+                AvtaleInnhold.Fields.godkjentAvArbeidsgiver,
+                AvtaleInnhold.Fields.godkjentAvVeileder,
+                "domainEvents");
+        assertThat(avtale.getGodkjentAvDeltaker()).isNull();
+        assertThat(avtale.getGodkjentAvArbeidsgiver()).isNull();
+        assertThat(avtale.getGodkjentAvVeileder()).isNull();
+        assertThat(avtale.getJournalpostId()).isNull();
+    }
+
+    @Test
+    public void låsOppAvtale__skal_lage_ny_versjon() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        avtale.låsOppAvtale();
+        List<AvtaleInnhold> versjoner = avtale.getVersjoner();
+
+        AvtaleInnhold førsteVersjon = versjoner.get(0);
+        AvtaleInnhold andreVersjon = versjoner.get(1);
+        assertThat(førsteVersjon.getVersjon()).isEqualTo(1);
+        assertThat(andreVersjon.getVersjon()).isEqualTo(2);
+        assertThat(andreVersjon.getMaal())
+                .usingElementComparatorOnFields(Maal.Fields.kategori, Maal.Fields.beskrivelse)
+                .isEqualTo(førsteVersjon.getMaal());
+        assertThat(andreVersjon.getOppgaver())
+                .usingElementComparatorOnFields(Oppgave.Fields.tittel, Oppgave.Fields.beskrivelse, Oppgave.Fields.opplaering)
+                .isEqualTo(førsteVersjon.getOppgaver());
+        assertThat(andreVersjon).isEqualToIgnoringGivenFields(førsteVersjon,
+                AvtaleInnhold.Fields.id,
+                AvtaleInnhold.Fields.versjon,
+                AvtaleInnhold.Fields.maal,
+                AvtaleInnhold.Fields.oppgaver,
+                AvtaleInnhold.Fields.godkjentAvDeltaker,
+                AvtaleInnhold.Fields.godkjentAvArbeidsgiver,
+                AvtaleInnhold.Fields.godkjentAvVeileder,
+                AvtaleInnhold.Fields.journalpostId);
+    }
+
+    @Test
+    public void sistEndretNå__kalles_ved_endreAvtale() {
+        Instant førEndringen = Instant.now();
+        Avtale avtale = TestData.enAvtale();
+        avtale.endreAvtale(Instant.MAX, TestData.ingenEndring(), Avtalerolle.VEILEDER);
+        assertThat(avtale.getSistEndret()).isAfter(førEndringen);
+    }
+
+    @Test
+    public void sistEndretNå__kalles_ved_godkjennForDeltaker() {
+        Instant førEndringen = Instant.now();
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.godkjennForDeltaker(TestData.enIdentifikator());
+        assertThat(avtale.getSistEndret()).isAfter(førEndringen);
+    }
+
+    @Test
+    public void sistEndretNå__kalles_ved_godkjennForArbeidsgiver() {
+        Instant førEndringen = Instant.now();
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
+        assertThat(avtale.getSistEndret()).isAfter(førEndringen);
+    }
+
+    @Test
+    public void sistEndretNå__kalles_ved_godkjennForVeileder() {
+        Instant førEndringen = Instant.now();
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
+        assertThat(avtale.getSistEndret()).isAfter(førEndringen);
+    }
+
+    @Test
+    public void sistEndretNå__kalles_ved_godkjennForVeilederOgDeltaker() {
+        Instant førEndringen = Instant.now();
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.godkjennForVeilederOgDeltaker(TestData.enIdentifikator(), TestData.enGodkjentPaVegneGrunn());
+        assertThat(avtale.getSistEndret()).isAfter(førEndringen);
+    }
+
+    @Test
+    public void sistEndretNå__kalles_ved_opphevGodkjenningerSomArbeidsgiver() {
+        Instant førEndringen = Instant.now();
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.opphevGodkjenningerSomArbeidsgiver();
+        assertThat(avtale.getSistEndret()).isAfter(førEndringen);
+    }
+
+    @Test
+    public void sistEndretNå__kalles_ved_opphevGodkjenningerSomVeileder() {
+        Instant førEndringen = Instant.now();
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.opphevGodkjenningerSomVeileder();
+        assertThat(avtale.getSistEndret()).isAfter(førEndringen);
+    }
+
+    @Test
+    public void sistEndretNå__kalles_ved_avbryt() {
+        Instant førEndringen = Instant.now();
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.avbryt(TestData.enVeileder(avtale));
+        assertThat(avtale.getSistEndret()).isAfter(førEndringen);
+    }
+
+    @Test
+    public void sistEndretNå__kalles_ved_låsOppAvtale() {
+        Instant førEndringen = Instant.now();
+        Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        avtale.låsOppAvtale();
+        assertThat(avtale.getSistEndret()).isAfter(førEndringen);
     }
 }

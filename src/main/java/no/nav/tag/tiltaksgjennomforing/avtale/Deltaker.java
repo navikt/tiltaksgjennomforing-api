@@ -31,7 +31,7 @@ public class Deltaker extends Avtalepart<Fnr> {
         AvtaleStatusDetaljer avtaleStatusDetaljer = new AvtaleStatusDetaljer();
         avtaleStatusDetaljer.setGodkjentAvInnloggetBruker(erGodkjentAvInnloggetBruker());
         if (!avtale.isAvbrutt()) {
-            if (avtale.heleAvtalenErFyltUt()) {
+            if (avtale.erAltUtfylt()) {
                 if (avtale.erGodkjentAvDeltaker()) {
                     if (avtale.erGodkjentAvVeileder()) {
                         if (avtale.getStartDato().isAfter(LocalDate.now())) {
@@ -90,5 +90,10 @@ public class Deltaker extends Avtalepart<Fnr> {
     @Override
     void opphevGodkjenningerSomAvtalepart() {
         throw new TilgangskontrollException("Deltaker kan ikke oppheve godkjenninger");
+    }
+
+    @Override
+    public void låsOppAvtale() {
+        throw new TilgangskontrollException("Deltaker kan ikke låse opp avtale");
     }
 }

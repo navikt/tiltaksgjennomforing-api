@@ -24,7 +24,7 @@
           }
         },
         "bodyPatterns" : [ {
-          "equalToJson" : "{\"query\" : \"query{ hentPerson( ident: \\\"16053900422\\\") {adressebeskyttelse {gradering} } }\"}"
+          "equalToJson" : {"query" : "query($ident: ID!) { hentPerson(ident: $ident) { adressebeskyttelse { gradering } } }", "variables":  {"ident": "16053900422"}}
         } ]
       },
       "response": {
@@ -46,7 +46,7 @@
           }
         },
         "bodyPatterns" : [ {
-          "equalToJson" : "{\"query\" : \"query{ hentPerson( ident: \\\"00000000000\\\") {adressebeskyttelse {gradering} } }\" }"
+          "equalToJson" : {"query" : "query($ident: ID!) { hentPerson(ident: $ident) { adressebeskyttelse { gradering } } }", "variables":  {"ident": "00000000000"}}
         } ]
       },
       "response": {
@@ -68,7 +68,7 @@
           }
         },
         "bodyPatterns" : [ {
-          "equalToJson" : "{\"query\" : \"query{ hentPerson( ident: \\\"26067114433\\\") {adressebeskyttelse {gradering} } }\" }"
+          "equalToJson" : {"query" : "query($ident: ID!) { hentPerson(ident: $ident) { adressebeskyttelse { gradering } } }", "variables":  {"ident": "26067114433"}}
         } ]
       },
       "response": {
@@ -90,7 +90,7 @@
           }
         },
         "bodyPatterns" : [ {
-          "equalToJson" : "{\"query\" : \"query{ hentPerson( ident: \\\"18076641842\\\") {adressebeskyttelse {gradering} } }\" }"
+          "equalToJson" : {"query" : "query($ident: ID!) { hentPerson(ident: $ident) { adressebeskyttelse { gradering } } }", "variables":  {"ident": "18076641842"}}
         } ]
       },
       "response": {
@@ -112,7 +112,7 @@
           }
         },
         "bodyPatterns" : [ {
-          "equalToJson" : "{\"query\" : \"query{ hentPerson( ident: \\\"23097010706\\\") {adressebeskyttelse {gradering} } }\" }"
+          "equalToJson" : {"query" : "query($ident: ID!) { hentPerson(ident: $ident) { adressebeskyttelse { gradering } } }", "variables":  {"ident": "23097010706"}}
         } ]
       },
       "response": {
@@ -134,12 +134,12 @@
           }
         },
         "bodyPatterns" : [ {
-          "equalToJson" : "{\"query\" : \"query{ hentPerson( ident: \\\"00000000000\\\") {adressebeskyttelse {gradering} } }\" }"
+          "equalToJson" : {"query" : "query($ident: ID!) { hentPerson(ident: $ident) { navn { fornavn mellomnavn etternavn } } }", "variables":  {"ident": "00000000000"}}
         } ]
       },
       "response": {
         "status": 200,
-        "body": "{\"data\": {\"hentPerson\": {\"adressebeskyttelse\": [{\"gradering\": \"UGRADERT\"}]}}}",
+        "body": "{\"data\": {\"hentPerson\": {\"navn\": [{\"fornavn\": \"Donald\", \"etternavn\": \"Duck\"}]}}}",
         "headers": {
           "Content-Type": "application/json"
         }

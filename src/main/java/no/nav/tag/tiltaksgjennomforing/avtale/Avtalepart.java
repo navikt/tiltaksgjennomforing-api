@@ -51,8 +51,7 @@ public abstract class Avtalepart<T extends Identifikator> {
         godkjennForAvtalepart();
     }
 
-    public void godkjennPaVegneAvDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn, Instant sistEndret) {
-        avtale.sjekkSistEndret(sistEndret);
+    public void godkjennPaVegneAvDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn) {
         godkjennForVeilederOgDeltaker(paVegneAvGrunn);
     }
 
@@ -70,4 +69,5 @@ public abstract class Avtalepart<T extends Identifikator> {
         opphevGodkjenningerSomAvtalepart();
     }
 
+    public abstract void låsOppAvtale();
 }

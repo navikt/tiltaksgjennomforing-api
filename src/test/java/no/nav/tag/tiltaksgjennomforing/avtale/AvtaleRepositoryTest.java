@@ -14,14 +14,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -167,27 +163,5 @@ public class AvtaleRepositoryTest {
         TestData.enVeileder(avtale).opphevGodkjenninger();
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).godkjenningerOpphevet(any(GodkjenningerOpphevetAvVeileder.class));
-    }
-
-    @Test
-    public void henter_avtaler_til_journalfoering() {
-        Avtale ikkeKlar = TestData.enAvtaleMedAltUtfylt();
-        Avtale klarTilJournalforing = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
-        Avtale journalfoert = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
-        journalfoert.setJournalpostId("done");
-        avtaleRepository.saveAll(Arrays.asList(klarTilJournalforing, ikkeKlar, journalfoert));
-
-        List<UUID> avtaleIds = avtaleRepository.finnAvtaleIdTilJournalfoering();
-        List<Avtale> faktiskAvtList = avtaleRepository.findAllById(avtaleIds);
-
-        assertEquals(avtaleIds.size(), faktiskAvtList.size());
-        boolean allMatch = faktiskAvtList.stream()
-                .allMatch(avtale ->
-                        avtale.erGodkjentAvVeileder()
-                                && avtale.getJournalpostId() == null
-                                && avtaleIds.stream().anyMatch(uuid ->
-                                uuid.equals(avtale.getId()) && !uuid.equals(ikkeKlar.getId()) && !uuid.equals(journalfoert.getId()))
-                );
-        assertTrue(allMatch);
     }
 }

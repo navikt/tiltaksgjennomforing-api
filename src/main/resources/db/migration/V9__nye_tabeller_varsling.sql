@@ -9,7 +9,7 @@ create table varslbar_hendelse
 create table sms_varsel
 (
     id                uuid primary key,
-    varslbar_hendelse uuid references varslbar_hendelse (id),
+    varslbar_hendelse uuid,
     status            varchar,
     telefonnummer     varchar(255),
     identifikator     varchar(11),
