@@ -63,7 +63,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
                 + (avtale.erGodkjentAvDeltaker() ? "har godkjent" : "har ikke godkjent"), avtale.erGodkjentAvDeltaker());
         avtaleStatusDetaljer.setPart2Detaljer((avtale.getVeilederFornavn() != null && !avtale.getVeilederFornavn().trim().equals("") ? avtale.getVeilederFornavn() : "Veileder") + " "
                 + (avtale.getVeilederEtternavn() != null && !avtale.getVeilederEtternavn().trim().equals("") ? avtale.getVeilederEtternavn() + " " : "")
-                + (avtale.erGodkjentAvVeileder() ? "har godkjent" : "venter på din godkjenning"), avtale.erGodkjentAvVeileder());
+                + (avtale.erGodkjentAvVeileder() ? "har godkjent" : (avtale.erGodkjentAvArbeidsgiver() ? "har ikke godkjent" : "venter på din godkjenning")), avtale.erGodkjentAvVeileder());
         return avtaleStatusDetaljer;
     }
 
