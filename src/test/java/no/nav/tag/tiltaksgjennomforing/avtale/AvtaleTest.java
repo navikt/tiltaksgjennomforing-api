@@ -402,6 +402,7 @@ public class AvtaleTest {
         assertThat(avtale.getGodkjentAvDeltaker()).isNull();
         assertThat(avtale.getGodkjentAvArbeidsgiver()).isNull();
         assertThat(avtale.getGodkjentAvVeileder()).isNull();
+        assertThat(avtale.getJournalpostId()).isNull();
     }
 
     @Test
@@ -427,7 +428,8 @@ public class AvtaleTest {
                 AvtaleInnhold.Fields.oppgaver,
                 AvtaleInnhold.Fields.godkjentAvDeltaker,
                 AvtaleInnhold.Fields.godkjentAvArbeidsgiver,
-                AvtaleInnhold.Fields.godkjentAvVeileder);
+                AvtaleInnhold.Fields.godkjentAvVeileder,
+                AvtaleInnhold.Fields.journalpostId);
     }
 
     @Test
