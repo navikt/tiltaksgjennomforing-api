@@ -71,7 +71,7 @@ public class AvtaleTilJournalfoeringMapper {
 
         MaalTilJournalfoering maalTilJournalfoering = new MaalTilJournalfoering();
 
-        maalTilJournalfoering.setKategori(maal.getKategori());
+        maalTilJournalfoering.setKategori(maal.getKategori().getVerdi());
         maalTilJournalfoering.setBeskrivelse(maal.getBeskrivelse());
 
         return maalTilJournalfoering;

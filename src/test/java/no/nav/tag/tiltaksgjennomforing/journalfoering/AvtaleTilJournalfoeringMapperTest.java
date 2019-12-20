@@ -139,11 +139,11 @@ public class AvtaleTilJournalfoeringMapperTest {
     @Test
     public void mapperMaal() {
         Maal maal = new Maal();
-        maal.setKategori("Kategori");
+        maal.setKategori(MaalKategori.FÅ_JOBB_I_BEDRIFTEN);
         maal.setBeskrivelse("Beskrivelse");
 
         Maal maal2 = new Maal();
-        maal2.setKategori("Kategori-2");
+        maal2.setKategori(MaalKategori.UTPRØVING);
         maal2.setBeskrivelse("Beskrivelse-2");
 
         avtaleInnhold.setMaal(Arrays.asList(maal, maal2));
@@ -151,9 +151,9 @@ public class AvtaleTilJournalfoeringMapperTest {
         tilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtaleInnhold);
 
         tilJournalfoering.getMaal().forEach(maalet -> {
-            if (maalet.getKategori().equals("Kategori")) {
+            if (maalet.getKategori().equals(MaalKategori.FÅ_JOBB_I_BEDRIFTEN.getVerdi())) {
                 assertEquals("Beskrivelse", maalet.getBeskrivelse());
-            } else if (maalet.getKategori().equals("Kategori-2")) {
+            } else if (maalet.getKategori().equals(MaalKategori.UTPRØVING.getVerdi())) {
                 assertEquals("Beskrivelse-2", maalet.getBeskrivelse());
             } else {
                 fail("Mål; " + maalet);

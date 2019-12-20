@@ -119,7 +119,7 @@ public class TestData {
 
     public static Maal etMaal() {
         Maal maal = new Maal();
-        maal.setKategori("Få jobb i bedriften");
+        maal.setKategori(MaalKategori.FÅ_JOBB_I_BEDRIFTEN);
         maal.setBeskrivelse("Lære butikkarbeid");
         return maal;
     }
