@@ -9,6 +9,8 @@ import lombok.experimental.FieldNameConstants;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
+import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
 import javax.persistence.*;
@@ -35,7 +37,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     @Convert(converter = NavIdentConverter.class)
     private NavIdent veilederNavIdent;
 
-    @Enumerated(value = EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     @Column(updatable = false)
     private Tiltakstype tiltakstype;
 
@@ -216,6 +218,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         this.setBedriftNavn(bedriftNavn);
     }
 
+    public void leggTilDeltakerNavn(Navn navn) {
+        NavnFormaterer formaterer = new NavnFormaterer(navn);
+        this.setDeltakerFornavn(formaterer.getFornavn());
+        this.setDeltakerEtternavn(formaterer.getEtternavn());
+    }
+
     @JsonProperty
     public boolean kanLåsesOpp() {
         return erGodkjentAvVeileder();
@@ -232,5 +240,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         versjoner.add(this.gjeldendeInnhold().nyVersjon());
         sistEndretNå();
         registerEvent(new AvtaleLåstOpp(this));
+    }
+
+    public boolean erArbeidstrening(){
+        return this.getTiltakstype() == Tiltakstype.ARBEIDSTRENING;
     }
 }

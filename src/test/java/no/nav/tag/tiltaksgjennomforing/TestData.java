@@ -37,6 +37,7 @@ public class TestData {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setJournalpostId("1");
         return avtale;
     }
 
@@ -118,7 +119,7 @@ public class TestData {
 
     public static Maal etMaal() {
         Maal maal = new Maal();
-        maal.setKategori("Få jobb i bedriften");
+        maal.setKategori(MaalKategori.FÅ_JOBB_I_BEDRIFTEN);
         maal.setBeskrivelse("Lære butikkarbeid");
         return maal;
     }
@@ -136,10 +137,6 @@ public class TestData {
 
     public static InnloggetSelvbetjeningBruker innloggetSelvbetjeningBrukerUtenOrganisasjon(Avtalepart<Fnr> avtalepartMedFnr) {
         return new InnloggetSelvbetjeningBruker(avtalepartMedFnr.getIdentifikator(), emptyList());
-    }
-
-    public static InnloggetNavAnsatt innloggetNavAnsatt(Avtalepart<NavIdent> avtalepartMedNavIdent) {
-        return new InnloggetNavAnsatt(avtalepartMedNavIdent.getIdentifikator(), mock(TilgangskontrollService.class));
     }
 
     public static Identifikator enIdentifikator() {

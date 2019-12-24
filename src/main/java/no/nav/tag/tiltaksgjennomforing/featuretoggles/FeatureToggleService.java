@@ -4,7 +4,6 @@ import no.finn.unleash.Unleash;
 import no.finn.unleash.UnleashContext;
 import no.finn.unleash.UnleashContext.Builder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +21,7 @@ public class FeatureToggleService {
     @Autowired
     public FeatureToggleService(Unleash unleash, TokenUtils tokenUtils) {
         this.unleash = unleash;
-        this.tokenUtils = tokenUtils;        
+        this.tokenUtils = tokenUtils;
     }
 
     public Map<String, Boolean> hentFeatureToggles(List<String> features) {

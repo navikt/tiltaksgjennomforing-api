@@ -18,7 +18,8 @@ public class Maal {
     @Id
     @GeneratedValue
     private UUID id;
-    private String kategori;
+    @Enumerated(EnumType.STRING)
+    private MaalKategori kategori;
     private String beskrivelse;
     @ManyToOne
     @JoinColumn(name = "avtale_innhold")
