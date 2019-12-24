@@ -181,17 +181,17 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     @JsonProperty
     public String status() {
         if (isAvbrutt()) {
-            return "Avbrutt";
+            return Status.AVBRUTT.getStatusVerdi();
         } else if (erGodkjentAvVeileder() && (this.getSluttDato().isBefore(LocalDate.now()))) {
-            return "Avsluttet";
+            return Status.AVSLUTTET.getStatusVerdi();
         } else if (erGodkjentAvVeileder() && (this.getStartDato().isBefore(LocalDate.now().plusDays(1)))) {
-            return "Gjennomføres";
+            return Status.GJENNOMFØRES.getStatusVerdi();
         } else if (erGodkjentAvVeileder()) {
-            return "Klar for oppstart";
+            return Status.KLAR_FOR_OPPSTART.getStatusVerdi();
         } else if (erAltUtfylt()) {
-            return "Mangler godkjenning";
+            return Status.MANGLER_GODKJENNING.getStatusVerdi();
         } else {
-            return "Påbegynt";
+            return Status.PÅBEGYNT.getStatusVerdi();
         }
     }
 
