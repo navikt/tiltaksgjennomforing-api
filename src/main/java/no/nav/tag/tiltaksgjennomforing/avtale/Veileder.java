@@ -68,29 +68,6 @@ public class Veileder extends Avtalepart<NavIdent> {
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
-     /*   if (!avtale.isAvbrutt()) {
-            if (avtale.erAltUtfylt()) {
-                if (avtale.erGodkjentAvVeileder()) {
-                    if (avtale.getStartDato().isAfter(LocalDate.now())) {
-                        //avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato().format(formatter), Veileder.ekstraTekstAvtleErGodkjentAvAllePartner);
-                    } else if (avtale.getSluttDato().isAfter(LocalDate.now())) {
-                        //avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleGjennomfores, "", "");
-                    } else {
-                        //avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErAvsluttet, "", "");
-                    }
-                } //else if (avtale.erGodkjentAvArbeidsgiver() && avtale.erGodkjentAvDeltaker()) {
-                    //avtaleStatusDetaljer.setInnloggetBrukerStatus
-                      //      (tekstHeaderAvtaleVenterPaaDinGodkjenning, tekstAvtaleVenterPaaDinGodkjenning, "");
-               // } else {
-                 //   avtaleStatusDetaljer.setInnloggetBrukerStatus
-                   //         (tekstHeaderVentAndreGodkjenning, "", "");
-                //}
-            } else {
-                //avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtalePaabegynt, "", "");
-            }
-        } else {
-            //avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleAvbrutt, tekstAvtaleAvbrutt, "");
-        }*/
 
         avtaleStatusDetaljer.setPart1Detaljer((avtale.getBedriftNavn() != null && !avtale.getBedriftNavn().trim().equals("") ? avtale.getBedriftNavn() : "Arbeidsgiver")
                 + (avtale.erGodkjentAvArbeidsgiver() ? " har godkjent" : " har ikke godkjent"), avtale.erGodkjentAvArbeidsgiver());

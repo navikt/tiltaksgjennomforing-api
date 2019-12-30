@@ -56,35 +56,7 @@ public class Deltaker extends Avtalepart<Fnr> {
                 avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErAvsluttet, tekstTiltaketErAvsluttet, "");
                 break;
         }
-        /*if (!avtale.isAvbrutt()) {
-            if (avtale.erAltUtfylt()) {
-                if (avtale.erGodkjentAvDeltaker()) {
-                    if (avtale.erGodkjentAvVeileder()) {
-                        if (avtale.getStartDato().isAfter(LocalDate.now())) {
-                            *//*avtaleStatusDetaljer.setInnloggetBrukerStatus(
-                                    tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato().format(formatter), "");*//*
-                        } else if (avtale.getSluttDato().isAfter(LocalDate.now())) {
-                            //avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleGjennomfores, " ", "");
-                        } else {
-                            //avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErAvsluttet, tekstTiltaketErAvsluttet, "");
-                        }
-                    } else if (avtale.erGodkjentAvArbeidsgiver()) {
-                      *//*  avtaleStatusDetaljer.setInnloggetBrukerStatus(
-                                tekstHeaderVentAndreGodkjenning, "", "");*//*
-                    } else {
-                        *//*avtaleStatusDetaljer.setInnloggetBrukerStatus(
-                                tekstHeaderVentAndreGodkjenning, tekstAvtaleVenterPaaAndrepartnerGodkjenning, ekstraTekstAvtaleVenterPaaAndrePartnerGodkjenning);*//*
-                    }
-                } else {
-                    *//*avtaleStatusDetaljer.setInnloggetBrukerStatus(
-                            tekstHeaderAvtaleVenterPaaDinGodkjenning, tekstAvtaleVenterPaaDinGodkjenning, ekstraTekstAvtaleVenterPaaDinGodkjenning);*//*
-                }
-            } else {
-                //avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtalePaabegynt, tekstAvtalePaabegynt, "");
-            }
-        } else {
-            //avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleAvbrutt, tekstAvtaleAvbrutt, "");
-        }*/
+
         avtaleStatusDetaljer.setPart1Detaljer((avtale.getBedriftNavn() != null && !avtale.getBedriftNavn().trim().equals("") ? avtale.getBedriftNavn() : "Arbeidsgiver")
                 + (avtale.erGodkjentAvArbeidsgiver() ? " har godkjent" : " har ikke godkjent"), avtale.erGodkjentAvArbeidsgiver());
         avtaleStatusDetaljer.setPart2Detaljer((avtale.getVeilederFornavn() != null && !avtale.getVeilederFornavn().trim().equals("") ? avtale.getVeilederFornavn() : "Veileder") + " "
