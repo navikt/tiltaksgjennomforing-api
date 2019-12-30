@@ -28,36 +28,64 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     @Override
     public AvtaleStatusDetaljer statusDetaljerForAvtale() {
         AvtaleStatusDetaljer avtaleStatusDetaljer = new AvtaleStatusDetaljer();
-        if (!avtale.isAvbrutt()) {
+        avtaleStatusDetaljer.setGodkjentAvInnloggetBruker(erGodkjentAvInnloggetBruker());
+
+        switch (Status.valueOf(avtale.statusSomEnum().name())){
+            case AVBRUTT:
+                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleAvbrutt, tekstAvtaleAvbrutt, "");
+                break;
+            case PÅBEGYNT:
+                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtalePaabegynt, "", "");
+                break;
+            case MANGLER_GODKJENNING:
+                if(avtale.erGodkjentAvArbeidsgiver())
+                    avtaleStatusDetaljer.setInnloggetBrukerStatus(
+                            tekstHeaderVentAndreGodkjenning, "", "");
+                else
+                    avtaleStatusDetaljer.setInnloggetBrukerStatus(
+                            tekstHeaderAvtaleVenterPaaDinGodkjenning,
+                            Arbeidsgiver.tekstAvtaleVenterPaaDinGodkjenning, ekstraTekstAvtaleVenterPaaDinGodkjenning);
+                break;
+            case KLAR_FOR_OPPSTART:
+                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato().format(formatter), "");
+                break;
+            case GJENNOMFØRES:
+                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleGjennomfores, "", "");
+                break;
+            case AVSLUTTET:
+                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErAvsluttet, tekstTiltaketErAvsluttet, "");
+                break;
+        }
+        /*if (!avtale.isAvbrutt()) {
             if (avtale.erAltUtfylt()) {
                 if (avtale.erGodkjentAvArbeidsgiver()) {
                     if (avtale.erGodkjentAvVeileder()) {
                         if (avtale.getStartDato().isAfter(LocalDate.now())) {
-                            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato().format(formatter), "");
+                            //avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato().format(formatter), "");
                         } else if (avtale.getSluttDato().isAfter(LocalDate.now())) {
-                            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleGjennomfores, "", "");
+                            //avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleGjennomfores, "", "");
                         } else {
-                            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErAvsluttet, tekstTiltaketErAvsluttet, "");
+                            //avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErAvsluttet, tekstTiltaketErAvsluttet, "");
                         }
 
                     } else if (avtale.erGodkjentAvDeltaker()) {
-                        avtaleStatusDetaljer.setInnloggetBrukerStatus(
-                                tekstHeaderVentAndreGodkjenning, "", "");
+                        //avtaleStatusDetaljer.setInnloggetBrukerStatus(
+                          //      tekstHeaderVentAndreGodkjenning, "", "");
                     } else {
-                        avtaleStatusDetaljer.setInnloggetBrukerStatus(
-                                tekstHeaderVentAndreGodkjenning, "", "");
+                       *//* avtaleStatusDetaljer.setInnloggetBrukerStatus(
+                                tekstHeaderVentAndreGodkjenning, "", "");*//*
                     }
                 } else {
-                    avtaleStatusDetaljer.setInnloggetBrukerStatus(
+                *//*    avtaleStatusDetaljer.setInnloggetBrukerStatus(
                             tekstHeaderAvtaleVenterPaaDinGodkjenning,
-                            Arbeidsgiver.tekstAvtaleVenterPaaDinGodkjenning, ekstraTekstAvtaleVenterPaaDinGodkjenning);
+                            Arbeidsgiver.tekstAvtaleVenterPaaDinGodkjenning, ekstraTekstAvtaleVenterPaaDinGodkjenning);*//*
                 }
             } else {
-                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtalePaabegynt, "", "");
+                //avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtalePaabegynt, "", "");
             }
         } else {
-            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleAvbrutt, tekstAvtaleAvbrutt, "");
-        }
+            //avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleAvbrutt, tekstAvtaleAvbrutt, "");
+        }*/
         avtaleStatusDetaljer.setPart1Detaljer((avtale.getDeltakerFornavn() != null && !avtale.getDeltakerFornavn().trim().equals("") ? avtale.getDeltakerFornavn() : "Deltaker") + " " +
                 (avtale.getDeltakerEtternavn() != null && !avtale.getDeltakerEtternavn().trim().equals("") ? avtale.getDeltakerEtternavn() + " " : "")
                 + (avtale.erGodkjentAvDeltaker() ? "har godkjent" : "har ikke godkjent"), avtale.erGodkjentAvDeltaker());
