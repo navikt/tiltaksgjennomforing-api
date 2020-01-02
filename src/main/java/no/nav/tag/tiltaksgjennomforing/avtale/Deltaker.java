@@ -2,8 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 
-import java.time.LocalDate;
-
 public class Deltaker extends Avtalepart<Fnr> {
 
     public Deltaker(Fnr identifikator, Avtale avtale) {
