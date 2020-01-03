@@ -16,6 +16,16 @@ public class VarslbarHendelseLytter {
     }
 
     @EventListener
+    public void avtaleDeltMedArbeidsgiver(AvtaleDeltMedArbeidsgiver event) {
+        varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.DELT_MED_ARBEIDSGIVER));
+    }
+
+    @EventListener
+    public void avtaleDeltMedDeltaker(AvtaleDeltMedDeltaker event) {
+        varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.DELT_MED_DELTAKER));
+    }
+
+    @EventListener
     public void avtaleEndret(AvtaleEndret event) {
         varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.ENDRET));
     }

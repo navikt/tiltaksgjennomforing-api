@@ -47,6 +47,12 @@ public class LagSmsVarselFraVarslbarHendelse {
                 }
                 return varslinger;
             }
+            case DELT_MED_DELTAKER: {
+                return List.of(factory.deltaker());
+            }
+            case DELT_MED_ARBEIDSGIVER: {
+                return List.of(factory.arbeidsgiver());
+            }
         }
         return Collections.emptyList();
     }

@@ -154,4 +154,14 @@ public class AvtaleController {
         avtalepart.låsOppAvtale();
         avtaleRepository.save(avtale);
     }
+
+    @PostMapping("/{avtaleId}/varsle-avtalepart")
+    @Transactional
+    public void varsleOmOpprettelse(@PathVariable("avtaleId") UUID avtaleId, @RequestBody Avtalerolle avtalerolle) {
+        InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        Veileder veileder = innloggetNavAnsatt.avtalepart(avtale);
+        veileder.varsleAvtalepart(avtalerolle);
+        avtaleRepository.save(avtale);
+    }
 }

@@ -14,7 +14,10 @@ public enum VarslbarHendelseType {
     GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER("Avtalens godkjenninger er opphevet av arbeidsgiver"),
     GODKJENNINGER_OPPHEVET_AV_VEILEDER("Avtalens godkjenninger er opphevet av NAV-veileder"),
     SMS_VARSLING_FEILET("Varsling på SMS har feilet"),
-    ENDRET("Avtale endret");
+    ENDRET("Avtale endret"),
+    DELT_MED_DELTAKER("Avtale delt med deltaker"),
+    DELT_MED_ARBEIDSGIVER("Avtale delt med arbeidsgiver"),
+    ;
 
     private final String tekst;
 }

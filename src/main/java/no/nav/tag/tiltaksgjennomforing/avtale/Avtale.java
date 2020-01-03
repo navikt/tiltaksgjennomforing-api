@@ -75,6 +75,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new AvtaleEndret(this, utfortAv));
     }
 
+    public void delMedArbeidsgiver() {
+        registerEvent(new AvtaleDeltMedArbeidsgiver(this));
+    }
+
+    public void delMedDeltaker() {
+        registerEvent(new AvtaleDeltMedDeltaker(this));
+    }
+
     private interface MetoderSomIkkeSkalDelegeresFraAvtaleInnhold {
         UUID getId();
         void setId(UUID id);
