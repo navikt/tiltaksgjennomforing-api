@@ -112,7 +112,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         avtale.låsOppAvtale();
     }
 
-    public void varsleAvtalepart(Avtalerolle avtalerolle) {
+    public void delAvtaleMedAvtalepart(Avtalerolle avtalerolle) {
         switch (avtalerolle) {
             case DELTAKER:
                 avtale.delMedDeltaker();
