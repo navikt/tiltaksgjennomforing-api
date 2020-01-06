@@ -11,6 +11,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
+import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
 import javax.persistence.*;
@@ -76,10 +77,16 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void delMedArbeidsgiver() {
+        if (!TelefonnummerValidator.erGyldigMobilnummer(getArbeidsgiverTlf())) {
+            throw new TiltaksgjennomforingException("Telefonnummeret er ikke et gyldig mobilnummer");
+        }
         registerEvent(new AvtaleDeltMedArbeidsgiver(this));
     }
 
     public void delMedDeltaker() {
+        if (!TelefonnummerValidator.erGyldigMobilnummer(getDeltakerTlf())) {
+            throw new TiltaksgjennomforingException("Telefonnummeret er ikke et gyldig mobilnummer");
+        }
         registerEvent(new AvtaleDeltMedDeltaker(this));
     }
 
