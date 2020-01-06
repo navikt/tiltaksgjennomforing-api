@@ -80,14 +80,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (!TelefonnummerValidator.erGyldigMobilnummer(getArbeidsgiverTlf())) {
             throw new TiltaksgjennomforingException("Telefonnummeret er ikke et gyldig mobilnummer");
         }
-        registerEvent(new AvtaleDeltMedArbeidsgiver(this));
+        registerEvent(new AvtaleDeltMedAvtalepart(this, Avtalerolle.ARBEIDSGIVER));
     }
 
     public void delMedDeltaker() {
         if (!TelefonnummerValidator.erGyldigMobilnummer(getDeltakerTlf())) {
             throw new TiltaksgjennomforingException("Telefonnummeret er ikke et gyldig mobilnummer");
         }
-        registerEvent(new AvtaleDeltMedDeltaker(this));
+        registerEvent(new AvtaleDeltMedAvtalepart(this, Avtalerolle.DELTAKER));
     }
 
     private interface MetoderSomIkkeSkalDelegeresFraAvtaleInnhold {

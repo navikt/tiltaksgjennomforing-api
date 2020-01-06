@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
 import lombok.RequiredArgsConstructor;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -16,13 +17,12 @@ public class VarslbarHendelseLytter {
     }
 
     @EventListener
-    public void avtaleDeltMedArbeidsgiver(AvtaleDeltMedArbeidsgiver event) {
-        varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.DELT_MED_ARBEIDSGIVER));
-    }
-
-    @EventListener
-    public void avtaleDeltMedDeltaker(AvtaleDeltMedDeltaker event) {
-        varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.DELT_MED_DELTAKER));
+    public void avtaleDeltMedAvtalepart(AvtaleDeltMedAvtalepart event) {
+        if (event.getAvtalepart() == Avtalerolle.ARBEIDSGIVER) {
+            varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.DELT_MED_ARBEIDSGIVER));
+        } else if (event.getAvtalepart() == Avtalerolle.DELTAKER) {
+            varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.DELT_MED_DELTAKER));
+        }
     }
 
     @EventListener
