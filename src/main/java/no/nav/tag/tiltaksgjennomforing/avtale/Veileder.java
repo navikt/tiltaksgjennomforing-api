@@ -113,13 +113,6 @@ public class Veileder extends Avtalepart<NavIdent> {
     }
 
     public void delAvtaleMedAvtalepart(Avtalerolle avtalerolle) {
-        switch (avtalerolle) {
-            case DELTAKER:
-                avtale.delMedDeltaker();
-                break;
-            case ARBEIDSGIVER:
-                avtale.delMedArbeidsgiver();
-                break;
-        }
+        avtale.delMedAvtalepart(avtalerolle);
     }
 }
