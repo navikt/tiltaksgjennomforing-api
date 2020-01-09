@@ -33,7 +33,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AvtaleControllerTest {
-	
+
     @InjectMocks
     private AvtaleController avtaleController;
 
@@ -73,10 +73,10 @@ public class AvtaleControllerTest {
         vaerInnloggetSom(innloggetNavAnsatt);
         when(tilgangskontrollService.harLesetilgangTilKandidat(eq(innloggetNavAnsatt), any(Fnr.class))).thenReturn(true);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        Avtale hentetAvtale = avtaleController.hent(avtale.getId()).getBody();
+        Avtale hentetAvtale = avtaleController.hent(avtale.getId());
         assertThat(hentetAvtale).isEqualTo(avtale);
     }
-    
+
     private static InnloggetNavAnsatt innloggetNavAnsatt(Avtalepart<NavIdent> avtalepartMedNavIdent, TilgangskontrollService tilgangskontrollService) {
         return new InnloggetNavAnsatt(avtalepartMedNavIdent.getIdentifikator(), tilgangskontrollService);
     }
@@ -226,9 +226,8 @@ public class AvtaleControllerTest {
         InnloggetSelvbetjeningBruker selvbetjeningBruker = TestData.innloggetSelvbetjeningBrukerUtenOrganisasjon(TestData.enDeltaker(avtale));
         vaerInnloggetSom(selvbetjeningBruker);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        ResponseEntity<Avtalerolle> svar = avtaleController.hentRolle(avtale.getId());
-        assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(svar.getBody()).isEqualTo(Avtalerolle.DELTAKER);
+        Avtalerolle svar = avtaleController.hentRolle(avtale.getId());
+        assertThat(svar).isEqualTo(Avtalerolle.DELTAKER);
     }
 
     @Test(expected = TilgangskontrollException.class)

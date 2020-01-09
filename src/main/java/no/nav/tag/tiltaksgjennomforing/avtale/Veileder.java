@@ -121,4 +121,8 @@ public class Veileder extends Avtalepart<NavIdent> {
     public void låsOppAvtale() {
         avtale.låsOppAvtale();
     }
+
+    public void delAvtaleMedAvtalepart(Avtalerolle avtalerolle) {
+        avtale.delMedAvtalepart(avtalerolle);
+    }
 }

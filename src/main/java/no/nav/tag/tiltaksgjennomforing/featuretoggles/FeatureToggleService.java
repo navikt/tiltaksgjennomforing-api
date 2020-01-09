@@ -16,7 +16,6 @@ public class FeatureToggleService {
 
     private final Unleash unleash;
     private final TokenUtils tokenUtils;
-    public static final String NY_VEILEDERTILGANG = "tag.tiltak.ny.veiledertilgang";
 
     @Autowired
     public FeatureToggleService(Unleash unleash, TokenUtils tokenUtils) {
