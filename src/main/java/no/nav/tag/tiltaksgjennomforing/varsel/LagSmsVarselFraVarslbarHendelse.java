@@ -8,7 +8,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,15 +19,14 @@ public class LagSmsVarselFraVarslbarHendelse {
     static List<SmsVarsel> lagSmsVarsler(Avtale avtale, VarslbarHendelse hendelse, GamleVerdier gamleVerdier) {
         SmsVarselFactory factory = new SmsVarselFactory(avtale, hendelse);
         switch (hendelse.getVarslbarHendelseType()) {
-            case OPPRETTET:
-                break;
             case GODKJENT_AV_DELTAKER:
             case GODKJENT_AV_ARBEIDSGIVER:
-                return Arrays.asList(factory.veileder());
+                return List.of(factory.veileder());
             case GODKJENT_AV_VEILEDER:
-                return Arrays.asList(factory.deltaker(), factory.arbeidsgiver());
+                return List.of(factory.deltaker(), factory.arbeidsgiver());
             case GODKJENT_PAA_VEGNE_AV:
-                return Arrays.asList(factory.arbeidsgiver());
+            case DELT_MED_ARBEIDSGIVER:
+                return List.of(factory.arbeidsgiver());
             case GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER: {
                 var varslinger = new ArrayList<SmsVarsel>();
                 if (gamleVerdier.isGodkjentAvDeltaker()) {
@@ -47,12 +45,9 @@ public class LagSmsVarselFraVarslbarHendelse {
                 }
                 return varslinger;
             }
-            case DELT_MED_DELTAKER: {
+            case DELT_MED_DELTAKER:
                 return List.of(factory.deltaker());
-            }
-            case DELT_MED_ARBEIDSGIVER: {
-                return List.of(factory.arbeidsgiver());
-            }
+
         }
         return Collections.emptyList();
     }
