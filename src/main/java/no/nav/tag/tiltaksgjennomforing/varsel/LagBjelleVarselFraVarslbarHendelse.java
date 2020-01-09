@@ -8,7 +8,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,14 +20,13 @@ public class LagBjelleVarselFraVarslbarHendelse {
         var factory = new BjelleVarselFactory(avtale, varslbarHendelse);
         switch (varslbarHendelse.getVarslbarHendelseType()) {
             case OPPRETTET:
-                return Arrays.asList(factory.deltaker(), factory.arbeidsgiver());
+            case GODKJENT_AV_VEILEDER:
+                return List.of(factory.deltaker(), factory.arbeidsgiver());
             case GODKJENT_AV_DELTAKER:
             case GODKJENT_AV_ARBEIDSGIVER:
-                return Arrays.asList(factory.veileder());
-            case GODKJENT_AV_VEILEDER:
-                return Arrays.asList(factory.deltaker(), factory.arbeidsgiver());
+                return List.of(factory.veileder());
             case GODKJENT_PAA_VEGNE_AV:
-                return Arrays.asList(factory.arbeidsgiver());
+                return List.of(factory.arbeidsgiver());
             case GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER: {
                 var varslinger = new ArrayList<BjelleVarsel>();
                 if (gamleVerdier.isGodkjentAvDeltaker()) {

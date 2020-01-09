@@ -11,6 +11,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
+import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
 import javax.persistence.*;
@@ -73,6 +74,27 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         gjeldendeInnhold().endreAvtale(nyAvtale);
         sistEndretNå();
         registerEvent(new AvtaleEndret(this, utfortAv));
+    }
+
+    public void delMedAvtalepart(Avtalerolle avtalerolle) {
+        String tlf = telefonnummerTilAvtalepart(avtalerolle);
+        if (!TelefonnummerValidator.erGyldigMobilnummer(tlf)) {
+            throw new TiltaksgjennomforingException("Telefonnummeret er ikke et gyldig mobilnummer");
+        }
+        registerEvent(new AvtaleDeltMedAvtalepart(this, avtalerolle));
+    }
+
+    private String telefonnummerTilAvtalepart(Avtalerolle avtalerolle) {
+        switch (avtalerolle) {
+            case DELTAKER:
+                return getDeltakerTlf();
+            case ARBEIDSGIVER:
+                return getArbeidsgiverTlf();
+            case VEILEDER:
+                return getVeilederTlf();
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
     private interface MetoderSomIkkeSkalDelegeresFraAvtaleInnhold {
@@ -242,7 +264,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new AvtaleLåstOpp(this));
     }
 
-    public boolean erArbeidstrening(){
+    public boolean erArbeidstrening() {
         return this.getTiltakstype() == Tiltakstype.ARBEIDSTRENING;
     }
 }
