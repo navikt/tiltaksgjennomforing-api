@@ -28,42 +28,41 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     @Override
     public AvtaleStatusDetaljer statusDetaljerForAvtale() {
         AvtaleStatusDetaljer avtaleStatusDetaljer = new AvtaleStatusDetaljer();
-        if (!avtale.isAvbrutt()) {
-            if (avtale.erAltUtfylt()) {
-                if (avtale.erGodkjentAvArbeidsgiver()) {
-                    if (avtale.erGodkjentAvVeileder()) {
-                        if (avtale.getStartDato().isAfter(LocalDate.now())) {
-                            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato().format(formatter), "");
-                        } else if (avtale.getSluttDato().isAfter(LocalDate.now())) {
-                            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleGjennomfores, "", "");
-                        } else {
-                            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErAvsluttet, tekstTiltaketErAvsluttet, "");
-                        }
+        avtaleStatusDetaljer.setGodkjentAvInnloggetBruker(erGodkjentAvInnloggetBruker());
 
-                    } else if (avtale.erGodkjentAvDeltaker()) {
-                        avtaleStatusDetaljer.setInnloggetBrukerStatus(
-                                tekstHeaderVentAndreGodkjenning, "", "");
-                    } else {
-                        avtaleStatusDetaljer.setInnloggetBrukerStatus(
-                                tekstHeaderVentAndreGodkjenning, "", "");
-                    }
-                } else {
+        switch (avtale.statusSomEnum()) {
+            case AVBRUTT:
+                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleAvbrutt, tekstAvtaleAvbrutt, "");
+                break;
+            case PÅBEGYNT:
+                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtalePaabegynt, "", "");
+                break;
+            case MANGLER_GODKJENNING:
+                if (avtale.erGodkjentAvArbeidsgiver())
+                    avtaleStatusDetaljer.setInnloggetBrukerStatus(
+                            tekstHeaderVentAndreGodkjenning, "", "");
+                else
                     avtaleStatusDetaljer.setInnloggetBrukerStatus(
                             tekstHeaderAvtaleVenterPaaDinGodkjenning,
                             Arbeidsgiver.tekstAvtaleVenterPaaDinGodkjenning, ekstraTekstAvtaleVenterPaaDinGodkjenning);
-                }
-            } else {
-                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtalePaabegynt, "", "");
-            }
-        } else {
-            avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleAvbrutt, tekstAvtaleAvbrutt, "");
+                break;
+            case KLAR_FOR_OPPSTART:
+                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato().format(formatter), "");
+                break;
+            case GJENNOMFØRES:
+                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleGjennomfores, "", "");
+                break;
+            case AVSLUTTET:
+                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErAvsluttet, tekstTiltaketErAvsluttet, "");
+                break;
         }
+
         avtaleStatusDetaljer.setPart1Detaljer((avtale.getDeltakerFornavn() != null && !avtale.getDeltakerFornavn().trim().equals("") ? avtale.getDeltakerFornavn() : "Deltaker") + " " +
                 (avtale.getDeltakerEtternavn() != null && !avtale.getDeltakerEtternavn().trim().equals("") ? avtale.getDeltakerEtternavn() + " " : "")
                 + (avtale.erGodkjentAvDeltaker() ? "har godkjent" : "har ikke godkjent"), avtale.erGodkjentAvDeltaker());
         avtaleStatusDetaljer.setPart2Detaljer((avtale.getVeilederFornavn() != null && !avtale.getVeilederFornavn().trim().equals("") ? avtale.getVeilederFornavn() : "Veileder") + " "
                 + (avtale.getVeilederEtternavn() != null && !avtale.getVeilederEtternavn().trim().equals("") ? avtale.getVeilederEtternavn() + " " : "")
-                + (avtale.erGodkjentAvVeileder() ? "har godkjent" : "venter på din godkjenning"), avtale.erGodkjentAvVeileder());
+                + (avtale.erGodkjentAvVeileder() ? "har godkjent" : (avtale.erGodkjentAvArbeidsgiver() ? "har ikke godkjent" : "venter på din godkjenning")), avtale.erGodkjentAvVeileder());
         return avtaleStatusDetaljer;
     }
 

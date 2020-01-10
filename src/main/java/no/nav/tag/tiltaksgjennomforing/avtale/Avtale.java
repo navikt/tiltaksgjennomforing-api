@@ -202,21 +202,24 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     @JsonProperty
     public String status() {
-        if (isAvbrutt()) {
-            return "Avbrutt";
-        } else if (erGodkjentAvVeileder() && (this.getSluttDato().isBefore(LocalDate.now()))) {
-            return "Avsluttet";
-        } else if (erGodkjentAvVeileder() && (this.getStartDato().isBefore(LocalDate.now().plusDays(1)))) {
-            return "Gjennomføres";
-        } else if (erGodkjentAvVeileder()) {
-            return "Klar for oppstart";
-        } else if (erAltUtfylt()) {
-            return "Mangler godkjenning";
-        } else {
-            return "Påbegynt";
-        }
-    }
+        return statusSomEnum().getStatusVerdi();
 
+    }
+public Status statusSomEnum(){
+    if (isAvbrutt()) {
+        return Status.AVBRUTT;
+    } else if (erGodkjentAvVeileder() && (this.getSluttDato().isBefore(LocalDate.now()))) {
+        return Status.AVSLUTTET;
+    } else if (erGodkjentAvVeileder() && (this.getStartDato().isBefore(LocalDate.now().plusDays(1)))) {
+        return Status.GJENNOMFØRES;
+    } else if (erGodkjentAvVeileder()) {
+        return Status.KLAR_FOR_OPPSTART;
+    } else if (erAltUtfylt()) {
+        return Status.MANGLER_GODKJENNING;
+    } else {
+        return Status.PÅBEGYNT;
+    }
+}
     @JsonProperty
     public boolean kanAvbrytes() {
         // Nå regner vi at veileder kan avbryte avtalen hvis veileder ikke har godkjent(kan også være at han kan
