@@ -15,6 +15,7 @@ public class ArbeidstreningStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.getOppgaver().clear();
         avtaleInnhold.getOppgaver().addAll(nyAvtale.getOppgaver());
         avtaleInnhold.getOppgaver().forEach(o -> o.setAvtaleInnhold(avtaleInnhold));
+        avtaleInnhold.setArbeidsoppgaver(nyAvtale.getArbeidsoppgaver());
         super.endre(nyAvtale);
     }
 

@@ -35,6 +35,7 @@ public class EndreAvtale {
     // Arbeidstreningsfelter
     private List<Maal> maal = new ArrayList<>();
     private List<Oppgave> oppgaver = new ArrayList<>();
+    private String arbeidsoppgaver;
 
     // Lønnstilskuddsfelter
     private String arbeidsgiverKontonummer;

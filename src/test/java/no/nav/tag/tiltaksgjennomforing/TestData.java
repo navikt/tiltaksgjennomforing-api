@@ -100,7 +100,7 @@ public class TestData {
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusWeeks(2));
         endreAvtale.setStillingprosent(50);
         endreAvtale.setMaal(List.of(TestData.etMaal()));
-        endreAvtale.setOppgaver(List.of(TestData.enOppgave()));
+        endreAvtale.setOppgaver(List.of(TestData.enOppgave(), TestData.enOppgave(), TestData.enOppgave()));
         return endreAvtale;
     }
 

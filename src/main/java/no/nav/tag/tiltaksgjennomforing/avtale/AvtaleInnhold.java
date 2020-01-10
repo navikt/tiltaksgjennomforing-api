@@ -78,6 +78,7 @@ public class AvtaleInnhold {
 
     @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Oppgave> oppgaver = new ArrayList<>();
+    private String arbeidsoppgaver;
 
     // Godkjenning
     private LocalDateTime godkjentAvDeltaker;
