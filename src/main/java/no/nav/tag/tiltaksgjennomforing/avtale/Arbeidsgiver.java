@@ -30,7 +30,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         AvtaleStatusDetaljer avtaleStatusDetaljer = new AvtaleStatusDetaljer();
         avtaleStatusDetaljer.setGodkjentAvInnloggetBruker(erGodkjentAvInnloggetBruker());
 
-        switch (Status.valueOf(avtale.statusSomEnum().name())){
+        switch (avtale.statusSomEnum()) {
             case AVBRUTT:
                 avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleAvbrutt, tekstAvtaleAvbrutt, "");
                 break;
@@ -38,7 +38,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
                 avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtalePaabegynt, "", "");
                 break;
             case MANGLER_GODKJENNING:
-                if(avtale.erGodkjentAvArbeidsgiver())
+                if (avtale.erGodkjentAvArbeidsgiver())
                     avtaleStatusDetaljer.setInnloggetBrukerStatus(
                             tekstHeaderVentAndreGodkjenning, "", "");
                 else

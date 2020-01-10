@@ -28,7 +28,7 @@ public class Deltaker extends Avtalepart<Fnr> {
     public AvtaleStatusDetaljer statusDetaljerForAvtale() {
         AvtaleStatusDetaljer avtaleStatusDetaljer = new AvtaleStatusDetaljer();
         avtaleStatusDetaljer.setGodkjentAvInnloggetBruker(erGodkjentAvInnloggetBruker());
-        switch (Status.valueOf(avtale.statusSomEnum().name())) {
+        switch (avtale.statusSomEnum()) {
             case AVBRUTT:
                 avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleAvbrutt, tekstAvtaleAvbrutt, "");
                 break;
