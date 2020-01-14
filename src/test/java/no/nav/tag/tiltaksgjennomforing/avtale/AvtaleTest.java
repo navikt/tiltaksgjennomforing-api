@@ -503,4 +503,10 @@ public class AvtaleTest {
         avtale.låsOppAvtale();
         assertThat(avtale.getSistEndret()).isAfter(førEndringen);
     }
+
+    @Test
+    public void avtaleklarForOppstart(){
+        Avtale avtale= TestData.enAvtaleKlarForOppstart();
+        assertThat(avtale.status()).isEqualTo(Status.KLAR_FOR_OPPSTART.getStatusVerdi());
+    }
 }
