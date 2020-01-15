@@ -270,7 +270,7 @@ public class AvtaleControllerTest {
         assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo("");
         assertThat(avtaleStatusDetaljer.infoDel2).isEqualTo("");
         assertThat(avtaleStatusDetaljer.part1).isEqualTo("Deltaker har ikke godkjent");
-        assertThat(avtaleStatusDetaljer.part2).isEqualTo("Veileder venter på din godkjenning");
+        assertThat(avtaleStatusDetaljer.part2).isEqualTo("Veileder har ikke godkjent");
     }
 
     @Test
@@ -361,7 +361,7 @@ public class AvtaleControllerTest {
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId());
         assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderAvtaleErGodkjentAvAllePartner);
-        assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo(Avtalepart.tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato().format(Avtalepart.formatter));
+        assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo(Avtalepart.tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato().format(Avtalepart.formatter)+".");
         assertThat(avtaleStatusDetaljer.infoDel2).isEqualTo(Veileder.ekstraTekstAvtleErGodkjentAvAllePartner);
     }
 
