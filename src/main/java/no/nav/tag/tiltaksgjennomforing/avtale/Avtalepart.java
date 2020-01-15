@@ -15,7 +15,7 @@ public abstract class Avtalepart<T extends Identifikator> {
     final Avtale avtale;
     static String tekstHeaderAvtalePaabegynt = "Du må fylle ut avtalen";
     static String tekstHeaderVentAndreGodkjenning = "Vent til de andre har godkjent";
-    static String tekstHeaderAvtaleErGodkjentAvAllePartner = "Avtalen er ferdig og godkjent";
+    static String tekstHeaderAvtaleErGodkjentAvAllePartner = "Avtalen er ferdig utfylt og godkjent";
     static String tekstAvtaleErGodkjentAvAllePartner = "Tiltaket starter ";
     static String tekstHeaderAvtaleVenterPaaDinGodkjenning = "Du må godkjenne ";
     static String tekstAvtaleVenterPaaAndrepartnerGodkjenning = "Andre partner må godkjenne avtalen";
@@ -24,7 +24,7 @@ public abstract class Avtalepart<T extends Identifikator> {
     static String tekstHeaderAvtaleErAvsluttet = "Tiltaket er avsluttet";
     static String tekstHeaderAvtaleAvbrutt = "Tiltaket er avbrutt";
     static String tekstAvtaleAvbrutt = "Veilederen har bestemt at tiltaket og avtalen skal avbrytes.";
-    static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd. LLL. yyyy");
+    static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd. MMMM yyyy");
 
     abstract void godkjennForAvtalepart();
 

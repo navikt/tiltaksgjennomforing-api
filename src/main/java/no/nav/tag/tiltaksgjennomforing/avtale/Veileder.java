@@ -56,7 +56,7 @@ public class Veileder extends Avtalepart<NavIdent> {
                 }
                 break;
             case KLAR_FOR_OPPSTART:
-                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato().format(formatter), Veileder.ekstraTekstAvtleErGodkjentAvAllePartner);
+                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato().format(formatter)+".", Veileder.ekstraTekstAvtleErGodkjentAvAllePartner);
                 break;
             case GJENNOMFØRES:
                 avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleGjennomfores, "", "");
