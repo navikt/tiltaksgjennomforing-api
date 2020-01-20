@@ -241,6 +241,7 @@ public class AvtaleControllerTest {
 
     private void vaerInnloggetSom(InnloggetBruker innloggetBruker) {
         when(innloggingService.hentInnloggetBruker()).thenReturn(innloggetBruker);
+        when(innloggingService.hentInnloggetBruker(any())).thenReturn(innloggetBruker);
         if (innloggetBruker instanceof InnloggetNavAnsatt) {
             when(innloggingService.hentInnloggetNavAnsatt()).thenReturn((InnloggetNavAnsatt) innloggetBruker);
         }

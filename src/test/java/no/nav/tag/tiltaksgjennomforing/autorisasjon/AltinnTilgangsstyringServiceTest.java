@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 import no.nav.tag.tiltaksgjennomforing.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringProperties;
@@ -45,13 +46,13 @@ public class AltinnTilgangsstyringServiceTest {
         assertThat(organisasjoner).hasSize(0);
     }
 
-    @Test
+    @Test (expected = TiltaksgjennomforingException.class)
     public void hentOrganisasjoner__ugyldig_fnr_tom_liste() {
         List<Organisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(TestData.enIdentifikator());
         assertThat(organisasjoner).hasSize(0);
     }
 
-    @Test
+    @Test (expected = TiltaksgjennomforingException.class)
     public void hentOrganisasjoner__feilkonfigurasjon_tom_liste() {
         AltinnTilgangsstyringProperties altinnTilgangsstyringProperties = new AltinnTilgangsstyringProperties();
         altinnTilgangsstyringProperties.setUri(URI.create("http://foobar"));
