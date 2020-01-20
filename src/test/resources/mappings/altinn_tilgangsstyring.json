@@ -49,6 +49,31 @@
           "Content-Type": "application/json"
         }
       }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPath": "/altinn-tilgangsstyring",
+        "queryParameters" : {
+          "subject" : {
+            "matches" : "^3\\d{10}$"
+          },
+          "serviceCode": {
+            "equalTo": "42"
+          },
+          "serviceEdition": {
+            "equalTo": "1"
+          }
+        }
+      },
+      "response": {
+        "status": 500,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "statusMessage": "Internal Server Error: 500 UserID"
+      }
     },{
       "priority": 2,
       "request": {

@@ -1,9 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
 import lombok.RequiredArgsConstructor;
-import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
-import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.BrukerOgIssuer;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer;
@@ -11,6 +9,9 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.Altinn
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 
 import org.springframework.stereotype.Component;
+
+import java.util.Collections;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -21,11 +22,15 @@ public class InnloggingService {
     private final AltinnTilgangsstyringService altinnTilgangsstyringService;
     private final TilgangskontrollService tilgangskontrollService;
 
-    public InnloggetBruker<? extends Identifikator> hentInnloggetBruker() {
+    public InnloggetBruker<? extends Identifikator> hentInnloggetBruker(Optional<Avtalerolle> avtalerolle) {
         BrukerOgIssuer brukerOgIssuer = tokenUtils.hentBrukerOgIssuer().orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget."));
         return Issuer.ISSUER_SELVBETJENING == brukerOgIssuer.getIssuer()
-                ? new InnloggetSelvbetjeningBruker(new Fnr(brukerOgIssuer.getBrukerIdent()), altinnTilgangsstyringService.hentOrganisasjoner(new Fnr(brukerOgIssuer.getBrukerIdent())))
+                ? new InnloggetSelvbetjeningBruker(new Fnr(brukerOgIssuer.getBrukerIdent()), (avtalerolle.isPresent() && avtalerolle.get().equals(Avtalerolle.ARBEIDSGIVER)) ?  altinnTilgangsstyringService.hentOrganisasjoner(new Fnr(brukerOgIssuer.getBrukerIdent())) : Collections.emptyList())
                 : new InnloggetNavAnsatt(new NavIdent(brukerOgIssuer.getBrukerIdent()), tilgangskontrollService);
+    }
+
+    public InnloggetBruker<? extends Identifikator> hentInnloggetBruker() {
+        return hentInnloggetBruker(Optional.empty());
     }
 
     public InnloggetNavAnsatt hentInnloggetNavAnsatt() {
