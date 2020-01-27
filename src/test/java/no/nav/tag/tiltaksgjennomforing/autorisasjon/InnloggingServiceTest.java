@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import java.util.List;
 import java.util.Optional;
 
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.TestData;
@@ -44,13 +45,13 @@ public class InnloggingServiceTest {
     }
     
     @Test
-    public void hentInnloggetBruker__selvbetjeningbruker_skal_hente_organisasjoner() {
+    public void hentInnloggetBruker__selvbetjeningbruker_type_arbeidsgiver_skal_hente_organisasjoner() {
         List<Organisasjon> organisasjoner = asList(new Organisasjon(new BedriftNr("111111111"), "Navn"));
         InnloggetSelvbetjeningBruker selvbetjeningBruker = new InnloggetSelvbetjeningBruker(new Fnr("11111111111"), organisasjoner);
         when(altinnTilgangsstyringService.hentOrganisasjoner(selvbetjeningBruker.getIdentifikator())).thenReturn(organisasjoner);
         vaerInnloggetSelvbetjening(selvbetjeningBruker);
         
-        assertThat(innloggingService.hentInnloggetBruker()).isEqualTo(selvbetjeningBruker);
+        assertThat(innloggingService.hentInnloggetBruker(Optional.of(Avtalerolle.ARBEIDSGIVER))).isEqualTo(selvbetjeningBruker);
         verify(altinnTilgangsstyringService).hentOrganisasjoner(selvbetjeningBruker.getIdentifikator());
     }
     

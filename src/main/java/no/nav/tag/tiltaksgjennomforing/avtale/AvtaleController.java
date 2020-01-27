@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.time.Instant;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -46,8 +47,8 @@ public class AvtaleController {
     }
 
     @GetMapping
-    public Iterable<Avtale> hentAlleAvtalerInnloggetBrukerHarTilgangTil(AvtalePredicate queryParametre) {
-        InnloggetBruker<?> bruker = innloggingService.hentInnloggetBruker();
+    public Iterable<Avtale> hentAlleAvtalerInnloggetBrukerHarTilgangTil(AvtalePredicate queryParametre, @CookieValue("innlogget-part") Optional<Avtalerolle> innloggetPart) {
+        InnloggetBruker<?> bruker = innloggingService.hentInnloggetBruker(innloggetPart);
         return avtaleRepository.findAll().stream()
                 .filter(queryParametre)
                 .filter(bruker::harLeseTilgang)
@@ -70,8 +71,8 @@ public class AvtaleController {
     }
 
     @GetMapping("/{avtaleId}/status-detaljer")
-    public AvtaleStatusDetaljer hentAvtaleStatusDetaljer(@PathVariable("avtaleId") UUID avtaleId) {
-        InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker();
+    public AvtaleStatusDetaljer hentAvtaleStatusDetaljer(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Optional<Avtalerolle> innloggetPart) {
+        InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         Avtalepart avtalepart = innloggetBruker.avtalepart(avtale);
         return avtalepart.statusDetaljerForAvtale();
@@ -81,8 +82,8 @@ public class AvtaleController {
     @Transactional
     public ResponseEntity<?> endreAvtale(@PathVariable("avtaleId") UUID avtaleId,
                                          @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
-                                         @RequestBody EndreAvtale endreAvtale) {
-        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker();
+                                         @RequestBody EndreAvtale endreAvtale, Optional<Avtalerolle> innloggetPart) {
+        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
@@ -93,8 +94,8 @@ public class AvtaleController {
     }
 
     @GetMapping("/{avtaleId}/rolle")
-    public Avtalerolle hentRolle(@PathVariable("avtaleId") UUID avtaleId) {
-        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker();
+    public Avtalerolle hentRolle(@PathVariable("avtaleId") UUID avtaleId, Optional<Avtalerolle> innloggetPart) {
+        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkLeseTilgang(avtale);
         Avtalepart<?> avtalepart = innloggetBruker.avtalepart(avtale);
@@ -103,8 +104,8 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/opphev-godkjenninger")
     @Transactional
-    public void opphevGodkjenninger(@PathVariable("avtaleId") UUID avtaleId) {
-        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker();
+    public void opphevGodkjenninger(@PathVariable("avtaleId") UUID avtaleId, Optional<Avtalerolle> innloggetPart) {
+        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
         Avtalepart<?> avtalepart = innloggetBruker.avtalepart(avtale);
@@ -114,8 +115,8 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/godkjenn")
     @Transactional
-    public void godkjenn(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret) {
-        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker();
+    public void godkjenn(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret, Optional<Avtalerolle> innloggetPart) {
+        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
         Avtalepart<?> avtalepart = innloggetBruker.avtalepart(avtale);
@@ -125,8 +126,8 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/godkjenn-paa-vegne-av")
     @Transactional
-    public void godkjennPaVegneAv(@PathVariable("avtaleId") UUID avtaleId, @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn) {
-        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker();
+    public void godkjennPaVegneAv(@PathVariable("avtaleId") UUID avtaleId, @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn, Optional<Avtalerolle> innloggetPart) {
+        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
         Avtalepart<?> avtalepart = innloggetBruker.avtalepart(avtale);
@@ -146,8 +147,8 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/laas-opp")
     @Transactional
-    public void laasOpp(@PathVariable("avtaleId") UUID avtaleId) {
-        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker();
+    public void laasOpp(@PathVariable("avtaleId") UUID avtaleId, Optional<Avtalerolle> innloggetPart) {
+        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
         Avtalepart<?> avtalepart = innloggetBruker.avtalepart(avtale);

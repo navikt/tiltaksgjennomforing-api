@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
@@ -51,8 +52,8 @@ public class AltinnTilgangsstyringService {
             AltinnOrganisasjon[] altinnOrganisasjoner = restTemplate.getForObject(uri, AltinnOrganisasjon[].class);
             return konverterTilDomeneObjekter(altinnOrganisasjoner);
         } catch (RestClientException exception) {
-            log.warn("Feil ved kall mot Altinn. Bedrifter som innlogget bruker kan representere settes til tom liste.", exception);
-            return Collections.emptyList();
+            log.warn("Feil ved kall mot Altinn.", exception);
+            throw new TiltaksgjennomforingException("Det har skjedd en feil ved oppslag mot Altinn. Forsøk å laste siden på nytt");
         }
     }
 }
