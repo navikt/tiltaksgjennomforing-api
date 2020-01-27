@@ -51,7 +51,7 @@ public class AltinnTilgangsstyringService {
             return konverterTilDomeneObjekter(altinnOrganisasjoner);
         } catch (RestClientException exception) {
             log.warn("Feil ved kall mot Altinn.", exception);
-            throw new TiltaksgjennomforingException("Feil ved oppslag mot Altinn. Forsøk å laste siden på nytt");
+            throw new TiltaksgjennomforingException("Det har skjedd e n feil ved oppslag mot Altinn. Forsøk å laste siden på nytt");
         }
     }
 }
