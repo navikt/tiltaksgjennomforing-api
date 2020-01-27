@@ -24,7 +24,7 @@ public class InnloggingService {
 
     public InnloggetBruker<? extends Identifikator> hentInnloggetBruker(Optional<Avtalerolle> avtalerolle) {
         BrukerOgIssuer brukerOgIssuer = tokenUtils.hentBrukerOgIssuer().orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget."));
-        boolean erDeltaker = (avtalerolle.isPresent() && avtalerolle.get().equals(Avtalerolle.DELTAKER));
+        boolean erDeltaker = avtalerolle.isPresent() && avtalerolle.get().equals(Avtalerolle.DELTAKER);
         return Issuer.ISSUER_SELVBETJENING == brukerOgIssuer.getIssuer()
                 ? new InnloggetSelvbetjeningBruker(new Fnr(brukerOgIssuer.getBrukerIdent()), erDeltaker ? Collections.emptyList() : altinnTilgangsstyringService.hentOrganisasjoner(new Fnr(brukerOgIssuer.getBrukerIdent())))
                 : new InnloggetNavAnsatt(new NavIdent(brukerOgIssuer.getBrukerIdent()), tilgangskontrollService);
