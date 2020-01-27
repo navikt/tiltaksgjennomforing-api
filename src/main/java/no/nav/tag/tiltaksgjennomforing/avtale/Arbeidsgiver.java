@@ -47,7 +47,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
                             Arbeidsgiver.tekstAvtaleVenterPaaDinGodkjenning, ekstraTekstAvtaleVenterPaaDinGodkjenning);
                 break;
             case KLAR_FOR_OPPSTART:
-                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato().format(formatter), "");
+                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato().format(formatter)+".", "");
                 break;
             case GJENNOMFØRES:
                 avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleGjennomfores, "", "");
@@ -62,7 +62,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
                 + (avtale.erGodkjentAvDeltaker() ? "har godkjent" : "har ikke godkjent"), avtale.erGodkjentAvDeltaker());
         avtaleStatusDetaljer.setPart2Detaljer((avtale.getVeilederFornavn() != null && !avtale.getVeilederFornavn().trim().equals("") ? avtale.getVeilederFornavn() : "Veileder") + " "
                 + (avtale.getVeilederEtternavn() != null && !avtale.getVeilederEtternavn().trim().equals("") ? avtale.getVeilederEtternavn() + " " : "")
-                + (avtale.erGodkjentAvVeileder() ? "har godkjent" : (avtale.erGodkjentAvArbeidsgiver() ? "har ikke godkjent" : "venter på din godkjenning")), avtale.erGodkjentAvVeileder());
+                + (avtale.erGodkjentAvVeileder() ? "har godkjent" : "har ikke godkjent" ), avtale.erGodkjentAvVeileder());
         return avtaleStatusDetaljer;
     }
 

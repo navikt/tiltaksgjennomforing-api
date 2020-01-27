@@ -22,5 +22,6 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         avtaleRepository.save(TestData.enAvtaleMedAltUtfylt());
         avtaleRepository.save(TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder());
         avtaleRepository.save(TestData.enAvtaleMedFlereVersjoner());
+        avtaleRepository.save(TestData.enAvtaleKlarForOppstart());
     }
 }

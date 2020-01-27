@@ -168,4 +168,15 @@ public class TestData {
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
         return avtale;
     }
+
+    public static Avtale enAvtaleKlarForOppstart(){
+        Avtale avtale = enAvtaleMedAltUtfylt();
+        avtale.setStartDato(LocalDate.now().plusDays(7));
+        avtale.setSluttDato(avtale.getStartDato().plusMonths(1));
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setJournalpostId("1");
+        return avtale;
+    }
 }

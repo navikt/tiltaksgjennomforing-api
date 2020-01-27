@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 public class AltinnTilgangsstyringService {
     private final AltinnTilgangsstyringProperties altinnTilgangsstyringProperties;
     private final RestTemplate restTemplate;
+    private static final int ALTINN_ORG_PAGE_SIZE = 500;
 
     public AltinnTilgangsstyringService(AltinnTilgangsstyringProperties altinnTilgangsstyringProperties) {
         this.altinnTilgangsstyringProperties = altinnTilgangsstyringProperties;
@@ -44,6 +45,7 @@ public class AltinnTilgangsstyringService {
                 .queryParam("serviceCode", altinnTilgangsstyringProperties.getServiceCode())
                 .queryParam("serviceEdition", altinnTilgangsstyringProperties.getServiceEdition())
                 .queryParam("$filter", "Type+ne+'Person'")
+                .queryParam("$top", ALTINN_ORG_PAGE_SIZE)
                 .build()
                 .toUri();
         try {
