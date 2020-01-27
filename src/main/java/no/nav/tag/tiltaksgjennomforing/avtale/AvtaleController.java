@@ -38,10 +38,10 @@ public class AvtaleController {
     private final PersondataService persondataService;
 
     @GetMapping("/{avtaleId}")
-    public Avtale hent(@PathVariable("avtaleId") UUID id) {
+    public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Optional<Avtalerolle> innloggetPart) {
         Avtale avtale = avtaleRepository.findById(id)
                 .orElseThrow(RessursFinnesIkkeException::new);
-        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker();
+        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
         innloggetBruker.sjekkLeseTilgang(avtale);
         return avtale;
     }
@@ -82,7 +82,7 @@ public class AvtaleController {
     @Transactional
     public ResponseEntity<?> endreAvtale(@PathVariable("avtaleId") UUID avtaleId,
                                          @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
-                                         @RequestBody EndreAvtale endreAvtale, Optional<Avtalerolle> innloggetPart) {
+                                         @RequestBody EndreAvtale endreAvtale, @CookieValue("innlogget-part") Optional<Avtalerolle> innloggetPart) {
         InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
@@ -94,7 +94,7 @@ public class AvtaleController {
     }
 
     @GetMapping("/{avtaleId}/rolle")
-    public Avtalerolle hentRolle(@PathVariable("avtaleId") UUID avtaleId, Optional<Avtalerolle> innloggetPart) {
+    public Avtalerolle hentRolle(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Optional<Avtalerolle> innloggetPart) {
         InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkLeseTilgang(avtale);
@@ -104,7 +104,7 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/opphev-godkjenninger")
     @Transactional
-    public void opphevGodkjenninger(@PathVariable("avtaleId") UUID avtaleId, Optional<Avtalerolle> innloggetPart) {
+    public void opphevGodkjenninger(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Optional<Avtalerolle> innloggetPart) {
         InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
@@ -115,7 +115,7 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/godkjenn")
     @Transactional
-    public void godkjenn(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret, Optional<Avtalerolle> innloggetPart) {
+    public void godkjenn(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret, @CookieValue("innlogget-part") Optional<Avtalerolle> innloggetPart) {
         InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
@@ -126,7 +126,7 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/godkjenn-paa-vegne-av")
     @Transactional
-    public void godkjennPaVegneAv(@PathVariable("avtaleId") UUID avtaleId, @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn, Optional<Avtalerolle> innloggetPart) {
+    public void godkjennPaVegneAv(@PathVariable("avtaleId") UUID avtaleId, @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn, @CookieValue("innlogget-part") Optional<Avtalerolle> innloggetPart) {
         InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
@@ -147,7 +147,7 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/laas-opp")
     @Transactional
-    public void laasOpp(@PathVariable("avtaleId") UUID avtaleId, Optional<Avtalerolle> innloggetPart) {
+    public void laasOpp(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Optional<Avtalerolle> innloggetPart) {
         InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
