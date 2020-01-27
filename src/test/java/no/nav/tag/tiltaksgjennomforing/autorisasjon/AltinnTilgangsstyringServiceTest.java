@@ -47,16 +47,14 @@ public class AltinnTilgangsstyringServiceTest {
     }
 
     @Test (expected = TiltaksgjennomforingException.class)
-    public void hentOrganisasjoner__ugyldig_fnr_tom_liste() {
+    public void hentOrganisasjoner__ugyldig_fnr_skal_kaste_feil() {
         List<Organisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(TestData.enIdentifikator());
-        assertThat(organisasjoner).hasSize(0);
     }
 
     @Test (expected = TiltaksgjennomforingException.class)
-    public void hentOrganisasjoner__feilkonfigurasjon_tom_liste() {
+    public void hentOrganisasjoner__feilkonfigurasjon_skal_kaste_feil() {
         AltinnTilgangsstyringProperties altinnTilgangsstyringProperties = new AltinnTilgangsstyringProperties();
         altinnTilgangsstyringProperties.setUri(URI.create("http://foobar"));
         List<Organisasjon> organisasjoner = new AltinnTilgangsstyringService(altinnTilgangsstyringProperties).hentOrganisasjoner(TestData.enIdentifikator());
-        assertThat(organisasjoner).hasSize(0);
     }
 }
