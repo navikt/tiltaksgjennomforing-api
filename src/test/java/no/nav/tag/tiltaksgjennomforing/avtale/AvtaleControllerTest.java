@@ -73,7 +73,7 @@ public class AvtaleControllerTest {
         vaerInnloggetSom(innloggetNavAnsatt);
         when(tilgangskontrollService.harLesetilgangTilKandidat(eq(innloggetNavAnsatt), any(Fnr.class))).thenReturn(true);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        Avtale hentetAvtale = avtaleController.hent(avtale.getId());
+        Avtale hentetAvtale = avtaleController.hent(avtale.getId(), Optional.empty());
         assertThat(hentetAvtale).isEqualTo(avtale);
     }
 
@@ -86,7 +86,7 @@ public class AvtaleControllerTest {
         Avtale avtale = TestData.enAvtale();
         vaerInnloggetSom(innloggetNavAnsatt(TestData.enVeileder(avtale), tilgangskontrollService));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.empty());
-        avtaleController.hent(avtale.getId());
+        avtaleController.hent(avtale.getId(), Optional.empty());
     }
 
     @Test(expected = TilgangskontrollException.class)
@@ -94,7 +94,7 @@ public class AvtaleControllerTest {
         Avtale avtale = TestData.enAvtale();
         vaerInnloggetSom(new InnloggetNavAnsatt(new NavIdent("Z333333"), tilgangskontrollService));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        avtaleController.hent(avtale.getId());
+        avtaleController.hent(avtale.getId(), Optional.empty());
     }
 
     @Test
@@ -144,7 +144,7 @@ public class AvtaleControllerTest {
         Avtale avtale = TestData.enAvtale();
         vaerInnloggetSom(new InnloggetSelvbetjeningBruker(new Fnr("55555566666"), emptyList()));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        avtaleController.hent(avtale.getId());
+        avtaleController.hent(avtale.getId(), Optional.empty());
     }
 
     @Test
