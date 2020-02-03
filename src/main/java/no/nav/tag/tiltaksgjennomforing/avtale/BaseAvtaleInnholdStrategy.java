@@ -22,6 +22,7 @@ public class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy {
         avtaleInnhold.setVeilederFornavn(nyAvtale.getVeilederFornavn());
         avtaleInnhold.setVeilederEtternavn(nyAvtale.getVeilederEtternavn());
         avtaleInnhold.setVeilederTlf(nyAvtale.getVeilederTlf());
+        avtaleInnhold.setArbeidsoppgaver(nyAvtale.getArbeidsoppgaver());
         avtaleInnhold.setOppfolging(nyAvtale.getOppfolging());
         avtaleInnhold.setTilrettelegging(nyAvtale.getTilrettelegging());
         avtaleInnhold.setStartDato(nyAvtale.getStartDato());

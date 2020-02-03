@@ -55,11 +55,11 @@ public class AvtaleInnhold {
     private LocalDate sluttDato;
     private Integer stillingprosent;
     private String journalpostId;
+    private String arbeidsoppgaver;
 
     // Lønnstilskudd
     private String arbeidsgiverKontonummer;
     private String stillingtype;
-    private String stillingbeskrivelse;
     private Integer lonnstilskuddProsent;
     private Integer manedslonn;
     private BigDecimal feriepengesats;
