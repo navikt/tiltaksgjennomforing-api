@@ -3,7 +3,9 @@ package no.nav.tag.tiltaksgjennomforing.journalfoering;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AvtaleTilJournalfoering {
+    private Tiltakstype tiltakstype;
     private UUID avtaleId;
     private UUID avtaleVersjonId;
 
@@ -39,6 +42,14 @@ public class AvtaleTilJournalfoering {
     private LocalDate startDato;
     private LocalDate sluttDato;
     private Integer stillingprosent;
+
+    // Lønnstilskudd
+    private String arbeidsgiverKontonummer;
+    private String stillingstype;
+    private Integer lonnstilskuddProsent;
+    private Integer manedslonn;
+    private BigDecimal feriepengesats;
+    private BigDecimal arbeidsgiveravgift;
 
     private List<MaalTilJournalfoering> maal = new ArrayList<>();
     private List<OppgaveTilJournalFoering> oppgaver = new ArrayList<>();
