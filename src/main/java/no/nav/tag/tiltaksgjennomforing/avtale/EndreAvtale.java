@@ -44,4 +44,11 @@ public class EndreAvtale {
     private Integer manedslonn;
     private BigDecimal feriepengesats;
     private BigDecimal arbeidsgiveravgift;
+
+    // Mentorfelter
+    private String mentorFornavn;
+    private String mentorEtternavn;
+    private String mentorOppgaver;
+    private Integer mentorAntallTimer;
+    private Integer mentorTimelonn;
 }
