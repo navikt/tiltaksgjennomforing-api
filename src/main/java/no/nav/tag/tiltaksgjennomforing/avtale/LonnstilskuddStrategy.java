@@ -11,7 +11,6 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
     public void endre(EndreAvtale nyAvtale) {
         avtaleInnhold.setArbeidsgiverKontonummer(nyAvtale.getArbeidsgiverKontonummer());
         avtaleInnhold.setStillingtype(nyAvtale.getStillingtype());
-        avtaleInnhold.setStillingbeskrivelse(nyAvtale.getStillingbeskrivelse());
         avtaleInnhold.setLonnstilskuddProsent(nyAvtale.getLonnstilskuddProsent());
         avtaleInnhold.setManedslonn(nyAvtale.getManedslonn());
         avtaleInnhold.setFeriepengesats(nyAvtale.getFeriepengesats());
@@ -24,7 +23,7 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         return super.erAltUtfylt() && erIkkeTomme(
                 avtaleInnhold.getArbeidsgiverKontonummer(),
                 avtaleInnhold.getStillingtype(),
-                avtaleInnhold.getStillingbeskrivelse(),
+                avtaleInnhold.getArbeidsoppgaver(),
                 avtaleInnhold.getLonnstilskuddProsent(),
                 avtaleInnhold.getManedslonn(),
                 avtaleInnhold.getFeriepengesats(),
