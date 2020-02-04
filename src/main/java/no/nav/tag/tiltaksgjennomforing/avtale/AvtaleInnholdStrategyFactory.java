@@ -12,6 +12,8 @@ public class AvtaleInnholdStrategyFactory {
                 return new MidlertidigLonnstilskuddStrategy(avtaleInnhold);
             case VARIG_LONNSTILSKUDD:
                 return new VarigLonnstilskuddStrategy(avtaleInnhold);
+            case MENTOR:
+                return new MentorStrategy(avtaleInnhold);
         }
         throw new IllegalStateException();
     }
