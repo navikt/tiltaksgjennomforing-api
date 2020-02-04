@@ -67,6 +67,14 @@ public class AvtaleTilJournalfoeringMapperTest {
         assertEquals(avtale.getGodkjentAvVeileder().toLocalDate(), tilJournalfoering.getGodkjentAvVeileder());
         assertEquals(avtale.isGodkjentPaVegneAv(), tilJournalfoering.isGodkjentPaVegneAv());
         assertEquals(avtale.getVersjon(), tilJournalfoering.getVersjon());
+        assertEquals(avtale.getTiltakstype(), tilJournalfoering.getTiltakstype());
+        assertEquals(avtale.getArbeidsgiverKontonummer(), tilJournalfoering.getArbeidsgiverKontonummer());
+        assertEquals(avtale.getStillingtype(), tilJournalfoering.getStillingstype());
+        assertEquals(avtale.getArbeidsoppgaver(), tilJournalfoering.getArbeidsoppgaver());
+        assertEquals(avtale.getLonnstilskuddProsent(), tilJournalfoering.getLonnstilskuddProsent());
+        assertEquals(avtale.getManedslonn(), tilJournalfoering.getManedslonn());
+        assertEquals(avtale.getFeriepengesats(), tilJournalfoering.getFeriepengesats());
+        assertEquals(avtale.getArbeidsgiveravgift(), tilJournalfoering.getArbeidsgiveravgift());
     }
 
     @Test
