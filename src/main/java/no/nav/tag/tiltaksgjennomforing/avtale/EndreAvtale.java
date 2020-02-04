@@ -39,7 +39,7 @@ public class EndreAvtale {
     // Lønnstilskuddsfelter
     private String arbeidsgiverKontonummer;
     private String stillingtype;
-    private String stillingbeskrivelse;
+    private String arbeidsoppgaver;
     private Integer lonnstilskuddProsent;
     private Integer manedslonn;
     private BigDecimal feriepengesats;
