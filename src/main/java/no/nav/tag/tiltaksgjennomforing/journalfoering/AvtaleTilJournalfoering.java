@@ -18,12 +18,12 @@ public class AvtaleTilJournalfoering {
     private Tiltakstype tiltakstype;
     private UUID avtaleId;
     private UUID avtaleVersjonId;
+    private LocalDate opprettet;
 
     private String deltakerFnr;
     private String bedriftNr;
     private String veilederNavIdent;
 
-    private LocalDate opprettet;
     private String deltakerFornavn;
     private String deltakerEtternavn;
     private String deltakerTlf;
@@ -42,10 +42,11 @@ public class AvtaleTilJournalfoering {
     private LocalDate startDato;
     private LocalDate sluttDato;
     private Integer stillingprosent;
+    private String stillingstype;
+    private String arbeidsoppgaver;
 
     // Lønnstilskudd
     private String arbeidsgiverKontonummer;
-    private String stillingstype;
     private Integer lonnstilskuddProsent;
     private Integer manedslonn;
     private BigDecimal feriepengesats;

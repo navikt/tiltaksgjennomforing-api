@@ -70,6 +70,7 @@ public class AvtaleTilJournalfoeringMapperTest {
         assertEquals(avtale.getTiltakstype(), tilJournalfoering.getTiltakstype());
         assertEquals(avtale.getArbeidsgiverKontonummer(), tilJournalfoering.getArbeidsgiverKontonummer());
         assertEquals(avtale.getStillingtype(), tilJournalfoering.getStillingstype());
+        assertEquals(avtale.getArbeidsoppgaver(), tilJournalfoering.getArbeidsoppgaver());
         assertEquals(avtale.getLonnstilskuddProsent(), tilJournalfoering.getLonnstilskuddProsent());
         assertEquals(avtale.getManedslonn(), tilJournalfoering.getManedslonn());
         assertEquals(avtale.getFeriepengesats(), tilJournalfoering.getFeriepengesats());

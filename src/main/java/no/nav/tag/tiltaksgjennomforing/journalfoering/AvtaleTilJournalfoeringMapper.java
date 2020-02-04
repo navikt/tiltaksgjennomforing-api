@@ -18,6 +18,7 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setTiltakstype(avtale.getTiltakstype());
         avtaleTilJournalfoering.setArbeidsgiverKontonummer(avtale.getArbeidsgiverKontonummer());
         avtaleTilJournalfoering.setStillingstype(avtale.getStillingtype());
+        avtaleTilJournalfoering.setArbeidsoppgaver(avtale.getArbeidsoppgaver());
         avtaleTilJournalfoering.setLonnstilskuddProsent(avtale.getLonnstilskuddProsent());
         avtaleTilJournalfoering.setManedslonn(avtale.getManedslonn());
         avtaleTilJournalfoering.setFeriepengesats(avtale.getFeriepengesats());
