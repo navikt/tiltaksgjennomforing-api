@@ -10,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.varsel.SmsVarsel;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelse;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,6 +39,21 @@ public class TestData {
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
         avtale.setJournalpostId("1");
+        return avtale;
+    }
+
+    public static Avtale enLonnstilskuddAvtaleMedMedAltUtfylt() {
+        Avtale avtale = enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        avtale.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+        avtale.setArbeidsgiverKontonummer("22222222222");
+        avtale.setLonnstilskuddProsent(60);
+        avtale.setManedslonn(20000);
+        avtale.setFeriepengesats(BigDecimal.valueOf(0.12));
+        avtale.setArbeidsgiveravgift(BigDecimal.valueOf(0.141));
+        avtale.setVersjon(1);
+        avtale.setJournalpostId(null);
+        avtale.setMaal(Arrays.asList());
+        avtale.setOppgaver(Arrays.asList());
         return avtale;
     }
 

@@ -9,12 +9,8 @@ public class AvtaleTilJournalfoeringMapper {
 
     public static AvtaleTilJournalfoering tilJournalfoering(AvtaleInnhold avtaleInnhold) {
         Avtale avtale = avtaleInnhold.getAvtale();
-        if (!avtale.erArbeidstrening() ) {
-            return null;
-        }
 
         AvtaleTilJournalfoering avtaleTilJournalfoering = new AvtaleTilJournalfoering();
-
         avtaleTilJournalfoering.setTiltakstype(avtale.getTiltakstype());
         avtaleTilJournalfoering.setArbeidsgiverKontonummer(avtale.getArbeidsgiverKontonummer());
         avtaleTilJournalfoering.setStillingstype(avtale.getStillingtype());
