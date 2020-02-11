@@ -57,6 +57,21 @@ public class TestData {
         return avtale;
     }
 
+    public static Avtale enMentorAvtaleMedMedAltUtfylt() {
+        Avtale avtale = enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        avtale.setTiltakstype(Tiltakstype.MENTOR);
+        avtale.setMentorFornavn("Jo");
+        avtale.setMentorEtternavn("Å");
+        avtale.setMentorOppgaver("Spise lunch med deltaker");
+        avtale.setMentorAntallTimer(30);
+        avtale.setMentorTimelonn(500);
+        avtale.setVersjon(1);
+        avtale.setJournalpostId(null);
+        avtale.setMaal(Arrays.asList());
+        avtale.setOppgaver(Arrays.asList());
+        return avtale;
+    }
+
     private static OpprettAvtale lagOpprettAvtale() {
         Fnr deltakerFnr = new Fnr("88888899999");
         BedriftNr bedriftNr = new BedriftNr("999999999");

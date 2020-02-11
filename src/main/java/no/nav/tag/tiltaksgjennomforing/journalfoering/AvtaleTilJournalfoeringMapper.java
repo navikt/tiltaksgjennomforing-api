@@ -19,6 +19,11 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setManedslonn(avtale.getManedslonn());
         avtaleTilJournalfoering.setFeriepengesats(avtale.getFeriepengesats());
         avtaleTilJournalfoering.setArbeidsgiveravgift(avtale.getArbeidsgiveravgift());
+        avtaleTilJournalfoering.setMentorFornavn(avtale.getMentorFornavn());
+        avtaleTilJournalfoering.setMentorEtternavn(avtale.getMentorEtternavn());
+        avtaleTilJournalfoering.setMentorOppgaver(avtale.getMentorOppgaver());
+        avtaleTilJournalfoering.setMentorAntallTimer(avtale.getMentorAntallTimer());
+        avtaleTilJournalfoering.setMentorTimelonn(avtale.getMentorTimelonn());
         avtaleTilJournalfoering.setGodkjentAvArbeidsgiver(avtaleInnhold.getGodkjentAvArbeidsgiver().toLocalDate());
         avtaleTilJournalfoering.setGodkjentAvVeileder(avtaleInnhold.getGodkjentAvVeileder().toLocalDate());
         avtaleTilJournalfoering.setGodkjentAvDeltaker(avtaleInnhold.getGodkjentAvDeltaker().toLocalDate());

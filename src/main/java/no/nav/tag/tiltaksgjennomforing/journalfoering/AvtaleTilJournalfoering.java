@@ -52,6 +52,13 @@ public class AvtaleTilJournalfoering {
     private BigDecimal feriepengesats;
     private BigDecimal arbeidsgiveravgift;
 
+    // mentor
+    private String mentorFornavn;
+    private String mentorEtternavn;
+    private String mentorOppgaver;
+    private Integer mentorAntallTimer;
+    private Integer mentorTimelonn;
+
     private List<MaalTilJournalfoering> maal = new ArrayList<>();
     private List<OppgaveTilJournalFoering> oppgaver = new ArrayList<>();
 
