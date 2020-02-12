@@ -39,7 +39,7 @@ tiltaksgjennomforing:
   altinn-varsel:
     uri: https://pep-gw-q1.oera-q.local:9443/ekstern/altinn/notificationagencyexternalbasic/v1
   ereg:
-    uri: https://modapp-q1.adeo.no/ereg/api/v1/organisasjon
+    uri: https://modapp-q0.adeo.no/ereg/api/v1/organisasjon
   sts:
     username: ${tiltaksgjennomforing.serviceuser.username}
     password: ${tiltaksgjennomforing.serviceuser.password}
