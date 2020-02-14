@@ -11,6 +11,7 @@ public class AvtalePredicate implements Predicate<Avtale> {
     private NavIdent veilederNavIdent;
     private BedriftNr bedriftNr;
     private Fnr deltakerFnr;
+    private Tiltakstype tiltakstype;
 
     private static boolean erLiktHvisOppgitt(Object kriterie, Object avtaleVerdi) {
         return kriterie == null || kriterie.equals(avtaleVerdi);
@@ -20,6 +21,7 @@ public class AvtalePredicate implements Predicate<Avtale> {
     public boolean test(Avtale avtale) {
         return erLiktHvisOppgitt(veilederNavIdent, avtale.getVeilederNavIdent())
                 && erLiktHvisOppgitt(bedriftNr, avtale.getBedriftNr())
-                && erLiktHvisOppgitt(deltakerFnr, avtale.getDeltakerFnr());
+                && erLiktHvisOppgitt(deltakerFnr, avtale.getDeltakerFnr())
+                && erLiktHvisOppgitt(tiltakstype, avtale.getTiltakstype());
     }
 }

@@ -6,6 +6,15 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AvtalePredicateTest {
+    private static Tiltakstype annenTiltakstypeEnnPåAvtale(Avtale avtale) {
+        for (Tiltakstype t : Tiltakstype.values()) {
+            if (!t.equals(avtale.getTiltakstype())) {
+                return t;
+            }
+        }
+        return null;
+    }
+
     @Test
     void veileder_nav_ident_oppgitt() {
         Avtale avtale = TestData.enAvtale();
@@ -28,6 +37,22 @@ public class AvtalePredicateTest {
         AvtalePredicate query = new AvtalePredicate();
         query.setBedriftNr(avtale.getBedriftNr());
         assertThat(query.test(avtale)).isTrue();
+    }
+
+    @Test
+    void tiltakstype_oppgitt() {
+        Avtale avtale = TestData.enAvtale();
+        AvtalePredicate query = new AvtalePredicate();
+        query.setTiltakstype(avtale.getTiltakstype());
+        assertThat(query.test(avtale)).isTrue();
+    }
+
+    @Test
+    void tiltakstype_annen_type() {
+        Avtale avtale = TestData.enAvtale();
+        AvtalePredicate query = new AvtalePredicate();
+        query.setTiltakstype(annenTiltakstypeEnnPåAvtale(avtale));
+        assertThat(query.test(avtale)).isFalse();
     }
 
     @Test
