@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
 import no.nav.tag.tiltaksgjennomforing.*;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.ArbeidsgiverOrganisasjon;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 
@@ -113,7 +114,7 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__arbeidsgiver_skal_kunne_representere_bedrift_uten_Fnr() {
-        InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker = new InnloggetSelvbetjeningBruker(new Fnr("00000000009"), Arrays.asList(new Organisasjon(bedriftNr, "Testbutikken")));
+        InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker = new InnloggetSelvbetjeningBruker(new Fnr("00000000009"), Arrays.asList(new ArbeidsgiverOrganisasjon(bedriftNr, "Testbutikken", Tiltakstype.ARBEIDSTRENING)));
         assertThat(innloggetSelvbetjeningBruker.harLeseTilgang(avtale)).isTrue();
     }
 }

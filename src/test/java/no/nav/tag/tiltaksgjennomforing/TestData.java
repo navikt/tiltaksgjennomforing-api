@@ -4,6 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetNavAnsatt;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetSelvbetjeningBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.ArbeidsgiverOrganisasjon;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.varsel.BjelleVarsel;
 import no.nav.tag.tiltaksgjennomforing.varsel.SmsVarsel;
@@ -162,7 +163,7 @@ public class TestData {
     }
 
     public static InnloggetSelvbetjeningBruker innloggetSelvbetjeningBrukerMedOrganisasjon(Avtalepart<Fnr> avtalepartMedFnr) {
-        Organisasjon organisasjon = new Organisasjon(avtalepartMedFnr.getAvtale().getBedriftNr(), avtalepartMedFnr.getAvtale().getBedriftNavn());
+        ArbeidsgiverOrganisasjon organisasjon = new ArbeidsgiverOrganisasjon(avtalepartMedFnr.getAvtale().getBedriftNr(), avtalepartMedFnr.getAvtale().getBedriftNavn(), Tiltakstype.ARBEIDSTRENING);
         return new InnloggetSelvbetjeningBruker(avtalepartMedFnr.getIdentifikator(), Arrays.asList(organisasjon));
     }
 

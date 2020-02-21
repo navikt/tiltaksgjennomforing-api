@@ -15,4 +15,11 @@ public class AltinnTilgangsstyringProperties {
     private String apiGwApiKey;
     private Integer serviceCode;
     private Integer serviceEdition;
+
+    private Integer ltsMidlertidigServiceCode;
+    private Integer ltsMidlertidigServiceEdition;
+    private Integer ltsVarigServiceCode;
+    private Integer ltsVarigServiceEdition;
+    private Integer arbtreningServiceCode;
+    private Integer arbtreningServiceEdition;
 }

@@ -30,8 +30,12 @@ no.nav.security.oidc:
 tiltaksgjennomforing:
   altinn-tilgangsstyring:
     uri: http://localhost:8090/altinn-tilgangsstyring
-    service-code: 42
-    service-edition: 1
+    lts-midlertidig-service-code: 5516
+    lts-midlertidig-service-edition: 1
+    lts-varig-service-code: 5516
+    lts-varig-service-edition: 2
+    arbtrening-service-code: 5332
+    arbtrening-service-edition: 1
   ereg:
     uri: http://localhost:8090/ereg
   sts:

@@ -4,6 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.ArbeidsgiverOrganisasjon;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringProperties;
@@ -30,31 +31,31 @@ public class AltinnTilgangsstyringServiceTest {
 
     @Test
     public void hentOrganisasjoner__gyldig_fnr_en_forste_bedrift() {
-        List<Organisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(new Fnr("10000000000"));
+        List<ArbeidsgiverOrganisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(new Fnr("10000000000"));
         assertThat(organisasjoner).extracting("bedriftNr").containsOnly(new BedriftNr("999999999"));
     }
 
     @Test
     public void hentOrganisasjoner__gyldig_fnr_en_andre_bedrift() {
-        List<Organisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(new Fnr("20000000000"));
+        List<ArbeidsgiverOrganisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(new Fnr("20000000000"));
         assertThat(organisasjoner).extracting("bedriftNr").containsOnly(new BedriftNr("981121465"), new BedriftNr("910909088"));
     }
 
     @Test
     public void hentOrganisasjoner__gyldig_fnr_tom_liste() {
-        List<Organisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(new Fnr("00000000000"));
+        List<ArbeidsgiverOrganisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(new Fnr("00000000000"));
         assertThat(organisasjoner).hasSize(0);
     }
 
     @Test (expected = TiltaksgjennomforingException.class)
     public void hentOrganisasjoner__ugyldig_fnr_skal_kaste_feil() {
-        List<Organisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(TestData.enIdentifikator());
+        List<ArbeidsgiverOrganisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(TestData.enIdentifikator());
     }
 
     @Test (expected = TiltaksgjennomforingException.class)
     public void hentOrganisasjoner__feilkonfigurasjon_skal_kaste_feil() {
         AltinnTilgangsstyringProperties altinnTilgangsstyringProperties = new AltinnTilgangsstyringProperties();
         altinnTilgangsstyringProperties.setUri(URI.create("http://foobar"));
-        List<Organisasjon> organisasjoner = new AltinnTilgangsstyringService(altinnTilgangsstyringProperties).hentOrganisasjoner(TestData.enIdentifikator());
+        List<ArbeidsgiverOrganisasjon> organisasjoner = new AltinnTilgangsstyringService(altinnTilgangsstyringProperties).hentOrganisasjoner(TestData.enIdentifikator());
     }
 }

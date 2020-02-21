@@ -3,7 +3,10 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.ArbeidsgiverOrganisasjon;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 
 
@@ -22,7 +25,7 @@ public class AltinnOrganisasjon {
     @JsonProperty("Status")
     private String status;
 
-    public Organisasjon konverterTilDomeneObjekt() {
-        return new Organisasjon(new BedriftNr(organizationNumber), name);
+    public ArbeidsgiverOrganisasjon konverterTilDomeneObjekt(Tiltakstype tilgangstype) {
+        return new ArbeidsgiverOrganisasjon(new BedriftNr(organizationNumber), name, tilgangstype);
     }
 }

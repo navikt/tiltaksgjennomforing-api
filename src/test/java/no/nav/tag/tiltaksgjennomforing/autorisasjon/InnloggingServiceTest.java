@@ -11,6 +11,8 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.TestData;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.ArbeidsgiverOrganisasjon;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,7 +48,7 @@ public class InnloggingServiceTest {
     
     @Test
     public void hentInnloggetBruker__selvbetjeningbruker_type_arbeidsgiver_skal_hente_organisasjoner() {
-        List<Organisasjon> organisasjoner = asList(new Organisasjon(new BedriftNr("111111111"), "Navn"));
+        List<ArbeidsgiverOrganisasjon> organisasjoner = asList(new ArbeidsgiverOrganisasjon(new BedriftNr("111111111"), "Navn", Tiltakstype.ARBEIDSTRENING));
         InnloggetSelvbetjeningBruker selvbetjeningBruker = new InnloggetSelvbetjeningBruker(new Fnr("11111111111"), organisasjoner);
         when(altinnTilgangsstyringService.hentOrganisasjoner(selvbetjeningBruker.getIdentifikator())).thenReturn(organisasjoner);
         vaerInnloggetSelvbetjening(selvbetjeningBruker);
