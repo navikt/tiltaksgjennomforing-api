@@ -1,1 +1,0 @@
-alter table avtale_innhold add column arbeidsoppgaver varchar;

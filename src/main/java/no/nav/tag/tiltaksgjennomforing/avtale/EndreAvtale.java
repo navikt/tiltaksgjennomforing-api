@@ -31,16 +31,15 @@ public class EndreAvtale {
     private LocalDate startDato;
     private LocalDate sluttDato;
     private Integer stillingprosent;
+    private String arbeidsoppgaver;
 
     // Arbeidstreningsfelter
     private List<Maal> maal = new ArrayList<>();
     private List<Oppgave> oppgaver = new ArrayList<>();
-    private String arbeidsoppgaver;
 
     // Lønnstilskuddsfelter
     private String arbeidsgiverKontonummer;
     private String stillingtype;
-    private String arbeidsoppgaver;
     private Integer lonnstilskuddProsent;
     private Integer manedslonn;
     private BigDecimal feriepengesats;
