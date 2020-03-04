@@ -34,7 +34,7 @@ public class InnloggetSelvbetjeningBruker extends InnloggetBruker<Fnr> {
 
     private boolean sjekkOmArbeidsgiverHarTilgang(Avtale avtale) {
         // Sjekk om du har en ArbeidsgiverOrganisasjon som matcher både bedriftNr og tilgangstype på avtale
-        return organisasjoner.stream().anyMatch(o -> o.getTilgangstype().equals(avtale.getTiltakstype()) && o.getBedriftNr().equals(avtale.getBedriftNr()));
+        return organisasjoner.stream().anyMatch(o -> o.getTilgangstyper().contains(avtale.getTiltakstype()) && o.getBedriftNr().equals(avtale.getBedriftNr()));
     }
 
     @Override

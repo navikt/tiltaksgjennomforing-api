@@ -163,8 +163,9 @@ public class TestData {
     }
 
     public static InnloggetSelvbetjeningBruker innloggetSelvbetjeningBrukerMedOrganisasjon(Avtalepart<Fnr> avtalepartMedFnr) {
-        ArbeidsgiverOrganisasjon organisasjon = new ArbeidsgiverOrganisasjon(avtalepartMedFnr.getAvtale().getBedriftNr(), avtalepartMedFnr.getAvtale().getBedriftNavn(), Tiltakstype.ARBEIDSTRENING);
-        return new InnloggetSelvbetjeningBruker(avtalepartMedFnr.getIdentifikator(), Arrays.asList(organisasjon));
+        ArbeidsgiverOrganisasjon organisasjon = new ArbeidsgiverOrganisasjon(avtalepartMedFnr.getAvtale().getBedriftNr(), avtalepartMedFnr.getAvtale().getBedriftNavn());
+        organisasjon.getTilgangstyper().addAll(List.of(Tiltakstype.values()));
+        return new InnloggetSelvbetjeningBruker(avtalepartMedFnr.getIdentifikator(), List.of(organisasjon));
     }
 
     public static InnloggetSelvbetjeningBruker innloggetSelvbetjeningBrukerUtenOrganisasjon(Avtalepart<Fnr> avtalepartMedFnr) {

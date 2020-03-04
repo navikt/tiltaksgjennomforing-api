@@ -14,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class InnloggetBrukerTest {
 
@@ -114,7 +115,9 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__arbeidsgiver_skal_kunne_representere_bedrift_uten_Fnr() {
-        InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker = new InnloggetSelvbetjeningBruker(new Fnr("00000000009"), Arrays.asList(new ArbeidsgiverOrganisasjon(bedriftNr, "Testbutikken", Tiltakstype.ARBEIDSTRENING)));
+        ArbeidsgiverOrganisasjon organisasjon = new ArbeidsgiverOrganisasjon(bedriftNr, "Testbutikken");
+        organisasjon.getTilgangstyper().addAll(List.of(Tiltakstype.values()));
+        InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker = new InnloggetSelvbetjeningBruker(new Fnr("00000000009"), Arrays.asList(organisasjon));
         assertThat(innloggetSelvbetjeningBruker.harLeseTilgang(avtale)).isTrue();
     }
 }

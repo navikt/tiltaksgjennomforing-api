@@ -160,10 +160,10 @@
             "matches" : "^\\d{11}$"
           },
           "serviceCode": {
-            "equalTo": "5332"
+            "matches": "5332|5516"
           },
           "serviceEdition": {
-            "equalTo": "1"
+            "matches": "1|2"
           }
         }
       },

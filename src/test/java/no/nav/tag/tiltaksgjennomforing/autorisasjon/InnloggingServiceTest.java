@@ -48,7 +48,7 @@ public class InnloggingServiceTest {
     
     @Test
     public void hentInnloggetBruker__selvbetjeningbruker_type_arbeidsgiver_skal_hente_organisasjoner() {
-        List<ArbeidsgiverOrganisasjon> organisasjoner = asList(new ArbeidsgiverOrganisasjon(new BedriftNr("111111111"), "Navn", Tiltakstype.ARBEIDSTRENING));
+        List<ArbeidsgiverOrganisasjon> organisasjoner = asList(new ArbeidsgiverOrganisasjon(new BedriftNr("111111111"), "Navn"));
         InnloggetSelvbetjeningBruker selvbetjeningBruker = new InnloggetSelvbetjeningBruker(new Fnr("11111111111"), organisasjoner);
         when(altinnTilgangsstyringService.hentOrganisasjoner(selvbetjeningBruker.getIdentifikator())).thenReturn(organisasjoner);
         vaerInnloggetSelvbetjening(selvbetjeningBruker);

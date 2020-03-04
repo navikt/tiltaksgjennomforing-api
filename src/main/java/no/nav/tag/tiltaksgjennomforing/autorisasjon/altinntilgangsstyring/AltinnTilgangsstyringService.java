@@ -1,23 +1,16 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
-import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.ArbeidsgiverOrganisasjon;
-import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -37,12 +30,6 @@ public class AltinnTilgangsstyringService {
         }));
     }
 
-    private static List<ArbeidsgiverOrganisasjon> konverterTilDomeneObjekter(AltinnOrganisasjon[] altinnOrganisasjoner, Tiltakstype tilgangstype) {
-        return Arrays.stream(altinnOrganisasjoner)
-                .map(AltinnOrganisasjon -> AltinnOrganisasjon.konverterTilDomeneObjekt(tilgangstype))
-                .collect(Collectors.toList());
-    }
-
     private URI lagAltinnUrl(Integer serviceCode, Integer serviceEdition, Identifikator fnr) {
         return UriComponentsBuilder.fromUri(altinnTilgangsstyringProperties.getUri())
                 .queryParam("ForceEIAuthentication")
@@ -56,17 +43,32 @@ public class AltinnTilgangsstyringService {
     }
 
     public List<ArbeidsgiverOrganisasjon> hentOrganisasjoner(Identifikator fnr) {
-        List<ArbeidsgiverOrganisasjon> organisasjoner = new ArrayList<>();
-        organisasjoner.addAll(kallAltinn(altinnTilgangsstyringProperties.getArbtreningServiceCode(), altinnTilgangsstyringProperties.getArbtreningServiceEdition(), fnr, Tiltakstype.ARBEIDSTRENING));
-        organisasjoner.addAll(kallAltinn(altinnTilgangsstyringProperties.getLtsMidlertidigServiceCode(), altinnTilgangsstyringProperties.getLtsMidlertidigServiceEdition(), fnr, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
-        organisasjoner.addAll(kallAltinn(altinnTilgangsstyringProperties.getLtsVarigServiceCode(), altinnTilgangsstyringProperties.getLtsVarigServiceEdition(), fnr, Tiltakstype.VARIG_LONNSTILSKUDD));
-        return organisasjoner;
+        Map<BedriftNr, ArbeidsgiverOrganisasjon> map = new HashMap<>();
+
+        settInnIMap(map, Tiltakstype.ARBEIDSTRENING, kallAltinn(altinnTilgangsstyringProperties.getArbtreningServiceCode(), altinnTilgangsstyringProperties.getArbtreningServiceEdition(), fnr));
+        settInnIMap(map, Tiltakstype.VARIG_LONNSTILSKUDD, kallAltinn(altinnTilgangsstyringProperties.getLtsVarigServiceCode(), altinnTilgangsstyringProperties.getLtsVarigServiceEdition(), fnr));
+        settInnIMap(map, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, kallAltinn(altinnTilgangsstyringProperties.getLtsMidlertidigServiceCode(), altinnTilgangsstyringProperties.getLtsMidlertidigServiceEdition(), fnr));
+
+        return new ArrayList<>(map.values());
     }
 
-    private List<ArbeidsgiverOrganisasjon> kallAltinn(Integer serviceCode, Integer serviceEdition, Identifikator fnr, Tiltakstype tilgangstype) {
+    private void settInnIMap(Map<BedriftNr, ArbeidsgiverOrganisasjon> map, Tiltakstype tiltakstype, AltinnOrganisasjon[] altinnOrganisasjons) {
+        for (AltinnOrganisasjon altinnOrganisasjon : altinnOrganisasjons) {
+            BedriftNr bedriftNr = new BedriftNr(altinnOrganisasjon.getOrganizationNumber());
+            ArbeidsgiverOrganisasjon arbeidsgiverOrganisasjon;
+            if (!map.containsKey(bedriftNr)) {
+                arbeidsgiverOrganisasjon = new ArbeidsgiverOrganisasjon(bedriftNr, altinnOrganisasjon.getName());
+                map.put(bedriftNr, arbeidsgiverOrganisasjon);
+            } else {
+                arbeidsgiverOrganisasjon = map.get(bedriftNr);
+            }
+            arbeidsgiverOrganisasjon.getTilgangstyper().add(tiltakstype);
+        }
+    }
+
+    private AltinnOrganisasjon[] kallAltinn(Integer serviceCode, Integer serviceEdition, Identifikator fnr) {
         try {
-            AltinnOrganisasjon[] altinnOrganisasjoner = restTemplate.getForObject(lagAltinnUrl(serviceCode, serviceEdition, fnr), AltinnOrganisasjon[].class);
-            return konverterTilDomeneObjekter(altinnOrganisasjoner, tilgangstype);
+            return restTemplate.getForObject(lagAltinnUrl(serviceCode, serviceEdition, fnr), AltinnOrganisasjon[].class);
         } catch (RestClientException exception) {
             log.warn("Feil ved kall mot Altinn.", exception);
             throw new TiltaksgjennomforingException("Det har skjedd en feil ved oppslag mot Altinn. Forsøk å laste siden på nytt");
