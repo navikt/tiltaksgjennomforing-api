@@ -4,21 +4,23 @@ metadata:
   name: tiltaksgjennomforing-api
   namespace: default
   labels:
-    team: teamtag
+    team: arbeidsgiver
 spec:
-  image: navikt/tiltaksgjennomforing-api:{{version}}
-  team: teamtag
+  image: {{image}}
+  team: arbeidsgiver
   port: 8080
   liveness:
     path: /tiltaksgjennomforing-api/internal/healthcheck
-    initialDelay: 50
+    initialDelay: 30
     timeout: 1
     periodSeconds: 10
     failureThreshold: 3
   readiness:
     path: /tiltaksgjennomforing-api/internal/healthcheck
-    initialDelay: 50
+    initialDelay: 30
     timeout: 1
+    periodSeconds: 10
+    failureThreshold: 3
   resources:
     limits:
       cpu: 2000m
