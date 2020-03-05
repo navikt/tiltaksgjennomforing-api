@@ -85,7 +85,7 @@ public class PersondataService {
 
     public void sjekkGradering(Fnr fnr) {
         String gradering = hentAdressebeskyttelse(fnr).getGradering();
-        if ("FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG".equals(gradering)) {
+        if ("FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG_UTLAND".equals(gradering)) {
             throw new TilgangskontrollException("Du har ikke tilgang til deltaker");
         }
     }

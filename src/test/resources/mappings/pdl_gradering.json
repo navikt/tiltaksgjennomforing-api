@@ -46,6 +46,28 @@
           }
         },
         "bodyPatterns" : [ {
+          "equalToJson" : {"query" : "query($ident: ID!) { hentPerson(ident: $ident) { adressebeskyttelse { gradering } } }", "variables":  {"ident": "28033114267"}}
+        } ]
+      },
+      "response": {
+        "status": 200,
+        "body": "{\"data\": {\"hentPerson\": {\"adressebeskyttelse\": [{\"gradering\": \"STRENGT_FORTROLIG_UTLAND\"}]}}}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/persondata",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json",
+            "caseInsensitive": true
+          }
+        },
+        "bodyPatterns" : [ {
           "equalToJson" : {"query" : "query($ident: ID!) { hentPerson(ident: $ident) { adressebeskyttelse { gradering } } }", "variables":  {"ident": "00000000000"}}
         } ]
       },
