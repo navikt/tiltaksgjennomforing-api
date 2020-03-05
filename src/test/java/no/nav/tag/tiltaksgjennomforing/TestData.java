@@ -42,7 +42,24 @@ public class TestData {
         return avtale;
     }
 
-    public static Avtale enLonnstilskuddAvtaleMedMedAltUtfylt() {
+    public static Avtale enLonnstilskuddAvtaleMedAltUtfylt() {
+        Avtale avtale = enAvtaleMedAltUtfylt();
+        avtale.setDeltakerFornavn("Lilly");
+        avtale.setDeltakerEtternavn("Lønning");
+        avtale.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+        avtale.setArbeidsgiverKontonummer("22222222222");
+        avtale.setLonnstilskuddProsent(60);
+        avtale.setManedslonn(20000);
+        avtale.setFeriepengesats(BigDecimal.valueOf(0.12));
+        avtale.setArbeidsgiveravgift(BigDecimal.valueOf(0.141));
+        avtale.setVersjon(1);
+        avtale.setJournalpostId(null);
+        avtale.setMaal(Arrays.asList());
+        avtale.setOppgaver(Arrays.asList());
+        return avtale;
+    }
+
+    public static Avtale enLonnstilskuddAvtaleGodkjentAvVeileder() {
         Avtale avtale = enAvtaleMedAltUtfyltGodkjentAvVeileder();
         avtale.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         avtale.setArbeidsgiverKontonummer("22222222222");
