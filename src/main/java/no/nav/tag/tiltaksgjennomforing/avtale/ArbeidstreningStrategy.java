@@ -22,7 +22,7 @@ public class ArbeidstreningStrategy extends BaseAvtaleInnholdStrategy {
 
     @Override
     public boolean erAltUtfylt() {
-        // Inntil data er migrert kan arbeidsoppgaver være fylt ut som fritekst eller i arbeidsoppgvaer-tabellen
+        // Inntil data er migrert kan arbeidsoppgaver være fylt ut som fritekst eller i arbeidsoppgaver-tabellen
         boolean arbeidsoppgaverErUtfylt = !avtaleInnhold.getOppgaver().isEmpty() || erIkkeTomme(avtaleInnhold.getArbeidsoppgaver());
 
         return super.erAltUtfylt()
