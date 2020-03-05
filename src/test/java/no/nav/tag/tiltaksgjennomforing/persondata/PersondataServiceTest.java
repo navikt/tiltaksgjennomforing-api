@@ -21,6 +21,7 @@ public class PersondataServiceTest {
     private PersondataService persondataService;
 
     private static final Fnr STRENGT_FORTROLIG_PERSON = new Fnr("16053900422");
+    private static final Fnr STRENGT_FORTROLIG_UTLAND_PERSON = new Fnr("28033114267");
     private static final Fnr FORTROLIG_PERSON = new Fnr("26067114433");
     private static final Fnr UGRADERT_PERSON = new Fnr("00000000000");
     private static final Fnr UGRADERT_PERSON_TOM_RESPONSE = new Fnr("27030960020");
@@ -33,6 +34,12 @@ public class PersondataServiceTest {
     public void hentGradering__returnerer_strengt_fortrolig_person() {
         Adressebeskyttelse adressebeskyttelse = persondataService.hentAdressebeskyttelse(STRENGT_FORTROLIG_PERSON);
         assertThat(adressebeskyttelse.getGradering()).isEqualTo("STRENGT_FORTROLIG");
+    }
+
+    @Test
+    public void hentGradering__returnerer_strengt_fortrolig_utland_person() {
+        Adressebeskyttelse adressebeskyttelse = persondataService.hentAdressebeskyttelse(STRENGT_FORTROLIG_UTLAND_PERSON);
+        assertThat(adressebeskyttelse.getGradering()).isEqualTo("STRENGT_FORTROLIG_UTLAND");
     }
 
     @Test
@@ -86,6 +93,11 @@ public class PersondataServiceTest {
     @Test(expected = TilgangskontrollException.class)
     public void sjekkGradering__skal_kaste_feile__strengt_fortrolig() {
         persondataService.sjekkGradering(STRENGT_FORTROLIG_PERSON);
+    }
+
+    @Test(expected = TilgangskontrollException.class)
+    public void sjekkGradering__skal_kaste_feile__strengt_fortrolig_utland() {
+        persondataService.sjekkGradering(STRENGT_FORTROLIG_UTLAND_PERSON);
     }
 
     @Test(expected = TilgangskontrollException.class)
