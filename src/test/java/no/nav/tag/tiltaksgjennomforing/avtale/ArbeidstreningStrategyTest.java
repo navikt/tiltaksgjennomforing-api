@@ -43,6 +43,7 @@ class ArbeidstreningStrategyTest {
         ).filteredOn(Objects::isNull).isEmpty();
     }
 
+    // Test at arbeidstreningsavtale regnes som utfylt med arbeidsoppgaver registrert som kort (gammel løsning)
     @Test
     void test_at_alt_er_utfylt_uten_arbeidsoppgaver() {
         AvtaleInnhold avtaleInnhold = new AvtaleInnhold();
@@ -55,6 +56,7 @@ class ArbeidstreningStrategyTest {
         assertThat(strategy.erAltUtfylt()).isTrue();
     }
 
+    // "Test at arbeidstreningsavtale regnes som utfylt med arbeidsoppgaver registrert som fritekst (ny løsning)
     @Test
     void test_at_alt_er_utfylt_uten_oppgaver() {
         AvtaleInnhold avtaleInnhold = new AvtaleInnhold();
