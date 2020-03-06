@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 import no.nav.tag.tiltaksgjennomforing.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.ArbeidsgiverOrganisasjon;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
@@ -34,6 +35,28 @@ public class AltinnTilgangsstyringServiceTest {
         List<ArbeidsgiverOrganisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(new Fnr("10000000000"));
         assertThat(organisasjoner).extracting("bedriftNr").containsOnly(new BedriftNr("999999999"), new BedriftNr("910712314"), new BedriftNr("910712306"));
     }
+
+    @Test
+    public void hentOrganisasjoner__fnr_skal_ha_tilgang_pa_arbeidstrening() {
+        List<ArbeidsgiverOrganisasjon> organisasjoner =altinnTilgangsstyringService.hentOrganisasjoner(new Fnr("20000000000"));
+        assertThat(organisasjoner).flatExtracting(ArbeidsgiverOrganisasjon.Fields.tilgangstyper).containsOnly(Tiltakstype.ARBEIDSTRENING);
+    }
+    @Test
+    public void hentOrganisasjoner__fnr_skal_ha_tilgang_pa_midlertidig_lonnstilskudd() {
+        List<ArbeidsgiverOrganisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(new Fnr("26000000000"));
+        assertThat(organisasjoner).flatExtracting(ArbeidsgiverOrganisasjon.Fields.tilgangstyper).containsOnly(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+    }
+    @Test
+    public void hentOrganisasjoner__fnr_skal_ha_tilgang_pa_varig_lonnstilskudd() {
+        List<ArbeidsgiverOrganisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(new Fnr("27000000000"));
+        assertThat(organisasjoner).flatExtracting(ArbeidsgiverOrganisasjon.Fields.tilgangstyper).containsOnly(Tiltakstype.VARIG_LONNSTILSKUDD);
+    }
+    @Test
+    public void hentOrganisasjoner__fnr_skal_ha_tilgang_pa_alle_tiltakstyper() {
+        List<ArbeidsgiverOrganisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(new Fnr("10000000000"));
+        assertThat(organisasjoner).flatExtracting(ArbeidsgiverOrganisasjon.Fields.tilgangstyper).contains(Tiltakstype.ARBEIDSTRENING, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD);
+    }
+
 
     @Test
     public void hentOrganisasjoner__gyldig_fnr_en_andre_bedrift() {

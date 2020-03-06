@@ -32,7 +32,7 @@
         "urlPath": "/altinn-tilgangsstyring",
         "queryParameters" : {
           "subject" : {
-            "matches" : "^2\\d{10}$"
+            "matches" : "^2[0-5]\\d{9}$"
           },
           "serviceCode": {
             "equalTo": "5332"
@@ -45,6 +45,56 @@
       "response": {
         "status": 200,
         "body": "[{\"Name\":\"SOPRA STERIA AS\",\"Type\":\"Business\",\"OrganizationNumber\":\"910909088\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}, {\"Name\":\"KIWI LØREN AS\",\"Type\":\"Business\",\"OrganizationNumber\":\"981121465\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPath": "/altinn-tilgangsstyring",
+        "queryParameters" : {
+          "subject" : {
+            "matches" : "^26\\d{9}$"
+          },
+          "serviceCode": {
+            "equalTo": "5516"
+          },
+          "serviceEdition": {
+            "equalTo": "1"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "[{\"Name\":\"HUNNDALEN OG NEVERDAL\",\"Type\":\"Business\",\"OrganizationNumber\":\"910712306\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPath": "/altinn-tilgangsstyring",
+        "queryParameters" : {
+          "subject" : {
+            "matches" : "^27\\d{9}$"
+          },
+          "serviceCode": {
+            "equalTo": "5516"
+          },
+          "serviceEdition": {
+            "equalTo": "2"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "[{\"Name\":\"BIRTAVARRE OG VÆRLANDET REGNSKAP\",\"Type\":\"Business\",\"OrganizationNumber\":\"910825607\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}]",
         "headers": {
           "Content-Type": "application/json"
         }
