@@ -40,10 +40,12 @@ public class ByEnhetStrategy implements Strategy {
                         .map(enheterString -> Set.of(enheterString.split(",\\s?")))
                         .map(enabledeEnheter -> !Collections.disjoint(enabledeEnheter, brukersEnheter(currentUserId))))
                 .orElse(false);
-
     }
 
     private List<String> brukersEnheter(String currentUserId) {
+        if (!NavIdent.erNavIdent(currentUserId)) {
+            return List.of();
+        }
         return axsysService.hentEnheterVeilederHarTilgangTil(new NavIdent(currentUserId)).stream()
                 .map(enhet -> enhet.getVerdi()).collect(toList());
     }

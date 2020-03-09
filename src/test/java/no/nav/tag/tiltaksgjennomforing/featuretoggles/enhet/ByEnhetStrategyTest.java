@@ -17,7 +17,12 @@ import static org.mockito.Mockito.*;
 public class ByEnhetStrategyTest {
 
     private AxsysService axsysService = mock(AxsysService.class);
-    private UnleashContext unleashContext = UnleashContext.builder().userId("brukerId").build();
+    private UnleashContext unleashContext = UnleashContext.builder().userId("X123456").build();
+
+    @Test
+    public void skal_være_disablet_hvis_innlogget_med_fødselsnummer() {
+        assertThat(new ByEnhetStrategy(axsysService).isEnabled(Map.of(PARAM, "1234"), UnleashContext.builder().userId("00000000000").build())).isEqualTo(false);
+    }
 
     @Test
     public void skal_være_disablet_hvis_det_toggle_evalueres_uten_kontekst() {
