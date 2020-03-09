@@ -172,7 +172,7 @@ public class TestData {
     }
 
     public static InnloggetNavAnsatt enNavAnsatt() {
-        return new InnloggetNavAnsatt(new NavIdent("F8888888"), mock(TilgangskontrollService.class));
+        return new InnloggetNavAnsatt(new NavIdent("F888888"), mock(TilgangskontrollService.class));
     }
 
     public static Arbeidsgiver enArbeidsgiver() {
