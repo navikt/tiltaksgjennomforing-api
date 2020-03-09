@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.orgenhet;
 
 import lombok.Data;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

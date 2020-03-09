@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
 import no.nav.tag.tiltaksgjennomforing.*;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.ArbeidsgiverOrganisasjon;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 
@@ -13,6 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class InnloggetBrukerTest {
 
@@ -113,7 +115,9 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__arbeidsgiver_skal_kunne_representere_bedrift_uten_Fnr() {
-        InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker = new InnloggetSelvbetjeningBruker(new Fnr("00000000009"), Arrays.asList(new Organisasjon(bedriftNr, "Testbutikken")));
+        ArbeidsgiverOrganisasjon organisasjon = new ArbeidsgiverOrganisasjon(bedriftNr, "Testbutikken");
+        organisasjon.getTilgangstyper().addAll(List.of(Tiltakstype.values()));
+        InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker = new InnloggetSelvbetjeningBruker(new Fnr("00000000009"), Arrays.asList(organisasjon));
         assertThat(innloggetSelvbetjeningBruker.harLeseTilgang(avtale)).isTrue();
     }
 }
