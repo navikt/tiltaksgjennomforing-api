@@ -1,5 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
+
 public class ArbeidstreningStrategy extends BaseAvtaleInnholdStrategy {
     public ArbeidstreningStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
@@ -20,8 +22,11 @@ public class ArbeidstreningStrategy extends BaseAvtaleInnholdStrategy {
 
     @Override
     public boolean erAltUtfylt() {
+        // Inntil data er migrert kan arbeidsoppgaver være fylt ut som fritekst eller i arbeidsoppgaver-tabellen
+        boolean arbeidsoppgaverErUtfylt = !avtaleInnhold.getOppgaver().isEmpty() || erIkkeTomme(avtaleInnhold.getArbeidsoppgaver());
+
         return super.erAltUtfylt()
                 && !avtaleInnhold.getMaal().isEmpty()
-                && !avtaleInnhold.getOppgaver().isEmpty();
+                && arbeidsoppgaverErUtfylt;
     }
 }
