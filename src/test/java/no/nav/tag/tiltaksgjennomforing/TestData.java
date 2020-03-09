@@ -29,7 +29,7 @@ public class TestData {
     public static Avtale enAvtaleMedAltUtfylt() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         Avtale avtale = AvtaleFactory.nyAvtale(lagOpprettAvtale(), veilderNavIdent);
-        avtale.endreAvtale(avtale.getSistEndret(), endringPaAlleFelt(), Avtalerolle.VEILEDER);
+        avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER);
         return avtale;
     }
 
@@ -42,7 +42,24 @@ public class TestData {
         return avtale;
     }
 
-    public static Avtale enLonnstilskuddAvtaleMedMedAltUtfylt() {
+    public static Avtale enLonnstilskuddAvtaleMedAltUtfylt() {
+        Avtale avtale = enAvtaleMedAltUtfylt();
+        avtale.setDeltakerFornavn("Lilly");
+        avtale.setDeltakerEtternavn("Lønning");
+        avtale.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+        avtale.setArbeidsgiverKontonummer("22222222222");
+        avtale.setLonnstilskuddProsent(60);
+        avtale.setManedslonn(20000);
+        avtale.setFeriepengesats(BigDecimal.valueOf(0.12));
+        avtale.setArbeidsgiveravgift(BigDecimal.valueOf(0.141));
+        avtale.setVersjon(1);
+        avtale.setJournalpostId(null);
+        avtale.setMaal(Arrays.asList());
+        avtale.setOppgaver(Arrays.asList());
+        return avtale;
+    }
+
+    public static Avtale enLonnstilskuddAvtaleGodkjentAvVeileder() {
         Avtale avtale = enAvtaleMedAltUtfyltGodkjentAvVeileder();
         avtale.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         avtale.setArbeidsgiverKontonummer("22222222222");
@@ -82,7 +99,7 @@ public class TestData {
         return new EndreAvtale();
     }
 
-    public static EndreAvtale endringPaAlleFelt() {
+    public static EndreAvtale endringPåAlleArbeidstreningFelter() {
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setDeltakerFornavn("Dagny");
         endreAvtale.setDeltakerEtternavn("Deltaker");
@@ -100,7 +117,44 @@ public class TestData {
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusWeeks(2));
         endreAvtale.setStillingprosent(50);
         endreAvtale.setMaal(List.of(TestData.etMaal()));
-        endreAvtale.setOppgaver(List.of(TestData.enOppgave()));
+
+        // Gjør endring begge steder i en overgangsfase
+        endreAvtale.setOppgaver(List.of(TestData.enOppgave(), TestData.enOppgave(), TestData.enOppgave()));
+        endreAvtale.setArbeidsoppgaver("Butikkarbeid");
+        return endreAvtale;
+    }
+
+    public static EndreAvtale endringPåAlleFelter() {
+        EndreAvtale endreAvtale = new EndreAvtale();
+        endreAvtale.setDeltakerFornavn("Dagny");
+        endreAvtale.setDeltakerEtternavn("Deltaker");
+        endreAvtale.setDeltakerTlf("22334455");
+        endreAvtale.setBedriftNavn("Pers butikk");
+        endreAvtale.setArbeidsgiverFornavn("Per");
+        endreAvtale.setArbeidsgiverEtternavn("Kremmer");
+        endreAvtale.setArbeidsgiverTlf("33333333");
+        endreAvtale.setVeilederFornavn("Vera");
+        endreAvtale.setVeilederEtternavn("Veileder");
+        endreAvtale.setVeilederTlf("44444444");
+        endreAvtale.setOppfolging("Telefon hver uke");
+        endreAvtale.setTilrettelegging("Ingen");
+        endreAvtale.setStartDato(LocalDate.now());
+        endreAvtale.setSluttDato(endreAvtale.getStartDato().plusWeeks(2));
+        endreAvtale.setStillingprosent(50);
+        endreAvtale.setMaal(List.of(TestData.etMaal()));
+        endreAvtale.setOppgaver(List.of(TestData.enOppgave(), TestData.enOppgave(), TestData.enOppgave()));
+        endreAvtale.setArbeidsoppgaver("Butikkarbeid");
+        endreAvtale.setArbeidsgiverKontonummer("000111222");
+        endreAvtale.setStillingtype("Stilling");
+        endreAvtale.setLonnstilskuddProsent(60);
+        endreAvtale.setManedslonn(10000);
+        endreAvtale.setFeriepengesats(BigDecimal.ONE);
+        endreAvtale.setArbeidsgiveravgift(BigDecimal.ONE);
+        endreAvtale.setMentorFornavn("Mentor");
+        endreAvtale.setMentorEtternavn("Mentorsen");
+        endreAvtale.setMentorOppgaver("Mentoroppgaver");
+        endreAvtale.setMentorAntallTimer(10);
+        endreAvtale.setMentorTimelonn(1000);
         return endreAvtale;
     }
 
@@ -189,7 +243,7 @@ public class TestData {
     public static Avtale enAvtaleMedFlereVersjoner() {
         Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         avtale.låsOppAvtale();
-        EndreAvtale endreAvtale = TestData.endringPaAlleFelt();
+        EndreAvtale endreAvtale = TestData.endringPåAlleArbeidstreningFelter();
         endreAvtale.setDeltakerFornavn("Atle");
         endreAvtale.setDeltakerEtternavn("Jørgensen");
         endreAvtale.setOppfolging("Trenger mer oppfølging");
@@ -200,7 +254,7 @@ public class TestData {
         return avtale;
     }
 
-    public static Avtale enAvtaleKlarForOppstart(){
+    public static Avtale enAvtaleKlarForOppstart() {
         Avtale avtale = enAvtaleMedAltUtfylt();
         avtale.setStartDato(LocalDate.now().plusDays(7));
         avtale.setSluttDato(avtale.getStartDato().plusMonths(1));

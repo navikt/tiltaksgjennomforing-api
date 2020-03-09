@@ -86,7 +86,7 @@ public class AvtaleTest {
     @Test
     public void endreAvtaleSkalOppdatereRiktigeFelt() {
         Avtale avtale = TestData.enAvtale();
-        EndreAvtale endreAvtale = TestData.endringPaAlleFelt();
+        EndreAvtale endreAvtale = TestData.endringPåAlleArbeidstreningFelter();
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
 
         SoftAssertions.assertSoftly(softly -> {
@@ -202,7 +202,7 @@ public class AvtaleTest {
         boolean arbeidsgiverGodkjenningFoerEndring = avtale.erGodkjentAvArbeidsgiver();
         boolean veilederGodkjenningFoerEndring = avtale.erGodkjentAvVeileder();
 
-        avtale.endreAvtale(Instant.now(), TestData.endringPaAlleFelt(), Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER);
 
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(deltakerGodkjenningFoerEndring).isEqualTo(avtale.erGodkjentAvDeltaker());
@@ -505,8 +505,8 @@ public class AvtaleTest {
     }
 
     @Test
-    public void avtaleklarForOppstart(){
-        Avtale avtale= TestData.enAvtaleKlarForOppstart();
+    public void avtaleklarForOppstart() {
+        Avtale avtale = TestData.enAvtaleKlarForOppstart();
         assertThat(avtale.status()).isEqualTo(Status.KLAR_FOR_OPPSTART.getStatusVerdi());
     }
 }
