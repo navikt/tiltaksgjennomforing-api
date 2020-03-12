@@ -10,13 +10,13 @@ public class ArbeidstreningStrategy extends BaseAvtaleInnholdStrategy {
     @Override
     public void endre(EndreAvtale nyAvtale) {
         nyAvtale.getMaal().forEach(Maal::sjekkMaalLengde);
-        nyAvtale.getOppgaver().forEach(Oppgave::sjekkOppgaveLengde);
-        avtaleInnhold.getMaal().clear();
+        nyAvtale.getOppgaver().forEach(Oppgave::sjekkOppgaveLengde);tMaal().clear();
         avtaleInnhold.getMaal().addAll(nyAvtale.getMaal());
         avtaleInnhold.getMaal().forEach(m -> m.setAvtaleInnhold(avtaleInnhold));
         avtaleInnhold.getOppgaver().clear();
         avtaleInnhold.getOppgaver().addAll(nyAvtale.getOppgaver());
         avtaleInnhold.getOppgaver().forEach(o -> o.setAvtaleInnhold(avtaleInnhold));
+        avtaleInnhold.setStillingtype(nyAvtale.getStillingtype());
         super.endre(nyAvtale);
     }
 
