@@ -5,7 +5,6 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetSelvbetjeningBruker
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.ArbeidsgiverOrganisasjon;
-import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.varsel.BjelleVarsel;
 import no.nav.tag.tiltaksgjennomforing.varsel.SmsVarsel;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelse;
@@ -146,7 +145,7 @@ public class TestData {
         endreAvtale.setOppgaver(List.of(TestData.enOppgave(), TestData.enOppgave(), TestData.enOppgave()));
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
         endreAvtale.setArbeidsgiverKontonummer("000111222");
-        endreAvtale.setStillingtype("Stilling");
+        endreAvtale.setStillingstittel("Stilling");
         endreAvtale.setLonnstilskuddProsent(60);
         endreAvtale.setManedslonn(10000);
         endreAvtale.setFeriepengesats(BigDecimal.ONE);
