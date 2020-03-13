@@ -42,7 +42,7 @@ public class AvtaleTilJournalfoering {
     private LocalDate startDato;
     private LocalDate sluttDato;
     private Integer stillingprosent;
-    private String stillingstype;
+    private String stillingstittel;
     private String arbeidsoppgaver;
 
     // Lønnstilskudd

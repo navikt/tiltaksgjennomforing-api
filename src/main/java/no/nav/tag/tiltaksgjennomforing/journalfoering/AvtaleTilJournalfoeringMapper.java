@@ -13,7 +13,7 @@ public class AvtaleTilJournalfoeringMapper {
         AvtaleTilJournalfoering avtaleTilJournalfoering = new AvtaleTilJournalfoering();
         avtaleTilJournalfoering.setTiltakstype(avtale.getTiltakstype());
         avtaleTilJournalfoering.setArbeidsgiverKontonummer(avtale.getArbeidsgiverKontonummer());
-        avtaleTilJournalfoering.setStillingstype(avtale.getStillingtype());
+        avtaleTilJournalfoering.setStillingstittel(avtale.getStillingstittel());
         avtaleTilJournalfoering.setArbeidsoppgaver(avtale.getArbeidsoppgaver());
         avtaleTilJournalfoering.setLonnstilskuddProsent(avtale.getLonnstilskuddProsent());
         avtaleTilJournalfoering.setManedslonn(avtale.getManedslonn());
