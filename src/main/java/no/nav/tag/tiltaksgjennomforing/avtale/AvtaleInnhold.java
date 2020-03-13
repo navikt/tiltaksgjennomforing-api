@@ -66,7 +66,7 @@ public class AvtaleInnhold {
 
     // Lønnstilskudd
     private String arbeidsgiverKontonummer;
-    private String stillingtype;
+    private String stillingstittel;
     private Integer lonnstilskuddProsent;
     private Integer manedslonn;
     private BigDecimal feriepengesats;
