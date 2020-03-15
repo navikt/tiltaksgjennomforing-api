@@ -39,6 +39,7 @@ class ArbeidstreningStrategyTest {
                 startDato,
                 sluttDato,
                 stillingprosent,
+                stillingstittel,
                 arbeidsoppgaver
         ).filteredOn(Objects::isNull).isEmpty();
     }

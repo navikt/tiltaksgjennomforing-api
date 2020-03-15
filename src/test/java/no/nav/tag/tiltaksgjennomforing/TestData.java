@@ -117,6 +117,7 @@ public class TestData {
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusWeeks(2));
         endreAvtale.setStillingprosent(50);
         endreAvtale.setMaal(List.of(TestData.etMaal()));
+        endreAvtale.setStillingstittel("Butikksjef");
 
         // Gjør endring begge steder i en overgangsfase
         endreAvtale.setOppgaver(List.of(TestData.enOppgave(), TestData.enOppgave(), TestData.enOppgave()));
