@@ -17,4 +17,4 @@ markComment: >
 closeComment: >
   Denne PR-en har nå blitt lukket pga. inaktivitet. Du kan fortsatt reåpne den.
 # Limit to only `issues` or `pulls`
-  only: pulls
+only: pulls
