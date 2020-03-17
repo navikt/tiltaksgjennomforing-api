@@ -5,6 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,25 +42,27 @@ public class VeilederTest {
     }
 
     @Test
-    @Ignore
-    public void avbrytAvtale__kan_ikke_avbryt_avtale_etter_veiledergodkjenning() {
+    public void avbrytAvtale__kan_avbryt_avtale_etter_veiledergodkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         Veileder veileder = TestData.enVeileder(avtale);
-        //veileder.avbrytAvtale(avtale.getSistEndret());
-        assertThat(avtale.isAvbrutt()).isFalse();
+        veileder.avbrytAvtale(avtale.getSistEndret(), new AvbruttInfo(LocalDate.now(), "enGrunn"));
+        assertThat(avtale.isAvbrutt()).isTrue();
+        assertThat(avtale.getAvbruttDato()).isNotNull();
+        assertThat(avtale.getAvbruttGrunn()).isEqualTo("enGrunn");
     }
 
     @Test
-    @Ignore
-    public void avbrytAvtale__kan_avbryt_avtale_foer_veiledergodkjenning() {
+    public void avbrytAvtale__kan_avbryte_avtale_foer_veiledergodkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         Veileder veileder = TestData.enVeileder(avtale);
-        //veileder.avbrytAvtale(avtale.getSistEndret());
+        veileder.avbrytAvtale(avtale.getSistEndret(), new AvbruttInfo(LocalDate.now(), "enGrunn"));
         assertThat(avtale.isAvbrutt()).isTrue();
+        assertThat(avtale.getAvbruttDato()).isNotNull();
+        assertThat(avtale.getAvbruttGrunn()).isEqualTo("enGrunn");
     }
 }
