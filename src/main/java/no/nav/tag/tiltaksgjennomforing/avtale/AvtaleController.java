@@ -136,12 +136,12 @@ public class AvtaleController {
     }
 
     @PostMapping("/{avtaleId}/avbryt")
-    public void avbryt(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret) {
+    public void avbryt(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret, @RequestBody AvbruttInfo avbruttInfo) {
         InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetNavAnsatt.sjekkSkriveTilgang(avtale);
         Veileder veileder = innloggetNavAnsatt.avtalepart(avtale);
-        veileder.avbrytAvtale(sistEndret);
+        veileder.avbrytAvtale(sistEndret, avbruttInfo);
         avtaleRepository.save(avtale);
     }
 
