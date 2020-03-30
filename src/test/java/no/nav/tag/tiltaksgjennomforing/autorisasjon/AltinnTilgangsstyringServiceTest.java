@@ -6,7 +6,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.ArbeidsgiverOrganisasjon;
-import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringProperties;
 import org.junit.Test;
@@ -79,6 +78,6 @@ public class AltinnTilgangsstyringServiceTest {
     public void hentOrganisasjoner__feilkonfigurasjon_skal_kaste_feil() {
         AltinnTilgangsstyringProperties altinnTilgangsstyringProperties = new AltinnTilgangsstyringProperties();
         altinnTilgangsstyringProperties.setUri(URI.create("http://foobar"));
-        List<ArbeidsgiverOrganisasjon> organisasjoner = new AltinnTilgangsstyringService(altinnTilgangsstyringProperties).hentOrganisasjoner(TestData.enIdentifikator());
+        List<ArbeidsgiverOrganisasjon> organisasjoner = new AltinnTilgangsstyringService(altinnTilgangsstyringProperties, tokenUtils, featureToggleService).hentOrganisasjoner(TestData.enIdentifikator());
     }
 }
