@@ -43,7 +43,7 @@ public class AltinnTilgangsstyringService {
     }
 
     private URI lagAltinnUrl(Integer serviceCode, Integer serviceEdition, Identifikator fnr) {
-        return UriComponentsBuilder.fromUri(altinnTilgangsstyringProperties.getProxyUri())
+        return UriComponentsBuilder.fromUri(altinnTilgangsstyringProperties.getUri())
                 .queryParam("ForceEIAuthentication")
                 .queryParam("subject", fnr.asString())
                 .queryParam("serviceCode", serviceCode)
@@ -55,7 +55,7 @@ public class AltinnTilgangsstyringService {
     }
 
     private URI lagAltinnProxyUrl(Integer serviceCode, Integer serviceEdition) {
-        return UriComponentsBuilder.fromUri(altinnTilgangsstyringProperties.getUri())
+        return UriComponentsBuilder.fromUri(altinnTilgangsstyringProperties.getProxyUri())
                 .queryParam("ForceEIAuthentication")
                 .queryParam("serviceCode", serviceCode)
                 .queryParam("serviceEdition", serviceEdition)
