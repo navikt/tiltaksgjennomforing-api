@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing;
 
-import no.finn.unleash.FakeUnleash;
 import no.finn.unleash.Unleash;
 import no.nav.security.oidc.test.support.spring.TokenGeneratorConfiguration;
 import org.springframework.context.annotation.Bean;

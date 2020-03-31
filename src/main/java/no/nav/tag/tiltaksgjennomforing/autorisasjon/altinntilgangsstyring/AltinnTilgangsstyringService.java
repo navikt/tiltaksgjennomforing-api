@@ -35,11 +35,6 @@ public class AltinnTilgangsstyringService {
         this.tokenUtils = tokenUtils;
         this.featureToggleService = featureToggleService;
         restTemplate = new RestTemplate();
-        restTemplate.setInterceptors(Collections.singletonList((request, body, execution) -> {
-            request.getHeaders().add("X-NAV-APIKEY", altinnTilgangsstyringProperties.getApiGwApiKey());
-            request.getHeaders().add("APIKEY", altinnTilgangsstyringProperties.getAltinnApiKey());
-            return execution.execute(request, body);
-        }));
     }
 
     private URI lagAltinnUrl(Integer serviceCode, Integer serviceEdition, Identifikator fnr) {
@@ -99,7 +94,12 @@ public class AltinnTilgangsstyringService {
                         AltinnOrganisasjon[].class
                 ).getBody();
             } else {
-                return restTemplate.getForObject(lagAltinnUrl(serviceCode, serviceEdition, fnr), AltinnOrganisasjon[].class);
+                return restTemplate.exchange(
+                        lagAltinnUrl(serviceCode, serviceEdition, fnr),
+                        HttpMethod.GET,
+                        getAuthHeadersForAltinn(),
+                        AltinnOrganisasjon[].class
+                ).getBody();
             }
         } catch (RestClientException exception) {
             log.warn("Feil ved kall mot Altinn.", exception);
@@ -110,6 +110,13 @@ public class AltinnTilgangsstyringService {
     private HttpEntity<HttpHeaders> getAuthHeadersForInnloggetBruker() {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(tokenUtils.hentSelvbetjeningToken());
+        return new HttpEntity<>(headers);
+    }
+
+    private HttpEntity<HttpHeaders> getAuthHeadersForAltinn() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-NAV-APIKEY", altinnTilgangsstyringProperties.getApiGwApiKey());
+        headers.set("APIKEY", altinnTilgangsstyringProperties.getAltinnApiKey());
         return new HttpEntity<>(headers);
     }
 }
