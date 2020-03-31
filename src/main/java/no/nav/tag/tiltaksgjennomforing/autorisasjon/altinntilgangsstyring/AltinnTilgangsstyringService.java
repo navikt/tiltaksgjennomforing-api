@@ -86,21 +86,15 @@ public class AltinnTilgangsstyringService {
 
     private AltinnOrganisasjon[] kallAltinn(Integer serviceCode, Integer serviceEdition, Identifikator fnr) {
         try {
-            if (featureToggleService.isEnabled("arbeidsgiver.tiltaksgjennomforing-api.bruk-altinn-proxy")) {
-                return restTemplate.exchange(
-                        lagAltinnProxyUrl(serviceCode, serviceEdition),
-                        HttpMethod.GET,
-                        getAuthHeadersForInnloggetBruker(),
-                        AltinnOrganisasjon[].class
-                ).getBody();
-            } else {
-                return restTemplate.exchange(
-                        lagAltinnUrl(serviceCode, serviceEdition, fnr),
-                        HttpMethod.GET,
-                        getAuthHeadersForAltinn(),
-                        AltinnOrganisasjon[].class
-                ).getBody();
-            }
+            boolean brukProxy = featureToggleService.isEnabled("arbeidsgiver.tiltaksgjennomforing-api.bruk-altinn-proxy");
+            HttpEntity<HttpHeaders> headers = brukProxy ? getAuthHeadersForInnloggetBruker() : getAuthHeadersForAltinn();
+            URI uri = brukProxy ? lagAltinnProxyUrl(serviceCode, serviceEdition) : lagAltinnUrl(serviceCode, serviceEdition, fnr);
+            return restTemplate.exchange(
+                    uri,
+                    HttpMethod.GET,
+                    headers,
+                    AltinnOrganisasjon[].class
+            ).getBody();
         } catch (RestClientException exception) {
             log.warn("Feil ved kall mot Altinn.", exception);
             throw new TiltaksgjennomforingException("Det har skjedd en feil ved oppslag mot Altinn. Forsøk å laste siden på nytt");
