@@ -14,8 +14,9 @@ public class LokalConfiguration {
     @Bean
     @Primary
     public Unleash unleashMock() {
-        FakeUnleash fakeUnleash = new FakeUnleash();
+        FakeFakeUnleash fakeUnleash = new FakeFakeUnleash();
         fakeUnleash.enableAll(); //Enabler alle toggles pr. default. Kan endres lokalt ved behov.
+        fakeUnleash.disable("arbeidsgiver.tiltaksgjennomforing-api.bruk-altinn-proxy");
         return fakeUnleash;
     }
 }
