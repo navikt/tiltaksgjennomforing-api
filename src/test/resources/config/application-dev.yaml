@@ -30,6 +30,7 @@ no.nav.security.oidc:
 tiltaksgjennomforing:
   altinn-tilgangsstyring:
     uri: http://localhost:8090/altinn-tilgangsstyring
+    proxyUri: http://localhost:9090/altinn-rettigheter-proxy/ekstern/altinn/api/serviceowner/reportees
     lts-midlertidig-service-code: 5516
     lts-midlertidig-service-edition: 1
     lts-varig-service-code: 5516

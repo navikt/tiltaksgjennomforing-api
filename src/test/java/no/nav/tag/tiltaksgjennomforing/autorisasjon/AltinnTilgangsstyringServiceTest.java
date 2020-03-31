@@ -5,14 +5,16 @@ import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.ArbeidsgiverOrganisasjon;
-import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringProperties;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -21,6 +23,9 @@ import java.net.URI;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -29,6 +34,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class AltinnTilgangsstyringServiceTest {
     @Autowired
     private AltinnTilgangsstyringService altinnTilgangsstyringService;
+
+    @MockBean
+    private TokenUtils tokenUtils;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
+    @Before
+    public void setUp() {
+        when(tokenUtils.hentSelvbetjeningToken()).thenReturn("token");
+        when(featureToggleService.isEnabled(anyString())).thenReturn(false);
+    }
 
     @Test
     public void hentOrganisasjoner__gyldig_fnr_en_bedrift_pa_hvert_titlak() {
@@ -79,6 +96,6 @@ public class AltinnTilgangsstyringServiceTest {
     public void hentOrganisasjoner__feilkonfigurasjon_skal_kaste_feil() {
         AltinnTilgangsstyringProperties altinnTilgangsstyringProperties = new AltinnTilgangsstyringProperties();
         altinnTilgangsstyringProperties.setUri(URI.create("http://foobar"));
-        List<ArbeidsgiverOrganisasjon> organisasjoner = new AltinnTilgangsstyringService(altinnTilgangsstyringProperties).hentOrganisasjoner(TestData.enIdentifikator());
+        List<ArbeidsgiverOrganisasjon> organisasjoner = new AltinnTilgangsstyringService(altinnTilgangsstyringProperties, tokenUtils, featureToggleService).hentOrganisasjoner(TestData.enIdentifikator());
     }
 }
