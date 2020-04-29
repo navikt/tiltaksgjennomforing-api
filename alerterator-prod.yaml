@@ -1,7 +1,8 @@
-apiVersion: "nais.io/v1alpha1"
+apiVersion: "nais.io/v1"
 kind: "Alert"
 metadata:
   name: tiltaksgjennomforing-api-alert
+  namespace: default
   labels:
     team: teamtag
 spec:
