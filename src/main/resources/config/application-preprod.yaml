@@ -35,8 +35,10 @@ tiltaksgjennomforing:
     maximum-pool-size: 8
     max-lifetime: 300000
   altinn-tilgangsstyring:
-    uri: https://api-gw-q1.adeo.no/ekstern/altinn/api/serviceowner/reportees
-    proxyUri: https://arbeidsgiver.nais.preprod.local/altinn-rettigheter-proxy/ekstern/altinn/api/serviceowner/reportees
+    altinnHeader: ${ALTINN_HEADER}
+    APIGwHeader: ${APIGW_HEADER}
+    proxyUrl: https://arbeidsgiver.nais.preprod.local/altinn-rettigheter-proxy
+    proxyFallbackUrl: https://api-gw-q1.adeo.no
   altinn-varsel:
     uri: https://pep-gw-q1.oera-q.local:9443/ekstern/altinn/notificationagencyexternalbasic/v1
   ereg:

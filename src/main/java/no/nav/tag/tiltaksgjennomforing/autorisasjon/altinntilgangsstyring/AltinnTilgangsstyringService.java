@@ -17,6 +17,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.util.*;
 
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnrettigheterProxyKlient;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnrettigheterProxyKlientConfig;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.ProxyConfig;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.Subject;
+import no.nav.security.oidc.context.TokenContext;
+
 @Component
 @Slf4j
 public class AltinnTilgangsstyringService {
@@ -25,6 +32,9 @@ public class AltinnTilgangsstyringService {
     private final TokenUtils tokenUtils;
     private final FeatureToggleService featureToggleService;
     private static final int ALTINN_ORG_PAGE_SIZE = 500;
+
+    private final String altinnProxyFallbackUrl;
+    private final AltinnrettigheterProxyKlient klient;
 
     public AltinnTilgangsstyringService(
             AltinnTilgangsstyringProperties altinnTilgangsstyringProperties,
@@ -35,6 +45,16 @@ public class AltinnTilgangsstyringService {
         this.tokenUtils = tokenUtils;
         this.featureToggleService = featureToggleService;
         restTemplate = new RestTemplate();
+
+        AltinnrettigheterProxyKlientConfig proxyKlientConfig = new AltinnrettigheterProxyKlientConfig(
+                new ProxyConfig("tiltaksgjennomforing-api", altinnTilgangsstyringProperties.getProxyUri()),
+                new no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnConfig(
+                        altinnProxyFallbackUrl,
+                        altinnConfig.getAltinnHeader(),
+                        altinnConfig.getAPIGwHeader()
+                )
+        );
+        this.klient = new AltinnrettigheterProxyKlient(proxyKlientConfig);
     }
 
     private URI lagAltinnUrl(Integer serviceCode, Integer serviceEdition, Identifikator fnr) {

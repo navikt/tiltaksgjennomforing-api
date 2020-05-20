@@ -10,8 +10,7 @@ import java.net.URI;
 @Component
 @ConfigurationProperties(prefix = "tiltaksgjennomforing.altinn-tilgangsstyring")
 public class AltinnTilgangsstyringProperties {
-    private URI uri;
-    private URI proxyUri;
+    private String proxyFallbackUrl;
     private String altinnApiKey;
     private String apiGwApiKey;
     private Integer serviceCode;

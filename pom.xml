@@ -24,6 +24,7 @@
         <java.version>11</java.version>
         <mapstruct.version>1.3.0.Final</mapstruct.version>
         <swagger.version>2.9.2</swagger.version>
+        <altinn-rettigheter-proxy-klient.version>0.1.1</altinn-rettigheter-proxy-klient.version>
     </properties>
 
     <dependencies>
@@ -150,7 +151,11 @@
             <artifactId>unleash-client-java</artifactId>
             <version>3.2.8</version>
         </dependency>
-
+        <dependency>
+            <groupId>no.nav.arbeidsgiver</groupId>
+            <artifactId>altinn-rettigheter-proxy-klient</artifactId>
+            <version>${altinn-rettigheter-proxy-klient.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

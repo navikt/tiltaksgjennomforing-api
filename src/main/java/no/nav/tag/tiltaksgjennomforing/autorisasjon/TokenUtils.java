@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.security.oidc.context.OIDCValidationContext;
+import no.nav.security.oidc.context.TokenContext;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -66,5 +67,7 @@ public class TokenUtils {
     public String hentSelvbetjeningToken() {
         return contextHolder.getOIDCValidationContext().getToken(ISSUER_SELVBETJENING.issuerName).getIdToken();
     }
-
+    public TokenContext hentSelvbetjeningTokenContext() {
+        return contextHolder.getOIDCValidationContext().getToken(ISSUER_SELVBETJENING.issuerName);
+    }
 }
