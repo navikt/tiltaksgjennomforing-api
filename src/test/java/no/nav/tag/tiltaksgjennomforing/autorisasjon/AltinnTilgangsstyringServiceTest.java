@@ -95,7 +95,7 @@ public class AltinnTilgangsstyringServiceTest {
     @Test (expected = TiltaksgjennomforingException.class)
     public void hentOrganisasjoner__feilkonfigurasjon_skal_kaste_feil() {
         AltinnTilgangsstyringProperties altinnTilgangsstyringProperties = new AltinnTilgangsstyringProperties();
-        altinnTilgangsstyringProperties.setUri(URI.create("http://foobar"));
+        altinnTilgangsstyringProperties.setProxyUrl(URI.create("http://foobar").toString());
         List<ArbeidsgiverOrganisasjon> organisasjoner = new AltinnTilgangsstyringService(altinnTilgangsstyringProperties, tokenUtils, featureToggleService).hentOrganisasjoner(TestData.enIdentifikator());
     }
 }

@@ -16,6 +16,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnrettigheterProxyKlient;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnrettigheterProxyKlientConfig;
@@ -33,6 +35,7 @@ public class AltinnTilgangsstyringService {
     private final FeatureToggleService featureToggleService;
     private static final int ALTINN_ORG_PAGE_SIZE = 500;
 
+    private final String proxyUrl;
     private final String altinnProxyFallbackUrl;
     private final AltinnrettigheterProxyKlient klient;
 
@@ -45,20 +48,21 @@ public class AltinnTilgangsstyringService {
         this.tokenUtils = tokenUtils;
         this.featureToggleService = featureToggleService;
         restTemplate = new RestTemplate();
-
+        altinnProxyFallbackUrl = altinnTilgangsstyringProperties.getProxyFallbackUrl();
+        proxyUrl = altinnTilgangsstyringProperties.getProxyUrl();
         AltinnrettigheterProxyKlientConfig proxyKlientConfig = new AltinnrettigheterProxyKlientConfig(
-                new ProxyConfig("tiltaksgjennomforing-api", altinnTilgangsstyringProperties.getProxyUri()),
+                new ProxyConfig("tiltaksgjennomforing-api", altinnTilgangsstyringProperties.getProxyUrl()),
                 new no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnConfig(
                         altinnProxyFallbackUrl,
-                        altinnConfig.getAltinnHeader(),
-                        altinnConfig.getAPIGwHeader()
+                        altinnTilgangsstyringProperties.getAltinnHeader(),
+                        altinnTilgangsstyringProperties.getAPIGwHeader()
                 )
         );
         this.klient = new AltinnrettigheterProxyKlient(proxyKlientConfig);
     }
 
     private URI lagAltinnUrl(Integer serviceCode, Integer serviceEdition, Identifikator fnr) {
-        return UriComponentsBuilder.fromUri(altinnTilgangsstyringProperties.getUri())
+        return UriComponentsBuilder.fromHttpUrl(altinnTilgangsstyringProperties.getProxyFallbackUrl() + "/ekstern/altinn/api/serviceowner/reportees")
                 .queryParam("ForceEIAuthentication")
                 .queryParam("subject", fnr.asString())
                 .queryParam("serviceCode", serviceCode)
@@ -69,17 +73,17 @@ public class AltinnTilgangsstyringService {
                 .toUri();
     }
 
-    private URI lagAltinnProxyUrl(Integer serviceCode, Integer serviceEdition) {
-        return UriComponentsBuilder.fromUri(altinnTilgangsstyringProperties.getProxyUri())
-                .queryParam("ForceEIAuthentication")
-                .queryParam("serviceCode", serviceCode)
-                .queryParam("serviceEdition", serviceEdition)
-                .queryParam("$filter", "Type+ne+'Person'")
-                .queryParam("$top", ALTINN_ORG_PAGE_SIZE)
-                .build()
-                .toUri();
-    }
-
+    /* private URI lagAltinnProxyUrl(Integer serviceCode, Integer serviceEdition) {
+         return UriComponentsBuilder.fromHttpUrl(altinnTilgangsstyringProperties.getProxyUrl())
+                 .queryParam("ForceEIAuthentication")
+                 .queryParam("serviceCode", serviceCode)
+                 .queryParam("serviceEdition", serviceEdition)
+                 .queryParam("$filter", "Type+ne+'Person'")
+                 .queryParam("$top", ALTINN_ORG_PAGE_SIZE)
+                 .build()
+                 .toUri();
+     }
+ */
     public List<ArbeidsgiverOrganisasjon> hentOrganisasjoner(Identifikator fnr) {
         Map<BedriftNr, ArbeidsgiverOrganisasjon> map = new HashMap<>();
 
@@ -105,19 +109,35 @@ public class AltinnTilgangsstyringService {
     }
 
     private AltinnOrganisasjon[] kallAltinn(Integer serviceCode, Integer serviceEdition, Identifikator fnr) {
-        try {
-            boolean brukProxy = featureToggleService.isEnabled("arbeidsgiver.tiltaksgjennomforing-api.bruk-altinn-proxy");
-            HttpEntity<HttpHeaders> headers = brukProxy ? getAuthHeadersForInnloggetBruker() : getAuthHeadersForAltinn();
-            URI uri = brukProxy ? lagAltinnProxyUrl(serviceCode, serviceEdition) : lagAltinnUrl(serviceCode, serviceEdition, fnr);
-            return restTemplate.exchange(
-                    uri,
-                    HttpMethod.GET,
-                    headers,
-                    AltinnOrganisasjon[].class
-            ).getBody();
-        } catch (RestClientException exception) {
-            log.warn("Feil ved kall mot Altinn.", exception);
-            throw new TiltaksgjennomforingException("Det har skjedd en feil ved oppslag mot Altinn. Forsøk å laste siden på nytt");
+
+        boolean brukProxy = featureToggleService.isEnabled("arbeidsgiver.tiltaksgjennomforing-api.bruk-altinn-proxy");
+        HttpEntity<HttpHeaders> headers = brukProxy ? getAuthHeadersForInnloggetBruker() : getAuthHeadersForAltinn();
+        if (true) {
+            Map<String, String> parametre = new ConcurrentHashMap<>();
+            parametre.put("serviceCode", serviceCode.toString());
+            parametre.put("serviceEdition", serviceEdition.toString());
+            log.info("Henter rettigheter fra Altinn via proxy");
+            List<AltinnOrganisasjon> reporteesFromAltinnViaProxy = getReporteesFromAltinnViaProxy(
+                    tokenUtils.hentSelvbetjeningTokenContext(),
+                    new Subject(fnr.asString()),
+                    parametre,
+                    altinnTilgangsstyringProperties.getProxyUrl(),
+                    ALTINN_ORG_PAGE_SIZE
+            );
+            return reporteesFromAltinnViaProxy.toArray(new AltinnOrganisasjon[0]);
+        } else {
+            try {
+                return restTemplate.exchange(
+                        lagAltinnUrl(serviceCode, serviceEdition, fnr),
+                        HttpMethod.GET,
+                        headers,
+                        AltinnOrganisasjon[].class
+                ).getBody();
+
+            } catch (RestClientException exception) {
+                log.warn("Feil ved kall mot Altinn.", exception);
+                throw new TiltaksgjennomforingException("Det har skjedd en feil ved oppslag mot Altinn. Forsøk å laste siden på nytt");
+            }
         }
     }
 
@@ -132,5 +152,44 @@ public class AltinnTilgangsstyringService {
         headers.set("X-NAV-APIKEY", altinnTilgangsstyringProperties.getApiGwApiKey());
         headers.set("APIKEY", altinnTilgangsstyringProperties.getAltinnApiKey());
         return new HttpEntity<>(headers);
+    }
+
+    List<AltinnOrganisasjon> getReporteesFromAltinnViaProxy(
+            TokenContext tokenContext,
+            Subject subject,
+            Map<String, String> parametre,
+            String url,
+            int pageSize
+    ) {
+        Set<AltinnOrganisasjon> response = new HashSet<>();
+        int pageNumber = 0;
+        boolean hasMore = true;
+        while (hasMore) {
+            pageNumber++;
+            try {
+                parametre.put("$top", String.valueOf(pageSize));
+                parametre.put("$skip", String.valueOf(((pageNumber - 1) * pageSize)));
+                List<AltinnOrganisasjon> collection = mapTo(klient.hentOrganisasjoner(tokenContext, subject, parametre));
+                response.addAll(collection);
+                hasMore = collection.size() >= pageSize;
+            } catch (RestClientException exception) {
+                log.error("Feil fra Altinn-proxy med spørring: " + url + " Exception: " + exception.getMessage());
+                throw new TiltaksgjennomforingException("Feil fra Altinn", exception);
+            }
+        }
+        return new ArrayList<>(response);
+    }
+
+    private List<AltinnOrganisasjon> mapTo(List<AltinnReportee> altinnReportees) {
+        return altinnReportees.stream().map(org -> {
+                    AltinnOrganisasjon altinnOrganisasjon = new AltinnOrganisasjon();
+                    altinnOrganisasjon.setName(org.getName());
+                    altinnOrganisasjon.setType(org.getType());
+                    altinnOrganisasjon.setOrganizationNumber(org.getOrganizationNumber());
+                    altinnOrganisasjon.setOrganizationForm(org.getOrganizationForm());
+                    altinnOrganisasjon.setStatus(org.getStatus());
+                    return altinnOrganisasjon;
+                }
+        ).collect(Collectors.toList());
     }
 }
