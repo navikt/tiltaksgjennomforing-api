@@ -4,8 +4,6 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import java.net.URI;
-
 @Data
 @Component
 @ConfigurationProperties(prefix = "tiltaksgjennomforing.altinn-tilgangsstyring")
@@ -16,8 +14,6 @@ public class AltinnTilgangsstyringProperties {
     private String altinnHeader;
     private String APIGwHeader;
     private String apiGwApiKey;
-    private Integer serviceCode;
-    private Integer serviceEdition;
 
     private Integer ltsMidlertidigServiceCode;
     private Integer ltsMidlertidigServiceEdition;

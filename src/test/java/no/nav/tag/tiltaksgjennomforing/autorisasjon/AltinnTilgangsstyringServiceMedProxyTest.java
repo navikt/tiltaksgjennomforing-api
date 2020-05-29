@@ -1,14 +1,15 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
+import no.nav.security.oidc.context.TokenContext;
 import no.nav.tag.tiltaksgjennomforing.TestData;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringProperties;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.ArbeidsgiverOrganisasjon;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,16 +23,17 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.net.URI;
 import java.util.List;
 
+import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISSUER_SELVBETJENING;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles({"dev", "wiremock"})
 @DirtiesContext
-public class AltinnTilgangsstyringServiceTest {
+public class AltinnTilgangsstyringServiceMedProxyTest {
     @Autowired
     private AltinnTilgangsstyringService altinnTilgangsstyringService;
 
@@ -43,8 +45,14 @@ public class AltinnTilgangsstyringServiceTest {
 
     @Before
     public void setUp() {
+        /*
+
+        TokenContext  tokenContext =
+                contextHolder.getOIDCValidationContext().getToken(ISSUER_SELVBETJENING);*/
         when(tokenUtils.hentSelvbetjeningToken()).thenReturn("token");
-        when(featureToggleService.isEnabled(anyString())).thenReturn(false);
+        when(featureToggleService.isEnabled("arbeidsgiver.tiltaksgjennomforing-api.bruk-altinn-proxy")).thenReturn(true);
+        //when(tokenUtils.hentSelvbetjeningTokenContext()).thenReturn(new TokenContext("selvbetjening",));
+        setTokenContext("10000000000");
     }
 
     @Test
@@ -55,19 +63,22 @@ public class AltinnTilgangsstyringServiceTest {
 
     @Test
     public void hentOrganisasjoner__fnr_skal_ha_tilgang_pa_arbeidstrening() {
-        List<ArbeidsgiverOrganisasjon> organisasjoner =altinnTilgangsstyringService.hentOrganisasjoner(new Fnr("20000000000"));
+        List<ArbeidsgiverOrganisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(new Fnr("20000000000"));
         assertThat(organisasjoner).flatExtracting(ArbeidsgiverOrganisasjon.Fields.tilgangstyper).containsOnly(Tiltakstype.ARBEIDSTRENING);
     }
+
     @Test
     public void hentOrganisasjoner__fnr_skal_ha_tilgang_pa_midlertidig_lonnstilskudd() {
         List<ArbeidsgiverOrganisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(new Fnr("26000000000"));
         assertThat(organisasjoner).flatExtracting(ArbeidsgiverOrganisasjon.Fields.tilgangstyper).containsOnly(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
     }
+
     @Test
     public void hentOrganisasjoner__fnr_skal_ha_tilgang_pa_varig_lonnstilskudd() {
         List<ArbeidsgiverOrganisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(new Fnr("27000000000"));
         assertThat(organisasjoner).flatExtracting(ArbeidsgiverOrganisasjon.Fields.tilgangstyper).containsOnly(Tiltakstype.VARIG_LONNSTILSKUDD);
     }
+
     @Test
     public void hentOrganisasjoner__fnr_skal_ha_tilgang_pa_alle_tiltakstyper() {
         List<ArbeidsgiverOrganisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(new Fnr("10000000000"));
@@ -87,12 +98,12 @@ public class AltinnTilgangsstyringServiceTest {
         assertThat(organisasjoner).hasSize(0);
     }
 
-    @Test (expected = TiltaksgjennomforingException.class)
+    @Test(expected = TiltaksgjennomforingException.class)
     public void hentOrganisasjoner__ugyldig_fnr_skal_kaste_feil() {
         List<ArbeidsgiverOrganisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(TestData.enIdentifikator());
     }
 
-    @Test (expected = TiltaksgjennomforingException.class)
+    @Test(expected = TiltaksgjennomforingException.class)
     public void hentOrganisasjoner__feilkonfigurasjon_skal_kaste_feil() {
         AltinnTilgangsstyringProperties altinnTilgangsstyringProperties = new AltinnTilgangsstyringProperties();
         altinnTilgangsstyringProperties.setProxyUrl(URI.create("http://foobar").toString());
@@ -114,6 +125,15 @@ public class AltinnTilgangsstyringServiceTest {
                 featureToggleService
         ).hentOrganisasjoner(
                 TestData.enIdentifikator()
+        );
+    }
+
+    private void setTokenContext(String fnr) {
+        when(tokenUtils.hentSelvbetjeningTokenContext()).thenReturn(
+                new TokenContext(
+                        ISSUER_SELVBETJENING.issuerName,
+                        fnr +"<--FNR_i_klar_tekst_for_MockServer"
+                )
         );
     }
 }

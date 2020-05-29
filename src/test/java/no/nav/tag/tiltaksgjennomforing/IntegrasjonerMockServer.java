@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
@@ -15,7 +16,13 @@ public class IntegrasjonerMockServer implements DisposableBean {
 
     public IntegrasjonerMockServer() {
         log.info("Starter mockserver for eksterne integrasjoner.");
-        server = new WireMockServer(WireMockConfiguration.options().usingFilesUnderClasspath(".").port(8090));
+        server = new WireMockServer(
+                WireMockConfiguration.options()
+                        .usingFilesUnderClasspath(".")
+                        .port(8090)
+                        .notifier(new ConsoleNotifier(true)
+                        )
+        );
         server.start();
     }
 

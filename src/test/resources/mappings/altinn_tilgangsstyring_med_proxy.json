@@ -1,0 +1,232 @@
+{
+  "mappings": [
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPath": "/altinn-rettigheter-proxy/ekstern/altinn/api/serviceowner/reportees",
+        "headers": {
+          "Authorization": {
+            "contains": "10000000000"
+           }
+        },
+        "queryParameters": {
+          "$skip": {
+            "equalTo": "0"
+          },
+          "$top": {
+            "equalTo": "500"
+          },
+          "ForceEIAuthentication": {
+            "equalTo": ""
+          },
+          "serviceCode": {
+            "equalTo": "5332"
+          },
+          "serviceEdition": {
+            "equalTo": "1"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "[{\"Name\":\"Saltrød og Høneby\",\"Type\":\"Business\",\"OrganizationNumber\":\"999999999\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPath": "/altinn-rettigheter-proxy/ekstern/altinn/api/serviceowner/reportees",
+        "queryParameters": {
+
+          "serviceCode": {
+            "equalTo": "5332"
+          },
+          "serviceEdition": {
+            "equalTo": "1"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "[{\"Name\":\"SOPRA STERIA AS\",\"Type\":\"Business\",\"OrganizationNumber\":\"910909088\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}, {\"Name\":\"KIWI LØREN AS\",\"Type\":\"Business\",\"OrganizationNumber\":\"981121465\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPath": "/altinn-rettigheter-proxy/ekstern/altinn/api/serviceowner/reportees",
+        "queryParameters": {
+          "serviceCode": {
+            "equalTo": "5516"
+          },
+          "serviceEdition": {
+            "equalTo": "1"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "[{\"Name\":\"HUNNDALEN OG NEVERDAL\",\"Type\":\"Business\",\"OrganizationNumber\":\"910712306\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPath": "/altinn-rettigheter-proxy/ekstern/altinn/api/serviceowner/reportees",
+        "queryParameters": {
+          "serviceCode": {
+            "equalTo": "5516"
+          },
+          "serviceEdition": {
+            "equalTo": "2"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "[{\"Name\":\"BIRTAVARRE OG VÆRLANDET REGNSKAP\",\"Type\":\"Business\",\"OrganizationNumber\":\"910825607\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPath": "/altinn-rettigheter-proxy/ekstern/altinn/api/serviceowner/reportees",
+        "queryParameters": {
+          "serviceCode": {
+            "equalTo": "5332"
+          },
+          "serviceEdition": {
+            "equalTo": "1"
+          }
+        }
+      },
+      "response": {
+        "status": 500,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "statusMessage": "Internal Server Error: 500 UserID"
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPath": "/altinn-rettigheter-proxy/ekstern/altinn/api/serviceowner/reportees",
+        "queryParameters": {
+          "serviceCode": {
+            "equalTo": "5516"
+          },
+          "serviceEdition": {
+            "equalTo": "1"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "[{\"Name\":\"Bedriften Med Midlertidi Lts\",\"Type\":\"Business\",\"OrganizationNumber\":\"910712314\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPath": "/altinn-rettigheter-proxy/ekstern/altinn/api/serviceowner/reportees",
+        "queryParameters": {
+          "serviceCode": {
+            "equalTo": "5516"
+          },
+          "serviceEdition": {
+            "equalTo": "2"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "[{\"Name\":\"Bedriften Med Varig Lts\",\"Type\":\"Business\",\"OrganizationNumber\":\"910712306\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPath": "/altinn-rettigheter-proxy/ekstern/altinn/api/serviceowner/reportees",
+        "queryParameters": {
+          "serviceCode": {
+            "matches": "5516|5332"
+          },
+          "serviceEdition": {
+            "matches": "1|2"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "[{\"Name\":\"Bedriften Med Alle Rettigheter\",\"Type\":\"Business\",\"OrganizationNumber\":\"910825607\",\"OrganizationForm\":\"BEDR\",\"Status\":\"Active\"}]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 2,
+      "request": {
+        "method": "GET",
+        "urlPath": "/altinn-rettigheter-proxy/ekstern/altinn/api/serviceowner/reportees",
+        "queryParameters": {
+          "serviceCode": {
+            "matches": "5332|5516"
+          },
+          "serviceEdition": {
+            "matches": "1|2"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "[]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/altinn-rettigheter-proxy/ekstern/altinn/api/serviceowner/reportees",
+        "queryParameters": {
+        }
+      },
+      "response": {
+        "status": 400,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "statusMessage": "Invalid social security number"
+      }
+    }
+  ]
+}

@@ -50,8 +50,12 @@ public class AltinnTilgangsstyringService {
         restTemplate = new RestTemplate();
         altinnProxyFallbackUrl = altinnTilgangsstyringProperties.getProxyFallbackUrl();
         proxyUrl = altinnTilgangsstyringProperties.getProxyUrl();
+
         AltinnrettigheterProxyKlientConfig proxyKlientConfig = new AltinnrettigheterProxyKlientConfig(
-                new ProxyConfig("tiltaksgjennomforing-api", altinnTilgangsstyringProperties.getProxyUrl()),
+                new ProxyConfig(
+                        "tiltaksgjennomforing-api",
+                        proxyUrl
+                ),
                 new no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnConfig(
                         altinnProxyFallbackUrl,
                         altinnTilgangsstyringProperties.getAltinnHeader(),
@@ -73,17 +77,6 @@ public class AltinnTilgangsstyringService {
                 .toUri();
     }
 
-    /* private URI lagAltinnProxyUrl(Integer serviceCode, Integer serviceEdition) {
-         return UriComponentsBuilder.fromHttpUrl(altinnTilgangsstyringProperties.getProxyUrl())
-                 .queryParam("ForceEIAuthentication")
-                 .queryParam("serviceCode", serviceCode)
-                 .queryParam("serviceEdition", serviceEdition)
-                 .queryParam("$filter", "Type+ne+'Person'")
-                 .queryParam("$top", ALTINN_ORG_PAGE_SIZE)
-                 .build()
-                 .toUri();
-     }
- */
     public List<ArbeidsgiverOrganisasjon> hentOrganisasjoner(Identifikator fnr) {
         Map<BedriftNr, ArbeidsgiverOrganisasjon> map = new HashMap<>();
 
@@ -112,7 +105,7 @@ public class AltinnTilgangsstyringService {
 
         boolean brukProxy = featureToggleService.isEnabled("arbeidsgiver.tiltaksgjennomforing-api.bruk-altinn-proxy");
         HttpEntity<HttpHeaders> headers = brukProxy ? getAuthHeadersForInnloggetBruker() : getAuthHeadersForAltinn();
-        if (true) {
+        if (brukProxy) {
             Map<String, String> parametre = new ConcurrentHashMap<>();
             parametre.put("serviceCode", serviceCode.toString());
             parametre.put("serviceEdition", serviceEdition.toString());
@@ -121,7 +114,6 @@ public class AltinnTilgangsstyringService {
                     tokenUtils.hentSelvbetjeningTokenContext(),
                     new Subject(fnr.asString()),
                     parametre,
-                    altinnTilgangsstyringProperties.getProxyUrl(),
                     ALTINN_ORG_PAGE_SIZE
             );
             return reporteesFromAltinnViaProxy.toArray(new AltinnOrganisasjon[0]);
@@ -158,7 +150,6 @@ public class AltinnTilgangsstyringService {
             TokenContext tokenContext,
             Subject subject,
             Map<String, String> parametre,
-            String url,
             int pageSize
     ) {
         Set<AltinnOrganisasjon> response = new HashSet<>();
@@ -169,11 +160,17 @@ public class AltinnTilgangsstyringService {
             try {
                 parametre.put("$top", String.valueOf(pageSize));
                 parametre.put("$skip", String.valueOf(((pageNumber - 1) * pageSize)));
-                List<AltinnOrganisasjon> collection = mapTo(klient.hentOrganisasjoner(tokenContext, subject, parametre));
+                List<AltinnOrganisasjon> collection = mapTo(
+                        klient.hentOrganisasjoner(
+                                tokenContext,
+                                subject,
+                                parametre
+                        )
+                );
                 response.addAll(collection);
                 hasMore = collection.size() >= pageSize;
             } catch (RestClientException exception) {
-                log.error("Feil fra Altinn-proxy med spørring: " + url + " Exception: " + exception.getMessage());
+                log.error("Feil fra Altinn-proxy med spørring til Reportees, Exception: " + exception.getMessage());
                 throw new TiltaksgjennomforingException("Feil fra Altinn", exception);
             }
         }

@@ -31,7 +31,7 @@ tiltaksgjennomforing:
   altinn-tilgangsstyring:
     altinnHeader: testAltinnHeader
     APIGwHeader: testAPIGwHeader
-    proxyUrl: http://localhost:9090/altinn-rettigheter-proxy
+    proxyUrl: http://localhost:8090/altinn-rettigheter-proxy
     proxyFallbackUrl: http://localhost:8090/altinn-tilgangsstyring
     lts-midlertidig-service-code: 5516
     lts-midlertidig-service-edition: 1
