@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class IntegrasjonerMockServer implements DisposableBean {
     private final WireMockServer server;
+    private static final boolean VERBOSE_WIREMOCK = false;
+
 
     public IntegrasjonerMockServer() {
         log.info("Starter mockserver for eksterne integrasjoner.");
@@ -20,7 +22,7 @@ public class IntegrasjonerMockServer implements DisposableBean {
                 WireMockConfiguration.options()
                         .usingFilesUnderClasspath(".")
                         .port(8090)
-                        .notifier(new ConsoleNotifier(true)
+                        .notifier(new ConsoleNotifier(VERBOSE_WIREMOCK)
                         )
         );
         server.start();
