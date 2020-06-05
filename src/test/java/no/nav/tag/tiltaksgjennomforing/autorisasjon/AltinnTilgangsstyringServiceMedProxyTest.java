@@ -221,13 +221,6 @@ public class AltinnTilgangsstyringServiceMedProxyTest {
     public void hentOrganisasjoner__fallback_kall_til_Altinn_dersom_Proxy_er_unavailable() {
         Fnr innloggetBruker = new Fnr("20000000000");
         String userToken = opprettOgSetSelvbetjeningTokenContext(innloggetBruker);
-        altinnProxyOgAltinnMockServer.stubForAltinnProxy(
-                userToken,
-                "5332",
-                "1",
-                getAltinnOrganisasjon("SOPRA STERIA AS", "910909088"),
-                getAltinnOrganisasjon("KIWI LØREN AS", "981121465")
-        );
         altinnProxyOgAltinnMockServer.stubForAltinnProxyUnavailable(userToken, "5332", "1");
         altinnProxyOgAltinnMockServer.stubForAltinnProxyUnavailable(userToken, "5516", "1");
         altinnProxyOgAltinnMockServer.stubForAltinnProxyUnavailable(userToken, "5516", "2");
