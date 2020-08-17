@@ -17,6 +17,7 @@ public class ArbeidstreningStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.getOppgaver().clear();
         avtaleInnhold.getOppgaver().addAll(nyAvtale.getOppgaver());
         avtaleInnhold.getOppgaver().forEach(o -> o.setAvtaleInnhold(avtaleInnhold));
+        avtaleInnhold.setStillingstittel(nyAvtale.getStillingstittel());
         super.endre(nyAvtale);
     }
 
@@ -27,6 +28,7 @@ public class ArbeidstreningStrategy extends BaseAvtaleInnholdStrategy {
 
         return super.erAltUtfylt()
                 && !avtaleInnhold.getMaal().isEmpty()
-                && arbeidsoppgaverErUtfylt;
+                && arbeidsoppgaverErUtfylt
+                && erIkkeTomme(avtaleInnhold.getStillingstittel());
     }
 }

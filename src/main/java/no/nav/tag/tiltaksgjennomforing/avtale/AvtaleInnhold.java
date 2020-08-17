@@ -56,6 +56,7 @@ public class AvtaleInnhold {
     private Integer stillingprosent;
     private String journalpostId;
     private String arbeidsoppgaver;
+    private String stillingstittel;
 
     // Mentor
     private String mentorFornavn;
@@ -66,7 +67,6 @@ public class AvtaleInnhold {
 
     // Lønnstilskudd
     private String arbeidsgiverKontonummer;
-    private String stillingstittel;
     private Integer lonnstilskuddProsent;
     private Integer manedslonn;
     private BigDecimal feriepengesats;
