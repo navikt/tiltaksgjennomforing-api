@@ -63,5 +63,8 @@ public class TokenUtils {
                 .map(claims -> claims.getClaimSet());
     }
 
+    public String hentSelvbetjeningToken() {
+        return contextHolder.getOIDCValidationContext().getToken(ISSUER_SELVBETJENING.issuerName).getIdToken();
+    }
+
 }
-    
