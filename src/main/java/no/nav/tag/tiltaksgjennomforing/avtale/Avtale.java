@@ -53,6 +53,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     private Instant sistEndret;
     private boolean avbrutt;
+    private LocalDate avbruttDato;
+    private String avbruttGrunn;
 
     public Avtale(Fnr deltakerFnr, BedriftNr bedriftNr, NavIdent veilederNavIdent, Tiltakstype tiltakstype) {
         this.id = UUID.randomUUID();
@@ -224,14 +226,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     @JsonProperty
     public boolean kanAvbrytes() {
-        // Nå regner vi at veileder kan avbryte avtalen hvis veileder ikke har godkjent(kan også være at han kan
-        // avbryte kun de avtalene som ikke er godkjente av deltaker og AG),
-        return !erGodkjentAvVeileder() && !isAvbrutt();
+        return !isAvbrutt();
     }
 
-    public void avbryt(Veileder veileder) {
+    public void avbryt(Veileder veileder, AvbruttInfo avbruttInfo) {
         if (this.kanAvbrytes()) {
             this.setAvbrutt(true);
+            this.setAvbruttDato(avbruttInfo.getAvbruttDato());
+            this.setAvbruttGrunn(avbruttInfo.getAvbruttGrunn());
             sistEndretNå();
             registerEvent(new AvbruttAvVeileder(this, veileder.getIdentifikator()));
         }

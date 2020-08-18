@@ -5,6 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.AvtalensVarighetMerEnnMaksimal
 import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import org.assertj.core.api.SoftAssertions;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.time.Instant;
@@ -345,8 +346,10 @@ public class AvtaleTest {
     @Test
     public void status__avbrutt() {
         Avtale avtale = TestData.enAvtale();
-        avtale.avbryt(TestData.enVeileder(avtale));
+        avtale.avbryt(TestData.enVeileder(avtale), new AvbruttInfo(LocalDate.now(), "grunnen"));
         assertThat(avtale.status()).isEqualTo(Status.AVBRUTT.getStatusVerdi());
+        assertThat(avtale.getAvbruttDato()).isNotNull();
+        assertThat(avtale.getAvbruttGrunn()).isEqualTo("grunnen");
     }
 
     @Test
@@ -362,9 +365,9 @@ public class AvtaleTest {
     }
 
     @Test
-    public void godkjent_av_veileder_avtale_kan_ikke_avbrytes() {
+    public void godkjent_av_veileder_avtale_kan_avbrytes() {
         Avtale godkjentAvtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
-        assertThat(godkjentAvtale.kanAvbrytes()).isFalse();
+        assertThat(godkjentAvtale.kanAvbrytes()).isTrue();
     }
 
     @Test
@@ -494,7 +497,7 @@ public class AvtaleTest {
     public void sistEndretNå__kalles_ved_avbryt() {
         Instant førEndringen = Instant.now();
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.avbryt(TestData.enVeileder(avtale));
+        avtale.avbryt(TestData.enVeileder(avtale), new AvbruttInfo());
         assertThat(avtale.getSistEndret()).isAfter(førEndringen);
     }
 
