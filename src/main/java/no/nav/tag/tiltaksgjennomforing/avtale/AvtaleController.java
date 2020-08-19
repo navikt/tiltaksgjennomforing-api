@@ -161,6 +161,7 @@ public class AvtaleController {
     public void delAvtaleMedAvtalepart(@PathVariable("avtaleId") UUID avtaleId, @RequestBody Avtalerolle avtalerolle) {
         InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        innloggetNavAnsatt.sjekkLeseTilgang(avtale);
         Veileder veileder = innloggetNavAnsatt.avtalepart(avtale);
         veileder.delAvtaleMedAvtalepart(avtalerolle);
         avtaleRepository.save(avtale);

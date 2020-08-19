@@ -13,6 +13,10 @@ import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Arrays;
 import java.util.List;
 
@@ -116,6 +120,36 @@ public class InnloggetBrukerTest {
     @Test
     public void harTilgang__arbeidsgiver_skal_kunne_representere_bedrift_uten_Fnr() {
         ArbeidsgiverOrganisasjon organisasjon = new ArbeidsgiverOrganisasjon(bedriftNr, "Testbutikken");
+        organisasjon.getTilgangstyper().addAll(List.of(Tiltakstype.values()));
+        InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker = new InnloggetSelvbetjeningBruker(new Fnr("00000000009"), Arrays.asList(organisasjon));
+        assertThat(innloggetSelvbetjeningBruker.harLeseTilgang(avtale)).isTrue();
+    }
+
+    @Test
+    public void harTilgang__arbeidsgiver_skal_ikke_ha_tilgang_til_avbrutt_avtale_eldre_enn_12_uker() {
+        ArbeidsgiverOrganisasjon organisasjon = new ArbeidsgiverOrganisasjon(bedriftNr, "Testbutikken");
+        organisasjon.getTilgangstyper().addAll(List.of(Tiltakstype.values()));
+        InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker = new InnloggetSelvbetjeningBruker(new Fnr("00000000009"), Arrays.asList(organisasjon));
+        avtale.setAvbrutt(true);
+        avtale.setSistEndret(Instant.now().minus(84, ChronoUnit.DAYS));
+        assertThat(innloggetSelvbetjeningBruker.harLeseTilgang(avtale)).isFalse();
+    }
+
+    @Test
+    public void harTilgang__arbeidsgiver_skal_ikke_ha_tilgang_til_avsluttet_avtale_eldre_enn_12_uker() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        avtale.setSluttDato(LocalDate.now().minusDays(85));
+        ArbeidsgiverOrganisasjon organisasjon = new ArbeidsgiverOrganisasjon(avtale.getBedriftNr(), "Testbutikken");
+        organisasjon.getTilgangstyper().addAll(List.of(Tiltakstype.values()));
+        InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker = new InnloggetSelvbetjeningBruker(new Fnr("00000000009"), Arrays.asList(organisasjon));
+        assertThat(innloggetSelvbetjeningBruker.harLeseTilgang(avtale)).isFalse();
+    }
+
+    @Test
+    public void harTilgang__arbeidsgiver_skal_ha_tilgang_til_avsluttet_avtale_eldre_enn_12_uker_når_ikke_godkjent_av_veileder() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setSluttDato(LocalDate.now().minusDays(85));
+        ArbeidsgiverOrganisasjon organisasjon = new ArbeidsgiverOrganisasjon(avtale.getBedriftNr(), "Testbutikken");
         organisasjon.getTilgangstyper().addAll(List.of(Tiltakstype.values()));
         InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker = new InnloggetSelvbetjeningBruker(new Fnr("00000000009"), Arrays.asList(organisasjon));
         assertThat(innloggetSelvbetjeningBruker.harLeseTilgang(avtale)).isTrue();
