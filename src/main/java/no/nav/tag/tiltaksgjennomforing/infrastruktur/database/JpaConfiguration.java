@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.infrastruktur.database;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -11,9 +11,9 @@ import javax.persistence.EntityManagerFactory;
 
 @Configuration
 @EnableTransactionManagement
+@RequiredArgsConstructor
 public class JpaConfiguration {
-    @Autowired
-    private EntityManagerFactory entityManagerFactory;
+    private final EntityManagerFactory entityManagerFactory;
 
     @Bean
     public PlatformTransactionManager transactionManager() {

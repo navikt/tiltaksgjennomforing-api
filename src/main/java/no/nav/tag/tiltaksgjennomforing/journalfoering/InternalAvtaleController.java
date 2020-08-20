@@ -6,7 +6,6 @@ import no.nav.security.oidc.api.ProtectedWithClaims;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnholdRepository;
-import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +22,6 @@ import java.util.stream.Collectors;
 @ProtectedWithClaims(issuer = "system")
 public class InternalAvtaleController {
 
-    private final AvtaleRepository avtaleRepository;
     private final AvtaleInnholdRepository avtaleInnholdRepository;
     private final InnloggingService innloggingService;
 
