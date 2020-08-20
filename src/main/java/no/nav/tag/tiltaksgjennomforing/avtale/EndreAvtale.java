@@ -44,6 +44,8 @@ public class EndreAvtale {
     private Integer manedslonn;
     private BigDecimal feriepengesats;
     private BigDecimal arbeidsgiveravgift;
+    private Boolean harFamilietilknytning;
+    private String familietilknytningForklaring;
 
     // Mentorfelter
     private String mentorFornavn;

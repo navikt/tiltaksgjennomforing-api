@@ -156,6 +156,8 @@ public class TestData {
         endreAvtale.setMentorOppgaver("Mentoroppgaver");
         endreAvtale.setMentorAntallTimer(10);
         endreAvtale.setMentorTimelonn(1000);
+        endreAvtale.setHarFamilietilknytning(true);
+        endreAvtale.setFamilietilknytningForklaring("En middels god forklaring");
         return endreAvtale;
     }
 

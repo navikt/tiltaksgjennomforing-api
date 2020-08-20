@@ -53,6 +53,8 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setGodkjentPaVegneGrunn(godkjentPaVegneGrunn(avtaleInnhold.getGodkjentPaVegneGrunn()));
         avtaleTilJournalfoering.setGodkjentPaVegneAv(avtaleInnhold.isGodkjentPaVegneAv());
         avtaleTilJournalfoering.setVersjon(avtaleInnhold.getVersjon());
+        avtaleTilJournalfoering.setHarFamilietilknytning(avtaleInnhold.getHarFamilietilknytning());
+        avtaleTilJournalfoering.setFamilietilknytningForklaring((avtaleInnhold.getFamilietilknytningForklaring()));
         return avtaleTilJournalfoering;
     }
 
