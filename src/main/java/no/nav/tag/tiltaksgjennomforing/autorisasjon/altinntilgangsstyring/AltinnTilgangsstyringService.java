@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.ArbeidsgiverOrganisasjon;
+import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -31,6 +32,14 @@ public class AltinnTilgangsstyringService {
             TokenUtils tokenUtils,
             FeatureToggleService featureToggleService
     ) {
+        if (Utils.erNoenTomme(altinnTilgangsstyringProperties.getArbtreningServiceCode(),
+                altinnTilgangsstyringProperties.getArbtreningServiceEdition(),
+                altinnTilgangsstyringProperties.getLtsMidlertidigServiceCode(),
+                altinnTilgangsstyringProperties.getLtsMidlertidigServiceEdition(),
+                altinnTilgangsstyringProperties.getLtsVarigServiceCode(),
+                altinnTilgangsstyringProperties.getLtsVarigServiceEdition())) {
+            throw new TiltaksgjennomforingException("Altinn konfigurasjon ikke komplett");
+        }
         this.altinnTilgangsstyringProperties = altinnTilgangsstyringProperties;
         this.tokenUtils = tokenUtils;
         this.featureToggleService = featureToggleService;

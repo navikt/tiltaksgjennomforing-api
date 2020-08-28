@@ -26,6 +26,9 @@ public class Utils {
         }
         return true;
     }
+    public static boolean erNoenTomme(Object... objekter) {
+        return !erIkkeTomme(objekter);
+    }
 
     public static URI lagUri(String path) {
         return UriComponentsBuilder

@@ -96,6 +96,12 @@ public class AltinnTilgangsstyringServiceTest {
     public void hentOrganisasjoner__feilkonfigurasjon_skal_kaste_feil() {
         AltinnTilgangsstyringProperties altinnTilgangsstyringProperties = new AltinnTilgangsstyringProperties();
         altinnTilgangsstyringProperties.setUri(URI.create("http://foobar"));
-        List<ArbeidsgiverOrganisasjon> organisasjoner = new AltinnTilgangsstyringService(altinnTilgangsstyringProperties, tokenUtils, featureToggleService).hentOrganisasjoner(TestData.enIdentifikator());
+        new AltinnTilgangsstyringService(altinnTilgangsstyringProperties, tokenUtils, featureToggleService).hentOrganisasjoner(TestData.enIdentifikator());
+    }
+
+    @Test (expected = TiltaksgjennomforingException.class)
+    public void hentOrganisasjoner__manglende_serviceCode_skal_kaste_feil() {
+        AltinnTilgangsstyringProperties altinnTilgangsstyringProperties = new AltinnTilgangsstyringProperties();
+        new AltinnTilgangsstyringService(altinnTilgangsstyringProperties, tokenUtils, featureToggleService);
     }
 }

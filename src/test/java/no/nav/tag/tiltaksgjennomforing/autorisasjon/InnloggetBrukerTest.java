@@ -154,4 +154,13 @@ public class InnloggetBrukerTest {
         InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker = new InnloggetSelvbetjeningBruker(new Fnr("00000000009"), Arrays.asList(organisasjon));
         assertThat(innloggetSelvbetjeningBruker.harLeseTilgang(avtale)).isTrue();
     }
+
+    @Test
+    public void harTilgang__arbeidsgiver_med_arbeidsgivertilgang_skal_ikke_ha_lonnstilskuddtilgang() {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        ArbeidsgiverOrganisasjon organisasjon = new ArbeidsgiverOrganisasjon(avtale.getBedriftNr(), "Testbutikken");
+        organisasjon.getTilgangstyper().add(Tiltakstype.ARBEIDSTRENING);
+        InnloggetSelvbetjeningBruker innloggetSelvbetjeningBruker = new InnloggetSelvbetjeningBruker(new Fnr("00000000009"), Arrays.asList(organisasjon));
+        assertThat(innloggetSelvbetjeningBruker.harLeseTilgang(avtale)).isFalse();
+    }
 }
