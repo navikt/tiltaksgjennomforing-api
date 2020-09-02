@@ -15,6 +15,15 @@ public class AvtalePredicateTest {
         return null;
     }
 
+    private static Status annenStatusEnnPåAvtale(Avtale avtale) {
+        for (Status s : Status.values()) {
+            if (!s.equals(avtale.getTiltakstype())) {
+                return s;
+            }
+        }
+        return null;
+    }
+
     @Test
     void veileder_nav_ident_oppgitt() {
         Avtale avtale = TestData.enAvtale();
@@ -52,6 +61,22 @@ public class AvtalePredicateTest {
         Avtale avtale = TestData.enAvtale();
         AvtalePredicate query = new AvtalePredicate();
         query.setTiltakstype(annenTiltakstypeEnnPåAvtale(avtale));
+        assertThat(query.test(avtale)).isFalse();
+    }
+
+    @Test
+    void status_oppgitt() {
+        Avtale avtale = TestData.enAvtale();
+        AvtalePredicate query = new AvtalePredicate();
+        query.setStatus(avtale.statusSomEnum());
+        assertThat(query.test(avtale)).isTrue();
+    }
+
+    @Test
+    void status_annen_type() {
+        Avtale avtale = TestData.enAvtale();
+        AvtalePredicate query = new AvtalePredicate();
+        query.setStatus(annenStatusEnnPåAvtale(avtale));
         assertThat(query.test(avtale)).isFalse();
     }
 
