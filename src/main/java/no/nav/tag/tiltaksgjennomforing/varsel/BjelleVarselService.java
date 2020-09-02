@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -36,7 +38,7 @@ public class BjelleVarselService {
     }
 
     private Stream<BjelleVarsel> bjelleVarslerForInnloggetBruker(InnloggetBruker<?> innloggetBruker) {
-        return bjelleVarselRepository.findAll().stream()
+        return bjelleVarselRepository.findAllByTidspunktAfter(LocalDateTime.now().minusDays(1)).stream()
                 .filter(bjelleVarsel -> innloggetBruker.identifikatorer().contains(bjelleVarsel.getIdentifikator()))
                 .sorted(Comparator.comparing(BjelleVarsel::getTidspunkt).reversed());
     }
