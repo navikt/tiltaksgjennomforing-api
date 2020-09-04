@@ -14,7 +14,6 @@ class LonnstilskuddStrategyTest {
     @BeforeEach
     public void setUp(){
         AvtaleInnhold avtaleInnhold = new AvtaleInnhold();
-        avtaleInnhold.setAvtale(TestData.enAvtale(MIDLERTIDIG_LONNSTILSKUDD));
         strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, MIDLERTIDIG_LONNSTILSKUDD);
     }
 

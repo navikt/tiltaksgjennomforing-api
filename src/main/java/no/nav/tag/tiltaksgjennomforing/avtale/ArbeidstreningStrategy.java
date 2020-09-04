@@ -1,8 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import java.time.LocalDate;
+
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
 public class ArbeidstreningStrategy extends BaseAvtaleInnholdStrategy {
+
+    private static final int MAKSIMALT_ANTALL_MÅNEDER_VARIGHET = 18;
+
     public ArbeidstreningStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
     }
@@ -30,5 +35,10 @@ public class ArbeidstreningStrategy extends BaseAvtaleInnholdStrategy {
                 && !avtaleInnhold.getMaal().isEmpty()
                 && arbeidsoppgaverErUtfylt
                 && erIkkeTomme(avtaleInnhold.getStillingstittel());
+    }
+
+    @Override
+    protected void sjekkStartogSluttDato(LocalDate startDato, LocalDate sluttDato) {
+        super.startOgSluttDatoMedVarighetErSattRiktig(startDato, sluttDato, MAKSIMALT_ANTALL_MÅNEDER_VARIGHET);
     }
 }

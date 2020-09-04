@@ -1,5 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.exceptions.AvtalensVarighetMerEnnMaksimaltAntallMånederException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
+
+import java.time.LocalDate;
+
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
 public class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy {
@@ -11,7 +16,7 @@ public class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy {
 
     @Override
     public void endre(EndreAvtale nyAvtale) {
-        avtaleInnhold.sjekkStartOgSluttDato(nyAvtale.getStartDato(), nyAvtale.getSluttDato());
+        this.sjekkStartogSluttDato(nyAvtale.getStartDato(), nyAvtale.getSluttDato());
         avtaleInnhold.setDeltakerFornavn(nyAvtale.getDeltakerFornavn());
         avtaleInnhold.setDeltakerEtternavn(nyAvtale.getDeltakerEtternavn());
         avtaleInnhold.setDeltakerTlf(nyAvtale.getDeltakerTlf());
@@ -49,5 +54,28 @@ public class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy {
                 avtaleInnhold.getSluttDato(),
                 avtaleInnhold.getStillingprosent()
         );
+    }
+
+    protected void sjekkStartogSluttDato(LocalDate startDato, LocalDate sluttDato){
+        startOgSluttDatoErSattRiktig(startDato, sluttDato);
+    }
+
+    protected boolean startOgSluttDatoErSattRiktig(LocalDate startDato, LocalDate sluttDato) {
+        if (startDato != null && sluttDato != null) {
+            if (startDato.isAfter(sluttDato)) {
+                throw new StartDatoErEtterSluttDatoException();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    protected void startOgSluttDatoMedVarighetErSattRiktig(LocalDate startDato, LocalDate sluttDato, Integer varighet) {
+        if(!startOgSluttDatoErSattRiktig(startDato, sluttDato)){
+            return;
+        }
+        if (sluttDato.isAfter(startDato.plusMonths(varighet))) {
+            throw new AvtalensVarighetMerEnnMaksimaltAntallMånederException(varighet);
+        }
     }
 }
