@@ -4,7 +4,7 @@ import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import no.nav.security.oidc.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetNavAnsatt;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
@@ -17,10 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.time.Instant;
-import java.util.Comparator;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
 
@@ -38,7 +35,7 @@ public class AvtaleController {
     private final PersondataService persondataService;
 
     @GetMapping("/{avtaleId}")
-    public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Optional<Avtalerolle> innloggetPart) {
+    public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtale avtale = avtaleRepository.findById(id)
                 .orElseThrow(RessursFinnesIkkeException::new);
         InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
@@ -47,22 +44,18 @@ public class AvtaleController {
     }
 
     @GetMapping
-    public Iterable<Avtale> hentAlleAvtalerInnloggetBrukerHarTilgangTil(AvtalePredicate queryParametre, @CookieValue("innlogget-part") Optional<Avtalerolle> innloggetPart) {
+    public Iterable<Avtale> hentAlleAvtalerInnloggetBrukerHarTilgangTil(AvtalePredicate queryParametre, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         InnloggetBruker<?> bruker = innloggingService.hentInnloggetBruker(innloggetPart);
-        return avtaleRepository.findAll().stream()
-                .filter(queryParametre)
-                .filter(bruker::harLeseTilgang)
-                .sorted(Comparator.nullsLast(Comparator.comparing(Avtale::getSistEndret).reversed()))
-                .collect(Collectors.toList());
+        return bruker.hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre);
     }
 
     @PostMapping
     @Transactional
     public ResponseEntity<?> opprettAvtale(@RequestBody OpprettAvtale opprettAvtale) {
-        InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
-        tilgangskontrollService.sjekkSkrivetilgangTilKandidat(innloggetNavAnsatt, opprettAvtale.getDeltakerFnr());
+        InnloggetVeileder innloggetVeileder = innloggingService.hentInnloggetVeileder();
+        tilgangskontrollService.sjekkSkrivetilgangTilKandidat(innloggetVeileder, opprettAvtale.getDeltakerFnr());
         persondataService.sjekkGradering(opprettAvtale.getDeltakerFnr());
-        Avtale avtale = innloggetNavAnsatt.opprettAvtale(opprettAvtale);
+        Avtale avtale = innloggetVeileder.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
         avtale.leggTilDeltakerNavn(persondataService.hentNavn(avtale.getDeltakerFnr()));
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
@@ -71,7 +64,7 @@ public class AvtaleController {
     }
 
     @GetMapping("/{avtaleId}/status-detaljer")
-    public AvtaleStatusDetaljer hentAvtaleStatusDetaljer(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Optional<Avtalerolle> innloggetPart) {
+    public AvtaleStatusDetaljer hentAvtaleStatusDetaljer(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         Avtalepart avtalepart = innloggetBruker.avtalepart(avtale);
@@ -82,7 +75,7 @@ public class AvtaleController {
     @Transactional
     public ResponseEntity<?> endreAvtale(@PathVariable("avtaleId") UUID avtaleId,
                                          @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
-                                         @RequestBody EndreAvtale endreAvtale, @CookieValue("innlogget-part") Optional<Avtalerolle> innloggetPart) {
+                                         @RequestBody EndreAvtale endreAvtale, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
@@ -94,7 +87,7 @@ public class AvtaleController {
     }
 
     @GetMapping("/{avtaleId}/rolle")
-    public Avtalerolle hentRolle(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Optional<Avtalerolle> innloggetPart) {
+    public Avtalerolle hentRolle(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkLeseTilgang(avtale);
@@ -104,7 +97,7 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/opphev-godkjenninger")
     @Transactional
-    public void opphevGodkjenninger(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Optional<Avtalerolle> innloggetPart) {
+    public void opphevGodkjenninger(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
@@ -115,7 +108,7 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/godkjenn")
     @Transactional
-    public void godkjenn(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret, @CookieValue("innlogget-part") Optional<Avtalerolle> innloggetPart) {
+    public void godkjenn(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
@@ -126,7 +119,7 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/godkjenn-paa-vegne-av")
     @Transactional
-    public void godkjennPaVegneAv(@PathVariable("avtaleId") UUID avtaleId, @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn, @CookieValue("innlogget-part") Optional<Avtalerolle> innloggetPart) {
+    public void godkjennPaVegneAv(@PathVariable("avtaleId") UUID avtaleId, @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
@@ -137,17 +130,17 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/avbryt")
     public void avbryt(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret, @RequestBody AvbruttInfo avbruttInfo) {
-        InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
+        InnloggetVeileder innloggetVeileder = innloggingService.hentInnloggetVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        innloggetNavAnsatt.sjekkSkriveTilgang(avtale);
-        Veileder veileder = innloggetNavAnsatt.avtalepart(avtale);
+        innloggetVeileder.sjekkSkriveTilgang(avtale);
+        Veileder veileder = innloggetVeileder.avtalepart(avtale);
         veileder.avbrytAvtale(sistEndret, avbruttInfo);
         avtaleRepository.save(avtale);
     }
 
     @PostMapping("/{avtaleId}/laas-opp")
     @Transactional
-    public void laasOpp(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Optional<Avtalerolle> innloggetPart) {
+    public void laasOpp(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
@@ -159,10 +152,10 @@ public class AvtaleController {
     @PostMapping("/{avtaleId}/del-med-avtalepart")
     @Transactional
     public void delAvtaleMedAvtalepart(@PathVariable("avtaleId") UUID avtaleId, @RequestBody Avtalerolle avtalerolle) {
-        InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
+        InnloggetVeileder innloggetVeileder = innloggingService.hentInnloggetVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        innloggetNavAnsatt.sjekkLeseTilgang(avtale);
-        Veileder veileder = innloggetNavAnsatt.avtalepart(avtale);
+        innloggetVeileder.sjekkLeseTilgang(avtale);
+        Veileder veileder = innloggetVeileder.avtalepart(avtale);
         veileder.delAvtaleMedAvtalepart(avtalerolle);
         avtaleRepository.save(avtale);
     }

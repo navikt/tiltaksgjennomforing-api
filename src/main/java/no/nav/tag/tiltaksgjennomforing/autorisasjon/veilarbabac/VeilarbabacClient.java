@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac;
 
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetNavAnsatt;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.restservicecache.CacheConfiguration;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
@@ -35,7 +35,7 @@ public class VeilarbabacClient {
     }
 
     @Cacheable(CacheConfiguration.ABAC_CACHE)
-    public boolean sjekkTilgang(InnloggetNavAnsatt veileder, String fnr, TilgangskontrollAction action) {
+    public boolean sjekkTilgang(InnloggetVeileder veileder, String fnr, TilgangskontrollAction action) {
         String response;
         try {
             response = hentTilgang(veileder, fnr, action);
@@ -53,7 +53,7 @@ public class VeilarbabacClient {
         throw new TilgangskontrollException("Ukjent respons fra veilarbabac: " + response);
     }
 
-    private String hentTilgang(InnloggetNavAnsatt veileder, String fnr, TilgangskontrollAction action) {
+    private String hentTilgang(InnloggetVeileder veileder, String fnr, TilgangskontrollAction action) {
         String uriString = UriComponentsBuilder.fromHttpUrl(veilarbabacUrl)
                 .path("/person")
                 .queryParam("fnr", fnr)
