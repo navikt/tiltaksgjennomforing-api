@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 import no.nav.tag.tiltaksgjennomforing.*;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.ArbeidsgiverOrganisasjon;
-import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 
 import org.junit.Before;
@@ -16,7 +15,6 @@ import static org.mockito.Mockito.*;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,21 +37,21 @@ public class InnloggetBrukerTest {
 
     @Test
     public void deltakerKnyttetTilAvtaleSkalHaDeltakerRolle() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         InnloggetSelvbetjeningBruker selvbetjeningBruker = TestData.innloggetSelvbetjeningBrukerUtenOrganisasjon(TestData.enDeltaker(avtale));
         assertThat(selvbetjeningBruker.avtalepart(avtale)).isInstanceOf(Deltaker.class);
     }
 
     @Test
     public void arbeidsgiverKnyttetTilAvtaleSkalHaArbeidsgiverRolle() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         InnloggetSelvbetjeningBruker selvbetjeningBruker = TestData.innloggetSelvbetjeningBrukerMedOrganisasjon(TestData.enArbeidsgiver(avtale));
         assertThat(selvbetjeningBruker.avtalepart(avtale)).isInstanceOf(Arbeidsgiver.class);
     }
 
     @Test
     public void veilederKnyttetTilAvtaleSkalHaVeilederRolle() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         InnloggetNavAnsatt navAnsatt = new InnloggetNavAnsatt(avtale.getVeilederNavIdent(), tilgangskontrollService);
         assertThat(navAnsatt.avtalepart(avtale)).isInstanceOf(Veileder.class);
     }

@@ -34,7 +34,7 @@ public class SmsVarselRepositoryTest {
 
     @Before
     public void setUp() {
-        avtale = TestData.enAvtale();
+        avtale = TestData.enArbeidstreningAvtale();
         avtaleRepository.save(avtale);
         varslbarHendelse = TestData.enHendelse(avtale);
         varslbarHendelseRepository.save(varslbarHendelse);

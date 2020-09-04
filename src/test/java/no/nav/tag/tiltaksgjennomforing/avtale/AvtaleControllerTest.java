@@ -27,7 +27,7 @@ import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static no.nav.tag.tiltaksgjennomforing.TestData.enAvtale;
+import static no.nav.tag.tiltaksgjennomforing.TestData.enArbeidstreningAvtale;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -68,7 +68,7 @@ public class AvtaleControllerTest {
 
     @Test
     public void hentSkalReturnereRiktigAvtale() {
-        Avtale avtale = enAvtale();
+        Avtale avtale = enArbeidstreningAvtale();
         InnloggetNavAnsatt innloggetNavAnsatt = innloggetNavAnsatt(TestData.enVeileder(avtale), tilgangskontrollService);
         vaerInnloggetSom(innloggetNavAnsatt);
         when(tilgangskontrollService.harLesetilgangTilKandidat(eq(innloggetNavAnsatt), any(Fnr.class))).thenReturn(true);
@@ -83,7 +83,7 @@ public class AvtaleControllerTest {
 
     @Test(expected = RessursFinnesIkkeException.class)
     public void hentSkalKasteResourceNotFoundExceptionHvisAvtaleIkkeFins() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         vaerInnloggetSom(innloggetNavAnsatt(TestData.enVeileder(avtale), tilgangskontrollService));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.empty());
         avtaleController.hent(avtale.getId(), Optional.empty());
@@ -91,7 +91,7 @@ public class AvtaleControllerTest {
 
     @Test(expected = TilgangskontrollException.class)
     public void hentSkalKastTilgangskontrollExceptionHvisInnloggetNavAnsattIkkeHarTilgang() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         vaerInnloggetSom(new InnloggetNavAnsatt(new NavIdent("Z333333"), tilgangskontrollService));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         avtaleController.hent(avtale.getId(), Optional.empty());
@@ -141,7 +141,7 @@ public class AvtaleControllerTest {
 
     @Test(expected = TilgangskontrollException.class)
     public void hentSkalKastTilgangskontrollExceptionHvisInnloggetSelvbetjeningBrukerIkkeHarTilgang() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         vaerInnloggetSom(new InnloggetSelvbetjeningBruker(new Fnr("55555566666"), emptyList()));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         avtaleController.hent(avtale.getId(), Optional.empty());
@@ -149,7 +149,7 @@ public class AvtaleControllerTest {
 
     @Test
     public void opprettAvtaleSkalReturnereCreatedOgOpprettetLokasjon() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         vaerInnloggetSom(innloggetNavAnsatt(TestData.enVeileder(avtale), tilgangskontrollService));
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
         when(eregService.hentVirksomhet(avtale.getBedriftNr())).thenReturn(new Organisasjon(avtale.getBedriftNr(), avtale.getBedriftNavn()));
@@ -161,7 +161,7 @@ public class AvtaleControllerTest {
 
     @Test(expected = RessursFinnesIkkeException.class)
     public void endreAvtaleSkalReturnereNotFoundHvisDenIkkeFins() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         vaerInnloggetSom(innloggetNavAnsatt(TestData.enVeileder(avtale), tilgangskontrollService));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.empty());
         avtaleController.endreAvtale(avtale.getId(), avtale.getSistEndret(), TestData.ingenEndring(), Optional.empty());
@@ -169,7 +169,7 @@ public class AvtaleControllerTest {
 
     @Test
     public void endreAvtaleSkalReturnereOkHvisInnloggetPersonErVeileder() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         vaerInnloggetSom(innloggetNavAnsatt(TestData.enVeileder(avtale), tilgangskontrollService));
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(any(InnloggetNavAnsatt.class), any(Fnr.class))).thenReturn(true);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
@@ -180,7 +180,7 @@ public class AvtaleControllerTest {
 
     @Test(expected = TilgangskontrollException.class)
     public void endreAvtaleSkalReturnereForbiddenHvisInnloggetPersonIkkeHarTilgang() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         vaerInnloggetSom(TestData.enSelvbetjeningBruker());
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         avtaleController.endreAvtale(avtale.getId(), avtale.getSistEndret(), TestData.ingenEndring(), Optional.empty());
@@ -188,7 +188,7 @@ public class AvtaleControllerTest {
 
     @Test
     public void hentAlleAvtalerInnloggetBrukerHarTilgangTilSkalIkkeReturnereAvtalerManIkkeHarTilgangTil() {
-        Avtale avtaleMedTilgang = TestData.enAvtale();
+        Avtale avtaleMedTilgang = TestData.enArbeidstreningAvtale();
         Avtale avtaleUtenTilgang = AvtaleFactory.nyAvtale(new OpprettAvtale(new Fnr("89898989898"), new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), new NavIdent("X643564"));
         InnloggetSelvbetjeningBruker selvbetjeningBruker = TestData.innloggetSelvbetjeningBrukerUtenOrganisasjon(TestData.enDeltaker(avtaleMedTilgang));
         vaerInnloggetSom(selvbetjeningBruker);
@@ -207,14 +207,14 @@ public class AvtaleControllerTest {
 
     @Test(expected = RessursFinnesIkkeException.class)
     public void hentRolleSkalKasteResourceNotFoundExceptionHvisAvtaleIkkeFins() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.empty());
         avtaleController.hentRolle(avtale.getId(), Optional.empty());
     }
 
     @Test(expected = TilgangskontrollException.class)
     public void hentRolleSkalReturnereForbiddenHvisIkkeTilknyttetAvtale() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         vaerInnloggetSom(TestData.enNavAnsatt());
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         avtaleController.hentRolle(avtale.getId(), Optional.empty());
@@ -222,7 +222,7 @@ public class AvtaleControllerTest {
 
     @Test
     public void hentRolleSkalReturnereOkMedEnRolleHvisInnloggetBrukerErTilknyttetAvtale() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         InnloggetSelvbetjeningBruker selvbetjeningBruker = TestData.innloggetSelvbetjeningBrukerUtenOrganisasjon(TestData.enDeltaker(avtale));
         vaerInnloggetSom(selvbetjeningBruker);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
@@ -250,7 +250,7 @@ public class AvtaleControllerTest {
     //Tester er avhengig av tekster i AvtalePart class og subclasses
     @Test
     public void avtaleStatus__veileder_maa_fylleut_avtale_foer_godkjenning() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         InnloggetBruker enNavAnsatt = TestData.enNavAnsatt();
         vaerInnloggetSom(enNavAnsatt);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
@@ -262,7 +262,7 @@ public class AvtaleControllerTest {
 
     @Test
     public void avtaleStatus__arbeidsgiver_maa_fylleut_avtale_foer_godkjenning() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         InnloggetBruker innloggetArbeidsgiver = TestData.innloggetSelvbetjeningBrukerMedOrganisasjon(TestData.enArbeidsgiver(avtale));
         vaerInnloggetSom(innloggetArbeidsgiver);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
@@ -276,7 +276,7 @@ public class AvtaleControllerTest {
 
     @Test
     public void avtaleStatus__deltaker_maa_be_om_utfylling_av_avtale_foer_godkjenning() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         InnloggetBruker innloggetDeltaker = TestData.innloggetSelvbetjeningBrukerUtenOrganisasjon(TestData.enDeltaker(avtale));
         vaerInnloggetSom(innloggetDeltaker);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));

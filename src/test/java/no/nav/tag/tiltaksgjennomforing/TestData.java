@@ -21,14 +21,19 @@ import static java.util.Collections.emptyList;
 import static org.mockito.Mockito.mock;
 
 public class TestData {
-    public static Avtale enAvtale() {
+    public static Avtale enAvtale(Tiltakstype tiltakstype) {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        return AvtaleFactory.nyAvtale(lagOpprettAvtale(), veilderNavIdent);
+        return AvtaleFactory.nyAvtale(lagOpprettAvtale(tiltakstype), veilderNavIdent);
+    }
+
+    public static Avtale enArbeidstreningAvtale() {
+        NavIdent veilderNavIdent = new NavIdent("Z123456");
+        return AvtaleFactory.nyAvtale(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING), veilderNavIdent);
     }
 
     public static Avtale enAvtaleMedAltUtfylt() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        Avtale avtale = AvtaleFactory.nyAvtale(lagOpprettAvtale(), veilderNavIdent);
+        Avtale avtale = AvtaleFactory.nyAvtale(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING), veilderNavIdent);
         avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER);
         return avtale;
     }
@@ -89,10 +94,10 @@ public class TestData {
         return avtale;
     }
 
-    private static OpprettAvtale lagOpprettAvtale() {
+    private static OpprettAvtale lagOpprettAvtale(Tiltakstype tiltakstype) {
         Fnr deltakerFnr = new Fnr("88888899999");
         BedriftNr bedriftNr = new BedriftNr("999999999");
-        return new OpprettAvtale(deltakerFnr, bedriftNr, Tiltakstype.ARBEIDSTRENING);
+        return new OpprettAvtale(deltakerFnr, bedriftNr, tiltakstype);
     }
 
     public static EndreAvtale ingenEndring() {
@@ -162,7 +167,7 @@ public class TestData {
     }
 
     static Deltaker enDeltaker() {
-        return new Deltaker(new Fnr("01234567890"), enAvtale());
+        return new Deltaker(new Fnr("01234567890"), enArbeidstreningAvtale());
     }
 
     public static Deltaker enDeltaker(Avtale avtale) {
@@ -178,7 +183,7 @@ public class TestData {
     }
 
     public static Arbeidsgiver enArbeidsgiver() {
-        return new Arbeidsgiver(new Fnr("12345678901"), enAvtale());
+        return new Arbeidsgiver(new Fnr("12345678901"), enArbeidstreningAvtale());
     }
 
     public static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
@@ -190,7 +195,7 @@ public class TestData {
     }
 
     public static Veileder enVeileder() {
-        return new Veileder(new NavIdent("X123456"), enAvtale());
+        return new Veileder(new NavIdent("X123456"), enArbeidstreningAvtale());
     }
 
     public static Veileder enVeileder(Avtale avtale) {

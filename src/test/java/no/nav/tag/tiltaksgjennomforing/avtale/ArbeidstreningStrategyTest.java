@@ -13,6 +13,7 @@ class ArbeidstreningStrategyTest {
     @Test
     void test_at_felter_relevante_i_arbeidstrening_kan_endres() {
         AvtaleInnhold avtaleInnhold = new AvtaleInnhold();
+        avtaleInnhold.setAvtale(TestData.enAvtaleMedAltUtfylt());
         AvtaleInnholdStrategy strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, Tiltakstype.ARBEIDSTRENING);
 
         strategy.endre(TestData.endringPåAlleFelter());
@@ -48,6 +49,7 @@ class ArbeidstreningStrategyTest {
     @Test
     void test_at_alt_er_utfylt_uten_arbeidsoppgaver() {
         AvtaleInnhold avtaleInnhold = new AvtaleInnhold();
+        avtaleInnhold.setAvtale(TestData.enAvtaleMedAltUtfylt());
         AvtaleInnholdStrategy strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, Tiltakstype.ARBEIDSTRENING);
 
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
@@ -61,6 +63,7 @@ class ArbeidstreningStrategyTest {
     @Test
     void test_at_alt_er_utfylt_uten_oppgaver() {
         AvtaleInnhold avtaleInnhold = new AvtaleInnhold();
+        avtaleInnhold.setAvtale(TestData.enAvtaleMedAltUtfylt());
         AvtaleInnholdStrategy strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, Tiltakstype.ARBEIDSTRENING);
 
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
@@ -73,6 +76,7 @@ class ArbeidstreningStrategyTest {
     @Test
     void test_at_ikke_alt_er_utfylt_uten_oppgaver_eller_arbeidsoppgaver() {
         AvtaleInnhold avtaleInnhold = new AvtaleInnhold();
+        avtaleInnhold.setAvtale(TestData.enAvtaleMedAltUtfylt());
         AvtaleInnholdStrategy strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, Tiltakstype.ARBEIDSTRENING);
 
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();

@@ -126,9 +126,14 @@ public class AvtaleInnhold {
         if (startDato != null && sluttDato != null) {
             if (startDato.isAfter(sluttDato)) {
                 throw new StartDatoErEtterSluttDatoException();
-            } else if (sluttDato.isAfter(startDato.plusMonths(MAKSIMALT_ANTALL_MÅNEDER_VARIGHET))) {
-                throw new AvtalensVarighetMerEnnMaksimaltAntallMånederException(MAKSIMALT_ANTALL_MÅNEDER_VARIGHET);
             }
+            this.avtale.getTiltakstype().varighet().ifPresent(varighet -> sjekkVarighet(startDato, sluttDato, varighet));
+        }
+    }
+
+    private void sjekkVarighet(LocalDate startDato, LocalDate sluttDato, Integer varighet) {
+        if (sluttDato.isAfter(startDato.plusMonths(varighet))) {
+            throw new AvtalensVarighetMerEnnMaksimaltAntallMånederException(varighet);
         }
     }
 

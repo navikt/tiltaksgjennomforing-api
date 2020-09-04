@@ -25,7 +25,7 @@ public class VarslbarHendelseRepositoryTest {
 
     @Test
     public void save__lagrer_alle_felter() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         avtaleRepository.save(avtale);
         VarslbarHendelse varslbarHendelse = TestData.enHendelse(avtale);
         VarslbarHendelse lagretVarslbarHendelse = varslbarHendelseRepository.save(varslbarHendelse);
