@@ -25,7 +25,7 @@ public class LagBjelleVarselFraVarslbarHendelseTest {
 
     @BeforeAll
     static void setUp() {
-        avtale = TestData.enAvtale();
+        avtale = TestData.enArbeidstreningAvtale();
         deltaker = avtale.getDeltakerFnr();
         arbeidsgiver = avtale.getBedriftNr();
         veileder = avtale.getVeilederNavIdent();
@@ -35,7 +35,7 @@ public class LagBjelleVarselFraVarslbarHendelseTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("provider")
     void testLagBjelleVarsler(VarslbarHendelseType hendelse, GamleVerdier gamleVerdier, List<Identifikator> skalVarsles) {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         List<BjelleVarsel> bjelleVarsler = LagBjelleVarselFraVarslbarHendelse.lagBjelleVarsler(avtale, VarslbarHendelse.nyHendelse(avtale, hendelse), gamleVerdier);
         assertThat(bjelleVarsler).extracting("identifikator").containsOnlyElementsOf(skalVarsles);
         if (!bjelleVarsler.isEmpty()) {

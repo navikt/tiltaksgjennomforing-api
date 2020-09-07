@@ -3,8 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.experimental.FieldNameConstants;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AvtalensVarighetMerEnnMaksimaltAntallMånederException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -25,7 +23,6 @@ import java.util.stream.Collectors;
 // Hibernate
 @Entity
 public class AvtaleInnhold {
-    private static final int MAKSIMALT_ANTALL_MÅNEDER_VARIGHET = 18;
 
     @Id
     @JsonIgnore
@@ -120,16 +117,6 @@ public class AvtaleInnhold {
 
     private List<Oppgave> kopiAvOppgaver() {
         return oppgaver.stream().map(o -> new Oppgave(o)).collect(Collectors.toList());
-    }
-
-    void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
-        if (startDato != null && sluttDato != null) {
-            if (startDato.isAfter(sluttDato)) {
-                throw new StartDatoErEtterSluttDatoException();
-            } else if (sluttDato.isAfter(startDato.plusMonths(MAKSIMALT_ANTALL_MÅNEDER_VARIGHET))) {
-                throw new AvtalensVarighetMerEnnMaksimaltAntallMånederException(MAKSIMALT_ANTALL_MÅNEDER_VARIGHET);
-            }
-        }
     }
 
     void endreAvtale(EndreAvtale nyAvtale) {

@@ -5,7 +5,6 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.AvtalensVarighetMerEnnMaksimal
 import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import org.assertj.core.api.SoftAssertions;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.time.Instant;
@@ -13,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AvtaleTest {
@@ -69,25 +69,25 @@ public class AvtaleTest {
 
     @Test(expected = SamtidigeEndringerException.class)
     public void sjekkVersjon__ugyldig_versjon() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         avtale.sjekkSistEndret(Instant.MIN);
     }
 
     @Test(expected = SamtidigeEndringerException.class)
     public void sjekkVersjon__null() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         avtale.sjekkSistEndret(null);
     }
 
     @Test
     public void sjekkVersjon__gyldig_versjon() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         avtale.sjekkSistEndret(Instant.now());
     }
 
     @Test
     public void endreAvtaleSkalOppdatereRiktigeFelt() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         EndreAvtale endreAvtale = TestData.endringPåAlleArbeidstreningFelter();
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
 
@@ -115,7 +115,7 @@ public class AvtaleTest {
 
     @Test(expected = TiltaksgjennomforingException.class)
     public void endreAvtale__for_langt_maal_skal_feile() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         Maal etMaal = TestData.etMaal();
         etMaal.setBeskrivelse("Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.");
         EndreAvtale endreAvtale = new EndreAvtale();
@@ -125,7 +125,7 @@ public class AvtaleTest {
 
     @Test(expected = TiltaksgjennomforingException.class)
     public void endreAvtale__for_lang_oppgave_beskrivelse_skal_feile() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         Oppgave enOppgave = TestData.enOppgave();
         enOppgave.setBeskrivelse("Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.");
         EndreAvtale endreAvtale = new EndreAvtale();
@@ -135,7 +135,7 @@ public class AvtaleTest {
 
     @Test
     public void endreAvtale__maks_lengde_skal_fungere() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         Oppgave enOppgave = TestData.enOppgave();
         enOppgave.setBeskrivelse("Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er");
         EndreAvtale endreAvtale = new EndreAvtale();
@@ -145,7 +145,7 @@ public class AvtaleTest {
 
     @Test
     public void endreAvtale__startdato_satt_men_ikke_sluttdato() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         EndreAvtale endreAvtale = new EndreAvtale();
         LocalDate startDato = LocalDate.now();
         endreAvtale.setStartDato(startDato);
@@ -155,7 +155,7 @@ public class AvtaleTest {
 
     @Test
     public void endreAvtale__sluttdato_satt_men_ikke_startdato() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         EndreAvtale endreAvtale = new EndreAvtale();
         LocalDate sluttDato = LocalDate.now();
         endreAvtale.setSluttDato(sluttDato);
@@ -165,7 +165,7 @@ public class AvtaleTest {
 
     @Test
     public void endreAvtale__startdato_og_sluttdato_satt_18mnd() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         EndreAvtale endreAvtale = new EndreAvtale();
         LocalDate startDato = LocalDate.now();
         LocalDate sluttDato = startDato.plusMonths(18);
@@ -178,7 +178,7 @@ public class AvtaleTest {
 
     @Test(expected = AvtalensVarighetMerEnnMaksimaltAntallMånederException.class)
     public void endreAvtale__startdato_og_sluttdato_satt_over_18mnd() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         EndreAvtale endreAvtale = new EndreAvtale();
         LocalDate startDato = LocalDate.now();
         LocalDate sluttDato = startDato.plusMonths(18).plusDays(1);
@@ -189,7 +189,7 @@ public class AvtaleTest {
 
     @Test(expected = StartDatoErEtterSluttDatoException.class)
     public void endreAvtale__startdato_er_etter_sluttdato() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         EndreAvtale endreAvtale = new EndreAvtale();
         LocalDate startDato = LocalDate.now();
         LocalDate sluttDato = startDato.minusDays(1);
@@ -200,7 +200,7 @@ public class AvtaleTest {
 
     @Test
     public void endreAvtaleSkalIkkeEndreGodkjenninger() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         boolean deltakerGodkjenningFoerEndring = avtale.erGodkjentAvDeltaker();
         boolean arbeidsgiverGodkjenningFoerEndring = avtale.erGodkjentAvArbeidsgiver();
         boolean veilederGodkjenningFoerEndring = avtale.erGodkjentAvVeileder();
@@ -216,7 +216,7 @@ public class AvtaleTest {
 
     @Test
     public void endreAvtaleSkalInkrementereVersjon() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         Instant førstEndret = avtale.getSistEndret();
         avtale.endreAvtale(førstEndret, TestData.ingenEndring(), Avtalerolle.VEILEDER);
         assertThat(avtale.getSistEndret()).isAfter(førstEndret);
@@ -224,7 +224,7 @@ public class AvtaleTest {
 
     @Test(expected = TiltaksgjennomforingException.class)
     public void kanIkkeGodkjennesNaarIkkeAltErUtfylt() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         avtale.sjekkOmKanGodkjennes();
     }
 
@@ -247,13 +247,13 @@ public class AvtaleTest {
 
     @Test
     public void status__ny_avtale() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         assertThat(avtale.status()).isEqualTo(Status.PÅBEGYNT.getStatusVerdi());
     }
 
     @Test
     public void status__null_startdato() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         avtale.setStartDato(null);
         avtale.setSluttDato(null);
         assertThat(avtale.status()).isEqualTo(Status.PÅBEGYNT.getStatusVerdi());
@@ -261,7 +261,7 @@ public class AvtaleTest {
 
     @Test
     public void status__noe_fylt_ut() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         avtale.setStartDato(LocalDate.now().plusDays(5));
         avtale.setSluttDato(avtale.getStartDato().plusMonths(3));
         avtale.setBedriftNavn("testbedriftsnavn");
@@ -345,7 +345,7 @@ public class AvtaleTest {
 
     @Test
     public void status__avbrutt() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         avtale.avbryt(TestData.enVeileder(avtale), new AvbruttInfo(LocalDate.now(), "grunnen"));
         assertThat(avtale.status()).isEqualTo(Status.AVBRUTT.getStatusVerdi());
         assertThat(avtale.getAvbruttDato()).isNotNull();
@@ -354,7 +354,7 @@ public class AvtaleTest {
 
     @Test
     public void tom_avtale_kan_avbrytes() {
-        Avtale tomAvtale = TestData.enAvtale();
+        Avtale tomAvtale = TestData.enArbeidstreningAvtale();
         assertThat(tomAvtale.kanAvbrytes()).isTrue();
     }
 
@@ -440,7 +440,7 @@ public class AvtaleTest {
     @Test
     public void sistEndretNå__kalles_ved_endreAvtale() {
         Instant førEndringen = Instant.now();
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         avtale.endreAvtale(Instant.MAX, TestData.ingenEndring(), Avtalerolle.VEILEDER);
         assertThat(avtale.getSistEndret()).isAfter(førEndringen);
     }

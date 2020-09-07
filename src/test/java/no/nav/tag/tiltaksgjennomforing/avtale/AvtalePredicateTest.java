@@ -26,7 +26,7 @@ public class AvtalePredicateTest {
 
     @Test
     void veileder_nav_ident_oppgitt() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         AvtalePredicate query = new AvtalePredicate();
         query.setVeilederNavIdent(avtale.getVeilederNavIdent());
         assertThat(query.test(avtale)).isTrue();
@@ -34,7 +34,7 @@ public class AvtalePredicateTest {
 
     @Test
     void deltaker_oppgitt() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         AvtalePredicate query = new AvtalePredicate();
         query.setDeltakerFnr(avtale.getDeltakerFnr());
         assertThat(query.test(avtale)).isTrue();
@@ -42,7 +42,7 @@ public class AvtalePredicateTest {
 
     @Test
     void bedrift_oppgitt() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         AvtalePredicate query = new AvtalePredicate();
         query.setBedriftNr(avtale.getBedriftNr());
         assertThat(query.test(avtale)).isTrue();
@@ -50,7 +50,7 @@ public class AvtalePredicateTest {
 
     @Test
     void tiltakstype_oppgitt() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         AvtalePredicate query = new AvtalePredicate();
         query.setTiltakstype(avtale.getTiltakstype());
         assertThat(query.test(avtale)).isTrue();
@@ -58,7 +58,7 @@ public class AvtalePredicateTest {
 
     @Test
     void tiltakstype_annen_type() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         AvtalePredicate query = new AvtalePredicate();
         query.setTiltakstype(annenTiltakstypeEnnPåAvtale(avtale));
         assertThat(query.test(avtale)).isFalse();
@@ -66,7 +66,7 @@ public class AvtalePredicateTest {
 
     @Test
     void status_oppgitt() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         AvtalePredicate query = new AvtalePredicate();
         query.setStatus(avtale.statusSomEnum());
         assertThat(query.test(avtale)).isTrue();
@@ -74,7 +74,7 @@ public class AvtalePredicateTest {
 
     @Test
     void status_annen_type() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         AvtalePredicate query = new AvtalePredicate();
         query.setStatus(annenStatusEnnPåAvtale(avtale));
         assertThat(query.test(avtale)).isFalse();
@@ -82,7 +82,7 @@ public class AvtalePredicateTest {
 
     @Test
     void kombinasjon_med_feil() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         AvtalePredicate query = new AvtalePredicate();
         query.setVeilederNavIdent(avtale.getVeilederNavIdent());
         query.setBedriftNr(avtale.getBedriftNr());
@@ -93,6 +93,6 @@ public class AvtalePredicateTest {
     @Test
     void ingenting_oppgitt() {
         AvtalePredicate query = new AvtalePredicate();
-        assertThat(query.test(TestData.enAvtale())).isTrue();
+        assertThat(query.test(TestData.enArbeidstreningAvtale())).isTrue();
     }
 }

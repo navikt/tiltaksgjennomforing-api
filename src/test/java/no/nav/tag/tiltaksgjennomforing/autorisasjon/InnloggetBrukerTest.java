@@ -37,21 +37,21 @@ public class InnloggetBrukerTest {
 
     @Test
     public void deltakerKnyttetTilAvtaleSkalHaDeltakerRolle() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         InnloggetDeltaker selvbetjeningBruker = TestData.innloggetDeltaker(TestData.enDeltaker(avtale));
         assertThat(selvbetjeningBruker.avtalepart(avtale)).isInstanceOf(Deltaker.class);
     }
 
     @Test
     public void arbeidsgiverKnyttetTilAvtaleSkalHaArbeidsgiverRolle() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         InnloggetArbeidsgiver selvbetjeningBruker = TestData.innloggetArbeidsgiver(TestData.enArbeidsgiver(avtale));
         assertThat(selvbetjeningBruker.avtalepart(avtale)).isInstanceOf(Arbeidsgiver.class);
     }
 
     @Test
     public void veilederKnyttetTilAvtaleSkalHaVeilederRolle() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         InnloggetVeileder navAnsatt = new InnloggetVeileder(avtale.getVeilederNavIdent(), tilgangskontrollService);
         assertThat(navAnsatt.avtalepart(avtale)).isInstanceOf(Veileder.class);
     }
