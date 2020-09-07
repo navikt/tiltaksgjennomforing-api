@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,6 +82,9 @@ public class InnloggetArbeidsgiver extends InnloggetBruker<Fnr> {
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
+        if (organisasjoner.isEmpty()) {
+            return Collections.emptyList();
+        }
         return avtaleRepository.findAllByBedriftNrIn(arbeidsgiverIdentifikatorer());
     }
 
