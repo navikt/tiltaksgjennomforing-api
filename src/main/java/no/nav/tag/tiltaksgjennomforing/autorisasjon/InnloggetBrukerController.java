@@ -25,6 +25,7 @@ public class InnloggetBrukerController {
 
     @GetMapping
     public ResponseEntity<InnloggetBruker<?>> hentInnloggetBruker(@CookieValue("innlogget-part") Optional<Avtalerolle> innloggetPart) {
+
         return ResponseEntity.ok(innloggingService.hentInnloggetBruker(innloggetPart));
     }
 }

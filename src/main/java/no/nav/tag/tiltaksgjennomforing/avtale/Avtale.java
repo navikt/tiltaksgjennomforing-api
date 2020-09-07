@@ -239,6 +239,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
     }
 
+    public void gjenopprett(Veileder veileder) {
+        this.setAvbrutt(false);
+        sistEndretNå();
+        registerEvent(new GjenopprettetEvent(this, veileder.getIdentifikator()));
+    }
+
     boolean erAltUtfylt() {
         return gjeldendeInnhold().erAltUtfylt();
     }

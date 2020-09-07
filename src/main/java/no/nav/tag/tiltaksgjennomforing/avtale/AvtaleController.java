@@ -102,6 +102,18 @@ public class AvtaleController {
         return avtalepart.rolle();
     }
 
+
+    @PostMapping("/{avtaleId}/gjenopprett")
+    @Transactional
+    public void gjenopprettAvtale(@PathVariable("avtaleId") UUID avtaleId) {
+        InnloggetNavAnsatt innloggetNavAnsatt = innloggingService.hentInnloggetNavAnsatt();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        innloggetNavAnsatt.sjekkSkriveTilgang(avtale);
+        Veileder veileder = innloggetNavAnsatt.avtalepart(avtale);
+        veileder.gjennopprettAvtale();
+        avtaleRepository.save(avtale);
+    }
+
     @PostMapping("/{avtaleId}/opphev-godkjenninger")
     @Transactional
     public void opphevGodkjenninger(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Optional<Avtalerolle> innloggetPart) {
