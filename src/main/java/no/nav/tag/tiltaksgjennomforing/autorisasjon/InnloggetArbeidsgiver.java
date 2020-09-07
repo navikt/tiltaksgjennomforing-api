@@ -11,13 +11,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class InnloggetArbeidsgiver extends InnloggetBruker<Fnr> {
-
     private final List<ArbeidsgiverOrganisasjon> organisasjoner;
 
     public InnloggetArbeidsgiver(Fnr identifikator, List<ArbeidsgiverOrganisasjon> organisasjoner) {
         super(identifikator);
         this.organisasjoner = organisasjoner;
     }
+
+    public List<ArbeidsgiverOrganisasjon> getOrganisasjoner() {
+        return organisasjoner;
+    }
+
 
     private static boolean avbruttForMerEnn12UkerSiden(Avtale avtale) {
         return avtale.isAvbrutt() && avtale.getSistEndret().plus(84, ChronoUnit.DAYS).isBefore(Instant.now());
