@@ -2,12 +2,12 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtalepart;
-import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 public abstract class InnloggetBruker<T extends Identifikator> {
@@ -35,6 +35,19 @@ public abstract class InnloggetBruker<T extends Identifikator> {
         return List.of(identifikator);
     }
 
-    @JsonProperty("erNavAnsatt")
+    @JsonProperty
     public abstract boolean erNavAnsatt();
+
+    @JsonProperty
+    public abstract Avtalerolle rolle();
+
+    public List<Avtale> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
+        return hentAlleAvtalerMedMuligTilgang(avtaleRepository, queryParametre).stream()
+                .filter(queryParametre)
+                .filter(this::harLeseTilgang)
+                .sorted(Comparator.nullsLast(Comparator.comparing(Avtale::getSistEndret).reversed()))
+                .collect(Collectors.toList());
+    }
+
+    abstract List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre);
 }

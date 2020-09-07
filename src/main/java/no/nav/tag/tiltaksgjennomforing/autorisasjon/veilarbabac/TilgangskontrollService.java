@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetNavAnsatt;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 
 @Service
@@ -13,31 +13,31 @@ public class TilgangskontrollService {
 
     private final VeilarbabacClient veilarbabacClient;
 
-    public boolean harLesetilgangTilKandidat(InnloggetNavAnsatt innloggetNavAnsatt, Fnr fnr) {
-        return hentTilgang(innloggetNavAnsatt, fnr, TilgangskontrollAction.read);
+    public boolean harLesetilgangTilKandidat(InnloggetVeileder innloggetVeileder, Fnr fnr) {
+        return hentTilgang(innloggetVeileder, fnr, TilgangskontrollAction.read);
     }
 
-    public boolean harSkrivetilgangTilKandidat(InnloggetNavAnsatt innloggetNavAnsatt, Fnr fnr) {
-        return hentTilgang(innloggetNavAnsatt, fnr, TilgangskontrollAction.update);
+    public boolean harSkrivetilgangTilKandidat(InnloggetVeileder innloggetVeileder, Fnr fnr) {
+        return hentTilgang(innloggetVeileder, fnr, TilgangskontrollAction.update);
     }
 
-    public void sjekkLesetilgangTilKandidat(InnloggetNavAnsatt innloggetNavAnsatt, Fnr fnr) {
-        sjekkTilgang(innloggetNavAnsatt, fnr, TilgangskontrollAction.read);
+    public void sjekkLesetilgangTilKandidat(InnloggetVeileder innloggetVeileder, Fnr fnr) {
+        sjekkTilgang(innloggetVeileder, fnr, TilgangskontrollAction.read);
     }
         
-    public void sjekkSkrivetilgangTilKandidat(InnloggetNavAnsatt innloggetNavAnsatt, Fnr fnr) {
-        sjekkTilgang(innloggetNavAnsatt, fnr, TilgangskontrollAction.update);
+    public void sjekkSkrivetilgangTilKandidat(InnloggetVeileder innloggetVeileder, Fnr fnr) {
+        sjekkTilgang(innloggetVeileder, fnr, TilgangskontrollAction.update);
     }
 
-    private void sjekkTilgang(InnloggetNavAnsatt innloggetNavAnsatt, Fnr fnr, TilgangskontrollAction action) {
-        if (!hentTilgang(innloggetNavAnsatt, fnr, action)) {
+    private void sjekkTilgang(InnloggetVeileder innloggetVeileder, Fnr fnr, TilgangskontrollAction action) {
+        if (!hentTilgang(innloggetVeileder, fnr, action)) {
             throw new TilgangskontrollException("Du har ikke tilgang til deltaker");
         }
     }
 
-    private boolean hentTilgang(InnloggetNavAnsatt innloggetNavAnsatt, Fnr fnr, TilgangskontrollAction action) {
+    private boolean hentTilgang(InnloggetVeileder innloggetVeileder, Fnr fnr, TilgangskontrollAction action) {
         return veilarbabacClient.sjekkTilgang(
-                innloggetNavAnsatt,
+                innloggetVeileder,
                 fnr.asString(),
                 action
         );
