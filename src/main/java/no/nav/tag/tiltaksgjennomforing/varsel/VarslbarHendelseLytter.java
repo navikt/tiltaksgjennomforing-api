@@ -12,7 +12,7 @@ public class VarslbarHendelseLytter {
     private final VarslbarHendelseRepository varslbarHendelseRepository;
 
     @EventListener
-    public void avtaleOpprettet(AvtaleOpprettet event) {
+    public void avtaleOpprettet(AvtaleOpprettetAvVeileder event) {
         varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.OPPRETTET));
     }
 

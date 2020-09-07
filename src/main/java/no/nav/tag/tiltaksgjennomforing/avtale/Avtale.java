@@ -67,7 +67,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         var innhold = AvtaleInnhold.nyttTomtInnhold();
         innhold.setAvtale(this);
         this.versjoner.add(innhold);
-        registerEvent(new AvtaleOpprettet(this, veilederNavIdent));
+        registerEvent(new AvtaleOpprettetAvVeileder(this, veilederNavIdent));
     }
 
     public void endreAvtale(Instant sistEndret, EndreAvtale nyAvtale, Avtalerolle utfortAv) {

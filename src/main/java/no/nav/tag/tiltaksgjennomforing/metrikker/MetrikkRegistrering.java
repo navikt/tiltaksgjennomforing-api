@@ -49,7 +49,7 @@ public class MetrikkRegistrering {
     }
 
     @EventListener
-    public void avtaleOpprettet(AvtaleOpprettet event) {
+    public void avtaleOpprettet(AvtaleOpprettetAvVeileder event) {
         Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
         log.info("Avtale opprettet, avtaleId={} ident={}, tiltakstype={}", event.getAvtale().getId(), event.getUtfortAv(), tiltakstype);
         counter("avtale.opprettet", Avtalerolle.VEILEDER, tiltakstype).increment();

@@ -278,4 +278,12 @@ public class TestData {
         avtale.setJournalpostId("1");
         return avtale;
     }
+
+    public static BedriftNr etBedriftNr() {
+        return new BedriftNr("777777777");
+    }
+
+    public static NavIdent enNavIdent() {
+        return new NavIdent("Q987654");
+    }
 }
