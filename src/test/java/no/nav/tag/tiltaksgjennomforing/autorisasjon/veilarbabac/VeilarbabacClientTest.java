@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetNavAnsatt;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSToken;
@@ -60,8 +60,8 @@ public class VeilarbabacClientTest {
                 .thenReturn(ResponseEntity.ok().body(response));
     }
 
-    private static InnloggetNavAnsatt enVeileder() {
-        return new InnloggetNavAnsatt(new NavIdent("X123456"), null);
+    private static InnloggetVeileder enVeileder() {
+        return new InnloggetVeileder(new NavIdent("X123456"), null);
     }
 
     @Test
@@ -80,7 +80,7 @@ public class VeilarbabacClientTest {
     public void harSkrivetilgangTilKandidat__skal_gjøre_kall_med_riktige_parametre() {
         STSToken stsToken = etStsToken();
 
-        InnloggetNavAnsatt veileder = enVeileder();
+        InnloggetVeileder veileder = enVeileder();
 
         when(stsClient.hentSTSToken()).thenReturn(stsToken);
 
