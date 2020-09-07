@@ -71,6 +71,11 @@ public class InnloggetArbeidsgiver extends InnloggetBruker<Fnr> {
     }
 
     @Override
+    public Avtalerolle rolle() {
+        return Avtalerolle.ARBEIDSGIVER;
+    }
+
+    @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
         return avtaleRepository.findAllByBedriftNrIn(arbeidsgiverIdentifikatorer());
     }

@@ -41,6 +41,11 @@ public class InnloggetVeileder extends InnloggetBruker<NavIdent> {
     }
 
     @Override
+    public Avtalerolle rolle() {
+        return Avtalerolle.VEILEDER;
+    }
+
+    @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
         if (queryParametre.getVeilederNavIdent() != null) {
             return avtaleRepository.findAllByVeilederNavIdent(queryParametre.getVeilederNavIdent());

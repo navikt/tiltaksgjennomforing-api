@@ -48,6 +48,11 @@ public class InnloggetDeltaker extends InnloggetBruker<Fnr> {
     }
 
     @Override
+    public Avtalerolle rolle() {
+        return Avtalerolle.DELTAKER;
+    }
+
+    @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
         return avtaleRepository.findAllByDeltakerFnr(getIdentifikator());
     }

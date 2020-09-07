@@ -35,8 +35,11 @@ public abstract class InnloggetBruker<T extends Identifikator> {
         return List.of(identifikator);
     }
 
-    @JsonProperty("erNavAnsatt")
+    @JsonProperty
     public abstract boolean erNavAnsatt();
+
+    @JsonProperty
+    public abstract Avtalerolle rolle();
 
     public List<Avtale> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
         return hentAlleAvtalerMedMuligTilgang(avtaleRepository, queryParametre).stream()
