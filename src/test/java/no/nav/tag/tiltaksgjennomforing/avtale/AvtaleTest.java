@@ -187,43 +187,6 @@ public class AvtaleTest {
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
     }
 
-    @Test
-    public void endreMidlertidigLønnstilskudd__startdato_og_sluttdato_satt_24mnd() {
-        Avtale avtale = TestData.enAvtale(MIDLERTIDIG_LONNSTILSKUDD);
-        EndreAvtale endreAvtale = new EndreAvtale();
-        LocalDate startDato = LocalDate.now();
-        LocalDate sluttDato = startDato.plusMonths(24);
-        endreAvtale.setStartDato(startDato);
-        endreAvtale.setSluttDato(sluttDato);
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
-        assertThat(avtale.getStartDato()).isEqualTo(startDato);
-        assertThat(avtale.getSluttDato()).isEqualTo(sluttDato);
-    }
-
-    @Test(expected = AvtalensVarighetMerEnnMaksimaltAntallMånederException.class)
-    public void endreMidlertidigLønnstilskudd__startdato_og_sluttdato_satt_over_24mnd() {
-        Avtale avtale = TestData.enAvtale(MIDLERTIDIG_LONNSTILSKUDD);
-        EndreAvtale endreAvtale = new EndreAvtale();
-        LocalDate startDato = LocalDate.now();
-        LocalDate sluttDato = startDato.plusMonths(24).plusDays(1);
-        endreAvtale.setStartDato(startDato);
-        endreAvtale.setSluttDato(sluttDato);
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
-    }
-
-    @Test
-    public void endreVarigLønnstilskudd__startdato_og_sluttdato_satt_24mnd() {
-        Avtale avtale = TestData.enAvtale(Tiltakstype.VARIG_LONNSTILSKUDD);
-        EndreAvtale endreAvtale = new EndreAvtale();
-        LocalDate startDato = LocalDate.now();
-        LocalDate sluttDato = startDato.plusMonths(24).plusDays(1);
-        endreAvtale.setStartDato(startDato);
-        endreAvtale.setSluttDato(sluttDato);
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
-        assertThat(avtale.getStartDato()).isEqualTo(startDato);
-        assertThat(avtale.getSluttDato()).isEqualTo(sluttDato);
-    }
-
     @Test(expected = StartDatoErEtterSluttDatoException.class)
     public void endreAvtale__startdato_er_etter_sluttdato() {
         Avtale avtale = TestData.enArbeidstreningAvtale();

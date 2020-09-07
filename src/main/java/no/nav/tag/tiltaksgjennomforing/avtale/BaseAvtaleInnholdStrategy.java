@@ -60,7 +60,7 @@ public class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy {
         startOgSluttDatoErSattRiktig(startDato, sluttDato);
     }
 
-    protected boolean startOgSluttDatoErSattRiktig(LocalDate startDato, LocalDate sluttDato) {
+    private boolean startOgSluttDatoErSattRiktig(LocalDate startDato, LocalDate sluttDato) {
         if (startDato != null && sluttDato != null) {
             if (startDato.isAfter(sluttDato)) {
                 throw new StartDatoErEtterSluttDatoException();
