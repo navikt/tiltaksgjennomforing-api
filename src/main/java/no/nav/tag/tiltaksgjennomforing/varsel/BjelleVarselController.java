@@ -25,15 +25,15 @@ public class BjelleVarselController {
     @GetMapping
     public Iterable<BjelleVarsel> hentVarsler(
             @RequestParam(value = "avtaleId", required = false) UUID avtaleId,
-            @RequestParam(value = "lest", required = false) Boolean lest, @CookieValue("innlogget-part") Optional<Avtalerolle> innloggetPart) {
-        InnloggetBruker<?> bruker = innloggingService.hentInnloggetBruker(innloggetPart.get());
+            @RequestParam(value = "lest", required = false) Boolean lest, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+        InnloggetBruker<?> bruker = innloggingService.hentInnloggetBruker(innloggetPart);
         return bjelleVarselService.varslerForInnloggetBruker(bruker, avtaleId, lest);
     }
 
     @PostMapping("{varselId}/sett-til-lest")
     @Transactional
-    public ResponseEntity<?> settTilLest(@PathVariable("varselId") UUID varselId, Optional<Avtalerolle> innloggetPart) {
-        InnloggetBruker<?> bruker = innloggingService.hentInnloggetBruker(innloggetPart.get());
+    public ResponseEntity<?> settTilLest(@PathVariable("varselId") UUID varselId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+        InnloggetBruker<?> bruker = innloggingService.hentInnloggetBruker(innloggetPart);
         bjelleVarselService.settTilLest(bruker, varselId);
         return ResponseEntity.ok().build();
     }
