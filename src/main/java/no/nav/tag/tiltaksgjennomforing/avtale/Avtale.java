@@ -229,6 +229,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         return !isAvbrutt();
     }
 
+    @JsonProperty
+    public boolean kanGjenopprettes() {
+        return isAvbrutt();
+    }
+
     public void avbryt(Veileder veileder, AvbruttInfo avbruttInfo) {
         if (this.kanAvbrytes()) {
             this.setAvbrutt(true);
@@ -240,11 +245,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void gjenopprett(Veileder veileder) {
-        this.setAvbrutt(false);
-        this.setAvbruttDato(null);
-        this.setAvbruttGrunn(null);
-        sistEndretNå();
-        registerEvent(new GjenopprettetEvent(this, veileder.getIdentifikator()));
+        if (this.kanGjenopprettes()) {
+            this.setAvbrutt(false);
+            this.setAvbruttDato(null);
+            this.setAvbruttGrunn(null);
+            sistEndretNå();
+            registerEvent(new GjenopprettetEvent(this, veileder.getIdentifikator()));
+        }
     }
 
     boolean erAltUtfylt() {

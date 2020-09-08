@@ -390,6 +390,19 @@ public class AvtaleTest {
     }
 
     @Test
+    public void ikke_avbrutt_avtale_kan_ikke_gjenopprettes() {
+        Avtale godkjentAvtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        assertThat(godkjentAvtale.kanGjenopprettes()).isFalse();
+    }
+
+    @Test
+    public void avbrutt_avtale_kan_gjenopprettes() {
+        Avtale godkjentAvtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        godkjentAvtale.setAvbrutt(true);
+        assertThat(godkjentAvtale.kanGjenopprettes()).isTrue();
+    }
+
+    @Test
     public void kanLåsesOpp__skal_være_true_når_godkjent_av_veileder() {
         assertThat(TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder().kanLåsesOpp()).isTrue();
     }

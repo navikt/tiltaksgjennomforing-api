@@ -76,7 +76,7 @@ public class VeilederTest {
         avtale.setAvbruttDato(LocalDate.now());
 
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.gjennopprettAvtale();
+        veileder.gjenopprettAvtale();
         assertThat(avtale.isAvbrutt()).isFalse();
         assertThat(avtale.getAvbruttDato()).isNull();
         assertThat(avtale.getAvbruttGrunn()).isNull();
@@ -92,7 +92,7 @@ public class VeilederTest {
         avtale.setAvbruttDato(LocalDate.now());
         Veileder veileder = TestData.enVeileder(avtale);
 
-        veileder.gjennopprettAvtale();
+        veileder.gjenopprettAvtale();
         assertThat(avtale.isAvbrutt()).isFalse();
         assertThat(avtale.getAvbruttDato()).isNull();
         assertThat(avtale.getAvbruttGrunn()).isNull();
