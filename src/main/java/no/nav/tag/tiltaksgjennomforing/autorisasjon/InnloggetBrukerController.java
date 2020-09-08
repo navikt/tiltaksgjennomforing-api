@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeValgtPartException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -25,7 +26,6 @@ public class InnloggetBrukerController {
 
     @GetMapping
     public ResponseEntity<InnloggetBruker<?>> hentInnloggetBruker(@CookieValue("innlogget-part") Optional<Avtalerolle> innloggetPart) {
-
-        return ResponseEntity.ok(innloggingService.hentInnloggetBruker(innloggetPart));
+        return ResponseEntity.ok(innloggingService.hentInnloggetBruker(innloggetPart.orElseThrow(IkkeValgtPartException::new)));
     }
 }

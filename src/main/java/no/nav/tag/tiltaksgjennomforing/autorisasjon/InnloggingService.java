@@ -8,9 +8,10 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 
+import no.nav.tag.tiltaksgjennomforing.orgenhet.ArbeidsgiverOrganisasjon;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -22,21 +23,24 @@ public class InnloggingService {
     private final AltinnTilgangsstyringService altinnTilgangsstyringService;
     private final TilgangskontrollService tilgangskontrollService;
 
-    public InnloggetBruker<? extends Identifikator> hentInnloggetBruker(Optional<Avtalerolle> avtalerolle) {
+    public InnloggetBruker<? extends Identifikator> hentInnloggetBruker(Avtalerolle avtalerolle) {
         BrukerOgIssuer brukerOgIssuer = tokenUtils.hentBrukerOgIssuer().orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget."));
-        boolean erDeltaker = avtalerolle.isPresent() && avtalerolle.get().equals(Avtalerolle.DELTAKER);
-        return Issuer.ISSUER_SELVBETJENING == brukerOgIssuer.getIssuer()
-                ? new InnloggetSelvbetjeningBruker(new Fnr(brukerOgIssuer.getBrukerIdent()), erDeltaker ? Collections.emptyList() : altinnTilgangsstyringService.hentOrganisasjoner(new Fnr(brukerOgIssuer.getBrukerIdent())))
-                : new InnloggetNavAnsatt(new NavIdent(brukerOgIssuer.getBrukerIdent()), tilgangskontrollService);
+        Issuer issuer = brukerOgIssuer.getIssuer();
+        if (issuer == Issuer.ISSUER_SELVBETJENING && avtalerolle == Avtalerolle.DELTAKER) {
+            return new InnloggetDeltaker(new Fnr(brukerOgIssuer.getBrukerIdent()));
+        } else if (issuer == Issuer.ISSUER_SELVBETJENING && avtalerolle == Avtalerolle.ARBEIDSGIVER) {
+            List<ArbeidsgiverOrganisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(new Fnr(brukerOgIssuer.getBrukerIdent()));
+            return new InnloggetArbeidsgiver(new Fnr(brukerOgIssuer.getBrukerIdent()), organisasjoner);
+        } else if (issuer == Issuer.ISSUER_ISSO && avtalerolle == Avtalerolle.VEILEDER) {
+            return new InnloggetVeileder(new NavIdent(brukerOgIssuer.getBrukerIdent()), tilgangskontrollService);
+        } else {
+            throw new TilgangskontrollException("Ugyldig kombinasjon av issuer og rolle.");
+        }
     }
 
-    public InnloggetBruker<? extends Identifikator> hentInnloggetBruker() {
-        return hentInnloggetBruker(Optional.empty());
-    }
-
-    public InnloggetNavAnsatt hentInnloggetNavAnsatt() {
+    public InnloggetVeileder hentInnloggetVeileder() {
         try {
-            return (InnloggetNavAnsatt) hentInnloggetBruker();
+            return (InnloggetVeileder) hentInnloggetBruker(Avtalerolle.VEILEDER);
         } catch (ClassCastException e) {
             throw new TilgangskontrollException("Innlogget bruker er ikke veileder.");
         }

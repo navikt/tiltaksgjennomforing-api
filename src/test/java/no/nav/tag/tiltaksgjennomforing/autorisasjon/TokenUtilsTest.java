@@ -36,14 +36,14 @@ public class TokenUtilsTest {
 
     @Test
     public void hentInnloggetBruker__er_selvbetjeningbruker() {
-        InnloggetSelvbetjeningBruker selvbetjeningBruker = TestData.enSelvbetjeningBruker();
+        InnloggetArbeidsgiver selvbetjeningBruker = TestData.enInnloggetArbeidsgiver();
         vaerInnloggetSelvbetjening(selvbetjeningBruker);
         assertThat(tokenUtils.hentBrukerOgIssuer().get()).isEqualTo(new BrukerOgIssuer(ISSUER_SELVBETJENING, selvbetjeningBruker.getIdentifikator().asString()));
     }
 
     @Test
     public void hentInnloggetBruker__er_selvbetjeningbruker_må_være_nivå_4() {
-        InnloggetSelvbetjeningBruker selvbetjeningBruker = TestData.enSelvbetjeningBruker();
+        InnloggetArbeidsgiver selvbetjeningBruker = TestData.enInnloggetArbeidsgiver();
         vaerInnloggetSelvbetjening(selvbetjeningBruker);
         assertThat(tokenUtils.hentBrukerOgIssuer().get()).isEqualTo(new BrukerOgIssuer(ISSUER_SELVBETJENING, selvbetjeningBruker.getIdentifikator().asString()));
         vaerInnloggetSelvbetjeningNiva3(selvbetjeningBruker);
@@ -52,7 +52,7 @@ public class TokenUtilsTest {
     
     @Test
     public void hentInnloggetBruker__er_nav_ansatt() {
-        InnloggetNavAnsatt navAnsatt = TestData.enNavAnsatt();
+        InnloggetVeileder navAnsatt = TestData.enInnloggetVeileder();
         vaerInnloggetNavAnsatt(navAnsatt);
         assertThat(tokenUtils.hentBrukerOgIssuer().get()).isEqualTo(new BrukerOgIssuer(ISSUER_ISSO, navAnsatt.getIdentifikator().asString()));
     }
@@ -77,15 +77,15 @@ public class TokenUtilsTest {
         lagOidcContext(ISSUER_SYSTEM, systemId, new HashMap<>(), null);
     }
 
-    private void vaerInnloggetSelvbetjening(InnloggetSelvbetjeningBruker bruker) {
+    private void vaerInnloggetSelvbetjening(InnloggetArbeidsgiver bruker) {
         lagOidcContext(ISSUER_SELVBETJENING, bruker.getIdentifikator().asString(), new HashMap<>(), ACR_LEVEL_4);
     }
 
-    private void vaerInnloggetSelvbetjeningNiva3(InnloggetSelvbetjeningBruker bruker) {
+    private void vaerInnloggetSelvbetjeningNiva3(InnloggetArbeidsgiver bruker) {
         lagOidcContext(ISSUER_SELVBETJENING, bruker.getIdentifikator().asString(), new HashMap<>(), "Level3");
     }
     
-    private void vaerInnloggetNavAnsatt(InnloggetNavAnsatt innloggetBruker) {
+    private void vaerInnloggetNavAnsatt(InnloggetVeileder innloggetBruker) {
         lagOidcContext(ISSUER_ISSO, "blablabla", Map.of("NAVident", innloggetBruker.getIdentifikator().asString()), null);
     }
 

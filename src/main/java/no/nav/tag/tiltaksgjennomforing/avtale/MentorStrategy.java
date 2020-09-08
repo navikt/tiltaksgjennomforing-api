@@ -1,8 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import java.time.LocalDate;
+
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
 public class MentorStrategy extends BaseAvtaleInnholdStrategy {
+
+    private static final int MAKSIMALT_ANTALL_MÅNEDER_VARIGHET = 36;
 
     public MentorStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
@@ -27,5 +31,10 @@ public class MentorStrategy extends BaseAvtaleInnholdStrategy {
                 avtaleInnhold.getMentorAntallTimer(),
                 avtaleInnhold.getMentorTimelonn()
         );
+    }
+
+    @Override
+    protected void sjekkStartogSluttDato(LocalDate startDato, LocalDate sluttDato) {
+        super.startOgSluttDatoMedVarighetErSattRiktig(startDato, sluttDato, MAKSIMALT_ANTALL_MÅNEDER_VARIGHET);
     }
 }

@@ -1,7 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing;
 
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetNavAnsatt;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetSelvbetjeningBruker;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.ArbeidsgiverOrganisasjon;
@@ -21,14 +22,19 @@ import static java.util.Collections.emptyList;
 import static org.mockito.Mockito.mock;
 
 public class TestData {
-    public static Avtale enAvtale() {
+    public static Avtale enAvtale(Tiltakstype tiltakstype) {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        return AvtaleFactory.nyAvtale(lagOpprettAvtale(), veilderNavIdent);
+        return AvtaleFactory.nyAvtale(lagOpprettAvtale(tiltakstype), veilderNavIdent);
+    }
+
+    public static Avtale enArbeidstreningAvtale() {
+        NavIdent veilderNavIdent = new NavIdent("Z123456");
+        return AvtaleFactory.nyAvtale(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING), veilderNavIdent);
     }
 
     public static Avtale enAvtaleMedAltUtfylt() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        Avtale avtale = AvtaleFactory.nyAvtale(lagOpprettAvtale(), veilderNavIdent);
+        Avtale avtale = AvtaleFactory.nyAvtale(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING), veilderNavIdent);
         avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER);
         return avtale;
     }
@@ -89,8 +95,8 @@ public class TestData {
         return avtale;
     }
 
-    private static OpprettAvtale lagOpprettAvtale() {
-        Fnr deltakerFnr = new Fnr("88888899999");
+    private static OpprettAvtale lagOpprettAvtale(Tiltakstype tiltakstype) {
+        Fnr deltakerFnr = new Fnr("00000000000");
         BedriftNr bedriftNr = new BedriftNr("999999999");
         return new OpprettAvtale(deltakerFnr, bedriftNr, Tiltakstype.ARBEIDSTRENING);
     }
@@ -162,23 +168,27 @@ public class TestData {
     }
 
     static Deltaker enDeltaker() {
-        return new Deltaker(new Fnr("01234567890"), enAvtale());
+        return new Deltaker(new Fnr("01234567890"), enArbeidstreningAvtale());
     }
 
     public static Deltaker enDeltaker(Avtale avtale) {
         return new Deltaker(avtale.getDeltakerFnr(), avtale);
     }
 
-    public static InnloggetSelvbetjeningBruker enSelvbetjeningBruker() {
-        return new InnloggetSelvbetjeningBruker(new Fnr("99999999999"), emptyList());
+    public static InnloggetDeltaker enInnloggetDeltaker() {
+        return new InnloggetDeltaker(new Fnr("99999999999"));
     }
 
-    public static InnloggetNavAnsatt enNavAnsatt() {
-        return new InnloggetNavAnsatt(new NavIdent("F888888"), mock(TilgangskontrollService.class));
+    public static InnloggetArbeidsgiver enInnloggetArbeidsgiver() {
+        return new InnloggetArbeidsgiver(new Fnr("99999999999"), emptyList());
+    }
+
+    public static InnloggetVeileder enInnloggetVeileder() {
+        return new InnloggetVeileder(new NavIdent("F888888"), mock(TilgangskontrollService.class));
     }
 
     public static Arbeidsgiver enArbeidsgiver() {
-        return new Arbeidsgiver(new Fnr("12345678901"), enAvtale());
+        return new Arbeidsgiver(new Fnr("12345678901"), enArbeidstreningAvtale());
     }
 
     public static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
@@ -190,7 +200,7 @@ public class TestData {
     }
 
     public static Veileder enVeileder() {
-        return new Veileder(new NavIdent("X123456"), enAvtale());
+        return new Veileder(new NavIdent("X123456"), enArbeidstreningAvtale());
     }
 
     public static Veileder enVeileder(Avtale avtale) {
@@ -218,14 +228,14 @@ public class TestData {
         return paVegneGrunn;
     }
 
-    public static InnloggetSelvbetjeningBruker innloggetSelvbetjeningBrukerMedOrganisasjon(Avtalepart<Fnr> avtalepartMedFnr) {
+    public static InnloggetArbeidsgiver innloggetArbeidsgiver(Avtalepart<Fnr> avtalepartMedFnr) {
         ArbeidsgiverOrganisasjon organisasjon = new ArbeidsgiverOrganisasjon(avtalepartMedFnr.getAvtale().getBedriftNr(), avtalepartMedFnr.getAvtale().getBedriftNavn());
         organisasjon.getTilgangstyper().addAll(List.of(Tiltakstype.values()));
-        return new InnloggetSelvbetjeningBruker(avtalepartMedFnr.getIdentifikator(), List.of(organisasjon));
+        return new InnloggetArbeidsgiver(avtalepartMedFnr.getIdentifikator(), List.of(organisasjon));
     }
 
-    public static InnloggetSelvbetjeningBruker innloggetSelvbetjeningBrukerUtenOrganisasjon(Avtalepart<Fnr> avtalepartMedFnr) {
-        return new InnloggetSelvbetjeningBruker(avtalepartMedFnr.getIdentifikator(), emptyList());
+    public static InnloggetDeltaker innloggetDeltaker(Avtalepart<Fnr> avtalepartMedFnr) {
+        return new InnloggetDeltaker(avtalepartMedFnr.getIdentifikator());
     }
 
     public static Identifikator enIdentifikator() {

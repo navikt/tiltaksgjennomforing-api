@@ -24,7 +24,7 @@ public class LagSmsVarselFraVarslbarHendelseTest {
 
     @BeforeAll
     static void setUp() {
-        avtale = TestData.enAvtale();
+        avtale = TestData.enArbeidstreningAvtale();
         deltaker = tuple(
                 avtale.getDeltakerTlf(),
                 avtale.getDeltakerFnr(),
@@ -43,7 +43,7 @@ public class LagSmsVarselFraVarslbarHendelseTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("provider")
     void testLagSmsVarsler(VarslbarHendelseType hendelse, GamleVerdier gamleVerdier, List<Tuple> skalVarsles) {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelse.nyHendelse(avtale, hendelse), gamleVerdier);
         assertThat(smsVarsler).extracting("telefonnummer", "identifikator", "meldingstekst")
                 .containsOnlyElementsOf(skalVarsles);

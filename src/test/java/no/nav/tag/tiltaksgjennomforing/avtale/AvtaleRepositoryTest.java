@@ -36,7 +36,7 @@ public class AvtaleRepositoryTest {
 
     @Test
     public void nyAvtaleSkalKunneLagreOgReturneresAvRepository() {
-        Avtale lagretAvtale = avtaleRepository.save(TestData.enAvtale());
+        Avtale lagretAvtale = avtaleRepository.save(TestData.enArbeidstreningAvtale());
 
         Optional<Avtale> avtaleOptional = avtaleRepository.findById(lagretAvtale.getId());
         assertThat(avtaleOptional).isPresent();
@@ -45,7 +45,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void skalKunneLagreMaalFlereGanger() {
         // Lage avtale
-        Avtale lagretAvtale = avtaleRepository.save(TestData.enAvtale());
+        Avtale lagretAvtale = avtaleRepository.save(TestData.enArbeidstreningAvtale());
 
         // Lagre maal skal fungere
         EndreAvtale endreAvtale = new EndreAvtale();
@@ -55,7 +55,7 @@ public class AvtaleRepositoryTest {
         avtaleRepository.save(lagretAvtale);
 
         // Lage ny avtale
-        Avtale lagretAvtale2 = avtaleRepository.save(TestData.enAvtale());
+        Avtale lagretAvtale2 = avtaleRepository.save(TestData.enArbeidstreningAvtale());
 
         // Lagre maal skal enda fungere
         EndreAvtale endreAvtale2 = new EndreAvtale();
@@ -68,7 +68,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void skalKunneLagreOppgaverFlereGanger() {
         // Lage avtale
-        Avtale lagretAvtale = avtaleRepository.save(TestData.enAvtale());
+        Avtale lagretAvtale = avtaleRepository.save(TestData.enArbeidstreningAvtale());
 
         // Lagre maal skal fungere
         EndreAvtale endreAvtale = new EndreAvtale();
@@ -78,7 +78,7 @@ public class AvtaleRepositoryTest {
         avtaleRepository.save(lagretAvtale);
 
         // Lage ny avtale
-        Avtale lagretAvtale2 = avtaleRepository.save(TestData.enAvtale());
+        Avtale lagretAvtale2 = avtaleRepository.save(TestData.enArbeidstreningAvtale());
 
         // Lagre maal skal enda fungere
         EndreAvtale endreAvtale2 = new EndreAvtale();
@@ -123,7 +123,7 @@ public class AvtaleRepositoryTest {
 
     @Test
     public void endreAvtale__skal_publisere_domainevent() {
-        Avtale avtale = TestData.enAvtale();
+        Avtale avtale = TestData.enArbeidstreningAvtale();
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering, never()).avtaleEndret(any());
         avtale.endreAvtale(Instant.now(), TestData.ingenEndring(), Avtalerolle.VEILEDER);
