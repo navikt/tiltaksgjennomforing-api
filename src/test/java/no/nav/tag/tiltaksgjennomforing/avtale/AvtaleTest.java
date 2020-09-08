@@ -378,6 +378,19 @@ public class AvtaleTest {
     }
 
     @Test
+    public void status__gjenopprettet() {
+        Avtale avtale = TestData.enAvtale();
+        avtale.setAvbrutt(true);
+        avtale.setAvbruttDato(LocalDate.now());
+        avtale.setAvbruttGrunn("enGrunn");
+
+        avtale.gjenopprett(TestData.enVeileder(avtale));
+        assertThat(avtale.status()).isNotEqualTo(Status.AVBRUTT.getStatusVerdi());
+        assertThat(avtale.getAvbruttDato()).isNull();
+        assertThat(avtale.getAvbruttGrunn()).isNull();
+    }
+
+    @Test
     public void kanLåsesOpp__skal_være_true_når_godkjent_av_veileder() {
         assertThat(TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder().kanLåsesOpp()).isTrue();
     }
