@@ -5,7 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 
 @Value
-public class GjenopprettetEvent {
-    private final Avtale avtale;
-    private final NavIdent utfortAv;
+public class AvtaleGjenopprettet {
+    Avtale avtale;
+    NavIdent utfortAv;
 }

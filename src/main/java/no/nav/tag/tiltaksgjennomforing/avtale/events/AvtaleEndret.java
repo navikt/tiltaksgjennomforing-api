@@ -6,6 +6,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 
 @Value
 public class AvtaleEndret {
-    private final Avtale avtale;
-    private final Avtalerolle utfortAv;
+    Avtale avtale;
+    Avtalerolle utfortAv;
 }

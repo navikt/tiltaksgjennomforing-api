@@ -6,6 +6,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 
 @Value
 public class GodkjentAvArbeidsgiver implements AvtaleGodkjent {
-    private final Avtale avtale;
-    private final Identifikator utfortAv;
+    Avtale avtale;
+    Identifikator utfortAv;
 }

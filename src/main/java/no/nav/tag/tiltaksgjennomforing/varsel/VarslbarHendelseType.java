@@ -17,6 +17,9 @@ public enum VarslbarHendelseType {
     ENDRET("Avtale endret"),
     DELT_MED_DELTAKER("Avtale delt med deltaker"),
     DELT_MED_ARBEIDSGIVER("Avtale delt med arbeidsgiver"),
+    AVBRUTT("Avtale avbrutt av veileder"),
+    LÅST_OPP("Avtale låst opp av veileder"),
+    GJENOPPRETTET("Avtale gjenopprettet")
     ;
 
     private final String tekst;

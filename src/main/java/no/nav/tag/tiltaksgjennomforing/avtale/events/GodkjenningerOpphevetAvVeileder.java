@@ -5,6 +5,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 
 @Value
 public class GodkjenningerOpphevetAvVeileder {
-    private final Avtale avtale;
-    private final GamleVerdier gamleVerdier;
+    Avtale avtale;
+    GamleVerdier gamleVerdier;
 }
