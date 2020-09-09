@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
@@ -45,13 +46,13 @@ public class AvtaleController {
     }
 
     @GetMapping
-    public Iterable<Avtale> hentAlleAvtalerInnloggetBrukerHarTilgangTil(AvtalePredicate queryParametre, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+    public List<Avtale> hentAlleAvtalerInnloggetBrukerHarTilgangTil(AvtalePredicate queryParametre, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         InnloggetBruker<?> bruker = innloggingService.hentInnloggetBruker(innloggetPart);
         return bruker.hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre);
     }
 
     @GetMapping("/min-side-arbeidsgiver")
-    public Iterable<Avtale> hentAlleAvtalerForMinSideArbeidsgiver(@RequestParam("bedriftNr") BedriftNr bedriftNr) {
+    public List<Avtale> hentAlleAvtalerForMinSideArbeidsgiver(@RequestParam("bedriftNr") BedriftNr bedriftNr) {
         InnloggetArbeidsgiver innloggetArbeidsgiver = innloggingService.hentInnloggetArbeidsgiver();
         return innloggetArbeidsgiver.hentAvtalerForMinsideArbeidsgiver(avtaleRepository, bedriftNr);
     }

@@ -19,17 +19,16 @@ public class InnloggetArbeidsgiver extends InnloggetBruker<Fnr> {
         this.organisasjoner = organisasjoner;
     }
 
-    public List<ArbeidsgiverOrganisasjon> getOrganisasjoner() {
-        return organisasjoner;
-    }
-
-
     private static boolean avbruttForMerEnn12UkerSiden(Avtale avtale) {
         return avtale.isAvbrutt() && avtale.getSistEndret().plus(84, ChronoUnit.DAYS).isBefore(Instant.now());
     }
 
     private static boolean sluttdatoPassertMedMerEnn12Uker(Avtale avtale) {
         return avtale.erGodkjentAvVeileder() && avtale.getSluttDato().plusWeeks(12).isBefore(LocalDate.now());
+    }
+
+    public List<ArbeidsgiverOrganisasjon> getOrganisasjoner() {
+        return organisasjoner;
     }
 
     @Override
@@ -92,7 +91,9 @@ public class InnloggetArbeidsgiver extends InnloggetBruker<Fnr> {
         return organisasjoner.stream().map(ArbeidsgiverOrganisasjon::getBedriftNr).collect(Collectors.toList());
     }
 
-    public Iterable<Avtale> hentAvtalerForMinsideArbeidsgiver(AvtaleRepository avtaleRepository, BedriftNr bedriftNr) {
-        return avtaleRepository.findAllByBedriftNr(bedriftNr).filter(this::harLeseTilgang);
+    public List<Avtale> hentAvtalerForMinsideArbeidsgiver(AvtaleRepository avtaleRepository, BedriftNr bedriftNr) {
+        return avtaleRepository.findAllByBedriftNr(bedriftNr).stream()
+                .filter(this::harLeseTilgang)
+                .collect(Collectors.toList());
     }
 }
