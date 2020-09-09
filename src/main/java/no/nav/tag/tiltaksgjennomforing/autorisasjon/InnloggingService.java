@@ -38,6 +38,14 @@ public class InnloggingService {
         }
     }
 
+    public InnloggetArbeidsgiver hentInnloggetArbeidsgiver() {
+        try {
+            return (InnloggetArbeidsgiver) hentInnloggetBruker(Avtalerolle.ARBEIDSGIVER);
+        } catch (ClassCastException e) {
+            throw new TilgangskontrollException("Innlogget bruker er ikke arbeidsgiver.");
+        }
+    }
+
     public InnloggetVeileder hentInnloggetVeileder() {
         try {
             return (InnloggetVeileder) hentInnloggetBruker(Avtalerolle.VEILEDER);

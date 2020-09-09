@@ -1,16 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
-import no.nav.tag.tiltaksgjennomforing.orgenhet.ArbeidsgiverOrganisasjon;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class InnloggetDeltaker extends InnloggetBruker<Fnr> {
 
