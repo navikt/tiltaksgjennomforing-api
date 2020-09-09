@@ -101,6 +101,14 @@ class LyttPåHendelseTilHendelseloggTest {
     }
 
     @Test
+    void skal_logge_gjenopprett() {
+        Avtale avtale = harOpprettetAvtale();
+        ogAvbrutt(avtale);
+        ogGjenopprettet(avtale);
+        sjekkAtHendelseErLogget(avtale, VarslbarHendelseType.GJENOPPRETTET, Avtalerolle.VEILEDER);
+    }
+
+    @Test
     void skal_logge_låst_opp() {
         Avtale avtale = harOpprettetAvtale();
         ogEndretAvtale(avtale);
@@ -162,6 +170,11 @@ class LyttPåHendelseTilHendelseloggTest {
         avbruttInfo.setAvbruttDato(LocalDate.now());
         avbruttInfo.setAvbruttGrunn("En grunn");
         new Veileder(TestData.enNavIdent(), avtale).avbrytAvtale(Instant.now(), avbruttInfo);
+        avtaleRepository.save(avtale);
+    }
+
+    private void ogGjenopprettet(Avtale avtale) {
+        new Veileder(TestData.enNavIdent(), avtale).gjenopprettAvtale();
         avtaleRepository.save(avtale);
     }
 

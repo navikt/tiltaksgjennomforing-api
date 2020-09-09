@@ -250,7 +250,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             this.setAvbruttDato(null);
             this.setAvbruttGrunn(null);
             sistEndretNå();
-            registerEvent(new GjenopprettetEvent(this, veileder.getIdentifikator()));
+            registerEvent(new AvtaleGjenopprettet(this, veileder.getIdentifikator()));
         }
     }
 

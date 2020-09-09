@@ -6,6 +6,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 
 @Value
 public class AvbruttAvVeileder {
-    private final Avtale avtale;
-    private final NavIdent utfortAv;
+    Avtale avtale;
+    NavIdent utfortAv;
 }
