@@ -28,6 +28,10 @@ public class Veileder extends Avtalepart<NavIdent> {
         avtale.avbryt(this, avbruttInfo);
     }
 
+    public void gjenopprettAvtale() {
+        avtale.gjenopprett(this);
+    }
+
     @Override
     public boolean kanEndreAvtale() {
         return true;

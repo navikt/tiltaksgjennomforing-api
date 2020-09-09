@@ -64,4 +64,37 @@ public class VeilederTest {
         assertThat(avtale.getAvbruttDato()).isNotNull();
         assertThat(avtale.getAvbruttGrunn()).isEqualTo("enGrunn");
     }
+
+    @Test
+    public void gjenopprettAvtale__kan_gjenopprette_avtale_etter_veiledergodkjenning() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setAvbrutt(true);
+        avtale.setAvbruttGrunn("enGrunn");
+        avtale.setAvbruttDato(LocalDate.now());
+
+        Veileder veileder = TestData.enVeileder(avtale);
+        veileder.gjenopprettAvtale();
+        assertThat(avtale.isAvbrutt()).isFalse();
+        assertThat(avtale.getAvbruttDato()).isNull();
+        assertThat(avtale.getAvbruttGrunn()).isNull();
+    }
+
+    @Test
+    public void gjenopprettAvtale__kan_gjenopprette_avtale_foer_veiledergodkjenning() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setAvbrutt(true);
+        avtale.setAvbruttGrunn("enGrunn");
+        avtale.setAvbruttDato(LocalDate.now());
+        Veileder veileder = TestData.enVeileder(avtale);
+
+        veileder.gjenopprettAvtale();
+        assertThat(avtale.isAvbrutt()).isFalse();
+        assertThat(avtale.getAvbruttDato()).isNull();
+        assertThat(avtale.getAvbruttGrunn()).isNull();
+    }
 }

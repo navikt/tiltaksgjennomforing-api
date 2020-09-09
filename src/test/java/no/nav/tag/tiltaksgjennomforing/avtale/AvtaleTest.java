@@ -12,7 +12,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AvtaleTest {
@@ -346,7 +345,7 @@ public class AvtaleTest {
     @Test
     public void status__avbrutt() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        avtale.avbryt(TestData.enVeileder(avtale), new AvbruttInfo(LocalDate.now(), "grunnen"));
+        avtale. avbryt(TestData.enVeileder(avtale), new AvbruttInfo(LocalDate.now(), "grunnen"));
         assertThat(avtale.status()).isEqualTo(Status.AVBRUTT.getStatusVerdi());
         assertThat(avtale.getAvbruttDato()).isNotNull();
         assertThat(avtale.getAvbruttGrunn()).isEqualTo("grunnen");
@@ -375,6 +374,32 @@ public class AvtaleTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setAvbrutt(true);
         assertThat(avtale.kanAvbrytes()).isFalse();
+    }
+
+    @Test
+    public void status__gjenopprettet() {
+        Avtale avtale = TestData.enArbeidstreningAvtale();
+        avtale.setAvbrutt(true);
+        avtale.setAvbruttDato(LocalDate.now());
+        avtale.setAvbruttGrunn("enGrunn");
+
+        avtale.gjenopprett(TestData.enVeileder(avtale));
+        assertThat(avtale.status()).isNotEqualTo(Status.AVBRUTT.getStatusVerdi());
+        assertThat(avtale.getAvbruttDato()).isNull();
+        assertThat(avtale.getAvbruttGrunn()).isNull();
+    }
+
+    @Test
+    public void ikke_avbrutt_avtale_kan_ikke_gjenopprettes() {
+        Avtale godkjentAvtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        assertThat(godkjentAvtale.kanGjenopprettes()).isFalse();
+    }
+
+    @Test
+    public void avbrutt_avtale_kan_gjenopprettes() {
+        Avtale godkjentAvtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        godkjentAvtale.setAvbrutt(true);
+        assertThat(godkjentAvtale.kanGjenopprettes()).isTrue();
     }
 
     @Test
