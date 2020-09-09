@@ -91,4 +91,8 @@ public class InnloggetArbeidsgiver extends InnloggetBruker<Fnr> {
     private List<BedriftNr> arbeidsgiverIdentifikatorer() {
         return organisasjoner.stream().map(ArbeidsgiverOrganisasjon::getBedriftNr).collect(Collectors.toList());
     }
+
+    public Iterable<Avtale> hentAvtalerForMinsideArbeidsgiver(AvtaleRepository avtaleRepository, BedriftNr bedriftNr) {
+        return avtaleRepository.findAllByBedriftNr(bedriftNr).filter(this::harLeseTilgang);
+    }
 }
