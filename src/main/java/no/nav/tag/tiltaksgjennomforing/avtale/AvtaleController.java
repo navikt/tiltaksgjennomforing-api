@@ -179,4 +179,18 @@ public class AvtaleController {
         veileder.delAvtaleMedAvtalepart(avtalerolle);
         avtaleRepository.save(avtale);
     }
+
+    @PutMapping("/{avtaleId}/overta")
+    @Transactional
+    public void settNyVeilederPåAvtale(@PathVariable("avtaleId") UUID avtaleId)  {
+
+        //Skrivetilgang til innlogget veileder
+        InnloggetVeileder innloggetVeileder = innloggingService.hentInnloggetVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        innloggetVeileder.sjekkSkriveTilgang(avtale);
+
+
+
+        avtaleRepository.save(avtale);
+    }
 }
