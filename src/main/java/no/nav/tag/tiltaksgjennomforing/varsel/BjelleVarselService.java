@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -35,6 +34,19 @@ public class BjelleVarselService {
                     b.settTilLest();
                     bjelleVarselRepository.save(b);
                 });
+    }
+
+    public void settVarslerTilLest(InnloggetBruker<?> innloggetBruker, List<UUID> varselIder) {
+        bjelleVarslerForInnloggetBruker(innloggetBruker)
+                .filter(b -> erIListe(b.getId(), varselIder))
+                .forEach(b -> {
+                    b.settTilLest();
+                    bjelleVarselRepository.save(b);
+                });
+    }
+
+    private boolean erIListe(UUID id, List<UUID> liste) {
+        return liste.contains(id);
     }
 
     private Stream<BjelleVarsel> bjelleVarslerForInnloggetBruker(InnloggetBruker<?> innloggetBruker) {
