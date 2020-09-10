@@ -8,9 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.IdentifikatorConverter;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -26,6 +24,8 @@ public class BjelleVarsel extends AbstractAggregateRoot<BjelleVarsel> {
     @Convert(converter = IdentifikatorConverter.class)
     private Identifikator identifikator;
     private String varslingstekst;
+    @Enumerated(EnumType.STRING)
+    private VarslbarHendelseType varslbarHendelseType;
     private UUID varslbarHendelse;
     private UUID avtaleId;
     private LocalDateTime tidspunkt;
@@ -37,6 +37,7 @@ public class BjelleVarsel extends AbstractAggregateRoot<BjelleVarsel> {
         varsel.identifikator = identifikator;
         varsel.varslbarHendelse = varslbarHendelse.getId();
         varsel.varslingstekst = varslbarHendelse.getVarslbarHendelseType().getTekst();
+        varsel.varslbarHendelseType = varslbarHendelse.getVarslbarHendelseType();
         varsel.avtaleId = varslbarHendelse.getAvtaleId();
         return varsel;
     }
