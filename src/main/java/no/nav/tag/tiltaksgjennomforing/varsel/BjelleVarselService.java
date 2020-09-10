@@ -38,15 +38,11 @@ public class BjelleVarselService {
 
     public void settVarslerTilLest(InnloggetBruker<?> innloggetBruker, List<UUID> varselIder) {
         bjelleVarslerForInnloggetBruker(innloggetBruker)
-                .filter(b -> erIListe(b.getId(), varselIder))
+                .filter(b -> varselIder.contains(b.getId()))
                 .forEach(b -> {
                     b.settTilLest();
                     bjelleVarselRepository.save(b);
                 });
-    }
-
-    private boolean erIListe(UUID id, List<UUID> liste) {
-        return liste.contains(id);
     }
 
     private Stream<BjelleVarsel> bjelleVarslerForInnloggetBruker(InnloggetBruker<?> innloggetBruker) {
