@@ -244,6 +244,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
     }
 
+    public void overtaAvtale(NavIdent navIdent){
+        this.sjekkOmAvtalenKanEndres();
+        this.setVeilederNavIdent(navIdent);
+        sistEndretNå();
+        registerEvent(new AvtaleEndretVeileder(this, navIdent));
+    }
+
     public void gjenopprett(Veileder veileder) {
         if (this.kanGjenopprettes()) {
             this.setAvbrutt(false);
