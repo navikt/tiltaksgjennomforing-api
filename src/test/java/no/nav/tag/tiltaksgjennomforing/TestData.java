@@ -28,7 +28,7 @@ public class TestData {
     }
 
     public static Avtale enArbeidstreningAvtale() {
-        NavIdent veilderNavIdent = new NavIdent("Z123456");
+        NavIdent veilderNavIdent = new NavIdent("J987654");
         return AvtaleFactory.nyAvtale(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING), veilderNavIdent);
     }
 
