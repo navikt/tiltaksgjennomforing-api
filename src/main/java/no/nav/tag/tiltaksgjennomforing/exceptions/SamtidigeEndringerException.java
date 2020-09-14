@@ -1,11 +1,9 @@
-package no.nav.tag.tiltaksgjennomforing.avtale;
+package no.nav.tag.tiltaksgjennomforing.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+public class SamtidigeEndringerException extends FeilkodeException {
 
-@ResponseStatus(HttpStatus.CONFLICT)
-public class SamtidigeEndringerException extends RuntimeException {
-    public SamtidigeEndringerException(String message) {
-        super(message);
+    @Override
+    String feilkode() {
+        return "SAMTIDIGE_ENDRINGER";
     }
 }
