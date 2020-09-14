@@ -83,4 +83,10 @@ public class LyttPåHendelseTilHendelselogg {
         Hendelselogg hendelselogg = Hendelselogg.nyHendelse(event.getAvtale().getId(), Avtalerolle.VEILEDER, VarslbarHendelseType.GJENOPPRETTET);
         repository.save(hendelselogg);
     }
+
+    @EventListener
+    public void nyVeileder(AvtaleEndretVeileder event) {
+        Hendelselogg hendelselogg = Hendelselogg.nyHendelse(event.getAvtale().getId(), Avtalerolle.VEILEDER, VarslbarHendelseType.NY_VEILEDER);
+        repository.save(hendelselogg);
+    }
 }

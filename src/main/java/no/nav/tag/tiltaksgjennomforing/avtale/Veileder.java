@@ -126,4 +126,11 @@ public class Veileder extends Avtalepart<NavIdent> {
     public void delAvtaleMedAvtalepart(Avtalerolle avtalerolle) {
         avtale.delMedAvtalepart(avtalerolle);
     }
+
+    public void overtaAvtale(Avtale avtale) {
+        if(this.getIdentifikator().equals(avtale.getVeilederNavIdent())){
+            throw new TiltaksgjennomforingException("Innlogget bruker er alledede veileder på denne avtalen");
+        }
+        avtale.overtaAvtale(this.getIdentifikator());
+    }
 }
