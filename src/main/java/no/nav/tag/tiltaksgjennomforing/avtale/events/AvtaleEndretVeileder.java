@@ -7,5 +7,5 @@ import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 @Value
 public class AvtaleEndretVeileder {
     Avtale avtale;
-    NavIdent utfortAv;
+    NavIdent endretFra;
 }

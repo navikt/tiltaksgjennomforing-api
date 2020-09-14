@@ -245,9 +245,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void overtaAvtale(NavIdent navIdent){
+        NavIdent endretFra = this.getVeilederNavIdent();
         this.setVeilederNavIdent(navIdent);
         sistEndretNå();
-        registerEvent(new AvtaleEndretVeileder(this, navIdent));
+        registerEvent(new AvtaleEndretVeileder(this, endretFra));
     }
 
     public void gjenopprett(Veileder veileder) {

@@ -126,6 +126,14 @@ public class MetrikkRegistrering {
         counter("avtale.deltMedAvtalepart", rolle, tiltakstype).increment();
     }
 
+    @EventListener
+    public void avtaleEndretVeileder(AvtaleEndretVeileder event) {
+        Avtalerolle rolle = Avtalerolle.VEILEDER;
+        Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
+        log.info("Avtale byttet veileder: avtaleId={}, tidligere veileder={}, ny veileder={}", event.getAvtale().getId(), event.getEndretFra().asString(), event.getAvtale().getVeilederNavIdent().asString());
+        counter("avtale.endretVEileder", rolle, tiltakstype).increment();
+    }
+
     private Counter counter(String navn, Avtalerolle avtalerolle, Tiltakstype tiltakstype) {
         var builder = Counter.builder("tiltaksgjennomforing." + navn)
                 .tag("tiltak", tiltakstype.name())
