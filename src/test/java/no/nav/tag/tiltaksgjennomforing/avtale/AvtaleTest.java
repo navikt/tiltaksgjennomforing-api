@@ -551,6 +551,13 @@ public class AvtaleTest {
     }
 
     @Test
+    public void status_skal_være_utkast_selv_om_alt_er_utfylt() {
+        Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
+        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER);
+        assertThat(avtale.statusSomEnum()).isEqualTo(Status.UTKAST);
+    }
+
+    @Test
     public void avtale_skal_ikke_kunne_godkjennes_når_ikke_akseptert() {
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
         avtale.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER);
