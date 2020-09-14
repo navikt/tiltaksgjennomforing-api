@@ -71,6 +71,17 @@ public class AvtaleController {
         return ResponseEntity.created(uri).build();
     }
 
+    @PostMapping("/opprett-som-arbeidsgiver")
+    @Transactional
+    public ResponseEntity<?> opprettAvtaleSomArbeidsgiver(@RequestBody OpprettAvtale opprettAvtale) {
+        InnloggetArbeidsgiver innloggetArbeidsgiver = innloggingService.hentInnloggetArbeidsgiver();
+        Avtale avtale = innloggetArbeidsgiver.opprettAvtale(opprettAvtale);
+        avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
+        Avtale opprettetAvtale = avtaleRepository.save(avtale);
+        URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
+        return ResponseEntity.created(uri).build();
+    }
+
     @GetMapping("/{avtaleId}/status-detaljer")
     public AvtaleStatusDetaljer hentAvtaleStatusDetaljer(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);

@@ -22,7 +22,7 @@ public class AvtaleTest {
 
         NavIdent veilederNavIdent = new NavIdent("X123456");
         BedriftNr bedriftNr = new BedriftNr("000111222");
-        Avtale avtale = AvtaleFactory.nyAvtale(new OpprettAvtale(deltakerFnr, bedriftNr, Tiltakstype.ARBEIDSTRENING), veilederNavIdent);
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(deltakerFnr, bedriftNr, Tiltakstype.ARBEIDSTRENING), veilederNavIdent);
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(avtale.getOpprettetTidspunkt()).isNotNull();
             softly.assertThat(avtale.getDeltakerFnr()).isEqualTo(deltakerFnr);
@@ -53,17 +53,17 @@ public class AvtaleTest {
 
     @Test(expected = TiltaksgjennomforingException.class)
     public void nyAvtaleSkalFeileHvisManglerDeltaker() {
-        AvtaleFactory.nyAvtale(new OpprettAvtale(null, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), new NavIdent("X123456"));
+        Avtale.veilederOppretterAvtale(new OpprettAvtale(null, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), new NavIdent("X123456"));
     }
 
     @Test(expected = TiltaksgjennomforingException.class)
     public void nyAvtaleSkalFeileHvisManglerArbeidsgiver() {
-        AvtaleFactory.nyAvtale(new OpprettAvtale(new Fnr("12345678901"), null, Tiltakstype.ARBEIDSTRENING), new NavIdent("X123456"));
+        Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("12345678901"), null, Tiltakstype.ARBEIDSTRENING), new NavIdent("X123456"));
     }
 
     @Test(expected = TiltaksgjennomforingException.class)
     public void nyAvtaleSkalFeileHvisManglerVeileder() {
-        AvtaleFactory.nyAvtale(new OpprettAvtale(new Fnr("11223344555"), new BedriftNr("000111222"), Tiltakstype.ARBEIDSTRENING), null);
+        Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("11223344555"), new BedriftNr("000111222"), Tiltakstype.ARBEIDSTRENING), null);
     }
 
     @Test(expected = SamtidigeEndringerException.class)

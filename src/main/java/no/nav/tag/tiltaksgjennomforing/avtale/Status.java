@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 public enum Status {
+    UFORDELT("Ufordelt"),
     AVBRUTT("Avbrutt"),
     PÅBEGYNT("Påbegynt"),
     MANGLER_GODKJENNING("Mangler godkjenning"),

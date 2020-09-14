@@ -24,17 +24,17 @@ import static org.mockito.Mockito.mock;
 public class TestData {
     public static Avtale enAvtale(Tiltakstype tiltakstype) {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        return AvtaleFactory.nyAvtale(lagOpprettAvtale(tiltakstype), veilderNavIdent);
+        return Avtale.veilederOppretterAvtale(lagOpprettAvtale(tiltakstype), veilderNavIdent);
     }
 
     public static Avtale enArbeidstreningAvtale() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        return AvtaleFactory.nyAvtale(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING), veilderNavIdent);
+        return Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING), veilderNavIdent);
     }
 
     public static Avtale enAvtaleMedAltUtfylt() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        Avtale avtale = AvtaleFactory.nyAvtale(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING), veilderNavIdent);
+        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING), veilderNavIdent);
         avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER);
         return avtale;
     }
