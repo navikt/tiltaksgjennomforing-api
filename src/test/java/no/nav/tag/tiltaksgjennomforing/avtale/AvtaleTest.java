@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.TestData;
+import no.nav.tag.tiltaksgjennomforing.exceptions.AvtaleErIkkeAkseptertException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.AvtalensVarighetMerEnnMaksimaltAntallMånederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class AvtaleTest {
 
@@ -538,5 +540,29 @@ public class AvtaleTest {
     public void avtaleklarForOppstart() {
         Avtale avtale = TestData.enAvtaleKlarForOppstart();
         assertThat(avtale.status()).isEqualTo(Status.KLAR_FOR_OPPSTART.getStatusVerdi());
+    }
+
+    @Test
+    public void avtale_opprettet_av_arbedsgiver_skal_være_ikke_akseptert() {
+        Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
+        assertThat(avtale.isUtkastAkseptert()).isFalse();
+        assertThat(avtale.isOpprettetAvArbeidsgiver()).isTrue();
+        assertThat(avtale.statusSomEnum()).isEqualTo(Status.UTKAST);
+    }
+
+    @Test
+    public void avtale_skal_ikke_kunne_godkjennes_når_ikke_akseptert() {
+        Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
+        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER);
+        assertThatThrownBy(() -> avtale.godkjennForArbeidsgiver(TestData.enIdentifikator())).isInstanceOf(AvtaleErIkkeAkseptertException.class);
+    }
+
+    @Test
+    public void avtale_skal_kunne_godkjennes_når_akseptert() {
+        Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
+        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER);
+        avtale.aksepterUtkast(TestData.enNavIdent());
+        avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
+        assertThat(avtale.erGodkjentAvArbeidsgiver());
     }
 }

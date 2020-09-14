@@ -57,4 +57,8 @@ public class InnloggetVeileder extends InnloggetBruker<NavIdent> {
             return emptyList();
         }
     }
+
+    public void aksepterUtkast(Avtale avtale) {
+        avtale.aksepterUtkast(getIdentifikator());
+    }
 }
