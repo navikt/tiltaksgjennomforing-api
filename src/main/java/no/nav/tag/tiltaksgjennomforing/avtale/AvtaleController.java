@@ -71,6 +71,27 @@ public class AvtaleController {
         return ResponseEntity.created(uri).build();
     }
 
+    @PostMapping("/opprett-som-arbeidsgiver")
+    @Transactional
+    public ResponseEntity<?> opprettAvtaleSomArbeidsgiver(@RequestBody OpprettAvtale opprettAvtale) {
+        InnloggetArbeidsgiver innloggetArbeidsgiver = innloggingService.hentInnloggetArbeidsgiver();
+        Avtale avtale = innloggetArbeidsgiver.opprettAvtale(opprettAvtale);
+        avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
+        Avtale opprettetAvtale = avtaleRepository.save(avtale);
+        URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
+        return ResponseEntity.created(uri).build();
+    }
+
+    @PostMapping("/{avtaleId}/aksepter-utkast")
+    @Transactional
+    public void aksepterUtkast(@PathVariable("avtaleId") UUID avtaleId) {
+        InnloggetVeileder innloggetVeileder = innloggingService.hentInnloggetVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        innloggetVeileder.sjekkSkriveTilgang(avtale);
+        innloggetVeileder.aksepterUtkast(avtale);
+        avtaleRepository.save(avtale);
+    }
+
     @GetMapping("/{avtaleId}/status-detaljer")
     public AvtaleStatusDetaljer hentAvtaleStatusDetaljer(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);

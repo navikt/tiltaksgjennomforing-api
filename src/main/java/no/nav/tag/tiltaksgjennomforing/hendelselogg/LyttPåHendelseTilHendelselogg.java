@@ -19,6 +19,12 @@ public class LyttPåHendelseTilHendelselogg {
     }
 
     @EventListener
+    public void avtaleOpprettetAvArbeidsgiver(AvtaleOpprettetAvArbeidsgiver event) {
+        Hendelselogg hendelselogg = Hendelselogg.nyHendelse(event.getAvtale().getId(), Avtalerolle.ARBEIDSGIVER, VarslbarHendelseType.OPPRETTET_AV_ARBEIDSGIVER);
+        repository.save(hendelselogg);
+    }
+
+    @EventListener
     public void avtaleEndret(AvtaleEndret event) {
         Hendelselogg hendelselogg = Hendelselogg.nyHendelse(event.getAvtale().getId(), event.getUtfortAv(), VarslbarHendelseType.ENDRET);
         repository.save(hendelselogg);

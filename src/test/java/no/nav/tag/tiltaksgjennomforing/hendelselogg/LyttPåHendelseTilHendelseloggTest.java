@@ -34,6 +34,12 @@ class LyttPåHendelseTilHendelseloggTest {
     }
 
     @Test
+    void skal_logge_opprett_av_arbeidsgiver_kall() {
+        Avtale avtale = harOpprettetAvtaleAvAg();
+        sjekkAtHendelseErLogget(avtale, VarslbarHendelseType.OPPRETTET_AV_ARBEIDSGIVER, Avtalerolle.ARBEIDSGIVER);
+    }
+
+    @Test
     void skal_logge_endre_kall() {
         Avtale avtale = harOpprettetAvtale();
         ogEndretAvtale(avtale);
@@ -120,7 +126,13 @@ class LyttPåHendelseTilHendelseloggTest {
     }
 
     private Avtale harOpprettetAvtale() {
-        Avtale avtale = AvtaleFactory.nyAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
+        avtaleRepository.save(avtale);
+        return avtale;
+    }
+
+    private Avtale harOpprettetAvtaleAvAg() {
+        Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
         avtaleRepository.save(avtale);
         return avtale;
     }
