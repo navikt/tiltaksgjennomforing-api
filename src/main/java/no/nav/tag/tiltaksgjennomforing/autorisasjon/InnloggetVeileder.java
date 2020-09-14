@@ -17,7 +17,7 @@ public class InnloggetVeileder extends InnloggetBruker<NavIdent> {
     }
 
     public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
-        return AvtaleFactory.nyAvtale(opprettAvtale, getIdentifikator());
+        return Avtale.veilederOppretterAvtale(opprettAvtale, getIdentifikator());
     }
 
     @Override
@@ -56,5 +56,9 @@ public class InnloggetVeileder extends InnloggetBruker<NavIdent> {
         } else {
             return emptyList();
         }
+    }
+
+    public void aksepterUtkast(Avtale avtale) {
+        avtale.aksepterUtkast(getIdentifikator());
     }
 }

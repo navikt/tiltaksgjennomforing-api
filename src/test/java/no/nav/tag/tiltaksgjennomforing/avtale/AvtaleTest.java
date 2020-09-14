@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.TestData;
+import no.nav.tag.tiltaksgjennomforing.exceptions.AvtaleErIkkeAkseptertException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.AvtalensVarighetMerEnnMaksimaltAntallMånederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class AvtaleTest {
 
@@ -22,7 +24,7 @@ public class AvtaleTest {
 
         NavIdent veilederNavIdent = new NavIdent("X123456");
         BedriftNr bedriftNr = new BedriftNr("000111222");
-        Avtale avtale = AvtaleFactory.nyAvtale(new OpprettAvtale(deltakerFnr, bedriftNr, Tiltakstype.ARBEIDSTRENING), veilederNavIdent);
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(deltakerFnr, bedriftNr, Tiltakstype.ARBEIDSTRENING), veilederNavIdent);
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(avtale.getOpprettetTidspunkt()).isNotNull();
             softly.assertThat(avtale.getDeltakerFnr()).isEqualTo(deltakerFnr);
@@ -53,17 +55,17 @@ public class AvtaleTest {
 
     @Test(expected = TiltaksgjennomforingException.class)
     public void nyAvtaleSkalFeileHvisManglerDeltaker() {
-        AvtaleFactory.nyAvtale(new OpprettAvtale(null, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), new NavIdent("X123456"));
+        Avtale.veilederOppretterAvtale(new OpprettAvtale(null, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), new NavIdent("X123456"));
     }
 
     @Test(expected = TiltaksgjennomforingException.class)
     public void nyAvtaleSkalFeileHvisManglerArbeidsgiver() {
-        AvtaleFactory.nyAvtale(new OpprettAvtale(new Fnr("12345678901"), null, Tiltakstype.ARBEIDSTRENING), new NavIdent("X123456"));
+        Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("12345678901"), null, Tiltakstype.ARBEIDSTRENING), new NavIdent("X123456"));
     }
 
     @Test(expected = TiltaksgjennomforingException.class)
     public void nyAvtaleSkalFeileHvisManglerVeileder() {
-        AvtaleFactory.nyAvtale(new OpprettAvtale(new Fnr("11223344555"), new BedriftNr("000111222"), Tiltakstype.ARBEIDSTRENING), null);
+        Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("11223344555"), new BedriftNr("000111222"), Tiltakstype.ARBEIDSTRENING), null);
     }
 
     @Test(expected = SamtidigeEndringerException.class)
@@ -538,5 +540,36 @@ public class AvtaleTest {
     public void avtaleklarForOppstart() {
         Avtale avtale = TestData.enAvtaleKlarForOppstart();
         assertThat(avtale.status()).isEqualTo(Status.KLAR_FOR_OPPSTART.getStatusVerdi());
+    }
+
+    @Test
+    public void avtale_opprettet_av_arbedsgiver_skal_være_ikke_akseptert() {
+        Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
+        assertThat(avtale.isUtkastAkseptert()).isFalse();
+        assertThat(avtale.isOpprettetAvArbeidsgiver()).isTrue();
+        assertThat(avtale.statusSomEnum()).isEqualTo(Status.UTKAST);
+    }
+
+    @Test
+    public void status_skal_være_utkast_selv_om_alt_er_utfylt() {
+        Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
+        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER);
+        assertThat(avtale.statusSomEnum()).isEqualTo(Status.UTKAST);
+    }
+
+    @Test
+    public void avtale_skal_ikke_kunne_godkjennes_når_ikke_akseptert() {
+        Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
+        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER);
+        assertThatThrownBy(() -> avtale.godkjennForArbeidsgiver(TestData.enIdentifikator())).isInstanceOf(AvtaleErIkkeAkseptertException.class);
+    }
+
+    @Test
+    public void avtale_skal_kunne_godkjennes_når_akseptert() {
+        Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
+        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER);
+        avtale.aksepterUtkast(TestData.enNavIdent());
+        avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
+        assertThat(avtale.erGodkjentAvArbeidsgiver());
     }
 }
