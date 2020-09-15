@@ -200,7 +200,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     void sjekkOmKanGodkjennes() {
         if (!erAltUtfylt()) {
-            //throw new TiltaksgjennomforingException("Alt må være utfylt før avtalen kan godkjennes.");
             throw new AltMåVæreFyltUtException();
         }
     }
