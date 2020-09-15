@@ -1,7 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing;
 
 import no.nav.security.spring.oidc.api.EnableOIDCTokenValidation;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.SjekkAktiveProfilerInitializer;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -17,7 +16,14 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 public class TiltaksgjennomforingApplication {
     public static void main(String[] args) {
         new SpringApplicationBuilder(TiltaksgjennomforingApplication.class)
-                .initializers(new SjekkAktiveProfilerInitializer())
+                .initializers(applicationContext -> {
+                    String clusterName = System.getenv("NAIS_CLUSTER_NAME");
+                    if (clusterName == null) {
+                        System.out.println("Kan ikke startes uten miljøvariabel NAIS_CLUSTER_NAME. Lokalt kan LokalTiltaksgjennomforingApplication kjøres.");
+                        System.exit(1);
+                    }
+                    applicationContext.getEnvironment().addActiveProfile(clusterName);
+                })
                 .build()
                 .run();
     }
