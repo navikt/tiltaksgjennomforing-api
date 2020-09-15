@@ -1,10 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.TestData;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AvtaleErIkkeAkseptertException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AvtalensVarighetMerEnnMaksimaltAntallMånederException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 
@@ -223,13 +220,13 @@ public class AvtaleTest {
         assertThat(avtale.getSistEndret()).isAfter(førstEndret);
     }
 
-    @Test(expected = TiltaksgjennomforingException.class)
+    @Test(expected = AltMåVæreFyltUtException.class)
     public void kanIkkeGodkjennesNaarIkkeAltErUtfylt() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         avtale.sjekkOmKanGodkjennes();
     }
 
-    @Test(expected = TiltaksgjennomforingException.class)
+    @Test(expected = AltMåVæreFyltUtException.class)
     public void kanIkkeGodkjennesNaarDeltakerTlfMangler() {
         // Deltaker tlf ble innført etter at avtaler er opprettet. Det kan derfor være
         // avtaler som er godkjent av deltaker og AG som mangler tlf.

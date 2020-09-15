@@ -14,8 +14,9 @@ public class AvbruttInfo {
     private LocalDate avbruttDato;
     private String avbruttGrunn;
 
-    public void grunnErOppgitt(){
-        if(avbruttGrunn == null || avbruttGrunn.isEmpty())
-            throw new TiltaksgjennomforingException("Grunn til abrytelse av avtale må oppgis");
+    public void grunnErOppgitt() {
+        if (avbruttGrunn == null || avbruttGrunn.isEmpty()) {
+            throw new TiltaksgjennomforingException("Grunn til avbrytelse av avtale må oppgis");
+        }
     }
 }

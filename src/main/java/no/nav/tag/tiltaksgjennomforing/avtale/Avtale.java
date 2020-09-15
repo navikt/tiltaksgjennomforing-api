@@ -7,10 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Delegate;
 import lombok.experimental.FieldNameConstants;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AvtaleErAlleredeAkseptertException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AvtaleErIkkeAkseptertException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
@@ -179,7 +176,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     void sjekkSistEndret(Instant sistEndret) {
         if (sistEndret == null || sistEndret.isBefore(this.sistEndret)) {
-            throw new SamtidigeEndringerException("Du må oppdatere siden før du kan lagre eller godkjenne. Det er gjort endringer i avtalen som du ikke har sett.");
+            throw new SamtidigeEndringerException();
         }
     }
 
@@ -219,7 +216,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             throw new AvtaleErIkkeAkseptertException();
         }
         if (!erAltUtfylt()) {
-            throw new TiltaksgjennomforingException("Alt må være utfylt før avtalen kan godkjennes.");
+            throw new AltMåVæreFyltUtException();
         }
     }
 
