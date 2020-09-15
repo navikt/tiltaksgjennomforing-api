@@ -96,4 +96,8 @@ public class InnloggetArbeidsgiver extends InnloggetBruker<Fnr> {
                 .filter(this::harLeseTilgang)
                 .collect(Collectors.toList());
     }
+
+    public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
+        return Avtale.arbeidsgiverOppretterAvtale(opprettAvtale);
+    }
 }

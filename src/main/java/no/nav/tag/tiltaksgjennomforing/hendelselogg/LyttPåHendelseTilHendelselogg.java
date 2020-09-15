@@ -19,6 +19,12 @@ public class LyttPåHendelseTilHendelselogg {
     }
 
     @EventListener
+    public void avtaleOpprettetAvArbeidsgiver(AvtaleOpprettetAvArbeidsgiver event) {
+        Hendelselogg hendelselogg = Hendelselogg.nyHendelse(event.getAvtale().getId(), Avtalerolle.ARBEIDSGIVER, VarslbarHendelseType.OPPRETTET_AV_ARBEIDSGIVER);
+        repository.save(hendelselogg);
+    }
+
+    @EventListener
     public void avtaleEndret(AvtaleEndret event) {
         Hendelselogg hendelselogg = Hendelselogg.nyHendelse(event.getAvtale().getId(), event.getUtfortAv(), VarslbarHendelseType.ENDRET);
         repository.save(hendelselogg);
@@ -75,6 +81,12 @@ public class LyttPåHendelseTilHendelselogg {
     @EventListener
     public void gjenopprettet(AvtaleGjenopprettet event) {
         Hendelselogg hendelselogg = Hendelselogg.nyHendelse(event.getAvtale().getId(), Avtalerolle.VEILEDER, VarslbarHendelseType.GJENOPPRETTET);
+        repository.save(hendelselogg);
+    }
+
+    @EventListener
+    public void nyVeileder(AvtaleEndretVeileder event) {
+        Hendelselogg hendelselogg = Hendelselogg.nyHendelse(event.getAvtale().getId(), Avtalerolle.VEILEDER, VarslbarHendelseType.NY_VEILEDER);
         repository.save(hendelselogg);
     }
 }

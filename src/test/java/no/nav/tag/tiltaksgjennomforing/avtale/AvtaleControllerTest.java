@@ -98,8 +98,8 @@ public class AvtaleControllerTest {
     @Test
     public void hentAvtalerOpprettetAvVeileder_skal_returnere_avtaler_dersom_veileder_har_tilgang() {
         NavIdent veilederNavIdent = new NavIdent("Z222222");
-        Avtale avtaleForVeilederSomSøkesEtter = AvtaleFactory.nyAvtale(lagOpprettAvtale(), veilederNavIdent);
-        Avtale avtaleForAnnenVeilder = AvtaleFactory.nyAvtale(lagOpprettAvtale(), new NavIdent("Z111111"));
+        Avtale avtaleForVeilederSomSøkesEtter = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), veilederNavIdent);
+        Avtale avtaleForAnnenVeilder = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), new NavIdent("Z111111"));
         InnloggetVeileder innloggetBruker = new InnloggetVeileder(new NavIdent("Z333333"), tilgangskontrollService);
         værInnloggetSom(innloggetBruker);
         when(avtaleRepository.findAllByVeilederNavIdent(veilederNavIdent)).thenReturn(asList(avtaleForVeilederSomSøkesEtter, avtaleForAnnenVeilder));
@@ -115,7 +115,7 @@ public class AvtaleControllerTest {
     @Test
     public void hentAvtalerOpprettetAvVeileder_skal_returnere_tom_liste_dersom_veileder_ikke_har_tilgang() {
         NavIdent veilederNavIdent = new NavIdent("Z222222");
-        Avtale avtaleForVeilederSomSøkesEtter = AvtaleFactory.nyAvtale(lagOpprettAvtale(), veilederNavIdent);
+        Avtale avtaleForVeilederSomSøkesEtter = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), veilederNavIdent);
         InnloggetVeileder innloggetBruker = new InnloggetVeileder(new NavIdent("Z333333"), tilgangskontrollService);
         værInnloggetSom(innloggetBruker);
         when(avtaleRepository.findAllByVeilederNavIdent(veilederNavIdent)).thenReturn(List.of(avtaleForVeilederSomSøkesEtter));
@@ -127,8 +127,8 @@ public class AvtaleControllerTest {
     @Test
     public void hentAvtalerOpprettetAvInnloggetVeileder_skal_returnere_avtaler_dersom_veileder_har_tilgang() {
         NavIdent navIdent = new NavIdent("Z333333");
-        Avtale avtaleForInnloggetVeileder = AvtaleFactory.nyAvtale(lagOpprettAvtale(), navIdent);
-        Avtale avtaleForAnnenVeilder = AvtaleFactory.nyAvtale(lagOpprettAvtale(), new NavIdent("Z111111"));
+        Avtale avtaleForInnloggetVeileder = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), navIdent);
+        Avtale avtaleForAnnenVeilder = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), new NavIdent("Z111111"));
         InnloggetVeileder innloggetVeileder = new InnloggetVeileder(navIdent, tilgangskontrollService);
         værInnloggetSom(innloggetVeileder);
         when(avtaleRepository.findAllByVeilederNavIdent(navIdent)).thenReturn(asList(avtaleForInnloggetVeileder, avtaleForAnnenVeilder));
@@ -189,7 +189,7 @@ public class AvtaleControllerTest {
     @Test
     public void hentAlleAvtalerInnloggetBrukerHarTilgangTilSkalIkkeReturnereAvtalerManIkkeHarTilgangTil() {
         Avtale avtaleMedTilgang = TestData.enArbeidstreningAvtale();
-        Avtale avtaleUtenTilgang = AvtaleFactory.nyAvtale(new OpprettAvtale(new Fnr("89898989898"), new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), new NavIdent("X643564"));
+        Avtale avtaleUtenTilgang = Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("89898989898"), new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), new NavIdent("X643564"));
         InnloggetDeltaker innloggetDeltaker = TestData.innloggetDeltaker(TestData.enDeltaker(avtaleMedTilgang));
         værInnloggetSom(innloggetDeltaker);
         List<Avtale> avtalerBrukerHarTilgangTil = lagListeMedAvtaler(avtaleMedTilgang, 5);

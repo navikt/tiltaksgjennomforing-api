@@ -19,7 +19,9 @@ public enum VarslbarHendelseType {
     DELT_MED_ARBEIDSGIVER("Avtale delt med arbeidsgiver"),
     AVBRUTT("Avtale avbrutt av veileder"),
     LÅST_OPP("Avtale låst opp av veileder"),
-    GJENOPPRETTET("Avtale gjenopprettet")
+    GJENOPPRETTET("Avtale gjenopprettet"),
+    OPPRETTET_AV_ARBEIDSGIVER("Avtale er opprettet av arbeidsgiver"),
+    NY_VEILEDER("Avtale tildelt ny veileder")
     ;
 
     private final String tekst;

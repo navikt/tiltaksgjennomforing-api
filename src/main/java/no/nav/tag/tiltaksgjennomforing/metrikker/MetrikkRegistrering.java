@@ -51,8 +51,15 @@ public class MetrikkRegistrering {
     @EventListener
     public void avtaleOpprettet(AvtaleOpprettetAvVeileder event) {
         Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
-        log.info("Avtale opprettet, avtaleId={} ident={}, tiltakstype={}", event.getAvtale().getId(), event.getUtfortAv(), tiltakstype);
+        log.info("Avtale opprettet av veileder, avtaleId={} ident={}, tiltakstype={}", event.getAvtale().getId(), event.getUtfortAv(), tiltakstype);
         counter("avtale.opprettet", Avtalerolle.VEILEDER, tiltakstype).increment();
+    }
+
+    @EventListener
+    public void avtaleOpprettetAvArbeidsgiver(AvtaleOpprettetAvArbeidsgiver event) {
+        Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
+        log.info("Avtale opprettet av arbeidsgiver, avtaleId={}, tiltakstype={}", event.getAvtale().getId(), tiltakstype);
+        counter("avtale.opprettet", Avtalerolle.ARBEIDSGIVER, tiltakstype).increment();
     }
 
     @EventListener
@@ -124,6 +131,14 @@ public class MetrikkRegistrering {
         Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
         log.info("Avtale delt med {}, avtaleId={}, avtalepart={}, tiltakstype={}", event.getAvtalepart(), event.getAvtale().getId(), rolle, tiltakstype);
         counter("avtale.deltMedAvtalepart", rolle, tiltakstype).increment();
+    }
+
+    @EventListener
+    public void avtaleEndretVeileder(AvtaleEndretVeileder event) {
+        Avtalerolle rolle = Avtalerolle.VEILEDER;
+        Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
+        log.info("Avtale byttet veileder: avtaleId={}, tidligere veileder={}, ny veileder={}", event.getAvtale().getId(), event.getEndretFra().asString(), event.getAvtale().getVeilederNavIdent().asString());
+        counter("avtale.endretVEileder", rolle, tiltakstype).increment();
     }
 
     private Counter counter(String navn, Avtalerolle avtalerolle, Tiltakstype tiltakstype) {

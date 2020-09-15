@@ -97,4 +97,22 @@ public class VeilederTest {
         assertThat(avtale.getAvbruttDato()).isNull();
         assertThat(avtale.getAvbruttGrunn()).isNull();
     }
+
+    @Test
+    public void overtarAvtale() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        NavIdent gammelVeileder = avtale.getVeilederNavIdent();
+        Veileder nyVeileder = new Veileder(new NavIdent("J987654"), avtale);
+
+        nyVeileder.overtaAvtale(avtale);
+        assertThat(gammelVeileder).isNotEqualTo(nyVeileder.getIdentifikator());
+        assertThat(avtale.getVeilederNavIdent()).isEqualTo(nyVeileder.getIdentifikator());
+    }
+
+    @Test(expected = TiltaksgjennomforingException.class)
+    public void overtarAvtale__feil_hvis_samme_ident() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        Veileder veileder = TestData.enVeileder(avtale);
+        veileder.overtaAvtale(avtale);
+    }
 }

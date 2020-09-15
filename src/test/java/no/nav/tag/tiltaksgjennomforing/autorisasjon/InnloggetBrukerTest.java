@@ -31,7 +31,7 @@ public class InnloggetBrukerTest {
         deltaker = new Fnr("10000000000");
         navIdent = new NavIdent("X100000");
         bedriftNr = new BedriftNr("12345678901");
-        avtale = AvtaleFactory.nyAvtale(new OpprettAvtale(deltaker, bedriftNr, Tiltakstype.ARBEIDSTRENING), navIdent);
+        avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(deltaker, bedriftNr, Tiltakstype.ARBEIDSTRENING), navIdent);
         tilgangskontrollService = mock(TilgangskontrollService.class);
     }
 
