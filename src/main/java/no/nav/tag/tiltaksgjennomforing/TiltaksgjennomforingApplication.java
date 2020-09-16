@@ -22,7 +22,7 @@ public class TiltaksgjennomforingApplication {
                         System.out.println("Kan ikke startes uten miljøvariabel NAIS_CLUSTER_NAME. Lokalt kan LokalTiltaksgjennomforingApplication kjøres.");
                         System.exit(1);
                     }
-                    applicationContext.getEnvironment().addActiveProfile(clusterName);
+                    applicationContext.getEnvironment().setActiveProfiles(clusterName);
                 })
                 .build()
                 .run();

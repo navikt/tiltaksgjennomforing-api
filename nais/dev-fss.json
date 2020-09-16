@@ -1,4 +1,3 @@
 {
-  "ingress": "https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api/",
-  "spring-profil": "dev-fss"
+  "ingress": "https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api/"
 }
