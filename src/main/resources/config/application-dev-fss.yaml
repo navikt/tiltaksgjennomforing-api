@@ -28,7 +28,6 @@ no.nav.security.oidc:
 
 tiltaksgjennomforing:
   database:
-    credentials-fra-vault: true
     database-navn: tiltaksgjennomforing-preprod
     database-url: ${spring.datasource.url}
     vault-sti: postgresql/preprod-fss

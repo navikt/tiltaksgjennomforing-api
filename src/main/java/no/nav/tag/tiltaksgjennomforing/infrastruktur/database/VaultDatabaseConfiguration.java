@@ -2,20 +2,21 @@ package no.nav.tag.tiltaksgjennomforing.infrastruktur.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.vault.jdbc.hikaricp.HikariCPVaultUtil;
 import no.nav.vault.jdbc.hikaricp.VaultError;
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import javax.sql.DataSource;
 
 @Configuration
-@ConditionalOnProperty("tiltaksgjennomforing.database.credentials-fra-vault")
+@Profile({ Miljø.DEV_FSS, Miljø.PROD_FSS })
 public class VaultDatabaseConfiguration {
     private final DatabaseProperties config;
 
