@@ -2,7 +2,6 @@ apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
   name: tiltaksgjennomforing-api
-  namespace: default
   labels:
     team: arbeidsgiver
 spec:
