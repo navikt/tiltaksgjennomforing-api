@@ -33,8 +33,10 @@ spec:
     requests:
       cpu: 500m
       memory: 600Mi
+  {{#if ingress}}
   ingresses:
     - {{ingress}}
+  {{/if}}
   vault:
     enabled: true
   webproxy: true
