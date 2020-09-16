@@ -16,18 +16,18 @@ no.nav.security.oidc:
   issuers: selvbetjening, isso
   issuer:
     selvbetjening:
-      discoveryurl: http://metadata-selvbetjening
+      discoveryurl: http://tiltak-fakelogin/metadata?issuer=selvbetjening
       accepted_audience: aud-selvbetjening
     isso:
-      discoveryurl: http://metadata-isso
+      discoveryurl: http://tiltak-fakelogin/metadata?issuer=selvbetjening
       accepted_audience: aud-isso
-
+    
 tiltaksgjennomforing:
   kafka:
     enabled: false
   altinn-tilgangsstyring:
-    uri: http://localhost:8090/altinn-tilgangsstyring
-    proxyUri: http://localhost:9090/altinn-rettigheter-proxy/ekstern/altinn/api/serviceowner/reportees
+    uri: http://tiltaksgjennomforing-wiremock/altinn-tilgangsstyring
+    proxyUri: http://tiltaksgjennomforing-wiremock/altinn-rettigheter-proxy/ekstern/altinn/api/serviceowner/reportees
     lts-midlertidig-service-code: 5516
     lts-midlertidig-service-edition: 1
     lts-varig-service-code: 5516
@@ -35,17 +35,17 @@ tiltaksgjennomforing:
     arbtrening-service-code: 5332
     arbtrening-service-edition: 1
   ereg:
-    uri: http://localhost:8090/ereg
+    uri: http://tiltaksgjennomforing-wiremock/ereg
   sts:
     username: foo
     password: bar
-    rest-uri: http://localhost:8090/sts/sts/token
+    rest-uri: http://tiltaksgjennomforing-wiremock/sts/sts/token
   axsys:
-    uri: http://localhost:8090/axsys
+    uri: http://tiltaksgjennomforing-wiremock/axsys
   abac:
-    veilarbabac-uri: http://localhost:8090/veilarbabac
+    veilarbabac-uri: http://tiltaksgjennomforing-wiremock/veilarbabac
   consumer:
     system:
       id: testsystem
   persondata:
-    uri: http://localhost:8090/persondata
+    uri: http://tiltaksgjennomforing-wiremock/persondata
