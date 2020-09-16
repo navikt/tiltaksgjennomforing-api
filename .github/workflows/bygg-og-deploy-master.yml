@@ -103,11 +103,18 @@ jobs:
       - name: Sjekk ut kode
         uses: actions/checkout@v2
 
+      - name: Generer tiltaksgjennomforing wiremock mapping configmap
+        run: |
+          curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x ./kubectl
+          kubectl create configmap --dry-run -o yaml --from-file src/test/resources/mappings -n arbeidsgiver tiltaksgjennomforing-wiremock > nais/cm.yaml
+          cat nais/cm.yaml # debug
+
       - name: Deploy til labs
         uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: labs-gcp
-          RESOURCE: nais/naiserator.yaml,nais/wiremock.yaml,nais/wiremock-mappings.yaml
+          RESOURCE: nais/naiserator.yaml,nais/wiremock.yaml,nais/wiremock-mappings.yaml,nais/cm.yaml
           PRINT_PAYLOAD: true
           VAR: deploytrigger=${{ github.run_number }},namespace=arbeidsgiver,labs=true
