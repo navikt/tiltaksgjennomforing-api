@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 
 import no.nav.tag.tiltaksgjennomforing.KafkaMockServer;
+import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.varsel.SmsVarsel;
 import no.nav.tag.tiltaksgjennomforing.varsel.SmsVarselRepository;
@@ -28,9 +29,9 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(properties = {"tiltaksgjennomforing.kafka.enabled=true"})
 @DirtiesContext
-@ActiveProfiles({"dev", "kafka", "kafka-test"})
+@ActiveProfiles({ Miljø.LOCAL, "kafka-test"})
 public class SmsVarselProducerTest {
 
     @Autowired

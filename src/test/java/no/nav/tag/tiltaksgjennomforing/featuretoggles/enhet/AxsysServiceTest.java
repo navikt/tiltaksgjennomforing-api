@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet;
 
+import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
@@ -19,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@ActiveProfiles({"dev", "wiremock"})
+@ActiveProfiles({ Miljø.LOCAL, "wiremock"})
 @DirtiesContext
 public class AxsysServiceTest {
     @Autowired

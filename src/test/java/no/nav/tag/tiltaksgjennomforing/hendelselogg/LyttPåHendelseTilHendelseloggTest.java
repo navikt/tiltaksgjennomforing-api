@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.hendelselogg;
 
+import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
@@ -17,7 +18,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@ActiveProfiles({ "dev" })
+@ActiveProfiles({ Miljø.LOCAL })
 @DirtiesContext
 class LyttPåHendelseTilHendelseloggTest {
     @Autowired

@@ -1,4 +1,3 @@
 {
-  "ingress": "https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api/",
-  "spring-profil": "preprod,kafka"
+  "ingress": "https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api/"
 }

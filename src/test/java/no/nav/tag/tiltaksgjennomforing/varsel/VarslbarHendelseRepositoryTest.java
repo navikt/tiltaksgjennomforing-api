@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
+import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.TestData;
@@ -15,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@ActiveProfiles("dev")
+@ActiveProfiles(Miljø.LOCAL)
 @DirtiesContext
 public class VarslbarHendelseRepositoryTest {
     @Autowired

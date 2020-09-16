@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 
 import no.finn.unleash.strategy.Strategy;
+import no.nav.tag.tiltaksgjennomforing.Miljø;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -14,7 +15,7 @@ public class ByEnvironmentStrategy implements Strategy {
     private final String environment;
 
     public ByEnvironmentStrategy() {
-        this.environment = Optional.ofNullable(System.getenv("NAIS_CLUSTER_NAME")).orElse("local");
+        this.environment = Optional.ofNullable(System.getenv("NAIS_CLUSTER_NAME")).orElse(Miljø.LOCAL);
     }
 
     @Override

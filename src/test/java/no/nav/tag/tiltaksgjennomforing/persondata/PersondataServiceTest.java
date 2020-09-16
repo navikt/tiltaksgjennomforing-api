@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.persondata;
 
+import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import org.junit.Test;
@@ -14,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@ActiveProfiles({"dev", "wiremock"})
+@ActiveProfiles({ Miljø.LOCAL, "wiremock"})
 @DirtiesContext
 public class PersondataServiceTest {
     @Autowired

@@ -2,11 +2,11 @@ package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.varsel.events.SmsVarselOpprettet;
-import org.springframework.context.annotation.Profile;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
-@Profile("kafka")
+@ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
 @Component
 @RequiredArgsConstructor
 public class OpprettSmsVarselKafkaMelding {
