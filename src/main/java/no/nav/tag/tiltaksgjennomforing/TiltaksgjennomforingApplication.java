@@ -15,15 +15,13 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories
 public class TiltaksgjennomforingApplication {
     public static void main(String[] args) {
+        String clusterName = System.getenv("NAIS_CLUSTER_NAME");
+        if (clusterName == null) {
+            System.out.println("Kan ikke startes uten miljøvariabel NAIS_CLUSTER_NAME. Lokalt kan LokalTiltaksgjennomforingApplication kjøres.");
+            System.exit(1);
+        }
         new SpringApplicationBuilder(TiltaksgjennomforingApplication.class)
-                .initializers(applicationContext -> {
-                    String clusterName = System.getenv("NAIS_CLUSTER_NAME");
-                    if (clusterName == null) {
-                        System.out.println("Kan ikke startes uten miljøvariabel NAIS_CLUSTER_NAME. Lokalt kan LokalTiltaksgjennomforingApplication kjøres.");
-                        System.exit(1);
-                    }
-                    applicationContext.getEnvironment().setActiveProfiles(clusterName);
-                })
+                .profiles(clusterName)
                 .build()
                 .run();
     }
