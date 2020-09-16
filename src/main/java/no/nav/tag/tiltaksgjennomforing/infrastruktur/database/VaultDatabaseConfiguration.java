@@ -7,15 +7,15 @@ import no.nav.vault.jdbc.hikaricp.VaultError;
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 
 import javax.sql.DataSource;
 
 @Configuration
-@Profile({"preprod", "prod"})
+@ConditionalOnProperty("tiltaksgjennomforing.database.credentials-fra-vault")
 public class VaultDatabaseConfiguration {
     private final DatabaseProperties config;
 

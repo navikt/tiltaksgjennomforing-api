@@ -28,6 +28,7 @@ no.nav.security.oidc:
 
 tiltaksgjennomforing:
   database:
+    credentials-fra-vault: true
     database-navn: tiltaksgjennomforing-prod
     database-url: ${spring.datasource.url}
     vault-sti: postgresql/prod-fss
@@ -52,6 +53,7 @@ tiltaksgjennomforing:
   abac:
     veilarbabac-uri: https://veilarbabac.nais.adeo.no
   unleash:
+    enabled: true
     unleash-uri: https://unleash.nais.adeo.no/api/
   consumer:
     system:
