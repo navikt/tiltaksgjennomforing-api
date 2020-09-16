@@ -4,6 +4,7 @@ metadata:
   labels:
     app: tiltaksgjennomforing-wiremock
   name: tiltaksgjennomforing-wiremock
+  namespace: arbeidsgiver
 data:
   altinn_tilgangsstyring.json: |
     {

@@ -2,6 +2,7 @@ apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
   name: tiltaksgjennomforing-wiremock
+  namespace: arbeidsgiver
   labels:
     team: arbeidsgiver
 spec:
