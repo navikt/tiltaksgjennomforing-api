@@ -47,6 +47,9 @@ spec:
     path: /tiltaksgjennomforing-api/internal/actuator/prometheus
   {{#if labs}}
   accessPolicy:
+    inbound:
+      rules:
+        - application: tiltaksgjennomforing
     outbound:
       rules:
         - application: tiltak-fakelogin
