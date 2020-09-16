@@ -74,6 +74,7 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-fss
+          ENVIRONMENT: dev-fss:default
           RESOURCE: nais/naiserator.yaml
           PRINT_PAYLOAD: true
           VAR: ingress=https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api/
@@ -91,6 +92,7 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-fss
+          ENVIRONMENT: prod-fss:default
           RESOURCE: nais/naiserator.yaml
           PRINT_PAYLOAD: true
           VAR: ingress=https://arbeidsgiver.nais.adeo.no/tiltaksgjennomforing-api/
@@ -108,6 +110,7 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: labs-gcp
+          ENVIRONMENT: labs-gcp:arbeidsgiver
           RESOURCE: nais/naiserator.yaml,nais/wiremock.yaml,nais/wiremock-mappings.yaml
           PRINT_PAYLOAD: true
-          VAR: deploytrigger=${{ github.run_number }},one-replica=true,namespace=arbeidsgiver
+          VAR: deploytrigger=${{ github.run_number }},one-replica=true
