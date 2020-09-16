@@ -43,3 +43,9 @@ spec:
   prometheus:
     enabled: true
     path: /tiltaksgjennomforing-api/internal/actuator/prometheus
+  {{#if fakelogin}}
+  accessPolicy:
+    outbound:
+      rules:
+        - application: tiltak-fakelogin
+  {{/if}}
