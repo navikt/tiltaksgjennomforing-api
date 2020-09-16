@@ -37,9 +37,11 @@ spec:
   ingresses:
     - {{ingress}}
   {{/if}}
+  {{#unless labs}}
   vault:
     enabled: true
   webproxy: true
+  {{/unless}}
   prometheus:
     enabled: true
     path: /tiltaksgjennomforing-api/internal/actuator/prometheus
