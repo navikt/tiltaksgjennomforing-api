@@ -54,3 +54,5 @@ tiltaksgjennomforing:
       id: testsystem
   persondata:
     uri: http://localhost:8090/persondata
+  unleash:
+    mock: true

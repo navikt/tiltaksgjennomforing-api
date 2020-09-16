@@ -33,4 +33,13 @@ public class FeatureToggleConfig {
                 byEnhetStrategy
         );
     }
+
+    @Bean
+    @ConditionalOnProperty("tiltaksgjennomforing.unleash.mock")
+    public Unleash unleashMock() {
+        FakeFakeUnleash fakeUnleash = new FakeFakeUnleash();
+        fakeUnleash.enableAll(); //Enabler alle toggles pr. default. Kan endres lokalt ved behov.
+        fakeUnleash.disable("arbeidsgiver.tiltaksgjennomforing-api.bruk-altinn-proxy");
+        return fakeUnleash;
+    }
 }

@@ -49,3 +49,5 @@ tiltaksgjennomforing:
       id: testsystem
   persondata:
     uri: http://tiltaksgjennomforing-wiremock/persondata
+  unleash:
+    mock: true
