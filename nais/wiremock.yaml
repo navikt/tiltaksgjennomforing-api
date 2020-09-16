@@ -30,7 +30,7 @@ spec:
       memory: 500Mi
   env:
   - name: deploytrigger
-    value: {{deploytrigger}}
+    value: "{{deploytrigger}}"
   filesFrom:
   - configmap: tiltaksgjennomforing-wiremock
     mountPath: /home/wiremock/mappings
