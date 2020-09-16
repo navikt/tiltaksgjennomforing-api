@@ -28,5 +28,7 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
 tiltaksgjennomforing:
+  kafka:
+    enabled: true
   persondata:
     uri: http://pdl-api.default.svc.nais.local/graphql

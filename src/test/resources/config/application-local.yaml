@@ -28,6 +28,8 @@ no.nav.security.oidc:
       accepted_audience: aud-system
 
 tiltaksgjennomforing:
+  kafka:
+    enabled: false
   altinn-tilgangsstyring:
     uri: http://localhost:8090/altinn-tilgangsstyring
     proxyUri: http://localhost:9090/altinn-rettigheter-proxy/ekstern/altinn/api/serviceowner/reportees

@@ -5,7 +5,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 public class LokalTiltaksgjennomforingApplication extends TiltaksgjennomforingApplication {
     public static void main(String[] args) {
         new SpringApplicationBuilder(TiltaksgjennomforingApplication.class)
-                .profiles("dev", "wiremock", "testdata")
+                .profiles(Miljø.LOCAL, "wiremock", "testdata")
                 .build()
                 .run()
         ;

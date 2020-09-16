@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
+import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
@@ -18,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(properties = {"spring.datasource.url=jdbc:h2:mem:smsVarselRepositoryTest"})
-@ActiveProfiles("dev")
+@ActiveProfiles(Miljø.LOCAL)
 @DirtiesContext
 public class SmsVarselRepositoryTest {
     @Autowired

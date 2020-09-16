@@ -1,45 +1,57 @@
 package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 
+import org.junit.After;
+import org.junit.ClassRule;
 import org.junit.Test;
-import org.springframework.core.env.Environment;
+import org.junit.contrib.java.lang.system.EnvironmentVariables;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static no.nav.tag.tiltaksgjennomforing.Miljø.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class ByEnvironmentStrategyTest {
+    public static final String NAIS_CLUSTER_NAME = "NAIS_CLUSTER_NAME";
 
-    @Test
-    public void featureIsEnabledWhenEnvironmentInList() {
-        assertThat(new ByEnvironmentStrategy(environmentMock("local")).isEnabled(Map.of("miljø", "local,dev"))).isEqualTo(true);
+    @ClassRule
+    public static final EnvironmentVariables environmentVariables = new EnvironmentVariables();
+
+    @After
+    public void tearDown() throws Exception {
+        environmentVariables.clear(NAIS_CLUSTER_NAME);
     }
 
     @Test
-    public void strategiSkalHandtereFlereProfiler() {
-        assertThat(new ByEnvironmentStrategy(environmentMock("local", "test")).isEnabled(Map.of("miljø", "local,dev"))).isEqualTo(true);
+    public void featureIsEnabledWhenEnvironmentInList() {
+        environmentMock(LOCAL);
+        assertThat(new ByEnvironmentStrategy().isEnabled(Map.of("miljø", "local,dev-fss"))).isEqualTo(true);
+    }
+
+    @Test
+    public void featureIsEnabledWhenLocalEnvironmentInList() {
+        assertThat(new ByEnvironmentStrategy().isEnabled(Map.of("miljø", "local"))).isEqualTo(true);
     }
 
     @Test
     public void featureIsDisabledWhenEnvironmentNotInList() {
-        assertThat(new ByEnvironmentStrategy(environmentMock("dev")).isEnabled(Map.of("miljø", "prod"))).isEqualTo(false);
+        environmentMock(PROD_FSS);
+        assertThat(new ByEnvironmentStrategy().isEnabled(Map.of("miljø", "local"))).isEqualTo(false);
     }
 
     @Test
     public void skalReturnereFalseHvisParametreErNull() {
-        assertThat(new ByEnvironmentStrategy(environmentMock("dev")).isEnabled(null)).isEqualTo(false);
+        environmentMock(DEV_FSS);
+        assertThat(new ByEnvironmentStrategy().isEnabled(null)).isEqualTo(false);
     }
 
     @Test
     public void skalReturnereFalseHvisMiljøIkkeErSatt() {
-        assertThat(new ByEnvironmentStrategy(environmentMock("dev")).isEnabled(new HashMap<>())).isEqualTo(false);
+        environmentMock(DEV_FSS);
+        assertThat(new ByEnvironmentStrategy().isEnabled(new HashMap<>())).isEqualTo(false);
     }
 
-    private static Environment environmentMock(String... profiles) {
-        Environment mock = mock(Environment.class);
-        when(mock.getActiveProfiles()).thenReturn(profiles);
-        return mock;
+    private void environmentMock(String profile) {
+        environmentVariables.set(NAIS_CLUSTER_NAME, profile);
     }
 }

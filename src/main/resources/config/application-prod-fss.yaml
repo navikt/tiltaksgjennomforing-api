@@ -52,6 +52,7 @@ tiltaksgjennomforing:
   abac:
     veilarbabac-uri: https://veilarbabac.nais.adeo.no
   unleash:
+    enabled: true
     unleash-uri: https://unleash.nais.adeo.no/api/
   consumer:
     system:

@@ -32,9 +32,6 @@ spec:
     - {{ingress}}
   vault:
     enabled: true
-  env:
-    - name: SPRING_PROFILES_ACTIVE
-      value: {{spring-profil}}
   webproxy: true
   prometheus:
     enabled: true
