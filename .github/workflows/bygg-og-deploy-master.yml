@@ -74,9 +74,9 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-fss
-          RESOURCE: naiserator.yaml
+          RESOURCE: nais/naiserator.yaml
           PRINT_PAYLOAD: true
-          VARS: nais/dev-fss.json
+          VAR: ingress=https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api/
 
   deploy-prod:
     name: Deploy til prod
@@ -91,6 +91,23 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-fss
-          RESOURCE: naiserator.yaml
+          RESOURCE: nais/naiserator.yaml
           PRINT_PAYLOAD: true
-          VARS: nais/prod-fss.json
+          VAR: ingress=https://arbeidsgiver.nais.adeo.no/tiltaksgjennomforing-api/
+
+  deploy-labs:
+    name: Deploy til labs
+    runs-on: ubuntu-latest
+    needs: bygg
+    steps:
+      - name: Sjekk ut kode
+        uses: actions/checkout@v2
+
+      - name: Deploy til labs
+        uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: labs-gcp
+          RESOURCE: nais/wiremock.yaml,nais/wiremock-mappings.yaml
+          PRINT_PAYLOAD: true
+          VAR: deploytrigger=${{ github.run_number }}
