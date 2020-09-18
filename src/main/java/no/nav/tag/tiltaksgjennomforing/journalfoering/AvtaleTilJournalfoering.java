@@ -53,6 +53,11 @@ public class AvtaleTilJournalfoering {
     private BigDecimal arbeidsgiveravgift;
     private Boolean harFamilietilknytning;
     private String familietilknytningForklaring;
+    private Integer feriepengerBelop;
+    private Integer otpBelop;
+    private Integer arbeidsgiveravgiftBelop;
+    private Integer sumLonntilskudd;
+    private Integer utbetaltLonntilskudd;
 
     // mentor
     private String mentorFornavn;

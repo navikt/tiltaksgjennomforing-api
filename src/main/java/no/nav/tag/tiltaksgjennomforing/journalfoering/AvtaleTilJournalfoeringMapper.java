@@ -55,6 +55,11 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setVersjon(avtaleInnhold.getVersjon());
         avtaleTilJournalfoering.setHarFamilietilknytning(avtaleInnhold.getHarFamilietilknytning());
         avtaleTilJournalfoering.setFamilietilknytningForklaring((avtaleInnhold.getFamilietilknytningForklaring()));
+        avtaleTilJournalfoering.setFeriepengerBelop(avtaleInnhold.getFeriepengerBelop());
+        avtaleTilJournalfoering.setOtpBelop(avtaleInnhold.getOtpBelop());
+        avtaleTilJournalfoering.setArbeidsgiveravgiftBelop(avtaleInnhold.getArbeidsgiveravgiftBelop());
+        avtaleTilJournalfoering.setSumLonntilskudd(avtaleInnhold.getSumLonntilskudd());
+        avtaleTilJournalfoering.setUtbetaltLonntilskudd(avtaleInnhold.getUtbetaltLonntilskudd());
         return avtaleTilJournalfoering;
     }
 
