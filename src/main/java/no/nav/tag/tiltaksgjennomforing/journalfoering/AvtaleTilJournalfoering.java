@@ -56,8 +56,8 @@ public class AvtaleTilJournalfoering {
     private Integer feriepengerBelop;
     private Integer otpBelop;
     private Integer arbeidsgiveravgiftBelop;
-    private Integer sumLonntilskudd;
-    private Integer utbetaltLonntilskudd;
+    private Integer sumLonnsutgifter;
+    private Integer sumLonnstilskudd;
 
     // mentor
     private String mentorFornavn;

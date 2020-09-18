@@ -73,8 +73,8 @@ public class AvtaleInnhold {
     private Integer feriepengerBelop;
     private Integer otpBelop;
     private Integer arbeidsgiveravgiftBelop;
-    private Integer sumLonntilskudd;
-    private Integer utbetaltLonntilskudd;
+    private Integer sumLonnsutgifter;
+    private Integer sumLonnstilskudd;
 
     // Arbeidstrening
     @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true)

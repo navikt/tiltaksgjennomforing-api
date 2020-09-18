@@ -22,8 +22,8 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setFeriepengerBelop(nyAvtale.getFeriepengerBelop());
         avtaleInnhold.setOtpBelop(nyAvtale.getOtpBelop());
         avtaleInnhold.setArbeidsgiveravgiftBelop(nyAvtale.getArbeidsgiveravgiftBelop());
-        avtaleInnhold.setSumLonntilskudd(nyAvtale.getSumLonntilskudd());
-        avtaleInnhold.setUtbetaltLonntilskudd(nyAvtale.getUtbetaltLonntilskudd());
+        avtaleInnhold.setSumLonnsutgifter(nyAvtale.getSumLonnsutgifter());
+        avtaleInnhold.setSumLonnstilskudd(nyAvtale.getSumLonnstilskudd());
 
         super.endre(nyAvtale);
     }

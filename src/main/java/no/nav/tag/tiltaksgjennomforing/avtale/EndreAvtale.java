@@ -49,8 +49,8 @@ public class EndreAvtale {
     private Integer feriepengerBelop;
     private Integer otpBelop;
     private Integer arbeidsgiveravgiftBelop;
-    private Integer sumLonntilskudd;
-    private Integer utbetaltLonntilskudd;
+    private Integer sumLonnsutgifter;
+    private Integer sumLonnstilskudd;
 
     // Mentorfelter
     private String mentorFornavn;

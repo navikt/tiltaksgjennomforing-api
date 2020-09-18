@@ -167,8 +167,8 @@ public class TestData {
         endreAvtale.setFeriepengerBelop(2400);
         endreAvtale.setOtpBelop(448);
         endreAvtale.setArbeidsgiveravgiftBelop(3222);
-        endreAvtale.setSumLonntilskudd(26070);
-        endreAvtale.setUtbetaltLonntilskudd(15642);
+        endreAvtale.setSumLonnsutgifter(26070);
+        endreAvtale.setSumLonnstilskudd(15642);
         return endreAvtale;
     }
 

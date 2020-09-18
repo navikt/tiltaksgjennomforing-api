@@ -58,8 +58,8 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setFeriepengerBelop(avtaleInnhold.getFeriepengerBelop());
         avtaleTilJournalfoering.setOtpBelop(avtaleInnhold.getOtpBelop());
         avtaleTilJournalfoering.setArbeidsgiveravgiftBelop(avtaleInnhold.getArbeidsgiveravgiftBelop());
-        avtaleTilJournalfoering.setSumLonntilskudd(avtaleInnhold.getSumLonntilskudd());
-        avtaleTilJournalfoering.setUtbetaltLonntilskudd(avtaleInnhold.getUtbetaltLonntilskudd());
+        avtaleTilJournalfoering.setSumLonnsutgifter(avtaleInnhold.getSumLonnsutgifter());
+        avtaleTilJournalfoering.setSumLonnstilskudd(avtaleInnhold.getSumLonnstilskudd());
         return avtaleTilJournalfoering;
     }
 
