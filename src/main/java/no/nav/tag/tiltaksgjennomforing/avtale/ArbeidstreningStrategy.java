@@ -1,12 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangArbeidstreningException;
+
 import java.time.LocalDate;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
 public class ArbeidstreningStrategy extends BaseAvtaleInnholdStrategy {
-
-    private static final int MAKSIMALT_ANTALL_MÅNEDER_VARIGHET = 18;
 
     public ArbeidstreningStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
@@ -38,7 +38,9 @@ public class ArbeidstreningStrategy extends BaseAvtaleInnholdStrategy {
     }
 
     @Override
-    protected void sjekkStartogSluttDato(LocalDate startDato, LocalDate sluttDato) {
-        super.startOgSluttDatoMedVarighetErSattRiktig(startDato, sluttDato, MAKSIMALT_ANTALL_MÅNEDER_VARIGHET);
+    public void sjekkOmVarighetErForLang(LocalDate startDato, LocalDate sluttDato) {
+        if (startDato != null && sluttDato != null && startDato.plusMonths(18).isBefore(sluttDato)) {
+            throw new VarighetForLangArbeidstreningException();
+        }
     }
 }
