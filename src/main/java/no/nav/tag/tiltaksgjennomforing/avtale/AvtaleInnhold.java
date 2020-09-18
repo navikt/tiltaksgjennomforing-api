@@ -70,6 +70,11 @@ public class AvtaleInnhold {
     private BigDecimal arbeidsgiveravgift;
     private Boolean harFamilietilknytning;
     private String familietilknytningForklaring;
+    private Integer feriepengerBelop;
+    private Integer otpBelop;
+    private Integer arbeidsgiveravgiftBelop;
+    private Integer sumLonntilskudd;
+    private Integer utbetaltLonntilskudd;
 
     // Arbeidstrening
     @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true)
