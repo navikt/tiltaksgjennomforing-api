@@ -2,8 +2,10 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
@@ -57,14 +59,14 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     public void endreAvtale(Instant sistEndret, EndreAvtale endreAvtale) {
         if (!kanEndreAvtale()) {
-            throw new TilgangskontrollException("Kan ikke endre avtale.");
+            throw new KanIkkeEndreException();
         }
         avtale.endreAvtale(sistEndret, endreAvtale, rolle());
     }
 
     public void opphevGodkjenninger() {
         if (!kanOppheveGodkjenninger()) {
-            throw new TiltaksgjennomforingException("Kan ikke oppheve godkjenninger i avtalen.");
+            throw new KanIkkeOppheveException();
         }
         opphevGodkjenningerSomAvtalepart();
     }

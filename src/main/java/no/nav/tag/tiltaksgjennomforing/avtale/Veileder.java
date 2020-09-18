@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 
 import java.time.Instant;
 
@@ -87,7 +87,7 @@ public class Veileder extends Avtalepart<NavIdent> {
     @Override
     public void sjekkOmAvtaleKanGodkjennes() {
         if (!avtale.erGodkjentAvArbeidsgiver() || !avtale.erGodkjentAvDeltaker()) {
-            throw new TiltaksgjennomforingException("Veileder må godkjenne avtalen etter deltaker og arbeidsgiver.");
+            throw new VeilederSkalGodkjenneSistException();
         }
     }
 
@@ -104,10 +104,10 @@ public class Veileder extends Avtalepart<NavIdent> {
     @Override
     public void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn) {
         if (avtale.erGodkjentAvDeltaker()) {
-            throw new TiltaksgjennomforingException("Deltaker har allerde godkjent avtalen");
+            throw new DeltakerHarGodkjentException();
         }
         if (!avtale.erGodkjentAvArbeidsgiver()) {
-            throw new TiltaksgjennomforingException("Arbeidsgiver må godkjenne avtalen før veileder kan godkjenne");
+            throw new ArbeidsgiverSkalGodkjenneFørVeilederException();
         }
         paVegneAvGrunn.valgtMinstEnGrunn();
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
@@ -129,8 +129,9 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     public void overtaAvtale(Avtale avtale) {
         if(this.getIdentifikator().equals(avtale.getVeilederNavIdent())){
-            throw new TiltaksgjennomforingException("Innlogget bruker er alledede veileder på denne avtalen");
+            throw new ErAlleredeVeilederException();
         }
         avtale.overtaAvtale(this.getIdentifikator());
     }
+
 }

@@ -1,7 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.TestData;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class VeilederTest {
-    @Test(expected = TiltaksgjennomforingException.class)
+    @Test(expected = VeilederSkalGodkjenneSistException.class)
     public void godkjennAvtale__kan_ikke_godkjenne_foerst() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Veileder veileder = TestData.enVeileder(avtale);
@@ -109,7 +110,7 @@ public class VeilederTest {
         assertThat(avtale.getVeilederNavIdent()).isEqualTo(nyVeileder.getIdentifikator());
     }
 
-    @Test(expected = TiltaksgjennomforingException.class)
+    @Test(expected = ErAlleredeVeilederException.class)
     public void overtarAvtale__feil_hvis_samme_ident() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Veileder veileder = TestData.enVeileder(avtale);
