@@ -164,6 +164,11 @@ public class TestData {
         endreAvtale.setMentorTimelonn(1000);
         endreAvtale.setHarFamilietilknytning(true);
         endreAvtale.setFamilietilknytningForklaring("En middels god forklaring");
+        endreAvtale.setFeriepengerBelop(2400);
+        endreAvtale.setOtpBelop(448);
+        endreAvtale.setArbeidsgiveravgiftBelop(3222);
+        endreAvtale.setSumLonnsutgifter(26070);
+        endreAvtale.setSumLonnstilskudd(15642);
         return endreAvtale;
     }
 
