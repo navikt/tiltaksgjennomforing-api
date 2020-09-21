@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.TestData;
+import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import org.junit.Test;
 
@@ -19,7 +20,7 @@ public class ArbeidsgiverTest {
         assertThat(avtale.erGodkjentAvDeltaker()).isFalse();
     }
 
-    @Test(expected = TiltaksgjennomforingException.class)
+    @Test(expected = KanIkkeOppheveException.class)
     public void opphevGodkjenninger__kan_ikke_oppheve_veiledergodkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setGodkjentAvVeileder(LocalDateTime.now());

@@ -1,9 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.TestData;
-import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import org.junit.Test;
 
 import java.time.Instant;
@@ -12,7 +10,7 @@ import java.time.LocalDateTime;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AvtalepartTest {
-    @Test(expected = TilgangskontrollException.class)
+    @Test(expected = KanIkkeEndreException.class)
     public void endreAvtale__skal_feile_for_deltaker() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Deltaker deltaker = TestData.enDeltaker(avtale);
@@ -35,7 +33,7 @@ public class AvtalepartTest {
         arbeidsgiver.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn);
     }
 
-    @Test(expected = TiltaksgjennomforingException.class)
+    @Test(expected = ArbeidsgiverSkalGodkjenneFørVeilederException.class)
     public void godkjennForVeilederOgDeltaker__skal_feile_hvis_ag_ikke_har_godkjent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Veileder veileder = TestData.enVeileder(avtale);

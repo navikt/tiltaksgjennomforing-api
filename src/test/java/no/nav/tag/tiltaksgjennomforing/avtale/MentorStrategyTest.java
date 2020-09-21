@@ -1,8 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.TestData;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AvtalensVarighetMerEnnMaksimaltAntallMånederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangMentorException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.MENTOR;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class MentorStrategyTest {
 
@@ -18,7 +18,7 @@ public class MentorStrategyTest {
     private AvtaleInnholdStrategy strategy;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         avtaleInnhold = new AvtaleInnhold();
         strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, MENTOR);
     }
@@ -30,7 +30,7 @@ public class MentorStrategyTest {
         LocalDate sluttDato = startDato.minusDays(1);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
-        assertThrows(StartDatoErEtterSluttDatoException.class, () -> strategy.endre(endreAvtale));
+        assertThatThrownBy(() -> strategy.endre(endreAvtale)).isInstanceOf(StartDatoErEtterSluttDatoException.class);
     }
 
     @Test
@@ -52,6 +52,6 @@ public class MentorStrategyTest {
         LocalDate sluttDato = startDato.plusMonths(36).plusDays(1);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
-        assertThrows(AvtalensVarighetMerEnnMaksimaltAntallMånederException.class, () -> strategy.endre(endreAvtale));
+        assertThatThrownBy(() -> strategy.endre(endreAvtale)).isInstanceOf(VarighetForLangMentorException.class);
     }
 }

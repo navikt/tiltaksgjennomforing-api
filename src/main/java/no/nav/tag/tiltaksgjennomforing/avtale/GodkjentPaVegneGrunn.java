@@ -1,6 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import lombok.Data;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 
 import javax.persistence.Embeddable;
@@ -14,7 +16,7 @@ public class GodkjentPaVegneGrunn {
 
     public void valgtMinstEnGrunn() {
         if (!ikkeBankId && !reservert && !digitalKompetanse) {
-            throw new TiltaksgjennomforingException("Minst én grunn må være valgt");
+            throw new FeilkodeException(Feilkode.GODKJENT_PAA_VEGNE_GRUNN_MAA_VELGES);
         }
     }
 }

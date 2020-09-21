@@ -1,5 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangMentorException;
+
 import java.time.LocalDate;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
@@ -34,7 +36,9 @@ public class MentorStrategy extends BaseAvtaleInnholdStrategy {
     }
 
     @Override
-    protected void sjekkStartogSluttDato(LocalDate startDato, LocalDate sluttDato) {
-        super.startOgSluttDatoMedVarighetErSattRiktig(startDato, sluttDato, MAKSIMALT_ANTALL_MÅNEDER_VARIGHET);
+    public void sjekkOmVarighetErForLang(LocalDate startDato, LocalDate sluttDato) {
+        if (startDato != null && sluttDato != null && startDato.plusMonths(MAKSIMALT_ANTALL_MÅNEDER_VARIGHET).isBefore(sluttDato)) {
+            throw new VarighetForLangMentorException();
+        }
     }
 }

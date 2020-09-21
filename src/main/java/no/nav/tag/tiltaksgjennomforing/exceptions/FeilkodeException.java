@@ -1,9 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.exceptions;
 
-public abstract class FeilkodeException extends RuntimeException {
+public class FeilkodeException extends RuntimeException {
     private final Feilkode feilkode;
 
-    protected FeilkodeException(Feilkode feilkode) {
+    public FeilkodeException(Feilkode feilkode) {
         this.feilkode = feilkode;
     }
 

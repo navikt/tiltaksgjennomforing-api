@@ -102,7 +102,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     public void delMedAvtalepart(Avtalerolle avtalerolle) {
         String tlf = telefonnummerTilAvtalepart(avtalerolle);
         if (!TelefonnummerValidator.erGyldigMobilnummer(tlf)) {
-            throw new TiltaksgjennomforingException("Telefonnummeret er ikke et gyldig mobilnummer");
+            throw new FeilkodeException(Feilkode.UGYLDIG_TLF);
         }
         registerEvent(new AvtaleDeltMedAvtalepart(this, avtalerolle));
     }
@@ -306,7 +306,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     public void sjekkOmKanLåsesOpp() {
         if (!kanLåsesOpp()) {
-            throw new TiltaksgjennomforingException("Avtalen kan ikke låses opp");
+            throw new FeilkodeException(Feilkode.KAN_IKKE_LAASES_OPP);
         }
     }
 

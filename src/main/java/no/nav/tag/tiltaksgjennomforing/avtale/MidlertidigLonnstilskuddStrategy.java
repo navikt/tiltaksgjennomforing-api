@@ -1,17 +1,18 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangMidlertidigLonnstilskuddException;
+
 import java.time.LocalDate;
 
 public class MidlertidigLonnstilskuddStrategy extends LonnstilskuddStrategy {
-
-    private static final int MAKSIMALT_ANTALL_MÅNEDER_VARIGHET = 24;
-
     public MidlertidigLonnstilskuddStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
     }
 
     @Override
-    protected void sjekkStartogSluttDato(LocalDate startDato, LocalDate sluttDato) {
-        super.startOgSluttDatoMedVarighetErSattRiktig(startDato, sluttDato, MAKSIMALT_ANTALL_MÅNEDER_VARIGHET);
+    public void sjekkOmVarighetErForLang(LocalDate startDato, LocalDate sluttDato) {
+        if (startDato != null && sluttDato != null && startDato.plusMonths(24).isBefore(sluttDato)) {
+            throw new VarighetForLangMidlertidigLonnstilskuddException();
+        }
     }
 }

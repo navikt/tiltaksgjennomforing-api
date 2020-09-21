@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.TestData;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AvtalensVarighetMerEnnMaksimaltAntallMånederException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangMidlertidigLonnstilskuddException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD;
 import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.VARIG_LONNSTILSKUDD;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LonnstilskuddStrategyTest {
 
@@ -18,7 +18,7 @@ class LonnstilskuddStrategyTest {
     private AvtaleInnholdStrategy strategy;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         avtaleInnhold = new AvtaleInnhold();
         strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, MIDLERTIDIG_LONNSTILSKUDD);
     }
@@ -78,7 +78,7 @@ class LonnstilskuddStrategyTest {
         LocalDate sluttDato = startDato.plusMonths(24).plusDays(1);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
-        assertThrows(AvtalensVarighetMerEnnMaksimaltAntallMånederException.class, () -> strategy.endre(endreAvtale));
+        assertThatThrownBy(() -> strategy.endre(endreAvtale)).isInstanceOf(VarighetForLangMidlertidigLonnstilskuddException.class);
     }
 
     @Test

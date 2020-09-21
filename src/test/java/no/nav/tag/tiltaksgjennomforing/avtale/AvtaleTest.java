@@ -174,7 +174,7 @@ public class AvtaleTest {
         assertThat(avtale.getSluttDato()).isEqualTo(sluttDato);
     }
 
-    @Test(expected = AvtalensVarighetMerEnnMaksimaltAntallMånederException.class)
+    @Test(expected = VarighetForLangArbeidstreningException.class)
     public void endreAvtale__startdato_og_sluttdato_satt_over_18mnd() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         EndreAvtale endreAvtale = new EndreAvtale();
@@ -344,7 +344,7 @@ public class AvtaleTest {
     @Test
     public void status__avbrutt() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        avtale. avbryt(TestData.enVeileder(avtale), new AvbruttInfo(LocalDate.now(), "grunnen"));
+        avtale.avbryt(TestData.enVeileder(avtale), new AvbruttInfo(LocalDate.now(), "grunnen"));
         assertThat(avtale.status()).isEqualTo(Status.AVBRUTT.getStatusVerdi());
         assertThat(avtale.getAvbruttDato()).isNotNull();
         assertThat(avtale.getAvbruttGrunn()).isEqualTo("grunnen");

@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.exceptions;
 
-public class StartDatoErEtterSluttDatoException extends TiltaksgjennomforingException {
+public class StartDatoErEtterSluttDatoException extends FeilkodeException {
     public StartDatoErEtterSluttDatoException() {
-        super("Startdato er etter sluttdato");
+        super(Feilkode.START_ETTER_SLUTT);
     }
 }
