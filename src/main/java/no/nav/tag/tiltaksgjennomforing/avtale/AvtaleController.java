@@ -88,7 +88,8 @@ public class AvtaleController {
         InnloggetVeileder innloggetVeileder = innloggingService.hentInnloggetVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetVeileder.sjekkSkriveTilgang(avtale);
-        innloggetVeileder.aksepterUtkast(avtale);
+        Veileder veileder = innloggetVeileder.avtalepart(avtale);
+        veileder.aksepterUtkast();
         avtaleRepository.save(avtale);
     }
 

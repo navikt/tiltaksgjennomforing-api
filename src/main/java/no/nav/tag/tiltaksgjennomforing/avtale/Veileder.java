@@ -1,14 +1,17 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.exceptions.*;
+import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørVeilederException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.DeltakerHarGodkjentException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
 
 import java.time.Instant;
 
 public class Veileder extends Avtalepart<NavIdent> {
-    String venteListeForVeileder;
     static String tekstAvtaleVenterPaaDinGodkjenning = "Før du godkjenner avtalen må du sjekke at alt er i orden og innholdet er riktig.";
     static String ekstraTekstAvtleErGodkjentAvAllePartner = "Du må fullføre registreringen i Arena. Avtalen journalføres automatisk i Gosys.";
     static String tekstAvtaleAvbrutt = "Du eller en annen veileder har avbrutt tiltaket.";
+    String venteListeForVeileder;
 
     public Veileder(NavIdent identifikator, Avtale avtale) {
         super(identifikator, avtale);
@@ -60,7 +63,7 @@ public class Veileder extends Avtalepart<NavIdent> {
                 }
                 break;
             case KLAR_FOR_OPPSTART:
-                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato().format(formatter)+".", Veileder.ekstraTekstAvtleErGodkjentAvAllePartner);
+                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato().format(formatter) + ".", Veileder.ekstraTekstAvtleErGodkjentAvAllePartner);
                 break;
             case GJENNOMFØRES:
                 avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleGjennomfores, "", "");
@@ -128,10 +131,13 @@ public class Veileder extends Avtalepart<NavIdent> {
     }
 
     public void overtaAvtale(Avtale avtale) {
-        if(this.getIdentifikator().equals(avtale.getVeilederNavIdent())){
+        if (this.getIdentifikator().equals(avtale.getVeilederNavIdent())) {
             throw new ErAlleredeVeilederException();
         }
         avtale.overtaAvtale(this.getIdentifikator());
     }
 
+    public void aksepterUtkast() {
+        avtale.aksepterUtkast(this.getIdentifikator());
+    }
 }

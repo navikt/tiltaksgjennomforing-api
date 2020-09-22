@@ -126,6 +126,13 @@ class LyttPåHendelseTilHendelseloggTest {
         sjekkAtHendelseErLogget(avtale, VarslbarHendelseType.LÅST_OPP, Avtalerolle.VEILEDER);
     }
 
+    @Test
+    void skal_logge_utkast_akseptert() {
+        Avtale avtale = harOpprettetAvtaleAvAg();
+        ogUtkastAkseptert(avtale);
+        sjekkAtHendelseErLogget(avtale, VarslbarHendelseType.UTKAST_AKSEPTERT, Avtalerolle.VEILEDER);
+    }
+
     private Avtale harOpprettetAvtale() {
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
         avtaleRepository.save(avtale);
@@ -188,6 +195,11 @@ class LyttPåHendelseTilHendelseloggTest {
 
     private void ogGjenopprettet(Avtale avtale) {
         new Veileder(TestData.enNavIdent(), avtale).gjenopprettAvtale();
+        avtaleRepository.save(avtale);
+    }
+
+    private void ogUtkastAkseptert(Avtale avtale) {
+        new Veileder(TestData.enNavIdent(), avtale).aksepterUtkast();
         avtaleRepository.save(avtale);
     }
 

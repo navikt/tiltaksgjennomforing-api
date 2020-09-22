@@ -88,6 +88,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             throw new AvtaleErAlleredeAkseptertException();
         }
         this.utkastAkseptert = true;
+        this.setVeilederNavIdent(navIdent);
         this.registerEvent(new UtkastFraArbeidsgiverAkseptert(this));
     }
 

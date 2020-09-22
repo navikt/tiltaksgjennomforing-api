@@ -21,7 +21,8 @@ public enum VarslbarHendelseType {
     LÅST_OPP("Avtale låst opp av veileder"),
     GJENOPPRETTET("Avtale gjenopprettet"),
     OPPRETTET_AV_ARBEIDSGIVER("Avtale er opprettet av arbeidsgiver"),
-    NY_VEILEDER("Avtale tildelt ny veileder")
+    NY_VEILEDER("Avtale tildelt ny veileder"),
+    UTKAST_AKSEPTERT("Avtaleutkast akseptert")
     ;
 
     private final String tekst;

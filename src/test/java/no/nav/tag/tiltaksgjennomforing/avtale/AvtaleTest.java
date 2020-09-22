@@ -565,7 +565,9 @@ public class AvtaleTest {
     public void avtale_skal_kunne_godkjennes_når_akseptert() {
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
         avtale.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER);
-        avtale.aksepterUtkast(TestData.enNavIdent());
+        NavIdent navIdent = TestData.enNavIdent();
+        avtale.aksepterUtkast(navIdent);
+        assertThat(avtale.getVeilederNavIdent()).isEqualTo(navIdent);
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
         assertThat(avtale.erGodkjentAvArbeidsgiver());
     }
