@@ -1,21 +1,18 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import lombok.Value;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Data
+@Value
+@JsonNaming(PropertyNamingStrategy.UpperCamelCaseStrategy.class)
 public class AltinnOrganisasjon {
-
-    @JsonProperty("Name")
-    private String name;
-    @JsonProperty("Type")
-    private String type;
-    @JsonProperty("OrganizationNumber")
-    private String organizationNumber;
-    @JsonProperty("OrganizationForm")
-    private String organizationForm;
-    @JsonProperty("Status")
-    private String status;
+    String name;
+    String type;
+    String organizationNumber;
+    String organizationForm;
+    String status;
+    String parentOrganizationNumber;
 }

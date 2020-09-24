@@ -16,6 +16,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class InnloggetBrukerTest {
@@ -97,7 +98,7 @@ public class InnloggetBrukerTest {
     
     @Test
     public void harTilgang__arbeidsgiver_skal_ikke_ha_tilgang_til_avtale() {
-        assertThat(new InnloggetArbeidsgiver(TestData.etFodselsnummer(), emptyList()).harLeseTilgang(avtale)).isFalse();
+        assertThat(new InnloggetArbeidsgiver(TestData.etFodselsnummer(), emptyList(), Collections.emptySet()).harLeseTilgang(avtale)).isFalse();
     }
 
     @Test
@@ -112,14 +113,14 @@ public class InnloggetBrukerTest {
     
     @Test
     public void harTilgang__ikkepart_selvbetjeningsbruker_skal_ikke_ha_tilgang() {
-        assertThat(new InnloggetArbeidsgiver(new Fnr("00000000001"), emptyList()).harLeseTilgang(avtale)).isFalse();
+        assertThat(new InnloggetArbeidsgiver(new Fnr("00000000001"), emptyList(), Collections.emptySet()).harLeseTilgang(avtale)).isFalse();
     }
 
     @Test
     public void harTilgang__arbeidsgiver_skal_kunne_representere_bedrift_uten_Fnr() {
         ArbeidsgiverOrganisasjon organisasjon = new ArbeidsgiverOrganisasjon(bedriftNr, "Testbutikken");
         organisasjon.getTilgangstyper().addAll(List.of(Tiltakstype.values()));
-        InnloggetArbeidsgiver innloggetArbeidsgiver = new InnloggetArbeidsgiver(new Fnr("00000000009"), Arrays.asList(organisasjon));
+        InnloggetArbeidsgiver innloggetArbeidsgiver = new InnloggetArbeidsgiver(new Fnr("00000000009"), Arrays.asList(organisasjon), Collections.emptySet());
         assertThat(innloggetArbeidsgiver.harLeseTilgang(avtale)).isTrue();
     }
 
@@ -127,7 +128,7 @@ public class InnloggetBrukerTest {
     public void harTilgang__arbeidsgiver_skal_ikke_ha_tilgang_til_avbrutt_avtale_eldre_enn_12_uker() {
         ArbeidsgiverOrganisasjon organisasjon = new ArbeidsgiverOrganisasjon(bedriftNr, "Testbutikken");
         organisasjon.getTilgangstyper().addAll(List.of(Tiltakstype.values()));
-        InnloggetArbeidsgiver innloggetArbeidsgiver = new InnloggetArbeidsgiver(new Fnr("00000000009"), Arrays.asList(organisasjon));
+        InnloggetArbeidsgiver innloggetArbeidsgiver = new InnloggetArbeidsgiver(new Fnr("00000000009"), Arrays.asList(organisasjon), Collections.emptySet());
         avtale.setAvbrutt(true);
         avtale.setSistEndret(Instant.now().minus(84, ChronoUnit.DAYS));
         assertThat(innloggetArbeidsgiver.harLeseTilgang(avtale)).isFalse();
@@ -139,7 +140,7 @@ public class InnloggetBrukerTest {
         avtale.setSluttDato(LocalDate.now().minusDays(85));
         ArbeidsgiverOrganisasjon organisasjon = new ArbeidsgiverOrganisasjon(avtale.getBedriftNr(), "Testbutikken");
         organisasjon.getTilgangstyper().addAll(List.of(Tiltakstype.values()));
-        InnloggetArbeidsgiver innloggetArbeidsgiver = new InnloggetArbeidsgiver(new Fnr("00000000009"), Arrays.asList(organisasjon));
+        InnloggetArbeidsgiver innloggetArbeidsgiver = new InnloggetArbeidsgiver(new Fnr("00000000009"), Arrays.asList(organisasjon), Collections.emptySet());
         assertThat(innloggetArbeidsgiver.harLeseTilgang(avtale)).isFalse();
     }
 
@@ -149,7 +150,7 @@ public class InnloggetBrukerTest {
         avtale.setSluttDato(LocalDate.now().minusDays(85));
         ArbeidsgiverOrganisasjon organisasjon = new ArbeidsgiverOrganisasjon(avtale.getBedriftNr(), "Testbutikken");
         organisasjon.getTilgangstyper().addAll(List.of(Tiltakstype.values()));
-        InnloggetArbeidsgiver innloggetArbeidsgiver = new InnloggetArbeidsgiver(new Fnr("00000000009"), Arrays.asList(organisasjon));
+        InnloggetArbeidsgiver innloggetArbeidsgiver = new InnloggetArbeidsgiver(new Fnr("00000000009"), Arrays.asList(organisasjon), Collections.emptySet());
         assertThat(innloggetArbeidsgiver.harLeseTilgang(avtale)).isTrue();
     }
 
@@ -158,7 +159,7 @@ public class InnloggetBrukerTest {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
         ArbeidsgiverOrganisasjon organisasjon = new ArbeidsgiverOrganisasjon(avtale.getBedriftNr(), "Testbutikken");
         organisasjon.getTilgangstyper().add(Tiltakstype.ARBEIDSTRENING);
-        InnloggetArbeidsgiver innloggetArbeidsgiver = new InnloggetArbeidsgiver(new Fnr("00000000009"), Arrays.asList(organisasjon));
+        InnloggetArbeidsgiver innloggetArbeidsgiver = new InnloggetArbeidsgiver(new Fnr("00000000009"), Arrays.asList(organisasjon), Collections.emptySet());
         assertThat(innloggetArbeidsgiver.harLeseTilgang(avtale)).isFalse();
     }
 }

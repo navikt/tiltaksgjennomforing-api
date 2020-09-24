@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnOrganisasjon;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.ArbeidsgiverOrganisasjon;
 
@@ -9,14 +10,18 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class InnloggetArbeidsgiver extends InnloggetBruker<Fnr> {
     private final List<ArbeidsgiverOrganisasjon> organisasjoner;
+    private final Set<AltinnOrganisasjon> altinnOrganisasjoner;
 
-    public InnloggetArbeidsgiver(Fnr identifikator, List<ArbeidsgiverOrganisasjon> organisasjoner) {
+    public InnloggetArbeidsgiver(Fnr identifikator, List<ArbeidsgiverOrganisasjon> organisasjoner, Set<AltinnOrganisasjon> altinnOrganisasjoner) {
         super(identifikator);
         this.organisasjoner = organisasjoner;
+        this.altinnOrganisasjoner = altinnOrganisasjoner;
+
     }
 
     private static boolean avbruttForMerEnn12UkerSiden(Avtale avtale) {
@@ -30,6 +35,7 @@ public class InnloggetArbeidsgiver extends InnloggetBruker<Fnr> {
     public List<ArbeidsgiverOrganisasjon> getOrganisasjoner() {
         return organisasjoner;
     }
+    public Set<AltinnOrganisasjon> getAltinnOrganisasjoner() { return altinnOrganisasjoner; }
 
     @Override
     public Avtalepart<Fnr> avtalepart(Avtale avtale) {

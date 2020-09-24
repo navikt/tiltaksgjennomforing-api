@@ -79,6 +79,14 @@ public class AltinnTilgangsstyringService {
         return new ArrayList<>(map.values());
     }
 
+    public Set<AltinnOrganisasjon> hentAltinnOrganisasjoner(Identifikator fnr) {
+        Set<AltinnOrganisasjon> altinnOrganisasjoner = new HashSet<>();
+        altinnOrganisasjoner.addAll(Arrays.asList(kallAltinn(altinnTilgangsstyringProperties.getArbtreningServiceCode(), altinnTilgangsstyringProperties.getArbtreningServiceEdition(), fnr)));
+        altinnOrganisasjoner.addAll(Arrays.asList(kallAltinn(altinnTilgangsstyringProperties.getLtsMidlertidigServiceCode(), altinnTilgangsstyringProperties.getLtsMidlertidigServiceEdition(), fnr)));
+        altinnOrganisasjoner.addAll(Arrays.asList(kallAltinn(altinnTilgangsstyringProperties.getLtsVarigServiceCode(), altinnTilgangsstyringProperties.getLtsVarigServiceEdition(), fnr)));
+        return altinnOrganisasjoner;
+    }
+
     private void settInnIMap(Map<BedriftNr, ArbeidsgiverOrganisasjon> map, Tiltakstype tiltakstype, AltinnOrganisasjon[] altinnOrganisasjons) {
         for (AltinnOrganisasjon altinnOrganisasjon : altinnOrganisasjons) {
             BedriftNr bedriftNr = new BedriftNr(altinnOrganisasjon.getOrganizationNumber());
