@@ -4,6 +4,7 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,7 +48,7 @@ public class InnloggingServiceTest {
     @Test
     public void hentInnloggetBruker__selvbetjeningbruker_type_arbeidsgiver_skal_hente_organisasjoner() {
         List<ArbeidsgiverOrganisasjon> organisasjoner = asList(new ArbeidsgiverOrganisasjon(new BedriftNr("111111111"), "Navn"));
-        InnloggetArbeidsgiver selvbetjeningBruker = new InnloggetArbeidsgiver(new Fnr("11111111111"), organisasjoner);
+        InnloggetArbeidsgiver selvbetjeningBruker = new InnloggetArbeidsgiver(new Fnr("11111111111"), organisasjoner, Collections.emptySet());
         when(altinnTilgangsstyringService.hentOrganisasjoner(selvbetjeningBruker.getIdentifikator())).thenReturn(organisasjoner);
         værInnloggetArbeidsgiver(selvbetjeningBruker);
 

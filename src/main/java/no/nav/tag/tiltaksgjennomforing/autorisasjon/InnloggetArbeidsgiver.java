@@ -1,22 +1,25 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnOrganisasjon;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.ArbeidsgiverOrganisasjon;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class InnloggetArbeidsgiver extends InnloggetBruker<Fnr> {
     private final List<ArbeidsgiverOrganisasjon> organisasjoner;
+    private final Set<AltinnOrganisasjon> altinnOrganisasjoner;
+    private final Map<BedriftNr, Set<Tiltakstype>> tilganger = new HashMap<>();
 
-    public InnloggetArbeidsgiver(Fnr identifikator, List<ArbeidsgiverOrganisasjon> organisasjoner) {
+    public InnloggetArbeidsgiver(Fnr identifikator, List<ArbeidsgiverOrganisasjon> organisasjoner, Set<AltinnOrganisasjon> altinnOrganisasjoner) {
         super(identifikator);
         this.organisasjoner = organisasjoner;
+        this.altinnOrganisasjoner = altinnOrganisasjoner;
+        organisasjoner.forEach(org -> tilganger.put(org.getBedriftNr(), new HashSet<>(org.getTilgangstyper())));
     }
 
     private static boolean avbruttForMerEnn12UkerSiden(Avtale avtale) {
@@ -27,8 +30,16 @@ public class InnloggetArbeidsgiver extends InnloggetBruker<Fnr> {
         return avtale.erGodkjentAvVeileder() && avtale.getSluttDato().plusWeeks(12).isBefore(LocalDate.now());
     }
 
+    public Map<BedriftNr, Set<Tiltakstype>> getTilganger() {
+        return tilganger;
+    }
+
     public List<ArbeidsgiverOrganisasjon> getOrganisasjoner() {
         return organisasjoner;
+    }
+
+    public Set<AltinnOrganisasjon> getAltinnOrganisasjoner() {
+        return altinnOrganisasjoner;
     }
 
     @Override

@@ -16,6 +16,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
@@ -189,7 +190,7 @@ public class TestData {
     }
 
     public static InnloggetArbeidsgiver enInnloggetArbeidsgiver() {
-        return new InnloggetArbeidsgiver(new Fnr("99999999999"), emptyList());
+        return new InnloggetArbeidsgiver(new Fnr("99999999999"), emptyList(), Collections.emptySet());
     }
 
     public static InnloggetVeileder enInnloggetVeileder() {
@@ -240,7 +241,7 @@ public class TestData {
     public static InnloggetArbeidsgiver innloggetArbeidsgiver(Avtalepart<Fnr> avtalepartMedFnr) {
         ArbeidsgiverOrganisasjon organisasjon = new ArbeidsgiverOrganisasjon(avtalepartMedFnr.getAvtale().getBedriftNr(), avtalepartMedFnr.getAvtale().getBedriftNavn());
         organisasjon.getTilgangstyper().addAll(List.of(Tiltakstype.values()));
-        return new InnloggetArbeidsgiver(avtalepartMedFnr.getIdentifikator(), List.of(organisasjon));
+        return new InnloggetArbeidsgiver(avtalepartMedFnr.getIdentifikator(), List.of(organisasjon), Collections.emptySet());
     }
 
     public static InnloggetDeltaker innloggetDeltaker(Avtalepart<Fnr> avtalepartMedFnr) {
