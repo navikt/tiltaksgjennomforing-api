@@ -1,11 +1,16 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.exceptions.AltinnFeilException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
-import no.nav.tag.tiltaksgjennomforing.orgenhet.ArbeidsgiverOrganisasjon;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -21,11 +26,11 @@ import java.util.*;
 @Component
 @Slf4j
 public class AltinnTilgangsstyringService {
+    private static final int ALTINN_ORG_PAGE_SIZE = 500;
     private final AltinnTilgangsstyringProperties altinnTilgangsstyringProperties;
     private final RestTemplate restTemplate;
     private final TokenUtils tokenUtils;
     private final FeatureToggleService featureToggleService;
-    private static final int ALTINN_ORG_PAGE_SIZE = 500;
 
     public AltinnTilgangsstyringService(
             AltinnTilgangsstyringProperties altinnTilgangsstyringProperties,
@@ -69,39 +74,34 @@ public class AltinnTilgangsstyringService {
                 .toUri();
     }
 
-    public List<ArbeidsgiverOrganisasjon> hentOrganisasjoner(Identifikator fnr) {
-        Map<BedriftNr, ArbeidsgiverOrganisasjon> map = new HashMap<>();
+    public Map<BedriftNr, Collection<Tiltakstype>> hentTilganger(Fnr fnr) {
+        Multimap<BedriftNr, Tiltakstype> tilganger = HashMultimap.create();
 
-        settInnIMap(map, Tiltakstype.ARBEIDSTRENING, kallAltinn(altinnTilgangsstyringProperties.getArbtreningServiceCode(), altinnTilgangsstyringProperties.getArbtreningServiceEdition(), fnr));
-        settInnIMap(map, Tiltakstype.VARIG_LONNSTILSKUDD, kallAltinn(altinnTilgangsstyringProperties.getLtsVarigServiceCode(), altinnTilgangsstyringProperties.getLtsVarigServiceEdition(), fnr));
-        settInnIMap(map, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, kallAltinn(altinnTilgangsstyringProperties.getLtsMidlertidigServiceCode(), altinnTilgangsstyringProperties.getLtsMidlertidigServiceEdition(), fnr));
+        AltinnOrganisasjon[] arbeidstreningOrger = kallAltinn(altinnTilgangsstyringProperties.getArbtreningServiceCode(), altinnTilgangsstyringProperties.getArbtreningServiceEdition(), fnr);
+        leggTil(tilganger, arbeidstreningOrger, Tiltakstype.ARBEIDSTRENING);
 
-        return new ArrayList<>(map.values());
+        AltinnOrganisasjon[] varigLtsOrger = kallAltinn(altinnTilgangsstyringProperties.getLtsVarigServiceCode(), altinnTilgangsstyringProperties.getLtsVarigServiceEdition(), fnr);
+        leggTil(tilganger, varigLtsOrger, Tiltakstype.VARIG_LONNSTILSKUDD);
+
+        AltinnOrganisasjon[] midlLtsOrger = kallAltinn(altinnTilgangsstyringProperties.getLtsMidlertidigServiceCode(), altinnTilgangsstyringProperties.getLtsMidlertidigServiceEdition(), fnr);
+        leggTil(tilganger, midlLtsOrger, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+
+        return tilganger.asMap();
     }
 
-    public Set<AltinnOrganisasjon> hentAltinnOrganisasjoner(Identifikator fnr) {
-        Set<AltinnOrganisasjon> altinnOrganisasjoner = new HashSet<>();
-        altinnOrganisasjoner.addAll(Arrays.asList(kallAltinn(altinnTilgangsstyringProperties.getArbtreningServiceCode(), altinnTilgangsstyringProperties.getArbtreningServiceEdition(), fnr)));
-        altinnOrganisasjoner.addAll(Arrays.asList(kallAltinn(altinnTilgangsstyringProperties.getLtsMidlertidigServiceCode(), altinnTilgangsstyringProperties.getLtsMidlertidigServiceEdition(), fnr)));
-        altinnOrganisasjoner.addAll(Arrays.asList(kallAltinn(altinnTilgangsstyringProperties.getLtsVarigServiceCode(), altinnTilgangsstyringProperties.getLtsVarigServiceEdition(), fnr)));
-        return altinnOrganisasjoner;
-    }
-
-    private void settInnIMap(Map<BedriftNr, ArbeidsgiverOrganisasjon> map, Tiltakstype tiltakstype, AltinnOrganisasjon[] altinnOrganisasjons) {
-        for (AltinnOrganisasjon altinnOrganisasjon : altinnOrganisasjons) {
-            BedriftNr bedriftNr = new BedriftNr(altinnOrganisasjon.getOrganizationNumber());
-            ArbeidsgiverOrganisasjon arbeidsgiverOrganisasjon;
-            if (!map.containsKey(bedriftNr)) {
-                arbeidsgiverOrganisasjon = new ArbeidsgiverOrganisasjon(bedriftNr, altinnOrganisasjon.getName());
-                map.put(bedriftNr, arbeidsgiverOrganisasjon);
-            } else {
-                arbeidsgiverOrganisasjon = map.get(bedriftNr);
+    private void leggTil(Multimap<BedriftNr, Tiltakstype> tilganger, AltinnOrganisasjon[] arbeidstreningOrger, Tiltakstype tiltakstype) {
+        for (AltinnOrganisasjon altinnOrganisasjon : arbeidstreningOrger) {
+            if (!altinnOrganisasjon.getType().equals("Enterprise")) {
+                tilganger.put(new BedriftNr(altinnOrganisasjon.getOrganizationNumber()), tiltakstype);
             }
-            arbeidsgiverOrganisasjon.getTilgangstyper().add(tiltakstype);
         }
     }
 
-    private AltinnOrganisasjon[] kallAltinn(Integer serviceCode, Integer serviceEdition, Identifikator fnr) {
+    public Set<AltinnOrganisasjon> hentAltinnOrganisasjoner(Fnr fnr) {
+        return new HashSet<>(List.of(kallAltinn(null, null, fnr)));
+    }
+
+    private AltinnOrganisasjon[] kallAltinn(Integer serviceCode, Integer serviceEdition, Fnr fnr) {
         try {
             boolean brukProxy = featureToggleService.isEnabled("arbeidsgiver.tiltaksgjennomforing-api.bruk-altinn-proxy");
             HttpEntity<HttpHeaders> headers = brukProxy ? getAuthHeadersForInnloggetBruker() : getAuthHeadersForAltinn();
@@ -114,7 +114,7 @@ public class AltinnTilgangsstyringService {
             ).getBody();
         } catch (RestClientException exception) {
             log.warn("Feil ved kall mot Altinn.", exception);
-            throw new TiltaksgjennomforingException("Det har skjedd en feil ved oppslag mot Altinn. Forsøk å laste siden på nytt");
+            throw new AltinnFeilException();
         }
     }
 

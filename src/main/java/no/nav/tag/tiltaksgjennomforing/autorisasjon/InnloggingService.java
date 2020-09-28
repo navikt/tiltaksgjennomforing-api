@@ -12,9 +12,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.Tilgangskontroll
 import no.nav.tag.tiltaksgjennomforing.orgenhet.ArbeidsgiverOrganisasjon;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
@@ -31,9 +29,9 @@ public class InnloggingService {
         if (issuer == Issuer.ISSUER_SELVBETJENING && avtalerolle == Avtalerolle.DELTAKER) {
             return new InnloggetDeltaker(new Fnr(brukerOgIssuer.getBrukerIdent()));
         } else if (issuer == Issuer.ISSUER_SELVBETJENING && avtalerolle == Avtalerolle.ARBEIDSGIVER) {
-            List<ArbeidsgiverOrganisasjon> organisasjoner = altinnTilgangsstyringService.hentOrganisasjoner(new Fnr(brukerOgIssuer.getBrukerIdent()));
             Set<AltinnOrganisasjon> altinnOrganisasjoner = altinnTilgangsstyringService.hentAltinnOrganisasjoner(new Fnr(brukerOgIssuer.getBrukerIdent()));
-            return new InnloggetArbeidsgiver(new Fnr(brukerOgIssuer.getBrukerIdent()), organisasjoner, altinnOrganisasjoner);
+            Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(new Fnr(brukerOgIssuer.getBrukerIdent()));
+            return new InnloggetArbeidsgiver(new Fnr(brukerOgIssuer.getBrukerIdent()), tilganger, altinnOrganisasjoner);
         } else if (issuer == Issuer.ISSUER_ISSO && avtalerolle == Avtalerolle.VEILEDER) {
             return new InnloggetVeileder(new NavIdent(brukerOgIssuer.getBrukerIdent()), tilgangskontrollService);
         } else {

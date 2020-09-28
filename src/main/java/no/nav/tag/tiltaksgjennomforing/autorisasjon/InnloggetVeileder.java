@@ -4,6 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.Tilgangskontroll
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Collections.emptyList;
 
@@ -52,7 +53,7 @@ public class InnloggetVeileder extends InnloggetBruker<NavIdent> {
         } else if (queryParametre.getDeltakerFnr() != null) {
             return avtaleRepository.findAllByDeltakerFnr(queryParametre.getDeltakerFnr());
         } else if (queryParametre.getBedriftNr() != null) {
-            return avtaleRepository.findAllByBedriftNrIn(List.of(queryParametre.getBedriftNr()));
+            return avtaleRepository.findAllByBedriftNrIn(Set.of(queryParametre.getBedriftNr()));
         } else {
             return emptyList();
         }
