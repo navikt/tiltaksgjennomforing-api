@@ -29,16 +29,9 @@
             "ParentOrganizationNumber": "910825550"
           },
           {
-            "Name": "BIRTAVARRE OG VÆRLANDET FORELDER",
-            "Type": "Enterprise",
-            "OrganizationNumber": "910825550",
-            "OrganizationForm": "AS",
-            "Status": "Active"
-          },
-          {
             "Name": "SALTRØD FORELDER",
             "Type": "Enterprise",
-            "OrganizationNumber": "910825555",
+            "OrganizationNumber": "910825550",
             "OrganizationForm": "AS",
             "Status": "Active"
           },
@@ -48,12 +41,12 @@
             "OrganizationNumber": "910712314",
             "OrganizationForm": "BEDR",
             "Status": "Active",
-            "ParentOrganizationNumber": "910825550"
+            "ParentOrganizationNumber": "910825555"
           },
           {
             "Name": "BIRTAVARRE OG VÆRLANDET FORELDER",
             "Type": "Enterprise",
-            "OrganizationNumber": "910825550",
+            "OrganizationNumber": "910825555",
             "OrganizationForm": "AS",
             "Status": "Active"
           },
@@ -63,7 +56,29 @@
             "OrganizationNumber": "910712306",
             "OrganizationForm": "BEDR",
             "Status": "Active",
-            "ParentOrganizationNumber": "910825550"
+            "ParentOrganizationNumber": "910825560"
+          },
+          {
+            "Name": "BIRTAVARRE OG VÆRLANDET FORELDER",
+            "Type": "Enterprise",
+            "OrganizationNumber": "910825560",
+            "OrganizationForm": "AS",
+            "Status": "Active"
+          },
+          {
+            "Name": "IngenTiltak Hjørnet",
+            "Type": "Business",
+            "OrganizationNumber": "980712306",
+            "OrganizationForm": "BEDR",
+            "Status": "Active",
+            "ParentOrganizationNumber": "980825560"
+          },
+          {
+            "Name": "IngenTiltak ASA",
+            "Type": "Enterprise",
+            "OrganizationNumber": "980825560",
+            "OrganizationForm": "AS",
+            "Status": "Active"
           }
         ],
         "headers": {
