@@ -37,6 +37,13 @@ tiltaksgjennomforing:
   altinn-tilgangsstyring:
     uri: https://api-gw.adeo.no/ekstern/altinn/api/serviceowner/reportees
     proxyUri: https://arbeidsgiver.nais.adeo.no/altinn-rettigheter-proxy/ekstern/altinn/api/serviceowner/reportees
+    beOmRettighetBaseUrl: https://altinn.no/ui/DelegationRequest
+    ltsMidlertidigServiceCode: 5516
+    ltsMidlertidigServiceEdition: 1
+    ltsVarigServiceCode: 5516
+    ltsVarigServiceEdition: 2
+    arbtreningServiceCode: 5332
+    arbtreningServiceEdition: 2
   altinn-varsel:
     uri: https://pep-gw.oera.no:9443/ekstern/altinn/notificationagencyexternalbasic/v1
   ereg:
