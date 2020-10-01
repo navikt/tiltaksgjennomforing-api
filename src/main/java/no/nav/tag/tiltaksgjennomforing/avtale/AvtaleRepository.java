@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecificationExecutor {
@@ -21,7 +22,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     List<Avtale> findAllByBedriftNr(BedriftNr bedriftNr);
 
     @Timed(percentiles = { 0.5d, 0.75d, 0.9d, 0.99d, 0.999d })
-    List<Avtale> findAllByBedriftNrIn(List<BedriftNr> bedriftNrList);
+    List<Avtale> findAllByBedriftNrIn(Set<BedriftNr> bedriftNrList);
 
     @Timed(percentiles = { 0.5d, 0.75d, 0.9d, 0.99d, 0.999d })
     List<Avtale> findAllByDeltakerFnr(Fnr deltakerFnr);

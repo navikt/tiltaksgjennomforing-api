@@ -33,12 +33,13 @@ tiltaksgjennomforing:
   altinn-tilgangsstyring:
     uri: http://localhost:8090/altinn-tilgangsstyring
     proxyUri: http://localhost:9090/altinn-rettigheter-proxy/ekstern/altinn/api/serviceowner/reportees
-    lts-midlertidig-service-code: 5516
-    lts-midlertidig-service-edition: 1
-    lts-varig-service-code: 5516
-    lts-varig-service-edition: 2
-    arbtrening-service-code: 5332
-    arbtrening-service-edition: 1
+    beOmRettighetBaseUrl: https://tt02.altinn.no/ui/DelegationRequest
+    ltsMidlertidigServiceCode: 5516
+    ltsMidlertidigServiceEdition: 1
+    ltsVarigServiceCode: 5516
+    ltsVarigServiceEdition: 2
+    arbtreningServiceCode: 5332
+    arbtreningServiceEdition: 1
   ereg:
     uri: http://localhost:8090/ereg
   sts:

@@ -2,7 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnOrganisasjon;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
-import no.nav.tag.tiltaksgjennomforing.orgenhet.ArbeidsgiverOrganisasjon;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -11,15 +10,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class InnloggetArbeidsgiver extends InnloggetBruker<Fnr> {
-    private final List<ArbeidsgiverOrganisasjon> organisasjoner;
     private final Set<AltinnOrganisasjon> altinnOrganisasjoner;
-    private final Map<BedriftNr, Set<Tiltakstype>> tilganger = new HashMap<>();
+    private final Map<BedriftNr, Collection<Tiltakstype>> tilganger;
 
-    public InnloggetArbeidsgiver(Fnr identifikator, List<ArbeidsgiverOrganisasjon> organisasjoner, Set<AltinnOrganisasjon> altinnOrganisasjoner) {
+    public InnloggetArbeidsgiver(Fnr identifikator, Map<BedriftNr, Collection<Tiltakstype>> tilganger, Set<AltinnOrganisasjon> altinnOrganisasjoner) {
         super(identifikator);
-        this.organisasjoner = organisasjoner;
         this.altinnOrganisasjoner = altinnOrganisasjoner;
-        organisasjoner.forEach(org -> tilganger.put(org.getBedriftNr(), new HashSet<>(org.getTilgangstyper())));
+        this.tilganger = tilganger;
     }
 
     private static boolean avbruttForMerEnn12UkerSiden(Avtale avtale) {
@@ -30,12 +27,8 @@ public class InnloggetArbeidsgiver extends InnloggetBruker<Fnr> {
         return avtale.erGodkjentAvVeileder() && avtale.getSluttDato().plusWeeks(12).isBefore(LocalDate.now());
     }
 
-    public Map<BedriftNr, Set<Tiltakstype>> getTilganger() {
+    public Map<BedriftNr, Collection<Tiltakstype>> getTilganger() {
         return tilganger;
-    }
-
-    public List<ArbeidsgiverOrganisasjon> getOrganisasjoner() {
-        return organisasjoner;
     }
 
     public Set<AltinnOrganisasjon> getAltinnOrganisasjoner() {
@@ -58,8 +51,11 @@ public class InnloggetArbeidsgiver extends InnloggetBruker<Fnr> {
         if (avbruttForMerEnn12UkerSiden(avtale)) {
             return false;
         }
-        // Sjekk om du har en ArbeidsgiverOrganisasjon som matcher både bedriftNr og tilgangstype på avtale
-        return organisasjoner.stream().anyMatch(o -> o.getTilgangstyper().contains(avtale.getTiltakstype()) && o.getBedriftNr().equals(avtale.getBedriftNr()));
+        if (!tilganger.containsKey(avtale.getBedriftNr())) {
+            return false;
+        }
+        Collection<Tiltakstype> gyldigeTilgangerPåBedriftNr = tilganger.get(avtale.getBedriftNr());
+        return gyldigeTilgangerPåBedriftNr.contains(avtale.getTiltakstype());
     }
 
     @Override
@@ -76,7 +72,7 @@ public class InnloggetArbeidsgiver extends InnloggetBruker<Fnr> {
     public List<Identifikator> identifikatorer() {
         var identifikatorer = new ArrayList<Identifikator>();
         identifikatorer.addAll(super.identifikatorer());
-        identifikatorer.addAll(arbeidsgiverIdentifikatorer());
+        identifikatorer.addAll(tilganger.keySet());
         return identifikatorer;
     }
 
@@ -92,14 +88,10 @@ public class InnloggetArbeidsgiver extends InnloggetBruker<Fnr> {
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
-        if (organisasjoner.isEmpty()) {
+        if (tilganger.isEmpty()) {
             return Collections.emptyList();
         }
-        return avtaleRepository.findAllByBedriftNrIn(arbeidsgiverIdentifikatorer());
-    }
-
-    private List<BedriftNr> arbeidsgiverIdentifikatorer() {
-        return organisasjoner.stream().map(ArbeidsgiverOrganisasjon::getBedriftNr).collect(Collectors.toList());
+        return avtaleRepository.findAllByBedriftNrIn(tilganger.keySet());
     }
 
     public List<Avtale> hentAvtalerForMinsideArbeidsgiver(AvtaleRepository avtaleRepository, BedriftNr bedriftNr) {

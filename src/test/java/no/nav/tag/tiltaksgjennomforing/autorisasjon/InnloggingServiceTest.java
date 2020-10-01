@@ -4,14 +4,13 @@ import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.TestData;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.ArbeidsgiverOrganisasjon;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,13 +46,14 @@ public class InnloggingServiceTest {
     
     @Test
     public void hentInnloggetBruker__selvbetjeningbruker_type_arbeidsgiver_skal_hente_organisasjoner() {
-        List<ArbeidsgiverOrganisasjon> organisasjoner = asList(new ArbeidsgiverOrganisasjon(new BedriftNr("111111111"), "Navn"));
-        InnloggetArbeidsgiver selvbetjeningBruker = new InnloggetArbeidsgiver(new Fnr("11111111111"), organisasjoner, Collections.emptySet());
-        when(altinnTilgangsstyringService.hentOrganisasjoner(selvbetjeningBruker.getIdentifikator())).thenReturn(organisasjoner);
+        InnloggetArbeidsgiver selvbetjeningBruker = new InnloggetArbeidsgiver(new Fnr("11111111111"), Map.of(), Set.of());
+        when(altinnTilgangsstyringService.hentTilganger(selvbetjeningBruker.getIdentifikator())).thenReturn(Map.of());
+        when(altinnTilgangsstyringService.hentAltinnOrganisasjoner(selvbetjeningBruker.getIdentifikator())).thenReturn(Set.of());
         værInnloggetArbeidsgiver(selvbetjeningBruker);
 
         assertThat(innloggingService.hentInnloggetBruker(Optional.of(Avtalerolle.ARBEIDSGIVER).get())).isEqualTo(selvbetjeningBruker);
-        verify(altinnTilgangsstyringService).hentOrganisasjoner(selvbetjeningBruker.getIdentifikator());
+        verify(altinnTilgangsstyringService).hentTilganger(selvbetjeningBruker.getIdentifikator());
+        verify(altinnTilgangsstyringService).hentAltinnOrganisasjoner(selvbetjeningBruker.getIdentifikator());
     }
     
     @Test

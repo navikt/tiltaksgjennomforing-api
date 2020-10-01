@@ -14,9 +14,7 @@ public class AltinnTilgangsstyringProperties {
     private URI proxyUri;
     private String altinnApiKey;
     private String apiGwApiKey;
-    private Integer serviceCode;
-    private Integer serviceEdition;
-
+    private String beOmRettighetBaseUrl;
     private Integer ltsMidlertidigServiceCode;
     private Integer ltsMidlertidigServiceEdition;
     private Integer ltsVarigServiceCode;
