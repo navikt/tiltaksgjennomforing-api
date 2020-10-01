@@ -134,10 +134,14 @@ public class MetrikkRegistrering {
     }
 
     @EventListener
-    public void avtaleEndretVeileder(AvtaleEndretVeileder event) {
+    public void avtaleNyVeileder(AvtaleNyVeileder event) {
         Avtalerolle rolle = Avtalerolle.VEILEDER;
         Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
-        log.info("Avtale byttet veileder: avtaleId={}, tidligere veileder={}, ny veileder={}", event.getAvtale().getId(), event.getEndretFra().asString(), event.getAvtale().getVeilederNavIdent().asString());
+        if (event.getTidligereVeileder() == null) {
+            log.info("Avtale tildelt veileder: avtaleId={}, veileder={}", event.getAvtale().getId(), event.getAvtale().getVeilederNavIdent().asString());
+        } else {
+            log.info("Avtale byttet veileder: avtaleId={}, tidligere veileder={}, ny veileder={}", event.getAvtale().getId(), event.getTidligereVeileder().asString(), event.getAvtale().getVeilederNavIdent().asString());
+        }
         counter("avtale.endretVEileder", rolle, tiltakstype).increment();
     }
 

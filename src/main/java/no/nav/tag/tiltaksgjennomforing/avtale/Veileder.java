@@ -13,6 +13,10 @@ public class Veileder extends Avtalepart<NavIdent> {
     static String tekstAvtaleAvbrutt = "Du eller en annen veileder har avbrutt tiltaket.";
     String venteListeForVeileder;
 
+    public Veileder(NavIdent identifikator) {
+        super(identifikator, null);
+    }
+
     public Veileder(NavIdent identifikator, Avtale avtale) {
         super(identifikator, avtale);
         this.venteListeForVeileder = "Du må vente for " + (!avtale.erGodkjentAvArbeidsgiver() ? "arbeidsgiver" : "");
@@ -135,9 +139,5 @@ public class Veileder extends Avtalepart<NavIdent> {
             throw new ErAlleredeVeilederException();
         }
         avtale.overtaAvtale(this.getIdentifikator());
-    }
-
-    public void aksepterUtkast() {
-        avtale.aksepterUtkast(this.getIdentifikator());
     }
 }

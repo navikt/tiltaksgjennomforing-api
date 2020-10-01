@@ -54,6 +54,8 @@ public class InnloggetVeileder extends InnloggetBruker<NavIdent> {
             return avtaleRepository.findAllByDeltakerFnr(queryParametre.getDeltakerFnr());
         } else if (queryParametre.getBedriftNr() != null) {
             return avtaleRepository.findAllByBedriftNrIn(Set.of(queryParametre.getBedriftNr()));
+        } else if (queryParametre.getErUfordelt() == true) {
+            return avtaleRepository.findAllByVeilederNavIdent(null);
         } else {
             return emptyList();
         }
