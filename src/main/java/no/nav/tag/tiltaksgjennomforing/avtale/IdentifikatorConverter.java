@@ -8,6 +8,9 @@ public class IdentifikatorConverter implements AttributeConverter<Identifikator,
 
     @Override
     public String convertToDatabaseColumn(Identifikator attribute) {
+        if(attribute == null){
+            return null;
+        }
         return attribute.asString();
     }
 

@@ -55,7 +55,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private LocalDate avbruttDato;
     private String avbruttGrunn;
     private boolean opprettetAvArbeidsgiver;
-    private boolean utkastAkseptert;
 
     private Avtale(OpprettAvtale opprettAvtale) {
         this.id = UUID.randomUUID();
@@ -81,15 +80,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         avtale.opprettetAvArbeidsgiver = true;
         avtale.registerEvent(new AvtaleOpprettetAvArbeidsgiver(avtale));
         return avtale;
-    }
-
-    public void aksepterUtkast(NavIdent navIdent) {
-        if (utkastAkseptert) {
-            throw new AvtaleErAlleredeAkseptertException();
-        }
-        this.utkastAkseptert = true;
-        this.setVeilederNavIdent(navIdent);
-        this.registerEvent(new UtkastFraArbeidsgiverAkseptert(this));
     }
 
     public void endreAvtale(Instant sistEndret, EndreAvtale nyAvtale, Avtalerolle utfortAv) {
@@ -190,6 +180,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     void godkjennForVeileder(Identifikator utfortAv) {
         sjekkOmKanGodkjennes();
+        
+        if(this.erUfordelt()){
+            throw new AvtaleErIkkeFordeltException();
+        }
+
         this.setGodkjentAvVeileder(LocalDateTime.now());
         sistEndretNå();
         registerEvent(new GodkjentAvVeileder(this, utfortAv));
@@ -213,9 +208,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     void sjekkOmKanGodkjennes() {
-        if (ikkeAkseptertHvisOpprettetAvArbeidsgiver()) {
-            throw new AvtaleErIkkeAkseptertException();
-        }
         if (!erAltUtfylt()) {
             throw new AltMåVæreFyltUtException();
         }
@@ -236,17 +228,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             return Status.GJENNOMFØRES;
         } else if (erGodkjentAvVeileder()) {
             return Status.KLAR_FOR_OPPSTART;
-        } else if (ikkeAkseptertHvisOpprettetAvArbeidsgiver()) {
-            return Status.UTKAST;
         } else if (erAltUtfylt()) {
             return Status.MANGLER_GODKJENNING;
         } else {
             return Status.PÅBEGYNT;
         }
-    }
-
-    private boolean ikkeAkseptertHvisOpprettetAvArbeidsgiver() {
-        return opprettetAvArbeidsgiver && !utkastAkseptert;
     }
 
     @JsonProperty
@@ -269,11 +255,15 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
     }
 
-    public void overtaAvtale(NavIdent navIdent){
-        NavIdent endretFra = this.getVeilederNavIdent();
-        this.setVeilederNavIdent(navIdent);
+    public void overtaAvtale(NavIdent nyNavIdent) {
+        NavIdent gammelNavIdent = this.getVeilederNavIdent();
+        this.setVeilederNavIdent(nyNavIdent);
         sistEndretNå();
-        registerEvent(new AvtaleEndretVeileder(this, endretFra));
+        if (gammelNavIdent == null) {
+            this.registerEvent(new AvtaleOpprettetAvArbeidsgiverErFordelt(this));
+        } else {
+            registerEvent(new AvtaleNyVeileder(this, gammelNavIdent));
+        }
     }
 
     public void gjenopprett(Veileder veileder) {
@@ -318,8 +308,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new AvtaleLåstOpp(this));
     }
 
-    public boolean erArbeidstrening() {
-        return this.getTiltakstype() == Tiltakstype.ARBEIDSTRENING;
+    @JsonProperty
+    public boolean erUfordelt() {
+        return this.getVeilederNavIdent() == null;
     }
 
     private interface MetoderSomIkkeSkalDelegeresFraAvtaleInnhold {

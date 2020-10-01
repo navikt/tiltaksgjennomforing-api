@@ -85,14 +85,14 @@ public class LyttPåHendelseTilHendelselogg {
     }
 
     @EventListener
-    public void avtaleEndretVeileder(AvtaleEndretVeileder event) {
+    public void avtaleEndretVeileder(AvtaleNyVeileder event) {
         Hendelselogg hendelselogg = Hendelselogg.nyHendelse(event.getAvtale().getId(), Avtalerolle.VEILEDER, VarslbarHendelseType.NY_VEILEDER);
         repository.save(hendelselogg);
     }
 
     @EventListener
-    public void utkastFraArbeidsgiverAkseptert(UtkastFraArbeidsgiverAkseptert event) {
-        Hendelselogg hendelselogg = Hendelselogg.nyHendelse(event.getAvtale().getId(), Avtalerolle.VEILEDER, VarslbarHendelseType.UTKAST_AKSEPTERT);
+    public void ufordeltAvtaleTildeltVeileder(AvtaleOpprettetAvArbeidsgiverErFordelt event) {
+        Hendelselogg hendelselogg = Hendelselogg.nyHendelse(event.getAvtale().getId(), Avtalerolle.VEILEDER, VarslbarHendelseType.AVTALE_FORDELT);
         repository.save(hendelselogg);
     }
 }

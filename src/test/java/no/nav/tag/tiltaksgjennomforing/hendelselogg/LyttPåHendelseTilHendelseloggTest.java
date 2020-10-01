@@ -127,10 +127,18 @@ class LyttPåHendelseTilHendelseloggTest {
     }
 
     @Test
-    void skal_logge_utkast_akseptert() {
+    void skal_logge_avtale_overtatt() {
+        Avtale avtale = harOpprettetAvtale();
+        ogEndretAvtale(avtale);
+        ogTildeltNyVeileder(avtale);
+        sjekkAtHendelseErLogget(avtale, VarslbarHendelseType.NY_VEILEDER, Avtalerolle.VEILEDER);
+    }
+
+    @Test
+    void skal_logge_ufordelt_avtale_tildelt() {
         Avtale avtale = harOpprettetAvtaleAvAg();
-        ogUtkastAkseptert(avtale);
-        sjekkAtHendelseErLogget(avtale, VarslbarHendelseType.UTKAST_AKSEPTERT, Avtalerolle.VEILEDER);
+        ogTildeltNyVeileder(avtale);
+        sjekkAtHendelseErLogget(avtale, VarslbarHendelseType.AVTALE_FORDELT, Avtalerolle.VEILEDER);
     }
 
     private Avtale harOpprettetAvtale() {
@@ -198,16 +206,16 @@ class LyttPåHendelseTilHendelseloggTest {
         avtaleRepository.save(avtale);
     }
 
-    private void ogUtkastAkseptert(Avtale avtale) {
-        new Veileder(TestData.enNavIdent(), avtale).aksepterUtkast();
+    private void ogTildeltNyVeileder(Avtale avtale) {
+        new Veileder(new NavIdent("Q987655")).overtaAvtale(avtale);
         avtaleRepository.save(avtale);
     }
 
-    private void sjekkAtHendelseErLogget(Avtale avtale, VarslbarHendelseType godkjentAvDeltaker, Avtalerolle deltaker) {
+    private void sjekkAtHendelseErLogget(Avtale avtale, VarslbarHendelseType varslbarHendelseType, Avtalerolle avtalerolle) {
         List<Hendelselogg> hendelser = hendelseloggRepository.findAllByAvtaleId(avtale.getId());
         assertThat(hendelser)
-                .filteredOn(logg -> logg.getHendelse() == godkjentAvDeltaker)
-                .filteredOn(logg -> logg.getUtførtAv() == deltaker)
+                .filteredOn(logg -> logg.getHendelse() == varslbarHendelseType)
+                .filteredOn(logg -> logg.getUtførtAv() == avtalerolle)
                 .hasSize(1);
     }
 }
