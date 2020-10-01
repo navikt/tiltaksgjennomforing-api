@@ -540,35 +540,35 @@ public class AvtaleTest {
     }
 
     @Test
-    public void avtale_opprettet_av_arbedsgiver_skal_være_ikke_akseptert() {
+    public void avtale_opprettet_av_arbedsgiver_skal_være_ufordelt() {
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
-        assertThat(avtale.isUtkastAkseptert()).isFalse();
         assertThat(avtale.isOpprettetAvArbeidsgiver()).isTrue();
-        assertThat(avtale.statusSomEnum()).isEqualTo(Status.UTKAST);
+        assertThat(avtale.erUfordelt()).isTrue();
     }
 
     @Test
-    public void status_skal_være_utkast_selv_om_alt_er_utfylt() {
+    public void avtale_kan_være_ufordelt_selv_om_alt_er_utfylt() {
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
         avtale.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER);
-        assertThat(avtale.statusSomEnum()).isEqualTo(Status.UTKAST);
+        assertThat(avtale.erUfordelt()).isTrue();
     }
 
     @Test
-    public void avtale_skal_ikke_kunne_godkjennes_når_ikke_akseptert() {
+    public void avtale_skal_kunne_godkjennes_når_den_erUfordelt() {
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
         avtale.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER);
-        assertThatThrownBy(() -> avtale.godkjennForArbeidsgiver(TestData.enIdentifikator())).isInstanceOf(AvtaleErIkkeAkseptertException.class);
-    }
-
-    @Test
-    public void avtale_skal_kunne_godkjennes_når_akseptert() {
-        Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
-        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER);
-        NavIdent navIdent = TestData.enNavIdent();
-        avtale.aksepterUtkast(navIdent);
-        assertThat(avtale.getVeilederNavIdent()).isEqualTo(navIdent);
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
+        avtale.godkjennForDeltaker(TestData.enIdentifikator());
         assertThat(avtale.erGodkjentAvArbeidsgiver());
+        assertThat(avtale.erGodkjentAvDeltaker());
+    }
+
+    @Test
+    public void ufordelt_avtale_må_tildeles_før_veileder_godkjenner() {
+        Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
+        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER);
+        avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
+        avtale.godkjennForDeltaker(TestData.enIdentifikator());
+        assertThatThrownBy(() -> avtale.godkjennForVeileder(TestData.enNavIdent())).isInstanceOf(AvtaleErIkkeFordeltException.class);
     }
 }

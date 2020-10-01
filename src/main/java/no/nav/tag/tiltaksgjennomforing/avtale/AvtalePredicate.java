@@ -13,6 +13,7 @@ public class AvtalePredicate implements Predicate<Avtale> {
     private Fnr deltakerFnr;
     private Tiltakstype tiltakstype;
     private Status status;
+    private Boolean erUfordelt;
 
     private static boolean erLiktHvisOppgitt(Object kriterie, Object avtaleVerdi) {
         return kriterie == null || kriterie.equals(avtaleVerdi);
