@@ -4,10 +4,14 @@ import no.finn.unleash.DefaultUnleash;
 import no.finn.unleash.Unleash;
 import no.finn.unleash.util.UnleashConfig;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.ByEnhetStrategy;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.context.annotation.RequestScope;
+
+import javax.servlet.http.HttpServletRequest;
 
 
 @Configuration
@@ -36,9 +40,15 @@ public class FeatureToggleConfig {
 
     @Bean
     @ConditionalOnProperty("tiltaksgjennomforing.unleash.mock")
-    public Unleash unleashMock() {
+    @RequestScope
+    public Unleash unleashMock(@Autowired HttpServletRequest request) {
         FakeFakeUnleash fakeUnleash = new FakeFakeUnleash();
-        fakeUnleash.enableAll(); //Enabler alle toggles pr. default. Kan endres lokalt ved behov.
+        boolean allEnabled = "enabled".equals(request.getHeader("features"));
+        if (allEnabled) {
+            fakeUnleash.enableAll();
+        } else {
+            fakeUnleash.disableAll();
+        }
         fakeUnleash.disable("arbeidsgiver.tiltaksgjennomforing-api.bruk-altinn-proxy");
         return fakeUnleash;
     }
