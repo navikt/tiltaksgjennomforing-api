@@ -121,14 +121,17 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         return erGodkjentAvVeileder() && erGodkjentAvArbeidsgiver() && erGodkjentAvDeltaker();
     }
 
+    @JsonProperty
     public boolean erGodkjentAvDeltaker() {
         return this.getGodkjentAvDeltaker() != null;
     }
 
+    @JsonProperty
     public boolean erGodkjentAvArbeidsgiver() {
         return this.getGodkjentAvArbeidsgiver() != null;
     }
 
+    @JsonProperty
     public boolean erGodkjentAvVeileder() {
         return this.getGodkjentAvVeileder() != null;
     }
