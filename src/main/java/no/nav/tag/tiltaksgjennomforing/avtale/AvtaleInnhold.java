@@ -75,6 +75,8 @@ public class AvtaleInnhold {
     private Integer arbeidsgiveravgiftBelop;
     private Integer sumLonnsutgifter;
     private Integer sumLonnstilskudd;
+    @Enumerated(EnumType.STRING)
+    private Stillingstype stillingstype;
 
     // Arbeidstrening
     @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -51,6 +51,7 @@ public class EndreAvtale {
     private Integer arbeidsgiveravgiftBelop;
     private Integer sumLonnsutgifter;
     private Integer sumLonnstilskudd;
+    private Stillingstype stillingstype;
 
     // Mentorfelter
     private String mentorFornavn;

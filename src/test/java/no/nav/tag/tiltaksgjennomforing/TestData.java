@@ -173,6 +173,7 @@ public class TestData {
         endreAvtale.setArbeidsgiveravgiftBelop(3222);
         endreAvtale.setSumLonnsutgifter(26070);
         endreAvtale.setSumLonnstilskudd(15642);
+        endreAvtale.setStillingstype(Stillingstype.FAST);
         return endreAvtale;
     }
 

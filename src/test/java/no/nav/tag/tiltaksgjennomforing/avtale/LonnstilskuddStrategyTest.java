@@ -24,6 +24,15 @@ class LonnstilskuddStrategyTest {
     }
 
     @Test
+    void test_at_alt_er_ikke_utfylt_nar_stillingstype_er_null(){
+        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        endreAvtale.setStillingstype(null);
+        strategy.endre(endreAvtale);
+
+        assertThat(strategy.erAltUtfylt()).isFalse();
+    }
+
+    @Test
     void test_at_feil_når_familietilknytning_ikke_er_fylt_ut() {
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         endreAvtale.setHarFamilietilknytning(true);
