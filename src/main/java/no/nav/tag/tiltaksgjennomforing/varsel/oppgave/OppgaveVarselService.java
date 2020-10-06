@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.oppgave;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -27,8 +28,8 @@ public class OppgaveVarselService {
         this.stsClient = stsClient;
     }
 
-    public void opprettOppgave(final String fnr, String aktørId) {
-        OppgaveRequest oppgaveRequest = new OppgaveRequest(fnr, aktørId);
+    public void opprettOppgave(String aktørId, Tiltakstype tiltakstype) {
+        OppgaveRequest oppgaveRequest = new OppgaveRequest(aktørId, tiltakstype);
         OppgaveResponse oppgaveResponse;
         String corrId = "corr-id";
 
@@ -39,7 +40,7 @@ public class OppgaveVarselService {
                 throw e2;
             }
 
-        log.info("Opprettet oppgave {} for manuell søknad {} med sakid {}", oppgaveResponse.getId(), corrId);
+        log.info("Opprettet oppgave for tiltak {}. OppgaveId={}", tiltakstype, oppgaveResponse.getId());
     }
 
     private HttpEntity<OppgaveRequest> entityMedStsToken(final OppgaveRequest oppgaveRequest, String correlationId) {

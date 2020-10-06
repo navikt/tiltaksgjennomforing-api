@@ -31,6 +31,9 @@ public class PersondataService {
     @Value("classpath:pdl/hentPerson.navn.graphql")
     private Resource navnQueryResource;
 
+    @Value("classpath:pdl/hentIdenter.resource.graphql2")
+    private Resource identerQueryResource;
+
     @SneakyThrows
     private static String resourceAsString(Resource adressebeskyttelseQuery) {
         String filinnhold = StreamUtils.copyToString(adressebeskyttelseQuery.getInputStream(), Charsets.UTF_8);
@@ -68,6 +71,14 @@ public class PersondataService {
         }
     }
 
+    private static String hentAktørIdFraPdlRespons(PdlRespons pdlRespons) {
+        try {
+            return pdlRespons.getData().getHentIdenter().getIdentInformasjon()[0].getIdent();
+        }catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
+            return ""; // TODO oppdatere feilhåndtering
+        }
+    }
+
     private PdlRespons utførKallTilPdl(PdlRequest pdlRequest) {
         try {
             return restTemplate.postForObject(persondataProperties.getUri(), createRequestEntity(pdlRequest), PdlRespons.class);
@@ -81,6 +92,11 @@ public class PersondataService {
     public Navn hentNavn(Fnr fnr) {
         PdlRequest pdlRequest = new PdlRequest(resourceAsString(navnQueryResource), new Variables(fnr.asString()));
         return hentNavnFraPdlRespons(utførKallTilPdl(pdlRequest));
+    }
+
+    public String hentAktørId(Fnr fnr) {
+        PdlRequest pdlRequest = new PdlRequest(resourceAsString(identerQueryResource), new Variables(fnr.asString()));
+        return hentAktørIdFraPdlRespons(utførKallTilPdl(pdlRequest));
     }
 
     public void sjekkGradering(Fnr fnr) {
