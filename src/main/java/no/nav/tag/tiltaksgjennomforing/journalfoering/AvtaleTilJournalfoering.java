@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.journalfoering;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 
 import java.math.BigDecimal;
@@ -43,6 +44,7 @@ public class AvtaleTilJournalfoering {
     private LocalDate sluttDato;
     private Integer stillingprosent;
     private String stillingstittel;
+    private Stillingstype stillingstype;
     private String arbeidsoppgaver;
 
     // Lønnstilskudd
