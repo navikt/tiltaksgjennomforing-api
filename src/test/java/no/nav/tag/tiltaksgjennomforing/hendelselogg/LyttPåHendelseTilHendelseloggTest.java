@@ -18,7 +18,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@ActiveProfiles({ Miljø.LOCAL })
+@ActiveProfiles({ Miljø.LOCAL, "wiremock" })
 @DirtiesContext
 class LyttPåHendelseTilHendelseloggTest {
     @Autowired
