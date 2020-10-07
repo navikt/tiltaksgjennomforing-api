@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 public enum Tiltakstype {
-    ARBEIDSTRENING("ab0422"), MIDLERTIDIG_LONNSTILSKUDD("ab0422"), VARIG_LONNSTILSKUDD("ab0422"), MENTOR("ab0422");
+    ARBEIDSTRENING("ab0422"), MIDLERTIDIG_LONNSTILSKUDD("ab0336"), VARIG_LONNSTILSKUDD("ab0337"), MENTOR("ab0416");
 
     final String behandlingstema;
 
