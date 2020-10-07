@@ -4,5 +4,5 @@ import lombok.Value;
 
 @Value
 public class HentIdenter {
-    private final IdentInformasjon[] identInformasjon;
+    private final Identer[] identer;
 }
