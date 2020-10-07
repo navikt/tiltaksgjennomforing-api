@@ -15,11 +15,13 @@ public class OppgaveRequest {
     private final static String TEMA = "TIL";
     private final static String HOY_PRI = "HOY";
     private final static String OPPG_TYPE = "VURD_HENV";
+    private final static String BEHANDLINGSTYPE = "ae0034";
 
     private final String beskrivelse = BESKRIVELSE;
     private final String tema = TEMA;
     private final String prioritet = HOY_PRI;
     private final String oppgavetype = OPPG_TYPE;
+    private final String behandlingstype = BEHANDLINGSTYPE;
     private final String behandlingstema;
 
     @JsonFormat(pattern = "yyyy-MM-dd")

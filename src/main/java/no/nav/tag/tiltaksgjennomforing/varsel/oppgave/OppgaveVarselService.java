@@ -12,6 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.Arrays;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -28,13 +29,12 @@ public class OppgaveVarselService {
         this.stsClient = stsClient;
     }
 
-    public void opprettOppgave(String aktørId, Tiltakstype tiltakstype) {
+    public void opprettOppgave(String aktørId, Tiltakstype tiltakstype, UUID corrlelationId) {
         OppgaveRequest oppgaveRequest = new OppgaveRequest(aktørId, tiltakstype);
         OppgaveResponse oppgaveResponse;
-        String corrId = "corr-id";
 
             try {
-                oppgaveResponse = restTemplate.postForObject(uri, entityMedStsToken(oppgaveRequest, corrId), OppgaveResponse.class);
+                oppgaveResponse = restTemplate.postForObject(uri, entityMedStsToken(oppgaveRequest, corrlelationId), OppgaveResponse.class);
             } catch (Exception e2) {
                 log.error("Kall til Oppgave feilet: {}", e2.getMessage());
                 throw e2;
@@ -43,12 +43,12 @@ public class OppgaveVarselService {
         log.info("Opprettet oppgave for tiltak {}. OppgaveId={}", tiltakstype, oppgaveResponse.getId());
     }
 
-    private HttpEntity<OppgaveRequest> entityMedStsToken(final OppgaveRequest oppgaveRequest, String correlationId) {
+    private HttpEntity<OppgaveRequest> entityMedStsToken(final OppgaveRequest oppgaveRequest, UUID correlationId) {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(stsClient.hentSTSToken().getAccessToken());
-        headers.set(CORR_ID, correlationId);
+        headers.set(CORR_ID, correlationId.toString());
         HttpEntity<OppgaveRequest> entity = new HttpEntity<>(oppgaveRequest, headers);
         return entity;
     }

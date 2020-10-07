@@ -31,7 +31,7 @@ public class PersondataService {
     @Value("classpath:pdl/hentPerson.navn.graphql")
     private Resource navnQueryResource;
 
-    @Value("classpath:pdl/hentIdenter.resource.graphql2")
+    @Value("classpath:pdl/hentIdenter.graphql")
     private Resource identerQueryResource;
 
     @SneakyThrows
@@ -40,7 +40,7 @@ public class PersondataService {
         return filinnhold.replaceAll("\\s+", " ");
     }
 
-    public Adressebeskyttelse hentAdressebeskyttelse(Fnr fnr) {
+    protected Adressebeskyttelse hentAdressebeskyttelse(Fnr fnr) {
         PdlRequest pdlRequest = new PdlRequest(resourceAsString(adressebeskyttelseQueryResource), new Variables(fnr.asString()));
         return hentAdressebeskyttelseFraPdlRespons(utførKallTilPdl(pdlRequest));
     }
@@ -73,7 +73,7 @@ public class PersondataService {
 
     private static String hentAktørIdFraPdlRespons(PdlRespons pdlRespons) {
         try {
-            return pdlRespons.getData().getHentIdenter().getIdentInformasjon()[0].getIdent();
+            return pdlRespons.getData().getHentIdenter().getIdenter()[0].getIdent();
         }catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
             return ""; // TODO oppdatere feilhåndtering
         }

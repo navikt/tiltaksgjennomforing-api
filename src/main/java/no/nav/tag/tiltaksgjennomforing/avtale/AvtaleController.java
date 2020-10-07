@@ -75,6 +75,7 @@ public class AvtaleController {
     @Transactional
     public ResponseEntity<?> opprettAvtaleSomArbeidsgiver(@RequestBody OpprettAvtale opprettAvtale) {
         InnloggetArbeidsgiver innloggetArbeidsgiver = innloggingService.hentInnloggetArbeidsgiver();
+        persondataService.sjekkGradering(opprettAvtale.getDeltakerFnr()); //TODO Hilken feilmelding skal arbeidsgiver få?
         Avtale avtale = innloggetArbeidsgiver.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
