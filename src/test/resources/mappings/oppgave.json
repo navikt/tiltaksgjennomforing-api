@@ -10,9 +10,8 @@
           }
         },
         "bodyPatterns" : [ {
-          "equalToJson" : "{\n  \"behandlingstema\":\"ab0336\",\n  \"aktoerId\": \"2135315926224\",\n  \"beskrivelse\": \"Avtale om arbeidstrening\",\n  \"tema\": \"TIL\",\n  \"prioritet\": \"HOY\",\n  \"oppgavetype\": \"VURD_HENV\",\n  \"behandlingstype\":\"ae0034\",\n  \"aktivDato\": \"2020-11-07\"\n}",
-          "ignoreArrayOrder" : true,
-          "aktivDato": "${json-unit.any-string}"
+          "equalToJson" : "{\n  \"behandlingstema\":\"ab0336\",\n  \"aktoerId\": \"2135315926224\",\n  \"beskrivelse\": \"Avtale om arbeidstrening\",\n  \"tema\": \"TIL\",\n  \"prioritet\": \"HOY\",\n  \"oppgavetype\": \"VURD_HENV\",\n  \"behandlingstype\":\"ae0034\"\n}",
+          "ignoreExtraElements" : true
           }]
       },
       "response": {
