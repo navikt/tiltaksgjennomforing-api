@@ -134,7 +134,7 @@ class LyttPåHendelseTilHendelseloggTest {
         sjekkAtHendelseErLogget(avtale, VarslbarHendelseType.NY_VEILEDER, Avtalerolle.VEILEDER);
     }
 
-    @Test //TODO
+    @Test
     void skal_logge_ufordelt_avtale_tildelt() {
         Avtale avtale = harOpprettetAvtaleAvAg();
         ogTildeltNyVeileder(avtale);

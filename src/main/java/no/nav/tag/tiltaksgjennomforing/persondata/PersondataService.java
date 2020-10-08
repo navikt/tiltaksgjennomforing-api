@@ -75,7 +75,7 @@ public class PersondataService {
         try {
             return pdlRespons.getData().getHentIdenter().getIdenter()[0].getIdent();
         }catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
-            return ""; // TODO oppdatere feilhåndtering
+            return "";
         }
     }
 

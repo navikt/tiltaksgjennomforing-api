@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.varsel.oppgave;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.exceptions.GosysFeilException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -29,18 +30,18 @@ public class OppgaveVarselService {
         this.stsClient = stsClient;
     }
 
-    public void opprettOppgave(String aktørId, Tiltakstype tiltakstype, UUID corrlelationId) {
+    public void opprettOppgave(String aktørId, Tiltakstype tiltakstype, UUID avtaleId) {
         OppgaveRequest oppgaveRequest = new OppgaveRequest(aktørId, tiltakstype);
         OppgaveResponse oppgaveResponse;
 
             try {
-                oppgaveResponse = restTemplate.postForObject(uri, entityMedStsToken(oppgaveRequest, corrlelationId), OppgaveResponse.class);
+                oppgaveResponse = restTemplate.postForObject(uri, entityMedStsToken(oppgaveRequest, avtaleId), OppgaveResponse.class);
             } catch (Exception e2) {
                 log.error("Kall til Oppgave feilet: {}", e2.getMessage());
-                throw e2;
+                throw new GosysFeilException();
             }
 
-        log.info("Opprettet oppgave for tiltak {}. OppgaveId={}", tiltakstype, oppgaveResponse.getId());
+        log.info("Opprettet oppgave for tiltak {}. OppgaveId={}, avtaleId={}", tiltakstype, oppgaveResponse.getId(), avtaleId);
     }
 
     private HttpEntity<OppgaveRequest> entityMedStsToken(final OppgaveRequest oppgaveRequest, UUID correlationId) {
