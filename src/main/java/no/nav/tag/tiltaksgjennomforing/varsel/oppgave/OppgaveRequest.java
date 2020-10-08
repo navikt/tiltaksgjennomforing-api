@@ -11,13 +11,13 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class OppgaveRequest {
 
-    private final static String BESKRIVELSE = "Avtale om arbeidstrening";
+    private final static String BESKRIVELSE = "Avtale er opprettet av arbeidsgiver på tiltak ";
     private final static String TEMA = "TIL";
     private final static String HOY_PRI = "HOY";
     private final static String OPPG_TYPE = "VURD_HENV";
     private final static String BEHANDLINGSTYPE = "ae0034";
 
-    private final String beskrivelse = BESKRIVELSE;
+    private final String beskrivelse;
     private final String tema = TEMA;
     private final String prioritet = HOY_PRI;
     private final String oppgavetype = OPPG_TYPE;
@@ -31,5 +31,6 @@ public class OppgaveRequest {
     public OppgaveRequest(String aktørId, Tiltakstype tiltakstype) {
         this.aktoerId = aktørId;
         this.behandlingstema = tiltakstype.getBehandlingstema();
+        this.beskrivelse = BESKRIVELSE + tiltakstype;
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class LagGosysVarselFraVarslbarHendelse {
+public class LagGosysVarselLytter {
     private final OppgaveVarselService oppgaveVarselService;
     private final PersondataService persondataService;
 

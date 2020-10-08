@@ -10,7 +10,7 @@
           }
         },
         "bodyPatterns" : [ {
-          "equalToJson" : "{\n  \"behandlingstema\":\"ab0336\",\n  \"aktoerId\": \"2135315926224\",\n  \"beskrivelse\": \"Avtale om arbeidstrening\",\n  \"tema\": \"TIL\",\n  \"prioritet\": \"HOY\",\n  \"oppgavetype\": \"VURD_HENV\",\n  \"behandlingstype\":\"ae0034\"\n}",
+          "equalToJson" : "{\n  \"behandlingstema\":\"ab0336\",\n  \"aktoerId\": \"2135315926224\",\n  \"beskrivelse\": \"Avtale er opprettet av arbeidsgiver på tiltak MIDLERTIDIG_LONNSTILSKUDD\",\n  \"tema\": \"TIL\",\n  \"prioritet\": \"HOY\",\n  \"oppgavetype\": \"VURD_HENV\",\n  \"behandlingstype\":\"ae0034\"\n}",
           "ignoreExtraElements" : true
           }]
       },
