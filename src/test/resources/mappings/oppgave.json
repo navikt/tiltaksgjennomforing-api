@@ -10,13 +10,14 @@
           }
         },
         "bodyPatterns" : [ {
-          "equalToJson" : "{\n  \"behandlingstema\":\"ab0422\",\n  \"aktoerId\": \"2135315926224\",\n  \"beskrivelse\": \"Avtale om arbeidstrening\",\n  \"tema\": \"TIL\",\n  \"prioritet\": \"HOY\",\n  \"oppgavetype\": \"VURD_HENV\",\n  \"behandlingstype\":\"ae0034\",\n  \"aktivDato\": \"2020-10-07\"\n}",
-          "ignoreArrayOrder" : true
+          "equalToJson" : "{\n  \"behandlingstema\":\"ab0336\",\n  \"aktoerId\": \"2135315926224\",\n  \"beskrivelse\": \"Avtale om arbeidstrening\",\n  \"tema\": \"TIL\",\n  \"prioritet\": \"HOY\",\n  \"oppgavetype\": \"VURD_HENV\",\n  \"behandlingstype\":\"ae0034\",\n  \"aktivDato\": \"2020-11-07\"\n}",
+          "ignoreArrayOrder" : true,
+          "aktivDato": "${json-unit.any-string}"
           }]
       },
       "response": {
         "status": 200,
-        "body": "{\n    \"id\": 315992387,\n    \"tildeltEnhetsnr\": \"0219\",\n    \"aktoerId\": \"2796812837591\",\n    \"beskrivelse\": \"Avtale om arbeidstrening\",\n    \"tema\": \"TIL\",\n    \"behandlingstema\": \"ab0422\",\n    \"oppgavetype\": \"VURD_HENV\",\n    \"behandlingstype\": \"ae0034\",\n    \"versjon\": 1,\n    \"opprettetAv\": \"srvtiltaksgjennomf\",\n    \"prioritet\": \"HOY\",\n    \"status\": \"OPPRETTET\",\n    \"metadata\": {},\n    \"aktivDato\": \"2020-10-07\",\n    \"opprettetTidspunkt\": \"2020-10-07T11:16:15.551+02:00\"\n}",
+        "body": "{\n    \"id\": 315992387,\n    \"tildeltEnhetsnr\": \"0219\",\n    \"aktoerId\": \"2796812837591\",\n    \"beskrivelse\": \"Avtale om arbeidstrening\",\n    \"tema\": \"TIL\",\n    \"behandlingstema\": \"ab0336\",\n    \"oppgavetype\": \"VURD_HENV\",\n    \"behandlingstype\": \"ae0034\",\n    \"versjon\": 1,\n    \"opprettetAv\": \"srvtiltaksgjennomf\",\n    \"prioritet\": \"HOY\",\n    \"status\": \"OPPRETTET\",\n    \"metadata\": {},\n    \"aktivDato\": \"2020-10-07\",\n    \"opprettetTidspunkt\": \"2020-10-07T11:16:15.551+02:00\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
