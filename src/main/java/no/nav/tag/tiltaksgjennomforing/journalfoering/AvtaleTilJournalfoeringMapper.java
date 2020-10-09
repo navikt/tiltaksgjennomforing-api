@@ -60,6 +60,7 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setArbeidsgiveravgiftBelop(avtaleInnhold.getArbeidsgiveravgiftBelop());
         avtaleTilJournalfoering.setSumLonnsutgifter(avtaleInnhold.getSumLonnsutgifter());
         avtaleTilJournalfoering.setSumLonnstilskudd(avtaleInnhold.getSumLonnstilskudd());
+        avtaleTilJournalfoering.setStillingstype(avtaleInnhold.getStillingstype());
         return avtaleTilJournalfoering;
     }
 

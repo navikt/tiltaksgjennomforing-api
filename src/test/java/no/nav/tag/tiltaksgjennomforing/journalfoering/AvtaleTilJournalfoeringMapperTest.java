@@ -39,6 +39,7 @@ public class AvtaleTilJournalfoeringMapperTest {
         avtale.setId(avtaleId);
         avtale.setGodkjentPaVegneAv(true);
         avtale.setOpprettetTidspunkt(LocalDateTime.now());
+        avtale.setStillingstype(Stillingstype.FAST);
 
         tilJournalfoering = tilJournalfoering(avtaleInnhold);
 
@@ -76,6 +77,8 @@ public class AvtaleTilJournalfoeringMapperTest {
         assertEquals(avtale.getManedslonn(), tilJournalfoering.getManedslonn());
         assertEquals(avtale.getFeriepengesats(), tilJournalfoering.getFeriepengesats());
         assertEquals(avtale.getArbeidsgiveravgift(), tilJournalfoering.getArbeidsgiveravgift());
+        assertNotNull(avtaleInnhold.getStillingstype());
+        assertEquals(avtaleInnhold.getStillingstype(), tilJournalfoering.getStillingstype());
     }
 
     @Test
