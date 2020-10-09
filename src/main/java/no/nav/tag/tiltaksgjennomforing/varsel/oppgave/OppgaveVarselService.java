@@ -41,7 +41,7 @@ public class OppgaveVarselService {
                 log.error("Kall til Oppgave feilet: {}", e2.getMessage());
                 throw new GosysFeilException();
             }
-        log.info("Opprettet oppgave for tiltak {}. OppgaveId={}, avtaleId={}", tiltakstype, oppgaveResponse.getId(), avtaleId);
+        log.info("Opprettet oppgave for tiltak {}. OppgaveId={}, avtaleId={}", tiltakstype.getNavn(), oppgaveResponse.getId(), avtaleId);
     }
 
     private HttpEntity<OppgaveRequest> entityMedStsToken(final OppgaveRequest oppgaveRequest, UUID correlationId) {
