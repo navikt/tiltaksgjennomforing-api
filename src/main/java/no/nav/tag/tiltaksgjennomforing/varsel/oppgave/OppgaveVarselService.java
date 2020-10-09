@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.oppgave;
 
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.GosysFeilException;
@@ -40,7 +41,6 @@ public class OppgaveVarselService {
                 log.error("Kall til Oppgave feilet: {}", e2.getMessage());
                 throw new GosysFeilException();
             }
-
         log.info("Opprettet oppgave for tiltak {}. OppgaveId={}, avtaleId={}", tiltakstype, oppgaveResponse.getId(), avtaleId);
     }
 
@@ -52,5 +52,10 @@ public class OppgaveVarselService {
         headers.set(CORR_ID, correlationId.toString());
         HttpEntity<OppgaveRequest> entity = new HttpEntity<>(oppgaveRequest, headers);
         return entity;
+    }
+
+    @Data
+    static class OppgaveResponse{
+        private String id;
     }
 }
