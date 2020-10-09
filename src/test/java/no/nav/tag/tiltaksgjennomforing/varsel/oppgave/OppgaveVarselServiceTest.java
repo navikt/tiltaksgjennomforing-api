@@ -65,11 +65,11 @@ public class OppgaveVarselServiceTest {
         assertThat(request.getAktivDato()).isToday();
         assertThat(request.getAktoerId()).isEqualTo("aktørId");
         assertThat(request.getBehandlingstema()).isEqualTo(tiltakstype.getBehandlingstema());
-        assertThat(request.getBeskrivelse()).contains(tiltakstype.name());
+        assertThat(request.getBeskrivelse()).contains(tiltakstype.getNavn());
         assertThat(request.getBeskrivelse()).contains("Avtale er opprettet av arbeidsgiver på tiltak ");
         assertThat(request.getBehandlingstype()).isEqualTo("ae0034");
         assertThat(request.getOppgavetype()).isEqualTo("VURD_HENV");
-        assertThat(request.getPrioritet()).isEqualTo("HOY");
+        assertThat(request.getPrioritet()).isEqualTo("NORM");
         assertThat(request.getTema()).isEqualTo("TIL");
     }
 

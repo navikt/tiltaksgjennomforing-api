@@ -11,7 +11,7 @@
         },
         "bodyPatterns": [
           {
-            "equalToJson": "{\n  \"aktoerId\": \"2135315926224\",\n  \"tema\": \"TIL\",\n  \"prioritet\": \"HOY\",\n  \"oppgavetype\": \"VURD_HENV\",\n  \"behandlingstype\":\"ae0034\"\n}",
+            "equalToJson": "{\n  \"aktoerId\": \"2135315926224\",\n  \"tema\": \"TIL\",\n  \"prioritet\": \"NORM\",\n  \"oppgavetype\": \"VURD_HENV\",\n  \"behandlingstype\":\"ae0034\"\n}",
             "ignoreArrayOrder": true,
             "ignoreExtraElements": true
           }

@@ -1,12 +1,21 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 public enum Tiltakstype {
-    ARBEIDSTRENING("ab0422"), MIDLERTIDIG_LONNSTILSKUDD("ab0336"), VARIG_LONNSTILSKUDD("ab0337"), MENTOR("ab0416");
+    ARBEIDSTRENING("Arbeidstrening", "ab0422"),
+    MIDLERTIDIG_LONNSTILSKUDD("Midlertidig lønnstilskudd", "ab0336"),
+    VARIG_LONNSTILSKUDD("Varig lønnstilskudd", "ab0337"),
+    MENTOR("Mentor", "ab0416");
 
+    final String navn;
     final String behandlingstema;
 
-    Tiltakstype(String behandlingstema) {
+    Tiltakstype(String navn, String behandlingstema) {
+        this.navn = navn;
         this.behandlingstema = behandlingstema;
+    }
+
+    public String getNavn() {
+        return this.navn;
     }
 
     public String getBehandlingstema() {
