@@ -20,4 +20,5 @@ public enum Feilkode {
     VARIGHET_FOR_LANG_MENTOR,
     VEILEDER_SKAL_GODKJENNE_SIST,
     ALTINN_FEIL,
+    GOSYS_FEIL,
 }

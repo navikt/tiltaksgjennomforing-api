@@ -166,6 +166,28 @@
           "Content-Type": "application/json"
         }
       }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/persondata",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json",
+            "caseInsensitive": true
+          }
+        },
+        "bodyPatterns" : [ {
+          "equalToJson" : {"query" : "query($ident: ID!) { hentIdenter(ident: $ident, grupper: [AKTORID]) { identer { ident gruppe historisk } } }", "variables":  {"ident": "00000000000"}}
+        } ]
+      },
+      "response": {
+        "status": 200,
+        "body": "{ \"data\": { \"hentIdenter\": { \"identer\": [{ \"ident\": \"2135315926224\", \"gruppe\": \"AKTORID\", \"historisk\": false }]}}}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
     }
   ]
 }

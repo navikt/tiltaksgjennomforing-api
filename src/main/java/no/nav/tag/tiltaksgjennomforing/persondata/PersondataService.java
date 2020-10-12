@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FortroligAdresseException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
 import org.apache.commons.io.Charsets;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,13 +31,16 @@ public class PersondataService {
     @Value("classpath:pdl/hentPerson.navn.graphql")
     private Resource navnQueryResource;
 
+    @Value("classpath:pdl/hentIdenter.graphql")
+    private Resource identerQueryResource;
+
     @SneakyThrows
     private static String resourceAsString(Resource adressebeskyttelseQuery) {
         String filinnhold = StreamUtils.copyToString(adressebeskyttelseQuery.getInputStream(), Charsets.UTF_8);
         return filinnhold.replaceAll("\\s+", " ");
     }
 
-    public Adressebeskyttelse hentAdressebeskyttelse(Fnr fnr) {
+    protected Adressebeskyttelse hentAdressebeskyttelse(Fnr fnr) {
         PdlRequest pdlRequest = new PdlRequest(resourceAsString(adressebeskyttelseQueryResource), new Variables(fnr.asString()));
         return hentAdressebeskyttelseFraPdlRespons(utførKallTilPdl(pdlRequest));
     }
@@ -68,6 +71,14 @@ public class PersondataService {
         }
     }
 
+    private static String hentAktørIdFraPdlRespons(PdlRespons pdlRespons) {
+        try {
+            return pdlRespons.getData().getHentIdenter().getIdenter()[0].getIdent();
+        }catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
+            return "";
+        }
+    }
+
     private PdlRespons utførKallTilPdl(PdlRequest pdlRequest) {
         try {
             return restTemplate.postForObject(persondataProperties.getUri(), createRequestEntity(pdlRequest), PdlRespons.class);
@@ -83,10 +94,15 @@ public class PersondataService {
         return hentNavnFraPdlRespons(utførKallTilPdl(pdlRequest));
     }
 
+    public String hentAktørId(Fnr fnr) {
+        PdlRequest pdlRequest = new PdlRequest(resourceAsString(identerQueryResource), new Variables(fnr.asString()));
+        return hentAktørIdFraPdlRespons(utførKallTilPdl(pdlRequest));
+    }
+
     public void sjekkGradering(Fnr fnr) {
         String gradering = hentAdressebeskyttelse(fnr).getGradering();
         if ("FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG_UTLAND".equals(gradering)) {
-            throw new TilgangskontrollException("Du har ikke tilgang til deltaker");
+            throw new FortroligAdresseException();
         }
     }
 }
