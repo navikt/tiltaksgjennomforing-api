@@ -2,7 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.persondata;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FortroligAdresseException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,17 +91,17 @@ public class PersondataServiceTest {
         assertThat(navn).isEqualTo(new Navn("Donald", null, "Duck"));
     }
 
-    @Test(expected = TilgangskontrollException.class)
+    @Test(expected = FortroligAdresseException.class)
     public void sjekkGradering__skal_kaste_feile__strengt_fortrolig() {
         persondataService.sjekkGradering(STRENGT_FORTROLIG_PERSON);
     }
 
-    @Test(expected = TilgangskontrollException.class)
+    @Test(expected = FortroligAdresseException.class)
     public void sjekkGradering__skal_kaste_feile__strengt_fortrolig_utland() {
         persondataService.sjekkGradering(STRENGT_FORTROLIG_UTLAND_PERSON);
     }
 
-    @Test(expected = TilgangskontrollException.class)
+    @Test(expected = FortroligAdresseException.class)
     public void sjekkGradering__skal_kaste_feile__fortrolig() {
         persondataService.sjekkGradering(FORTROLIG_PERSON);
     }

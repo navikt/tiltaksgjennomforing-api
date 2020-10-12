@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FortroligAdresseException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
 import org.apache.commons.io.Charsets;
 import org.springframework.beans.factory.annotation.Value;
@@ -102,7 +102,7 @@ public class PersondataService {
     public void sjekkGradering(Fnr fnr) {
         String gradering = hentAdressebeskyttelse(fnr).getGradering();
         if ("FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG_UTLAND".equals(gradering)) {
-            throw new TilgangskontrollException("Du har ikke tilgang til deltaker");
+            throw new FortroligAdresseException();
         }
     }
 }
