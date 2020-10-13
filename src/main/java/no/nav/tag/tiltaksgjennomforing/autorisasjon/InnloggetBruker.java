@@ -3,10 +3,12 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Data
@@ -50,4 +52,8 @@ public abstract class InnloggetBruker<T extends Identifikator> {
     }
 
     abstract List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre);
+
+    public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
+        return avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+    }
 }

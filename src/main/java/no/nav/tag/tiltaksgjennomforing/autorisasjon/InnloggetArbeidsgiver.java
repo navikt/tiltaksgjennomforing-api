@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnOrganisasjon;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -91,16 +92,33 @@ public class InnloggetArbeidsgiver extends InnloggetBruker<Fnr> {
         if (tilganger.isEmpty()) {
             return Collections.emptyList();
         }
-        return avtaleRepository.findAllByBedriftNrIn(tilganger.keySet());
+        return avtaleRepository.findAllByBedriftNrIn(tilganger.keySet()).stream().map(this::fjernAvbruttGrunn).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Avtale> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
+        return super.hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre).stream().map(this::fjernAvbruttGrunn).collect(Collectors.toList());
     }
 
     public List<Avtale> hentAvtalerForMinsideArbeidsgiver(AvtaleRepository avtaleRepository, BedriftNr bedriftNr) {
         return avtaleRepository.findAllByBedriftNr(bedriftNr).stream()
                 .filter(this::harLeseTilgang)
+                .map(this::fjernAvbruttGrunn)
                 .collect(Collectors.toList());
     }
 
     public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
         return Avtale.arbeidsgiverOppretterAvtale(opprettAvtale);
     }
+
+    @Override
+    public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
+        return avtaleRepository.findById(avtaleId).map(this::fjernAvbruttGrunn).orElseThrow(RessursFinnesIkkeException::new);
+    }
+
+    private Avtale fjernAvbruttGrunn(Avtale avtale) {
+        avtale.setAvbruttGrunn(null);
+        return avtale;
+    }
+
 }

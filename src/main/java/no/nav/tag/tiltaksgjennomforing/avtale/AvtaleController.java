@@ -38,9 +38,8 @@ public class AvtaleController {
 
     @GetMapping("/{avtaleId}")
     public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
-        Avtale avtale = avtaleRepository.findById(id)
-                .orElseThrow(RessursFinnesIkkeException::new);
         InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
+        Avtale avtale = innloggetBruker.hentAvtale(avtaleRepository, id);
         innloggetBruker.sjekkLeseTilgang(avtale);
         return avtale;
     }

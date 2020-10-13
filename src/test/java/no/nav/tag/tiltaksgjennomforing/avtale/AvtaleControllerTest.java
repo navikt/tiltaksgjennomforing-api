@@ -21,8 +21,8 @@ import java.time.LocalDate;
 import java.util.*;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static no.nav.tag.tiltaksgjennomforing.TestData.enArbeidstreningAvtale;
+import static no.nav.tag.tiltaksgjennomforing.TestData.innloggetArbeidsgiver;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -47,6 +47,9 @@ public class AvtaleControllerTest {
 
     @Mock
     private PersondataService persondataService;
+
+    @Mock
+    private Map<BedriftNr, Collection<Tiltakstype>> tilganger;
 
     private static List<Avtale> lagListeMedAvtaler(Avtale avtale, int antall) {
         List<Avtale> avtaler = new ArrayList<>();
@@ -361,4 +364,14 @@ public class AvtaleControllerTest {
         assertThat(avtaleStatusDetaljer.infoDel2).isEqualTo(Veileder.ekstraTekstAvtleErGodkjentAvAllePartner);
     }
 
+    @Test
+    public void viser_ikke_avbruttGrunn_til_arbeidsgiver() {
+        Avtale avtale = enArbeidstreningAvtale();
+        avtale.setAvbruttGrunn("Hemmelig");
+        InnloggetArbeidsgiver innloggetArbeidsgiver = innloggetArbeidsgiver(TestData.enArbeidsgiver(avtale));
+        værInnloggetSom(innloggetArbeidsgiver);
+        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
+        Avtale hentetAvtale = avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER);
+        assertThat(hentetAvtale.getAvbruttGrunn()).isNull();
+    }
 }
