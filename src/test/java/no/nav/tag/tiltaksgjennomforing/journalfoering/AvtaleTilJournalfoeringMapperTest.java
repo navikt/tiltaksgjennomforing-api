@@ -123,32 +123,6 @@ public class AvtaleTilJournalfoeringMapperTest {
     }
 
     @Test
-    public void mapperOppgaver() {
-        Oppgave oppgave = new Oppgave();
-        oppgave.setTittel("Tittel");
-        oppgave.setOpplaering("Opplæring");
-        oppgave.setBeskrivelse("Beskrivelse");
-
-        Oppgave oppgave2 = new Oppgave();
-        oppgave2.setTittel("Tittel-2");
-        oppgave2.setOpplaering("Opplæring-2");
-        oppgave2.setBeskrivelse("Beskrivelse-2");
-        avtale.setOppgaver(Arrays.asList(oppgave, oppgave2));
-
-        tilJournalfoering = tilJournalfoering(avtaleInnhold);
-
-        tilJournalfoering.getOppgaver().forEach(oppg -> {
-            if (oppg.getTittel().equals("Tittel")) {
-                assertTrue(oppg.getBeskrivelse().equals("Beskrivelse") && oppg.getOpplaering().equals("Opplæring"));
-            } else if (oppg.getTittel().equals("Tittel-2")) {
-                assertTrue(oppg.getBeskrivelse().equals("Beskrivelse-2") && oppg.getOpplaering().equals("Opplæring-2"));
-            } else {
-                fail("Oppgave; " + oppg);
-            }
-        });
-    }
-
-    @Test
     public void mapperMaal() {
         Maal maal = new Maal();
         maal.setKategori(MaalKategori.FÅ_JOBB_I_BEDRIFTEN);

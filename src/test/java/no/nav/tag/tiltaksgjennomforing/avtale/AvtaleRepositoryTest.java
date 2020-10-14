@@ -73,8 +73,6 @@ public class AvtaleRepositoryTest {
 
         // Lagre maal skal fungere
         EndreAvtale endreAvtale = new EndreAvtale();
-        Oppgave oppgave = TestData.enOppgave();
-        endreAvtale.setOppgaver(List.of(oppgave));
         lagretAvtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
         avtaleRepository.save(lagretAvtale);
 
@@ -83,8 +81,6 @@ public class AvtaleRepositoryTest {
 
         // Lagre maal skal enda fungere
         EndreAvtale endreAvtale2 = new EndreAvtale();
-        Oppgave oppgave2 = TestData.enOppgave();
-        endreAvtale2.setOppgaver(List.of(oppgave2));
         lagretAvtale2.endreAvtale(Instant.now(), endreAvtale2, Avtalerolle.VEILEDER);
         avtaleRepository.save(lagretAvtale2);
     }

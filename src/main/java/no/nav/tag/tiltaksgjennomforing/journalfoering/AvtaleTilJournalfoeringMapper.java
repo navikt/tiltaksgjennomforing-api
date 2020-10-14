@@ -49,7 +49,6 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setSluttDato(avtaleInnhold.getSluttDato());
         avtaleTilJournalfoering.setStillingprosent(avtaleInnhold.getStillingprosent());
         avtaleTilJournalfoering.setMaal(maalListToMaalTilJournalfoeringList(avtaleInnhold.getMaal()));
-        avtaleTilJournalfoering.setOppgaver(oppgaveListToOppgaveTilJournalFoeringList(avtaleInnhold.getOppgaver()));
         avtaleTilJournalfoering.setGodkjentPaVegneGrunn(godkjentPaVegneGrunn(avtaleInnhold.getGodkjentPaVegneGrunn()));
         avtaleTilJournalfoering.setGodkjentPaVegneAv(avtaleInnhold.isGodkjentPaVegneAv());
         avtaleTilJournalfoering.setVersjon(avtaleInnhold.getVersjon());
@@ -102,33 +101,6 @@ public class AvtaleTilJournalfoeringMapper {
         List<MaalTilJournalfoering> list1 = new ArrayList<>(list.size());
         for (Maal maal : list) {
             list1.add(maalToMaalTilJournalfoering(maal));
-        }
-
-        return list1;
-    }
-
-    private static OppgaveTilJournalFoering oppgaveToOppgaveTilJournalFoering(Oppgave oppgave) {
-        if (oppgave == null) {
-            return null;
-        }
-
-        OppgaveTilJournalFoering oppgaveTilJournalFoering = new OppgaveTilJournalFoering();
-
-        oppgaveTilJournalFoering.setTittel(oppgave.getTittel());
-        oppgaveTilJournalFoering.setBeskrivelse(oppgave.getBeskrivelse());
-        oppgaveTilJournalFoering.setOpplaering(oppgave.getOpplaering());
-
-        return oppgaveTilJournalFoering;
-    }
-
-    private static List<OppgaveTilJournalFoering> oppgaveListToOppgaveTilJournalFoeringList(List<Oppgave> list) {
-        if (list == null) {
-            return null;
-        }
-
-        List<OppgaveTilJournalFoering> list1 = new ArrayList<OppgaveTilJournalFoering>(list.size());
-        for (Oppgave oppgave : list) {
-            list1.add(oppgaveToOppgaveTilJournalFoering(oppgave));
         }
 
         return list1;

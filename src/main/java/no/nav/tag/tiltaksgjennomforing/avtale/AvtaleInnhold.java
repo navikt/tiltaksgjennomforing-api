@@ -54,6 +54,8 @@ public class AvtaleInnhold {
     private String journalpostId;
     private String arbeidsoppgaver;
     private String stillingstittel;
+    private Integer stillingStyrk08;
+    private Integer stillingKonseptId;
 
     // Mentor
     private String mentorFornavn;
@@ -82,9 +84,6 @@ public class AvtaleInnhold {
     @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Maal> maal = new ArrayList<>();
 
-    @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Oppgave> oppgaver = new ArrayList<>();
-
     // Godkjenning
     private LocalDateTime godkjentAvDeltaker;
     private LocalDateTime godkjentAvArbeidsgiver;
@@ -104,7 +103,6 @@ public class AvtaleInnhold {
         AvtaleInnhold nyVersjon = toBuilder()
                 .id(UUID.randomUUID())
                 .maal(kopiAvMål())
-                .oppgaver(kopiAvOppgaver())
                 .godkjentAvDeltaker(null)
                 .godkjentAvArbeidsgiver(null)
                 .godkjentAvVeileder(null)
@@ -114,16 +112,11 @@ public class AvtaleInnhold {
                 .versjon(versjon + 1)
                 .build();
         nyVersjon.getMaal().forEach(m -> m.setAvtaleInnhold(nyVersjon));
-        nyVersjon.getOppgaver().forEach(o -> o.setAvtaleInnhold(nyVersjon));
         return nyVersjon;
     }
 
     private List<Maal> kopiAvMål() {
         return maal.stream().map(m -> new Maal(m)).collect(Collectors.toList());
-    }
-
-    private List<Oppgave> kopiAvOppgaver() {
-        return oppgaver.stream().map(o -> new Oppgave(o)).collect(Collectors.toList());
     }
 
     void endreAvtale(EndreAvtale nyAvtale) {
