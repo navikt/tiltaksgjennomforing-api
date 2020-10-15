@@ -4,6 +4,8 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangArbeidstreningE
 
 import java.time.LocalDate;
 
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
+
 public class ArbeidstreningStrategy extends BaseAvtaleInnholdStrategy {
 
     public ArbeidstreningStrategy(AvtaleInnhold avtaleInnhold) {
@@ -16,12 +18,16 @@ public class ArbeidstreningStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.getMaal().clear();
         avtaleInnhold.getMaal().addAll(nyAvtale.getMaal());
         avtaleInnhold.getMaal().forEach(m -> m.setAvtaleInnhold(avtaleInnhold));
+        avtaleInnhold.setStillingstittel(nyAvtale.getStillingstittel());
+        avtaleInnhold.setStillingStyrk08(nyAvtale.getStillingStyrk08());
+        avtaleInnhold.setStillingKonseptId(nyAvtale.getStillingKonseptId());
         super.endre(nyAvtale);
     }
 
     @Override
     public boolean erAltUtfylt() {
         return super.erAltUtfylt()
+                && erIkkeTomme(avtaleInnhold.getStillingstittel())
                 && !avtaleInnhold.getMaal().isEmpty();
     }
 

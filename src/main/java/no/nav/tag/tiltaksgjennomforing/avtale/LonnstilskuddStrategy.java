@@ -12,7 +12,6 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
     @Override
     public void endre(EndreAvtale nyAvtale) {
         avtaleInnhold.setArbeidsgiverKontonummer(nyAvtale.getArbeidsgiverKontonummer());
-        avtaleInnhold.setStillingstittel(nyAvtale.getStillingstittel());
         avtaleInnhold.setLonnstilskuddProsent(nyAvtale.getLonnstilskuddProsent());
         avtaleInnhold.setManedslonn(nyAvtale.getManedslonn());
         avtaleInnhold.setFeriepengesats(nyAvtale.getFeriepengesats());
@@ -25,6 +24,9 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setSumLonnsutgifter(nyAvtale.getSumLonnsutgifter());
         avtaleInnhold.setSumLonnstilskudd(nyAvtale.getSumLonnstilskudd());
         avtaleInnhold.setStillingstype(nyAvtale.getStillingstype());
+        avtaleInnhold.setStillingstittel(nyAvtale.getStillingstittel());
+        avtaleInnhold.setStillingStyrk08(nyAvtale.getStillingStyrk08());
+        avtaleInnhold.setStillingKonseptId(nyAvtale.getStillingKonseptId());
         super.endre(nyAvtale);
     }
 
@@ -47,7 +49,7 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
                 avtaleInnhold.getFeriepengesats(),
                 avtaleInnhold.getArbeidsgiveravgift(),
                 avtaleInnhold.getHarFamilietilknytning(),
-            avtaleInnhold.getStillingstype()
+                avtaleInnhold.getStillingstype()
         ) && erFamiletilknytningForklaringFylltUtHvisDetTrengs();
     }
 }

@@ -33,9 +33,6 @@ public class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy {
         avtaleInnhold.setStartDato(nyAvtale.getStartDato());
         avtaleInnhold.setSluttDato(nyAvtale.getSluttDato());
         avtaleInnhold.setStillingprosent(nyAvtale.getStillingprosent());
-        avtaleInnhold.setStillingstittel(nyAvtale.getStillingstittel());
-        avtaleInnhold.setStillingStyrk08(nyAvtale.getStillingStyrk08());
-        avtaleInnhold.setStillingKonseptId(nyAvtale.getStillingKonseptId());
     }
 
     @Override
@@ -55,12 +52,7 @@ public class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy {
                 avtaleInnhold.getTilrettelegging(),
                 avtaleInnhold.getStartDato(),
                 avtaleInnhold.getSluttDato(),
-                avtaleInnhold.getStillingprosent(),
-                avtaleInnhold.getStillingstittel()
-
-                // Følgende to sjekker kan legges til på sikt
-                // avtaleInnhold.getStillingStyrk08(),
-                // avtaleInnhold.getStillingKonseptId()
+                avtaleInnhold.getStillingprosent()
         );
     }
 
