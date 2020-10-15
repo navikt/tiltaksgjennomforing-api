@@ -24,7 +24,7 @@ class LonnstilskuddStrategyTest {
     }
 
     @Test
-    void test_at_alt_er_ikke_utfylt_nar_stillingstype_er_null(){
+    void test_at_alt_er_ikke_utfylt_nar_stillingstype_er_null() {
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         endreAvtale.setStillingstype(null);
         strategy.endre(endreAvtale);
@@ -100,6 +100,33 @@ class LonnstilskuddStrategyTest {
         endreAvtale.setSluttDato(sluttDato);
         strategy.endre(endreAvtale);
 
+        assertThat(strategy.erAltUtfylt()).isTrue();
+    }
+
+    @Test
+    void test_at_styrk08_og_konsept_id_lagres_og_ikke_er_påkrevd() {
+        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        endreAvtale.setStillingKonseptId(null);
+        endreAvtale.setStillingStyrk08(null);
+        strategy.endre(endreAvtale);
+        assertThat(avtaleInnhold.getStillingKonseptId()).isNull();
+        assertThat(avtaleInnhold.getStillingStyrk08()).isNull();
+        assertThat(strategy.erAltUtfylt()).isTrue();
+    }
+
+    @Test
+    void test_at_styrk08_og_konsept_id_lagres() {
+        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        strategy.endre(endreAvtale);
+        assertThat(avtaleInnhold.getStillingKonseptId()).isNotNull();
+        assertThat(avtaleInnhold.getStillingStyrk08()).isNotNull();
+        assertThat(strategy.erAltUtfylt()).isTrue();
+    }
+
+    @Test
+    void test_at_alt_er_utfylt() {
+        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        strategy.endre(endreAvtale);
         assertThat(strategy.erAltUtfylt()).isTrue();
     }
 

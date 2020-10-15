@@ -27,7 +27,6 @@ public class AvtaleTest {
             softly.assertThat(avtale.getDeltakerFnr()).isEqualTo(deltakerFnr);
             softly.assertThat(avtale.getDeltakerTlf()).isNull();
             softly.assertThat(avtale.getMaal()).isEmpty();
-            softly.assertThat(avtale.getOppgaver()).isEmpty();
             softly.assertThat(avtale.getDeltakerFornavn()).isNull();
             softly.assertThat(avtale.getDeltakerEtternavn()).isNull();
             softly.assertThat(avtale.getBedriftNavn()).isNull();
@@ -106,7 +105,6 @@ public class AvtaleTest {
             softly.assertThat(avtale.getSluttDato()).isEqualTo(endreAvtale.getSluttDato());
             softly.assertThat(avtale.getStillingprosent()).isEqualTo(endreAvtale.getStillingprosent());
             softly.assertThat(avtale.getMaal()).isEqualTo(endreAvtale.getMaal());
-            softly.assertThat(avtale.getOppgaver()).isEqualTo(endreAvtale.getOppgaver());
             softly.assertThat(avtale.getStillingstittel()).isEqualTo(endreAvtale.getStillingstittel());
         });
     }
@@ -118,26 +116,6 @@ public class AvtaleTest {
         etMaal.setBeskrivelse("Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.");
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setMaal(List.of(etMaal));
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
-    }
-
-    @Test(expected = TiltaksgjennomforingException.class)
-    public void endreAvtale__for_lang_oppgave_beskrivelse_skal_feile() {
-        Avtale avtale = TestData.enArbeidstreningAvtale();
-        Oppgave enOppgave = TestData.enOppgave();
-        enOppgave.setBeskrivelse("Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.");
-        EndreAvtale endreAvtale = new EndreAvtale();
-        endreAvtale.setOppgaver(List.of(enOppgave));
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
-    }
-
-    @Test
-    public void endreAvtale__maks_lengde_skal_fungere() {
-        Avtale avtale = TestData.enArbeidstreningAvtale();
-        Oppgave enOppgave = TestData.enOppgave();
-        enOppgave.setBeskrivelse("Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er en string på 1000 tegn Dette er");
-        EndreAvtale endreAvtale = new EndreAvtale();
-        endreAvtale.setOppgaver(List.of(enOppgave));
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
     }
 
@@ -447,14 +425,10 @@ public class AvtaleTest {
         assertThat(andreVersjon.getMaal())
                 .usingElementComparatorOnFields(Maal.Fields.kategori, Maal.Fields.beskrivelse)
                 .isEqualTo(førsteVersjon.getMaal());
-        assertThat(andreVersjon.getOppgaver())
-                .usingElementComparatorOnFields(Oppgave.Fields.tittel, Oppgave.Fields.beskrivelse, Oppgave.Fields.opplaering)
-                .isEqualTo(førsteVersjon.getOppgaver());
         assertThat(andreVersjon).isEqualToIgnoringGivenFields(førsteVersjon,
                 AvtaleInnhold.Fields.id,
                 AvtaleInnhold.Fields.versjon,
                 AvtaleInnhold.Fields.maal,
-                AvtaleInnhold.Fields.oppgaver,
                 AvtaleInnhold.Fields.godkjentAvDeltaker,
                 AvtaleInnhold.Fields.godkjentAvArbeidsgiver,
                 AvtaleInnhold.Fields.godkjentAvVeileder,

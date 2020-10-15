@@ -65,7 +65,6 @@ public class TestData {
         avtale.setVersjon(1);
         avtale.setJournalpostId(null);
         avtale.setMaal(Arrays.asList());
-        avtale.setOppgaver(Arrays.asList());
         return avtale;
     }
 
@@ -80,7 +79,6 @@ public class TestData {
         avtale.setVersjon(1);
         avtale.setJournalpostId(null);
         avtale.setMaal(Arrays.asList());
-        avtale.setOppgaver(Arrays.asList());
         return avtale;
     }
 
@@ -95,7 +93,6 @@ public class TestData {
         avtale.setVersjon(1);
         avtale.setJournalpostId(null);
         avtale.setMaal(Arrays.asList());
-        avtale.setOppgaver(Arrays.asList());
         return avtale;
     }
 
@@ -128,9 +125,6 @@ public class TestData {
         endreAvtale.setStillingprosent(50);
         endreAvtale.setMaal(List.of(TestData.etMaal()));
         endreAvtale.setStillingstittel("Butikksjef");
-
-        // Gjør endring begge steder i en overgangsfase
-        endreAvtale.setOppgaver(List.of(TestData.enOppgave(), TestData.enOppgave(), TestData.enOppgave()));
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
         return endreAvtale;
     }
@@ -153,10 +147,11 @@ public class TestData {
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusWeeks(2));
         endreAvtale.setStillingprosent(50);
         endreAvtale.setMaal(List.of(TestData.etMaal()));
-        endreAvtale.setOppgaver(List.of(TestData.enOppgave(), TestData.enOppgave(), TestData.enOppgave()));
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
         endreAvtale.setArbeidsgiverKontonummer("000111222");
-        endreAvtale.setStillingstittel("Stilling");
+        endreAvtale.setStillingstittel("Butikkbetjent");
+        endreAvtale.setStillingStyrk08(5223);
+        endreAvtale.setStillingKonseptId(112968);
         endreAvtale.setLonnstilskuddProsent(60);
         endreAvtale.setManedslonn(10000);
         endreAvtale.setFeriepengesats(BigDecimal.ONE);
@@ -215,14 +210,6 @@ public class TestData {
 
     public static Veileder enVeileder(Avtale avtale) {
         return new Veileder(avtale.getVeilederNavIdent(), avtale);
-    }
-
-    public static Oppgave enOppgave() {
-        Oppgave oppgave = new Oppgave();
-        oppgave.setTittel("Lagerarbeid");
-        oppgave.setBeskrivelse("Rydde på lageret");
-        oppgave.setOpplaering("Ryddekurs");
-        return oppgave;
     }
 
     public static Maal etMaal() {
