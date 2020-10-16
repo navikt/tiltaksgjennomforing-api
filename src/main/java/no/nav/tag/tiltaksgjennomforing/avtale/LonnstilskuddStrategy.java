@@ -29,7 +29,7 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
 
     private void regnUtTotalLonnstilskudd(EndreAvtale nyAvtale) {
         Integer feriepengerBelop = getFeriepengerBelop(nyAvtale.getFeriepengesats(), nyAvtale.getManedslonn());
-        Integer obligTjenestepensjon = getBeregnetOptBelop(nyAvtale.getManedslonn(), feriepengerBelop);
+        Integer obligTjenestepensjon = getBeregnetOtpBelop(nyAvtale.getManedslonn(), feriepengerBelop);
         Integer arbeidsgiveravgiftBelop = getArbeidsgiverAvgift(avtaleInnhold.getManedslonn(), feriepengerBelop, obligTjenestepensjon,
             nyAvtale.getArbeidsgiveravgift());
         Integer sumLonnsutgifter = getSumLonnsutgifter(nyAvtale.getManedslonn(), feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgiftBelop);
@@ -45,8 +45,8 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         if (sumLonnsutgifter == null) {
             return null;
         }
-        double lonnstilskuddLonnDecimal = lonnstilskuddProsent != null ? (lonnstilskuddProsent.doubleValue() / 100) : 0;
-        return (int) Math.round(sumLonnsutgifter * lonnstilskuddLonnDecimal);
+        double lonnstilskuddProsentSomDecimal = lonnstilskuddProsent != null ? (lonnstilskuddProsent.doubleValue() / 100) : 0;
+        return (int) Math.round(sumLonnsutgifter * lonnstilskuddProsentSomDecimal);
     }
 
     private Integer getSumLonnsutgifter(Integer manedslonn, Integer feriepengerBelop, Integer obligTjenestepensjon, Integer arbeidsgiveravgiftBelop) {
@@ -63,9 +63,10 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         return null;
     }
 
-    private Integer getBeregnetOptBelop(Integer manedslonn, Integer feriepenger) {
+    private Integer getBeregnetOtpBelop(Integer manedslonn, Integer feriepenger) {
         if (manedslonn != null && feriepenger != null) {
-            return (int) ((manedslonn + feriepenger) * 0.02);
+            double OBLIG_TJENESTEPENSJON_PROSENT_SATS = 0.02;
+            return (int) ((manedslonn + feriepenger) * OBLIG_TJENESTEPENSJON_PROSENT_SATS);
         }
         return null;
     }
