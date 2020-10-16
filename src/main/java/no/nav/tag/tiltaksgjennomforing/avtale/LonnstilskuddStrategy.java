@@ -73,7 +73,7 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
 
     private Integer getFeriepengerBelop(BigDecimal feriepengersats, Integer manedslonn) {
         if (erIkkeTomme(feriepengersats, manedslonn)) {
-            return (int) Math.round((feriepengersats.doubleValue() / 100) * manedslonn);
+            return (int) Math.round((feriepengersats.doubleValue()) * manedslonn);
         }
         return null;
     }
