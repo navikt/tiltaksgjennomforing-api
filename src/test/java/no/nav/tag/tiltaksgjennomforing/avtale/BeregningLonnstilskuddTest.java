@@ -24,14 +24,14 @@ class BeregningLonnstilskuddTest {
         // GIVEN
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setManedslonn(20000);
-        endreAvtale.setFeriepengesats(new BigDecimal(12));
-        endreAvtale.setArbeidsgiveravgift(new BigDecimal(14.1));
+        endreAvtale.setFeriepengesats(new BigDecimal(0.102));
+        endreAvtale.setArbeidsgiveravgift(new BigDecimal(0.064));
 
         // WHEN
         strategy.endre(endreAvtale);
 
         // THEN
-        assertThat(avtaleInnhold.getSumLonnstilskudd()).isEqualTo(0);
+        assertThat(avtaleInnhold.getSumLonnstilskudd()).isNull();
     }
 
     @Test
@@ -40,8 +40,8 @@ class BeregningLonnstilskuddTest {
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setManedslonn(20000);
         endreAvtale.setLonnstilskuddProsent(60);
-        endreAvtale.setFeriepengesats(new BigDecimal(12));
-        endreAvtale.setArbeidsgiveravgift(new BigDecimal(14.1));
+        endreAvtale.setFeriepengesats(new BigDecimal(0.12));
+        endreAvtale.setArbeidsgiveravgift(new BigDecimal(0.141));
 
         // WHEN
         strategy.endre(endreAvtale);
@@ -55,8 +55,8 @@ class BeregningLonnstilskuddTest {
         // GIVEN
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setManedslonn(20000);
-        endreAvtale.setFeriepengesats(new BigDecimal(12));
-        endreAvtale.setArbeidsgiveravgift(new BigDecimal(14.1));
+        endreAvtale.setFeriepengesats(new BigDecimal(0.12));
+        endreAvtale.setArbeidsgiveravgift(new BigDecimal(0.141));
 
         // WHEN
         strategy.endre(endreAvtale);
@@ -70,7 +70,7 @@ class BeregningLonnstilskuddTest {
         // GIVEN
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setManedslonn(20000);
-        endreAvtale.setFeriepengesats(new BigDecimal(12));
+        endreAvtale.setFeriepengesats(new BigDecimal(0.12));
 
         // WHEN
         strategy.endre(endreAvtale);
@@ -112,7 +112,7 @@ class BeregningLonnstilskuddTest {
         // GIVEN
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setManedslonn(20000);
-        endreAvtale.setFeriepengesats(new BigDecimal(12));
+        endreAvtale.setFeriepengesats(new BigDecimal(0.12));
 
         // WHEN
         strategy.endre(endreAvtale);
