@@ -50,21 +50,21 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
     }
 
     private Integer getSumLonnsutgifter(Integer manedslonn, Integer feriepengerBelop, Integer obligTjenestepensjon, Integer arbeidsgiveravgiftBelop) {
-        if (feriepengerBelop != null && obligTjenestepensjon != null && arbeidsgiveravgiftBelop != null) {
+        if (erIkkeTomme(feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgiftBelop)) {
             return manedslonn + feriepengerBelop + obligTjenestepensjon + arbeidsgiveravgiftBelop;
         }
         return null;
     }
 
     private Integer getArbeidsgiverAvgift(Integer manedslonn, Integer feriepengerBelop, Integer obligTjenestepensjon, BigDecimal arbeidsgiveravgift) {
-        if (manedslonn != null && feriepengerBelop != null && obligTjenestepensjon != null && arbeidsgiveravgift != null) {
+        if (erIkkeTomme(manedslonn, feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgift)) {
             return (int) Math.round((manedslonn + feriepengerBelop + obligTjenestepensjon) * (arbeidsgiveravgift.doubleValue() / 100));
         }
         return null;
     }
 
     private Integer getBeregnetOtpBelop(Integer manedslonn, Integer feriepenger) {
-        if (manedslonn != null && feriepenger != null) {
+        if (erIkkeTomme(manedslonn, feriepenger)) {
             double OBLIG_TJENESTEPENSJON_PROSENT_SATS = 0.02;
             return (int) ((manedslonn + feriepenger) * OBLIG_TJENESTEPENSJON_PROSENT_SATS);
         }
@@ -72,7 +72,7 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
     }
 
     private Integer getFeriepengerBelop(BigDecimal feriepengersats, Integer manedslonn) {
-        if (feriepengersats != null && manedslonn != null) {
+        if (erIkkeTomme(feriepengersats, manedslonn)) {
             return (int) ((feriepengersats.doubleValue() / 100) * manedslonn);
         }
         return null;
