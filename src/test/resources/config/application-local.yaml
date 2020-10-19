@@ -33,7 +33,7 @@ tiltaksgjennomforing:
   altinn-tilgangsstyring:
     uri: http://localhost:8090/altinn-tilgangsstyring
     proxyUri: http://localhost:9090/altinn-rettigheter-proxy/ekstern/altinn/api/serviceowner/reportees
-    beOmRettighetBaseUrl: https://tt02.altinn.no/ui/DelegationRequest
+    beOmRettighetBaseUrl: https://arbeidsgiver-q.nav.no/min-side-arbeidsgiver/?fragment=be-om-tilgang
     ltsMidlertidigServiceCode: 5516
     ltsMidlertidigServiceEdition: 1
     ltsVarigServiceCode: 5516

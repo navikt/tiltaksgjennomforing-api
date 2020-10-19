@@ -27,6 +27,6 @@ public class BeOmAltinnRettighetUrlerController {
     }
 
     private String beOmRettighetUrl(String orgNr, Integer serviceCode, Integer serviceEdition) {
-        return props.getBeOmRettighetBaseUrl() + "?offeredBy=" + orgNr + "&resource=" + serviceCode + "_" + serviceEdition;
+        return props.getBeOmRettighetBaseUrl() + "&bedrift=" + orgNr;
     }
 }
