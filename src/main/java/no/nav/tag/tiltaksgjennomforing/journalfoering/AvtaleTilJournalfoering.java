@@ -60,6 +60,7 @@ public class AvtaleTilJournalfoering {
     private Integer arbeidsgiveravgiftBelop;
     private Integer sumLonnsutgifter;
     private Integer sumLonnstilskudd;
+    private Integer manedslonn100pst;
 
     // mentor
     private String mentorFornavn;
