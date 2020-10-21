@@ -77,6 +77,7 @@ public class AvtaleInnhold {
     private Integer arbeidsgiveravgiftBelop;
     private Integer sumLonnsutgifter;
     private Integer sumLonnstilskudd;
+    private Integer manedslonn100pst;
     @Enumerated(EnumType.STRING)
     private Stillingstype stillingstype;
 

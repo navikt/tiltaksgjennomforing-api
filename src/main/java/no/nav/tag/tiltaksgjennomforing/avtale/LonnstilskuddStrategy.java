@@ -1,9 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
+import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
-import org.apache.commons.lang3.StringUtils;
+
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
 public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
     public LonnstilskuddStrategy(AvtaleInnhold avtaleInnhold) {
@@ -33,12 +34,21 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         Integer arbeidsgiveravgiftBelop = getArbeidsgiverAvgift(avtaleInnhold.getManedslonn(), feriepengerBelop, obligTjenestepensjon,
             nyAvtale.getArbeidsgiveravgift());
         Integer sumLonnsutgifter = getSumLonnsutgifter(nyAvtale.getManedslonn(), feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgiftBelop);
+        Integer månedslønnFullStilling = getLønnVedFulltilling(nyAvtale.getSumLonnsutgifter(), nyAvtale.getStillingprosent());
 
         avtaleInnhold.setFeriepengerBelop(feriepengerBelop);
         avtaleInnhold.setOtpBelop(obligTjenestepensjon);
         avtaleInnhold.setArbeidsgiveravgiftBelop(arbeidsgiveravgiftBelop);
         avtaleInnhold.setSumLonnsutgifter(sumLonnsutgifter);
         avtaleInnhold.setSumLonnstilskudd(getSumLonnsTilskudd(sumLonnsutgifter, nyAvtale.getLonnstilskuddProsent()));
+        avtaleInnhold.setManedslonn100pst(månedslønnFullStilling);
+    }
+
+    private Integer getLønnVedFulltilling(Integer sumUtgifter, Integer stillingsProsent){
+        if(sumUtgifter == null || stillingsProsent == null){
+            return null;
+        }
+        return (sumUtgifter * 100) / stillingsProsent;
     }
 
     private Integer getSumLonnsTilskudd(Integer sumLonnsutgifter, Integer lonnstilskuddProsent) {
