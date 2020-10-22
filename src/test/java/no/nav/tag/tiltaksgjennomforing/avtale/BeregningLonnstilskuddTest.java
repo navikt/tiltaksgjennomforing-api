@@ -125,14 +125,18 @@ class BeregningLonnstilskuddTest {
     public void test_regn_ut_lonn_ved_100_prosent() {
         // GIVEN
         EndreAvtale endreAvtale = new EndreAvtale();
-        endreAvtale.setSumLonnsutgifter(26070);
         endreAvtale.setStillingprosent(50);
+        endreAvtale.setManedslonn(20000);
+        endreAvtale.setLonnstilskuddProsent(60);
+        endreAvtale.setFeriepengesats(new BigDecimal(0.12));
+        endreAvtale.setArbeidsgiveravgift(new BigDecimal(0.141));
 
         // WHEN
         strategy.endre(endreAvtale);
 
         // THEN
-        assertThat(avtaleInnhold.getManedslonn100pst()).isEqualTo(52140);
+        assertThat(avtaleInnhold.getSumLonnstilskudd()).isEqualTo(15642);
+        assertThat(avtaleInnhold.getManedslonn100pst()).isEqualTo(31284);
     }
 
 }
