@@ -12,6 +12,94 @@
           "Content-Type": "application/json"
         }
       }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPattern": "/ereg/8[0-9]{8}"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "organisasjonsnummer": "885807542",
+          "type": "JuridiskEnhet",
+          "navn": {
+            "navnelinje1": "TRANØY OG SANDE I VESTFOLD REGNSKAP",
+            "bruksperiode": {
+              "fom": "2020-09-21T13:03:49.398"
+            },
+            "gyldighetsperiode": {
+              "fom": "2020-09-21"
+            }
+          },
+          "organisasjonDetaljer": {
+            "registreringsdato": "2020-08-17T00:00:00",
+            "enhetstyper": [
+              {
+                "enhetstype": "AS",
+                "bruksperiode": {
+                  "fom": "2020-08-17T14:58:25.57"
+                },
+                "gyldighetsperiode": {
+                  "fom": "2020-08-17"
+                }
+              }
+            ],
+            "navn": [
+              {
+                "navnelinje1": "TRANØY OG SANDE I VESTFOLD REGNSKAP",
+                "bruksperiode": {
+                  "fom": "2020-09-21T13:03:49.398"
+                },
+                "gyldighetsperiode": {
+                  "fom": "2020-09-21"
+                }
+              }
+            ],
+            "forretningsadresser": [
+              {
+                "type": "Forretningsadresse",
+                "adresselinje1": "HMS AVDELINGEN, VED JULIUS VEUM, ÅS",
+                "adresselinje2": "GATEN 24",
+                "postnummer": "3060",
+                "poststed": "DRAMMEN",
+                "landkode": "NO",
+                "kommunenummer": "3005",
+                "bruksperiode": {
+                  "fom": "2020-09-21T13:03:49.41"
+                },
+                "gyldighetsperiode": {
+                  "fom": "2020-09-21"
+                }
+              }
+            ],
+            "postadresser": [
+              {
+                "type": "Postadresse",
+                "adresselinje1": "JULIUS VEUM, HMS AVDELINGEN, ÅSGATE",
+                "adresselinje2": "N 24",
+                "postnummer": "3060",
+                "poststed": "DRAMMEN",
+                "landkode": "NO",
+                "kommunenummer": "3005",
+                "bruksperiode": {
+                  "fom": "2020-09-21T13:03:49.405"
+                },
+                "gyldighetsperiode": {
+                  "fom": "2020-09-21"
+                }
+              }
+            ],
+            "sistEndret": "2020-09-21"
+          },
+          "juridiskEnhetDetaljer": {
+            "enhetstype": "AS"
+          }
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
     }
   ]
 }

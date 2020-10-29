@@ -1,11 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.orgenhet;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public class EnhetFinnesIkkeException extends RuntimeException {
+public class EnhetFinnesIkkeException extends FeilkodeException {
     public EnhetFinnesIkkeException() {
-        super("Finnes ikke i Enhetsregisteret.");
+        super(Feilkode.ENHET_FINNES_IKKE);
     }
 }
