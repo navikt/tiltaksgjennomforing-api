@@ -62,7 +62,7 @@ tiltaksgjennomforing:
     oppgave-uri: https://oppgave.nais.adeo.no/api/v1/oppgaver
   unleash:
     enabled: true
-    unleash-uri: https://unleash.nais.adeo.no/api/
+    unleash-uri: https://unleash.nais.io/api/
   consumer:
     system:
       id: ${tiltaksgjennomforing.consumer.system}
