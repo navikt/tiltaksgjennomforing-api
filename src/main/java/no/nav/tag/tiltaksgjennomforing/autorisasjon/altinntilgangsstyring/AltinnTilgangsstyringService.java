@@ -26,7 +26,7 @@ import java.util.*;
 @Component
 @Slf4j
 public class AltinnTilgangsstyringService {
-    private static final int ALTINN_ORG_PAGE_SIZE = 500;
+    private static final int ALTINN_ORG_PAGE_SIZE = 100000;
     private final AltinnTilgangsstyringProperties altinnTilgangsstyringProperties;
     private final RestTemplate restTemplate;
     private final TokenUtils tokenUtils;
