@@ -31,7 +31,7 @@ jobs:
           fetch-depth: 0
 
       - name: Sett miljøvariabel COMMIT
-        run: echo "::set-env name=COMMIT::$(git rev-parse HEAD)"
+        run: echo "COMMIT=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
       - name: Sjekk om COMMIT er oppdatert mot master
         run: |
@@ -39,7 +39,7 @@ jobs:
           git merge-base --is-ancestor origin/master $COMMIT
 
       - name: Sett miljøvariabel IMAGE
-        run: echo "::set-env name=IMAGE::$IMAGE_BASE:$COMMIT"
+        run: echo "IMAGE=$IMAGE_BASE:$COMMIT" >> $GITHUB_ENV
 
       - name: Deploy til dev-fss
         uses: nais/deploy/actions/deploy@v1
