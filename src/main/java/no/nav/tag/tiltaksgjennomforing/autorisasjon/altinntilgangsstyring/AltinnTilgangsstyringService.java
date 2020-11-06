@@ -3,6 +3,9 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnrettigheterProxyKlientConfig;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.ProxyConfig;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.*;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
@@ -20,6 +23,8 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnrettigheterProxyKlient;
+
 import java.net.URI;
 import java.util.*;
 
@@ -32,11 +37,12 @@ public class AltinnTilgangsstyringService {
     private final TokenUtils tokenUtils;
     private final FeatureToggleService featureToggleService;
 
+    private final AltinnrettigheterProxyKlient klient;
+
     public AltinnTilgangsstyringService(
             AltinnTilgangsstyringProperties altinnTilgangsstyringProperties,
             TokenUtils tokenUtils,
-            FeatureToggleService featureToggleService
-    ) {
+            FeatureToggleService featureToggleService) {
         if (Utils.erNoenTomme(altinnTilgangsstyringProperties.getArbtreningServiceCode(),
                 altinnTilgangsstyringProperties.getArbtreningServiceEdition(),
                 altinnTilgangsstyringProperties.getLtsMidlertidigServiceCode(),
@@ -49,6 +55,22 @@ public class AltinnTilgangsstyringService {
         this.tokenUtils = tokenUtils;
         this.featureToggleService = featureToggleService;
         restTemplate = new RestTemplate();
+
+
+        String altinnProxyUrl = altinnTilgangsstyringProperties.getProxyUri().toString();
+        String altinnProxyFallbackUrl = altinnTilgangsstyringProperties.getUri().toString();
+
+        AltinnrettigheterProxyKlientConfig proxyKlientConfig = new AltinnrettigheterProxyKlientConfig(
+                new ProxyConfig("tiltaksgjennomforing-api", altinnProxyUrl),
+                new no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnConfig(
+                        altinnProxyFallbackUrl,
+                        altinnTilgangsstyringProperties.getAltinnApiKey(),
+                        altinnTilgangsstyringProperties.getApiGwApiKey()
+                )
+        );
+        this.klient = new AltinnrettigheterProxyKlient(proxyKlientConfig);
+
+
     }
 
     private URI lagAltinnUrl(Integer serviceCode, Integer serviceEdition, Identifikator fnr) {
@@ -104,6 +126,19 @@ public class AltinnTilgangsstyringService {
     private AltinnOrganisasjon[] kallAltinn(Integer serviceCode, Integer serviceEdition, Fnr fnr) {
         try {
             boolean brukProxy = featureToggleService.isEnabled("arbeidsgiver.tiltaksgjennomforing-api.bruk-altinn-proxy");
+
+            if (brukProxy) {
+                List<AltinnReportee> reportees = klient.hentOrganisasjoner(
+                        new SelvbetjeningToken(tokenUtils.hentSelvbetjeningToken()),
+                        new Subject(fnr.asString()), new ServiceCode(serviceCode.toString()), new ServiceEdition(serviceEdition.toString()),
+                        true
+                );
+
+                AltinnOrganisasjon[] altinnOrganisasjons = new AltinnOrganisasjon[reportees.size()];
+                return reportees.toArray(altinnOrganisasjons);
+
+            }
+
             HttpEntity<HttpHeaders> headers = brukProxy ? getAuthHeadersForInnloggetBruker() : getAuthHeadersForAltinn();
             URI uri = brukProxy ? lagAltinnProxyUrl(serviceCode, serviceEdition) : lagAltinnUrl(serviceCode, serviceEdition, fnr);
             return restTemplate.exchange(

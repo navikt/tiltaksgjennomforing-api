@@ -40,6 +40,8 @@ tiltaksgjennomforing:
     ltsVarigServiceEdition: 2
     arbtreningServiceCode: 5332
     arbtreningServiceEdition: 1
+    altinnApiKey: foo
+    apiGwApiKey: foo
   ereg:
     uri: http://localhost:8090/ereg
   sts:
