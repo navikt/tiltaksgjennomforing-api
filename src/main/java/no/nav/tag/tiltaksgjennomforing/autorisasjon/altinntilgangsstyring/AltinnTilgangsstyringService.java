@@ -134,20 +134,20 @@ public class AltinnTilgangsstyringService {
                         true
                 );
                 log.info("altinn org hentet, antall={}", reportees.size());
-
                 AltinnOrganisasjon[] altinnOrganisasjons = new AltinnOrganisasjon[reportees.size()];
                 return reportees.toArray(altinnOrganisasjons);
 
+            } else {
+                HttpEntity<HttpHeaders> headers = brukProxy ? getAuthHeadersForInnloggetBruker() : getAuthHeadersForAltinn();
+                URI uri = brukProxy ? lagAltinnProxyUrl(serviceCode, serviceEdition) : lagAltinnUrl(serviceCode, serviceEdition, fnr);
+                return restTemplate.exchange(
+                        uri,
+                        HttpMethod.GET,
+                        headers,
+                        AltinnOrganisasjon[].class
+                ).getBody();
             }
 
-            HttpEntity<HttpHeaders> headers = brukProxy ? getAuthHeadersForInnloggetBruker() : getAuthHeadersForAltinn();
-            URI uri = brukProxy ? lagAltinnProxyUrl(serviceCode, serviceEdition) : lagAltinnUrl(serviceCode, serviceEdition, fnr);
-            return restTemplate.exchange(
-                    uri,
-                    HttpMethod.GET,
-                    headers,
-                    AltinnOrganisasjon[].class
-            ).getBody();
         } catch (RestClientException exception) {
             log.warn("Feil ved kall mot Altinn.", exception);
             throw new AltinnFeilException();
