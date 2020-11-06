@@ -15,6 +15,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.AltinnFeilException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -39,6 +40,7 @@ public class AltinnTilgangsstyringService {
 
     private final AltinnrettigheterProxyKlient klient;
 
+    @Autowired
     public AltinnTilgangsstyringService(
             AltinnTilgangsstyringProperties altinnTilgangsstyringProperties,
             TokenUtils tokenUtils,
@@ -124,6 +126,7 @@ public class AltinnTilgangsstyringService {
     }
 
     private AltinnOrganisasjon[] kallAltinn(Integer serviceCode, Integer serviceEdition, Fnr fnr) {
+        log.info("Kaller altinn");
         try {
             boolean brukProxy = featureToggleService.isEnabled("arbeidsgiver.tiltaksgjennomforing-api.bruk-altinn-proxy");
 
