@@ -128,6 +128,7 @@ public class AltinnTilgangsstyringService {
             boolean brukProxy = featureToggleService.isEnabled("arbeidsgiver.tiltaksgjennomforing-api.bruk-altinn-proxy");
 
             if (brukProxy) {
+                log.info("Kaller altinn med proxy-klient");
                 List<AltinnReportee> reportees = klient.hentOrganisasjoner(
                         new SelvbetjeningToken(tokenUtils.hentSelvbetjeningToken()),
                         new Subject(fnr.asString()), new ServiceCode(serviceCode.toString()), new ServiceEdition(serviceEdition.toString()),
@@ -138,6 +139,7 @@ public class AltinnTilgangsstyringService {
                 return reportees.toArray(altinnOrganisasjons);
 
             } else {
+                log.info("Kaller altinn uten klient");
                 HttpEntity<HttpHeaders> headers = brukProxy ? getAuthHeadersForInnloggetBruker() : getAuthHeadersForAltinn();
                 URI uri = brukProxy ? lagAltinnProxyUrl(serviceCode, serviceEdition) : lagAltinnUrl(serviceCode, serviceEdition, fnr);
                 return restTemplate.exchange(
