@@ -133,6 +133,7 @@ public class AltinnTilgangsstyringService {
                         new Subject(fnr.asString()), new ServiceCode(serviceCode.toString()), new ServiceEdition(serviceEdition.toString()),
                         true
                 );
+                log.info("altinn org hentet, antall={}", reportees.size());
 
                 AltinnOrganisasjon[] altinnOrganisasjons = new AltinnOrganisasjon[reportees.size()];
                 return reportees.toArray(altinnOrganisasjons);
