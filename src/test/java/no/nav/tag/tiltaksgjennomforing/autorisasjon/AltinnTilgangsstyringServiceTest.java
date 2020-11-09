@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.error.exceptions.AltinnrettigheterProxyKlientFallbackException;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringProperties;
@@ -100,7 +101,7 @@ public class AltinnTilgangsstyringServiceTest {
         assertThat(tilganger).isEmpty();
     }
 
-    @Test(expected = AltinnFeilException.class)
+    @Test(expected = AltinnrettigheterProxyKlientFallbackException.class)
     public void hentTilganger__midlertidig_feil_gir_feilkode() {
         altinnTilgangsstyringService.hentTilganger(new Fnr("31000000000"));
     }
