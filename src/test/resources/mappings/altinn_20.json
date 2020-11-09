@@ -10,10 +10,10 @@
             "matches": "^2\\d{10}$"
           },
           "serviceCode": {
-            "matches": "^$"
+            "absent": true
           },
           "serviceEdition": {
-            "matches": "^$"
+            "absent": true
           }
         }
       },

@@ -1,7 +1,7 @@
 {
   "mappings": [
     {
-      "priority": 2,
+      "priority": 1,
       "request": {
         "method": "GET",
         "urlPath": "/altinn-tilgangsstyring/ekstern/altinn/api/serviceowner/reportees",
@@ -14,6 +14,31 @@
           },
           "serviceEdition": {
             "matches": "1|2|^$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "[]",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPath": "/altinn-tilgangsstyring/ekstern/altinn/api/serviceowner/reportees",
+        "queryParameters" : {
+          "subject" : {
+            "matches" : "^\\d{11}$"
+          },
+          "serviceCode": {
+            "absent": true
+          },
+          "serviceEdition": {
+            "absent": true
           }
         }
       },

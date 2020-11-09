@@ -98,7 +98,7 @@ public class AltinnTilgangsstyringService {
                             true
                     );
                 } else {
-                    reportees = klient.hentOrganisasjoner(new SelvbetjeningToken(tokenUtils.hentSelvbetjeningToken()), new Subject(fnr.asString()), new ServiceCode(""), new ServiceEdition(""), true);
+                    reportees = klient.hentOrganisasjoner(new SelvbetjeningToken(tokenUtils.hentSelvbetjeningToken()), new Subject(fnr.asString()), true);
                 }
                 return reportees.toArray(new AltinnReportee[0]);
 
