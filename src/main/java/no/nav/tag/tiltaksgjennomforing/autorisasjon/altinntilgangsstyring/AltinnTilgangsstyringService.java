@@ -130,16 +130,22 @@ public class AltinnTilgangsstyringService {
         try {
             boolean brukProxy = featureToggleService.isEnabled("arbeidsgiver.tiltaksgjennomforing-api.bruk-altinn-proxy");
 
+
             if (brukProxy) {
                 log.info("Kaller altinn med proxy-klient");
-                List<AltinnReportee> reportees = klient.hentOrganisasjoner(
-                        new SelvbetjeningToken(tokenUtils.hentSelvbetjeningToken()),
-                        new Subject(fnr.asString()), new ServiceCode(serviceCode.toString()), new ServiceEdition(serviceEdition.toString()),
-                        true
-                );
-                log.info("altinn org hentet, antall={}", reportees.size());
-                AltinnOrganisasjon[] altinnOrganisasjons = new AltinnOrganisasjon[reportees.size()];
-                return reportees.toArray(altinnOrganisasjons);
+                if (serviceCode != null && serviceEdition != null) {
+                    List<AltinnReportee> reportees = klient.hentOrganisasjoner(
+                            new SelvbetjeningToken(tokenUtils.hentSelvbetjeningToken()),
+                            new Subject(fnr.asString()), new ServiceCode(serviceCode.toString()), new ServiceEdition(serviceEdition.toString()),
+                            true
+                    );
+                    AltinnOrganisasjon[] altinnOrganisasjons = new AltinnOrganisasjon[reportees.size()];
+                    return reportees.toArray(altinnOrganisasjons);
+                } else {
+                    List<AltinnReportee> reportees = klient.hentOrganisasjoner(new SelvbetjeningToken(tokenUtils.hentSelvbetjeningToken()), new Subject(fnr.asString()), true);
+                    AltinnOrganisasjon[] altinnOrganisasjons = new AltinnOrganisasjon[reportees.size()];
+                    return reportees.toArray(altinnOrganisasjons);
+                }
 
             } else {
                 log.info("Kaller altinn uten klient");
