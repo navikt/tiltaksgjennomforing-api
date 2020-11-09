@@ -27,6 +27,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -163,20 +164,19 @@ public class AltinnTilgangsstyringService {
     }
 
     private AltinnOrganisasjon[] mapTo(List<AltinnReportee> altinnReportees) {
-        AltinnOrganisasjon[] altinnOrganisasjons = altinnReportees.stream().toArray(AltinnOrganisasjon[]::new);
+        AltinnOrganisasjon[] altinnOrganisasjons = altinnReportees.stream().map(org -> {
+                    AltinnOrganisasjon altinnOrganisasjon = new AltinnOrganisasjon();
+                    altinnOrganisasjon.setName(org.getName());
+                    altinnOrganisasjon.setType(org.getType());
+                    altinnOrganisasjon.setParentOrganizationNumber(org.getParentOrganizationNumber());
+                    altinnOrganisasjon.setOrganizationNumber(org.getOrganizationNumber());
+                    altinnOrganisasjon.setOrganizationForm(org.getOrganizationForm());
+                    altinnOrganisasjon.setStatus(org.getStatus());
 
-//        AltinnOrganisasjon[] altinnOrganisasjons = altinnReportees.stream().map(org -> {
-//                    AltinnOrganisasjon altinnOrganisasjon = new AltinnOrganisasjon();
-//                    altinnOrganisasjon.setName(org.getName());
-//                    altinnOrganisasjon.setType(org.getType());
-//                    altinnOrganisasjon.setParentOrganizationNumber(org.getParentOrganizationNumber());
-//                    altinnOrganisasjon.setOrganizationNumber(org.getOrganizationNumber());
-//                    altinnOrganisasjon.setOrganizationForm(org.getOrganizationForm());
-//                    altinnOrganisasjon.setStatus(org.getStatus());
-//
-//                    return altinnOrganisasjon;
-//                }
-//        ).collect();
+                    return altinnOrganisasjon;
+                }
+        ).toArray(AltinnOrganisasjon[]::new);
+
         return altinnOrganisasjons;
     }
 
