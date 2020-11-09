@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnrettigheterProxyKlient;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnrettigheterProxyKlientConfig;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.ProxyConfig;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.*;
@@ -23,8 +24,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnrettigheterProxyKlient;
 
 import java.net.URI;
 import java.util.*;
@@ -139,12 +138,10 @@ public class AltinnTilgangsstyringService {
                             new Subject(fnr.asString()), new ServiceCode(serviceCode.toString()), new ServiceEdition(serviceEdition.toString()),
                             true
                     );
-                    AltinnOrganisasjon[] altinnOrganisasjons = new AltinnOrganisasjon[reportees.size()];
-                    return reportees.toArray(altinnOrganisasjons);
+                    return mapTo(reportees);
                 } else {
                     List<AltinnReportee> reportees = klient.hentOrganisasjoner(new SelvbetjeningToken(tokenUtils.hentSelvbetjeningToken()), new Subject(fnr.asString()), true);
-                    AltinnOrganisasjon[] altinnOrganisasjons = new AltinnOrganisasjon[reportees.size()];
-                    return reportees.toArray(altinnOrganisasjons);
+                    return mapTo(reportees);
                 }
 
             } else {
@@ -163,6 +160,24 @@ public class AltinnTilgangsstyringService {
             log.warn("Feil ved kall mot Altinn.", exception);
             throw new AltinnFeilException();
         }
+    }
+
+    private AltinnOrganisasjon[] mapTo(List<AltinnReportee> altinnReportees) {
+        AltinnOrganisasjon[] altinnOrganisasjons = altinnReportees.stream().toArray(AltinnOrganisasjon[]::new);
+
+//        AltinnOrganisasjon[] altinnOrganisasjons = altinnReportees.stream().map(org -> {
+//                    AltinnOrganisasjon altinnOrganisasjon = new AltinnOrganisasjon();
+//                    altinnOrganisasjon.setName(org.getName());
+//                    altinnOrganisasjon.setType(org.getType());
+//                    altinnOrganisasjon.setParentOrganizationNumber(org.getParentOrganizationNumber());
+//                    altinnOrganisasjon.setOrganizationNumber(org.getOrganizationNumber());
+//                    altinnOrganisasjon.setOrganizationForm(org.getOrganizationForm());
+//                    altinnOrganisasjon.setStatus(org.getStatus());
+//
+//                    return altinnOrganisasjon;
+//                }
+//        ).collect();
+        return altinnOrganisasjons;
     }
 
     private HttpEntity<HttpHeaders> getAuthHeadersForInnloggetBruker() {
