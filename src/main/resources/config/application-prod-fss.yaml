@@ -35,8 +35,8 @@ tiltaksgjennomforing:
     maximum-pool-size: 8
     max-lifetime: 300000
   altinn-tilgangsstyring:
-    uri: https://api-gw.adeo.no/ekstern/altinn/api/serviceowner/reportees
-    proxyUri: https://arbeidsgiver.nais.adeo.no/altinn-rettigheter-proxy/ekstern/altinn/api/serviceowner/reportees
+    uri: https://api-gw.adeo.no/
+    proxyUri: https://arbeidsgiver.nais.adeo.no/altinn-rettigheter-proxy/
     beOmRettighetBaseUrl: https://arbeidsgiver.nav.no/min-side-arbeidsgiver/?fragment=be-om-tilgang
     ltsMidlertidigServiceCode: 5516
     ltsMidlertidigServiceEdition: 1
