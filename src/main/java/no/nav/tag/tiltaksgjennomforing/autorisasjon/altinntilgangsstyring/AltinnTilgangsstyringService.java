@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnrettigheterProxyKlient;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnrettigheterProxyKlientConfig;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.ProxyConfig;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.error.exceptions.AltinnrettigheterProxyKlientFallbackException;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.*;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
@@ -102,7 +103,7 @@ public class AltinnTilgangsstyringService {
                 }
                 return reportees.toArray(new AltinnReportee[0]);
 
-        } catch (RestClientException exception) {
+        } catch (AltinnrettigheterProxyKlientFallbackException exception) {
             log.warn("Feil ved kall mot Altinn.", exception);
             throw new AltinnFeilException();
         }

@@ -1,7 +1,7 @@
 {
   "mappings": [
     {
-      "priority": 1,
+      "priority": 2,
       "request": {
         "method": "GET",
         "urlPath": "/altinn-tilgangsstyring/ekstern/altinn/api/serviceowner/reportees",
@@ -26,7 +26,7 @@
       }
     },
     {
-      "priority": 1,
+      "priority": 2,
       "request": {
         "method": "GET",
         "urlPath": "/altinn-tilgangsstyring/ekstern/altinn/api/serviceowner/reportees",

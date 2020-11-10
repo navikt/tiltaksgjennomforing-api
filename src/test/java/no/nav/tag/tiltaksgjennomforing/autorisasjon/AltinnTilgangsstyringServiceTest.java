@@ -101,9 +101,9 @@ public class AltinnTilgangsstyringServiceTest {
         assertThat(tilganger).isEmpty();
     }
 
-    @Test(expected = AltinnrettigheterProxyKlientFallbackException.class)
+    @Test(expected = AltinnFeilException.class)
     public void hentTilganger__midlertidig_feil_gir_feilkode() {
-        altinnTilgangsstyringService.hentTilganger(new Fnr("31000000000"));
+        Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(new Fnr("31000000000"));
     }
 
     @Test(expected = TiltaksgjennomforingException.class)
