@@ -49,7 +49,6 @@ public class FeatureToggleConfig {
         } else {
             fakeUnleash.disableAll();
         }
-        fakeUnleash.disable("arbeidsgiver.tiltaksgjennomforing-api.bruk-altinn-proxy");
         return fakeUnleash;
     }
 }

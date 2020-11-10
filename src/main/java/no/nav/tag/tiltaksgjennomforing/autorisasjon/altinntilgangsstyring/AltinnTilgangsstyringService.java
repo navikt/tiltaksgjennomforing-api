@@ -15,6 +15,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.AltinnFeilException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -25,10 +26,14 @@ public class AltinnTilgangsstyringService {
     private final AltinnTilgangsstyringProperties altinnTilgangsstyringProperties;
     private final TokenUtils tokenUtils;
     private final AltinnrettigheterProxyKlient klient;
+    private final String applicationName;
 
     public AltinnTilgangsstyringService(
             AltinnTilgangsstyringProperties altinnTilgangsstyringProperties,
-            TokenUtils tokenUtils) {
+            TokenUtils tokenUtils,
+            @Value("${spring.application.name}") String applicationName) {
+
+        this.applicationName = applicationName;
         if (Utils.erNoenTomme(altinnTilgangsstyringProperties.getArbtreningServiceCode(),
                 altinnTilgangsstyringProperties.getArbtreningServiceEdition(),
                 altinnTilgangsstyringProperties.getLtsMidlertidigServiceCode(),
@@ -45,7 +50,7 @@ public class AltinnTilgangsstyringService {
         String altinnProxyFallbackUrl = altinnTilgangsstyringProperties.getUri().toString();
 
         AltinnrettigheterProxyKlientConfig proxyKlientConfig = new AltinnrettigheterProxyKlientConfig(
-                new ProxyConfig("tiltaksgjennomforing-api", altinnProxyUrl),
+                new ProxyConfig(applicationName, altinnProxyUrl),
                 new no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnConfig(
                         altinnProxyFallbackUrl,
                         altinnTilgangsstyringProperties.getAltinnApiKey(),
