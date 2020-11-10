@@ -102,7 +102,7 @@ public class AltinnTilgangsstyringServiceTest {
 
     @Test(expected = AltinnFeilException.class)
     public void hentTilganger__midlertidig_feil_gir_feilkode() {
-        Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(new Fnr("31000000000"));
+        altinnTilgangsstyringService.hentTilganger(new Fnr("31000000000"));
     }
 
     @Test(expected = TiltaksgjennomforingException.class)

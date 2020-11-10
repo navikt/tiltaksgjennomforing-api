@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnConfig;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnrettigheterProxyKlient;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnrettigheterProxyKlientConfig;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.ProxyConfig;
@@ -26,14 +27,12 @@ public class AltinnTilgangsstyringService {
     private final AltinnTilgangsstyringProperties altinnTilgangsstyringProperties;
     private final TokenUtils tokenUtils;
     private final AltinnrettigheterProxyKlient klient;
-    private final String applicationName;
 
     public AltinnTilgangsstyringService(
             AltinnTilgangsstyringProperties altinnTilgangsstyringProperties,
             TokenUtils tokenUtils,
             @Value("${spring.application.name}") String applicationName) {
 
-        this.applicationName = applicationName;
         if (Utils.erNoenTomme(altinnTilgangsstyringProperties.getArbtreningServiceCode(),
                 altinnTilgangsstyringProperties.getArbtreningServiceEdition(),
                 altinnTilgangsstyringProperties.getLtsMidlertidigServiceCode(),
@@ -51,14 +50,13 @@ public class AltinnTilgangsstyringService {
 
         AltinnrettigheterProxyKlientConfig proxyKlientConfig = new AltinnrettigheterProxyKlientConfig(
                 new ProxyConfig(applicationName, altinnProxyUrl),
-                new no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnConfig(
+                new AltinnConfig(
                         altinnProxyFallbackUrl,
                         altinnTilgangsstyringProperties.getAltinnApiKey(),
                         altinnTilgangsstyringProperties.getApiGwApiKey()
                 )
         );
         this.klient = new AltinnrettigheterProxyKlient(proxyKlientConfig);
-
 
     }
 
