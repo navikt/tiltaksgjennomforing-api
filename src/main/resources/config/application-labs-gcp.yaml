@@ -35,6 +35,8 @@ tiltaksgjennomforing:
     ltsVarigServiceEdition: 2
     arbtreningServiceCode: 5332
     arbtreningServiceEdition: 1
+    altinnApiKey: foo
+    apiGwApiKey: foo
   ereg:
     uri: http://tiltaksgjennomforing-wiremock/ereg
   sts:
