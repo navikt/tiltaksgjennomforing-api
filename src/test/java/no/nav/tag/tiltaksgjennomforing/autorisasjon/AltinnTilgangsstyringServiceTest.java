@@ -108,6 +108,6 @@ public class AltinnTilgangsstyringServiceTest {
     @Test(expected = TiltaksgjennomforingException.class)
     public void manglende_serviceCode_skal_kaste_feil() {
         AltinnTilgangsstyringProperties altinnTilgangsstyringProperties = new AltinnTilgangsstyringProperties();
-        new AltinnTilgangsstyringService(altinnTilgangsstyringProperties, tokenUtils);
+        new AltinnTilgangsstyringService(altinnTilgangsstyringProperties, tokenUtils, "tiltaksgjennomforing-api");
     }
 }
