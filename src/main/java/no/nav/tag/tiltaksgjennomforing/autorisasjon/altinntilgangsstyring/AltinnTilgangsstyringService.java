@@ -14,12 +14,8 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.AltinnFeilException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
@@ -30,7 +26,6 @@ public class AltinnTilgangsstyringService {
     private final TokenUtils tokenUtils;
     private final AltinnrettigheterProxyKlient klient;
 
-    @Autowired
     public AltinnTilgangsstyringService(
             AltinnTilgangsstyringProperties altinnTilgangsstyringProperties,
             TokenUtils tokenUtils) {
