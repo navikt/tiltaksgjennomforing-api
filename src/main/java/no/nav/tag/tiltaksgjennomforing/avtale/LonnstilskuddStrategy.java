@@ -35,7 +35,7 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
             nyAvtale.getArbeidsgiveravgift());
         Integer sumLonnsutgifter = getSumLonnsutgifter(nyAvtale.getManedslonn(), feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgiftBelop);
         Integer sumlønnTilskudd = getSumLonnsTilskudd(sumLonnsutgifter, nyAvtale.getLonnstilskuddProsent());
-        Integer månedslønnFullStilling = getLønnVedFullStilling(nyAvtale.getManedslonn(), nyAvtale.getStillingprosent());
+        Integer månedslønnFullStilling = getLønnVedFullStilling(sumLonnsutgifter, nyAvtale.getStillingprosent());
 
         avtaleInnhold.setFeriepengerBelop(feriepengerBelop);
         avtaleInnhold.setOtpBelop(obligTjenestepensjon);
