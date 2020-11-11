@@ -126,13 +126,14 @@ class BeregningLonnstilskuddTest {
         // GIVEN
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setStillingprosent(50);
-        endreAvtale.setManedslonn(15642);
-
+        endreAvtale.setManedslonn(10000);
+        endreAvtale.setFeriepengesats(new BigDecimal(0.125));
+        endreAvtale.setArbeidsgiveravgift(new BigDecimal(0.0));
         // WHEN
         strategy.endre(endreAvtale);
 
         // THEN
-        assertThat(avtaleInnhold.getManedslonn100pst()).isEqualTo(31284);
+        assertThat(avtaleInnhold.getManedslonn100pst()).isEqualTo(22950);
     }
 
 }
