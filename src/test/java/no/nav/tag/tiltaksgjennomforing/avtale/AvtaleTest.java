@@ -191,9 +191,10 @@ public class AvtaleTest {
     }
 
     @Test
-    public void endreAvtaleSkalInkrementereVersjon() {
+    public void endreAvtaleSkalInkrementereVersjon() throws InterruptedException {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         Instant førstEndret = avtale.getSistEndret();
+        Thread.sleep(10);
         avtale.endreAvtale(førstEndret, TestData.ingenEndring(), Avtalerolle.VEILEDER);
         assertThat(avtale.getSistEndret()).isAfter(førstEndret);
     }
@@ -436,73 +437,82 @@ public class AvtaleTest {
     }
 
     @Test
-    public void sistEndretNå__kalles_ved_endreAvtale() {
+    public void sistEndretNå__kalles_ved_endreAvtale() throws InterruptedException {
         Instant førEndringen = Instant.now();
         Avtale avtale = TestData.enArbeidstreningAvtale();
+        Thread.sleep(10);
         avtale.endreAvtale(Instant.MAX, TestData.ingenEndring(), Avtalerolle.VEILEDER);
         assertThat(avtale.getSistEndret()).isAfter(førEndringen);
     }
 
     @Test
-    public void sistEndretNå__kalles_ved_godkjennForDeltaker() {
+    public void sistEndretNå__kalles_ved_godkjennForDeltaker() throws InterruptedException {
         Instant førEndringen = Instant.now();
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        Thread.sleep(10);
         avtale.godkjennForDeltaker(TestData.enIdentifikator());
         assertThat(avtale.getSistEndret()).isAfter(førEndringen);
     }
 
     @Test
-    public void sistEndretNå__kalles_ved_godkjennForArbeidsgiver() {
+    public void sistEndretNå__kalles_ved_godkjennForArbeidsgiver() throws InterruptedException {
         Instant førEndringen = Instant.now();
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        Thread.sleep(10);
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
         assertThat(avtale.getSistEndret()).isAfter(førEndringen);
     }
 
     @Test
-    public void sistEndretNå__kalles_ved_godkjennForVeileder() {
+    public void sistEndretNå__kalles_ved_godkjennForVeileder() throws InterruptedException {
         Instant førEndringen = Instant.now();
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        Thread.sleep(10);
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
         assertThat(avtale.getSistEndret()).isAfter(førEndringen);
     }
 
     @Test
-    public void sistEndretNå__kalles_ved_godkjennForVeilederOgDeltaker() {
+    public void sistEndretNå__kalles_ved_godkjennForVeilederOgDeltaker() throws InterruptedException {
         Instant førEndringen = Instant.now();
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        Thread.sleep(10);
         avtale.godkjennForVeilederOgDeltaker(TestData.enIdentifikator(), TestData.enGodkjentPaVegneGrunn());
         assertThat(avtale.getSistEndret()).isAfter(førEndringen);
     }
 
     @Test
-    public void sistEndretNå__kalles_ved_opphevGodkjenningerSomArbeidsgiver() {
+    public void sistEndretNå__kalles_ved_opphevGodkjenningerSomArbeidsgiver() throws InterruptedException {
         Instant førEndringen = Instant.now();
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        Thread.sleep(10);
         avtale.opphevGodkjenningerSomArbeidsgiver();
         assertThat(avtale.getSistEndret()).isAfter(førEndringen);
     }
 
     @Test
-    public void sistEndretNå__kalles_ved_opphevGodkjenningerSomVeileder() {
+    public void sistEndretNå__kalles_ved_opphevGodkjenningerSomVeileder() throws InterruptedException {
         Instant førEndringen = Instant.now();
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        Thread.sleep(10);
         avtale.opphevGodkjenningerSomVeileder();
         assertThat(avtale.getSistEndret()).isAfter(førEndringen);
     }
 
     @Test
-    public void sistEndretNå__kalles_ved_avbryt() {
+    public void sistEndretNå__kalles_ved_avbryt() throws InterruptedException {
         Instant førEndringen = Instant.now();
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        Thread.sleep(10);
         avtale.avbryt(TestData.enVeileder(avtale), new AvbruttInfo());
         assertThat(avtale.getSistEndret()).isAfter(førEndringen);
     }
 
     @Test
-    public void sistEndretNå__kalles_ved_låsOppAvtale() {
+    public void sistEndretNå__kalles_ved_låsOppAvtale() throws InterruptedException {
         Instant førEndringen = Instant.now();
         Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        Thread.sleep(10);
         avtale.låsOppAvtale();
         assertThat(avtale.getSistEndret()).isAfter(førEndringen);
     }
