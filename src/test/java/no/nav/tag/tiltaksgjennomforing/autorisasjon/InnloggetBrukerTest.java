@@ -68,7 +68,7 @@ public class InnloggetBrukerTest {
         assertThat(innloggetVeileder.harLeseTilgang(avtale)).isTrue();
         verify(tilgangskontrollService).harLesetilgangTilKandidat(innloggetVeileder, avtale.getDeltakerFnr());
     }
-    
+
     @Test
     public void harTilgang__veileder_skal_ikke_ha_lesetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_feiler() {
         InnloggetVeileder innloggetVeileder = new InnloggetVeileder(navIdent, tilgangskontrollService);
@@ -76,7 +76,7 @@ public class InnloggetBrukerTest {
 
         assertThat(innloggetVeileder.harLeseTilgang(avtale)).isFalse();
     }
-    
+
     @Test
     public void harTilgang__veileder_skal_ha_skrivetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_er_ok() {
         InnloggetVeileder innloggetVeileder = new InnloggetVeileder(navIdent, tilgangskontrollService);
@@ -85,15 +85,15 @@ public class InnloggetBrukerTest {
         assertThat(innloggetVeileder.harSkriveTilgang(avtale)).isTrue();
         verify(tilgangskontrollService).harSkrivetilgangTilKandidat(innloggetVeileder, avtale.getDeltakerFnr());
     }
-    
+
     @Test
     public void harTilgang__veileder_skal_ikke_ha_skrivetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_feiler() {
         InnloggetVeileder innloggetVeileder = new InnloggetVeileder(navIdent, tilgangskontrollService);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(innloggetVeileder, avtale.getDeltakerFnr())).thenReturn(false);
-        
+
         assertThat(innloggetVeileder.harSkriveTilgang(avtale)).isFalse();
     }
-    
+
     @Test
     public void harTilgang__arbeidsgiver_skal_ikke_ha_tilgang_til_avtale() {
         assertThat(new InnloggetArbeidsgiver(TestData.etFodselsnummer(), Map.of(), Collections.emptySet()).harLeseTilgang(avtale)).isFalse();
@@ -108,7 +108,7 @@ public class InnloggetBrukerTest {
     public void harTilgang__ikkepart_veileder_skal_ikke_ha_skrivetilgang_hvis_toggle_er_av() {
         assertThat(new InnloggetVeileder(new NavIdent("X123456"), tilgangskontrollService).harSkriveTilgang(avtale)).isFalse();
     }
-    
+
     @Test
     public void harTilgang__ikkepart_selvbetjeningsbruker_skal_ikke_ha_tilgang() {
         assertThat(new InnloggetArbeidsgiver(new Fnr("00000000001"), Map.of(), Collections.emptySet()).harLeseTilgang(avtale)).isFalse();
@@ -126,7 +126,7 @@ public class InnloggetBrukerTest {
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(this.bedriftNr, Set.of(Tiltakstype.values()));
         InnloggetArbeidsgiver innloggetArbeidsgiver = new InnloggetArbeidsgiver(new Fnr("00000000009"), tilganger, Collections.emptySet());
         avtale.setAvbrutt(true);
-        avtale.setSistEndret(Instant.now().minus(84, ChronoUnit.DAYS));
+        avtale.setSistEndret(Instant.now().minus(84, ChronoUnit.DAYS).minusMillis(100));
         assertThat(innloggetArbeidsgiver.harLeseTilgang(avtale)).isFalse();
     }
 
