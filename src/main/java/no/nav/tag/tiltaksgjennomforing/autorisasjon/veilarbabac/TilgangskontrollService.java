@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac;
 
+import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class TilgangskontrollService {
 
     private void sjekkTilgang(InnloggetVeileder innloggetVeileder, Fnr fnr, TilgangskontrollAction action) {
         if (!hentTilgang(innloggetVeileder, fnr, action)) {
-            throw new TilgangskontrollException("Du har ikke tilgang til deltaker");
+            throw new IkkeTilgangTilDeltakerException();
         }
     }
 
