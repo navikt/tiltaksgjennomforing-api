@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
 @RequiredArgsConstructor
@@ -18,7 +18,7 @@ public class LagGosysVarselLytter {
         oppgaveVarselService.opprettOppgave(aktørid, avtale.getTiltakstype(), avtale.getId());
     }
 
-    @EventListener
+    @TransactionalEventListener
     public void opprettGosysVarsel(AvtaleOpprettetAvArbeidsgiver event) {
         varsleGosys(event.getAvtale());
     }
