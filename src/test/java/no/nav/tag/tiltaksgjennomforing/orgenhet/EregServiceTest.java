@@ -29,6 +29,6 @@ public class EregServiceTest {
 
     @Test(expected = EnhetFinnesIkkeException.class)
     public void hentBedriftNavn__kaster_exception_ved_404() {
-        eregService.hentVirksomhet(new BedriftNr("899999999"));
+        eregService.hentVirksomhet(new BedriftNr("799999999"));
     }
 }

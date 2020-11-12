@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnOrganisasjon;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 
@@ -11,10 +11,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class InnloggetArbeidsgiver extends InnloggetBruker<Fnr> {
-    private final Set<AltinnOrganisasjon> altinnOrganisasjoner;
+    private final Set<AltinnReportee> altinnOrganisasjoner;
     private final Map<BedriftNr, Collection<Tiltakstype>> tilganger;
 
-    public InnloggetArbeidsgiver(Fnr identifikator, Map<BedriftNr, Collection<Tiltakstype>> tilganger, Set<AltinnOrganisasjon> altinnOrganisasjoner) {
+    public InnloggetArbeidsgiver(Fnr identifikator, Map<BedriftNr, Collection<Tiltakstype>> tilganger, Set<AltinnReportee> altinnOrganisasjoner) {
         super(identifikator);
         this.altinnOrganisasjoner = altinnOrganisasjoner;
         this.tilganger = tilganger;
@@ -32,7 +32,7 @@ public class InnloggetArbeidsgiver extends InnloggetBruker<Fnr> {
         return tilganger;
     }
 
-    public Set<AltinnOrganisasjon> getAltinnOrganisasjoner() {
+    public Set<AltinnReportee> getAltinnOrganisasjoner() {
         return altinnOrganisasjoner;
     }
 

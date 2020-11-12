@@ -27,7 +27,7 @@ tiltaksgjennomforing:
     enabled: false
   altinn-tilgangsstyring:
     uri: http://tiltaksgjennomforing-wiremock/altinn-tilgangsstyring
-    proxyUri: http://tiltaksgjennomforing-wiremock/altinn-rettigheter-proxy/ekstern/altinn/api/serviceowner/reportees
+    proxyUri: http://heh:9090/
     beOmRettighetBaseUrl: https://arbeidsgiver-q.nav.no/min-side-arbeidsgiver/?fragment=be-om-tilgang
     ltsMidlertidigServiceCode: 5516
     ltsMidlertidigServiceEdition: 1
@@ -35,6 +35,8 @@ tiltaksgjennomforing:
     ltsVarigServiceEdition: 2
     arbtreningServiceCode: 5332
     arbtreningServiceEdition: 1
+    altinnApiKey: foo
+    apiGwApiKey: foo
   ereg:
     uri: http://tiltaksgjennomforing-wiremock/ereg
   sts:

@@ -17,7 +17,7 @@ no.nav.security.oidc:
   issuers: selvbetjening, isso, system
   issuer:
     selvbetjening:
-      discoveryurl: https://login.microsoftonline.com/navnob2c.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1A_idporten
+      discoveryurl: ${LOGINSERVICE_IDPORTEN_DISCOVERY_URL}
       accepted_audience: 45104d6a-f5bc-4e8c-b352-4bbfc9381f25
     isso:
       discoveryurl: https://login.microsoftonline.com/navno.onmicrosoft.com/.well-known/openid-configuration
@@ -35,8 +35,8 @@ tiltaksgjennomforing:
     maximum-pool-size: 8
     max-lifetime: 300000
   altinn-tilgangsstyring:
-    uri: https://api-gw.adeo.no/ekstern/altinn/api/serviceowner/reportees
-    proxyUri: https://arbeidsgiver.nais.adeo.no/altinn-rettigheter-proxy/ekstern/altinn/api/serviceowner/reportees
+    uri: https://api-gw.adeo.no/
+    proxyUri: https://arbeidsgiver.nais.adeo.no/altinn-rettigheter-proxy/
     beOmRettighetBaseUrl: https://arbeidsgiver.nav.no/min-side-arbeidsgiver/?fragment=be-om-tilgang
     ltsMidlertidigServiceCode: 5516
     ltsMidlertidigServiceEdition: 1
@@ -62,7 +62,7 @@ tiltaksgjennomforing:
     oppgave-uri: https://oppgave.nais.adeo.no/api/v1/oppgaver
   unleash:
     enabled: true
-    unleash-uri: https://unleash.nais.adeo.no/api/
+    unleash-uri: https://unleash.nais.io/api/
   consumer:
     system:
       id: ${tiltaksgjennomforing.consumer.system}

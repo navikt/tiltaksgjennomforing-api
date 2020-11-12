@@ -1,11 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.orgenhet;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public class EnhetErOrganisasjonsleddException extends RuntimeException {
+public class EnhetErOrganisasjonsleddException extends FeilkodeException {
     public EnhetErOrganisasjonsleddException() {
-        super("Avtale må registreres på virksomhetens bedriftsnummer, ikke organisasjonsleddet.");
+        super(Feilkode.ENHET_ER_ORGLEDD);
     }
 }

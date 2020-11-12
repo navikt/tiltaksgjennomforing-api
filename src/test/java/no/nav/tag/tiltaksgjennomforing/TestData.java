@@ -12,10 +12,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnOrganisasjon;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -245,7 +246,7 @@ public class TestData {
     public static InnloggetArbeidsgiver innloggetArbeidsgiver(Avtalepart<Fnr> avtalepartMedFnr) {
         Avtale avtale = avtalepartMedFnr.getAvtale();
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.values()));
-        AltinnOrganisasjon altinnOrganisasjon = new AltinnOrganisasjon(avtale.getBedriftNavn(), "Business", avtale.getBedriftNr().asString(), "BEDR", "Active", null);
+        AltinnReportee altinnOrganisasjon = new AltinnReportee("Bedriften AS", "Business", avtale.getBedriftNr().asString(), "BEDR", "Active", null);
         return new InnloggetArbeidsgiver(avtalepartMedFnr.getIdentifikator(), tilganger, Set.of(altinnOrganisasjon));
     }
 

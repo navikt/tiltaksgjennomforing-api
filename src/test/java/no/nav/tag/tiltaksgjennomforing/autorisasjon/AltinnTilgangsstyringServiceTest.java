@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnOrganisasjon;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
@@ -52,13 +52,13 @@ public class AltinnTilgangsstyringServiceTest {
     public void hentOrganisasjoner__gyldig_fnr_en_bedrift_på_hvert_tiltak() {
         Fnr fnr = new Fnr("10000000000");
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(fnr);
-        Set<AltinnOrganisasjon> organisasjoner = altinnTilgangsstyringService.hentAltinnOrganisasjoner(fnr);
+        Set<AltinnReportee> organisasjoner = altinnTilgangsstyringService.hentAltinnOrganisasjoner(fnr);
 
         // Alt som finnes i tilganger-mappet skal også finnes i organisasjoner-settet
         assertThat(organisasjoner).extracting(org -> new BedriftNr(org.getOrganizationNumber())).containsAll(tilganger.keySet());
 
         // Sjekk at uvesentilg tilgang er med i organisasjoner
-        assertThat(organisasjoner).extracting(AltinnOrganisasjon::getOrganizationNumber).contains("980712306", "980825560");
+        assertThat(organisasjoner).extracting(AltinnReportee::getOrganizationNumber).contains("980712306", "980825560");
 
 
         // Parents skal ikke være i tilgang-map
@@ -78,7 +78,7 @@ public class AltinnTilgangsstyringServiceTest {
     public void hentOrganisasjoner__tilgang_bare_for_arbeidstrening() {
         Fnr fnr = new Fnr("20000000000");
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(fnr);
-        Set<AltinnOrganisasjon> organisasjoner = altinnTilgangsstyringService.hentAltinnOrganisasjoner(fnr);
+        Set<AltinnReportee> organisasjoner = altinnTilgangsstyringService.hentAltinnOrganisasjoner(fnr);
 
         // Alt som finnes i tilganger-mappet skal også finnes i organisasjoner-settet
         assertThat(organisasjoner).extracting(org -> new BedriftNr(org.getOrganizationNumber())).containsAll(tilganger.keySet());
@@ -94,7 +94,7 @@ public class AltinnTilgangsstyringServiceTest {
     public void hentOrganisasjoner__ingen_tilgang() {
         Fnr fnr = new Fnr("09000000000");
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(fnr);
-        Set<AltinnOrganisasjon> organisasjoner = altinnTilgangsstyringService.hentAltinnOrganisasjoner(fnr);
+        Set<AltinnReportee> organisasjoner = altinnTilgangsstyringService.hentAltinnOrganisasjoner(fnr);
 
         assertThat(organisasjoner).isEmpty();
         assertThat(tilganger).isEmpty();
@@ -108,6 +108,6 @@ public class AltinnTilgangsstyringServiceTest {
     @Test(expected = TiltaksgjennomforingException.class)
     public void manglende_serviceCode_skal_kaste_feil() {
         AltinnTilgangsstyringProperties altinnTilgangsstyringProperties = new AltinnTilgangsstyringProperties();
-        new AltinnTilgangsstyringService(altinnTilgangsstyringProperties, tokenUtils, featureToggleService);
+        new AltinnTilgangsstyringService(altinnTilgangsstyringProperties, tokenUtils, "tiltaksgjennomforing-api");
     }
 }

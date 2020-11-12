@@ -91,7 +91,7 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-fss
-          RESOURCE: nais/naiserator.yaml
+          RESOURCE: nais/naiserator.yaml,nais/alerterator.yaml
           PRINT_PAYLOAD: true
           VAR: ingress=https://arbeidsgiver.nais.adeo.no/tiltaksgjennomforing-api/,namespace=default
 

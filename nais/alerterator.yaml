@@ -1,10 +1,10 @@
-apiVersion: "nais.io/v1"
-kind: "Alert"
+apiVersion: nais.io/v1
+kind: Alert
 metadata:
   name: tiltaksgjennomforing-api-alert
-  namespace: default
+  namespace: {{namespace}}
   labels:
-    team: teamtag
+    team: arbeidsgiver
 spec:
   receivers:
     slack:
@@ -13,6 +13,6 @@ spec:
   alerts:
     - alert: applikasjon nede
       expr: up{app="tiltaksgjennomforing-api", job="kubernetes-pods"} == 0
-      for: 2m
+      for: 5m
       description: "{{ $labels.app }} er nede i {{ $labels.kubernetes_namespace }}"
       action: "`kubectl describe pod {{ $labels.kubernetes_pod_name }} -n {{ $labels.kubernetes_namespace }}` for events, og `kubectl logs {{ $labels.kubernetes_pod_name }} -n {{ $labels.kubernetes_namespace }}` for logger"
