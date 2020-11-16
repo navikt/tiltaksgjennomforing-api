@@ -68,7 +68,7 @@ class StatistikkformidlingProducerTest {
     avtale.setDeltakerEtternavn("Duck");
 
     //NÅR
-    statistikkFormidlingProducer.publiserStatistikkformidlingMelding(avtale);
+    statistikkFormidlingProducer.publiserStatistikkformidlingMelding(Statistikkformidlingsmelding.fraAvtale(avtale));
 
     //SÅ
     ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.STATISTIKKFORMIDLING);

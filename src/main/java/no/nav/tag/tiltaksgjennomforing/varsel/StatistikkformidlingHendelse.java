@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAv;
 import no.nav.tag.tiltaksgjennomforing.varsel.kafka.StatistikkformidlingProducer;
+import no.nav.tag.tiltaksgjennomforing.varsel.kafka.Statistikkformidlingsmelding;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -17,12 +18,11 @@ public class StatistikkformidlingHendelse {
 
     @TransactionalEventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
-        statistikkformidlingProducer.publiserStatistikkformidlingMelding(event.getAvtale());
+        statistikkformidlingProducer.publiserStatistikkformidlingMelding(Statistikkformidlingsmelding.fraAvtale(event.getAvtale()));
     }
 
     @TransactionalEventListener
     public void godkjentPaVegneAv(GodkjentPaVegneAv event) {
-        statistikkformidlingProducer.publiserStatistikkformidlingMelding(event.getAvtale());
+        statistikkformidlingProducer.publiserStatistikkformidlingMelding(Statistikkformidlingsmelding.fraAvtale(event.getAvtale()));
     }
-
 }
