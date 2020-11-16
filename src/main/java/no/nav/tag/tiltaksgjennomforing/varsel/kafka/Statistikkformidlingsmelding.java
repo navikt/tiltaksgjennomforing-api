@@ -10,7 +10,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Statistikkformidlingsmelding {
-
   private String organisasjonsnummer;
   private Stillingstype stillingstype;
   private String yrke;
