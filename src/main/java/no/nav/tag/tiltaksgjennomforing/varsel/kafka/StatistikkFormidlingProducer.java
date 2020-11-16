@@ -21,7 +21,7 @@ public class StatistikkFormidlingProducer {
 
     public void sendStatistikkFormidlingMeldingTilKafka(Avtale avtale) {
         StatistikkFormidlingsmelding statistikkFormidlingsmelding = getFormidlingsmeldingFraAvtale(avtale);
-        kafkaTemplate.send(Topics.STATISTIKK_FORMIDLING, avtale.getId().toString(), statistikkFormidlingsmelding)
+        kafkaTemplate.send(Topics.STATISTIKKFORMIDLING, avtale.getId().toString(), statistikkFormidlingsmelding)
             .addCallback(new ListenableFutureCallback<>() {
                 @Override
                 public void onFailure(Throwable ex) {

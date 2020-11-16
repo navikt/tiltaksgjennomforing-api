@@ -1,13 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 
 public class Topics {
-    public static final String STATISTIKK_FORMIDLING = "privat-tiltaksgjennomforing-statistikk-formidling";
+    public static final String STATISTIKKFORMIDLING = "privat-tiltaksgjennomforing-statistikk-formidling";
     public static final String SMS_VARSEL = "privat-tiltaksgjennomforing-smsVarsel";
     public static final String SMS_VARSEL_RESULTAT = "privat-tiltaksgjennomforing-smsVarselResultat";
 
     public static String[] alleTopics() {
         return new String[]{
-            STATISTIKK_FORMIDLING,
+            STATISTIKKFORMIDLING,
             SMS_VARSEL,
             SMS_VARSEL_RESULTAT
         };

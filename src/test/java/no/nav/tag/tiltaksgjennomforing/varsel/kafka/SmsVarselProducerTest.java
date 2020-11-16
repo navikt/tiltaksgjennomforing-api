@@ -1,6 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 
-import no.nav.tag.tiltaksgjennomforing.KafkaMockServer;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Map;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.varsel.SmsVarsel;
@@ -18,26 +20,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.test.EmbeddedKafkaBroker;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(properties = {"tiltaksgjennomforing.kafka.enabled=true"})
 @DirtiesContext
-@ActiveProfiles({ Miljø.LOCAL, "kafka-test"})
+@ActiveProfiles({Miljø.LOCAL, "kafka-test"})
+@EmbeddedKafka(partitions = 1, controlledShutdown = false, topics = {Topics.SMS_VARSEL, Topics.SMS_VARSEL_RESULTAT, Topics.STATISTIKKFORMIDLING})
 public class SmsVarselProducerTest {
 
     @Autowired
     private TransactionTemplate transactionTemplate;
     @Autowired
-    private KafkaMockServer embeddedKafka;
+    private EmbeddedKafkaBroker embeddedKafka;
     @Autowired
     private SmsVarselRepository repository;
 
@@ -45,13 +46,13 @@ public class SmsVarselProducerTest {
 
     @Before
     public void setUp() {
-        Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "false", embeddedKafka.getEmbeddedKafka());
+        Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "false", embeddedKafka);
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 
         ConsumerFactory<String, String> cf = new DefaultKafkaConsumerFactory<>(consumerProps);
         consumer = cf.createConsumer();
-        embeddedKafka.getEmbeddedKafka().consumeFromAnEmbeddedTopic(consumer, Topics.SMS_VARSEL);
+        embeddedKafka.consumeFromAnEmbeddedTopic(consumer, Topics.SMS_VARSEL);
     }
 
     @Test

@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
-import no.nav.tag.tiltaksgjennomforing.KafkaMockServer;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
@@ -24,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.test.EmbeddedKafkaBroker;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -31,24 +32,25 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(properties = {"tiltaksgjennomforing.kafka.enabled=true"})
 @DirtiesContext
 @ActiveProfiles({Miljø.LOCAL, "kafka-test"})
+@EmbeddedKafka(partitions = 1, controlledShutdown = false, topics = {Topics.SMS_VARSEL, Topics.SMS_VARSEL_RESULTAT, Topics.STATISTIKKFORMIDLING})
 class StatistikkFormidlingProducerTest {
 
   @Autowired
   private StatistikkFormidlingProducer statistikkFormidlingProducer;
 
   @Autowired
-  private KafkaMockServer embeddedKafka;
+  private EmbeddedKafkaBroker embeddedKafka;
 
   private Consumer<String, String> consumer;
 
   @BeforeEach
   public void setUp() {
-    Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "false", embeddedKafka.getEmbeddedKafka());
+    Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "false", embeddedKafka);
     consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
     consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
     ConsumerFactory<String, String> consumerFactory = new DefaultKafkaConsumerFactory<>(consumerProps);
     consumer = consumerFactory.createConsumer();
-    embeddedKafka.getEmbeddedKafka().consumeFromAnEmbeddedTopic(consumer, Topics.STATISTIKK_FORMIDLING);
+    embeddedKafka.consumeFromAnEmbeddedTopic(consumer, Topics.STATISTIKKFORMIDLING);
   }
 
   @Test
@@ -69,7 +71,7 @@ class StatistikkFormidlingProducerTest {
     statistikkFormidlingProducer.sendStatistikkFormidlingMeldingTilKafka(avtale);
 
     //SÅ
-    ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.STATISTIKK_FORMIDLING);
+    ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.STATISTIKKFORMIDLING);
     JSONObject json = new JSONObject(record.value());
     assertThat(json.getString("avtaleId")).isNotNull();
     assertThat(json.getString("organisasjonsnummer")).isEqualTo(bedriftNr.toString());
