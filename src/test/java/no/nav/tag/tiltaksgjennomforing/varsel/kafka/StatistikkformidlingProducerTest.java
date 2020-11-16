@@ -54,7 +54,7 @@ class StatistikkformidlingProducerTest {
   }
 
   @Test
-  public void statisktikkFormidlingmelding__skal_sendes_på_kafka_topic_med_riktige_felter() throws JSONException, InterruptedException {
+  public void statisktikkformidlingMelding__skal_sendes_på_kafka_topic_med_riktige_felter() throws JSONException, InterruptedException {
 
     // GITT
     Fnr deltakerFnr = new Fnr("01234567890");
