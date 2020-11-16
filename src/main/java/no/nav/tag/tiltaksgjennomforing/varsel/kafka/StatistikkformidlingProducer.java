@@ -20,7 +20,7 @@ public class StatistikkformidlingProducer {
   private final KafkaTemplate<String, Statistikkformidlingsmelding> kafkaTemplate;
 
   public void publiserStatistikkformidlingMelding(Avtale avtale) {
-    Statistikkformidlingsmelding statistikkFormidlingsmelding = getFormidlingsmeldingFraAvtale(avtale);
+    Statistikkformidlingsmelding statistikkFormidlingsmelding = tilFormidlingsmelding(avtale);
     kafkaTemplate.send(Topics.STATISTIKKFORMIDLING, avtale.getId().toString(), statistikkFormidlingsmelding)
         .addCallback(new ListenableFutureCallback<>() {
           @Override
@@ -36,7 +36,7 @@ public class StatistikkformidlingProducer {
     }
 
   @NotNull
-  private Statistikkformidlingsmelding getFormidlingsmeldingFraAvtale(Avtale avtale) {
+  private Statistikkformidlingsmelding tilFormidlingsmelding(Avtale avtale) {
     return new Statistikkformidlingsmelding(
         avtale.getBedriftNr().toString(), avtale.getStillingstype(),
         avtale.getStillingstittel(), avtale.getLonnstilskuddProsent(),
