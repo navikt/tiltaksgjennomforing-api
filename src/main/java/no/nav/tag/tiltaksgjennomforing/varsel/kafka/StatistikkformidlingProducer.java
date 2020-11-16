@@ -17,27 +17,27 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 @RequiredArgsConstructor
 public class StatistikkformidlingProducer {
 
-  private final KafkaTemplate<String, StatistikkformidlingMelding> kafkaTemplate;
+  private final KafkaTemplate<String, Statistikkformidlingsmelding> kafkaTemplate;
 
   public void publiserStatistikkformidlingMelding(Avtale avtale) {
-    StatistikkformidlingMelding statistikkFormidlingsmelding = getFormidlingsmeldingFraAvtale(avtale);
+    Statistikkformidlingsmelding statistikkFormidlingsmelding = getFormidlingsmeldingFraAvtale(avtale);
     kafkaTemplate.send(Topics.STATISTIKKFORMIDLING, avtale.getId().toString(), statistikkFormidlingsmelding)
         .addCallback(new ListenableFutureCallback<>() {
           @Override
           public void onFailure(Throwable ex) {
-            log.warn("Statistikk formidlingsmelding med avtaleID={} kunne ikke sendes til Kafka topic", avtale.getId().toString());
+            log.warn("Statistikkformidlingsmelding med avtaleID={} kunne ikke sendes til Kafka topic", avtale.getId().toString());
           }
 
           @Override
-          public void onSuccess(SendResult<String, StatistikkformidlingMelding> result) {
-            log.info("Statistikk formidlingsmelding med avtaleID={} sendt på Kafka topic", avtale.getId().toString());
+          public void onSuccess(SendResult<String, Statistikkformidlingsmelding> result) {
+            log.info("Statistikkformidlingsmelding med avtaleID={} sendt på Kafka topic", avtale.getId().toString());
           }
             });
     }
 
   @NotNull
-  private StatistikkformidlingMelding getFormidlingsmeldingFraAvtale(Avtale avtale) {
-    return new StatistikkformidlingMelding(
+  private Statistikkformidlingsmelding getFormidlingsmeldingFraAvtale(Avtale avtale) {
+    return new Statistikkformidlingsmelding(
         avtale.getBedriftNr().toString(), avtale.getStillingstype(),
         avtale.getStillingstittel(), avtale.getLonnstilskuddProsent(),
         avtale.getTiltakstype(), avtale.getId().toString(),
