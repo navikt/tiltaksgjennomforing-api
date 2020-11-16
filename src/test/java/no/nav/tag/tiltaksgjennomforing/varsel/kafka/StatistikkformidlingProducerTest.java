@@ -33,10 +33,10 @@ import org.springframework.test.context.ActiveProfiles;
 @DirtiesContext
 @ActiveProfiles({Miljø.LOCAL, "kafka-test"})
 @EmbeddedKafka(partitions = 1, controlledShutdown = false, topics = {Topics.SMS_VARSEL, Topics.SMS_VARSEL_RESULTAT, Topics.STATISTIKKFORMIDLING})
-class StatistikkFormidlingProducerTest {
+class StatistikkformidlingProducerTest {
 
   @Autowired
-  private StatistikkFormidlingProducer statistikkFormidlingProducer;
+  private StatistikkformidlingProducer statistikkFormidlingProducer;
 
   @Autowired
   private EmbeddedKafkaBroker embeddedKafka;
@@ -68,7 +68,7 @@ class StatistikkFormidlingProducerTest {
     avtale.setDeltakerEtternavn("Duck");
 
     //NÅR
-    statistikkFormidlingProducer.sendStatistikkFormidlingMeldingTilKafka(avtale);
+    statistikkFormidlingProducer.publiserStatistikkformidlingMelding(avtale);
 
     //SÅ
     ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.STATISTIKKFORMIDLING);

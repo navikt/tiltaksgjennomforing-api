@@ -9,7 +9,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StatistikkFormidlingsmelding {
+public class StatistikkformidlingMelding {
 
   private String organisasjonsnummer;
   private Stillingstype stillingstype;
