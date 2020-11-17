@@ -35,7 +35,7 @@ public class StatistikkformidlingProducer {
 
           @Override
           public void onSuccess(SendResult<String, Statistikkformidlingsmelding> result) {
-            log.info("Statistikkformidlingsmelding med avtale innhold ID={} sendt på Kafka topic", melding.getAvtaleInnholdId());
+            log.info("Statistikkformidlingsmelding med avtale innhold ID={} sendt til Kafka topic", melding.getAvtaleInnholdId());
           }
         });
   }
