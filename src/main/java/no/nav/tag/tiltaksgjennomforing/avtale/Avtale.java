@@ -140,9 +140,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     @Delegate(excludes = MetoderSomIkkeSkalDelegeresFraAvtaleInnhold.class)
-    private AvtaleInnhold gjeldendeInnhold() {
+    public AvtaleInnhold gjeldendeInnhold() {
         return versjoner.get(versjoner.size() - 1);
     }
+
 
     @JsonProperty
     public boolean erLaast() {
