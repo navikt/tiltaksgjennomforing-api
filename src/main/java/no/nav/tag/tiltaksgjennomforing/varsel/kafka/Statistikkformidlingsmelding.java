@@ -15,7 +15,7 @@ public class Statistikkformidlingsmelding {
   Tiltakstype tiltakstype;
   String avtaleId;
   String navn;
-  String innholdVersion;
+  String avtaleInnholdId;
 
   public static Statistikkformidlingsmelding fraAvtale(Avtale avtale) {
     return new Statistikkformidlingsmelding(
