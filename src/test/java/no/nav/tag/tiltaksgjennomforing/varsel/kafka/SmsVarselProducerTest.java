@@ -29,10 +29,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = {"tiltaksgjennomforing.kafka.enabled=true"})
 @DirtiesContext
-@ActiveProfiles({Miljø.LOCAL, "kafka-test"})
-@EmbeddedKafka(partitions = 1, controlledShutdown = false, topics = {Topics.SMS_VARSEL, Topics.SMS_VARSEL_RESULTAT, Topics.STATISTIKKFORMIDLING})
+@SpringBootTest(properties = {"tiltaksgjennomforing.kafka.enabled=true"})
+@ActiveProfiles({Miljø.LOCAL})
+@EmbeddedKafka(partitions = 1, controlledShutdown = false, topics = {Topics.SMS_VARSEL, Topics.SMS_VARSEL_RESULTAT})
 public class SmsVarselProducerTest {
 
     @Autowired

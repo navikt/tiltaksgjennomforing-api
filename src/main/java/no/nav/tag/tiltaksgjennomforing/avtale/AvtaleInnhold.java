@@ -1,10 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
-import lombok.experimental.FieldNameConstants;
-
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,6 +8,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.FieldNameConstants;
 
 // Lombok
 @Data
@@ -100,15 +112,19 @@ public class AvtaleInnhold {
         return innhold;
     }
 
+    public UUID getAvtaleInnholdId() {
+        return id;
+    }
+
     public AvtaleInnhold nyVersjon() {
         AvtaleInnhold nyVersjon = toBuilder()
-                .id(UUID.randomUUID())
-                .maal(kopiAvMål())
-                .godkjentAvDeltaker(null)
-                .godkjentAvArbeidsgiver(null)
-                .godkjentAvVeileder(null)
-                .godkjentPaVegneAv(false)
-                .godkjentPaVegneGrunn(null)
+            .id(UUID.randomUUID())
+            .maal(kopiAvMål())
+            .godkjentAvDeltaker(null)
+            .godkjentAvArbeidsgiver(null)
+            .godkjentAvVeileder(null)
+            .godkjentPaVegneAv(false)
+            .godkjentPaVegneGrunn(null)
                 .journalpostId(null)
                 .versjon(versjon + 1)
                 .build();
