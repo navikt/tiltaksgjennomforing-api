@@ -33,7 +33,7 @@ public class TilskuddForPeriodeTest {
         LocalDate datoTom = LocalDate.of(2020, 3, 15);
 
         List<TilskuddPeriode> list  = tilskuddForPeriode.beregnTilskuddForPeriode(månedslønn, datoFom, datoTom);
-        assertEquals(61, (DAYS.between(list.get(0).getDatoFom(), list.get(0).getDatoTom()) + 1L));
+        assertEquals(61, tilskuddForPeriode.beregnetilskuddsperiode(list.get(0).getDatoFom(), list.get(0).getDatoTom()));
         assertEquals(40667, list.get(0).getBeløp());
     }
 
@@ -45,7 +45,7 @@ public class TilskuddForPeriodeTest {
         LocalDate datoTom = LocalDate.of(2020, 1, 20);
 
         List<TilskuddPeriode> list  = tilskuddForPeriode.beregnTilskuddForPeriode(månedslønn, datoFom, datoTom);
-        assertEquals(11, (DAYS.between(list.get(0).getDatoFom(), list.get(0).getDatoTom()) + 1L));
+        assertEquals(11, tilskuddForPeriode.beregnetilskuddsperiode(list.get(0).getDatoFom(), list.get(0).getDatoTom()));
         assertEquals(7333, list.get(0).getBeløp());
     }
 

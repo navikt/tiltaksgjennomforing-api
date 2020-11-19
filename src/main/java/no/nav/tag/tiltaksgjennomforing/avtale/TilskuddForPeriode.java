@@ -25,7 +25,7 @@ public class TilskuddForPeriode {
 
         while(period.getMonths() >= antallMånederIEnPeriode){
             nyDatoTilOgMed = nyDatoFraOgMed.plusMonths(antallMånederIEnPeriode);
-            nyTsPeriode = new TilskuddPeriode(lønnPrMåned * antallMånederIEnPeriode, nyDatoFraOgMed, nyDatoTilOgMed.minusDays(1), false);
+            nyTsPeriode = new TilskuddPeriode(lønnPrMåned * antallMånederIEnPeriode, nyDatoFraOgMed, nyDatoTilOgMed.minusDays(1));
             tilskuddPerioder.add(nyTsPeriode);
             nyDatoFraOgMed = nyDatoTilOgMed;
             period = period.minusMonths(antallMånederIEnPeriode);
@@ -49,6 +49,6 @@ public class TilskuddForPeriode {
         long dagerISisteTilskuddsPerioden = beregnetilskuddsperiode(datoFom, datoTom);
         Integer lønnISistePeriode = dagslønn.multiply(BigDecimal.valueOf(dagerISisteTilskuddsPerioden)).setScale(0, RoundingMode.HALF_UP).intValue();
 
-        return new TilskuddPeriode(lønnISistePeriode, datoFom, datoTom, true);
+        return new TilskuddPeriode(lønnISistePeriode, datoFom, datoTom);
     }
 }
