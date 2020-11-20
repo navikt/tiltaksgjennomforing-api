@@ -69,6 +69,7 @@ public class AvtaleInnhold {
     private Integer stillingStyrk08;
     private Integer stillingKonseptId;
 
+
     // Mentor
     private String mentorFornavn;
     private String mentorEtternavn;
@@ -92,6 +93,9 @@ public class AvtaleInnhold {
     private Integer manedslonn100pst;
     @Enumerated(EnumType.STRING)
     private Stillingstype stillingstype;
+
+    @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TilskuddPeriode> tilskuddPeriode;
 
     // Arbeidstrening
     @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -127,8 +131,10 @@ public class AvtaleInnhold {
             .godkjentPaVegneGrunn(null)
                 .journalpostId(null)
                 .versjon(versjon + 1)
+                .tilskuddPeriode(null)
                 .build();
         nyVersjon.getMaal().forEach(m -> m.setAvtaleInnhold(nyVersjon));
+//        nyVersjon.getTilskuddPeriode().forEach(tp -> tp.setAvtaleInnhold(nyVersjon));
         return nyVersjon;
     }
 
