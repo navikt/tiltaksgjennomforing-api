@@ -86,6 +86,27 @@ public class AvtaleRepositoryTest {
     }
 
     @Test
+    public void skalKunneLagreTilskuddsPeriode() {
+        // Lage avtale
+        Avtale lagretAvtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        lagretAvtale.setSumLonnstilskudd(20000);
+        avtaleRepository.save(lagretAvtale);
+
+        // Lagre tilskuddsperiode skal fungere
+        EndreAvtale endreAvtale = new EndreAvtale();
+        endreAvtale.setSumLonnstilskudd(lagretAvtale.getSumLonnstilskudd());
+        endreAvtale.setStartDato(lagretAvtale.getStartDato());
+        endreAvtale.setSluttDato(lagretAvtale.getSluttDato());
+
+        lagretAvtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        Avtale nyLagretAvtale = avtaleRepository.save(lagretAvtale);
+
+        List<TilskuddPeriode> perioder = nyLagretAvtale.getTilskuddPeriode();
+        assertThat(perioder).isNotEmpty();
+        assertThat(lagretAvtale.getVersjoner().get(0).getId()).isEqualTo(perioder.get(0).getAvtaleInnhold().getId());
+    }
+
+    @Test
     public void avtale_godkjent_pa_vegne_av_skal_lagres_med_pa_vegne_av_grunn() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
