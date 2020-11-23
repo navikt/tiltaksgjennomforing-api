@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -143,7 +144,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     public AvtaleInnhold gjeldendeInnhold() {
         return versjoner.get(versjoner.size() - 1);
     }
-
 
     @JsonProperty
     public boolean erLaast() {

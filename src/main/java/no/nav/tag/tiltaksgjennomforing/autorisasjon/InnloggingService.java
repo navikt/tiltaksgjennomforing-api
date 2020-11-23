@@ -8,6 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.Altinn
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -22,6 +23,7 @@ public class InnloggingService {
     private final TokenUtils tokenUtils;
     private final AltinnTilgangsstyringService altinnTilgangsstyringService;
     private final TilgangskontrollService tilgangskontrollService;
+    private final PersondataService persondataService;
 
     public InnloggetBruker<? extends Identifikator> hentInnloggetBruker(Avtalerolle avtalerolle) {
         BrukerOgIssuer brukerOgIssuer = tokenUtils.hentBrukerOgIssuer().orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget."));

@@ -8,6 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
@@ -61,8 +62,10 @@ public class AvtaleController {
     public ResponseEntity<?> opprettAvtale(@RequestBody OpprettAvtale opprettAvtale) {
         InnloggetVeileder innloggetVeileder = innloggingService.hentInnloggetVeileder();
         tilgangskontrollService.sjekkSkrivetilgangTilKandidat(innloggetVeileder, opprettAvtale.getDeltakerFnr());
-        persondataService.sjekkGradering(opprettAvtale.getDeltakerFnr());
         Avtale avtale = innloggetVeileder.opprettAvtale(opprettAvtale);
+        if (persondataService.erKode6(opprettAvtale.getDeltakerFnr())) {
+            throw new IkkeTilgangTilDeltakerException();
+        }
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
         avtale.leggTilDeltakerNavn(persondataService.hentNavn(avtale.getDeltakerFnr()));
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
@@ -74,7 +77,6 @@ public class AvtaleController {
     @Transactional
     public ResponseEntity<?> opprettAvtaleSomArbeidsgiver(@RequestBody OpprettAvtale opprettAvtale) {
         InnloggetArbeidsgiver innloggetArbeidsgiver = innloggingService.hentInnloggetArbeidsgiver();
-        persondataService.sjekkGradering(opprettAvtale.getDeltakerFnr());
         Avtale avtale = innloggetArbeidsgiver.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
@@ -193,7 +195,7 @@ public class AvtaleController {
 
     @PutMapping("/{avtaleId}/overta")
     @Transactional
-    public void settNyVeilederPåAvtale(@PathVariable("avtaleId") UUID avtaleId)  {
+    public void settNyVeilederPåAvtale(@PathVariable("avtaleId") UUID avtaleId) {
         InnloggetVeileder innloggetVeileder = innloggingService.hentInnloggetVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetVeileder.sjekkSkriveTilgang(avtale);
