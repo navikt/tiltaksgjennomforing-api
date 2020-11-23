@@ -12,7 +12,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
 
 public class TilskuddForAvtalePeriode {
 
-    private final static int dagerIMåned = 30; //TODO 30,4375
+    private final static BigDecimal dagerIMåned = BigDecimal.valueOf(30.4375);
     private final static int antallMånederIEnPeriode = 3;
 
     public static List<TilskuddPeriode> beregnTilskuddForAvtalePeriode(final Integer lønnPrMåned, final LocalDate datoFraOgMed, final LocalDate datoTilOgMed){
@@ -61,7 +61,7 @@ public class TilskuddForAvtalePeriode {
         BigDecimal restLønn = BigDecimal.ZERO;
 
         if(!period.isZero()) {
-            BigDecimal dagsLønn = lønnPrMåned.divide(BigDecimal.valueOf(dagerIMåned), MathContext.DECIMAL32);
+            BigDecimal dagsLønn = lønnPrMåned.divide(dagerIMåned, MathContext.DECIMAL32);
             restLønn = dagsLønn.multiply(BigDecimal.valueOf(period.getDays()));
         }
         return restLønn;

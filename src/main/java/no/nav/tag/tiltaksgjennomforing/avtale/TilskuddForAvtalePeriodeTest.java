@@ -28,7 +28,7 @@ public class TilskuddForAvtalePeriodeTest { //TODO Test på årsskifte
 
         List<TilskuddPeriode> list  = TilskuddForAvtalePeriode.beregnTilskuddForAvtalePeriode(månedslønn, datoFom, datoTom);
         assertEquals(61, TilskuddForAvtalePeriode.beregnetilskuddsperiode(list.get(0).getStartDato(), list.get(0).getSluttDato()));
-        assertEquals(40667, list.get(0).getBeløp());
+        assertEquals(40657, list.get(0).getBeløp());
     }
 
     @Test
@@ -38,7 +38,7 @@ public class TilskuddForAvtalePeriodeTest { //TODO Test på årsskifte
 
         List<TilskuddPeriode> list  = TilskuddForAvtalePeriode.beregnTilskuddForAvtalePeriode(månedslønn, datoFom, datoTom);
         assertEquals(11, TilskuddForAvtalePeriode.beregnetilskuddsperiode(list.get(0).getStartDato(), list.get(0).getSluttDato()));
-        assertEquals(7333, list.get(0).getBeløp());
+        assertEquals(7228, list.get(0).getBeløp());
     }
 
     @Test
@@ -92,7 +92,7 @@ public class TilskuddForAvtalePeriodeTest { //TODO Test på årsskifte
         tilskuddPeriode = perioder.get(2);
         assertEquals(avtaleSluttDato, tilskuddPeriode.getStartDato());
         assertEquals(1, TilskuddForAvtalePeriode.beregnetilskuddsperiode(tilskuddPeriode.getStartDato(), tilskuddPeriode.getSluttDato()));
-        assertEquals(667, tilskuddPeriode.getBeløp());
+        assertEquals(657, tilskuddPeriode.getBeløp());
     }
 
 
@@ -109,14 +109,14 @@ public class TilskuddForAvtalePeriodeTest { //TODO Test på årsskifte
         assertEquals(2, perioder.size());
         TilskuddPeriode tilskuddPeriode = perioder.get(0);
         assertEquals(avtaleStartDato, tilskuddPeriode.getStartDato());
-        assertEquals(_31_MARS, tilskuddPeriode.getStartDato());
+        assertEquals(_31_MARS, tilskuddPeriode.getSluttDato());
 
         assertEquals(60000, tilskuddPeriode.getBeløp());
 
         tilskuddPeriode = perioder.get(1);
         assertEquals(_1_APRIL, tilskuddPeriode.getStartDato());
-        assertEquals(avtaleSluttDato, tilskuddPeriode.getStartDato());
+        assertEquals(avtaleSluttDato, tilskuddPeriode.getSluttDato());
         assertEquals(45, TilskuddForAvtalePeriode.beregnetilskuddsperiode(tilskuddPeriode.getStartDato(), tilskuddPeriode.getSluttDato()));
-        assertEquals(30000, tilskuddPeriode.getBeløp());
+        assertEquals(29856, tilskuddPeriode.getBeløp());
     }
 }
