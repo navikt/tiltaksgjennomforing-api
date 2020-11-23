@@ -15,6 +15,20 @@ public class TilskuddForAvtalePeriode {
     private final static BigDecimal dagerIMåned = BigDecimal.valueOf(30.4375);
     private final static int antallMånederIEnPeriode = 3;
 
+    public static List<TilskuddPeriode> beregnTilskuddForEttÅr(final Integer lønnPrMåned, final LocalDate datoFraOgMed, final LocalDate datoTilOgMed){
+        List<TilskuddPeriode> tilskuddPeriode = new ArrayList<>();
+        LocalDate nyStartDato = datoFraOgMed;
+
+        while (nyStartDato.getYear() != datoTilOgMed.getYear()) {
+            tilskuddPeriode.addAll(beregnTilskuddForAvtalePeriode(lønnPrMåned, nyStartDato, LocalDate.of(nyStartDato.getYear(), 12, 31)));
+            nyStartDato = nyStartDato.plusYears(1);
+            nyStartDato = LocalDate.of(nyStartDato.getYear(), 1, 1);
+        }
+
+        tilskuddPeriode.addAll(beregnTilskuddForAvtalePeriode(lønnPrMåned, nyStartDato, datoTilOgMed));
+        return tilskuddPeriode;
+    }
+
     public static List<TilskuddPeriode> beregnTilskuddForAvtalePeriode(final Integer lønnPrMåned, final LocalDate datoFraOgMed, final LocalDate datoTilOgMed){
 
         Period period = Period.between(datoFraOgMed, datoTilOgMed.plusDays(1));
@@ -22,6 +36,11 @@ public class TilskuddForAvtalePeriode {
         LocalDate nyDatoFraOgMed = datoFraOgMed;
         LocalDate nyDatoTilOgMed;
         TilskuddPeriode nyTsPeriode;
+
+        if (period.getYears() > 0) {
+           period = period.plusMonths(period.getYears() * 12);
+           period = period.minusYears(1);
+        }
 
         while(period.getMonths() >= antallMånederIEnPeriode){
             nyDatoTilOgMed = nyDatoFraOgMed.plusMonths(antallMånederIEnPeriode);

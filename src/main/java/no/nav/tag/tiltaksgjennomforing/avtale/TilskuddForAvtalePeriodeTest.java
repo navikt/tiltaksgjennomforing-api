@@ -119,4 +119,46 @@ public class TilskuddForAvtalePeriodeTest { //TODO Test på årsskifte
         assertEquals(45, TilskuddForAvtalePeriode.beregnetilskuddsperiode(tilskuddPeriode.getStartDato(), tilskuddPeriode.getSluttDato()));
         assertEquals(29856, tilskuddPeriode.getBeløp());
     }
+
+    @Test
+    public void beregnNyttTilskuddOverNyttår() {
+        LocalDate avtaleStartDato = LocalDate.of(2020, 11, 1);
+        LocalDate avtaleSluttDato = LocalDate.of(2021, 1, 31);
+        LocalDate _31_DES = LocalDate.of(2020, 12, 31);
+        LocalDate _1_JAN = LocalDate.of(2021, 1, 1);
+        LocalDate _31_JAN = LocalDate.of(2021, 1, 31);
+        List<TilskuddPeriode> perioder = TilskuddForAvtalePeriode.beregnTilskuddForEttÅr(20000, avtaleStartDato, avtaleSluttDato);
+        assertEquals(2, perioder.size());
+
+        TilskuddPeriode tilskuddPeriode = perioder.get(0);
+        assertEquals(avtaleStartDato, tilskuddPeriode.getStartDato());
+        assertEquals(_31_DES, tilskuddPeriode.getSluttDato());
+
+        tilskuddPeriode = perioder.get(1);
+        assertEquals(_1_JAN, tilskuddPeriode.getStartDato());
+        assertEquals(_31_JAN, tilskuddPeriode.getSluttDato());
+
+    }
+
+    @Test
+    public void beregnNyttTilskuddOver3årOgEnDag() {
+        LocalDate avtaleStartDato = LocalDate.of(2020, 11, 1);
+        LocalDate avtaleSluttDato = LocalDate.of(2023, 11, 1);
+        LocalDate _1_JAN = LocalDate.of(2021, 1, 1);
+        LocalDate _31_MARS = LocalDate.of(2021, 3, 31);
+
+        List<TilskuddPeriode> perioder = TilskuddForAvtalePeriode.beregnTilskuddForEttÅr(20000, avtaleStartDato, avtaleSluttDato);
+        TilskuddPeriode tilskuddPeriode = perioder.get(1);
+        assertEquals(_1_JAN, tilskuddPeriode.getStartDato());
+        assertEquals(_31_MARS, tilskuddPeriode.getSluttDato());
+
+        _1_JAN = LocalDate.of(2022, 1, 1);
+        _31_MARS = LocalDate.of(2022, 3, 31);
+        tilskuddPeriode = perioder.get(5);
+        assertEquals(_1_JAN, tilskuddPeriode.getStartDato());
+        assertEquals(_31_MARS, tilskuddPeriode.getSluttDato());
+
+
+        assertEquals(13, perioder.size());
+    }
 }
