@@ -51,8 +51,6 @@ public class EndreAvtale {
     private Integer sumLonnsutgifter;
     private Integer sumLonnstilskudd;
     private Stillingstype stillingstype;
-    private  List<TilskuddPeriode> tilskuddPeriode = new ArrayList<>();
-
 
     // Mentorfelter
     private String mentorFornavn;

@@ -6,12 +6,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
@@ -68,7 +63,7 @@ public class TestData {
         avtale.setVersjon(1);
         avtale.setJournalpostId(null);
         avtale.setMaal(Arrays.asList());
-        avtale.setTilskuddPeriode(Arrays.asList());
+        avtale.setTilskuddPeriode(new ArrayList<>());
         return avtale;
     }
 

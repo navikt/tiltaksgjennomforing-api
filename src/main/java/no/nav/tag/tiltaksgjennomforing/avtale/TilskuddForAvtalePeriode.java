@@ -15,7 +15,7 @@ public class TilskuddForAvtalePeriode {
     private final static int dagerIMåned = 30; //TODO 30,4375
     private final static int antallMånederIEnPeriode = 3;
 
-    public List<TilskuddPeriode> beregnTilskuddForAvtalePeriode(final Integer lønnPrMåned, final LocalDate datoFraOgMed, final LocalDate datoTilOgMed){
+    public static List<TilskuddPeriode> beregnTilskuddForAvtalePeriode(final Integer lønnPrMåned, final LocalDate datoFraOgMed, final LocalDate datoTilOgMed){
 
         Period period = Period.between(datoFraOgMed, datoTilOgMed.plusDays(1));
         List<TilskuddPeriode> tilskuddPerioder = new ArrayList<>();
@@ -38,11 +38,11 @@ public class TilskuddForAvtalePeriode {
         return tilskuddPerioder;
     }
 
-    long beregnetilskuddsperiode(LocalDate fraDato, LocalDate tilDato){
+    static long beregnetilskuddsperiode(LocalDate fraDato, LocalDate tilDato){
         return DAYS.between(fraDato, tilDato.plusDays(1));
     }
 
-    private TilskuddPeriode beregnTilsagnPåSistePeriode(Integer lønnPrMåned, LocalDate datoFom, LocalDate datoTom, Period period){
+    private static TilskuddPeriode beregnTilsagnPåSistePeriode(Integer lønnPrMåned, LocalDate datoFom, LocalDate datoTom, Period period){
         BigDecimal lønnPrMånedBD = BigDecimal.valueOf(lønnPrMåned);
         BigDecimal totalLønnIPerioden = BigDecimal.ZERO;
 
@@ -57,7 +57,7 @@ public class TilskuddForAvtalePeriode {
         return new TilskuddPeriode(lønnISistePeriode, datoFom, datoTom);
     }
 
-    private BigDecimal beregnTilskuddPåDager(BigDecimal lønnPrMåned, Period period) {
+    private static BigDecimal beregnTilskuddPåDager(BigDecimal lønnPrMåned, Period period) {
         BigDecimal restLønn = BigDecimal.ZERO;
 
         if(!period.isZero()) {

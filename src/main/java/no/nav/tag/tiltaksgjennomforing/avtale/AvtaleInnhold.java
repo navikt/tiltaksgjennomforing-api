@@ -134,7 +134,7 @@ public class AvtaleInnhold {
                 .tilskuddPeriode(kopiAvTilskuddPeriode())
                 .build();
         nyVersjon.getMaal().forEach(m -> m.setAvtaleInnhold(nyVersjon));
-//        nyVersjon.getTilskuddPeriode().forEach(tp -> tp.setAvtaleInnhold(nyVersjon));
+        nyVersjon.getTilskuddPeriode().forEach(tp -> tp.setAvtaleInnhold(nyVersjon));
         return nyVersjon;
     }
 

@@ -12,8 +12,6 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         super(avtaleInnhold);
     }
 
-
-
     @Override
     public void endre(EndreAvtale nyAvtale) {
         avtaleInnhold.setArbeidsgiverKontonummer(nyAvtale.getArbeidsgiverKontonummer());
@@ -52,7 +50,7 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
     private void regnUtrefusjonsperioder(EndreAvtale nyAvtale) {
         avtaleInnhold.getTilskuddPeriode().clear();
         if(harAllePåkrevdeFeltForRegneUtTilskuddsPeriode(nyAvtale)) {
-            List<TilskuddPeriode> tilskuddForAvtalePeriode = new TilskuddForAvtalePeriode().beregnTilskuddForAvtalePeriode(avtaleInnhold.getSumLonnstilskudd(), nyAvtale.getStartDato(), nyAvtale.getSluttDato());
+            List<TilskuddPeriode> tilskuddForAvtalePeriode = TilskuddForAvtalePeriode.beregnTilskuddForAvtalePeriode(avtaleInnhold.getSumLonnstilskudd(), nyAvtale.getStartDato(), nyAvtale.getSluttDato());
             avtaleInnhold.getTilskuddPeriode().addAll(tilskuddForAvtalePeriode);
             avtaleInnhold.getTilskuddPeriode().forEach(periode -> periode.setAvtaleInnhold(avtaleInnhold));
         }

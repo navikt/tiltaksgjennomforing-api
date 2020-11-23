@@ -13,6 +13,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -94,9 +95,13 @@ public class AvtaleRepositoryTest {
 
         // Lagre tilskuddsperiode skal fungere
         EndreAvtale endreAvtale = new EndreAvtale();
-        endreAvtale.setSumLonnstilskudd(lagretAvtale.getSumLonnstilskudd());
         endreAvtale.setStartDato(lagretAvtale.getStartDato());
         endreAvtale.setSluttDato(lagretAvtale.getSluttDato());
+        endreAvtale.setManedslonn(20000);
+        endreAvtale.setStillingprosent(100);
+        endreAvtale.setFeriepengesats(BigDecimal.valueOf(0.12));
+        endreAvtale.setArbeidsgiveravgift(BigDecimal.valueOf(0.141));
+        endreAvtale.setLonnstilskuddProsent(40);
 
         lagretAvtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
         Avtale nyLagretAvtale = avtaleRepository.save(lagretAvtale);
