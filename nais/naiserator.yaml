@@ -7,7 +7,7 @@ metadata:
     team: arbeidsgiver
 spec:
   kafka:
-    pool: {{kafka-pool}}
+    pool: nav-dev
   image: {{image}}
   team: arbeidsgiver
   port: 8080
