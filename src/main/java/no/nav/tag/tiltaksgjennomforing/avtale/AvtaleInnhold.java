@@ -95,7 +95,7 @@ public class AvtaleInnhold {
     private Stillingstype stillingstype;
 
     @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TilskuddPeriode> tilskuddPeriode;
+    private List<TilskuddPeriode> tilskuddPeriode = new ArrayList<>();
 
     // Arbeidstrening
     @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -131,11 +131,15 @@ public class AvtaleInnhold {
             .godkjentPaVegneGrunn(null)
                 .journalpostId(null)
                 .versjon(versjon + 1)
-                .tilskuddPeriode(null)
+                .tilskuddPeriode(kopiAvTilskuddPeriode())
                 .build();
         nyVersjon.getMaal().forEach(m -> m.setAvtaleInnhold(nyVersjon));
 //        nyVersjon.getTilskuddPeriode().forEach(tp -> tp.setAvtaleInnhold(nyVersjon));
         return nyVersjon;
+    }
+
+    private List<TilskuddPeriode> kopiAvTilskuddPeriode() {
+        return tilskuddPeriode.stream().map(periode -> new TilskuddPeriode(periode)).collect(Collectors.toList());
     }
 
     private List<Maal> kopiAvMål() {

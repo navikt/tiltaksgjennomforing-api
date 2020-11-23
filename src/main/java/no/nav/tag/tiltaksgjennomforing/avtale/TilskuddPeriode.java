@@ -5,7 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.UUID;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Data
@@ -19,6 +19,8 @@ public class TilskuddPeriode {
 
     @ManyToOne
     @JoinColumn(name = "avtale_innhold")
+    @JsonIgnore
+    @ToString.Exclude
     private AvtaleInnhold avtaleInnhold;
 
     @NonNull
@@ -27,4 +29,12 @@ public class TilskuddPeriode {
     private LocalDate startDato;
     @NonNull
     private LocalDate sluttDato;
+
+    public TilskuddPeriode(TilskuddPeriode periode) {
+        id = UUID.randomUUID();
+        beløp = periode.beløp;
+        startDato = periode.startDato;
+        sluttDato = periode.sluttDato;
+    }
+
 }
