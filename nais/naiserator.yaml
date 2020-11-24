@@ -8,8 +8,6 @@ metadata:
 spec:
   kafka:
     pool: nav-dev
-  envFrom:
-    - configMap: loginservice-idporten
   image: {{image}}
   team: arbeidsgiver
   port: 8080
