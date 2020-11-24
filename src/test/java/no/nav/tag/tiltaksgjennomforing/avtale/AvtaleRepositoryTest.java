@@ -13,6 +13,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -83,6 +84,31 @@ public class AvtaleRepositoryTest {
         EndreAvtale endreAvtale2 = new EndreAvtale();
         lagretAvtale2.endreAvtale(Instant.now(), endreAvtale2, Avtalerolle.VEILEDER);
         avtaleRepository.save(lagretAvtale2);
+    }
+
+    @Test
+    public void skalKunneLagreTilskuddsPeriode() {
+        // Lage avtale
+        Avtale lagretAvtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        lagretAvtale.setSumLonnstilskudd(20000);
+        avtaleRepository.save(lagretAvtale);
+
+        // Lagre tilskuddsperiode skal fungere
+        EndreAvtale endreAvtale = new EndreAvtale();
+        endreAvtale.setStartDato(lagretAvtale.getStartDato());
+        endreAvtale.setSluttDato(lagretAvtale.getSluttDato());
+        endreAvtale.setManedslonn(20000);
+        endreAvtale.setStillingprosent(100);
+        endreAvtale.setFeriepengesats(BigDecimal.valueOf(0.12));
+        endreAvtale.setArbeidsgiveravgift(BigDecimal.valueOf(0.141));
+        endreAvtale.setLonnstilskuddProsent(40);
+
+        lagretAvtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        Avtale nyLagretAvtale = avtaleRepository.save(lagretAvtale);
+
+        List<TilskuddPeriode> perioder = nyLagretAvtale.getTilskuddPeriode();
+        assertThat(perioder).isNotEmpty();
+        assertThat(lagretAvtale.getVersjoner().get(0).getId()).isEqualTo(perioder.get(0).getAvtaleInnhold().getId());
     }
 
     @Test

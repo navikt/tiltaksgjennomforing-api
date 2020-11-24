@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
@@ -28,6 +29,7 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         super.endre(nyAvtale);
     }
 
+
     private void regnUtTotalLonnstilskudd(EndreAvtale nyAvtale) {
         Integer feriepengerBelop = getFeriepengerBelop(nyAvtale.getFeriepengesats(), nyAvtale.getManedslonn());
         Integer obligTjenestepensjon = getBeregnetOtpBelop(nyAvtale.getManedslonn(), feriepengerBelop);
@@ -36,13 +38,26 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         Integer sumLonnsutgifter = getSumLonnsutgifter(nyAvtale.getManedslonn(), feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgiftBelop);
         Integer sumlønnTilskudd = getSumLonnsTilskudd(sumLonnsutgifter, nyAvtale.getLonnstilskuddProsent());
         Integer månedslønnFullStilling = getLønnVedFullStilling(sumLonnsutgifter, nyAvtale.getStillingprosent());
-
         avtaleInnhold.setFeriepengerBelop(feriepengerBelop);
         avtaleInnhold.setOtpBelop(obligTjenestepensjon);
         avtaleInnhold.setArbeidsgiveravgiftBelop(arbeidsgiveravgiftBelop);
         avtaleInnhold.setSumLonnsutgifter(sumLonnsutgifter);
         avtaleInnhold.setSumLonnstilskudd(sumlønnTilskudd);
         avtaleInnhold.setManedslonn100pst(månedslønnFullStilling);
+        regnUtrefusjonsperioder(nyAvtale);
+    }
+
+    private void regnUtrefusjonsperioder(EndreAvtale nyAvtale) {
+        avtaleInnhold.getTilskuddPeriode().clear();
+        if(harAllePåkrevdeFeltForRegneUtTilskuddsPeriode(nyAvtale)) {
+            List<TilskuddPeriode> tilskuddForAvtalePeriode = TilskuddForAvtalePeriode.beregnTilskuddForAvtalePerioden(avtaleInnhold.getSumLonnstilskudd(), nyAvtale.getStartDato(), nyAvtale.getSluttDato());
+            avtaleInnhold.getTilskuddPeriode().addAll(tilskuddForAvtalePeriode);
+            avtaleInnhold.getTilskuddPeriode().forEach(periode -> periode.setAvtaleInnhold(avtaleInnhold));
+        }
+    }
+
+    private Boolean harAllePåkrevdeFeltForRegneUtTilskuddsPeriode(EndreAvtale nyAvtale){
+        return avtaleInnhold.getSumLonnstilskudd() != null && nyAvtale.getStartDato() != null && nyAvtale.getSluttDato() != null;
     }
 
     private Integer getLønnVedFullStilling(Integer sumUtgifter, Integer stillingsProsent){
