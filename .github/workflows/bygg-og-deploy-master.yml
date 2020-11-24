@@ -76,7 +76,7 @@ jobs:
           CLUSTER: dev-fss
           RESOURCE: nais/naiserator.yaml
           PRINT_PAYLOAD: true
-          VAR: ingress=https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api/,namespace=default
+          VAR: ingress=https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api/,namespace=arbeidsgiver
 
   deploy-prod:
     name: Deploy til prod
@@ -93,7 +93,7 @@ jobs:
           CLUSTER: prod-fss
           RESOURCE: nais/naiserator.yaml,nais/alerterator.yaml
           PRINT_PAYLOAD: true
-          VAR: ingress=https://arbeidsgiver.nais.adeo.no/tiltaksgjennomforing-api/,namespace=default
+          VAR: ingress=https://arbeidsgiver.nais.adeo.no/tiltaksgjennomforing-api/,namespace=arbeidsgiver
 
   deploy-labs:
     name: Deploy til labs
