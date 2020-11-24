@@ -50,7 +50,7 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
     private void regnUtrefusjonsperioder(EndreAvtale nyAvtale) {
         avtaleInnhold.getTilskuddPeriode().clear();
         if(harAllePåkrevdeFeltForRegneUtTilskuddsPeriode(nyAvtale)) {
-            List<TilskuddPeriode> tilskuddForAvtalePeriode = TilskuddForAvtalePeriode.beregnTilskuddForAvtalePeriode(avtaleInnhold.getSumLonnstilskudd(), nyAvtale.getStartDato(), nyAvtale.getSluttDato());
+            List<TilskuddPeriode> tilskuddForAvtalePeriode = TilskuddForAvtalePeriode.beregnTilskuddForAvtalePerioden(avtaleInnhold.getSumLonnstilskudd(), nyAvtale.getStartDato(), nyAvtale.getSluttDato());
             avtaleInnhold.getTilskuddPeriode().addAll(tilskuddForAvtalePeriode);
             avtaleInnhold.getTilskuddPeriode().forEach(periode -> periode.setAvtaleInnhold(avtaleInnhold));
         }
