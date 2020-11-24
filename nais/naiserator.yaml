@@ -57,3 +57,5 @@ spec:
         - application: tiltak-fakelogin
         - application: tiltaksgjennomforing-wiremock
   {{/if}}
+  envFrom:
+    - configmap: loginservice-idporten
