@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.converter.StringJsonMessageConverter;
 
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
@@ -53,13 +52,9 @@ public class AivenKafkaConfiguration {
     return props;
   }
 
-  private ProducerFactory<String, String> aivenProducerFactory() {
-    return new DefaultKafkaProducerFactory<>(producerConfigs());
-  }
-
-  @Bean
+  @Bean("aivenKafkaTemplate")
   KafkaTemplate<String, String> aivenKafkaTemplate() {
-    KafkaTemplate<String, String> kafkaTemplate = new KafkaTemplate<>(aivenProducerFactory());
+    KafkaTemplate<String, String> kafkaTemplate = new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs()));
     kafkaTemplate.setMessageConverter(new StringJsonMessageConverter());
     return kafkaTemplate;
   }

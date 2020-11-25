@@ -20,13 +20,13 @@ public class StatistikkformidlingHendelse {
 
     @TransactionalEventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
-        refusjonProducer.publiserRefusjonsmelding("TEST1");
         statistikkformidlingProducer.publiserStatistikkformidlingMelding(Statistikkformidlingsmelding.fraAvtale(event.getAvtale()));
+        refusjonProducer.publiserRefusjonsmelding("TEST1");
     }
 
     @TransactionalEventListener
     public void godkjentPaVegneAv(GodkjentPaVegneAv event) {
-        refusjonProducer.publiserRefusjonsmelding("TEST2");
         statistikkformidlingProducer.publiserStatistikkformidlingMelding(Statistikkformidlingsmelding.fraAvtale(event.getAvtale()));
+        refusjonProducer.publiserRefusjonsmelding("TEST2");
     }
 }
