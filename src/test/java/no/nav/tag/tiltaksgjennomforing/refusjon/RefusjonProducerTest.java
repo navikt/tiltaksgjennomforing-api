@@ -50,7 +50,7 @@ class RefusjonProducerTest {
   public void refusjonProducer__skal_sendes_på_kafka_topic_med_riktige_felter() throws JSONException, InterruptedException {
 
     // GITT
-    final String melding = "Hei";
+   final String melding = "Hei";
 
     //NÅR
     refusjonProducer.publiserRefusjonsmelding(melding);

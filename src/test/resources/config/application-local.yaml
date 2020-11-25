@@ -34,6 +34,9 @@ no.nav.security.oidc:
       accepted_audience: aud-system
 
 tiltaksgjennomforing:
+  serviceuser:
+    username: ""
+    password: ""
   kafka:
     enabled: false
   altinn-tilgangsstyring:
