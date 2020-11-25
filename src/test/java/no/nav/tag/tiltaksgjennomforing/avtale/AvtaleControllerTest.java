@@ -204,31 +204,6 @@ public class AvtaleControllerTest {
                 .allMatch(innloggetDeltaker::harLeseTilgang);
     }
 
-    @Test(expected = RessursFinnesIkkeException.class)
-    public void hentRolleSkalKasteResourceNotFoundExceptionHvisAvtaleIkkeFins() {
-        Avtale avtale = TestData.enArbeidstreningAvtale();
-        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.empty());
-        avtaleController.hentRolle(avtale.getId(), Avtalerolle.ARBEIDSGIVER);
-    }
-
-    @Test(expected = TilgangskontrollException.class)
-    public void hentRolleSkalReturnereForbiddenHvisIkkeTilknyttetAvtale() {
-        Avtale avtale = TestData.enArbeidstreningAvtale();
-        værInnloggetSom(TestData.enInnloggetVeileder());
-        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        avtaleController.hentRolle(avtale.getId(), Avtalerolle.VEILEDER);
-    }
-
-    @Test
-    public void hentRolleSkalReturnereOkMedEnRolleHvisInnloggetBrukerErTilknyttetAvtale() {
-        Avtale avtale = TestData.enArbeidstreningAvtale();
-        InnloggetDeltaker selvbetjeningBruker = TestData.innloggetDeltaker(TestData.enDeltaker(avtale));
-        værInnloggetSom(selvbetjeningBruker);
-        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        Avtalerolle svar = avtaleController.hentRolle(avtale.getId(), Avtalerolle.DELTAKER);
-        assertThat(svar).isEqualTo(Avtalerolle.DELTAKER);
-    }
-
     @Test(expected = TilgangskontrollException.class)
     public void opprettAvtale__skal_feile_hvis_veileder_ikke_har_tilgang_til_bruker() {
         InnloggetVeileder enNavAnsatt = TestData.enInnloggetVeileder();
@@ -261,7 +236,7 @@ public class AvtaleControllerTest {
     @Test
     public void avtaleStatus__arbeidsgiver_maa_fylleut_avtale_foer_godkjenning() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        InnloggetBruker innloggetArbeidsgiver = TestData.innloggetArbeidsgiver(TestData.enArbeidsgiver(avtale));
+        InnloggetBruker innloggetArbeidsgiver = TestData.innloggetArbeidsgiver(TestData.enArbeidsgiver(avtale), avtale.getBedriftNr());
         værInnloggetSom(innloggetArbeidsgiver);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId(), Avtalerolle.ARBEIDSGIVER);
@@ -301,7 +276,7 @@ public class AvtaleControllerTest {
     @Test
     public void avtaleStatus__arbeidsgiver__maa_godkjenn__avtale() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        InnloggetBruker innloggetArbeidsgiver = TestData.innloggetArbeidsgiver(TestData.enArbeidsgiver(avtale));
+        InnloggetBruker innloggetArbeidsgiver = TestData.innloggetArbeidsgiver(TestData.enArbeidsgiver(avtale), avtale.getBedriftNr());
         værInnloggetSom(innloggetArbeidsgiver);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId(), Avtalerolle.ARBEIDSGIVER);
@@ -368,7 +343,7 @@ public class AvtaleControllerTest {
     public void viser_ikke_avbruttGrunn_til_arbeidsgiver() {
         Avtale avtale = enArbeidstreningAvtale();
         avtale.setAvbruttGrunn("Hemmelig");
-        InnloggetArbeidsgiver innloggetArbeidsgiver = innloggetArbeidsgiver(TestData.enArbeidsgiver(avtale));
+        InnloggetArbeidsgiver innloggetArbeidsgiver = innloggetArbeidsgiver(TestData.enArbeidsgiver(avtale), avtale.getBedriftNr());
         værInnloggetSom(innloggetArbeidsgiver);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         Avtale hentetAvtale = avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER);

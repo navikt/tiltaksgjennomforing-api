@@ -159,37 +159,37 @@ class LyttPåHendelseTilHendelseloggTest {
     }
 
     private void ogGodkjentAvDeltaker(Avtale avtale) {
-        new Deltaker(avtale.getDeltakerFnr(), avtale).godkjennForAvtalepart();
+        new Deltaker(avtale.getDeltakerFnr()).godkjennForAvtalepart(avtale);
         avtaleRepository.save(avtale);
     }
 
     private void ogGodkjentAvArbeidsgiver(Avtale avtale) {
-        new Arbeidsgiver(TestData.etFodselsnummer(), avtale).godkjennForAvtalepart();
+        new Arbeidsgiver(TestData.etFodselsnummer()).godkjennForAvtalepart(avtale);
         avtaleRepository.save(avtale);
     }
 
     private void ogGodkjentAvVeileder(Avtale avtale) {
-        new Veileder(TestData.enNavIdent(), avtale).godkjennForAvtalepart();
+        new Veileder(TestData.enNavIdent(), avtale).godkjennForAvtalepart(avtale);
         avtaleRepository.save(avtale);
     }
 
     private void ogGodkjentPåVegneAv(Avtale avtale) {
-        new Veileder(TestData.enNavIdent(), avtale).godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn());
+        new Veileder(TestData.enNavIdent(), avtale).godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
         avtaleRepository.save(avtale);
     }
 
     private void ogOpphevetAvArbeidsgiver(Avtale avtale) {
-        new Arbeidsgiver(TestData.etFodselsnummer(), avtale).opphevGodkjenninger();
+        new Arbeidsgiver(TestData.etFodselsnummer()).opphevGodkjenninger(avtale);
         avtaleRepository.save(avtale);
     }
 
     private void ogOpphevetAvVeileder(Avtale avtale) {
-        new Veileder(TestData.enNavIdent(), avtale).opphevGodkjenninger();
+        new Veileder(TestData.enNavIdent()).opphevGodkjenninger(avtale);
         avtaleRepository.save(avtale);
     }
 
     private void ogLåstOpp(Avtale avtale) {
-        new Veileder(TestData.enNavIdent(), avtale).låsOppAvtale();
+        new Veileder(TestData.enNavIdent(), avtale).låsOppAvtale(avtale);
         avtaleRepository.save(avtale);
     }
 
@@ -197,12 +197,12 @@ class LyttPåHendelseTilHendelseloggTest {
         AvbruttInfo avbruttInfo = new AvbruttInfo();
         avbruttInfo.setAvbruttDato(LocalDate.now());
         avbruttInfo.setAvbruttGrunn("En grunn");
-        new Veileder(TestData.enNavIdent(), avtale).avbrytAvtale(Instant.now(), avbruttInfo);
+        new Veileder(TestData.enNavIdent(), avtale).avbrytAvtale(Instant.now(), avbruttInfo, avtale);
         avtaleRepository.save(avtale);
     }
 
     private void ogGjenopprettet(Avtale avtale) {
-        new Veileder(TestData.enNavIdent(), avtale).gjenopprettAvtale();
+        new Veileder(TestData.enNavIdent(), avtale).gjenopprettAvtale(avtale);
         avtaleRepository.save(avtale);
     }
 

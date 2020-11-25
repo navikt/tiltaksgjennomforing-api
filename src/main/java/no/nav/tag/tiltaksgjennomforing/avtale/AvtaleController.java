@@ -89,7 +89,7 @@ public class AvtaleController {
         InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         Avtalepart avtalepart = innloggetBruker.avtalepart(avtale);
-        return avtalepart.statusDetaljerForAvtale();
+        return avtalepart.statusDetaljerForAvtale(avtale);
     }
 
     @PutMapping("/{avtaleId}")
@@ -102,20 +102,10 @@ public class AvtaleController {
                 .orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
         Avtalepart<?> avtalepart = innloggetBruker.avtalepart(avtale);
-        avtalepart.endreAvtale(sistEndret, endreAvtale);
+        avtalepart.endreAvtale(sistEndret, endreAvtale, avtale);
         Avtale lagretAvtale = avtaleRepository.save(avtale);
         return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
     }
-
-    @GetMapping("/{avtaleId}/rolle")
-    public Avtalerolle hentRolle(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
-        InnloggetBruker<?> innloggetBruker = innloggingService.hentInnloggetBruker(innloggetPart);
-        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        innloggetBruker.sjekkLeseTilgang(avtale);
-        Avtalepart<?> avtalepart = innloggetBruker.avtalepart(avtale);
-        return avtalepart.rolle();
-    }
-
 
     @PostMapping("/{avtaleId}/gjenopprett")
     @Transactional
@@ -124,7 +114,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetVeileder.sjekkSkriveTilgang(avtale);
         Veileder veileder = innloggetVeileder.avtalepart(avtale);
-        veileder.gjenopprettAvtale();
+        veileder.gjenopprettAvtale(avtale);
         avtaleRepository.save(avtale);
     }
 
@@ -135,7 +125,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
         Avtalepart<?> avtalepart = innloggetBruker.avtalepart(avtale);
-        avtalepart.opphevGodkjenninger();
+        avtalepart.opphevGodkjenninger(avtale);
         avtaleRepository.save(avtale);
     }
 
@@ -146,7 +136,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
         Avtalepart<?> avtalepart = innloggetBruker.avtalepart(avtale);
-        avtalepart.godkjennAvtale(sistEndret);
+        avtalepart.godkjennAvtale(sistEndret, avtale);
         avtaleRepository.save(avtale);
     }
 
@@ -157,7 +147,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
         Avtalepart<?> avtalepart = innloggetBruker.avtalepart(avtale);
-        avtalepart.godkjennPaVegneAvDeltaker(paVegneAvGrunn);
+        avtalepart.godkjennPaVegneAvDeltaker(paVegneAvGrunn, avtale);
         avtaleRepository.save(avtale);
     }
 
@@ -167,7 +157,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetVeileder.sjekkSkriveTilgang(avtale);
         Veileder veileder = innloggetVeileder.avtalepart(avtale);
-        veileder.avbrytAvtale(sistEndret, avbruttInfo);
+        veileder.avbrytAvtale(sistEndret, avbruttInfo, avtale);
         avtaleRepository.save(avtale);
     }
 
@@ -178,7 +168,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetBruker.sjekkSkriveTilgang(avtale);
         Avtalepart<?> avtalepart = innloggetBruker.avtalepart(avtale);
-        avtalepart.låsOppAvtale();
+        avtalepart.låsOppAvtale(avtale);
         avtaleRepository.save(avtale);
     }
 
@@ -189,7 +179,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         innloggetVeileder.sjekkLeseTilgang(avtale);
         Veileder veileder = innloggetVeileder.avtalepart(avtale);
-        veileder.delAvtaleMedAvtalepart(avtalerolle);
+        veileder.delAvtaleMedAvtalepart(avtalerolle, avtale);
         avtaleRepository.save(avtale);
     }
 

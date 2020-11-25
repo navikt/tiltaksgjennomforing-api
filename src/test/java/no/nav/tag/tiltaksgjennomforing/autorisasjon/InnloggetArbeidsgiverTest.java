@@ -24,7 +24,7 @@ public class InnloggetArbeidsgiverTest {
     public AvtaleRepository avtaleRepository;
 
     Avtale avtale = TestData.enArbeidstreningAvtale();
-    InnloggetArbeidsgiver innloggetArbeidsgiver = TestData.innloggetArbeidsgiver(TestData.enArbeidsgiver(avtale));
+    InnloggetArbeidsgiver innloggetArbeidsgiver = TestData.innloggetArbeidsgiver(TestData.enArbeidsgiver(avtale), avtale.getBedriftNr());
 
     @Before
     public void setUp(){

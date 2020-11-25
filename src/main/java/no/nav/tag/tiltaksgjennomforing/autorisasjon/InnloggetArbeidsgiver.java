@@ -39,7 +39,7 @@ public class InnloggetArbeidsgiver extends InnloggetBruker<Fnr> {
     @Override
     public Avtalepart<Fnr> avtalepart(Avtale avtale) {
         if (sjekkOmArbeidsgiverHarTilgang(avtale)) {
-            return new Arbeidsgiver(getIdentifikator(), avtale);
+            return new Arbeidsgiver(getIdentifikator());
         } else {
             return null;
         }

@@ -16,7 +16,7 @@ public class ArbeidsgiverTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.opphevGodkjenninger();
+        arbeidsgiver.opphevGodkjenninger(avtale);
         assertThat(avtale.erGodkjentAvDeltaker()).isFalse();
     }
 
@@ -25,6 +25,6 @@ public class ArbeidsgiverTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.opphevGodkjenninger();
+        arbeidsgiver.opphevGodkjenninger(avtale);
     }
 }

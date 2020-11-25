@@ -171,11 +171,11 @@ public class TestData {
     }
 
     static Deltaker enDeltaker() {
-        return new Deltaker(new Fnr("01234567890"), enArbeidstreningAvtale());
+        return new Deltaker(new Fnr("01234567890"));
     }
 
     public static Deltaker enDeltaker(Avtale avtale) {
-        return new Deltaker(avtale.getDeltakerFnr(), avtale);
+        return new Deltaker(avtale.getDeltakerFnr());
     }
 
     public static InnloggetDeltaker enInnloggetDeltaker() {
@@ -191,11 +191,11 @@ public class TestData {
     }
 
     public static Arbeidsgiver enArbeidsgiver() {
-        return new Arbeidsgiver(new Fnr("12345678901"), enArbeidstreningAvtale());
+        return new Arbeidsgiver(new Fnr("12345678901"));
     }
 
     public static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
-        return new Arbeidsgiver(TestData.etFodselsnummer(), avtale);
+        return new Arbeidsgiver(TestData.etFodselsnummer());
     }
 
     public static Fnr etFodselsnummer() {
@@ -223,10 +223,9 @@ public class TestData {
         return paVegneGrunn;
     }
 
-    public static InnloggetArbeidsgiver innloggetArbeidsgiver(Avtalepart<Fnr> avtalepartMedFnr) {
-        Avtale avtale = avtalepartMedFnr.getAvtale();
-        Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.values()));
-        AltinnReportee altinnOrganisasjon = new AltinnReportee("Bedriften AS", "Business", avtale.getBedriftNr().asString(), "BEDR", "Active", null);
+    public static InnloggetArbeidsgiver innloggetArbeidsgiver(Avtalepart<Fnr> avtalepartMedFnr, BedriftNr bedriftNr) {
+        Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(bedriftNr, Set.of(Tiltakstype.values()));
+        AltinnReportee altinnOrganisasjon = new AltinnReportee("Bedriften AS", "Business", bedriftNr.asString(), "BEDR", "Active", null);
         return new InnloggetArbeidsgiver(avtalepartMedFnr.getIdentifikator(), tilganger, Set.of(altinnOrganisasjon));
     }
 

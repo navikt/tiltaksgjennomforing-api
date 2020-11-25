@@ -42,7 +42,7 @@ public class InnloggetBrukerTest {
     @Test
     public void arbeidsgiverKnyttetTilAvtaleSkalHaArbeidsgiverRolle() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        InnloggetArbeidsgiver selvbetjeningBruker = TestData.innloggetArbeidsgiver(TestData.enArbeidsgiver(avtale));
+        InnloggetArbeidsgiver selvbetjeningBruker = TestData.innloggetArbeidsgiver(TestData.enArbeidsgiver(avtale), avtale.getBedriftNr());
         assertThat(selvbetjeningBruker.avtalepart(avtale)).isInstanceOf(Arbeidsgiver.class);
     }
 

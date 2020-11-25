@@ -14,28 +14,28 @@ public class Veileder extends Avtalepart<NavIdent> {
     String venteListeForVeileder;
 
     public Veileder(NavIdent identifikator) {
-        super(identifikator, null);
+        super(identifikator);
     }
 
     public Veileder(NavIdent identifikator, Avtale avtale) {
-        super(identifikator, avtale);
+        super(identifikator);
         this.venteListeForVeileder = "Du må vente for " + (!avtale.erGodkjentAvArbeidsgiver() ? "arbeidsgiver" : "");
         this.venteListeForVeileder = this.venteListeForVeileder +
                 ((!avtale.erGodkjentAvDeltaker() ? " og deltaker" : "") + " godkjenner avtale");
     }
 
     @Override
-    public void godkjennForAvtalepart() {
+    public void godkjennForAvtalepart(Avtale avtale) {
         avtale.godkjennForVeileder(getIdentifikator());
     }
 
-    public void avbrytAvtale(Instant sistEndret, AvbruttInfo avbruttInfo) {
+    public void avbrytAvtale(Instant sistEndret, AvbruttInfo avbruttInfo, Avtale avtale) {
         avtale.sjekkSistEndret(sistEndret);
         avbruttInfo.grunnErOppgitt();
         avtale.avbryt(this, avbruttInfo);
     }
 
-    public void gjenopprettAvtale() {
+    public void gjenopprettAvtale(Avtale avtale) {
         avtale.gjenopprett(this);
     }
 
@@ -45,9 +45,9 @@ public class Veileder extends Avtalepart<NavIdent> {
     }
 
     @Override
-    public AvtaleStatusDetaljer statusDetaljerForAvtale() {
+    public AvtaleStatusDetaljer statusDetaljerForAvtale(Avtale avtale) {
         AvtaleStatusDetaljer avtaleStatusDetaljer = new AvtaleStatusDetaljer();
-        avtaleStatusDetaljer.setGodkjentAvInnloggetBruker(erGodkjentAvInnloggetBruker());
+        avtaleStatusDetaljer.setGodkjentAvInnloggetBruker(erGodkjentAvInnloggetBruker(avtale));
 
 
         switch (avtale.statusSomEnum()) {
@@ -86,30 +86,25 @@ public class Veileder extends Avtalepart<NavIdent> {
     }
 
     @Override
-    public boolean erGodkjentAvInnloggetBruker() {
+    public boolean erGodkjentAvInnloggetBruker(Avtale avtale) {
         return avtale.erGodkjentAvVeileder();
     }
 
 
     @Override
-    public void sjekkOmAvtaleKanGodkjennes() {
+    public void sjekkOmAvtaleKanGodkjennes(Avtale avtale) {
         if (!avtale.erGodkjentAvArbeidsgiver() || !avtale.erGodkjentAvDeltaker()) {
             throw new VeilederSkalGodkjenneSistException();
         }
     }
 
     @Override
-    boolean kanOppheveGodkjenninger() {
+    boolean kanOppheveGodkjenninger(Avtale avtale) {
         return true;
     }
 
     @Override
-    public Avtalerolle rolle() {
-        return Avtalerolle.VEILEDER;
-    }
-
-    @Override
-    public void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn) {
+    public void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn, Avtale avtale) {
         if (avtale.erGodkjentAvDeltaker()) {
             throw new DeltakerHarGodkjentException();
         }
@@ -121,16 +116,21 @@ public class Veileder extends Avtalepart<NavIdent> {
     }
 
     @Override
-    void opphevGodkjenningerSomAvtalepart() {
+    void opphevGodkjenningerSomAvtalepart(Avtale avtale) {
         avtale.opphevGodkjenningerSomVeileder();
     }
 
     @Override
-    public void låsOppAvtale() {
+    protected Avtalerolle rolle() {
+        return Avtalerolle.VEILEDER;
+    }
+
+    @Override
+    public void låsOppAvtale(Avtale avtale) {
         avtale.låsOppAvtale();
     }
 
-    public void delAvtaleMedAvtalepart(Avtalerolle avtalerolle) {
+    public void delAvtaleMedAvtalepart(Avtalerolle avtalerolle, Avtale avtale) {
         avtale.delMedAvtalepart(avtalerolle);
     }
 

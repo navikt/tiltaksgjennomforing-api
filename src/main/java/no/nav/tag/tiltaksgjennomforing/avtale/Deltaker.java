@@ -4,8 +4,8 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 
 public class Deltaker extends Avtalepart<Fnr> {
 
-    public Deltaker(Fnr identifikator, Avtale avtale) {
-        super(identifikator, avtale);
+    public Deltaker(Fnr identifikator) {
+        super(identifikator);
     }
 
     static String tekstHeaderAvtalePaabegynt = "Avtale påbegynt";
@@ -15,7 +15,7 @@ public class Deltaker extends Avtalepart<Fnr> {
     static String tekstTiltaketErAvsluttet = "Hvis du har spørsmål må du kontakte veilederen din.";
 
     @Override
-    public void godkjennForAvtalepart() {
+    public void godkjennForAvtalepart(Avtale avtale) {
         avtale.godkjennForDeltaker(getIdentifikator());
     }
 
@@ -25,9 +25,9 @@ public class Deltaker extends Avtalepart<Fnr> {
     }
 
     @Override
-    public AvtaleStatusDetaljer statusDetaljerForAvtale() {
+    public AvtaleStatusDetaljer statusDetaljerForAvtale(Avtale avtale) {
         AvtaleStatusDetaljer avtaleStatusDetaljer = new AvtaleStatusDetaljer();
-        avtaleStatusDetaljer.setGodkjentAvInnloggetBruker(erGodkjentAvInnloggetBruker());
+        avtaleStatusDetaljer.setGodkjentAvInnloggetBruker(erGodkjentAvInnloggetBruker(avtale));
         switch (avtale.statusSomEnum()) {
             case AVBRUTT:
                 avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleAvbrutt, tekstAvtaleAvbrutt, "");
@@ -65,33 +65,33 @@ public class Deltaker extends Avtalepart<Fnr> {
     }
 
     @Override
-    public boolean erGodkjentAvInnloggetBruker() {
+    public boolean erGodkjentAvInnloggetBruker(Avtale avtale) {
         return avtale.erGodkjentAvDeltaker();
     }
 
 
     @Override
-    boolean kanOppheveGodkjenninger() {
+    boolean kanOppheveGodkjenninger(Avtale avtale) {
         return false;
     }
 
     @Override
-    public Avtalerolle rolle() {
-        return Avtalerolle.DELTAKER;
-    }
-
-    @Override
-    public void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn) {
+    public void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn, Avtale avtale) {
         throw new TilgangskontrollException("Deltaker kan ikke godkjenne som veileder");
     }
 
     @Override
-    void opphevGodkjenningerSomAvtalepart() {
+    void opphevGodkjenningerSomAvtalepart(Avtale avtale) {
         throw new TilgangskontrollException("Deltaker kan ikke oppheve godkjenninger");
     }
 
     @Override
-    public void låsOppAvtale() {
+    protected Avtalerolle rolle() {
+        return Avtalerolle.DELTAKER;
+    }
+
+    @Override
+    public void låsOppAvtale(Avtale avtale) {
         throw new TilgangskontrollException("Deltaker kan ikke låse opp avtale");
     }
 }

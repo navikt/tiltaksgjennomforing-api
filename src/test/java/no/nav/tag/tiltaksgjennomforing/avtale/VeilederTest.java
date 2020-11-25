@@ -15,7 +15,7 @@ public class VeilederTest {
     public void godkjennAvtale__kan_ikke_godkjenne_foerst() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.godkjennAvtale(avtale.getSistEndret());
+        veileder.godkjennAvtale(avtale.getSistEndret(), avtale);
     }
 
     @Test
@@ -24,7 +24,7 @@ public class VeilederTest {
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.godkjennAvtale(avtale.getSistEndret());
+        veileder.godkjennAvtale(avtale.getSistEndret(), avtale);
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
     }
 
@@ -35,7 +35,7 @@ public class VeilederTest {
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.opphevGodkjenninger();
+        veileder.opphevGodkjenninger(avtale);
         assertThat(avtale.erGodkjentAvDeltaker()).isFalse();
         assertThat(avtale.erGodkjentAvArbeidsgiver()).isFalse();
         assertThat(avtale.erGodkjentAvVeileder()).isFalse();
@@ -48,7 +48,7 @@ public class VeilederTest {
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.avbrytAvtale(avtale.getSistEndret(), new AvbruttInfo(LocalDate.now(), "enGrunn"));
+        veileder.avbrytAvtale(avtale.getSistEndret(), new AvbruttInfo(LocalDate.now(), "enGrunn"), avtale);
         assertThat(avtale.isAvbrutt()).isTrue();
         assertThat(avtale.getAvbruttDato()).isNotNull();
         assertThat(avtale.getAvbruttGrunn()).isEqualTo("enGrunn");
@@ -60,7 +60,7 @@ public class VeilederTest {
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.avbrytAvtale(avtale.getSistEndret(), new AvbruttInfo(LocalDate.now(), "enGrunn"));
+        veileder.avbrytAvtale(avtale.getSistEndret(), new AvbruttInfo(LocalDate.now(), "enGrunn"), avtale);
         assertThat(avtale.isAvbrutt()).isTrue();
         assertThat(avtale.getAvbruttDato()).isNotNull();
         assertThat(avtale.getAvbruttGrunn()).isEqualTo("enGrunn");
@@ -77,7 +77,7 @@ public class VeilederTest {
         avtale.setAvbruttDato(LocalDate.now());
 
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.gjenopprettAvtale();
+        veileder.gjenopprettAvtale(avtale);
         assertThat(avtale.isAvbrutt()).isFalse();
         assertThat(avtale.getAvbruttDato()).isNull();
         assertThat(avtale.getAvbruttGrunn()).isNull();
@@ -93,7 +93,7 @@ public class VeilederTest {
         avtale.setAvbruttDato(LocalDate.now());
         Veileder veileder = TestData.enVeileder(avtale);
 
-        veileder.gjenopprettAvtale();
+        veileder.gjenopprettAvtale(avtale);
         assertThat(avtale.isAvbrutt()).isFalse();
         assertThat(avtale.getAvbruttDato()).isNull();
         assertThat(avtale.getAvbruttGrunn()).isNull();

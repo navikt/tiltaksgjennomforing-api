@@ -13,7 +13,7 @@ public class InnloggetDeltaker extends InnloggetBruker<Fnr> {
     @Override
     public Deltaker avtalepart(Avtale avtale) {
         if (avtale.getDeltakerFnr().equals(getIdentifikator())) {
-            return new Deltaker(getIdentifikator(), avtale);
+            return new Deltaker(getIdentifikator());
         } else {
             return null;
         }
