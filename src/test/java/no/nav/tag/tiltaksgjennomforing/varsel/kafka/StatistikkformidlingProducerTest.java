@@ -1,8 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
 import java.util.Map;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
@@ -13,7 +11,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -24,7 +21,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
@@ -45,14 +41,12 @@ class StatistikkformidlingProducerTest {
   @Autowired
   private EmbeddedKafkaBroker embeddedKafka;
 
-  @MockBean
-  private FeatureToggleService featureToggleService;
 
   private Consumer<String, String> consumer;
 
   @BeforeEach
   public void setUp() {
-    when(featureToggleService.isEnabled(anyString())).thenReturn(true);
+    //when(featureToggleService.isEnabled(anyString())).thenReturn(true);
 
     Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "false", embeddedKafka);
     consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
