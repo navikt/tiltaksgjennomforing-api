@@ -19,6 +19,7 @@ public class StatistikkformidlingProducer {
   private final KafkaTemplate<String, Statistikkformidlingsmelding> kafkaTemplate;
   private final FeatureToggleService featureToggleService;
 
+
   public void publiserStatistikkformidlingMelding(Statistikkformidlingsmelding melding) {
     boolean brukStatistikkformidling = featureToggleService.isEnabled("arbeidsgiver.tiltaksgjennomforing-api.statistikkformidling");
     if (!brukStatistikkformidling) {

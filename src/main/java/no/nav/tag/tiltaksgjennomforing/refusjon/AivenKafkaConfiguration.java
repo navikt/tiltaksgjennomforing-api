@@ -1,10 +1,22 @@
-package no.nav.tag.tiltaksgjennomforing.varsel.kafka.avien;
+package no.nav.tag.tiltaksgjennomforing.refusjon;
 
+import java.util.HashMap;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.CommonClientConfigs;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.config.SslConfigs;
+import org.apache.kafka.common.security.auth.SecurityProtocol;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.support.converter.StringJsonMessageConverter;
 
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
 @Configuration
@@ -24,32 +36,30 @@ public class AivenKafkaConfiguration {
   private String sslKeystoreLocationEnvKey;
   @Value("${no.nav.gcp.kafka.aiven.keystore-password}")
   private String sslKeystorePasswordEnvKey;
-/*
-  @Bean
-  Map<String, Object> producerConfigs() {
+
+  private Map<String, Object> producerConfigs() {
     Map<String, Object> props = new HashMap<>();
     props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
     props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
     props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, SecurityProtocol.SSL.name);
     props.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
-    props.put(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG , javaKeystore);
-    props.put(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG , pkcs12);
-    props.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG , sslTruststoreLocationEnvKey);
-    props.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG , sslTruststorePasswordEnvKey);
-    props.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG , sslKeystoreLocationEnvKey);
-    props.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG , sslKeystorePasswordEnvKey);
+    props.put(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG, javaKeystore);
+    props.put(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG, pkcs12);
+    props.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, sslTruststoreLocationEnvKey);
+    props.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, sslTruststorePasswordEnvKey);
+    props.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, sslKeystoreLocationEnvKey);
+    props.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, sslKeystorePasswordEnvKey);
     return props;
   }
 
-  @Bean
-  ProducerFactory<String, String> producerFactory() {
+  private ProducerFactory<String, String> aivenProducerFactory() {
     return new DefaultKafkaProducerFactory<>(producerConfigs());
   }
 
-  @Bean
-  KafkaTemplate<String, String> kafkaTemplate() {
-    KafkaTemplate<String, String> kafkaTemplate = new KafkaTemplate<>(producerFactory());
+  @Bean(name = "aivenKafkaTemplate")
+  KafkaTemplate<String, String> aivenKafkaTemplate() {
+    KafkaTemplate<String, String> kafkaTemplate = new KafkaTemplate<>(aivenProducerFactory());
     kafkaTemplate.setMessageConverter(new StringJsonMessageConverter());
     return kafkaTemplate;
-  }*/
+  }
 }
