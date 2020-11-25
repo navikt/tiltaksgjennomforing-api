@@ -27,6 +27,9 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
+no.nav.gcp.kafka.aiven:
+  bootstrap-servers: ""
+
 tiltaksgjennomforing:
   kafka:
     enabled: true
