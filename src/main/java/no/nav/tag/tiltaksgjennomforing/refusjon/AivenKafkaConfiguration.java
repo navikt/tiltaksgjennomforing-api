@@ -10,7 +10,6 @@ import org.apache.kafka.common.security.auth.SecurityProtocol;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -24,7 +23,7 @@ import org.springframework.kafka.support.converter.StringJsonMessageConverter;
 public class AivenKafkaConfiguration {
 
   @Value("${no.nav.gcp.kafka.aiven.bootstrap-servers}")
-  private String bootstrapServers;
+  private String gcpBootstrapServers;
   private final String javaKeystore = "jks";
   private final String pkcs12 = "PKCS12";
   @Value("${no.nav.gcp.kafka.aiven.truststore-path}")
@@ -38,7 +37,7 @@ public class AivenKafkaConfiguration {
 
   private Map<String, Object> producerConfigs() {
     Map<String, Object> props = new HashMap<>();
-    props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+    props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, gcpBootstrapServers);
     props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
     props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
     props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, SecurityProtocol.SSL.name);
@@ -52,7 +51,6 @@ public class AivenKafkaConfiguration {
     return props;
   }
 
-  @Bean("aivenKafkaTemplate")
   KafkaTemplate<String, String> aivenKafkaTemplate() {
     KafkaTemplate<String, String> kafkaTemplate = new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs()));
     kafkaTemplate.setMessageConverter(new StringJsonMessageConverter());
