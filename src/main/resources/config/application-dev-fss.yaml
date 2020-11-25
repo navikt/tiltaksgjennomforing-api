@@ -13,6 +13,8 @@ spring:
         location: ${javax.net.ssl.trustStore}
         password: ${javax.net.ssl.trustStorePassword}
 
+no.nav.gcp.kafka.aiven:
+  bootstrap-servers: ""
 no.nav.security.oidc:
   issuers: selvbetjening, isso, system
   issuer:
