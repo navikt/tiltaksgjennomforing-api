@@ -49,7 +49,7 @@ public class AivenKafkaConfiguration {
     props.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, sslTruststoreLocationEnvKey);
     props.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, sslTruststorePasswordEnvKey);
     props.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, sslKeystoreLocationEnvKey);
-    props.put(SslConfigs.SSL_KEY_PASSWORD_CONFIG, sslKeystorePasswordEnvKey);
+    props.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, sslKeystorePasswordEnvKey);
     return props;
   }
 
