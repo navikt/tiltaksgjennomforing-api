@@ -14,18 +14,18 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
 @Component
 @RequiredArgsConstructor
-public class StatistikkformidlingHendelse {
+public class RefusjonHendelse {
 
     private final StatistikkformidlingProducer statistikkformidlingProducer;
     private final RefusjonProducer refusjonProducer;
 
     @TransactionalEventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
-        statistikkformidlingProducer.publiserStatistikkformidlingMelding(Statistikkformidlingsmelding.fraAvtale(event.getAvtale()));
+        refusjonProducer.publiserRefusjonsmelding(new Refusjonsmelding());
     }
 
     @TransactionalEventListener
     public void godkjentPaVegneAv(GodkjentPaVegneAv event) {
-        statistikkformidlingProducer.publiserStatistikkformidlingMelding(Statistikkformidlingsmelding.fraAvtale(event.getAvtale()));
+        refusjonProducer.publiserRefusjonsmelding(new Refusjonsmelding());
     }
 }
