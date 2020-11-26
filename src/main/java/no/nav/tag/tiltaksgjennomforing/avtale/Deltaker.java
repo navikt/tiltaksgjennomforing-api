@@ -1,6 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+
+import java.util.List;
 
 public class Deltaker extends Avtalepart<Fnr> {
 
@@ -13,6 +17,16 @@ public class Deltaker extends Avtalepart<Fnr> {
     static String tekstAvtaleVenterPaaDinGodkjenning = "Les hele avtalen først. Du kan ikke endre teksten i avtalen. ";
     static String ekstraTekstAvtaleVenterPaaDinGodkjenning = "Hvis du er uenig i innholdet, eller har spørsmål til avtalen, må du kontakte veilederen din via Aktivitetsplanen før du godkjenner.";
     static String tekstTiltaketErAvsluttet = "Hvis du har spørsmål må du kontakte veilederen din.";
+
+    @Override
+    public boolean harTilgang(Avtale avtale) {
+        return avtale.getDeltakerFnr().equals(getIdentifikator());
+    }
+
+    @Override
+    List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
+        return avtaleRepository.findAllByDeltakerFnr(getIdentifikator());
+    }
 
     @Override
     public void godkjennForAvtalepart(Avtale avtale) {
@@ -93,5 +107,10 @@ public class Deltaker extends Avtalepart<Fnr> {
     @Override
     public void låsOppAvtale(Avtale avtale) {
         throw new TilgangskontrollException("Deltaker kan ikke låse opp avtale");
+    }
+
+    @Override
+    public InnloggetBruker innloggetBruker() {
+        return new InnloggetDeltaker(getIdentifikator());
     }
 }

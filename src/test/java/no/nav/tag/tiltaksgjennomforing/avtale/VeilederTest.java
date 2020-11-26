@@ -103,7 +103,7 @@ public class VeilederTest {
     public void overtarAvtale() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         NavIdent gammelVeileder = avtale.getVeilederNavIdent();
-        Veileder nyVeileder = new Veileder(new NavIdent("J987654"), avtale);
+        Veileder nyVeileder = TestData.enVeileder(new NavIdent("J987654"));
 
         nyVeileder.overtaAvtale(avtale);
         assertThat(gammelVeileder).isNotEqualTo(nyVeileder.getIdentifikator());

@@ -1,17 +1,41 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class Arbeidsgiver extends Avtalepart<Fnr> {
-    public Arbeidsgiver(Fnr identifikator) {
-        super(identifikator);
-    }
-
     static String tekstAvtaleVenterPaaDinGodkjenning = "Deltakeren trenger ikke å godkjenne avtalen før du gjør det. ";
-
     static String ekstraTekstAvtaleVenterPaaDinGodkjenning = "Veilederen skal godkjenne til slutt.";
     static String tekstTiltaketErAvsluttet = "Hvis du har spørsmål må du kontakte NAV.";
+    private final Map<BedriftNr, Collection<Tiltakstype>> tilganger;
+    private final Set<AltinnReportee> altinnOrganisasjoner;
+    public Arbeidsgiver(Fnr identifikator, Set<AltinnReportee> altinnOrganisasjoner, Map<BedriftNr, Collection<Tiltakstype>> tilganger) {
+        super(identifikator);
+        this.altinnOrganisasjoner = altinnOrganisasjoner;
+        this.tilganger = tilganger;
+    }
+
+    private static boolean avbruttForMerEnn12UkerSiden(Avtale avtale) {
+        return avtale.isAvbrutt() && avtale.getSistEndret().plus(84, ChronoUnit.DAYS).isBefore(Instant.now());
+    }
+
+    private static boolean sluttdatoPassertMedMerEnn12Uker(Avtale avtale) {
+        return avtale.erGodkjentAvVeileder() && avtale.getSluttDato().plusWeeks(12).isBefore(LocalDate.now());
+    }
+
+    private static Avtale fjernAvbruttGrunn(Avtale avtale) {
+        avtale.setAvbruttGrunn(null);
+        return avtale;
+    }
 
     @Override
     public void godkjennForAvtalepart(Avtale avtale) {
@@ -45,7 +69,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
                             Arbeidsgiver.tekstAvtaleVenterPaaDinGodkjenning, ekstraTekstAvtaleVenterPaaDinGodkjenning);
                 break;
             case KLAR_FOR_OPPSTART:
-                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato().format(formatter)+".", "");
+                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato().format(formatter) + ".", "");
                 break;
             case GJENNOMFØRES:
                 avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleGjennomfores, "", "");
@@ -60,7 +84,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
                 + (avtale.erGodkjentAvDeltaker() ? "har godkjent" : "har ikke godkjent"), avtale.erGodkjentAvDeltaker());
         avtaleStatusDetaljer.setPart2Detaljer((avtale.getVeilederFornavn() != null && !avtale.getVeilederFornavn().trim().equals("") ? avtale.getVeilederFornavn() : "Veileder") + " "
                 + (avtale.getVeilederEtternavn() != null && !avtale.getVeilederEtternavn().trim().equals("") ? avtale.getVeilederEtternavn() + " " : "")
-                + (avtale.erGodkjentAvVeileder() ? "har godkjent" : "har ikke godkjent" ), avtale.erGodkjentAvVeileder());
+                + (avtale.erGodkjentAvVeileder() ? "har godkjent" : "har ikke godkjent"), avtale.erGodkjentAvVeileder());
         return avtaleStatusDetaljer;
     }
 
@@ -92,5 +116,67 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     @Override
     public void låsOppAvtale(Avtale avtale) {
         throw new TilgangskontrollException("Arbeidsgiver kan ikke låse opp avtale");
+    }
+
+    @Override
+    public InnloggetBruker innloggetBruker() {
+        return new InnloggetArbeidsgiver(getIdentifikator(), altinnOrganisasjoner, tilganger);
+    }
+
+    @Override
+    public Collection<Object> identifikatorer() {
+        return List.of(tilganger.keySet());
+    }
+
+    @Override
+    public boolean harTilgang(Avtale avtale) {
+        if (sluttdatoPassertMedMerEnn12Uker(avtale)) {
+            return false;
+        }
+        if (avbruttForMerEnn12UkerSiden(avtale)) {
+            return false;
+        }
+        return harTilgangPåTiltakIBedrift(avtale.getBedriftNr(), avtale.getTiltakstype());
+    }
+
+    private boolean harTilgangPåTiltakIBedrift(BedriftNr bedriftNr, Tiltakstype tiltakstype) {
+        if (!tilganger.containsKey(bedriftNr)) {
+            return false;
+        }
+        Collection<Tiltakstype> gyldigeTilgangerPåBedriftNr = tilganger.get(bedriftNr);
+        return gyldigeTilgangerPåBedriftNr.contains(tiltakstype);
+    }
+
+    @Override
+    List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
+        if (tilganger.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return avtaleRepository.findAllByBedriftNrIn(tilganger.keySet()).stream().map(Arbeidsgiver::fjernAvbruttGrunn).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Avtale> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
+        return super.hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre).stream().map(Arbeidsgiver::fjernAvbruttGrunn).collect(Collectors.toList());
+    }
+
+    public List<Avtale> hentAvtalerForMinsideArbeidsgiver(AvtaleRepository avtaleRepository, BedriftNr bedriftNr) {
+        return avtaleRepository.findAllByBedriftNr(bedriftNr).stream()
+                .filter(this::harTilgang)
+                .map(Arbeidsgiver::fjernAvbruttGrunn)
+                .collect(Collectors.toList());
+    }
+
+    public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
+        if (!harTilgangPåTiltakIBedrift(opprettAvtale.getBedriftNr(), opprettAvtale.getTiltakstype())) {
+            throw new TilgangskontrollException("Har ikke tilgang på tiltak i valgt bedrift");
+        }
+        return Avtale.arbeidsgiverOppretterAvtale(opprettAvtale);
+    }
+
+    @Override
+    public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
+        Avtale avtale = super.hentAvtale(avtaleRepository, avtaleId);
+        return fjernAvbruttGrunn(avtale);
     }
 }

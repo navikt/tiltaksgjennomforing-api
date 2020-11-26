@@ -1,27 +1,58 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørVeilederException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.DeltakerHarGodkjentException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.Set;
+
+import static java.util.Collections.emptyList;
 
 public class Veileder extends Avtalepart<NavIdent> {
     static String tekstAvtaleVenterPaaDinGodkjenning = "Før du godkjenner avtalen må du sjekke at alt er i orden og innholdet er riktig.";
     static String ekstraTekstAvtleErGodkjentAvAllePartner = "Du må fullføre registreringen i Arena. Avtalen journalføres automatisk i Gosys.";
     static String tekstAvtaleAvbrutt = "Du eller en annen veileder har avbrutt tiltaket.";
+    private final TilgangskontrollService tilgangskontrollService;
+    private final PersondataService persondataService;
     String venteListeForVeileder;
 
-    public Veileder(NavIdent identifikator) {
+    public Veileder(NavIdent identifikator, TilgangskontrollService tilgangskontrollService, PersondataService persondataService) {
         super(identifikator);
+        this.tilgangskontrollService = tilgangskontrollService;
+        this.persondataService = persondataService;
     }
 
-    public Veileder(NavIdent identifikator, Avtale avtale) {
+    public Veileder(NavIdent identifikator, Avtale avtale, TilgangskontrollService tilgangskontrollService, PersondataService persondataService) {
         super(identifikator);
         this.venteListeForVeileder = "Du må vente for " + (!avtale.erGodkjentAvArbeidsgiver() ? "arbeidsgiver" : "");
         this.venteListeForVeileder = this.venteListeForVeileder +
                 ((!avtale.erGodkjentAvDeltaker() ? " og deltaker" : "") + " godkjenner avtale");
+        this.tilgangskontrollService = tilgangskontrollService;
+        this.persondataService = persondataService;
+    }
+
+    @Override
+    public boolean harTilgang(Avtale avtale) {
+        return tilgangskontrollService.harSkrivetilgangTilKandidat(getIdentifikator(), avtale.getDeltakerFnr());
+    }
+
+    @Override
+    List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
+        if (queryParametre.getVeilederNavIdent() != null) {
+            return avtaleRepository.findAllByVeilederNavIdent(queryParametre.getVeilederNavIdent());
+        } else if (queryParametre.getDeltakerFnr() != null) {
+            return avtaleRepository.findAllByDeltakerFnr(queryParametre.getDeltakerFnr());
+        } else if (queryParametre.getBedriftNr() != null) {
+            return avtaleRepository.findAllByBedriftNrIn(Set.of(queryParametre.getBedriftNr()));
+        } else if (queryParametre.getErUfordelt() == true) {
+            return avtaleRepository.findAllByVeilederNavIdent(null);
+        } else {
+            return emptyList();
+        }
     }
 
     @Override
@@ -130,6 +161,11 @@ public class Veileder extends Avtalepart<NavIdent> {
         avtale.låsOppAvtale();
     }
 
+    @Override
+    public InnloggetBruker innloggetBruker() {
+        return new InnloggetVeileder(getIdentifikator());
+    }
+
     public void delAvtaleMedAvtalepart(Avtalerolle avtalerolle, Avtale avtale) {
         avtale.delMedAvtalepart(avtalerolle);
     }
@@ -139,5 +175,14 @@ public class Veileder extends Avtalepart<NavIdent> {
             throw new ErAlleredeVeilederException();
         }
         avtale.overtaAvtale(this.getIdentifikator());
+    }
+
+    public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
+        boolean harAbacTilgang = tilgangskontrollService.harSkrivetilgangTilKandidat(getIdentifikator(), opprettAvtale.getDeltakerFnr());
+        boolean erKode6 = persondataService.erKode6(opprettAvtale.getDeltakerFnr());
+        if (!harAbacTilgang || erKode6) {
+            throw new IkkeTilgangTilDeltakerException();
+        }
+        return Avtale.veilederOppretterAvtale(opprettAvtale, getIdentifikator());
     }
 }

@@ -2,11 +2,21 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.hendelselogg.Hendelselogg;
+import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Data
@@ -24,6 +34,24 @@ public abstract class Avtalepart<T extends Identifikator> {
     static String tekstHeaderAvtaleAvbrutt = "Tiltaket er avbrutt";
     static String tekstAvtaleAvbrutt = "Veilederen har bestemt at tiltaket og avtalen skal avbrytes.";
     static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd. MMMM yyyy");
+
+    public abstract boolean harTilgang(Avtale avtale);
+
+    abstract List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre);
+
+    public List<Avtale> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
+        return hentAlleAvtalerMedMuligTilgang(avtaleRepository, queryParametre).stream()
+                .filter(queryParametre)
+                .filter(this::harTilgang)
+                .sorted(Comparator.nullsLast(Comparator.comparing(Avtale::getSistEndret).reversed()))
+                .collect(Collectors.toList());
+    }
+
+    public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        sjekkTilgang(avtale);
+        return avtale;
+    }
 
     abstract void godkjennForAvtalepart(Avtale avtale);
 
@@ -43,16 +71,25 @@ public abstract class Avtalepart<T extends Identifikator> {
     abstract void opphevGodkjenningerSomAvtalepart(Avtale avtale);
 
     public void godkjennAvtale(Instant sistEndret, Avtale avtale) {
+        sjekkTilgang(avtale);
         avtale.sjekkSistEndret(sistEndret);
         sjekkOmAvtaleKanGodkjennes(avtale);
         godkjennForAvtalepart(avtale);
     }
 
+    private void sjekkTilgang(Avtale avtale) {
+        if (!harTilgang(avtale)) {
+            throw new TilgangskontrollException("Ikke tilgang til avtale");
+        }
+    }
+
     public void godkjennPaVegneAvDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn, Avtale avtale) {
+        sjekkTilgang(avtale);
         godkjennForVeilederOgDeltaker(paVegneAvGrunn, avtale);
     }
 
     public void endreAvtale(Instant sistEndret, EndreAvtale endreAvtale, Avtale avtale) {
+        sjekkTilgang(avtale);
         if (!kanEndreAvtale()) {
             throw new KanIkkeEndreException();
         }
@@ -69,4 +106,15 @@ public abstract class Avtalepart<T extends Identifikator> {
     }
 
     public abstract void låsOppAvtale(Avtale avtale);
+
+    public abstract InnloggetBruker innloggetBruker();
+
+    public Collection<Object> identifikatorer() {
+        return List.of(getIdentifikator());
+    }
+
+    public List<Hendelselogg> hentHendelselogg(UUID avtaleId, AvtaleRepository avtaleRepository, HendelseloggRepository hendelseloggRepository) {
+        Avtale avtale = hentAvtale(avtaleRepository, avtaleId);
+        return hendelseloggRepository.findAllByAvtaleId(avtale.getId());
+    }
 }

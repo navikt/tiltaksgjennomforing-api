@@ -164,32 +164,32 @@ class LyttPåHendelseTilHendelseloggTest {
     }
 
     private void ogGodkjentAvArbeidsgiver(Avtale avtale) {
-        new Arbeidsgiver(TestData.etFodselsnummer()).godkjennForAvtalepart(avtale);
+        TestData.enArbeidsgiver(avtale).godkjennForAvtalepart(avtale);
         avtaleRepository.save(avtale);
     }
 
     private void ogGodkjentAvVeileder(Avtale avtale) {
-        new Veileder(TestData.enNavIdent(), avtale).godkjennForAvtalepart(avtale);
+        TestData.enVeileder(avtale).godkjennForAvtalepart(avtale);
         avtaleRepository.save(avtale);
     }
 
     private void ogGodkjentPåVegneAv(Avtale avtale) {
-        new Veileder(TestData.enNavIdent(), avtale).godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
+        TestData.enVeileder(avtale).godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
         avtaleRepository.save(avtale);
     }
 
     private void ogOpphevetAvArbeidsgiver(Avtale avtale) {
-        new Arbeidsgiver(TestData.etFodselsnummer()).opphevGodkjenninger(avtale);
+        TestData.enArbeidsgiver(avtale).opphevGodkjenninger(avtale);
         avtaleRepository.save(avtale);
     }
 
     private void ogOpphevetAvVeileder(Avtale avtale) {
-        new Veileder(TestData.enNavIdent()).opphevGodkjenninger(avtale);
+        TestData.enVeileder(avtale).opphevGodkjenninger(avtale);
         avtaleRepository.save(avtale);
     }
 
     private void ogLåstOpp(Avtale avtale) {
-        new Veileder(TestData.enNavIdent(), avtale).låsOppAvtale(avtale);
+        TestData.enVeileder(avtale).låsOppAvtale(avtale);
         avtaleRepository.save(avtale);
     }
 
@@ -197,17 +197,17 @@ class LyttPåHendelseTilHendelseloggTest {
         AvbruttInfo avbruttInfo = new AvbruttInfo();
         avbruttInfo.setAvbruttDato(LocalDate.now());
         avbruttInfo.setAvbruttGrunn("En grunn");
-        new Veileder(TestData.enNavIdent(), avtale).avbrytAvtale(Instant.now(), avbruttInfo, avtale);
+        TestData.enVeileder(avtale).avbrytAvtale(Instant.now(), avbruttInfo, avtale);
         avtaleRepository.save(avtale);
     }
 
     private void ogGjenopprettet(Avtale avtale) {
-        new Veileder(TestData.enNavIdent(), avtale).gjenopprettAvtale(avtale);
+        TestData.enVeileder(avtale).gjenopprettAvtale(avtale);
         avtaleRepository.save(avtale);
     }
 
     private void ogTildeltNyVeileder(Avtale avtale) {
-        new Veileder(new NavIdent("Q987655")).overtaAvtale(avtale);
+        TestData.enVeileder(new NavIdent("Q987655")).overtaAvtale(avtale);
         avtaleRepository.save(avtale);
     }
 
