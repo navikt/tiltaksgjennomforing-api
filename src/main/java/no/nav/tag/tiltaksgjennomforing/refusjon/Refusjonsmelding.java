@@ -12,7 +12,7 @@ import lombok.experimental.FieldNameConstants;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @FieldNameConstants
-public class Refusjon {
+public class Refusjonsmelding {
 
   private String id;
   private String deltaker;

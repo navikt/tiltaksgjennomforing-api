@@ -52,7 +52,7 @@ class RefusjonProducerTest {
   public void skal_kunne_sende_refusjonsmelding_på_kafka_topic() throws JSONException {
 
     // GITT
-    Refusjon refusjonsmelding = new Refusjon();
+    Refusjonsmelding refusjonsmelding = new Refusjonsmelding();
     refusjonsmelding.setId(UUID.randomUUID().toString());
     final String deltakerFnr = "09876543211";
     refusjonsmelding.setDeltakerFnr(deltakerFnr);

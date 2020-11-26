@@ -53,7 +53,7 @@ public class AivenKafkaConfiguration {
   }
 
   @Bean
-  public KafkaTemplate<String, Refusjon> aivenKafkaTemplate() {
+  public KafkaTemplate<String, Refusjonsmelding> aivenKafkaTemplate() {
     return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs()));
   }
 
