@@ -6,6 +6,8 @@ metadata:
   labels:
     team: arbeidsgiver
 spec:
+  kafka:
+    pool: {{kafka-pool}}
   image: {{image}}
   team: arbeidsgiver
   port: 8080
