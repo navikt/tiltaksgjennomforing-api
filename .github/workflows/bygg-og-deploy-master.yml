@@ -76,7 +76,7 @@ jobs:
           CLUSTER: dev-fss
           RESOURCE: nais/naiserator.yaml
           PRINT_PAYLOAD: true
-          VAR: ingress=https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api/,namespace=arbeidsgiver,kafka-pool=nav-prod
+          VAR: ingress=https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api/,namespace=arbeidsgiver,kafka-pool=nav-dev
 
   deploy-prod:
     name: Deploy til prod
@@ -117,4 +117,4 @@ jobs:
           CLUSTER: labs-gcp
           RESOURCE: nais/naiserator.yaml,nais/wiremock.yaml,nais/wiremock-mappings.yaml
           PRINT_PAYLOAD: true
-          VAR: deploytrigger=${{ github.run_number }},namespace=arbeidsgiver,labs=true,kafka-pool=nav-prod
+          VAR: deploytrigger=${{ github.run_number }},namespace=arbeidsgiver,labs=true,kafka-pool=nav-dev
