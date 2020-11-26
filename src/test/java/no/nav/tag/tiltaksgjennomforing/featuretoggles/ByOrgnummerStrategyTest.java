@@ -64,4 +64,14 @@ public class ByOrgnummerStrategyTest {
         assertThat(new ByOrgnummerStrategy(altinnTilgangsstyringService).isEnabled(Map.of(ByOrgnummerStrategy.UNLEASH_PARAMETER_ORGNUMRE, "910825526,999999999"), unleashContext)).isTrue();
     }
 
+    @Test
+    public void skal_være_disablet_hvis_feil_ved_oppslag_i_altinn() {
+        Fnr fnr = new Fnr("12345678901");
+        Set<AltinnReportee> orgSet = new HashSet<>();
+        orgSet.add(new AltinnReportee("", "AS", null, "999999998", "", ""));
+
+        when(altinnTilgangsstyringService.hentAltinnOrganisasjoner(fnr)).thenThrow(RuntimeException.class);
+        assertThat(new ByOrgnummerStrategy(altinnTilgangsstyringService).isEnabled(Map.of(ByOrgnummerStrategy.UNLEASH_PARAMETER_ORGNUMRE, "999999999"), unleashContext)).isFalse();
+    }
+
 }
