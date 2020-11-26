@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.refusjon;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
-import java.util.UUID;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -53,7 +52,6 @@ class RefusjonProducerTest {
 
     // GITT
     Refusjonsmelding refusjonsmelding = new Refusjonsmelding();
-    refusjonsmelding.setId(UUID.randomUUID().toString());
     final String deltakerFnr = "09876543211";
     refusjonsmelding.setDeltakerFnr(deltakerFnr);
 
@@ -63,7 +61,16 @@ class RefusjonProducerTest {
     //SÅ
     ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.REFUSJON);
     JSONObject jsonRefusjonRecord = new JSONObject(record.value());
-    assertThat(jsonRefusjonRecord.get("id")).isNotNull();
+    assertThat(jsonRefusjonRecord.get("tilskuddPeriodeId")).isNotNull();
+    assertThat(jsonRefusjonRecord.get("avtaleInnholdId")).isNotNull();
+    assertThat(jsonRefusjonRecord.get("tiltakstype")).isNotNull();
+    assertThat(jsonRefusjonRecord.get("deltakerFnr")).isNotNull();
+    assertThat(jsonRefusjonRecord.get("veilederNavIdent")).isNotNull();
+    assertThat(jsonRefusjonRecord.get("bedriftnummer")).isNotNull();
+    assertThat(jsonRefusjonRecord.get("tilskuddBeløp")).isNotNull();
+    assertThat(jsonRefusjonRecord.get("tilskuddFraDato")).isNotNull();
+    assertThat(jsonRefusjonRecord.get("tilskuddTilDato")).isNotNull();
+    assertThat(jsonRefusjonRecord.get("opprettetTidspunkt")).isNotNull();
     assertThat(jsonRefusjonRecord.get("deltakerFnr")).isEqualTo(deltakerFnr);
   }
 }

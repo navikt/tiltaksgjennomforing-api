@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.varsel;
+package no.nav.tag.tiltaksgjennomforing.refusjon;
 
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvVeileder;
@@ -15,16 +15,15 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public class RefusjonHendelse {
 
-    private final StatistikkformidlingProducer statistikkformidlingProducer;
     private final RefusjonProducer refusjonProducer;
 
     @TransactionalEventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
-        refusjonProducer.publiserRefusjonsmelding(new Refusjonsmelding());
+        refusjonProducer.publiserRefusjonsmelding(Refusjonsmelding.fraAvtale(event.getAvtale()));
     }
 
     @TransactionalEventListener
     public void godkjentPaVegneAv(GodkjentPaVegneAv event) {
-        refusjonProducer.publiserRefusjonsmelding(new Refusjonsmelding());
+        refusjonProducer.publiserRefusjonsmelding(Refusjonsmelding.fraAvtale(event.getAvtale()));
     }
 }
