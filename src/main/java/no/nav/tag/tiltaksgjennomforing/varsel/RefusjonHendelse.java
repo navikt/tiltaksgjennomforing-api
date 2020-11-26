@@ -6,7 +6,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAv;
 import no.nav.tag.tiltaksgjennomforing.refusjon.RefusjonProducer;
 import no.nav.tag.tiltaksgjennomforing.refusjon.Refusjonsmelding;
 import no.nav.tag.tiltaksgjennomforing.varsel.kafka.StatistikkformidlingProducer;
-import no.nav.tag.tiltaksgjennomforing.varsel.kafka.Statistikkformidlingsmelding;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
