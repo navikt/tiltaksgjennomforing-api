@@ -32,9 +32,10 @@ public class ByOrgnummerStrategy implements Strategy {
 
     @Override
     public boolean isEnabled(Map<String, String> parameters, UnleashContext unleashContext) {
-        String brukerId = unleashContext.getUserId().orElseThrow();
-        return tilhørerOrganisasjon(new Fnr(brukerId), parameters);
-
+        if(unleashContext.getUserId().isPresent()) {
+            return tilhørerOrganisasjon(new Fnr(unleashContext.getUserId().get()), parameters);
+        }
+        return false;
     }
 
      private boolean tilhørerOrganisasjon(Fnr fnr, Map<String, String> parameters){
