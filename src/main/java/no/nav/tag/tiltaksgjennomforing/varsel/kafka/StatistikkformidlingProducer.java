@@ -21,13 +21,12 @@ public class StatistikkformidlingProducer {
 
 
   public void publiserStatistikkformidlingMelding(Statistikkformidlingsmelding melding) {
-    /*
     boolean brukStatistikkformidling = featureToggleService.isEnabled("arbeidsgiver.tiltaksgjennomforing-api.statistikkformidling");
     if (!brukStatistikkformidling) {
       log.warn(
           "Feature arbeidsgiver.tiltaksgjennomforing-api.statistikkformidling er ikke aktivert. Sender derfor ikke en Statistikkformidlingsmelding til Kafka topic.");
       return;
-    }*/
+    }
     kafkaTemplate.send(Topics.STATISTIKKFORMIDLING, melding.getAvtaleInnholdId(), melding)
         .addCallback(new ListenableFutureCallback<>() {
           @Override
