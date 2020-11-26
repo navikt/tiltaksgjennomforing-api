@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import no.finn.unleash.UnleashContext;
 import no.finn.unleash.strategy.Strategy;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
@@ -13,7 +14,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Data
- @Component
+@Slf4j
+@Component
 public class ByOrgnummerStrategy implements Strategy {
 
      static final String UNLEASH_PARAMETER_ORGNUMRE = "orgnumre";
@@ -42,7 +44,12 @@ public class ByOrgnummerStrategy implements Strategy {
          if (NavIdent.erNavIdent(currentUserId)) {
              return List.of();
          }
-         Set<AltinnReportee> altinnOrganisasjoner = altinnTilgangsstyringService.hentAltinnOrganisasjoner(new Fnr(currentUserId));
-         return altinnOrganisasjoner.stream().map(org -> org.getOrganizationNumber()).collect(Collectors.toList());
+         try {
+             Set<AltinnReportee> altinnOrganisasjoner = altinnTilgangsstyringService.hentAltinnOrganisasjoner(new Fnr(currentUserId));
+             return altinnOrganisasjoner.stream().map(org -> org.getOrganizationNumber()).collect(Collectors.toList());
+         }catch (Exception e){
+             log.error("Feil ved oppslag på brukers organisasjoner i Altinn: {}", e.getMessage());
+             return List.of();
+         }
      }
 }
