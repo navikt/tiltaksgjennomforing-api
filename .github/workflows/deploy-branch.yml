@@ -47,9 +47,10 @@ jobs:
           TEAM: arbeidsgiver
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-fss
+          KAFKAPOOL: nav-dev
           RESOURCE: nais/naiserator.yaml
           PRINT_PAYLOAD: true
-          VAR: ingress=https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api/,namespace=arbeidsgiver,kafkapool="nav-dev"
+          VAR: ingress=https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api/,namespace=arbeidsgiver,
           REF: ${{ env.COMMIT }}
           IMAGE: ${{ env.IMAGE }}
           
