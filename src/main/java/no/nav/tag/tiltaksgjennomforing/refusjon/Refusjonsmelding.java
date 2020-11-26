@@ -29,9 +29,8 @@ public class Refusjonsmelding {
   private LocalDate tilskuddTilDato;
   private LocalDateTime opprettetTidspunkt;
 
-
   public static Refusjonsmelding fraAvtale(Avtale avtale){
-    //TDO: finn en bedre måte å hente gjeldene tilskudd periode
+    //TDO: finn en bedre måte å hente gjeldende tilskudd periode som blir sendt
     TilskuddPeriode tilskuddPeriode = avtale.gjeldendeInnhold().getTilskuddPeriode().stream().findFirst().orElseThrow( () -> new RefusjonFeilException("Tilskuddperiode er tom"));
     return new Refusjonsmelding(tilskuddPeriode.getId().toString(),
         avtale.getAvtaleInnholdId().toString(),
