@@ -179,8 +179,8 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
         boolean harAbacTilgang = tilgangskontrollService.harSkrivetilgangTilKandidat(getIdentifikator(), opprettAvtale.getDeltakerFnr());
-        boolean erKode6 = persondataService.erKode6(opprettAvtale.getDeltakerFnr());
-        if (!harAbacTilgang || erKode6) {
+        boolean erKode6Eller7 = persondataService.erKode6Eller7(opprettAvtale.getDeltakerFnr());
+        if (!harAbacTilgang || erKode6Eller7) {
             throw new IkkeTilgangTilDeltakerException();
         }
         return Avtale.veilederOppretterAvtale(opprettAvtale, getIdentifikator());

@@ -98,8 +98,8 @@ public class PersondataService {
         return hentAktørIdFraPdlRespons(utførKallTilPdl(pdlRequest));
     }
 
-    public boolean erKode6(Fnr fnr) {
+    public boolean erKode6Eller7(Fnr fnr) {
         String gradering = hentAdressebeskyttelse(fnr).getGradering();
-        return "STRENGT_FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG_UTLAND".equals(gradering);
+        return "FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG_UTLAND".equals(gradering);
     }
 }

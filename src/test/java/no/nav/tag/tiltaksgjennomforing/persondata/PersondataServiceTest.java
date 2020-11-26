@@ -91,38 +91,39 @@ public class PersondataServiceTest {
     }
 
     @Test
-    public void erKode6__strengt_fortrolig() {
-        assertThat(persondataService.erKode6(STRENGT_FORTROLIG_PERSON)).isTrue();
+    public void erKode6Eller7__strengt_fortrolig() {
+        assertThat(persondataService.erKode6Eller7(STRENGT_FORTROLIG_PERSON)).isTrue();
     }
 
     @Test
-    public void erKode6__strengt_fortrolig_utland() {
-        assertThat(persondataService.erKode6(STRENGT_FORTROLIG_UTLAND_PERSON)).isTrue();
+    public void erKode6Eller7__strengt_fortrolig_utland() {
+        assertThat(persondataService.erKode6Eller7(STRENGT_FORTROLIG_UTLAND_PERSON)).isTrue();
     }
 
     @Test
-    public void erKode6__fortrolig() {
-        assertThat(persondataService.erKode6(FORTROLIG_PERSON)).isFalse();
+    public void erKode6Eller7__fortrolig() {
+        // TODO: Endres til isFalse når det åpnes for kode 7
+        assertThat(persondataService.erKode6Eller7(FORTROLIG_PERSON)).isTrue();
     }
 
     @Test
-    public void erKode6__ugradert() {
-        assertThat(persondataService.erKode6(UGRADERT_PERSON)).isFalse();
+    public void erKode6Eller7__ugradert() {
+        assertThat(persondataService.erKode6Eller7(UGRADERT_PERSON)).isFalse();
     }
 
     @Test
-    public void erKode6__ugradertTom() {
-        assertThat(persondataService.erKode6(UGRADERT_PERSON_TOM_RESPONSE)).isFalse();
+    public void erKode6Eller7__ugradertTom() {
+        assertThat(persondataService.erKode6Eller7(UGRADERT_PERSON_TOM_RESPONSE)).isFalse();
     }
 
     @Test
-    public void erKode6__uspesifisert_gradering() {
-        assertThat(persondataService.erKode6(USPESIFISERT_GRADERT_PERSON)).isFalse();
+    public void erKode6Eller7__uspesifisert_gradering() {
+        assertThat(persondataService.erKode6Eller7(USPESIFISERT_GRADERT_PERSON)).isFalse();
     }
 
     @Test
-    public void erKode6_person_finnes_ikke_er_ok() {
-        assertThat(persondataService.erKode6(PERSON_FINNES_IKKE)).isFalse();
+    public void erKode6Eller7_person_finnes_ikke_er_ok() {
+        assertThat(persondataService.erKode6Eller7(PERSON_FINNES_IKKE)).isFalse();
     }
 
 }
