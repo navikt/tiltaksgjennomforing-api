@@ -3,12 +3,14 @@ package no.nav.tag.tiltaksgjennomforing.refusjon;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
+import java.util.UUID;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,17 +49,21 @@ class RefusjonProducerTest {
   }
 
   @Test
-  public void refusjonProducer__skal_sendes_på_kafka_topic_med_riktige_felter() throws JSONException, InterruptedException {
+  public void skal_kunne_sende_refusjonsmelding_på_kafka_topic() throws JSONException {
 
     // GITT
-   final String melding = "Hei";
+    Refusjon refusjonsmelding = new Refusjon();
+    refusjonsmelding.setId(UUID.randomUUID().toString());
+    final String deltakerFnr = "09876543211";
+    refusjonsmelding.setDeltakerFnr(deltakerFnr);
 
     //NÅR
-    refusjonProducer.publiserRefusjonsmelding(melding);
+    refusjonProducer.publiserRefusjonsmelding(refusjonsmelding);
 
     //SÅ
     ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.REFUSJON);
-    String v = record.value();
-    assertThat(v).isEqualTo(melding);
+    JSONObject jsonRefusjonRecord = new JSONObject(record.value());
+    assertThat(jsonRefusjonRecord.get("id")).isNotNull();
+    assertThat(jsonRefusjonRecord.get("deltakerFnr")).isEqualTo(deltakerFnr);
   }
 }

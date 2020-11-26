@@ -16,19 +16,19 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 @RequiredArgsConstructor
 public class RefusjonProducer {
 
-  private final KafkaTemplate<String, String> aivenKafkaTemplate;
+  private final KafkaTemplate<String, Refusjon> aivenKafkaTemplate;
 
-  public void publiserRefusjonsmelding(String melding) {
-    aivenKafkaTemplate.send(Topics.REFUSJON, UUID.randomUUID().toString(), melding)
+  public void publiserRefusjonsmelding(Refusjon refusjon) {
+    aivenKafkaTemplate.send(Topics.REFUSJON, UUID.randomUUID().toString(), refusjon)
         .addCallback(new ListenableFutureCallback<>() {
           @Override
           public void onFailure(Throwable ex) {
-            log.warn("Refusjonsmelding med ID={} kunne ikke sendes til Kafka topic", melding);
+            log.warn("Refusjonsmelding med ID={} kunne ikke sendes til Kafka topic", refusjon);
           }
 
           @Override
-          public void onSuccess(SendResult<String, String> result) {
-            log.info("Refusjonsmelding med ID={} sendt til Kafka topic", melding);
+          public void onSuccess(SendResult<String, Refusjon> result) {
+            log.info("Refusjonsmelding med ID={} sendt til Kafka topic", refusjon);
           }
         });
   }

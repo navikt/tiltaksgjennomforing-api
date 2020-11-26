@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.varsel;
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAv;
+import no.nav.tag.tiltaksgjennomforing.refusjon.Refusjon;
 import no.nav.tag.tiltaksgjennomforing.refusjon.RefusjonProducer;
 import no.nav.tag.tiltaksgjennomforing.varsel.kafka.StatistikkformidlingProducer;
 import no.nav.tag.tiltaksgjennomforing.varsel.kafka.Statistikkformidlingsmelding;
@@ -21,12 +22,12 @@ public class StatistikkformidlingHendelse {
     @TransactionalEventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
         statistikkformidlingProducer.publiserStatistikkformidlingMelding(Statistikkformidlingsmelding.fraAvtale(event.getAvtale()));
-        refusjonProducer.publiserRefusjonsmelding("TEST1");
+        refusjonProducer.publiserRefusjonsmelding(new Refusjon());
     }
 
     @TransactionalEventListener
     public void godkjentPaVegneAv(GodkjentPaVegneAv event) {
         statistikkformidlingProducer.publiserStatistikkformidlingMelding(Statistikkformidlingsmelding.fraAvtale(event.getAvtale()));
-        refusjonProducer.publiserRefusjonsmelding("TEST2");
+        refusjonProducer.publiserRefusjonsmelding(new Refusjon());
     }
 }

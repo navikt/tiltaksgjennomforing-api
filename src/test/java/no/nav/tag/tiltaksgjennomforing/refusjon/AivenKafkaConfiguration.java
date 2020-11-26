@@ -13,6 +13,7 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.converter.StringJsonMessageConverter;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
 @TestConfiguration
@@ -27,13 +28,13 @@ public class AivenKafkaConfiguration {
     Map<String, Object> props = new HashMap<>();
     props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
     props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
     return props;
   }
 
-  @Bean("aivenKafkaTemplate")
-  KafkaTemplate<String, String> aivenKafkaTemplate() {
-    KafkaTemplate<String, String> kafkaTemplate = new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs()));
+  @Bean
+  public KafkaTemplate<String, Refusjon> aivenKafkaTemplate() {
+    KafkaTemplate<String, Refusjon> kafkaTemplate = new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs()));
     kafkaTemplate.setMessageConverter(new StringJsonMessageConverter());
     return kafkaTemplate;
   }

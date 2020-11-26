@@ -10,11 +10,12 @@ import org.apache.kafka.common.security.auth.SecurityProtocol;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.converter.StringJsonMessageConverter;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
 @Configuration
@@ -39,7 +40,7 @@ public class AivenKafkaConfiguration {
     Map<String, Object> props = new HashMap<>();
     props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, gcpBootstrapServers);
     props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
     props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, SecurityProtocol.SSL.name);
     props.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
     props.put(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG, javaKeystore);
@@ -51,10 +52,9 @@ public class AivenKafkaConfiguration {
     return props;
   }
 
-  KafkaTemplate<String, String> aivenKafkaTemplate() {
-    KafkaTemplate<String, String> kafkaTemplate = new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs()));
-    kafkaTemplate.setMessageConverter(new StringJsonMessageConverter());
-    return kafkaTemplate;
+  @Bean
+  public KafkaTemplate<String, Refusjon> aivenKafkaTemplate() {
+    return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs()));
   }
 
 }
