@@ -117,4 +117,4 @@ jobs:
           CLUSTER: labs-gcp
           RESOURCE: nais/naiserator.yaml,nais/wiremock.yaml,nais/wiremock-mappings.yaml
           PRINT_PAYLOAD: true
-          VAR: deploytrigger=${{ github.run_number }},namespace=arbeidsgiver,labs=true,kafka-pool=nav-prod
+          VAR: deploytrigger=${{ github.run_number }},namespace=arbeidsgiver,labs=true,kafka-pool=nav-dev
