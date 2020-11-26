@@ -202,7 +202,7 @@ public class AvtaleTest {
     @Test(expected = AltMåVæreFyltUtException.class)
     public void kanIkkeGodkjennesNaarIkkeAltErUtfylt() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        avtale.sjekkOmKanGodkjennes();
+        avtale.sjekkOmAltErUtfylt();
     }
 
     @Test(expected = AltMåVæreFyltUtException.class)
@@ -213,13 +213,13 @@ public class AvtaleTest {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setDeltakerTlf(null);
-        avtale.sjekkOmKanGodkjennes();
+        avtale.sjekkOmAltErUtfylt();
     }
 
     @Test
     public void kanGodkjennesNaarAltErUtfylt() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.sjekkOmKanGodkjennes();
+        avtale.sjekkOmAltErUtfylt();
     }
 
     @Test

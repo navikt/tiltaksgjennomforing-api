@@ -2,13 +2,17 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.TestData;
 import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.junit.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class VeilederTest {
     @Test(expected = VeilederSkalGodkjenneSistException.class)
@@ -26,6 +30,17 @@ public class VeilederTest {
         Veileder veileder = TestData.enVeileder(avtale);
         veileder.godkjennAvtale(avtale.getSistEndret(), avtale);
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
+    }
+
+    @Test(expected = KanIkkeGodkjenneAvtalePåKode6Exception.class)
+    public void godkjennAvtale__kan_ikke_godkjenne_kode6_eller_kode7() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        PersondataService persondataService = mock(PersondataService.class);
+        when(persondataService.erKode6Eller7(avtale.getDeltakerFnr())).thenReturn(true);
+        Veileder veileder = TestData.enVeileder(avtale, persondataService);
+        veileder.godkjennAvtale(avtale.getSistEndret(), avtale);
     }
 
     @Test

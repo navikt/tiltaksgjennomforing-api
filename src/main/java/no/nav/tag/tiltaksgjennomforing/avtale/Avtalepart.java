@@ -61,9 +61,6 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     public abstract boolean erGodkjentAvInnloggetBruker(Avtale avtale);
 
-    void sjekkOmAvtaleKanGodkjennes(Avtale avtale) {
-    }
-
     abstract boolean kanOppheveGodkjenninger(Avtale avtale);
 
     abstract void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn, Avtale avtale);
@@ -73,7 +70,6 @@ public abstract class Avtalepart<T extends Identifikator> {
     public void godkjennAvtale(Instant sistEndret, Avtale avtale) {
         sjekkTilgang(avtale);
         avtale.sjekkSistEndret(sistEndret);
-        sjekkOmAvtaleKanGodkjennes(avtale);
         godkjennForAvtalepart(avtale);
     }
 

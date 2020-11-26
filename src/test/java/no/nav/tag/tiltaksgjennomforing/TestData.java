@@ -267,4 +267,10 @@ public class TestData {
     public static Veileder enVeileder(NavIdent navIdent) {
         return new Veileder(navIdent, mock(TilgangskontrollService.class), mock(PersondataService.class));
     }
+
+    public static Veileder enVeileder(Avtale avtale, PersondataService persondataService) {
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(avtale.getVeilederNavIdent(), avtale.getDeltakerFnr())).thenReturn(true);
+        return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, persondataService);
+    }
 }
