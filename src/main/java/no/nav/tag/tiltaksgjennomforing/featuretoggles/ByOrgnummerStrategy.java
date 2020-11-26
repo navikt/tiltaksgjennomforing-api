@@ -6,18 +6,17 @@ import no.finn.unleash.strategy.Strategy;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Data
  @Component
 public class ByOrgnummerStrategy implements Strategy {
 
-     private final String UNLEASH_PARAMETER_ORGNUMRE = "orgnumre";
+     static final String UNLEASH_PARAMETER_ORGNUMRE = "orgnumre";
      private final AltinnTilgangsstyringService altinnTilgangsstyringService;
 
     @Override
@@ -32,17 +31,18 @@ public class ByOrgnummerStrategy implements Strategy {
 
     @Override
     public boolean isEnabled(Map<String, String> parameters, UnleashContext unleashContext) {
-        if(unleashContext.getUserId().isPresent()) {
-            return tilhørerOrganisasjon(new Fnr(unleashContext.getUserId().get()), parameters);
-        }
-        return false;
+        return unleashContext.getUserId()
+                .flatMap(currentUserId -> Optional.ofNullable(parameters.get(UNLEASH_PARAMETER_ORGNUMRE))
+                        .map(enheterOrg -> Set.of(enheterOrg.split(",\\s?")))
+                        .map(enabledeOrg -> !Collections.disjoint(enabledeOrg, brukersOrganisasjoner(currentUserId))))
+                .orElse(false);
     }
 
-     private boolean tilhørerOrganisasjon(Fnr fnr, Map<String, String> parameters){
-         Set<AltinnReportee> altinnOrganisasjoner = altinnTilgangsstyringService.hentAltinnOrganisasjoner(fnr);
-         List<String> altinnOrgnr = altinnOrganisasjoner.stream().map(org -> org.getOrganizationNumber()).collect(Collectors.toList());
-         List<String> matchPåOrgnummer = altinnOrgnr.stream().filter(parameters::containsValue).collect(Collectors.toList());
-         return !matchPåOrgnummer.isEmpty();
+     private List<String> brukersOrganisasjoner(String currentUserId){
+         if (NavIdent.erNavIdent(currentUserId)) {
+             return List.of();
+         }
+         Set<AltinnReportee> altinnOrganisasjoner = altinnTilgangsstyringService.hentAltinnOrganisasjoner(new Fnr(currentUserId));
+         return altinnOrganisasjoner.stream().map(org -> org.getOrganizationNumber()).collect(Collectors.toList());
      }
-
 }
