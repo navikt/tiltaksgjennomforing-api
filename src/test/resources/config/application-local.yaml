@@ -15,10 +15,6 @@ spring:
     bootstrap-servers: ${spring.embedded.kafka.brokers}
 no.nav.gcp.kafka.aiven:
   bootstrap-servers: ${spring.embedded.kafka.brokers}
-  truststore-path: ""
-  truststore-password: ""
-  keystore-path: ""
-  keystore-password: ""
 
 no.nav.security.oidc:
   issuers: selvbetjening, isso, system
