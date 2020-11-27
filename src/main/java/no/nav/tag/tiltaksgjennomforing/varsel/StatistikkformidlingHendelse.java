@@ -16,7 +16,6 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class StatistikkformidlingHendelse {
 
     private final StatistikkformidlingProducer statistikkformidlingProducer;
-    private final RefusjonProducer refusjonProducer;
 
     @TransactionalEventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
