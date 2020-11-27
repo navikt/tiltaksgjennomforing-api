@@ -16,28 +16,27 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 @RequiredArgsConstructor
 public class StatistikkformidlingProducer {
 
-  private final KafkaTemplate<String, Statistikkformidlingsmelding> kafkaTemplate;
-  private final FeatureToggleService featureToggleService;
+    private final KafkaTemplate<String, Statistikkformidlingsmelding> kafkaTemplate;
+    private final FeatureToggleService featureToggleService;
 
+    public void publiserStatistikkformidlingMelding(Statistikkformidlingsmelding melding) {
+        boolean brukStatistikkformidling = featureToggleService.isEnabled("arbeidsgiver.tiltaksgjennomforing-api.statistikkformidling");
+        if (!brukStatistikkformidling) {
+            log.warn(
+                    "Feature arbeidsgiver.tiltaksgjennomforing-api.statistikkformidling er ikke aktivert. Sender derfor ikke en Statistikkformidlingsmelding til Kafka topic.");
+            return;
+        }
+        kafkaTemplate.send(Topics.STATISTIKKFORMIDLING, melding.getAvtaleInnholdId(), melding)
+                .addCallback(new ListenableFutureCallback<>() {
+                    @Override
+                    public void onFailure(Throwable ex) {
+                        log.warn("Statistikkformidlingsmelding med avtale innhold ID={} kunne ikke sendes til Kafka topic", melding.getAvtaleInnholdId());
+                    }
 
-  public void publiserStatistikkformidlingMelding(Statistikkformidlingsmelding melding) {
-    boolean brukStatistikkformidling = featureToggleService.isEnabled("arbeidsgiver.tiltaksgjennomforing-api.statistikkformidling");
-    if (!brukStatistikkformidling) {
-      log.warn(
-          "Feature arbeidsgiver.tiltaksgjennomforing-api.statistikkformidling er ikke aktivert. Sender derfor ikke en Statistikkformidlingsmelding til Kafka topic.");
-      return;
+                    @Override
+                    public void onSuccess(SendResult<String, Statistikkformidlingsmelding> result) {
+                        log.info("Statistikkformidlingsmelding med avtale innhold ID={} sendt til Kafka topic", melding.getAvtaleInnholdId());
+                    }
+                });
     }
-    kafkaTemplate.send(Topics.STATISTIKKFORMIDLING, melding.getAvtaleInnholdId(), melding)
-        .addCallback(new ListenableFutureCallback<>() {
-          @Override
-          public void onFailure(Throwable ex) {
-            log.warn("Statistikkformidlingsmelding med avtale innhold ID={} kunne ikke sendes til Kafka topic", melding.getAvtaleInnholdId());
-          }
-
-          @Override
-          public void onSuccess(SendResult<String, Statistikkformidlingsmelding> result) {
-            log.info("Statistikkformidlingsmelding med avtale innhold ID={} sendt til Kafka topic", melding.getAvtaleInnholdId());
-          }
-        });
-  }
 }

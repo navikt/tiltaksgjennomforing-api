@@ -11,7 +11,7 @@ public class Statistikkformidlingsmelding {
   String organisasjonsnummer;
   Stillingstype stillingstype;
   String yrke;
-  int andelLonnstilskudd;
+  Integer andelLonnstilskudd;
   Tiltakstype tiltakstype;
   String avtaleId;
   String navn;
