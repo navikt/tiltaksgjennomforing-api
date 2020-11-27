@@ -4,6 +4,7 @@ package no.nav.tag.tiltaksgjennomforing.refusjon;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -17,18 +18,25 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 public class RefusjonProducer {
 
   private final KafkaTemplate<String, Refusjonsmelding> aivenKafkaTemplate;
+  private final FeatureToggleService featureToggleService;
 
   public void publiserRefusjonsmelding(Refusjonsmelding refusjonsmelding) {
+    boolean brukSendingAvRefusjonsmeldinger = featureToggleService.isEnabled("arbeidsgiver.tiltaksgjennomforing-api.refusjon");
+    if (!brukSendingAvRefusjonsmeldinger) {
+      log.warn(
+          "Feature arbeidsgiver.tiltaksgjennomforing-api.refusjon er ikke aktivert. Sender derfor ikke en refusjonsmelding til Kafka topic.");
+      return;
+    }
     aivenKafkaTemplate.send(Topics.REFUSJON, UUID.randomUUID().toString(), refusjonsmelding)
         .addCallback(new ListenableFutureCallback<>() {
           @Override
           public void onFailure(Throwable ex) {
-            log.warn("Refusjonsmelding med ID={} kunne ikke sendes til Kafka topic", refusjonsmelding);
+            log.warn("Refusjonsmelding med avtale innhold ID={} kunne ikke sendes til Kafka topic", refusjonsmelding.getAvtaleInnholdId());
           }
 
           @Override
           public void onSuccess(SendResult<String, Refusjonsmelding> result) {
-            log.info("Refusjonsmelding med ID={} sendt til Kafka topic", refusjonsmelding);
+            log.info("Refusjonsmelding med avtale innhold ID={} sendt til Kafka topic", refusjonsmelding.getAvtaleInnholdId());
           }
         });
   }

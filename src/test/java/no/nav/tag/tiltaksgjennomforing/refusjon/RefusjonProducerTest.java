@@ -1,19 +1,32 @@
 package no.nav.tag.tiltaksgjennomforing.refusjon;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.UUID;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.tomcat.jni.Local;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
@@ -25,7 +38,7 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(properties = {"tiltaksgjennomforing.kafka.enabled=true"})
 @DirtiesContext
 @ActiveProfiles({Miljø.LOCAL})
-@EmbeddedKafka(partitions = 1, controlledShutdown = false, topics = {Topics.REFUSJON})
+@EmbeddedKafka(partitions = 1, topics = {Topics.REFUSJON})
 class RefusjonProducerTest {
 
   @Autowired
@@ -34,10 +47,14 @@ class RefusjonProducerTest {
   @Autowired
   private EmbeddedKafkaBroker embeddedKafka;
 
+  @MockBean
+  private FeatureToggleService featureToggleService;
+
   private Consumer<String, String> consumer;
 
   @BeforeEach
   public void setUp() {
+    when(featureToggleService.isEnabled(anyString())).thenReturn(true);
 
     Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "false", embeddedKafka);
     consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -51,9 +68,24 @@ class RefusjonProducerTest {
   public void skal_kunne_sende_refusjonsmelding_på_kafka_topic() throws JSONException {
 
     // GITT
-    Refusjonsmelding refusjonsmelding = new Refusjonsmelding();
-    final String deltakerFnr = "09876543211";
-    refusjonsmelding.setDeltakerFnr(deltakerFnr);
+    final UUID tilskuddPeriodeId = UUID.randomUUID();
+    final UUID avtaleInnholdId = UUID.randomUUID();
+    final Tiltakstype tiltakstype = Tiltakstype.VARIG_LONNSTILSKUDD;
+    final String deltakerFornavn = "Donald";
+    final String deltakerEtternavn = "Duck";
+    final Identifikator deltakerFnr = new Fnr("12345678901");
+    final NavIdent veilederNavIdent = new NavIdent("X123456");
+    final String bedriftNavn = "Donald Delivery";
+    final BedriftNr bedriftnummer = new BedriftNr("99999999");
+    final Integer tilskuddBeløp = 12000;
+    final LocalDate tilskuddFraDato = LocalDate.now().minusDays(15);
+    final LocalDate tilskuddTilDato = LocalDate.now().plusMonths(2);
+    final LocalDateTime opprettetTidspunkt = LocalDateTime.now();
+
+    final Refusjonsmelding refusjonsmelding = new Refusjonsmelding(
+        tilskuddPeriodeId,avtaleInnholdId,tiltakstype,deltakerFornavn,deltakerEtternavn,
+        deltakerFnr,veilederNavIdent,bedriftNavn,bedriftnummer,tilskuddBeløp,tilskuddFraDato,tilskuddFraDato,opprettetTidspunkt);
+
 
     //NÅR
     refusjonProducer.publiserRefusjonsmelding(refusjonsmelding);
@@ -71,6 +103,6 @@ class RefusjonProducerTest {
     assertThat(jsonRefusjonRecord.get("tilskuddFraDato")).isNotNull();
     assertThat(jsonRefusjonRecord.get("tilskuddTilDato")).isNotNull();
     assertThat(jsonRefusjonRecord.get("opprettetTidspunkt")).isNotNull();
-    assertThat(jsonRefusjonRecord.get("deltakerFnr")).isEqualTo(deltakerFnr);
+    assertThat(jsonRefusjonRecord.get("deltakerFnr")).isEqualTo(deltakerFnr.asString());
   }
 }

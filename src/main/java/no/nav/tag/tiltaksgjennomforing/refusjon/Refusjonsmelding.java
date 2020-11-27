@@ -3,45 +3,52 @@ package no.nav.tag.tiltaksgjennomforing.refusjon;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.experimental.FieldNameConstants;
+import java.util.Comparator;
+import java.util.UUID;
+import lombok.Value;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 
-@Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@NoArgsConstructor
-@AllArgsConstructor
-@FieldNameConstants
+@Value
 public class Refusjonsmelding {
-  private String tilskuddPeriodeId;
-  private String avtaleInnholdId;;
-  private String tiltakstype;
-  private String deltakerFnr;
-  private String veilederNavIdent;
-  private String bedrift;
-  private String bedriftnummer;
-  private Integer tilskuddBeløp;
-  private LocalDate tilskuddFraDato;
-  private LocalDate tilskuddTilDato;
-  private LocalDateTime opprettetTidspunkt;
+  UUID tilskuddPeriodeId;
+  UUID avtaleInnholdId;;
+  Tiltakstype tiltakstype;
+  String deltakerFornavn;
+  String deltakerEtternavn;
+  Identifikator deltakerFnr;
+  NavIdent veilederNavIdent;
+  String bedriftNavn;
+  BedriftNr bedriftnummer;
+  Integer tilskuddBeløp;
+  LocalDate tilskuddFraDato;
+  LocalDate tilskuddTilDato;
+  LocalDateTime opprettetTidspunkt;
 
   public static Refusjonsmelding fraAvtale(Avtale avtale){
-    //TDO: finn en bedre måte å hente gjeldende tilskudd periode som blir sendt
-    TilskuddPeriode tilskuddPeriode = avtale.gjeldendeInnhold().getTilskuddPeriode().stream().findFirst().orElseThrow( () -> new RefusjonFeilException("Tilskuddperiode er tom"));
-    return new Refusjonsmelding(tilskuddPeriode.getId().toString(),
-        avtale.getAvtaleInnholdId().toString(),
-        avtale.getTiltakstype().toString(),
-        avtale.getDeltakerFnr().asString(),
-        avtale.getVeilederNavIdent().asString(),
+    //TODO: finn en bedre måte å hente gjeldende tilskudd periode som blir sendt
+    TilskuddPeriode gjeldendeTilskuddPeriode = avtale.gjeldendeInnhold()
+        .getTilskuddPeriode()
+        .stream()
+        .min(Comparator.comparing(TilskuddPeriode::getStartDato))
+        .orElseThrow(() -> new RefusjonFeilException("Fant ikke TilskuddPeriode."));
+
+    return new Refusjonsmelding(gjeldendeTilskuddPeriode.getId(),
+        avtale.getAvtaleInnholdId(),
+        avtale.getTiltakstype(),
+        avtale.getDeltakerFornavn(),
+        avtale.getDeltakerEtternavn(),
+        avtale.getDeltakerFnr(),
+        avtale.getVeilederNavIdent(),
         avtale.getBedriftNavn(),
-        avtale.getBedriftNr().asString(),
-        tilskuddPeriode.getBeløp(),
-        tilskuddPeriode.getStartDato(),
-        tilskuddPeriode.getSluttDato(),
+        avtale.getBedriftNr(),
+        gjeldendeTilskuddPeriode.getBeløp(),
+        gjeldendeTilskuddPeriode.getStartDato(),
+        gjeldendeTilskuddPeriode.getSluttDato(),
         LocalDateTime.now()
         );
   }
