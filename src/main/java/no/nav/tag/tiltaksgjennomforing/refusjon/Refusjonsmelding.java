@@ -16,7 +16,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 @Value
 public class Refusjonsmelding {
   UUID tilskuddPeriodeId;
-  UUID avtaleInnholdId;;
+  UUID avtaleInnholdId;
   Tiltakstype tiltakstype;
   String deltakerFornavn;
   String deltakerEtternavn;

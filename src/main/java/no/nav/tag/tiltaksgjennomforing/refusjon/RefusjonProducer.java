@@ -27,16 +27,16 @@ public class RefusjonProducer {
           "Feature arbeidsgiver.tiltaksgjennomforing-api.refusjon er ikke aktivert. Sender derfor ikke en refusjonsmelding til Kafka topic.");
       return;
     }
-    aivenKafkaTemplate.send(Topics.REFUSJON, UUID.randomUUID().toString(), refusjonsmelding)
+    aivenKafkaTemplate.send(Topics.REFUSJON, refusjonsmelding.getTilskuddPeriodeId().toString(), refusjonsmelding)
         .addCallback(new ListenableFutureCallback<>() {
           @Override
           public void onFailure(Throwable ex) {
-            log.warn("Refusjonsmelding med avtale innhold ID={} kunne ikke sendes til Kafka topic", refusjonsmelding.getAvtaleInnholdId());
+            log.warn("Refusjonsmelding med Tilskudd Periode Id={} kunne ikke sendes til Kafka topic", refusjonsmelding.getTilskuddPeriodeId());
           }
 
           @Override
           public void onSuccess(SendResult<String, Refusjonsmelding> result) {
-            log.info("Refusjonsmelding med avtale innhold ID={} sendt til Kafka topic", refusjonsmelding.getAvtaleInnholdId());
+            log.info("Refusjonsmelding med Tilskudd Periode Id={} sendt til Kafka topic", refusjonsmelding.getTilskuddPeriodeId());
           }
         });
   }
