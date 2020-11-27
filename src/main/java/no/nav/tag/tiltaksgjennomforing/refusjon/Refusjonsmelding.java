@@ -2,7 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.refusjon;
 
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.UUID;
 import lombok.Value;
@@ -15,6 +14,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 
 @Value
 public class Refusjonsmelding {
+  UUID avtaleId;
   UUID tilskuddPeriodeId;
   UUID avtaleInnholdId;
   Tiltakstype tiltakstype;
@@ -28,7 +28,7 @@ public class Refusjonsmelding {
   LocalDate tilskuddFraDato;
   LocalDate tilskuddTilDato;
 
-  public static Refusjonsmelding fraAvtale(Avtale avtale){
+  public static Refusjonsmelding fraAvtale(Avtale avtale) {
     //TODO: finn en bedre måte å hente gjeldende tilskudd periode som blir sendt
     TilskuddPeriode gjeldendeTilskuddPeriode = avtale.gjeldendeInnhold()
         .getTilskuddPeriode()
@@ -36,7 +36,8 @@ public class Refusjonsmelding {
         .min(Comparator.comparing(TilskuddPeriode::getStartDato))
         .orElseThrow(() -> new RefusjonFeilException("Fant ikke TilskuddPeriode."));
 
-    return new Refusjonsmelding(gjeldendeTilskuddPeriode.getId(),
+    return new Refusjonsmelding(avtale.getId(),
+        gjeldendeTilskuddPeriode.getId(),
         avtale.getAvtaleInnholdId(),
         avtale.getTiltakstype(),
         avtale.getDeltakerFornavn(),

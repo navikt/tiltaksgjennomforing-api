@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
@@ -19,7 +18,6 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.tomcat.jni.Local;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,6 +66,7 @@ class RefusjonProducerTest {
   public void skal_kunne_sende_refusjonsmelding_på_kafka_topic() throws JSONException {
 
     // GITT
+    final UUID avtaleId = UUID.randomUUID();
     final UUID tilskuddPeriodeId = UUID.randomUUID();
     final UUID avtaleInnholdId = UUID.randomUUID();
     final Tiltakstype tiltakstype = Tiltakstype.VARIG_LONNSTILSKUDD;
@@ -81,9 +80,9 @@ class RefusjonProducerTest {
     final LocalDate tilskuddFraDato = LocalDate.now().minusDays(15);
     final LocalDate tilskuddTilDato = LocalDate.now().plusMonths(2);
 
-    final Refusjonsmelding refusjonsmelding = new Refusjonsmelding(
-        tilskuddPeriodeId,avtaleInnholdId,tiltakstype,deltakerFornavn,deltakerEtternavn,
-        deltakerFnr,veilederNavIdent,bedriftNavn,bedriftnummer,tilskuddBeløp,tilskuddFraDato,tilskuddTilDato);
+    final Refusjonsmelding refusjonsmelding = new Refusjonsmelding(avtaleId,
+        tilskuddPeriodeId, avtaleInnholdId, tiltakstype, deltakerFornavn, deltakerEtternavn,
+        deltakerFnr, veilederNavIdent, bedriftNavn, bedriftnummer, tilskuddBeløp, tilskuddFraDato, tilskuddTilDato);
 
 
     //NÅR
@@ -92,6 +91,7 @@ class RefusjonProducerTest {
     //SÅ
     ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.REFUSJON);
     JSONObject jsonRefusjonRecord = new JSONObject(record.value());
+    assertThat(jsonRefusjonRecord.get("avtaleId")).isNotNull();
     assertThat(jsonRefusjonRecord.get("tilskuddPeriodeId")).isNotNull();
     assertThat(jsonRefusjonRecord.get("avtaleInnholdId")).isNotNull();
     assertThat(jsonRefusjonRecord.get("tiltakstype")).isNotNull();
