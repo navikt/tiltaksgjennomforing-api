@@ -83,7 +83,7 @@ class RefusjonProducerTest {
 
     final Refusjonsmelding refusjonsmelding = new Refusjonsmelding(
         tilskuddPeriodeId,avtaleInnholdId,tiltakstype,deltakerFornavn,deltakerEtternavn,
-        deltakerFnr,veilederNavIdent,bedriftNavn,bedriftnummer,tilskuddBeløp,tilskuddFraDato,tilskuddFraDato);
+        deltakerFnr,veilederNavIdent,bedriftNavn,bedriftnummer,tilskuddBeløp,tilskuddFraDato,tilskuddTilDato);
 
 
     //NÅR
