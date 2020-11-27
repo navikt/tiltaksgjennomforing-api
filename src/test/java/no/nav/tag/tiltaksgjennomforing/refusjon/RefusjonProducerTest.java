@@ -80,11 +80,10 @@ class RefusjonProducerTest {
     final Integer tilskuddBeløp = 12000;
     final LocalDate tilskuddFraDato = LocalDate.now().minusDays(15);
     final LocalDate tilskuddTilDato = LocalDate.now().plusMonths(2);
-    final LocalDateTime opprettetTidspunkt = LocalDateTime.now();
 
     final Refusjonsmelding refusjonsmelding = new Refusjonsmelding(
         tilskuddPeriodeId,avtaleInnholdId,tiltakstype,deltakerFornavn,deltakerEtternavn,
-        deltakerFnr,veilederNavIdent,bedriftNavn,bedriftnummer,tilskuddBeløp,tilskuddFraDato,tilskuddFraDato,opprettetTidspunkt);
+        deltakerFnr,veilederNavIdent,bedriftNavn,bedriftnummer,tilskuddBeløp,tilskuddFraDato,tilskuddFraDato);
 
 
     //NÅR
@@ -102,7 +101,6 @@ class RefusjonProducerTest {
     assertThat(jsonRefusjonRecord.get("tilskuddBeløp")).isNotNull();
     assertThat(jsonRefusjonRecord.get("tilskuddFraDato")).isNotNull();
     assertThat(jsonRefusjonRecord.get("tilskuddTilDato")).isNotNull();
-    assertThat(jsonRefusjonRecord.get("opprettetTidspunkt")).isNotNull();
     assertThat(jsonRefusjonRecord.get("deltakerFnr")).isEqualTo(deltakerFnr.asString());
   }
 }

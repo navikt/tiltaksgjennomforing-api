@@ -27,7 +27,6 @@ public class Refusjonsmelding {
   Integer tilskuddBeløp;
   LocalDate tilskuddFraDato;
   LocalDate tilskuddTilDato;
-  LocalDateTime opprettetTidspunkt;
 
   public static Refusjonsmelding fraAvtale(Avtale avtale){
     //TODO: finn en bedre måte å hente gjeldende tilskudd periode som blir sendt
@@ -48,8 +47,7 @@ public class Refusjonsmelding {
         avtale.getBedriftNr(),
         gjeldendeTilskuddPeriode.getBeløp(),
         gjeldendeTilskuddPeriode.getStartDato(),
-        gjeldendeTilskuddPeriode.getSluttDato(),
-        LocalDateTime.now()
+        gjeldendeTilskuddPeriode.getSluttDato()
         );
   }
 
