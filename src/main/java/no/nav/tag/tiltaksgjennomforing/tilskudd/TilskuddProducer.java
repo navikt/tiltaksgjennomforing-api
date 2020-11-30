@@ -19,9 +19,9 @@ public class TilskuddProducer {
   private final KafkaTemplate<String, TilskuddMelding> aivenKafkaTemplate;
   private final FeatureToggleService featureToggleService;
 
-  public void publiserRefusjonsmelding(TilskuddMelding tilskuddMelding) {
-    boolean brukSendingAvRefusjonsmeldinger = featureToggleService.isEnabled("arbeidsgiver.tiltaksgjennomforing-api.refusjon");
-    if (!brukSendingAvRefusjonsmeldinger) {
+  public void publiserTilskuddMelding(TilskuddMelding tilskuddMelding) {
+    boolean brukSendingAvTilskuddMelding = featureToggleService.isEnabled("arbeidsgiver.tiltaksgjennomforing-api.refusjon");
+    if (!brukSendingAvTilskuddMelding) {
       log.warn(
           "Feature arbeidsgiver.tiltaksgjennomforing-api.refusjon er ikke aktivert. Sender derfor ikke en refusjonsmelding til Kafka topic.");
       return;

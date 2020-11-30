@@ -15,6 +15,6 @@ public class TilskuddHendelse {
 
     @TransactionalEventListener
     public void godkjentAvVeileder(TilskuddGodkjent event) {
-        tilskuddProducer.publiserRefusjonsmelding(TilskuddMelding.fraAvtale(event.getAvtale()));
+        tilskuddProducer.publiserTilskuddMelding(TilskuddMelding.fraAvtale(event.getAvtale()));
     }
 }

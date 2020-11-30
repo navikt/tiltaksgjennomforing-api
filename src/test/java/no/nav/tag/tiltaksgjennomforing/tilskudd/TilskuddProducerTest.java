@@ -86,7 +86,7 @@ class TilskuddProducerTest {
 
 
     //NÅR
-    tilskuddProducer.publiserRefusjonsmelding(tilskuddMelding);
+    tilskuddProducer.publiserTilskuddMelding(tilskuddMelding);
 
     //SÅ
     ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.REFUSJON);
