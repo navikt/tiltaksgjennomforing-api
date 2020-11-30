@@ -1,14 +1,16 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac;
 
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.restservicecache.CacheConfiguration;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -35,13 +37,13 @@ public class VeilarbabacClient {
     }
 
     @Cacheable(CacheConfiguration.ABAC_CACHE)
-    public boolean sjekkTilgang(InnloggetVeileder veileder, String fnr, TilgangskontrollAction action) {
+    public boolean sjekkTilgang(String fnr, TilgangskontrollAction action, NavIdent navIdent) {
         String response;
         try {
-            response = hentTilgang(veileder, fnr, action);
+            response = hentTilgang(fnr, action, navIdent);
         } catch (HttpClientErrorException e) {
             stsClient.evictToken();
-            response = hentTilgang(veileder, fnr, action);
+            response = hentTilgang(fnr, action, navIdent);
         }
 
         if (PERMIT_RESPONSE.equals(response)) {
@@ -53,7 +55,7 @@ public class VeilarbabacClient {
         throw new TilgangskontrollException("Ukjent respons fra veilarbabac: " + response);
     }
 
-    private String hentTilgang(InnloggetVeileder veileder, String fnr, TilgangskontrollAction action) {
+    private String hentTilgang(String fnr, TilgangskontrollAction action, NavIdent identifikator) {
         String uriString = UriComponentsBuilder.fromHttpUrl(veilarbabacUrl)
                 .path("/person")
                 .queryParam("fnr", fnr)
@@ -61,7 +63,7 @@ public class VeilarbabacClient {
                 .toUriString();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("subject", veileder.getIdentifikator().asString());
+        headers.set("subject", identifikator.asString());
         headers.set("subjectType", "InternBruker");
         headers.setBearerAuth(hentOidcTokenTilSystembruker());
         headers.setContentType(MediaType.APPLICATION_JSON);

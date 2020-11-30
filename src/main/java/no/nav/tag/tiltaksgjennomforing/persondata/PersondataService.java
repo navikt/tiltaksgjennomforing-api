@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FortroligAdresseException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
 import org.apache.commons.io.Charsets;
 import org.springframework.beans.factory.annotation.Value;
@@ -99,10 +98,13 @@ public class PersondataService {
         return hentAktørIdFraPdlRespons(utførKallTilPdl(pdlRequest));
     }
 
-    public void sjekkGradering(Fnr fnr) {
+    public boolean erKode6Eller7(Fnr fnr) {
         String gradering = hentAdressebeskyttelse(fnr).getGradering();
-        if ("FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG_UTLAND".equals(gradering)) {
-            throw new FortroligAdresseException();
-        }
+        return "FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG_UTLAND".equals(gradering);
+    }
+
+    public boolean erKode6(Fnr fnr) {
+        String gradering = hentAdressebeskyttelse(fnr).getGradering();
+        return "STRENGT_FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG_UTLAND".equals(gradering);
     }
 }

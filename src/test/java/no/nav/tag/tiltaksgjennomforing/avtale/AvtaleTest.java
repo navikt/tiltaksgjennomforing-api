@@ -202,7 +202,7 @@ public class AvtaleTest {
     @Test(expected = AltMåVæreFyltUtException.class)
     public void kanIkkeGodkjennesNaarIkkeAltErUtfylt() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        avtale.sjekkOmKanGodkjennes();
+        avtale.sjekkOmAltErUtfylt();
     }
 
     @Test(expected = AltMåVæreFyltUtException.class)
@@ -213,13 +213,13 @@ public class AvtaleTest {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setDeltakerTlf(null);
-        avtale.sjekkOmKanGodkjennes();
+        avtale.sjekkOmAltErUtfylt();
     }
 
     @Test
     public void kanGodkjennesNaarAltErUtfylt() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.sjekkOmKanGodkjennes();
+        avtale.sjekkOmAltErUtfylt();
     }
 
     @Test
@@ -476,6 +476,7 @@ public class AvtaleTest {
     public void sistEndretNå__kalles_ved_godkjennForVeilederOgDeltaker() throws InterruptedException {
         Instant førEndringen = Instant.now();
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         Thread.sleep(10);
         avtale.godkjennForVeilederOgDeltaker(TestData.enIdentifikator(), TestData.enGodkjentPaVegneGrunn());
         assertThat(avtale.getSistEndret()).isAfter(førEndringen);

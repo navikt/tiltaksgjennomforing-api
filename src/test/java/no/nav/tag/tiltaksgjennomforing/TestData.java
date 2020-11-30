@@ -1,6 +1,14 @@
 package no.nav.tag.tiltaksgjennomforing;
 
-import static org.mockito.Mockito.mock;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelse;
+import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -8,23 +16,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
-import no.nav.tag.tiltaksgjennomforing.varsel.BjelleVarsel;
-import no.nav.tag.tiltaksgjennomforing.varsel.SmsVarsel;
-import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelse;
-import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class TestData {
-    public static Avtale enAvtale(Tiltakstype tiltakstype) {
-        NavIdent veilderNavIdent = new NavIdent("Z123456");
-        return Avtale.veilederOppretterAvtale(lagOpprettAvtale(tiltakstype), veilderNavIdent);
-    }
-
     public static Avtale enArbeidstreningAvtale() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         return Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING), veilderNavIdent);
@@ -62,7 +58,7 @@ public class TestData {
         avtale.setArbeidsgiveravgift(BigDecimal.valueOf(0.141));
         avtale.setVersjon(1);
         avtale.setJournalpostId(null);
-        avtale.setMaal(Arrays.asList());
+        avtale.setMaal(List.of());
         avtale.setTilskuddPeriode(new ArrayList<>());
         return avtale;
     }
@@ -77,7 +73,7 @@ public class TestData {
         avtale.setArbeidsgiveravgift(BigDecimal.valueOf(0.141));
         avtale.setVersjon(1);
         avtale.setJournalpostId(null);
-        avtale.setMaal(Arrays.asList());
+        avtale.setMaal(List.of());
         return avtale;
     }
 
@@ -91,14 +87,14 @@ public class TestData {
         avtale.setMentorTimelonn(500);
         avtale.setVersjon(1);
         avtale.setJournalpostId(null);
-        avtale.setMaal(Arrays.asList());
+        avtale.setMaal(List.of());
         return avtale;
     }
 
     private static OpprettAvtale lagOpprettAvtale(Tiltakstype tiltakstype) {
         Fnr deltakerFnr = new Fnr("00000000000");
         BedriftNr bedriftNr = new BedriftNr("999999999");
-        return new OpprettAvtale(deltakerFnr, bedriftNr, Tiltakstype.ARBEIDSTRENING);
+        return new OpprettAvtale(deltakerFnr, bedriftNr, tiltakstype);
     }
 
     public static EndreAvtale ingenEndring() {
@@ -170,12 +166,8 @@ public class TestData {
         return endreAvtale;
     }
 
-    static Deltaker enDeltaker() {
-        return new Deltaker(new Fnr("01234567890"), enArbeidstreningAvtale());
-    }
-
     public static Deltaker enDeltaker(Avtale avtale) {
-        return new Deltaker(avtale.getDeltakerFnr(), avtale);
+        return new Deltaker(avtale.getDeltakerFnr());
     }
 
     public static InnloggetDeltaker enInnloggetDeltaker() {
@@ -183,31 +175,29 @@ public class TestData {
     }
 
     public static InnloggetArbeidsgiver enInnloggetArbeidsgiver() {
-        return new InnloggetArbeidsgiver(new Fnr("99999999999"), Map.of(), Collections.emptySet());
+        return new InnloggetArbeidsgiver(new Fnr("99999999999"), Collections.emptySet(), Map.of());
     }
 
     public static InnloggetVeileder enInnloggetVeileder() {
-        return new InnloggetVeileder(new NavIdent("F888888"), mock(TilgangskontrollService.class));
+        return new InnloggetVeileder(new NavIdent("F888888"));
     }
 
     public static Arbeidsgiver enArbeidsgiver() {
-        return new Arbeidsgiver(new Fnr("12345678901"), enArbeidstreningAvtale());
+        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of());
     }
 
     public static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
-        return new Arbeidsgiver(TestData.etFodselsnummer(), avtale);
+        return new Arbeidsgiver(TestData.etFodselsnummer(), Set.of(new AltinnReportee("Bedriftnavn", "", null, avtale.getBedriftNr().asString(), "", "")), Map.of(avtale.getBedriftNr(), List.of(Tiltakstype.values())));
     }
 
     public static Fnr etFodselsnummer() {
         return new Fnr("00000000000");
     }
 
-    public static Veileder enVeileder() {
-        return new Veileder(new NavIdent("X123456"), enArbeidstreningAvtale());
-    }
-
     public static Veileder enVeileder(Avtale avtale) {
-        return new Veileder(avtale.getVeilederNavIdent(), avtale);
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(avtale.getVeilederNavIdent()), eq(avtale.getDeltakerFnr()))).thenReturn(true);
+        return new Veileder(avtale.getVeilederNavIdent(), avtale, tilgangskontrollService, mock(PersondataService.class));
     }
 
     public static Maal etMaal() {
@@ -223,11 +213,10 @@ public class TestData {
         return paVegneGrunn;
     }
 
-    public static InnloggetArbeidsgiver innloggetArbeidsgiver(Avtalepart<Fnr> avtalepartMedFnr) {
-        Avtale avtale = avtalepartMedFnr.getAvtale();
-        Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.values()));
-        AltinnReportee altinnOrganisasjon = new AltinnReportee("Bedriften AS", "Business", avtale.getBedriftNr().asString(), "BEDR", "Active", null);
-        return new InnloggetArbeidsgiver(avtalepartMedFnr.getIdentifikator(), tilganger, Set.of(altinnOrganisasjon));
+    public static InnloggetArbeidsgiver innloggetArbeidsgiver(Avtalepart<Fnr> avtalepartMedFnr, BedriftNr bedriftNr) {
+        Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(bedriftNr, Set.of(Tiltakstype.values()));
+        AltinnReportee altinnOrganisasjon = new AltinnReportee("Bedriften AS", "Business", bedriftNr.asString(), "BEDR", "Active", null);
+        return new InnloggetArbeidsgiver(avtalepartMedFnr.getIdentifikator(), Set.of(altinnOrganisasjon), tilganger);
     }
 
     public static InnloggetDeltaker innloggetDeltaker(Avtalepart<Fnr> avtalepartMedFnr) {
@@ -240,14 +229,6 @@ public class TestData {
 
     public static VarslbarHendelse enHendelse(Avtale avtale) {
         return VarslbarHendelse.nyHendelse(avtale, VarslbarHendelseType.OPPRETTET);
-    }
-
-    public static BjelleVarsel etBjelleVarsel(Avtale avtale) {
-        return BjelleVarsel.nyttVarsel(TestData.enIdentifikator(), TestData.enHendelse(avtale));
-    }
-
-    public static SmsVarsel etSmsVarsel(Avtale avtale) {
-        return SmsVarsel.nyttVarsel("tlf", TestData.enIdentifikator(), "", null);
     }
 
     public static Avtale enAvtaleMedFlereVersjoner() {
@@ -281,5 +262,15 @@ public class TestData {
 
     public static NavIdent enNavIdent() {
         return new NavIdent("Q987654");
+    }
+
+    public static Veileder enVeileder(NavIdent navIdent) {
+        return new Veileder(navIdent, mock(TilgangskontrollService.class), mock(PersondataService.class));
+    }
+
+    public static Veileder enVeileder(Avtale avtale, PersondataService persondataService) {
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(avtale.getVeilederNavIdent(), avtale.getDeltakerFnr())).thenReturn(true);
+        return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, persondataService);
     }
 }

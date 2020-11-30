@@ -9,7 +9,8 @@ import org.junit.Test;
 public class DeltakerTest {
     @Test(expected = KanIkkeOppheveException.class)
     public void opphevGodkjenninger__kan_aldri_oppheve_godkjenninger() {
-        Deltaker deltaker = TestData.enDeltaker(TestData.enAvtaleMedAltUtfylt());
-        deltaker.opphevGodkjenninger();
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        Deltaker deltaker = TestData.enDeltaker(avtale);
+        deltaker.opphevGodkjenninger(avtale);
     }
 }

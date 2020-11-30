@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
 import lombok.RequiredArgsConstructor;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalepart;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,8 +16,8 @@ import java.util.stream.Stream;
 public class BjelleVarselService {
     private final BjelleVarselRepository bjelleVarselRepository;
 
-    public List<BjelleVarsel> varslerForInnloggetBruker(InnloggetBruker<?> innloggetBruker, UUID avtaleId, Boolean lest) {
-        Stream<BjelleVarsel> stream = bjelleVarslerForInnloggetBruker(innloggetBruker);
+    public List<BjelleVarsel> varslerForAvtalepart(Avtalepart avtalepart, UUID avtaleId, Boolean lest) {
+        Stream<BjelleVarsel> stream = bjelleVarslerForAvtalepart(avtalepart);
         if (avtaleId != null) {
             stream = stream.filter(b -> b.getAvtaleId().equals(avtaleId));
         }
@@ -27,8 +27,8 @@ public class BjelleVarselService {
         return stream.collect(Collectors.toList());
     }
 
-    public void settTilLest(InnloggetBruker<?> innloggetBruker, UUID varselId) {
-        bjelleVarslerForInnloggetBruker(innloggetBruker)
+    public void settTilLest(Avtalepart avtalepart, UUID varselId) {
+        bjelleVarslerForAvtalepart(avtalepart)
                 .filter(b -> b.getId().equals(varselId))
                 .forEach(b -> {
                     b.settTilLest();
@@ -36,8 +36,8 @@ public class BjelleVarselService {
                 });
     }
 
-    public void settVarslerTilLest(InnloggetBruker<?> innloggetBruker, List<UUID> varselIder) {
-        bjelleVarslerForInnloggetBruker(innloggetBruker)
+    public void settVarslerTilLest(Avtalepart avtalepart, List<UUID> varselIder) {
+        bjelleVarslerForAvtalepart(avtalepart)
                 .filter(b -> varselIder.contains(b.getId()))
                 .forEach(b -> {
                     b.settTilLest();
@@ -45,9 +45,9 @@ public class BjelleVarselService {
                 });
     }
 
-    private Stream<BjelleVarsel> bjelleVarslerForInnloggetBruker(InnloggetBruker<?> innloggetBruker) {
+    private Stream<BjelleVarsel> bjelleVarslerForAvtalepart(Avtalepart avtalepart) {
         return bjelleVarselRepository.findAllByTidspunktAfter(LocalDateTime.now().minusDays(1)).stream()
-                .filter(bjelleVarsel -> innloggetBruker.identifikatorer().contains(bjelleVarsel.getIdentifikator()))
+                .filter(bjelleVarsel -> avtalepart.identifikatorer().contains(bjelleVarsel.getIdentifikator()))
                 .sorted(Comparator.comparing(BjelleVarsel::getTidspunkt).reversed());
     }
 }

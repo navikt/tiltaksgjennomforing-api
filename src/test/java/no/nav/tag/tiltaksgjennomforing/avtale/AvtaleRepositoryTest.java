@@ -119,7 +119,7 @@ public class AvtaleRepositoryTest {
         godkjentPaVegneGrunn.setIkkeBankId(true);
         Veileder veileder = TestData.enVeileder(avtale);
 
-        veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn);
+        veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
         Avtale lagretAvtale = avtaleRepository.save(avtale);
 
         assertThat(lagretAvtale.getGodkjentPaVegneGrunn().isIkkeBankId()).isEqualTo(godkjentPaVegneGrunn.isIkkeBankId());
@@ -131,7 +131,7 @@ public class AvtaleRepositoryTest {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         Veileder veileder = TestData.enVeileder(avtale);
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
-        veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn);
+        veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
 
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).godkjentPaVegneAv(any());
@@ -157,7 +157,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void godkjennForArbeidsgiver__skal_publisere_domainevent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        TestData.enArbeidsgiver(avtale).godkjennAvtale(avtale.getSistEndret());
+        TestData.enArbeidsgiver(avtale).godkjennAvtale(avtale.getSistEndret(), avtale);
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).godkjentAvArbeidsgiver(any());
     }
@@ -165,7 +165,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void godkjennForDeltaker__skal_publisere_domainevent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        TestData.enDeltaker(avtale).godkjennAvtale(avtale.getSistEndret());
+        TestData.enDeltaker(avtale).godkjennAvtale(avtale.getSistEndret(), avtale);
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).godkjentAvDeltaker(any());
     }
@@ -175,7 +175,7 @@ public class AvtaleRepositoryTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
-        TestData.enVeileder(avtale).godkjennAvtale(avtale.getSistEndret());
+        TestData.enVeileder(avtale).godkjennAvtale(avtale.getSistEndret(), avtale);
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).godkjentAvVeileder(any());
     }
@@ -183,7 +183,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void opphevGodkjenning__skal_publisere_domainevent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        TestData.enVeileder(avtale).opphevGodkjenninger();
+        TestData.enVeileder(avtale).opphevGodkjenninger(avtale);
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).godkjenningerOpphevet(any(GodkjenningerOpphevetAvVeileder.class));
     }

@@ -2,7 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.persondata;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FortroligAdresseException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,39 +90,40 @@ public class PersondataServiceTest {
         assertThat(navn).isEqualTo(new Navn("Donald", null, "Duck"));
     }
 
-    @Test(expected = FortroligAdresseException.class)
-    public void sjekkGradering__skal_kaste_feile__strengt_fortrolig() {
-        persondataService.sjekkGradering(STRENGT_FORTROLIG_PERSON);
-    }
-
-    @Test(expected = FortroligAdresseException.class)
-    public void sjekkGradering__skal_kaste_feile__strengt_fortrolig_utland() {
-        persondataService.sjekkGradering(STRENGT_FORTROLIG_UTLAND_PERSON);
-    }
-
-    @Test(expected = FortroligAdresseException.class)
-    public void sjekkGradering__skal_kaste_feile__fortrolig() {
-        persondataService.sjekkGradering(FORTROLIG_PERSON);
+    @Test
+    public void erKode6Eller7__strengt_fortrolig() {
+        assertThat(persondataService.erKode6Eller7(STRENGT_FORTROLIG_PERSON)).isTrue();
     }
 
     @Test
-    public void sjekkGradering__skal_ikke_kaste_feil_ugradert() {
-        persondataService.sjekkGradering(UGRADERT_PERSON);
+    public void erKode6Eller7__strengt_fortrolig_utland() {
+        assertThat(persondataService.erKode6Eller7(STRENGT_FORTROLIG_UTLAND_PERSON)).isTrue();
     }
 
     @Test
-    public void sjekkGradering_skal_ikke_kaste_feil_ugradertTom() {
-        persondataService.sjekkGradering(UGRADERT_PERSON_TOM_RESPONSE);
+    public void erKode6Eller7__fortrolig() {
+        // TODO: Endres til isFalse når det åpnes for kode 7
+        assertThat(persondataService.erKode6Eller7(FORTROLIG_PERSON)).isTrue();
     }
 
     @Test
-    public void sjekkGradering__skal_ikke_kaste_feil_uspesifisert_gradering() {
-        persondataService.sjekkGradering(USPESIFISERT_GRADERT_PERSON);
+    public void erKode6Eller7__ugradert() {
+        assertThat(persondataService.erKode6Eller7(UGRADERT_PERSON)).isFalse();
     }
 
     @Test
-    public void sjekkGradering_person_finnes_ikke_er_ok() {
-        persondataService.sjekkGradering(PERSON_FINNES_IKKE);
+    public void erKode6Eller7__ugradertTom() {
+        assertThat(persondataService.erKode6Eller7(UGRADERT_PERSON_TOM_RESPONSE)).isFalse();
+    }
+
+    @Test
+    public void erKode6Eller7__uspesifisert_gradering() {
+        assertThat(persondataService.erKode6Eller7(USPESIFISERT_GRADERT_PERSON)).isFalse();
+    }
+
+    @Test
+    public void erKode6Eller7_person_finnes_ikke_er_ok() {
+        assertThat(persondataService.erKode6Eller7(PERSON_FINNES_IKKE)).isFalse();
     }
 
 }
