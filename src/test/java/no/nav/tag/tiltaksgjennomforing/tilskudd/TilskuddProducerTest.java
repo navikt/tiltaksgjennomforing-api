@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.refusjon;
+package no.nav.tag.tiltaksgjennomforing.tilskudd;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -37,10 +37,10 @@ import org.springframework.test.context.ActiveProfiles;
 @DirtiesContext
 @ActiveProfiles({Miljø.LOCAL})
 @EmbeddedKafka(partitions = 1, topics = {Topics.REFUSJON})
-class RefusjonProducerTest {
+class TilskuddProducerTest {
 
   @Autowired
-  private RefusjonProducer refusjonProducer;
+  private TilskuddProducer tilskuddProducer;
 
   @Autowired
   private EmbeddedKafkaBroker embeddedKafka;
@@ -80,13 +80,13 @@ class RefusjonProducerTest {
     final LocalDate tilskuddFraDato = LocalDate.now().minusDays(15);
     final LocalDate tilskuddTilDato = LocalDate.now().plusMonths(2);
 
-    final Refusjonsmelding refusjonsmelding = new Refusjonsmelding(avtaleId,
+    final TilskuddMelding tilskuddMelding = new TilskuddMelding(avtaleId,
         tilskuddPeriodeId, avtaleInnholdId, tiltakstype, deltakerFornavn, deltakerEtternavn,
         deltakerFnr, veilederNavIdent, bedriftNavn, bedriftnummer, tilskuddBeløp, tilskuddFraDato, tilskuddTilDato);
 
 
     //NÅR
-    refusjonProducer.publiserRefusjonsmelding(refusjonsmelding);
+    tilskuddProducer.publiserRefusjonsmelding(tilskuddMelding);
 
     //SÅ
     ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.REFUSJON);

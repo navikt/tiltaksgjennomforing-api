@@ -1,9 +1,8 @@
-package no.nav.tag.tiltaksgjennomforing.refusjon;
+package no.nav.tag.tiltaksgjennomforing.tilskudd;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -16,7 +15,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 
-class RefusjonsmeldingTest {
+class TilskuddMeldingTest {
 
   @Test
   void skal_ikke_kunne_hente_fra_avtale_uten_Tilskuddperiode() {
@@ -28,9 +27,9 @@ class RefusjonsmeldingTest {
     Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(deltakerFnr, bedriftNr, Tiltakstype.ARBEIDSTRENING), veilederNavIdent);
 
     // WHEN
-    assertThrows(RefusjonFeilException.class, () ->
+    assertThrows(TilskuddFeilException.class, () ->
     {
-      Refusjonsmelding refusjonsmelding = Refusjonsmelding.fraAvtale(avtale);
+      TilskuddMelding tilskuddMelding = TilskuddMelding.fraAvtale(avtale);
     });
 
   }
@@ -52,15 +51,15 @@ class RefusjonsmeldingTest {
     avtale.setTilskuddPeriode(List.of(tilskuddPeriode));
 
     // WHEN
-    Refusjonsmelding refusjonsmelding = Refusjonsmelding.fraAvtale(avtale);
+    TilskuddMelding tilskuddMelding = TilskuddMelding.fraAvtale(avtale);
 
 
     // THEN
     SoftAssertions.assertSoftly(softly -> {
-      softly.assertThat(avtale.getDeltakerFnr()).isEqualTo(refusjonsmelding.getDeltakerFnr());
-      softly.assertThat(avtale.getBedriftNavn()).isEqualTo(refusjonsmelding.getBedriftNavn());
-      softly.assertThat(avtale.getBedriftNr()).isEqualTo(refusjonsmelding.getBedriftnummer());
-      softly.assertThat(avtale.getAvtaleInnholdId()).isEqualTo(refusjonsmelding.getAvtaleInnholdId());
+      softly.assertThat(avtale.getDeltakerFnr()).isEqualTo(tilskuddMelding.getDeltakerFnr());
+      softly.assertThat(avtale.getBedriftNavn()).isEqualTo(tilskuddMelding.getBedriftNavn());
+      softly.assertThat(avtale.getBedriftNr()).isEqualTo(tilskuddMelding.getBedriftnummer());
+      softly.assertThat(avtale.getAvtaleInnholdId()).isEqualTo(tilskuddMelding.getAvtaleInnholdId());
       softly.assertThat(avtale.gjeldendeInnhold().getTilskuddPeriode().stream().findFirst().get().getBeløp()).isEqualTo(1000);
       softly.assertThat(avtale.getStillingprosent()).isNull();
     });

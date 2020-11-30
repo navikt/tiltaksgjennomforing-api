@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.refusjon;
+package no.nav.tag.tiltaksgjennomforing.tilskudd;
 
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddPeriodeGodkjent;
@@ -11,10 +11,10 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public class TilskuddHendelse {
 
-    private final RefusjonProducer refusjonProducer;
+    private final TilskuddProducer tilskuddProducer;
 
     @TransactionalEventListener
     public void godkjentAvVeileder(TilskuddPeriodeGodkjent event) {
-        refusjonProducer.publiserRefusjonsmelding(Refusjonsmelding.fraAvtale(event.getAvtale()));
+        tilskuddProducer.publiserRefusjonsmelding(TilskuddMelding.fraAvtale(event.getAvtale()));
     }
 }

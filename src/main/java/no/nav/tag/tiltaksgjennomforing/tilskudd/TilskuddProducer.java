@@ -1,7 +1,6 @@
-package no.nav.tag.tiltaksgjennomforing.refusjon;
+package no.nav.tag.tiltaksgjennomforing.tilskudd;
 
 
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
@@ -15,28 +14,28 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class RefusjonProducer {
+public class TilskuddProducer {
 
-  private final KafkaTemplate<String, Refusjonsmelding> aivenKafkaTemplate;
+  private final KafkaTemplate<String, TilskuddMelding> aivenKafkaTemplate;
   private final FeatureToggleService featureToggleService;
 
-  public void publiserRefusjonsmelding(Refusjonsmelding refusjonsmelding) {
+  public void publiserRefusjonsmelding(TilskuddMelding tilskuddMelding) {
     boolean brukSendingAvRefusjonsmeldinger = featureToggleService.isEnabled("arbeidsgiver.tiltaksgjennomforing-api.refusjon");
     if (!brukSendingAvRefusjonsmeldinger) {
       log.warn(
           "Feature arbeidsgiver.tiltaksgjennomforing-api.refusjon er ikke aktivert. Sender derfor ikke en refusjonsmelding til Kafka topic.");
       return;
     }
-    aivenKafkaTemplate.send(Topics.REFUSJON, refusjonsmelding.getTilskuddPeriodeId().toString(), refusjonsmelding)
+    aivenKafkaTemplate.send(Topics.REFUSJON, tilskuddMelding.getTilskuddPeriodeId().toString(), tilskuddMelding)
         .addCallback(new ListenableFutureCallback<>() {
           @Override
           public void onFailure(Throwable ex) {
-            log.warn("Refusjonsmelding med Tilskudd Periode Id={} kunne ikke sendes til Kafka topic", refusjonsmelding.getTilskuddPeriodeId());
+            log.warn("Refusjonsmelding med Tilskudd Periode Id={} kunne ikke sendes til Kafka topic", tilskuddMelding.getTilskuddPeriodeId());
           }
 
           @Override
-          public void onSuccess(SendResult<String, Refusjonsmelding> result) {
-            log.info("Refusjonsmelding med Tilskudd Periode Id={} sendt til Kafka topic", refusjonsmelding.getTilskuddPeriodeId());
+          public void onSuccess(SendResult<String, TilskuddMelding> result) {
+            log.info("Refusjonsmelding med Tilskudd Periode Id={} sendt til Kafka topic", tilskuddMelding.getTilskuddPeriodeId());
           }
         });
   }

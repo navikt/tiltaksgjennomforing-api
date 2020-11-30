@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.refusjon;
+package no.nav.tag.tiltaksgjennomforing.tilskudd;
 
 
 import java.time.LocalDate;
@@ -13,7 +13,8 @@ import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 
 @Value
-public class Refusjonsmelding {
+public class TilskuddMelding {
+
   UUID avtaleId;
   UUID tilskuddPeriodeId;
   UUID avtaleInnholdId;
@@ -28,15 +29,15 @@ public class Refusjonsmelding {
   LocalDate tilskuddFraDato;
   LocalDate tilskuddTilDato;
 
-  public static Refusjonsmelding fraAvtale(Avtale avtale) {
+  public static TilskuddMelding fraAvtale(Avtale avtale) {
     //TODO: finn en bedre måte å hente gjeldende tilskudd periode som blir sendt
     TilskuddPeriode gjeldendeTilskuddPeriode = avtale.gjeldendeInnhold()
         .getTilskuddPeriode()
         .stream()
         .min(Comparator.comparing(TilskuddPeriode::getStartDato))
-        .orElseThrow(() -> new RefusjonFeilException("Fant ikke TilskuddPeriode."));
+        .orElseThrow(() -> new TilskuddFeilException("Fant ikke TilskuddPeriode."));
 
-    return new Refusjonsmelding(avtale.getId(),
+    return new TilskuddMelding(avtale.getId(),
         gjeldendeTilskuddPeriode.getId(),
         avtale.getAvtaleInnholdId(),
         avtale.getTiltakstype(),

@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.varsel;
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAv;
-import no.nav.tag.tiltaksgjennomforing.refusjon.RefusjonProducer;
 import no.nav.tag.tiltaksgjennomforing.varsel.kafka.StatistikkformidlingProducer;
 import no.nav.tag.tiltaksgjennomforing.varsel.kafka.Statistikkformidlingsmelding;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

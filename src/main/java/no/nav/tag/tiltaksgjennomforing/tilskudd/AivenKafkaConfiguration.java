@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.refusjon;
+package no.nav.tag.tiltaksgjennomforing.tilskudd;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,7 +53,7 @@ public class AivenKafkaConfiguration {
   }
 
   @Bean
-  public KafkaTemplate<String, Refusjonsmelding> aivenKafkaTemplate() {
+  public KafkaTemplate<String, TilskuddMelding> aivenKafkaTemplate() {
     return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs()));
   }
 
