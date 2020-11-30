@@ -13,6 +13,8 @@ spring:
     banner-mode: "console"
   kafka:
     bootstrap-servers: ${spring.embedded.kafka.brokers}
+no.nav.gcp.kafka.aiven:
+  bootstrap-servers: ${spring.embedded.kafka.brokers}
 
 no.nav.security.oidc:
   issuers: selvbetjening, isso, system
