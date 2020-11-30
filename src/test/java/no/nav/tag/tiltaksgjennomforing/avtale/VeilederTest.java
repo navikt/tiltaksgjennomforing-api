@@ -33,14 +33,25 @@ public class VeilederTest {
     }
 
     @Test(expected = KanIkkeGodkjenneAvtalePåKode6Exception.class)
-    public void godkjennAvtale__kan_ikke_godkjenne_kode6_eller_kode7() {
+    public void godkjennAvtale__kan_ikke_godkjenne_kode6() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         PersondataService persondataService = mock(PersondataService.class);
-        when(persondataService.erKode6Eller7(avtale.getDeltakerFnr())).thenReturn(true);
+        when(persondataService.erKode6(avtale.getDeltakerFnr())).thenReturn(true);
         Veileder veileder = TestData.enVeileder(avtale, persondataService);
         veileder.godkjennAvtale(avtale.getSistEndret(), avtale);
+    }
+
+    @Test(expected = KanIkkeGodkjenneAvtalePåKode6Exception.class)
+    public void godkjennForVeilederOgDeltaker__kan_ikke_godkjenne_kode6() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        PersondataService persondataService = mock(PersondataService.class);
+        when(persondataService.erKode6(avtale.getDeltakerFnr())).thenReturn(true);
+        Veileder veileder = TestData.enVeileder(avtale, persondataService);
+        veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
     }
 
     @Test

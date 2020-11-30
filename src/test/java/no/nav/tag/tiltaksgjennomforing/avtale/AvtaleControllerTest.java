@@ -4,6 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.TestData;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6Eller7Exception;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
@@ -204,10 +205,23 @@ public class AvtaleControllerTest {
 
     @Test(expected = IkkeTilgangTilDeltakerException.class)
     public void opprettAvtaleSomVeileder__skal_feile_hvis_veileder_ikke_har_tilgang_til_bruker() {
-        Veileder enNavAnsatt = new Veileder(new NavIdent("T000000"), tilgangskontrollService, persondataService);
+        PersondataService persondataServiceIMetode = mock(PersondataService.class);
+        Veileder enNavAnsatt = new Veileder(new NavIdent("T000000"), tilgangskontrollService, persondataServiceIMetode);
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = new Fnr("11111100000");
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(enNavAnsatt.getIdentifikator(), deltakerFnr)).thenReturn(false);
+        when(persondataServiceIMetode.erKode6Eller7(deltakerFnr)).thenReturn(true);
+        avtaleController.opprettAvtaleSomVeileder(new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING));
+    }
+
+    @Test(expected = KanIkkeOppretteAvtalePåKode6Eller7Exception.class)
+    public void opprettAvtaleSomVeileder__skal_feile_hvis_kode6() {
+        PersondataService persondataServiceIMetode = mock(PersondataService.class);
+        Veileder enNavAnsatt = new Veileder(new NavIdent("T000000"), tilgangskontrollService, persondataServiceIMetode);
+        værInnloggetSom(enNavAnsatt);
+        Fnr deltakerFnr = new Fnr("11111100000");
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(enNavAnsatt.getIdentifikator(), deltakerFnr)).thenReturn(true);
+        when(persondataServiceIMetode.erKode6Eller7(deltakerFnr)).thenReturn(true);
         avtaleController.opprettAvtaleSomVeileder(new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING));
     }
 

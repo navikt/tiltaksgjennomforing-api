@@ -476,6 +476,7 @@ public class AvtaleTest {
     public void sistEndretNå__kalles_ved_godkjennForVeilederOgDeltaker() throws InterruptedException {
         Instant førEndringen = Instant.now();
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         Thread.sleep(10);
         avtale.godkjennForVeilederOgDeltaker(TestData.enIdentifikator(), TestData.enGodkjentPaVegneGrunn());
         assertThat(avtale.getSistEndret()).isAfter(førEndringen);

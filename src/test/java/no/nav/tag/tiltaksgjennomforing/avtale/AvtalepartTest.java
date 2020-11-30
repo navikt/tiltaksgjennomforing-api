@@ -17,22 +17,6 @@ public class AvtalepartTest {
         deltaker.endreAvtale(avtale.getSistEndret(), TestData.ingenEndring(), avtale);
     }
 
-    @Test(expected = TilgangskontrollException.class)
-    public void godkjennForVeilederOgDeltaker__skal_feile_for_deltaker() {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        Deltaker deltaker = TestData.enDeltaker(avtale);
-        GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
-        deltaker.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
-    }
-
-    @Test(expected = TilgangskontrollException.class)
-    public void godkjennForVeilederOgDeltaker__skal_feile_for_arbeidsgiver() {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
-        arbeidsgiver.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
-    }
-
     @Test(expected = ArbeidsgiverSkalGodkjenneFørVeilederException.class)
     public void godkjennForVeilederOgDeltaker__skal_feile_hvis_ag_ikke_har_godkjent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();

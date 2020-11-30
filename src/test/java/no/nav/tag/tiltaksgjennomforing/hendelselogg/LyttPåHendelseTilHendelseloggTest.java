@@ -159,17 +159,17 @@ class LyttPåHendelseTilHendelseloggTest {
     }
 
     private void ogGodkjentAvDeltaker(Avtale avtale) {
-        new Deltaker(avtale.getDeltakerFnr()).godkjennForAvtalepart(avtale);
+        new Deltaker(avtale.getDeltakerFnr()).godkjennAvtale(Instant.now(), avtale);
         avtaleRepository.save(avtale);
     }
 
     private void ogGodkjentAvArbeidsgiver(Avtale avtale) {
-        TestData.enArbeidsgiver(avtale).godkjennForAvtalepart(avtale);
+        TestData.enArbeidsgiver(avtale).godkjennAvtale(Instant.now(), avtale);
         avtaleRepository.save(avtale);
     }
 
     private void ogGodkjentAvVeileder(Avtale avtale) {
-        TestData.enVeileder(avtale).godkjennForAvtalepart(avtale);
+        TestData.enVeileder(avtale).godkjennAvtale(Instant.now(), avtale);
         avtaleRepository.save(avtale);
     }
 

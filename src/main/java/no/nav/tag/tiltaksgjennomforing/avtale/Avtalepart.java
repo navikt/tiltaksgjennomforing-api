@@ -63,8 +63,6 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     abstract boolean kanOppheveGodkjenninger(Avtale avtale);
 
-    abstract void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn, Avtale avtale);
-
     abstract void opphevGodkjenningerSomAvtalepart(Avtale avtale);
 
     public void godkjennAvtale(Instant sistEndret, Avtale avtale) {
@@ -73,15 +71,10 @@ public abstract class Avtalepart<T extends Identifikator> {
         godkjennForAvtalepart(avtale);
     }
 
-    private void sjekkTilgang(Avtale avtale) {
+    void sjekkTilgang(Avtale avtale) {
         if (!harTilgang(avtale)) {
             throw new TilgangskontrollException("Ikke tilgang til avtale");
         }
-    }
-
-    public void godkjennPaVegneAvDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn, Avtale avtale) {
-        sjekkTilgang(avtale);
-        godkjennForVeilederOgDeltaker(paVegneAvGrunn, avtale);
     }
 
     public void endreAvtale(Instant sistEndret, EndreAvtale endreAvtale, Avtale avtale) {

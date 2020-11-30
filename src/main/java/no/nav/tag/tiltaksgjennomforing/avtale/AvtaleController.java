@@ -123,7 +123,7 @@ public class AvtaleController {
     public void godkjennPaVegneAv(@PathVariable("avtaleId") UUID avtaleId, @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        veileder.godkjennPaVegneAvDeltaker(paVegneAvGrunn, avtale);
+        veileder.godkjennForVeilederOgDeltaker(paVegneAvGrunn, avtale);
         avtaleRepository.save(avtale);
     }
 

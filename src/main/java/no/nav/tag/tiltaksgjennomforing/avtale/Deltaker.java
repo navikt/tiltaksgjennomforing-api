@@ -90,11 +90,6 @@ public class Deltaker extends Avtalepart<Fnr> {
     }
 
     @Override
-    public void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn, Avtale avtale) {
-        throw new TilgangskontrollException("Deltaker kan ikke godkjenne som veileder");
-    }
-
-    @Override
     void opphevGodkjenningerSomAvtalepart(Avtale avtale) {
         throw new TilgangskontrollException("Deltaker kan ikke oppheve godkjenninger");
     }

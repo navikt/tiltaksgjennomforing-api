@@ -38,7 +38,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     @Override
-    public void godkjennForAvtalepart(Avtale avtale) {
+    void godkjennForAvtalepart(Avtale avtale) {
         avtale.godkjennForArbeidsgiver(getIdentifikator());
     }
 
@@ -96,11 +96,6 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     @Override
     boolean kanOppheveGodkjenninger(Avtale avtale) {
         return !avtale.erGodkjentAvVeileder();
-    }
-
-    @Override
-    public void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn, Avtale avtale) {
-        throw new TilgangskontrollException("Arbeidsgiver kan ikke godkjenne som veileder");
     }
 
     @Override

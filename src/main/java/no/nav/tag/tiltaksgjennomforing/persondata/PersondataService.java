@@ -102,4 +102,9 @@ public class PersondataService {
         String gradering = hentAdressebeskyttelse(fnr).getGradering();
         return "FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG_UTLAND".equals(gradering);
     }
+
+    public boolean erKode6(Fnr fnr) {
+        String gradering = hentAdressebeskyttelse(fnr).getGradering();
+        return "STRENGT_FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG_UTLAND".equals(gradering);
+    }
 }

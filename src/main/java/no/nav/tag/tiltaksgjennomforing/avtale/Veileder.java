@@ -55,14 +55,6 @@ public class Veileder extends Avtalepart<NavIdent> {
         }
     }
 
-    @Override
-    public void godkjennForAvtalepart(Avtale avtale) {
-        if (persondataService.erKode6Eller7(avtale.getDeltakerFnr())) {
-            throw new KanIkkeGodkjenneAvtalePåKode6Exception();
-        }
-        avtale.godkjennForVeileder(getIdentifikator());
-    }
-
     public void avbrytAvtale(Instant sistEndret, AvbruttInfo avbruttInfo, Avtale avtale) {
         avtale.sjekkSistEndret(sistEndret);
         avbruttInfo.grunnErOppgitt();
@@ -120,6 +112,14 @@ public class Veileder extends Avtalepart<NavIdent> {
     }
 
     @Override
+    void godkjennForAvtalepart(Avtale avtale) {
+        if (persondataService.erKode6(avtale.getDeltakerFnr())) {
+            throw new KanIkkeGodkjenneAvtalePåKode6Exception();
+        }
+        avtale.godkjennForVeileder(getIdentifikator());
+    }
+
+    @Override
     public boolean erGodkjentAvInnloggetBruker(Avtale avtale) {
         return avtale.erGodkjentAvVeileder();
     }
@@ -129,15 +129,11 @@ public class Veileder extends Avtalepart<NavIdent> {
         return true;
     }
 
-    @Override
     public void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn, Avtale avtale) {
-        if (avtale.erGodkjentAvDeltaker()) {
-            throw new DeltakerHarGodkjentException();
+        sjekkTilgang(avtale);
+        if (persondataService.erKode6(avtale.getDeltakerFnr())) {
+            throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
-        if (!avtale.erGodkjentAvArbeidsgiver()) {
-            throw new ArbeidsgiverSkalGodkjenneFørVeilederException();
-        }
-        paVegneAvGrunn.valgtMinstEnGrunn();
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
     }
 
@@ -175,8 +171,11 @@ public class Veileder extends Avtalepart<NavIdent> {
     public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
         boolean harAbacTilgang = tilgangskontrollService.harSkrivetilgangTilKandidat(getIdentifikator(), opprettAvtale.getDeltakerFnr());
         boolean erKode6Eller7 = persondataService.erKode6Eller7(opprettAvtale.getDeltakerFnr());
-        if (!harAbacTilgang || erKode6Eller7) {
+        if (!harAbacTilgang) {
             throw new IkkeTilgangTilDeltakerException();
+        }
+        if (erKode6Eller7) {
+            throw new KanIkkeOppretteAvtalePåKode6Eller7Exception();
         }
         return Avtale.veilederOppretterAvtale(opprettAvtale, getIdentifikator());
     }

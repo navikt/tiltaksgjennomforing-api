@@ -197,6 +197,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     void godkjennForVeilederOgDeltaker(Identifikator utfortAv, GodkjentPaVegneGrunn paVegneAvGrunn) {
         sjekkOmAltErUtfylt();
+        if (erGodkjentAvDeltaker()) {
+            throw new DeltakerHarGodkjentException();
+        }
+        if (!erGodkjentAvArbeidsgiver()) {
+            throw new ArbeidsgiverSkalGodkjenneFørVeilederException();
+        }
+        paVegneAvGrunn.valgtMinstEnGrunn();
         this.setGodkjentAvVeileder(LocalDateTime.now());
         this.setGodkjentAvDeltaker(LocalDateTime.now());
         this.setGodkjentPaVegneAv(true);
