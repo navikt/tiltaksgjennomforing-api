@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.tilskudd;
 
 import lombok.RequiredArgsConstructor;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddPeriodeGodkjent;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddGodkjent;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -14,7 +14,7 @@ public class TilskuddHendelse {
     private final TilskuddProducer tilskuddProducer;
 
     @TransactionalEventListener
-    public void godkjentAvVeileder(TilskuddPeriodeGodkjent event) {
+    public void godkjentAvVeileder(TilskuddGodkjent event) {
         tilskuddProducer.publiserRefusjonsmelding(TilskuddMelding.fraAvtale(event.getAvtale()));
     }
 }
