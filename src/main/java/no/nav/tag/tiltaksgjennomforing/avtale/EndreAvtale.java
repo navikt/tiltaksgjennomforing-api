@@ -46,6 +46,7 @@ public class EndreAvtale {
     private BigDecimal arbeidsgiveravgift;
     private Boolean harFamilietilknytning;
     private String familietilknytningForklaring;
+    private Double otpSats;
     private Integer otpBelop;
     private Integer arbeidsgiveravgiftBelop;
     private Integer sumLonnsutgifter;
