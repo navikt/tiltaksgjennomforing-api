@@ -67,7 +67,9 @@ public class TestData {
     }
 
     public static Avtale enLonnstilskuddAvtaleMedAltUtfylt() {
-        Avtale avtale = enAvtaleMedAltUtfylt();
+        NavIdent veilderNavIdent = new NavIdent("Z123456");
+        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), veilderNavIdent);
+        avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleFelter(), Avtalerolle.VEILEDER);
         avtale.setDeltakerFornavn("Lilly");
         avtale.setDeltakerEtternavn("Lønning");
         avtale.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
