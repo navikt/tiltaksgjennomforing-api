@@ -1,10 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
 import java.time.LocalDate;
-
-import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
+import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
 
 public class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy {
     final AvtaleInnhold avtaleInnhold;
@@ -33,6 +32,7 @@ public class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy {
         avtaleInnhold.setStartDato(nyAvtale.getStartDato());
         avtaleInnhold.setSluttDato(nyAvtale.getSluttDato());
         avtaleInnhold.setStillingprosent(nyAvtale.getStillingprosent());
+        avtaleInnhold.setOtpSats(getOtpSats(nyAvtale));
     }
 
     @Override
@@ -45,15 +45,21 @@ public class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy {
                 avtaleInnhold.getArbeidsgiverFornavn(),
                 avtaleInnhold.getArbeidsgiverEtternavn(),
                 avtaleInnhold.getArbeidsgiverTlf(),
-                avtaleInnhold.getVeilederFornavn(),
-                avtaleInnhold.getVeilederEtternavn(),
-                avtaleInnhold.getVeilederTlf(),
-                avtaleInnhold.getOppfolging(),
-                avtaleInnhold.getTilrettelegging(),
-                avtaleInnhold.getStartDato(),
-                avtaleInnhold.getSluttDato(),
-                avtaleInnhold.getStillingprosent()
+            avtaleInnhold.getVeilederFornavn(),
+            avtaleInnhold.getVeilederEtternavn(),
+            avtaleInnhold.getVeilederTlf(),
+            avtaleInnhold.getOppfolging(),
+            avtaleInnhold.getTilrettelegging(),
+            avtaleInnhold.getStartDato(),
+            avtaleInnhold.getSluttDato(),
+            avtaleInnhold.getStillingprosent()
         );
+    }
+
+
+    protected double getOtpSats(EndreAvtale nyAvtale) {
+        double OBLIG_TJENESTEPENSJON_PROSENT_SATS = 0.02;
+        return nyAvtale.getOtpSats() == null ? OBLIG_TJENESTEPENSJON_PROSENT_SATS : nyAvtale.getOtpSats() / 100;
     }
 
     protected void sjekkAtStartDatoErEtterSluttDato(LocalDate startDato, LocalDate sluttDato) {

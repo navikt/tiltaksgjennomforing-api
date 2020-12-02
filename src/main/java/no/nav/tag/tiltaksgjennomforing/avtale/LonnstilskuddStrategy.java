@@ -24,7 +24,6 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setStillingstittel(nyAvtale.getStillingstittel());
         avtaleInnhold.setStillingStyrk08(nyAvtale.getStillingStyrk08());
         avtaleInnhold.setStillingKonseptId(nyAvtale.getStillingKonseptId());
-        avtaleInnhold.setOtpSats(nyAvtale.getOtpSats());
         regnUtTotalLonnstilskudd(nyAvtale);
         super.endre(nyAvtale);
     }
