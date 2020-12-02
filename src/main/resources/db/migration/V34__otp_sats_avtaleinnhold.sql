@@ -1,2 +1,7 @@
 alter table avtale_innhold add column otp_sats decimal;
-update avtale_innhold set otp_sats = 2.0 where otp_sats is NULL;
+
+UPDATE avtale_innhold
+SET avtale_innhold.otp_sats = 0.02
+WHERE avtale_innhold.avtale
+IN (SELECT id from avtale WHERE avtale.tiltakstype = 'MIDLERTIDIG_LONNSTILSKUDD' OR tiltakstype = 'VARIG_LONNSTILSKUDD' )
+AND avtale_innhold.otp_sats is NULL;
