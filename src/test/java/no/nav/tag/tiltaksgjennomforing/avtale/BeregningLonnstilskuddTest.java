@@ -40,6 +40,7 @@ class BeregningLonnstilskuddTest {
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setManedslonn(20000);
         endreAvtale.setLonnstilskuddProsent(60);
+        endreAvtale.setOtpSats(0.02);
         endreAvtale.setFeriepengesats(new BigDecimal(0.12));
         endreAvtale.setArbeidsgiveravgift(new BigDecimal(0.141));
 
@@ -55,7 +56,7 @@ class BeregningLonnstilskuddTest {
         // GIVEN
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setManedslonn(20000);
-        endreAvtale.setOtpSats(2.0);
+        endreAvtale.setOtpSats(0.02);
         endreAvtale.setLonnstilskuddProsent(60);
         endreAvtale.setFeriepengesats(new BigDecimal(0.12));
         endreAvtale.setArbeidsgiveravgift(new BigDecimal(0.141));
@@ -72,7 +73,7 @@ class BeregningLonnstilskuddTest {
         // GIVEN
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setManedslonn(20000);
-        endreAvtale.setOtpSats(2.0);
+        endreAvtale.setOtpSats(0.02);
         endreAvtale.setFeriepengesats(new BigDecimal(0.12));
         endreAvtale.setArbeidsgiveravgift(new BigDecimal(0.141));
 
@@ -88,7 +89,7 @@ class BeregningLonnstilskuddTest {
         // GIVEN
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setManedslonn(20000);
-        endreAvtale.setOtpSats(2.0);
+        endreAvtale.setOtpSats(0.02);
         endreAvtale.setFeriepengesats(new BigDecimal(0.12));
 
         // WHEN
@@ -146,7 +147,7 @@ class BeregningLonnstilskuddTest {
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setStillingprosent(50);
         endreAvtale.setManedslonn(10000);
-        endreAvtale.setOtpSats(2.0);
+        endreAvtale.setOtpSats(0.02);
         endreAvtale.setFeriepengesats(new BigDecimal(0.125));
         endreAvtale.setArbeidsgiveravgift(new BigDecimal(0.0));
         // WHEN
