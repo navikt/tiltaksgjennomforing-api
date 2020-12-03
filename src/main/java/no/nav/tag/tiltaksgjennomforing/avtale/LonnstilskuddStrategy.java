@@ -24,6 +24,7 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setStillingstittel(nyAvtale.getStillingstittel());
         avtaleInnhold.setStillingStyrk08(nyAvtale.getStillingStyrk08());
         avtaleInnhold.setStillingKonseptId(nyAvtale.getStillingKonseptId());
+        avtaleInnhold.setOtpSats(getOtpSats(nyAvtale));
         regnUtTotalLonnstilskudd(nyAvtale);
         super.endre(nyAvtale);
     }
@@ -42,7 +43,6 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setArbeidsgiveravgiftBelop(arbeidsgiveravgiftBelop);
         avtaleInnhold.setSumLonnsutgifter(sumLonnsutgifter);
         avtaleInnhold.setSumLonnstilskudd(sumlønnTilskudd);
-        avtaleInnhold.setOtpSats(nyAvtale.getOtpSats());
         avtaleInnhold.setManedslonn100pst(månedslønnFullStilling);
         regnUtrefusjonsperioder(nyAvtale);
     }
@@ -54,6 +54,18 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
             avtaleInnhold.getTilskuddPeriode().addAll(tilskuddForAvtalePeriode);
             avtaleInnhold.getTilskuddPeriode().forEach(periode -> periode.setAvtaleInnhold(avtaleInnhold));
         }
+    }
+
+    private double getOtpSats(EndreAvtale nyAvtale) {
+        double OBLIG_TJENESTEPENSJON_PROSENT_SATS = 0.02;
+        if (otpSatsErDefinert(nyAvtale)) {
+           return nyAvtale.getOtpSats();
+        }
+        return  OBLIG_TJENESTEPENSJON_PROSENT_SATS;
+    }
+
+    private Boolean otpSatsErDefinert(EndreAvtale nyAvtale) {
+        return nyAvtale.getOtpSats() != null;
     }
 
     private Boolean harAllePåkrevdeFeltForRegneUtTilskuddsPeriode(EndreAvtale nyAvtale){
