@@ -58,14 +58,10 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
 
     private double getOtpSats(EndreAvtale nyAvtale) {
         double OBLIG_TJENESTEPENSJON_PROSENT_SATS = 0.02;
-        if (otpSatsErDefinert(nyAvtale)) {
-           return nyAvtale.getOtpSats();
+        if (erIkkeTomme(nyAvtale.getOtpSats())) {
+            return nyAvtale.getOtpSats();
         }
         return  OBLIG_TJENESTEPENSJON_PROSENT_SATS;
-    }
-
-    private Boolean otpSatsErDefinert(EndreAvtale nyAvtale) {
-        return nyAvtale.getOtpSats() != null;
     }
 
     private Boolean harAllePåkrevdeFeltForRegneUtTilskuddsPeriode(EndreAvtale nyAvtale){
