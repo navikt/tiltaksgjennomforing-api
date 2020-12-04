@@ -1,10 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
 import java.time.LocalDate;
-
-import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
+import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
 
 public class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy {
     final AvtaleInnhold avtaleInnhold;
@@ -45,14 +44,14 @@ public class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy {
                 avtaleInnhold.getArbeidsgiverFornavn(),
                 avtaleInnhold.getArbeidsgiverEtternavn(),
                 avtaleInnhold.getArbeidsgiverTlf(),
-                avtaleInnhold.getVeilederFornavn(),
-                avtaleInnhold.getVeilederEtternavn(),
-                avtaleInnhold.getVeilederTlf(),
-                avtaleInnhold.getOppfolging(),
-                avtaleInnhold.getTilrettelegging(),
-                avtaleInnhold.getStartDato(),
-                avtaleInnhold.getSluttDato(),
-                avtaleInnhold.getStillingprosent()
+            avtaleInnhold.getVeilederFornavn(),
+            avtaleInnhold.getVeilederEtternavn(),
+            avtaleInnhold.getVeilederTlf(),
+            avtaleInnhold.getOppfolging(),
+            avtaleInnhold.getTilrettelegging(),
+            avtaleInnhold.getStartDato(),
+            avtaleInnhold.getSluttDato(),
+            avtaleInnhold.getStillingprosent()
         );
     }
 

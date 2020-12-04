@@ -55,6 +55,7 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setHarFamilietilknytning(avtaleInnhold.getHarFamilietilknytning());
         avtaleTilJournalfoering.setFamilietilknytningForklaring((avtaleInnhold.getFamilietilknytningForklaring()));
         avtaleTilJournalfoering.setFeriepengerBelop(avtaleInnhold.getFeriepengerBelop());
+        avtaleTilJournalfoering.setOtpSats(avtaleInnhold.getOtpSats());
         avtaleTilJournalfoering.setOtpBelop(avtaleInnhold.getOtpBelop());
         avtaleTilJournalfoering.setArbeidsgiveravgiftBelop(avtaleInnhold.getArbeidsgiveravgiftBelop());
         avtaleTilJournalfoering.setSumLonnsutgifter(avtaleInnhold.getSumLonnsutgifter());

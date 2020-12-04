@@ -1,24 +1,44 @@
 package no.nav.tag.tiltaksgjennomforing;
 
-import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
-import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
-import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelse;
-import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
-
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalepart;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Deltaker;
+import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
+import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.avtale.Maal;
+import no.nav.tag.tiltaksgjennomforing.avtale.MaalKategori;
+import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
+import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelse;
+import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 
 public class TestData {
     public static Avtale enArbeidstreningAvtale() {
@@ -47,7 +67,9 @@ public class TestData {
     }
 
     public static Avtale enLonnstilskuddAvtaleMedAltUtfylt() {
-        Avtale avtale = enAvtaleMedAltUtfylt();
+        NavIdent veilderNavIdent = new NavIdent("Z123456");
+        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), veilderNavIdent);
+        avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleFelter(), Avtalerolle.VEILEDER);
         avtale.setDeltakerFornavn("Lilly");
         avtale.setDeltakerEtternavn("Lønning");
         avtale.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
@@ -158,6 +180,7 @@ public class TestData {
         endreAvtale.setMentorTimelonn(1000);
         endreAvtale.setHarFamilietilknytning(true);
         endreAvtale.setFamilietilknytningForklaring("En middels god forklaring");
+        endreAvtale.setOtpSats(0.02);
         endreAvtale.setOtpBelop(448);
         endreAvtale.setArbeidsgiveravgiftBelop(3222);
         endreAvtale.setSumLonnsutgifter(26070);

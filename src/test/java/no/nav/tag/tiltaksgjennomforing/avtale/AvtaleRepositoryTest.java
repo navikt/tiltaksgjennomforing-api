@@ -1,5 +1,15 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
@@ -12,17 +22,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -99,6 +98,7 @@ public class AvtaleRepositoryTest {
         endreAvtale.setSluttDato(lagretAvtale.getSluttDato());
         endreAvtale.setManedslonn(20000);
         endreAvtale.setStillingprosent(100);
+        endreAvtale.setOtpSats(0.02);
         endreAvtale.setFeriepengesats(BigDecimal.valueOf(0.12));
         endreAvtale.setArbeidsgiveravgift(BigDecimal.valueOf(0.141));
         endreAvtale.setLonnstilskuddProsent(40);

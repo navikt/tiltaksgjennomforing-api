@@ -1,11 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import org.apache.commons.lang3.StringUtils;
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
 import java.math.BigDecimal;
 import java.util.List;
-
-import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
+import org.apache.commons.lang3.StringUtils;
 
 public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
     public LonnstilskuddStrategy(AvtaleInnhold avtaleInnhold) {
@@ -25,6 +24,7 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setStillingstittel(nyAvtale.getStillingstittel());
         avtaleInnhold.setStillingStyrk08(nyAvtale.getStillingStyrk08());
         avtaleInnhold.setStillingKonseptId(nyAvtale.getStillingKonseptId());
+        avtaleInnhold.setOtpSats(getOtpSats(nyAvtale));
         regnUtTotalLonnstilskudd(nyAvtale);
         super.endre(nyAvtale);
     }
@@ -32,7 +32,7 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
 
     private void regnUtTotalLonnstilskudd(EndreAvtale nyAvtale) {
         Integer feriepengerBelop = getFeriepengerBelop(nyAvtale.getFeriepengesats(), nyAvtale.getManedslonn());
-        Integer obligTjenestepensjon = getBeregnetOtpBelop(nyAvtale.getManedslonn(), feriepengerBelop);
+        Integer obligTjenestepensjon = getBeregnetOtpBelop(nyAvtale.getOtpSats(), nyAvtale.getManedslonn(), feriepengerBelop);
         Integer arbeidsgiveravgiftBelop = getArbeidsgiverAvgift(avtaleInnhold.getManedslonn(), feriepengerBelop, obligTjenestepensjon,
             nyAvtale.getArbeidsgiveravgift());
         Integer sumLonnsutgifter = getSumLonnsutgifter(nyAvtale.getManedslonn(), feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgiftBelop);
@@ -54,6 +54,14 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
             avtaleInnhold.getTilskuddPeriode().addAll(tilskuddForAvtalePeriode);
             avtaleInnhold.getTilskuddPeriode().forEach(periode -> periode.setAvtaleInnhold(avtaleInnhold));
         }
+    }
+
+    private double getOtpSats(EndreAvtale nyAvtale) {
+        double OBLIG_TJENESTEPENSJON_PROSENT_SATS = 0.02;
+        if (erIkkeTomme(nyAvtale.getOtpSats())) {
+            return nyAvtale.getOtpSats();
+        }
+        return  OBLIG_TJENESTEPENSJON_PROSENT_SATS;
     }
 
     private Boolean harAllePåkrevdeFeltForRegneUtTilskuddsPeriode(EndreAvtale nyAvtale){
@@ -89,10 +97,9 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         return null;
     }
 
-    private Integer getBeregnetOtpBelop(Integer manedslonn, Integer feriepenger) {
-        if (erIkkeTomme(manedslonn, feriepenger)) {
-            double OBLIG_TJENESTEPENSJON_PROSENT_SATS = 0.02;
-            return (int) Math.round((manedslonn + feriepenger) * OBLIG_TJENESTEPENSJON_PROSENT_SATS);
+    private Integer getBeregnetOtpBelop(Double optSats, Integer manedslonn, Integer feriepenger) {
+        if (erIkkeTomme(optSats, manedslonn, feriepenger)) {
+            return (int) Math.round((manedslonn + feriepenger) * optSats);
         }
         return null;
     }

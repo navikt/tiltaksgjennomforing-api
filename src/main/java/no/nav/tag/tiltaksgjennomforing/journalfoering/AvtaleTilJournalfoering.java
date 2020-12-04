@@ -56,6 +56,7 @@ public class AvtaleTilJournalfoering {
     private Boolean harFamilietilknytning;
     private String familietilknytningForklaring;
     private Integer feriepengerBelop;
+    private Double otpSats;
     private Integer otpBelop;
     private Integer arbeidsgiveravgiftBelop;
     private Integer sumLonnsutgifter;
