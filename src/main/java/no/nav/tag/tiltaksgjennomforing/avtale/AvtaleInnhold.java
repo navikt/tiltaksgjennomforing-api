@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
+import javax.persistence.Convert;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -106,6 +107,9 @@ public class AvtaleInnhold {
     private LocalDateTime godkjentAvDeltaker;
     private LocalDateTime godkjentAvArbeidsgiver;
     private LocalDateTime godkjentAvVeileder;
+    @Convert(converter = NavIdentConverter.class)
+    private NavIdent godkjentAvNavIdent;
+
     @Embedded
     private GodkjentPaVegneGrunn godkjentPaVegneGrunn;
     private boolean godkjentPaVegneAv;

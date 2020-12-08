@@ -1,27 +1,58 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Delegate;
-import lombok.experimental.FieldNameConstants;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
-import no.nav.tag.tiltaksgjennomforing.exceptions.*;
-import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
-import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
-import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
-import org.springframework.data.domain.AbstractAggregateRoot;
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Delegate;
+import lombok.experimental.FieldNameConstants;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvbruttAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleGjenopprettet;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleLåstOpp;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiverErFordelt;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GamleVerdier;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvDeltaker;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAv;
+import no.nav.tag.tiltaksgjennomforing.exceptions.AltMåVæreFyltUtException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørVeilederException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.AvtaleErIkkeFordeltException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.DeltakerHarGodkjentException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
+import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
+import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
+import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
+import org.springframework.data.domain.AbstractAggregateRoot;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -161,6 +192,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         setGodkjentAvVeileder(null);
         setGodkjentPaVegneAv(false);
         setGodkjentPaVegneGrunn(null);
+        setGodkjentAvNavIdent(null);
         sistEndretNå();
     }
 
@@ -191,6 +223,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
 
         this.setGodkjentAvVeileder(LocalDateTime.now());
+        this.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
         sistEndretNå();
         registerEvent(new GodkjentAvVeileder(this, utfortAv));
     }
@@ -208,6 +241,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         this.setGodkjentAvDeltaker(LocalDateTime.now());
         this.setGodkjentPaVegneAv(true);
         this.setGodkjentPaVegneGrunn(paVegneAvGrunn);
+        this.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
         sistEndretNå();
         registerEvent(new GodkjentPaVegneAv(this, utfortAv));
     }
