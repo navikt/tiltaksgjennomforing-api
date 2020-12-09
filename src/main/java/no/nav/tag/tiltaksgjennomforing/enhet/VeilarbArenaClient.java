@@ -22,26 +22,26 @@ public class VeilarbArenaClient {
   private final RestTemplate restTemplate;
   private final STSClient stsClient;
   @Value("${tiltaksgjennomforing.veilarbarena.url}")
-  String veilarbarenaUrl;
+  private String veilarbarenaUrl;
 
-  public Oppfølgingsbruker hentOppfølgingsbruker(String fnr, String aktørId) {
+  public Oppfølgingsstatus hentOppfølgingsbruker(String fnr, String aktørId) {
     log.info("Henter oppfølgingsbruker for aktørId {}", aktørId);
 
     String uri = UriComponentsBuilder.fromHttpUrl(veilarbarenaUrl)
-        .path("/oppfolgingsbruker/" + fnr)
+        .path("/oppfolgingstatus/" + fnr)
         .toUriString();
 
     try {
-      ResponseEntity<Oppfølgingsbruker> respons = restTemplate.exchange(
+      ResponseEntity<Oppfølgingsstatus> respons = restTemplate.exchange(
           uri,
           HttpMethod.GET,
           httpHeadere(),
-          Oppfølgingsbruker.class
+          Oppfølgingsstatus.class
       );
 
       if (respons.getStatusCode().equals(HttpStatus.NO_CONTENT)) {
         log.warn("Kandidat ikke registrert i veilarbarena, aktørId: {}", aktørId);
-        return Oppfølgingsbruker.builder().fnr(fnr).navKontor(null).build();
+        return Oppfølgingsstatus.builder().oppfolgingsenhet(null).build();
       } else {
         return respons.getBody();
       }

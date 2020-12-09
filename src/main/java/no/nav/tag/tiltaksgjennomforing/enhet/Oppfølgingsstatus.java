@@ -12,11 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Oppfølgingsbruker {
+public class Oppfølgingsstatus {
 
-    @JsonProperty("fodselsnr")
-    public String fnr;
-
-    @JsonProperty("nav_kontor")
-    public String navKontor;
+    @JsonProperty("oppfolgingsenhet")
+    public String oppfolgingsenhet;
 }
