@@ -66,6 +66,8 @@ tiltaksgjennomforing:
   consumer:
     system:
       id: ${tiltaksgjennomforing.consumer.system}
+  veilarbarena:
+    url: https://veilarbarena-q0.nais.preprod.local/veilarbarena/api
 
 
 http:
