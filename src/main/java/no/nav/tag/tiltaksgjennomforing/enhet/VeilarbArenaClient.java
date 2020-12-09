@@ -25,7 +25,7 @@ public class VeilarbArenaClient {
   public Oppfølgingsstatus hentOppfølgingsEnhet(String fnr) {
 
     String uri = UriComponentsBuilder.fromHttpUrl(veilarbArenaProperties.getUrl().toString())
-        .path("/oppfolgingstatus/" + fnr)
+        .path("/underoppfolging/" + fnr)
         .toUriString();
 
     try {

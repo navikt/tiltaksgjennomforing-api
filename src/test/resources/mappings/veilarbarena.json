@@ -3,7 +3,7 @@
     {
       "request": {
         "method": "GET",
-        "urlPathPattern": "/veilarbarena/oppfolgingstatus/1\\d{10}"
+        "urlPathPattern": "/veilarbarena/underoppfolging/1\\d{10}"
       },
       "response": {
         "status": 200,
