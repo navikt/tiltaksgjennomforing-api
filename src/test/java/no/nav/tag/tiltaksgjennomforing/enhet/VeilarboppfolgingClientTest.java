@@ -13,21 +13,21 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 @ActiveProfiles({Miljø.LOCAL, "wiremock"})
 @DirtiesContext
-class VeilarbArenaClientTest {
+class VeilarboppfolgingClientTest {
 
   @Autowired
-  private VeilarbArenaClient veilarbArenaClient;
+  private VeilarboppfolgingClient veilarboppfolgingClient;
 
   @Test
   public void hent_oppfølingsEnhet_fra_arena() {
-    Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.hentOppfølgingsEnhet("12345678901");
+    Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingClient.hentOppfølgingsEnhet("12345678901");
     assertThat(oppfølgingsstatus.getOppfolgingsenhet()).isEqualTo("4806");
   }
 
   @Test
   public void hent_oppfølingsEnhet_fra_arena__kaster_exception_ved_500() {
     assertThatThrownBy(() -> {
-      veilarbArenaClient.hentOppfølgingsEnhet("799999999");
+      veilarboppfolgingClient.hentOppfølgingsEnhet("799999999");
     }).isInstanceOf(VeilarbArenaException.class);
   }
 

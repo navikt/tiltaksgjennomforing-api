@@ -16,7 +16,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Slf4j
 @Component
 @AllArgsConstructor
-public class VeilarbArenaClient {
+public class VeilarboppfolgingClient {
 
   private final RestTemplate restTemplate;
   private final STSClient stsClient;
@@ -25,7 +25,7 @@ public class VeilarbArenaClient {
   public Oppfølgingsstatus hentOppfølgingsEnhet(String fnr) {
 
     String uri = UriComponentsBuilder.fromHttpUrl(veilarbArenaProperties.getUrl().toString())
-        .path("/oppfolgingstatus/" + fnr)
+        .path("/underoppfolging/" + fnr)
         .toUriString();
 
     try {
