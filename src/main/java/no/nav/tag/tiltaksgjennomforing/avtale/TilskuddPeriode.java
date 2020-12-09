@@ -1,11 +1,20 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import lombok.*;
-
-import javax.persistence.*;
-import java.time.LocalDate;
-import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -29,6 +38,11 @@ public class TilskuddPeriode {
     private LocalDate startDato;
     @NonNull
     private LocalDate sluttDato;
+
+    @Convert(converter = NavIdentConverter.class)
+    private NavIdent godkjentAvNavIdent;
+
+    private LocalDateTime godkjentTidspunkt;
 
     public TilskuddPeriode(TilskuddPeriode periode) {
         id = UUID.randomUUID();
