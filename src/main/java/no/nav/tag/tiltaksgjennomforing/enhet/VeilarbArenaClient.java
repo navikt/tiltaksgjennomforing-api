@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.enhet;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -21,13 +20,11 @@ public class VeilarbArenaClient {
 
   private final RestTemplate restTemplate;
   private final STSClient stsClient;
-  @Value("${tiltaksgjennomforing.veilarbarena.url}")
-  private String veilarbarenaUrl;
+  private VeilarbArenaProperties veilarbArenaProperties;
 
-  public Oppfølgingsstatus hentOppfølgingsbruker(String fnr, String aktørId) {
-    log.info("Henter oppfølgingsbruker for aktørId {}", aktørId);
+  public Oppfølgingsstatus hentOppfølgingsEnhet(String fnr) {
 
-    String uri = UriComponentsBuilder.fromHttpUrl(veilarbarenaUrl)
+    String uri = UriComponentsBuilder.fromHttpUrl(veilarbArenaProperties.getUrl().toString())
         .path("/oppfolgingstatus/" + fnr)
         .toUriString();
 
@@ -40,15 +37,15 @@ public class VeilarbArenaClient {
       );
 
       if (respons.getStatusCode().equals(HttpStatus.NO_CONTENT)) {
-        log.warn("Kandidat ikke registrert i veilarbarena, aktørId: {}", aktørId);
+        log.warn("Kandidat ikke registrert i veilarbarena");
         return Oppfølgingsstatus.builder().oppfolgingsenhet(null).build();
       } else {
         return respons.getBody();
       }
 
     } catch (RestClientResponseException exception) {
-      log.error("Kunne ikke hente oppfølgingsbruker fra veilarbarena, aktørId: {}", aktørId, exception);
-      throw new FinnKandidatException("Kunne ikke hente oppfølgingsbruker fra veilarbarena");
+      log.error("Kunne ikke hente oppfølgingsbruker fra veilarbarena", exception);
+      throw new VeilarbArenaException("Kunne ikke hente oppfølgingsbruker fra veilarbarena");
     }
   }
 

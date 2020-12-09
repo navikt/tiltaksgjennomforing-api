@@ -1,0 +1,17 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/veilarbarena/oppfolgingstatus/1\\d{10}"
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"formidlingsgruppe\": \"4404\",\n  \"inaktiveringsdato\": \"2020.20.12\",\n  \"kanEnkeltReaktiveres\": true,\n  \"oppfolgingsenhet\": \"4806\",\n  \"rettighetsgruppe\": \"gruppe\",\n  \"servicegruppe\": \"srvgruppe\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}

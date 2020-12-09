@@ -63,3 +63,5 @@ tiltaksgjennomforing:
     oppgave-uri: http://localhost:8090/api/v1/oppgaver
   unleash:
     mock: true
+  veilarbarena:
+    url: http://localhost:8090/veilarbarena
