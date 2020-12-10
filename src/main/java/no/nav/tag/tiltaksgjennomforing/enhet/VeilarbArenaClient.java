@@ -44,8 +44,8 @@ public class VeilarbArenaClient {
       }
 
     } catch (RestClientResponseException exception) {
-      log.error("Kunne ikke hente oppfølgingsbruker fra veilarbarena", exception);
-      throw new VeilarbArenaException("Kunne ikke hente oppfølgingsbruker fra veilarbarena");
+      log.error("Kunne ikke hente Oppfølgingsstatus fra veilarbarena", exception);
+      throw new VeilarbArenaException("Kunne ikke hente Oppfølgingsstatus fra veilarbarena");
     }
   }
 
