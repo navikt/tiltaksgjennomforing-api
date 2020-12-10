@@ -3,11 +3,18 @@
     {
       "request": {
         "method": "GET",
-        "urlPathPattern": "/veilarbarena/underoppfolging/1\\d{10}"
+        "urlPathPattern": "/veilarbarena/oppfolgingsstatus/1\\d{10}"
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"formidlingsgruppe\": \"4404\",\n  \"inaktiveringsdato\": \"2020.20.12\",\n  \"kanEnkeltReaktiveres\": true,\n  \"oppfolgingsenhet\": \"4806\",\n  \"rettighetsgruppe\": \"gruppe\",\n  \"servicegruppe\": \"srvgruppe\"\n}",
+        "jsonBody": {
+          "rettighetsgruppe": "IYT",
+          "formidlingsgruppe": "ARBS",
+          "servicegruppe": "IVURD",
+          "oppfolgingsenhet": "1416",
+          "inaktiveringsdato": null,
+          "kanEnkeltReaktiveres": null
+        },
         "headers": {
           "Content-Type": "application/json"
         }
