@@ -105,9 +105,9 @@ jobs:
 
       - name: Generer tiltaksgjennomforing wiremock mapping configmap
         run: |
-          curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.19.5/bin/linux/amd64/kubectl"
+          curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
           chmod +x ./kubectl
-          kubectl create configmap --dry-run -o yaml --from-file src/test/resources/mappings -n arbeidsgiver tiltaksgjennomforing-wiremock > nais/wiremock-mappings.yaml
+          kubectl create configmap --dry-run=client -o yaml --from-file src/test/resources/mappings -n arbeidsgiver tiltaksgjennomforing-wiremock > nais/wiremock-mappings.yaml
           cat nais/wiremock-mappings.yaml # debug
 
       - name: Deploy til labs
