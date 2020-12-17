@@ -87,7 +87,7 @@ public class AltinnTilgangsstyringServiceTest {
         assertThat(tilganger).doesNotContainKey(new BedriftNr("910825555"));
 
         // Virksomheter skal være i tilgang-map
-        assertThat(tilganger.get(new BedriftNr("999999999"))).containsOnly(Tiltakstype.ARBEIDSTRENING);
+        assertThat(tilganger.get(new BedriftNr("999999999"))).containsOnly(Tiltakstype.ARBEIDSTRENING, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD);
     }
 
     @Test
