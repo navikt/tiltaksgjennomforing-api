@@ -97,17 +97,17 @@ jobs:
 
   deploy-labs:
     name: Deploy til labs
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     needs: bygg
     steps:
       - name: Sjekk ut kode
         uses: actions/checkout@v2
 
-      - name: Generer tiltaksgjennomforing wiremock mapping configmap
+      - name: Generer tiltaksgjennomforing-wiremock configmap
         run: |
           curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
           chmod +x ./kubectl
-          kubectl create configmap --client=true --dry-run=client -o yaml --from-file src/test/resources/mappings -n arbeidsgiver tiltaksgjennomforing-wiremock > nais/wiremock-mappings.yaml
+          kubectl create configmap --dry-run=client -o yaml --from-file src/test/resources/mappings -n arbeidsgiver tiltaksgjennomforing-wiremock > nais/wiremock-mappings.yaml
           cat nais/wiremock-mappings.yaml # debug
 
       - name: Deploy til labs
