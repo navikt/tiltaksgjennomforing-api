@@ -150,12 +150,12 @@ public class VeilederTest {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
         Norg2Client norg2Client = mock(Norg2Client.class);
-        final PdlRespons pdlRespons = lagPdlrespons();
+        final PdlRespons pdlRespons = TestData.enPdlrespons(false);
         final String navEnhet = "0411";
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(TestData.enNavIdent()), eq(TestData.etFodselsnummer()))).thenReturn(true);
-        when(persondataService.erKode6(TestData.etFodselsnummer())).thenReturn(false);
-        when(persondataService.hentNavnOgGeografiskTilhørighet(TestData.etFodselsnummer())).thenReturn(pdlRespons);
+        when(persondataService.hentPersondata(TestData.etFodselsnummer())).thenReturn(pdlRespons);
+        when(persondataService.erKode6Eller7(pdlRespons)).thenCallRealMethod();
         when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel())).thenReturn(navEnhet);
 
         Veileder veileder = new Veileder(TestData.enNavIdent(), tilgangskontrollService, persondataService, norg2Client);
@@ -165,10 +165,5 @@ public class VeilederTest {
         assertThat(avtale.getDeltakerFornavn()).isEqualTo("Donald");
         assertThat(avtale.getDeltakerEtternavn()).isEqualTo("Duck");
         assertThat(avtale.getEnhetGeografisk()).isEqualTo(navEnhet);
-    }
-
-    private PdlRespons lagPdlrespons(){
-        HentPerson hentPerson = new HentPerson(null, new Navn[]{new Navn("Donald", null, "Duck")});
-        return new PdlRespons(new Data(hentPerson, null, new HentGeografiskTilknytning(null, "030101", null, null)));
     }
 }

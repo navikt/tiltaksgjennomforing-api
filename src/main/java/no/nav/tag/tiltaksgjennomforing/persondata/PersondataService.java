@@ -29,8 +29,8 @@ public class PersondataService {
     @Value("classpath:pdl/hentPerson.adressebeskyttelse.graphql")
     private Resource adressebeskyttelseQueryResource;
 
-    @Value("classpath:pdl/hentPerson.navn.og.geografiskTilknytning.graphql")
-    private Resource navnOgGeoTilknytningQueryResource;
+    @Value("classpath:pdl/hentPersondata.graphql")
+    private Resource persondataQueryResource;
 
     @Value("classpath:pdl/hentIdenter.graphql")
     private Resource identerQueryResource;
@@ -75,7 +75,7 @@ public class PersondataService {
     private static String hentAktørIdFraPdlRespons(PdlRespons pdlRespons) {
         try {
             return pdlRespons.getData().getHentIdenter().getIdenter()[0].getIdent();
-        }catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
+        } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
             return "";
         }
     }
@@ -83,7 +83,7 @@ public class PersondataService {
     public static Optional<String> hentGeoLokasjonFraPdlRespons(PdlRespons pdlRespons) {
         try {
             return Optional.of(pdlRespons.getData().getHentGeografiskTilknytning().getGeoTilknytning());
-        }catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
+        } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
             return Optional.empty();
         }
     }
@@ -98,11 +98,6 @@ public class PersondataService {
         }
     }
 
-    public Navn hentNavn(Fnr fnr) {
-        PdlRequest pdlRequest = new PdlRequest(resourceAsString(navnOgGeoTilknytningQueryResource), new Variables(fnr.asString()));
-        return hentNavnFraPdlRespons(utførKallTilPdl(pdlRequest));
-    }
-
     public String hentAktørId(Fnr fnr) {
         PdlRequest pdlRequest = new PdlRequest(resourceAsString(identerQueryResource), new Variables(fnr.asString()));
         return hentAktørIdFraPdlRespons(utførKallTilPdl(pdlRequest));
@@ -113,13 +108,22 @@ public class PersondataService {
         return "FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG_UTLAND".equals(gradering);
     }
 
+    public boolean erKode6Eller7(PdlRespons pdlRespons) {
+        try {
+            String gradering = hentAdressebeskyttelseFraPdlRespons(pdlRespons).getGradering();
+            return "FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG_UTLAND".equals(gradering);
+        } catch (NullPointerException e) {
+            return false;
+        }
+    }
+
     public boolean erKode6(Fnr fnr) {
         String gradering = hentAdressebeskyttelse(fnr).getGradering();
         return "STRENGT_FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG_UTLAND".equals(gradering);
     }
 
-    public PdlRespons hentNavnOgGeografiskTilhørighet(Fnr fnr){
-        PdlRequest pdlRequest = new PdlRequest(resourceAsString(navnOgGeoTilknytningQueryResource), new Variables(fnr.asString()));
+    public PdlRespons hentPersondata(Fnr fnr) {
+        PdlRequest pdlRequest = new PdlRequest(resourceAsString(persondataQueryResource), new Variables(fnr.asString()));
         return utførKallTilPdl(pdlRequest);
     }
 }

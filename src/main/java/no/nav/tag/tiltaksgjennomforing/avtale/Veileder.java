@@ -180,20 +180,23 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
         boolean harAbacTilgang = tilgangskontrollService.harSkrivetilgangTilKandidat(getIdentifikator(), opprettAvtale.getDeltakerFnr());
-        boolean erKode6Eller7 = persondataService.erKode6Eller7(opprettAvtale.getDeltakerFnr());
         if (!harAbacTilgang) {
             throw new IkkeTilgangTilDeltakerException();
         }
+
+        final PdlRespons persondata = persondataService.hentPersondata(opprettAvtale.getDeltakerFnr());
+        boolean erKode6Eller7 = persondataService.erKode6Eller7(persondata);
+
         if (erKode6Eller7) {
             throw new KanIkkeOppretteAvtalePåKode6Eller7Exception();
         }
+
         Avtale avtale = Avtale.veilederOppretterAvtale(opprettAvtale, getIdentifikator());
-        leggTilDeltakerNavnOgGeografiskEnhet(avtale);
+        leggTilDeltakerNavnOgGeografiskEnhet(avtale, persondata);
         return avtale;
     }
 
-    private void leggTilDeltakerNavnOgGeografiskEnhet(Avtale avtale) {
-        PdlRespons pdlRespons = persondataService.hentNavnOgGeografiskTilhørighet(avtale.getDeltakerFnr());
+    private void leggTilDeltakerNavnOgGeografiskEnhet(Avtale avtale, PdlRespons pdlRespons) {
         avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(pdlRespons));
         String enhet = hentGeoLokasjonFraPdlRespons(pdlRespons)
                 .map(geoLokasjon -> norg2Client.hentGeografiskEnhet(geoLokasjon))

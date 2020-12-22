@@ -10,7 +10,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -81,13 +80,14 @@ public class PersondataServiceTest {
 
     @Test
     public void hentNavn__tomt_navn_hvis_person_ikke_finens() {
-        PdlRespons pdlRespons = persondataService.hentNavnOgGeografiskTilhørighet(PERSON_FINNES_IKKE);
+        PdlRespons pdlRespons = persondataService.hentPersondata(PERSON_FINNES_IKKE);
         assertThat(PersondataService.hentNavnFraPdlRespons(pdlRespons)).isEqualTo(Navn.TOMT_NAVN);
     }
 
     @Test
     public void hentNavn__navn_hvis_person_finnes() {
-        Navn navn = persondataService.hentNavn(DONALD_DUCK);
+        PdlRespons pdlRespons = persondataService.hentPersondata(DONALD_DUCK);
+        Navn navn = PersondataService.hentNavnFraPdlRespons(pdlRespons);
         assertThat(navn).isEqualTo(new Navn("Donald", null, "Duck"));
     }
 
@@ -129,7 +129,7 @@ public class PersondataServiceTest {
 
     @Test
     public void henterGeoTilhørighet(){
-        PdlRespons pdlRespons = persondataService.hentNavnOgGeografiskTilhørighet(DONALD_DUCK);
+        PdlRespons pdlRespons = persondataService.hentPersondata(DONALD_DUCK);
         assertThat(PersondataService.hentGeoLokasjonFraPdlRespons(pdlRespons).get()).isEqualTo("030104");
     }
 

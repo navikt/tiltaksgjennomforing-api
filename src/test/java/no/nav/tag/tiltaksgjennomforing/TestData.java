@@ -37,7 +37,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.persondata.*;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelse;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 
@@ -296,5 +296,15 @@ public class TestData {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(avtale.getVeilederNavIdent(), avtale.getDeltakerFnr())).thenReturn(true);
         return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, persondataService, mock(Norg2Client.class));
+    }
+
+    public static PdlRespons enPdlrespons(boolean harKode6eller7){
+        Adressebeskyttelse adressebeskyttelser[] = new Adressebeskyttelse[1];
+        if(harKode6eller7){
+            adressebeskyttelser[0] = new Adressebeskyttelse("FORTROLIG");
+        }
+
+        HentPerson hentPerson = new HentPerson(adressebeskyttelser, new Navn[]{new Navn("Donald", null, "Duck")});
+        return new PdlRespons(new Data(hentPerson, null, new HentGeografiskTilknytning(null, "030101", null, null)));
     }
 }

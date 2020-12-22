@@ -11,6 +11,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
+import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -216,7 +217,6 @@ public class AvtaleControllerTest {
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = new Fnr("11111100000");
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(enNavAnsatt.getIdentifikator(), deltakerFnr)).thenReturn(false);
-        when(persondataServiceIMetode.erKode6Eller7(deltakerFnr)).thenReturn(true);
         avtaleController.opprettAvtaleSomVeileder(new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING));
     }
 
@@ -227,7 +227,9 @@ public class AvtaleControllerTest {
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = new Fnr("11111100000");
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(enNavAnsatt.getIdentifikator(), deltakerFnr)).thenReturn(true);
-        when(persondataServiceIMetode.erKode6Eller7(deltakerFnr)).thenReturn(true);
+        PdlRespons pdlRespons = TestData.enPdlrespons(true);
+        when(persondataServiceIMetode.hentPersondata(deltakerFnr)).thenReturn(pdlRespons);
+        when(persondataServiceIMetode.erKode6Eller7(pdlRespons)).thenCallRealMethod();
         avtaleController.opprettAvtaleSomVeileder(new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING));
     }
 
