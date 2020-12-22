@@ -3,13 +3,14 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.tag.tiltaksgjennomforing.TestData;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6Eller7Exception;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
-import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,6 +51,12 @@ public class AvtaleControllerTest {
     @Mock
     private PersondataService persondataService;
 
+    @Mock
+    VeilarbArenaClient veilarbArenaClient;
+
+    @Mock
+    Norg2Client norg2Client;
+
     private static List<Avtale> lagListeMedAvtaler(Avtale avtale, int antall) {
         List<Avtale> avtaler = new ArrayList<>();
         for (int i = 0; i <= antall; i++) {
@@ -67,7 +74,7 @@ public class AvtaleControllerTest {
     @Test
     public void hentSkalReturnereRiktigAvtale() {
         Avtale avtale = enArbeidstreningAvtale();
-        Veileder veileder = new Veileder(TestData.enNavIdent(), tilgangskontrollService, persondataService);
+        Veileder veileder = new Veileder(TestData.enNavIdent(), tilgangskontrollService, persondataService, norg2Client);
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder.getIdentifikator()), any(Fnr.class))).thenReturn(true);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
@@ -87,7 +94,7 @@ public class AvtaleControllerTest {
     @Test(expected = TilgangskontrollException.class)
     public void hentSkalKastTilgangskontrollExceptionHvisInnloggetNavAnsattIkkeHarTilgang() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        værInnloggetSom(new Veileder(new NavIdent("Z333333"), tilgangskontrollService, persondataService));
+        værInnloggetSom(new Veileder(new NavIdent("Z333333"), tilgangskontrollService, persondataService, norg2Client));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER);
     }
@@ -98,7 +105,7 @@ public class AvtaleControllerTest {
         Avtale avtaleForVeilederSomSøkesEtter = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), veilederNavIdent);
         Avtale avtaleForAnnenVeilder = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), new NavIdent("Z111111"));
         NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
-        Veileder veileder = new Veileder(identTilInnloggetVeileder, tilgangskontrollService, persondataService);
+        Veileder veileder = new Veileder(identTilInnloggetVeileder, tilgangskontrollService, persondataService, norg2Client);
         værInnloggetSom(veileder);
         when(avtaleRepository.findAllByVeilederNavIdent(veilederNavIdent)).thenReturn(asList(avtaleForVeilederSomSøkesEtter, avtaleForAnnenVeilder));
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(identTilInnloggetVeileder), any(Fnr.class))).thenReturn(true);
@@ -115,7 +122,7 @@ public class AvtaleControllerTest {
         NavIdent veilederNavIdent = new NavIdent("Z222222");
         Avtale avtaleForVeilederSomSøkesEtter = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), veilederNavIdent);
         NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
-        Veileder veileder = new Veileder(identTilInnloggetVeileder, tilgangskontrollService, persondataService);
+        Veileder veileder = new Veileder(identTilInnloggetVeileder, tilgangskontrollService, persondataService, norg2Client);
         værInnloggetSom(veileder);
         when(avtaleRepository.findAllByVeilederNavIdent(veilederNavIdent)).thenReturn(List.of(avtaleForVeilederSomSøkesEtter));
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(identTilInnloggetVeileder), any(Fnr.class))).thenReturn(false);
@@ -128,7 +135,7 @@ public class AvtaleControllerTest {
         NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
         Avtale avtaleForInnloggetVeileder = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), identTilInnloggetVeileder);
         Avtale avtaleForAnnenVeilder = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), new NavIdent("Z111111"));
-        Veileder veileder = new Veileder(identTilInnloggetVeileder, tilgangskontrollService, persondataService);
+        Veileder veileder = new Veileder(identTilInnloggetVeileder, tilgangskontrollService, persondataService, norg2Client);
         værInnloggetSom(veileder);
         when(avtaleRepository.findAllByVeilederNavIdent(identTilInnloggetVeileder)).thenReturn(asList(avtaleForInnloggetVeileder, avtaleForAnnenVeilder));
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(identTilInnloggetVeileder), any(Fnr.class))).thenReturn(true);
@@ -152,7 +159,6 @@ public class AvtaleControllerTest {
         værInnloggetSom(TestData.enVeileder(avtale));
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
         when(eregService.hentVirksomhet(avtale.getBedriftNr())).thenReturn(new Organisasjon(avtale.getBedriftNr(), avtale.getBedriftNavn()));
-        when(persondataService.hentNavn(any())).thenReturn(Navn.TOMT_NAVN);
         ResponseEntity svar = avtaleController.opprettAvtaleSomVeileder(new OpprettAvtale(avtale.getDeltakerFnr(), avtale.getBedriftNr(), Tiltakstype.ARBEIDSTRENING));
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(svar.getHeaders().getLocation().getPath()).isEqualTo("/avtaler/" + avtale.getId());
@@ -169,7 +175,7 @@ public class AvtaleControllerTest {
     @Test
     public void endreAvtaleSkalReturnereOkHvisInnloggetPersonErVeileder() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        Veileder veileder = new Veileder(enNavIdent(), tilgangskontrollService, persondataService);
+        Veileder veileder = new Veileder(enNavIdent(), tilgangskontrollService, persondataService, norg2Client);
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(any(NavIdent.class), any(Fnr.class))).thenReturn(true);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
@@ -206,7 +212,7 @@ public class AvtaleControllerTest {
     @Test(expected = IkkeTilgangTilDeltakerException.class)
     public void opprettAvtaleSomVeileder__skal_feile_hvis_veileder_ikke_har_tilgang_til_bruker() {
         PersondataService persondataServiceIMetode = mock(PersondataService.class);
-        Veileder enNavAnsatt = new Veileder(new NavIdent("T000000"), tilgangskontrollService, persondataServiceIMetode);
+        Veileder enNavAnsatt = new Veileder(new NavIdent("T000000"), tilgangskontrollService, persondataServiceIMetode, norg2Client);
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = new Fnr("11111100000");
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(enNavAnsatt.getIdentifikator(), deltakerFnr)).thenReturn(false);
@@ -217,7 +223,7 @@ public class AvtaleControllerTest {
     @Test(expected = KanIkkeOppretteAvtalePåKode6Eller7Exception.class)
     public void opprettAvtaleSomVeileder__skal_feile_hvis_kode6() {
         PersondataService persondataServiceIMetode = mock(PersondataService.class);
-        Veileder enNavAnsatt = new Veileder(new NavIdent("T000000"), tilgangskontrollService, persondataServiceIMetode);
+        Veileder enNavAnsatt = new Veileder(new NavIdent("T000000"), tilgangskontrollService, persondataServiceIMetode, norg2Client);
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = new Fnr("11111100000");
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(enNavAnsatt.getIdentifikator(), deltakerFnr)).thenReturn(true);

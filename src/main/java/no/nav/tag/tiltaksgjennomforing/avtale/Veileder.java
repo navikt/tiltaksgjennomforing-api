@@ -3,7 +3,12 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.exceptions.*;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
+import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6Eller7Exception;
+import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 
 import java.time.Instant;
@@ -11,6 +16,8 @@ import java.util.List;
 import java.util.Set;
 
 import static java.util.Collections.emptyList;
+import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentGeoLokasjonFraPdlRespons;
+import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
 public class Veileder extends Avtalepart<NavIdent> {
     static String tekstAvtaleVenterPaaDinGodkjenning = "Før du godkjenner avtalen må du sjekke at alt er i orden og innholdet er riktig.";
@@ -18,21 +25,24 @@ public class Veileder extends Avtalepart<NavIdent> {
     static String tekstAvtaleAvbrutt = "Du eller en annen veileder har avbrutt tiltaket.";
     private final TilgangskontrollService tilgangskontrollService;
     private final PersondataService persondataService;
+    private final Norg2Client norg2Client;
     String venteListeForVeileder;
 
-    public Veileder(NavIdent identifikator, TilgangskontrollService tilgangskontrollService, PersondataService persondataService) {
+    public Veileder(NavIdent identifikator, TilgangskontrollService tilgangskontrollService, PersondataService persondataService, Norg2Client norg2Client) {
         super(identifikator);
         this.tilgangskontrollService = tilgangskontrollService;
         this.persondataService = persondataService;
+        this.norg2Client = norg2Client;
     }
 
-    public Veileder(NavIdent identifikator, Avtale avtale, TilgangskontrollService tilgangskontrollService, PersondataService persondataService) {
+    public Veileder(NavIdent identifikator, Avtale avtale, TilgangskontrollService tilgangskontrollService, PersondataService persondataService, Norg2Client norg2Client) {
         super(identifikator);
         this.venteListeForVeileder = "Du må vente for " + (!avtale.erGodkjentAvArbeidsgiver() ? "arbeidsgiver" : "");
         this.venteListeForVeileder = this.venteListeForVeileder +
                 ((!avtale.erGodkjentAvDeltaker() ? " og deltaker" : "") + " godkjenner avtale");
         this.tilgangskontrollService = tilgangskontrollService;
         this.persondataService = persondataService;
+        this.norg2Client = norg2Client;
     }
 
     @Override
@@ -177,6 +187,17 @@ public class Veileder extends Avtalepart<NavIdent> {
         if (erKode6Eller7) {
             throw new KanIkkeOppretteAvtalePåKode6Eller7Exception();
         }
-        return Avtale.veilederOppretterAvtale(opprettAvtale, getIdentifikator());
+        Avtale avtale = Avtale.veilederOppretterAvtale(opprettAvtale, getIdentifikator());
+        leggTilDeltakerNavnOgGeografiskEnhet(avtale);
+        return avtale;
+    }
+
+    private void leggTilDeltakerNavnOgGeografiskEnhet(Avtale avtale) {
+        PdlRespons pdlRespons = persondataService.hentNavnOgGeografiskTilhørighet(avtale.getDeltakerFnr());
+        avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(pdlRespons));
+        String enhet = hentGeoLokasjonFraPdlRespons(pdlRespons)
+                .map(geoLokasjon -> norg2Client.hentGeografiskEnhet(geoLokasjon))
+                .orElse(null);
+        avtale.setEnhetGeografisk(enhet);
     }
 }

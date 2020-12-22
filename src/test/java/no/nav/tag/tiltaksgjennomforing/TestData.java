@@ -36,6 +36,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelse;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
@@ -220,7 +221,7 @@ public class TestData {
     public static Veileder enVeileder(Avtale avtale) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(avtale.getVeilederNavIdent()), eq(avtale.getDeltakerFnr()))).thenReturn(true);
-        return new Veileder(avtale.getVeilederNavIdent(), avtale, tilgangskontrollService, mock(PersondataService.class));
+        return new Veileder(avtale.getVeilederNavIdent(), avtale, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class));
     }
 
     public static Maal etMaal() {
@@ -288,12 +289,12 @@ public class TestData {
     }
 
     public static Veileder enVeileder(NavIdent navIdent) {
-        return new Veileder(navIdent, mock(TilgangskontrollService.class), mock(PersondataService.class));
+        return new Veileder(navIdent, mock(TilgangskontrollService.class), mock(PersondataService.class), mock(Norg2Client.class));
     }
 
     public static Veileder enVeileder(Avtale avtale, PersondataService persondataService) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(avtale.getVeilederNavIdent(), avtale.getDeltakerFnr())).thenReturn(true);
-        return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, persondataService);
+        return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, persondataService, mock(Norg2Client.class));
     }
 }

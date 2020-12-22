@@ -7,6 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,7 @@ public class InnloggingService {
     private final AltinnTilgangsstyringService altinnTilgangsstyringService;
     private final TilgangskontrollService tilgangskontrollService;
     private final PersondataService persondataService;
+    private final Norg2Client norg2Client;
 
     public Avtalepart hentAvtalepart(Avtalerolle avtalerolle) {
         BrukerOgIssuer brukerOgIssuer = tokenUtils.hentBrukerOgIssuer().orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget."));
@@ -35,7 +37,7 @@ public class InnloggingService {
             Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(new Fnr(brukerOgIssuer.getBrukerIdent()));
             return new Arbeidsgiver(new Fnr(brukerOgIssuer.getBrukerIdent()), altinnOrganisasjoner, tilganger);
         } else if (issuer == Issuer.ISSUER_ISSO && avtalerolle == Avtalerolle.VEILEDER) {
-            return new Veileder(new NavIdent(brukerOgIssuer.getBrukerIdent()), tilgangskontrollService, persondataService);
+            return new Veileder(new NavIdent(brukerOgIssuer.getBrukerIdent()), tilgangskontrollService, persondataService, norg2Client);
         } else {
             throw new TilgangskontrollException("Ugyldig kombinasjon av issuer og rolle.");
         }
@@ -74,6 +76,4 @@ public class InnloggingService {
             .filter(t -> (Issuer.ISSUER_SYSTEM == t.getIssuer() && systembrukerProperties.getId().equals(t.getBrukerIdent())))
             .orElseThrow(() -> new TilgangskontrollException("Systemet har ikke tilgang til tjenesten"));
     }
-
-
 }

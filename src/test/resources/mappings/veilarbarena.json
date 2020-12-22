@@ -1,9 +1,10 @@
 {
   "mappings": [
     {
+      "priority": 1,
       "request": {
         "method": "GET",
-        "urlPathPattern": "/veilarbarena/oppfolgingsstatus/1\\d{10}"
+        "urlPattern": "/veilarbarena/oppfolgingsstatus/([0-9]*)\\d{11}"
       },
       "response": {
         "status": 200,

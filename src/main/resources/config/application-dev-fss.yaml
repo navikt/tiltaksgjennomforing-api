@@ -67,8 +67,9 @@ tiltaksgjennomforing:
     system:
       id: ${tiltaksgjennomforing.consumer.system}
   veilarbarena:
-    url: https://veilarbarena-q0.nais.preprod.local/veilarbarena/api
-
+    url: https://veilarbarena-q0.nais.preprod.local/veilarbarena/api/oppfolgingsstatus
+  norg2:
+    url: https://app-q1.adeo.no/norg2/api/v1/enhet/navkontor/
 
 http:
   proxy:

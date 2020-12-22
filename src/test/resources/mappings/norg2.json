@@ -1,0 +1,19 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/norg2/api/v1/enhet/navkontor/\\d{6}"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "enhetId": "0313"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}

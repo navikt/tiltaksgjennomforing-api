@@ -20,8 +20,8 @@ class VeilarbArenaClientTest {
 
   @Test
   public void hent_oppfølingsEnhet_fra_arena() {
-    Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.hentOppfølgingsEnhet("12345678901");
-    assertThat(oppfølgingsstatus.getOppfolgingsenhet()).isEqualTo("1416");
+    String oppfølgingsEnhet = veilarbArenaClient.hentOppfølgingsEnhet("12345678901");
+    assertThat(oppfølgingsEnhet).isEqualTo("1416");
   }
 
   @Test

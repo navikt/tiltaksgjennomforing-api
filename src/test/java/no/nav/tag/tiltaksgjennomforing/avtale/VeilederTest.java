@@ -1,18 +1,19 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.TestData;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
-import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.persondata.*;
 import org.junit.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class VeilederTest {
     @Test(expected = VeilederSkalGodkjenneSistException.class)
@@ -141,5 +142,33 @@ public class VeilederTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Veileder veileder = TestData.enVeileder(avtale);
         veileder.overtaAvtale(avtale);
+    }
+
+    @Test
+    public void oprettAvtale__setter_startverdier_på_avtale() {
+        OpprettAvtale opprettAvtale = new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        PersondataService persondataService = mock(PersondataService.class);
+        Norg2Client norg2Client = mock(Norg2Client.class);
+        final PdlRespons pdlRespons = lagPdlrespons();
+        final String navEnhet = "0411";
+
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(TestData.enNavIdent()), eq(TestData.etFodselsnummer()))).thenReturn(true);
+        when(persondataService.erKode6(TestData.etFodselsnummer())).thenReturn(false);
+        when(persondataService.hentNavnOgGeografiskTilhørighet(TestData.etFodselsnummer())).thenReturn(pdlRespons);
+        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel())).thenReturn(navEnhet);
+
+        Veileder veileder = new Veileder(TestData.enNavIdent(), tilgangskontrollService, persondataService, norg2Client);
+        Avtale avtale = veileder.opprettAvtale(opprettAvtale);
+
+        assertThat(avtale.getVeilederNavIdent()).isEqualTo(TestData.enNavIdent());
+        assertThat(avtale.getDeltakerFornavn()).isEqualTo("Donald");
+        assertThat(avtale.getDeltakerEtternavn()).isEqualTo("Duck");
+        assertThat(avtale.getEnhetGeografisk()).isEqualTo(navEnhet);
+    }
+
+    private PdlRespons lagPdlrespons(){
+        HentPerson hentPerson = new HentPerson(null, new Navn[]{new Navn("Donald", null, "Duck")});
+        return new PdlRespons(new Data(hentPerson, null, new HentGeografiskTilknytning(null, "030101", null, null)));
     }
 }

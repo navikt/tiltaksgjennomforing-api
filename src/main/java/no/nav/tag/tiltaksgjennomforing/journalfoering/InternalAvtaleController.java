@@ -43,5 +43,3 @@ public class InternalAvtaleController {
         return ResponseEntity.ok().build();
     }
 }
-
-

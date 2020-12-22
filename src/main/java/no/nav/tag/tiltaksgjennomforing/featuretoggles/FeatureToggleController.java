@@ -25,9 +25,7 @@ public class FeatureToggleController {
 
     @GetMapping("/feature")
     public ResponseEntity<Map<String, Boolean>> feature(@RequestParam("feature") List<String> features) {
-
         return ResponseEntity.status(OK).body(featureToggleService.hentFeatureToggles(features));
-
     }
 
 }

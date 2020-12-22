@@ -64,4 +64,6 @@ tiltaksgjennomforing:
   unleash:
     mock: true
   veilarbarena:
-    url: http://localhost:8090/veilarbarena
+    url: http://localhost:8090/veilarbarena/oppfolgingsstatus
+  norg2:
+    url: http://localhost:8090/norg2/api/v1/enhet/navkontor/

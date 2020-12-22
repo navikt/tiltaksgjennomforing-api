@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 import no.nav.tag.tiltaksgjennomforing.TestData;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,6 +26,7 @@ public class InnloggetBrukerTest {
     private BedriftNr bedriftNr;
     private TilgangskontrollService tilgangskontrollService;
     private PersondataService persondataService;
+    private Norg2Client norg2Client;
 
     @Before
     public void setup() {
@@ -43,7 +45,7 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__veileder_skal_ha_lesetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_er_ok() {
-        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService);
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(veileder.getIdentifikator(), avtale.getDeltakerFnr())).thenReturn(true);
 
         assertThat(veileder.harTilgang(avtale)).isTrue();
@@ -52,7 +54,7 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__veileder_skal_ikke_ha_lesetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_feiler() {
-        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService);
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(veileder.getIdentifikator(), avtale.getDeltakerFnr())).thenReturn(false);
 
         assertThat(veileder.harTilgang(avtale)).isFalse();
@@ -60,7 +62,7 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__veileder_skal_ha_skrivetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_er_ok() {
-        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService);
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(veileder.getIdentifikator(), avtale.getDeltakerFnr())).thenReturn(true);
 
         assertThat(veileder.harTilgang(avtale)).isTrue();
@@ -69,7 +71,7 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__veileder_skal_ikke_ha_skrivetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_feiler() {
-        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService);
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(veileder.getIdentifikator(), avtale.getDeltakerFnr())).thenReturn(false);
 
         assertThat(veileder.harTilgang(avtale)).isFalse();
@@ -82,12 +84,12 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__ikkepart_veileder_skal_ikke_ha_lesetilgang_hvis_toggle_er_av() {
-        assertThat(new Veileder(new NavIdent("X123456"), tilgangskontrollService, persondataService).harTilgang(avtale)).isFalse();
+        assertThat(new Veileder(new NavIdent("X123456"), tilgangskontrollService, persondataService, norg2Client).harTilgang(avtale)).isFalse();
     }
 
     @Test
     public void harTilgang__ikkepart_veileder_skal_ikke_ha_skrivetilgang_hvis_toggle_er_av() {
-        assertThat(new Veileder(new NavIdent("X123456"), tilgangskontrollService, persondataService).harTilgang(avtale)).isFalse();
+        assertThat(new Veileder(new NavIdent("X123456"), tilgangskontrollService, persondataService, norg2Client).harTilgang(avtale)).isFalse();
     }
 
     @Test
