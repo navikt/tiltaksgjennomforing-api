@@ -192,15 +192,8 @@ public class Veileder extends Avtalepart<NavIdent> {
         }
 
         Avtale avtale = Avtale.veilederOppretterAvtale(opprettAvtale, getIdentifikator());
-        leggTilDeltakerNavnOgGeografiskEnhet(avtale, persondata);
+        avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(persondata));
+        leggTilGeografiskEnhet(avtale, persondata, norg2Client);
         return avtale;
-    }
-
-    private void leggTilDeltakerNavnOgGeografiskEnhet(Avtale avtale, PdlRespons pdlRespons) {
-        avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(pdlRespons));
-        String enhet = hentGeoLokasjonFraPdlRespons(pdlRespons)
-                .map(geoLokasjon -> norg2Client.hentGeografiskEnhet(geoLokasjon))
-                .orElse(null);
-        avtale.setEnhetGeografisk(enhet);
     }
 }

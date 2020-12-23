@@ -207,11 +207,17 @@ public class TestData {
     }
 
     public static Arbeidsgiver enArbeidsgiver() {
-        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of());
+        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of(), null, null);
     }
 
     public static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
-        return new Arbeidsgiver(TestData.etFodselsnummer(), Set.of(new AltinnReportee("Bedriftnavn", "", null, avtale.getBedriftNr().asString(), "", "")), Map.of(avtale.getBedriftNr(), List.of(Tiltakstype.values())));
+        return new Arbeidsgiver(
+                TestData.etFodselsnummer(),
+                Set.of(new AltinnReportee("Bedriftnavn", "", null, avtale.getBedriftNr().asString(), "", ""))
+                , Map.of(avtale.getBedriftNr(),
+                List.of(Tiltakstype.values())),
+                null,
+                null);
     }
 
     public static Fnr etFodselsnummer() {

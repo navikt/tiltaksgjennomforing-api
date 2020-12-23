@@ -149,7 +149,7 @@ public class AvtaleControllerTest {
     @Test(expected = TilgangskontrollException.class)
     public void hentSkalKastTilgangskontrollExceptionHvisInnloggetSelvbetjeningBrukerIkkeHarTilgang() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        værInnloggetSom(new Arbeidsgiver(new Fnr("55555566666"), Set.of(), Map.of()));
+        værInnloggetSom(new Arbeidsgiver(new Fnr("55555566666"), Set.of(), Map.of(), null, null));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         avtaleController.hent(avtale.getId(), Avtalerolle.ARBEIDSGIVER);
     }
@@ -235,7 +235,7 @@ public class AvtaleControllerTest {
 
     @Test(expected = TilgangskontrollException.class)
     public void opprettAvtaleSomArbeidsgiver__skal_feile_hvis_ag_ikke_har_tilgang_til_bedrift() {
-        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(TestData.etFodselsnummer(), Set.of(), Map.of());
+        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(TestData.etFodselsnummer(), Set.of(), Map.of(), null, null);
         værInnloggetSom(arbeidsgiver);
         avtaleController.opprettAvtaleSomArbeidsgiver(new OpprettAvtale(new Fnr("99887765432"), new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING));
     }
@@ -378,5 +378,16 @@ public class AvtaleControllerTest {
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         Avtale hentetAvtale = avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER);
         assertThat(hentetAvtale.getAvbruttGrunn()).isNull();
+    }
+
+    @Test
+    public void viser_ikke_navenheter_til_arbeidsgiver() {
+        Avtale avtale = enArbeidstreningAvtale();
+        var arbeidsgiver = TestData.enArbeidsgiver(avtale);
+        værInnloggetSom(arbeidsgiver);
+        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
+        Avtale hentetAvtale = avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER);
+        assertThat(hentetAvtale.getEnhetGeografisk()).isNull();
+        assertThat(hentetAvtale.getEnhetOppfolging()).isNull();
     }
 }

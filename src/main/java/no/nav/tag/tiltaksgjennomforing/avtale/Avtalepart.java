@@ -3,12 +3,14 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.hendelselogg.Hendelselogg;
 import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
+import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
@@ -17,6 +19,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentGeoLokasjonFraPdlRespons;
 
 @AllArgsConstructor
 @Data
@@ -105,5 +109,12 @@ public abstract class Avtalepart<T extends Identifikator> {
     public List<Hendelselogg> hentHendelselogg(UUID avtaleId, AvtaleRepository avtaleRepository, HendelseloggRepository hendelseloggRepository) {
         Avtale avtale = hentAvtale(avtaleRepository, avtaleId);
         return hendelseloggRepository.findAllByAvtaleId(avtale.getId());
+    }
+
+    protected void leggTilGeografiskEnhet(Avtale avtale, PdlRespons pdlRespons, Norg2Client norg2Client) {
+        String enhet = hentGeoLokasjonFraPdlRespons(pdlRespons)
+                .map(geoLokasjon -> norg2Client.hentGeografiskEnhet(geoLokasjon))
+                .orElse(null);
+        avtale.setEnhetGeografisk(enhet);
     }
 }

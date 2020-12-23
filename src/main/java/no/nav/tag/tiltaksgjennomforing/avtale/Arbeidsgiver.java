@@ -3,7 +3,10 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -18,10 +21,15 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     static String tekstTiltaketErAvsluttet = "Hvis du har spørsmål må du kontakte NAV.";
     private final Map<BedriftNr, Collection<Tiltakstype>> tilganger;
     private final Set<AltinnReportee> altinnOrganisasjoner;
-    public Arbeidsgiver(Fnr identifikator, Set<AltinnReportee> altinnOrganisasjoner, Map<BedriftNr, Collection<Tiltakstype>> tilganger) {
+    private final PersondataService persondataService;
+    private final Norg2Client norg2Client;
+
+    public Arbeidsgiver(Fnr identifikator, Set<AltinnReportee> altinnOrganisasjoner, Map<BedriftNr, Collection<Tiltakstype>> tilganger, PersondataService persondataService, Norg2Client norg2Client) {
         super(identifikator);
         this.altinnOrganisasjoner = altinnOrganisasjoner;
         this.tilganger = tilganger;
+        this.persondataService = persondataService;
+        this.norg2Client = norg2Client;
     }
 
     private static boolean avbruttForMerEnn12UkerSiden(Avtale avtale) {
@@ -166,7 +174,10 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         if (!harTilgangPåTiltakIBedrift(opprettAvtale.getBedriftNr(), opprettAvtale.getTiltakstype())) {
             throw new TilgangskontrollException("Har ikke tilgang på tiltak i valgt bedrift");
         }
-        return Avtale.arbeidsgiverOppretterAvtale(opprettAvtale);
+        Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(opprettAvtale);
+        final PdlRespons persondata = persondataService.hentPersondata(opprettAvtale.getDeltakerFnr());
+        leggTilGeografiskEnhet(avtale, persondata, norg2Client);
+        return avtale;
     }
 
     @Override
