@@ -38,7 +38,7 @@ public class OppgaveVarselService {
             try {
                 oppgaveResponse = restTemplate.postForObject(uri, entityMedStsToken(oppgaveRequest, avtaleId), OppgaveResponse.class);
             } catch (Exception e2) {
-                log.error("Kall til Oppgave feilet: {}", e2.getMessage());
+                log.error("Kall til Oppgave feilet, avtaleId={} : {}", avtaleId, e2.getMessage());
                 throw new GosysFeilException();
             }
         log.info("Opprettet oppgave for tiltak {}. OppgaveId={}, avtaleId={}", tiltakstype.getNavn(), oppgaveResponse.getId(), avtaleId);
