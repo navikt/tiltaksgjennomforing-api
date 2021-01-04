@@ -37,7 +37,7 @@ public class VeilarbArenaClient {
                 log.warn("Kandidat ikke registrert i veilarbarena");
                 return null;
             }
-            log.error("Kunne ikke hente Oppfølgingsstatus fra veilarbarena");
+            log.error("Kunne ikke hente Oppfølgingsstatus fra veilarbarena: status=" + exception.getRawStatusCode());
             throw new VeilarbArenaException("Kunne ikke hente Oppfølgingsstatus fra veilarbarena");
         }
     }
