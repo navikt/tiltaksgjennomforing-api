@@ -1,20 +1,19 @@
 package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 
+import no.finn.unleash.Variant;
+import no.nav.security.oidc.api.Unprotected;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import no.nav.security.oidc.api.Unprotected;
-
-import static org.springframework.http.HttpStatus.OK;
 
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @Unprotected
+@RequestMapping("/feature")
 public class FeatureToggleController {
     private final FeatureToggleService featureToggleService;
 
@@ -23,9 +22,14 @@ public class FeatureToggleController {
         this.featureToggleService = featureToggleService;
     }
 
-    @GetMapping("/feature")
-    public ResponseEntity<Map<String, Boolean>> feature(@RequestParam("feature") List<String> features) {
-        return ResponseEntity.status(OK).body(featureToggleService.hentFeatureToggles(features));
+    @GetMapping
+    public Map<String, Boolean> feature(@RequestParam("feature") List<String> features) {
+        return featureToggleService.hentFeatureToggles(features);
+    }
+
+    @GetMapping("/variant")
+    public Map<String, Variant> variant(@RequestParam("feature") List<String> features) {
+        return  featureToggleService.hentVarianter(features);
     }
 
 }
