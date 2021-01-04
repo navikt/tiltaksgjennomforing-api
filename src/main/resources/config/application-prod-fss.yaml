@@ -69,7 +69,7 @@ tiltaksgjennomforing:
   veilarbarena:
     url: https://veilarbarena.nais.adeo.no/veilarbarena/api
   norg2:
-    url: https://app.adeo.no/norg2/api/v1/enhet/navkontor/
+    url: https://norg2.nais.adeo.no/norg2/api/v1/enhet/navkontor/
 http:
   proxy:
     parametername: nothing
