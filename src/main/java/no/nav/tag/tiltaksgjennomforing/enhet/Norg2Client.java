@@ -16,7 +16,7 @@ public class Norg2Client {
 
     @SneakyThrows
     public String hentGeografiskEnhet(String geoOmråde) {
-        return restTemplate.getForObject(norg2Properties.getUrl() + geoOmråde, Norg2Response.class).getEnhetId();
+        return restTemplate.getForObject(norg2Properties.getUrl() + geoOmråde, Norg2Response.class).getEnhetNr();
     }
 }
 

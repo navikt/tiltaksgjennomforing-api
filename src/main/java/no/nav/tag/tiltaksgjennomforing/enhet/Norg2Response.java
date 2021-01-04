@@ -4,5 +4,5 @@ import lombok.Value;
 
 @Value
 public class Norg2Response {
-    private final String enhetId;
+    private final String enhetNr;
 }
