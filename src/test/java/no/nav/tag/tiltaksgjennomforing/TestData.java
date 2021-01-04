@@ -36,7 +36,8 @@ import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
-import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.persondata.*;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelse;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 
@@ -206,11 +207,17 @@ public class TestData {
     }
 
     public static Arbeidsgiver enArbeidsgiver() {
-        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of());
+        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of(), null, null);
     }
 
     public static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
-        return new Arbeidsgiver(TestData.etFodselsnummer(), Set.of(new AltinnReportee("Bedriftnavn", "", null, avtale.getBedriftNr().asString(), "", "")), Map.of(avtale.getBedriftNr(), List.of(Tiltakstype.values())));
+        return new Arbeidsgiver(
+                TestData.etFodselsnummer(),
+                Set.of(new AltinnReportee("Bedriftnavn", "", null, avtale.getBedriftNr().asString(), "", ""))
+                , Map.of(avtale.getBedriftNr(),
+                List.of(Tiltakstype.values())),
+                null,
+                null);
     }
 
     public static Fnr etFodselsnummer() {
@@ -220,7 +227,7 @@ public class TestData {
     public static Veileder enVeileder(Avtale avtale) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(avtale.getVeilederNavIdent()), eq(avtale.getDeltakerFnr()))).thenReturn(true);
-        return new Veileder(avtale.getVeilederNavIdent(), avtale, tilgangskontrollService, mock(PersondataService.class));
+        return new Veileder(avtale.getVeilederNavIdent(), avtale, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class));
     }
 
     public static Maal etMaal() {
@@ -288,12 +295,22 @@ public class TestData {
     }
 
     public static Veileder enVeileder(NavIdent navIdent) {
-        return new Veileder(navIdent, mock(TilgangskontrollService.class), mock(PersondataService.class));
+        return new Veileder(navIdent, mock(TilgangskontrollService.class), mock(PersondataService.class), mock(Norg2Client.class));
     }
 
     public static Veileder enVeileder(Avtale avtale, PersondataService persondataService) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(avtale.getVeilederNavIdent(), avtale.getDeltakerFnr())).thenReturn(true);
-        return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, persondataService);
+        return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, persondataService, mock(Norg2Client.class));
+    }
+
+    public static PdlRespons enPdlrespons(boolean harKode6eller7){
+        Adressebeskyttelse adressebeskyttelser[] = new Adressebeskyttelse[1];
+        if(harKode6eller7){
+            adressebeskyttelser[0] = new Adressebeskyttelse("FORTROLIG");
+        }
+
+        HentPerson hentPerson = new HentPerson(adressebeskyttelser, new Navn[]{new Navn("Donald", null, "Duck")});
+        return new PdlRespons(new Data(hentPerson, null, new HentGeografiskTilknytning(null, "030101", null, null)));
     }
 }

@@ -1,0 +1,72 @@
+{
+  "mappings": [
+    {
+      "priority": 2,
+      "request": {
+        "method": "GET",
+        "urlPattern": "/veilarbarena/oppfolgingsstatus/([0-9]*)\\d{11}"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "rettighetsgruppe": "IYT",
+          "formidlingsgruppe": "ARBS",
+          "servicegruppe": "IVURD",
+          "oppfolgingsenhet": "1416",
+          "inaktiveringsdato": null,
+          "kanEnkeltReaktiveres": null
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPattern": "/veilarbarena/oppfolgingsstatus/11111111111"
+      },
+      "response": {
+        "status": 500,
+        "jsonBody": {},
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPattern": "/veilarbarena/oppfolgingsstatus/22222222222"
+      },
+      "response": {
+        "status": 404,
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPattern": "/veilarbarena/oppfolgingsstatus/33333333333"
+      },
+      "response": {
+        "status": 404,
+        "jsonBody": {
+          "timestamp": "2021-01-04T13:06:25.211+00:00",
+          "status": 404,
+          "error": "Not Found",
+          "message": "",
+          "path": "/veilarbarena/api/oppfolgingsstatus/33333333333"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}

@@ -66,7 +66,10 @@ tiltaksgjennomforing:
   consumer:
     system:
       id: ${tiltaksgjennomforing.consumer.system}
-
+  veilarbarena:
+    url: https://veilarbarena.nais.adeo.no/veilarbarena/api
+  norg2:
+    url: https://app.adeo.no/norg2/api/v1/enhet/navkontor/
 http:
   proxy:
     parametername: nothing
