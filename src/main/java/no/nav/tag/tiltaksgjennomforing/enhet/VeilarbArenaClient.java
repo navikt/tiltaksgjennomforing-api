@@ -32,7 +32,7 @@ public class VeilarbArenaClient {
                     Oppfølgingsstatus.class
             );
 
-            if (respons.getStatusCode().equals(HttpStatus.NO_CONTENT)) {
+            if (respons.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
                 log.warn("Kandidat ikke registrert i veilarbarena");
                 return null;
             } else {
