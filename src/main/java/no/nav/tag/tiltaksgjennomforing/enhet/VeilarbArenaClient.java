@@ -31,16 +31,13 @@ public class VeilarbArenaClient {
                     httpHeadere(),
                     Oppfølgingsstatus.class
             );
-
-            if (respons.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+            return respons.getBody().getOppfolgingsenhet();
+        } catch (RestClientResponseException exception) {
+            if (exception.getRawStatusCode() == HttpStatus.NOT_FOUND.value() && !exception.getResponseBodyAsString().isEmpty()) {
                 log.warn("Kandidat ikke registrert i veilarbarena");
                 return null;
-            } else {
-                return respons.getBody().getOppfolgingsenhet();
             }
-
-        } catch (RestClientResponseException exception) {
-            log.error("Kunne ikke hente Oppfølgingsstatus fra veilarbarena", exception);
+            log.error("Kunne ikke hente Oppfølgingsstatus fra veilarbarena");
             throw new VeilarbArenaException("Kunne ikke hente Oppfølgingsstatus fra veilarbarena");
         }
     }

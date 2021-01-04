@@ -25,9 +25,22 @@ class VeilarbArenaClientTest {
   }
 
   @Test
+  public void finner_ikke_oppfølingsEnhet_for_fnr() {
+    String oppfølgingsEnhet = veilarbArenaClient.hentOppfølgingsEnhet("33333333333");
+    assertThat(oppfølgingsEnhet).isNull();
+  }
+
+  @Test
   public void hent_oppfølingsEnhet_fra_arena__kaster_exception_ved_500() {
     assertThatThrownBy(() -> {
-      veilarbArenaClient.hentOppfølgingsEnhet("799999999");
+      veilarbArenaClient.hentOppfølgingsEnhet("11111111111");
+    }).isInstanceOf(VeilarbArenaException.class);
+  }
+
+  @Test
+  public void hent_oppfølingsEnhet_fra_arena__kaster_exception_feil_url() {
+    assertThatThrownBy(() -> {
+      veilarbArenaClient.hentOppfølgingsEnhet("22222222222");
     }).isInstanceOf(VeilarbArenaException.class);
   }
 
