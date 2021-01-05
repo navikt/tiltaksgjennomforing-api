@@ -49,6 +49,10 @@ tiltaksgjennomforing:
     veilarbabac-uri: http://tiltaksgjennomforing-wiremock/veilarbabac
   oppgave:
     oppgave-uri: http://tiltaksgjennomforing-wiremock/api/v1/oppgaver
+  veilarbarena:
+    url: http://tiltaksgjennomforing-wiremock/veilarbarena/oppfolgingsstatus
+  norg2:
+    url: http://tiltaksgjennomforing-wiremock/norg2/api/v1/enhet/navkontor/
   consumer:
     system:
       id: testsystem
