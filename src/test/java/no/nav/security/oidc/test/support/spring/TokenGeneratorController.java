@@ -1,23 +1,26 @@
 package no.nav.security.oidc.test.support.spring;
 
+import static no.nav.security.oidc.test.support.JwtTokenGenerator.ACR_LEVEL_4;
+
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.util.IOUtils;
 import com.nimbusds.jwt.SignedJWT;
-import no.nav.security.oidc.api.Unprotected;
-import no.nav.security.oidc.test.support.JwkGenerator;
-import no.nav.security.oidc.test.support.JwtTokenGenerator;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import static no.nav.security.oidc.test.support.JwtTokenGenerator.ACR_LEVEL_4;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import no.nav.security.oidc.api.Unprotected;
+import no.nav.security.oidc.test.support.JwkGenerator;
+import no.nav.security.oidc.test.support.JwtTokenGenerator;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/local")
@@ -38,7 +41,7 @@ public class TokenGeneratorController {
             String acrLevel
     ) throws IOException {
         long expiryTime = expiry != null ? Long.parseLong(expiry) : JwtTokenGenerator.EXPIRY;
-        SignedJWT token = JwtTokenGenerator.createSignedJWT(subject, expiryTime, claims, issuer, audience, acrLevel);
+        SignedJWT token = JwtTokenGenerator.createSignedJWT(subject, expiryTime, claims, issuer, audience, acrLevel, null);
         Cookie cookie = new Cookie(cookieName, token.serialize());
         cookie.setPath("/");
         response.addCookie(cookie);
