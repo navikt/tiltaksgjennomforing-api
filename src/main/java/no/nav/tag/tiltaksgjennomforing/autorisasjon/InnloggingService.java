@@ -23,6 +23,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -36,13 +37,17 @@ public class InnloggingService {
     private final PersondataService persondataService;
     private final Norg2Client norg2Client;
 
+    @Value("${}")
+    private final UUID beslutterAdGruppe;
+
+
     public Avtalepart hentAvtalepart(Avtalerolle avtalerolle) {
         BrukerOgIssuer brukerOgIssuer = tokenUtils.hentBrukerOgIssuer().orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget."));
         Issuer issuer = brukerOgIssuer.getIssuer();
         //TODO: Returnere riktig beslutter
         //TODO: hente ad gruppe fra properites env -> vault
         if ((issuer == Issuer.ISSUER_ISSO && avtalerolle == Avtalerolle.BESLUTTER && tokenUtils
-            .erRiktigADGruppeForBeslutter(UUID.fromString("beslutter-ad-gruppe")))) {
+            .harAdGruppe(UUID.fromString("beslutter-ad-gruppe")))) {
             return new Beslutter(new NavIdent(brukerOgIssuer.getBrukerIdent()));
         }
         if (issuer == Issuer.ISSUER_SELVBETJENING && avtalerolle == Avtalerolle.DELTAKER) {

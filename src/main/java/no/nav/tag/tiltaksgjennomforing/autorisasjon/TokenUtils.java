@@ -45,7 +45,7 @@ public class TokenUtils {
             .or(() -> hentClaim(ISSUER_ISSO, "NAVident").map(sub -> new BrukerOgIssuer(ISSUER_ISSO, sub)));
     }
 
-    public boolean erRiktigADGruppeForBeslutter(UUID gruppeAD) {
+    public boolean harAdGruppe(UUID gruppeAD) {
         return hentClaim(ISSUER_ISSO, "groups").filter(sub -> sub.contains(gruppeAD.toString())).isPresent();
     }
 

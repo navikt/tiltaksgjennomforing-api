@@ -49,7 +49,7 @@ public class TokenUtilsTest {
         vaerInnloggetNavAnsatt(navBeslutter);
         assertThat(tokenUtils.hentBrukerOgIssuer().get()).isEqualTo(new BrukerOgIssuer(ISSUER_ISSO, navBeslutter.getIdentifikator().asString()));
         UUID beslutterAdGruppe = UUID.fromString("928636f4-fd0d-4149-978e-a6fb68bb19de");
-        assertThat(tokenUtils.erRiktigADGruppeForBeslutter(beslutterAdGruppe)).isTrue();
+        assertThat(tokenUtils.harAdGruppe(beslutterAdGruppe)).isTrue();
     }
 
     @Test
@@ -57,7 +57,7 @@ public class TokenUtilsTest {
         InnloggetBeslutter navBeslutter = TestData.enInnloggetBeslutter();
         vaerInnloggetNavAnsatt(navBeslutter);
         assertThat(tokenUtils.hentBrukerOgIssuer().get()).isEqualTo(new BrukerOgIssuer(ISSUER_ISSO, navBeslutter.getIdentifikator().asString()));
-        assertThat(tokenUtils.erRiktigADGruppeForBeslutter(UUID.randomUUID())).isFalse();
+        assertThat(tokenUtils.harAdGruppe(UUID.randomUUID())).isFalse();
     }
 
     @Test
