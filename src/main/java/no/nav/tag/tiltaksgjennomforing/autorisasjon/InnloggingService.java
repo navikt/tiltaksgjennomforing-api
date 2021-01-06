@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.BrukerOgIssuer;
@@ -23,7 +22,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -31,23 +29,19 @@ import org.springframework.stereotype.Component;
 public class InnloggingService {
 
     private final SystembrukerProperties systembrukerProperties;
+    private final IdaGruppeProperties idaGruppeProperties;
     private final TokenUtils tokenUtils;
     private final AltinnTilgangsstyringService altinnTilgangsstyringService;
     private final TilgangskontrollService tilgangskontrollService;
     private final PersondataService persondataService;
     private final Norg2Client norg2Client;
 
-    @Value("${tiltaksgjennomforing.beslutter-gruppe}")
-    private UUID beslutterAdGruppeUUID;
-
     public Avtalepart hentAvtalepart(Avtalerolle avtalerolle) {
         BrukerOgIssuer brukerOgIssuer = tokenUtils.hentBrukerOgIssuer().orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget."));
         Issuer issuer = brukerOgIssuer.getIssuer();
-        //TODO: Returnere riktig beslutter
-        //TODO: hente ad gruppe fra properites env -> vault
         if ((issuer == Issuer.ISSUER_ISSO
             && avtalerolle == Avtalerolle.BESLUTTER
-            && tokenUtils.harAdGruppe(beslutterAdGruppeUUID))) {
+            && tokenUtils.harAdGruppe(idaGruppeProperties.getId()))) {
             return new Beslutter(new NavIdent(brukerOgIssuer.getBrukerIdent()));
         }
         if (issuer == Issuer.ISSUER_SELVBETJENING && avtalerolle == Avtalerolle.DELTAKER) {

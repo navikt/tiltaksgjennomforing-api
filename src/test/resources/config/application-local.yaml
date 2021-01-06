@@ -30,6 +30,7 @@ no.nav.security.oidc:
       accepted_audience: aud-system
 
 tiltaksgjennomforing:
+  beslutter-ad-gruppe: 1a1d2745-952f-4a0f-839f-9530145b1d4a
   kafka:
     enabled: false
   altinn-tilgangsstyring:

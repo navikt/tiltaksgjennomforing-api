@@ -1,5 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.TestData;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
@@ -11,14 +19,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InnloggingServiceTest {
@@ -35,13 +35,16 @@ public class InnloggingServiceTest {
     @Mock
     private SystembrukerProperties systembrukerProperties;
 
+    @Mock
+    private IdaGruppeProperties idaGruppeProperties;
+
     @Test
     public void hentInnloggetBruker__er_selvbetjeningbruker() {
         InnloggetDeltaker selvbetjeningBruker = TestData.enInnloggetDeltaker();
         værInnloggetDeltaker(selvbetjeningBruker);
         assertThat(innloggingService.hentInnloggetBruker(Avtalerolle.DELTAKER)).isEqualTo(selvbetjeningBruker);
     }
-    
+
     @Test
     public void hentInnloggetBruker__selvbetjeningbruker_type_arbeidsgiver_skal_hente_organisasjoner() {
         InnloggetArbeidsgiver selvbetjeningBruker = new InnloggetArbeidsgiver(new Fnr("11111111111"), Set.of(), Map.of());
@@ -53,12 +56,19 @@ public class InnloggingServiceTest {
         verify(altinnTilgangsstyringService).hentTilganger(selvbetjeningBruker.getIdentifikator());
         verify(altinnTilgangsstyringService).hentAltinnOrganisasjoner(selvbetjeningBruker.getIdentifikator());
     }
-    
+
     @Test
     public void hentInnloggetBruker__er_nav_ansatt() {
         InnloggetVeileder navAnsatt = TestData.enInnloggetVeileder();
         værInnloggetVeileder(navAnsatt);
         assertThat(innloggingService.hentInnloggetBruker(Avtalerolle.VEILEDER)).isEqualTo(navAnsatt);
+    }
+
+    @Test
+    public void hentInnloggetBruker__er_nav_ansatt_og_beslutter() {
+        InnloggetBeslutter navAnsatt = TestData.enInnloggetBeslutter();
+        værInnloggetBeslutter(navAnsatt);
+        assertThat(innloggingService.hentInnloggetBruker(Avtalerolle.BESLUTTER)).isEqualTo(navAnsatt);
     }
 
     @Test(expected = TilgangskontrollException.class)
@@ -103,16 +113,25 @@ public class InnloggingServiceTest {
     }
 
     private void værInnloggetDeltaker(InnloggetDeltaker bruker) {
-        when(tokenUtils.hentBrukerOgIssuer()).thenReturn(Optional.of(new TokenUtils.BrukerOgIssuer(Issuer.ISSUER_SELVBETJENING, bruker.getIdentifikator().asString())));
+        when(tokenUtils.hentBrukerOgIssuer())
+            .thenReturn(Optional.of(new TokenUtils.BrukerOgIssuer(Issuer.ISSUER_SELVBETJENING, bruker.getIdentifikator().asString())));
     }
 
     private void værInnloggetArbeidsgiver(InnloggetArbeidsgiver bruker) {
-        when(tokenUtils.hentBrukerOgIssuer()).thenReturn(Optional.of(new TokenUtils.BrukerOgIssuer(Issuer.ISSUER_SELVBETJENING, bruker.getIdentifikator().asString())));
+        when(tokenUtils.hentBrukerOgIssuer())
+            .thenReturn(Optional.of(new TokenUtils.BrukerOgIssuer(Issuer.ISSUER_SELVBETJENING, bruker.getIdentifikator().asString())));
     }
 
     private void værInnloggetVeileder(InnloggetVeileder navAnsatt) {
-        when(tokenUtils.hentBrukerOgIssuer()).thenReturn(Optional.of(new TokenUtils.BrukerOgIssuer(Issuer.ISSUER_ISSO, navAnsatt.getIdentifikator().asString())));
+        when(tokenUtils.hentBrukerOgIssuer())
+            .thenReturn(Optional.of(new TokenUtils.BrukerOgIssuer(Issuer.ISSUER_ISSO, navAnsatt.getIdentifikator().asString())));
     }
 
-    
+    private void værInnloggetBeslutter(InnloggetBeslutter navAnsatt) {
+        when(tokenUtils.harAdGruppe(any())).thenReturn(true);
+        when(tokenUtils.hentBrukerOgIssuer())
+            .thenReturn(Optional.of(new TokenUtils.BrukerOgIssuer(Issuer.ISSUER_ISSO, navAnsatt.getIdentifikator().asString())));
+    }
+
+
 }
