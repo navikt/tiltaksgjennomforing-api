@@ -3,8 +3,17 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import java.util.List;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 
 public class Beslutter extends Avtalepart<NavIdent> {
+
+    private TilgangskontrollService tilgangskontrollService;
+
+
+    public Beslutter(NavIdent identifikator, TilgangskontrollService tilgangskontrollService) {
+        super(identifikator);
+        this.tilgangskontrollService = tilgangskontrollService;
+    }
 
     public Beslutter(NavIdent identifikator) {
         super(identifikator);
@@ -12,14 +21,12 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
     @Override
     public boolean harTilgang(Avtale avtale) {
-        //TODO: Skriv om, oppslag i abac for å sjekke om man kan lese deltaker fnr
+        tilgangskontrollService.sjekkSkrivetilgangTilKandidat(getIdentifikator(), avtale.getDeltakerFnr());
         return avtale.getDeltakerFnr().equals(getIdentifikator());
     }
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
-        // TODO: Hent nav enhet fra axsys evt. fagområde
-        // TODO: sjekke at nav enhet for avtale er samme enhet for beslutter
         // TODO: hente alle godkjente avtaler
         return avtaleRepository.findAllByDeltakerFnr(null);
     }
@@ -63,7 +70,6 @@ public class Beslutter extends Avtalepart<NavIdent> {
     public void låsOppAvtale(Avtale avtale) {
 
     }
-
 
     @Override
     public InnloggetBruker innloggetBruker() {
