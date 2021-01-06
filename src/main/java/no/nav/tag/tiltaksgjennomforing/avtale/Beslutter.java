@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
@@ -8,11 +9,13 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.Tilgangskontroll
 public class Beslutter extends Avtalepart<NavIdent> {
 
     private TilgangskontrollService tilgangskontrollService;
+    private TilskuddPeriodeRepository tilskuddPeriodeRepository;
 
 
-    public Beslutter(NavIdent identifikator, TilgangskontrollService tilgangskontrollService) {
+    public Beslutter(NavIdent identifikator, TilgangskontrollService tilgangskontrollService, TilskuddPeriodeRepository tilskuddPeriodeRepository) {
         super(identifikator);
         this.tilgangskontrollService = tilgangskontrollService;
+        this.tilskuddPeriodeRepository = tilskuddPeriodeRepository;
     }
 
     public Beslutter(NavIdent identifikator) {
@@ -27,13 +30,16 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
-        // TODO: hente alle godkjente avtaler
-        return avtaleRepository.findAllByDeltakerFnr(null);
+        if (queryParametre.getErGodkjkentTilskudd()) {
+            return tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNotNull()
+                .stream().map(tilskudd -> tilskudd.getAvtaleInnhold().getAvtale())
+                .collect(Collectors.toList());
+        }
+        return avtaleRepository.findAllByDeltakerFnr(queryParametre.getDeltakerFnr());
     }
 
     @Override
     void godkjennForAvtalepart(Avtale avtale) {
-
     }
 
     @Override

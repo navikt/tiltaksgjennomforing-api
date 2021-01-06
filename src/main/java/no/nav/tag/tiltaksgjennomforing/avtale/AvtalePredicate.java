@@ -1,9 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import java.util.function.Predicate;
 import lombok.Data;
 import lombok.experimental.Accessors;
-
-import java.util.function.Predicate;
 
 @Data
 @Accessors(chain = true)
@@ -14,6 +13,7 @@ public class AvtalePredicate implements Predicate<Avtale> {
     private Tiltakstype tiltakstype;
     private Status status;
     private Boolean erUfordelt;
+    private Boolean erGodkjkentTilskudd;
 
     private static boolean erLiktHvisOppgitt(Object kriterie, Object avtaleVerdi) {
         return kriterie == null || kriterie.equals(avtaleVerdi);
