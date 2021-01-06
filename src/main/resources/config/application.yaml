@@ -36,6 +36,7 @@ no.nav.gcp.kafka.aiven:
   keystore-password: ${KAFKA_CREDSTORE_PASSWORD}
 
 tiltaksgjennomforing:
+  beslutter-gruppe: 928636f4-fd0d-4149-978e-a6fb68bb19de
   kafka:
     enabled: true
   persondata:

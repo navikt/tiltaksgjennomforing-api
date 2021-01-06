@@ -37,17 +37,17 @@ public class InnloggingService {
     private final PersondataService persondataService;
     private final Norg2Client norg2Client;
 
-    @Value("${}")
-    private final UUID beslutterAdGruppe;
-
+    @Value("${tiltaksgjennomforing.beslutter-gruppe}")
+    private UUID beslutterAdGruppeUUID;
 
     public Avtalepart hentAvtalepart(Avtalerolle avtalerolle) {
         BrukerOgIssuer brukerOgIssuer = tokenUtils.hentBrukerOgIssuer().orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget."));
         Issuer issuer = brukerOgIssuer.getIssuer();
         //TODO: Returnere riktig beslutter
         //TODO: hente ad gruppe fra properites env -> vault
-        if ((issuer == Issuer.ISSUER_ISSO && avtalerolle == Avtalerolle.BESLUTTER && tokenUtils
-            .harAdGruppe(UUID.fromString("beslutter-ad-gruppe")))) {
+        if ((issuer == Issuer.ISSUER_ISSO
+            && avtalerolle == Avtalerolle.BESLUTTER
+            && tokenUtils.harAdGruppe(beslutterAdGruppeUUID))) {
             return new Beslutter(new NavIdent(brukerOgIssuer.getBrukerIdent()));
         }
         if (issuer == Issuer.ISSUER_SELVBETJENING && avtalerolle == Avtalerolle.DELTAKER) {
