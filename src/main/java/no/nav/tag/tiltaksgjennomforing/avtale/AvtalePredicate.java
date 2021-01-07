@@ -15,7 +15,6 @@ public class AvtalePredicate implements Predicate<Avtale> {
     private Status status;
     private Boolean erUfordelt;
     private Boolean erGodkjkentTilskuddPerioder;
-    private Boolean erUbehandletTilskuddPerioder;
 
     private static boolean erLiktHvisOppgitt(Object kriterie, Object avtaleVerdi) {
         return kriterie == null || kriterie.equals(avtaleVerdi);

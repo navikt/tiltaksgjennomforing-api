@@ -40,4 +40,31 @@ class BeslutterTest {
     assertThat(avtales).isNotEmpty();
   }
 
+  @Test
+  public void hentAlleAvtalerMedMuligTilgang_kan_hente_avtale_Med_ubehandlet_periode() {
+
+    // GITT
+    Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+    TilskuddPeriode tilskuddPeriode = new TilskuddPeriode();
+    tilskuddPeriode.setBeløp(1200);
+    tilskuddPeriode.setAvtaleInnhold(avtale.gjeldendeInnhold());
+    avtale.gjeldendeInnhold().setTilskuddPeriode(Lists.list(tilskuddPeriode));
+
+    TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+    TilskuddPeriodeRepository tilskuddPeriodeRepository = mock(TilskuddPeriodeRepository.class);
+    Beslutter veileder = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, tilskuddPeriodeRepository);
+
+    AvtaleRepository avtaleRepository = mock(AvtaleRepository.class);
+
+    AvtalePredicate avtalePredicate = new AvtalePredicate();
+    avtalePredicate.setErGodkjkentTilskuddPerioder(false);
+
+    // NÅR
+    when(tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNotNull()).thenReturn(avtale.gjeldendeInnhold().getTilskuddPeriode());
+    List<Avtale> avtales = veileder.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
+
+    assertThat(avtales).isNotEmpty();
+  }
+
+
 }
