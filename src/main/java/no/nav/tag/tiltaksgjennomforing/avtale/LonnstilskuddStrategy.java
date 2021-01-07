@@ -1,10 +1,11 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
+import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
+
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
 public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
     public LonnstilskuddStrategy(AvtaleInnhold avtaleInnhold) {
@@ -25,32 +26,32 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setStillingStyrk08(nyAvtale.getStillingStyrk08());
         avtaleInnhold.setStillingKonseptId(nyAvtale.getStillingKonseptId());
         avtaleInnhold.setOtpSats(getOtpSats(nyAvtale));
-        regnUtTotalLonnstilskudd(nyAvtale);
         super.endre(nyAvtale);
+        regnUtTotalLonnstilskudd();
     }
 
 
-    private void regnUtTotalLonnstilskudd(EndreAvtale nyAvtale) {
-        Integer feriepengerBelop = getFeriepengerBelop(nyAvtale.getFeriepengesats(), nyAvtale.getManedslonn());
-        Integer obligTjenestepensjon = getBeregnetOtpBelop(nyAvtale.getOtpSats(), nyAvtale.getManedslonn(), feriepengerBelop);
+    private void regnUtTotalLonnstilskudd() {
+        Integer feriepengerBelop = getFeriepengerBelop(avtaleInnhold.getFeriepengesats(), avtaleInnhold.getManedslonn());
+        Integer obligTjenestepensjon = getBeregnetOtpBelop(avtaleInnhold.getOtpSats(), avtaleInnhold.getManedslonn(), feriepengerBelop);
         Integer arbeidsgiveravgiftBelop = getArbeidsgiverAvgift(avtaleInnhold.getManedslonn(), feriepengerBelop, obligTjenestepensjon,
-            nyAvtale.getArbeidsgiveravgift());
-        Integer sumLonnsutgifter = getSumLonnsutgifter(nyAvtale.getManedslonn(), feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgiftBelop);
-        Integer sumlønnTilskudd = getSumLonnsTilskudd(sumLonnsutgifter, nyAvtale.getLonnstilskuddProsent());
-        Integer månedslønnFullStilling = getLønnVedFullStilling(sumLonnsutgifter, nyAvtale.getStillingprosent());
+                avtaleInnhold.getArbeidsgiveravgift());
+        Integer sumLonnsutgifter = getSumLonnsutgifter(avtaleInnhold.getManedslonn(), feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgiftBelop);
+        Integer sumlønnTilskudd = getSumLonnsTilskudd(sumLonnsutgifter, avtaleInnhold.getLonnstilskuddProsent());
+        Integer månedslønnFullStilling = getLønnVedFullStilling(sumLonnsutgifter, avtaleInnhold.getStillingprosent());
         avtaleInnhold.setFeriepengerBelop(feriepengerBelop);
         avtaleInnhold.setOtpBelop(obligTjenestepensjon);
         avtaleInnhold.setArbeidsgiveravgiftBelop(arbeidsgiveravgiftBelop);
         avtaleInnhold.setSumLonnsutgifter(sumLonnsutgifter);
         avtaleInnhold.setSumLonnstilskudd(sumlønnTilskudd);
         avtaleInnhold.setManedslonn100pst(månedslønnFullStilling);
-        regnUtrefusjonsperioder(nyAvtale);
+        regnUtTilskuddsperioder();
     }
 
-    private void regnUtrefusjonsperioder(EndreAvtale nyAvtale) {
+    private void regnUtTilskuddsperioder() {
         avtaleInnhold.getTilskuddPeriode().clear();
-        if(harAllePåkrevdeFeltForRegneUtTilskuddsPeriode(nyAvtale)) {
-            List<TilskuddPeriode> tilskuddForAvtalePeriode = TilskuddForAvtalePeriode.beregnTilskuddForAvtalePerioden(avtaleInnhold.getSumLonnstilskudd(), nyAvtale.getStartDato(), nyAvtale.getSluttDato());
+        if (harAllePåkrevdeFeltForRegneUtTilskuddsperiode()) {
+            List<TilskuddPeriode> tilskuddForAvtalePeriode = TilskuddForAvtalePeriode.beregnTilskuddsperioderForAvtale(avtaleInnhold.getSumLonnstilskudd(), avtaleInnhold.getStartDato(), avtaleInnhold.getSluttDato());
             avtaleInnhold.getTilskuddPeriode().addAll(tilskuddForAvtalePeriode);
             avtaleInnhold.getTilskuddPeriode().forEach(periode -> periode.setAvtaleInnhold(avtaleInnhold));
         }
@@ -61,15 +62,15 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         if (erIkkeTomme(nyAvtale.getOtpSats())) {
             return nyAvtale.getOtpSats();
         }
-        return  OBLIG_TJENESTEPENSJON_PROSENT_SATS;
+        return OBLIG_TJENESTEPENSJON_PROSENT_SATS;
     }
 
-    private Boolean harAllePåkrevdeFeltForRegneUtTilskuddsPeriode(EndreAvtale nyAvtale){
-        return avtaleInnhold.getSumLonnstilskudd() != null && nyAvtale.getStartDato() != null && nyAvtale.getSluttDato() != null;
+    private boolean harAllePåkrevdeFeltForRegneUtTilskuddsperiode() {
+        return avtaleInnhold.getSumLonnstilskudd() != null && avtaleInnhold.getStartDato() != null && avtaleInnhold.getSluttDato() != null;
     }
 
-    private Integer getLønnVedFullStilling(Integer sumUtgifter, Integer stillingsProsent){
-        if(sumUtgifter == null || stillingsProsent == null){
+    private Integer getLønnVedFullStilling(Integer sumUtgifter, Integer stillingsProsent) {
+        if (sumUtgifter == null || stillingsProsent == null) {
             return null;
         }
         return (sumUtgifter * 100) / stillingsProsent;

@@ -1,13 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.TestData;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
@@ -19,6 +11,15 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InnloggingServiceTest {
@@ -36,7 +37,7 @@ public class InnloggingServiceTest {
     private SystembrukerProperties systembrukerProperties;
 
     @Mock
-    private IdaGruppeProperties idaGruppeProperties;
+    private BeslutterAdGruppeProperties beslutterAdGruppeProperties;
 
     @Test
     public void hentInnloggetBruker__er_selvbetjeningbruker() {

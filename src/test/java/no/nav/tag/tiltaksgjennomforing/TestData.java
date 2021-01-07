@@ -1,54 +1,26 @@
 package no.nav.tag.tiltaksgjennomforing;
 
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtalepart;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
-import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
-import no.nav.tag.tiltaksgjennomforing.avtale.Beslutter;
-import no.nav.tag.tiltaksgjennomforing.avtale.Deltaker;
-import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
-import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
-import no.nav.tag.tiltaksgjennomforing.avtale.Maal;
-import no.nav.tag.tiltaksgjennomforing.avtale.MaalKategori;
-import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
-import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
-import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeRepository;
-import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.persondata.Adressebeskyttelse;
-import no.nav.tag.tiltaksgjennomforing.persondata.Data;
-import no.nav.tag.tiltaksgjennomforing.persondata.HentGeografiskTilknytning;
-import no.nav.tag.tiltaksgjennomforing.persondata.HentPerson;
-import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
-import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
-import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.persondata.*;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelse;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
+
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class TestData {
     public static Avtale enArbeidstreningAvtale() {
@@ -91,21 +63,15 @@ public class TestData {
         avtale.setVersjon(1);
         avtale.setJournalpostId(null);
         avtale.setMaal(List.of());
-        avtale.setTilskuddPeriode(new ArrayList<>());
         return avtale;
     }
 
     public static Avtale enLonnstilskuddAvtaleGodkjentAvVeileder() {
-        Avtale avtale = enAvtaleMedAltUtfyltGodkjentAvVeileder();
-        avtale.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
-        avtale.setArbeidsgiverKontonummer("22222222222");
-        avtale.setLonnstilskuddProsent(60);
-        avtale.setManedslonn(20000);
-        avtale.setFeriepengesats(BigDecimal.valueOf(0.12));
-        avtale.setArbeidsgiveravgift(BigDecimal.valueOf(0.141));
-        avtale.setVersjon(1);
-        avtale.setJournalpostId(null);
-        avtale.setMaal(List.of());
+        Avtale avtale = enLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setJournalpostId("1");
         return avtale;
     }
 

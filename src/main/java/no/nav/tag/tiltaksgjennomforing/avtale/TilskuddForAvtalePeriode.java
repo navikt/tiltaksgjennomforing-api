@@ -10,10 +10,10 @@ import java.util.List;
 
 public class TilskuddForAvtalePeriode {
 
-    private final static BigDecimal dagerIMåned = BigDecimal.valueOf(30.4375);
-    private final static int antallMånederIEnPeriode = 3;
+    private final static BigDecimal DAGER_I_MÅNED = BigDecimal.valueOf(30.4375);
+    private final static int ANTALL_MÅNEDER_I_EN_PERIODE = 3;
 
-    public static List<TilskuddPeriode> beregnTilskuddForAvtalePerioden(final Integer lønnPrMåned, final LocalDate datoFraOgMed, final LocalDate datoTilOgMed){
+    public static List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(final Integer lønnPrMåned, final LocalDate datoFraOgMed, final LocalDate datoTilOgMed){
         List<TilskuddPeriode> tilskuddPerioder = new ArrayList<>();
         LocalDate nyStartDato = datoFraOgMed;
         nyStartDato = beregnTilskuddsPerioderForHvertHeleÅr(lønnPrMåned, datoTilOgMed, tilskuddPerioder, nyStartDato);
@@ -36,12 +36,12 @@ public class TilskuddForAvtalePeriode {
         LocalDate nyDatoTilOgMed;
         TilskuddPeriode nyTsPeriode;
 
-        while(period.getMonths() >= antallMånederIEnPeriode){
-            nyDatoTilOgMed = nyDatoFraOgMed.plusMonths(antallMånederIEnPeriode);
-            nyTsPeriode = new TilskuddPeriode(lønnPrMåned * antallMånederIEnPeriode, nyDatoFraOgMed, nyDatoTilOgMed.minusDays(1));
+        while(period.getMonths() >= ANTALL_MÅNEDER_I_EN_PERIODE){
+            nyDatoTilOgMed = nyDatoFraOgMed.plusMonths(ANTALL_MÅNEDER_I_EN_PERIODE);
+            nyTsPeriode = new TilskuddPeriode(lønnPrMåned * ANTALL_MÅNEDER_I_EN_PERIODE, nyDatoFraOgMed, nyDatoTilOgMed.minusDays(1));
             tilskuddPerioder.add(nyTsPeriode);
             nyDatoFraOgMed = nyDatoTilOgMed;
-            period = period.minusMonths(antallMånederIEnPeriode);
+            period = period.minusMonths(ANTALL_MÅNEDER_I_EN_PERIODE);
         }
 
         if(!period.isZero()){
@@ -69,7 +69,7 @@ public class TilskuddForAvtalePeriode {
         BigDecimal restLønn = BigDecimal.ZERO;
 
         if(!period.isZero()) {
-            BigDecimal dagsLønn = lønnPrMåned.divide(dagerIMåned, MathContext.DECIMAL32);
+            BigDecimal dagsLønn = lønnPrMåned.divide(DAGER_I_MÅNED, MathContext.DECIMAL32);
             restLønn = dagsLønn.multiply(BigDecimal.valueOf(period.getDays()));
         }
         return restLønn;

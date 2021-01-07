@@ -20,7 +20,7 @@ public class TilskuddForAvtalePeriodeTest {
         LocalDate datoFom = _1_JANUAR;
         LocalDate datoTom = LocalDate.of(2020, 3, 31);
 
-        List<TilskuddPeriode> list = TilskuddForAvtalePeriode.beregnTilskuddForAvtalePerioden(månedslønn, datoFom, datoTom);
+        List<TilskuddPeriode> list = TilskuddForAvtalePeriode.beregnTilskuddsperioderForAvtale(månedslønn, datoFom, datoTom);
         assertEquals(1, list.size());
         assertEquals(datoFom, list.get(0).getStartDato());
         assertEquals(datoTom, list.get(0).getSluttDato());
@@ -32,7 +32,7 @@ public class TilskuddForAvtalePeriodeTest {
         LocalDate datoFom = LocalDate.of(2020, 1, 15);
         LocalDate datoTom = LocalDate.of(2020, 3, 15);
 
-        List<TilskuddPeriode> list = TilskuddForAvtalePeriode.beregnTilskuddForAvtalePerioden(månedslønn, datoFom, datoTom);
+        List<TilskuddPeriode> list = TilskuddForAvtalePeriode.beregnTilskuddsperioderForAvtale(månedslønn, datoFom, datoTom);
         assertEquals(1, list.size());
         assertEquals(datoFom, list.get(0).getStartDato());
         assertEquals(datoTom, list.get(0).getSluttDato());
@@ -45,7 +45,7 @@ public class TilskuddForAvtalePeriodeTest {
         LocalDate datoFom = LocalDate.of(2020, 1, 10);
         LocalDate datoTom = LocalDate.of(2020, 1, 20);
 
-        List<TilskuddPeriode> list = TilskuddForAvtalePeriode.beregnTilskuddForAvtalePerioden(månedslønn, datoFom, datoTom);
+        List<TilskuddPeriode> list = TilskuddForAvtalePeriode.beregnTilskuddsperioderForAvtale(månedslønn, datoFom, datoTom);
         assertEquals(11, beregnetilskuddsperiode(list.get(0).getStartDato(), list.get(0).getSluttDato()));
         assertEquals(7228, list.get(0).getBeløp());
     }
@@ -55,7 +55,7 @@ public class TilskuddForAvtalePeriodeTest {
         LocalDate datoFom = _1_JANUAR;
         LocalDate datoTom = LocalDate.of(2020, 3, 31);
 
-        List<TilskuddPeriode> perioder = TilskuddForAvtalePeriode.beregnTilskuddForAvtalePerioden(20000, datoFom, datoTom);
+        List<TilskuddPeriode> perioder = TilskuddForAvtalePeriode.beregnTilskuddsperioderForAvtale(20000, datoFom, datoTom);
         assertEquals(1, perioder.size());
         TilskuddPeriode tilskuddPeriode = perioder.get(0);
         assertEquals(datoFom, tilskuddPeriode.getStartDato());
@@ -85,7 +85,7 @@ public class TilskuddForAvtalePeriodeTest {
         LocalDate _1_JUNI = LocalDate.of(2020, 6, 1);
         LocalDate _31_AUG = LocalDate.of(2020, 8, 31);
 
-        List<TilskuddPeriode> perioder = TilskuddForAvtalePeriode.beregnTilskuddForAvtalePerioden(20000, avtaleStartDato, avtaleSluttDato);
+        List<TilskuddPeriode> perioder = TilskuddForAvtalePeriode.beregnTilskuddsperioderForAvtale(20000, avtaleStartDato, avtaleSluttDato);
 
         assertEquals(3, perioder.size());
 
@@ -114,7 +114,7 @@ public class TilskuddForAvtalePeriodeTest {
         LocalDate _31_MARS = LocalDate.of(2020, 3, 31);
         LocalDate _1_APRIL = LocalDate.of(2020, 4, 1);
 
-        List<TilskuddPeriode> perioder = TilskuddForAvtalePeriode.beregnTilskuddForAvtalePerioden(20000, avtaleStartDato, avtaleSluttDato);
+        List<TilskuddPeriode> perioder = TilskuddForAvtalePeriode.beregnTilskuddsperioderForAvtale(20000, avtaleStartDato, avtaleSluttDato);
 
         assertEquals(2, perioder.size());
         TilskuddPeriode tilskuddPeriode = perioder.get(0);
@@ -136,7 +136,7 @@ public class TilskuddForAvtalePeriodeTest {
 
         LocalDate _1_JAN = _1_JANUAR.plusYears(1);
         LocalDate _31_JAN = LocalDate.of(2021, 1, 31);
-        List<TilskuddPeriode> perioder = TilskuddForAvtalePeriode.beregnTilskuddForAvtalePerioden(20000, avtaleStartDato, avtaleSluttDato);
+        List<TilskuddPeriode> perioder = TilskuddForAvtalePeriode.beregnTilskuddsperioderForAvtale(20000, avtaleStartDato, avtaleSluttDato);
         assertEquals(2, perioder.size());
 
         TilskuddPeriode tilskuddPeriode = perioder.get(0);
@@ -155,7 +155,7 @@ public class TilskuddForAvtalePeriodeTest {
         LocalDate avtaleStartDato = LocalDate.of(2020, 11, 1);
         LocalDate avtaleSluttDato = LocalDate.of(2023, 12, 1);
 
-        List<TilskuddPeriode> perioder = TilskuddForAvtalePeriode.beregnTilskuddForAvtalePerioden(20000, avtaleStartDato, avtaleSluttDato);
+        List<TilskuddPeriode> perioder = TilskuddForAvtalePeriode.beregnTilskuddsperioderForAvtale(20000, avtaleStartDato, avtaleSluttDato);
 
         assertEquals(13, perioder.size());
 
