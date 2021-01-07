@@ -30,14 +30,10 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
-
         if (queryParametre.getErGodkjkentTilskuddPerioder()) {
             return getAvtalesMedGodkjentTilskuddPerioder(tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNotNull());
         }
-        if (!queryParametre.getErGodkjkentTilskuddPerioder()) {
-            return getAvtalesMedGodkjentTilskuddPerioder(tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNull());
-        }
-        return avtaleRepository.findAllByDeltakerFnr(queryParametre.getDeltakerFnr());
+        return getAvtalesMedGodkjentTilskuddPerioder(tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNull());
     }
 
     @NotNull
