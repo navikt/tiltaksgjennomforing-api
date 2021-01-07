@@ -22,6 +22,7 @@ public interface TilskuddPeriodeRepository extends JpaRepository<TilskuddPeriode
     @Override
     List<TilskuddPeriode> findAll();
 
+    //TODO: query basert på noe spesifikt
     List<TilskuddPeriode> findAllByGodkjentTidspunktIsNotNull();
 
     List<TilskuddPeriode> findAllByGodkjentTidspunktIsNull();

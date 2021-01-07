@@ -42,6 +42,8 @@ public class Beslutter extends Avtalepart<NavIdent> {
             .collect(Collectors.toList());
     }
 
+    //TODO: Fiks tomme overrides
+
     @Override
     void godkjennForAvtalepart(Avtale avtale) {
     }
