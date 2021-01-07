@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
+import org.jetbrains.annotations.NotNull;
 
 public class Beslutter extends Avtalepart<NavIdent> {
 
@@ -29,12 +30,21 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
+
         if (queryParametre.getErGodkjkentTilskuddPerioder()) {
-            return tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNotNull()
-                .stream().map(tilskudd -> tilskudd.getAvtaleInnhold().getAvtale())
-                .collect(Collectors.toList());
+            return getAvtalesMedGodkjentTilskuddPerioder(tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNotNull());
+        }
+        if (!queryParametre.getErGodkjkentTilskuddPerioder()) {
+            return getAvtalesMedGodkjentTilskuddPerioder(tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNull());
         }
         return avtaleRepository.findAllByDeltakerFnr(queryParametre.getDeltakerFnr());
+    }
+
+    @NotNull
+    private List<Avtale> getAvtalesMedGodkjentTilskuddPerioder(List<TilskuddPeriode> allByGodkjentTidspunktIsNull) {
+        return allByGodkjentTidspunktIsNull
+            .stream().map(tilskudd -> tilskudd.getAvtaleInnhold().getAvtale())
+            .collect(Collectors.toList());
     }
 
     @Override

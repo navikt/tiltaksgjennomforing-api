@@ -60,7 +60,7 @@ class BeslutterTest {
     avtalePredicate.setErGodkjkentTilskuddPerioder(false);
 
     // NÅR
-    when(tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNotNull()).thenReturn(avtale.gjeldendeInnhold().getTilskuddPeriode());
+    when(tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNull()).thenReturn(avtale.gjeldendeInnhold().getTilskuddPeriode());
     List<Avtale> avtales = veileder.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
 
     assertThat(avtales).isNotEmpty();
