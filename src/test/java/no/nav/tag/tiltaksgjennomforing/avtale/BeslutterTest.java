@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import no.nav.tag.tiltaksgjennomforing.TestData;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
@@ -25,9 +24,6 @@ class BeslutterTest {
     tilskuddPeriode.setAvtaleInnhold(avtale.gjeldendeInnhold());
     avtale.gjeldendeInnhold().setTilskuddPeriode(Lists.list(tilskuddPeriode));
 
-    avtale.setGodkjentAvVeileder(LocalDateTime.now());
-    avtale.setGodkjentAvDeltaker(LocalDateTime.now());
-    avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
     TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
     TilskuddPeriodeRepository tilskuddPeriodeRepository = mock(TilskuddPeriodeRepository.class);
     Beslutter veileder = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, tilskuddPeriodeRepository);

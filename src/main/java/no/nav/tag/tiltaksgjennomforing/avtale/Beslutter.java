@@ -11,7 +11,6 @@ public class Beslutter extends Avtalepart<NavIdent> {
     private TilgangskontrollService tilgangskontrollService;
     private TilskuddPeriodeRepository tilskuddPeriodeRepository;
 
-
     public Beslutter(NavIdent identifikator, TilgangskontrollService tilgangskontrollService, TilskuddPeriodeRepository tilskuddPeriodeRepository) {
         super(identifikator);
         this.tilgangskontrollService = tilgangskontrollService;
