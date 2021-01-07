@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
+import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 
 public class Beslutter extends Avtalepart<NavIdent> {
@@ -30,22 +31,30 @@ public class Beslutter extends Avtalepart<NavIdent> {
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
         if (queryParametre.getErGodkjkentTilskuddPerioder() != null && queryParametre.getErGodkjkentTilskuddPerioder()) {
-            return getAvtalesMedGodkjentTilskuddPerioder(tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNotNull());
+            return getAvtalesMedGodkjentTilskuddPerioder(queryParametre, tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNotNull());
         }
-        return getAvtalesMedGodkjentTilskuddPerioder(tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNull());
+        return getAvtalesMedGodkjentTilskuddPerioder(queryParametre, tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNull());
     }
 
     @NotNull
-    private List<Avtale> getAvtalesMedGodkjentTilskuddPerioder(List<TilskuddPeriode> allByGodkjentTidspunktIsNull) {
+    private List<Avtale> getAvtalesMedGodkjentTilskuddPerioder(AvtalePredicate queryParametre, List<TilskuddPeriode> allByGodkjentTidspunktIsNull) {
         return allByGodkjentTidspunktIsNull
             .stream().map(tilskudd -> tilskudd.getAvtaleInnhold().getAvtale())
+            .filter(avtale -> erTiltakstype(queryParametre, avtale))
             .collect(Collectors.toList());
+
     }
 
-    //TODO: Fiks tomme overrides
+    private boolean erTiltakstype(AvtalePredicate queryParametre, Avtale avtale) {
+        if (queryParametre.getTiltakstype() == null) {
+            return true;
+        }
+        return avtale.getTiltakstype().equals(queryParametre.getTiltakstype());
+    }
 
     @Override
     void godkjennForAvtalepart(Avtale avtale) {
+        throw new NotImplementedException();
     }
 
     @Override
@@ -70,7 +79,7 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
     @Override
     void opphevGodkjenningerSomAvtalepart(Avtale avtale) {
-
+        throw new NotImplementedException();
     }
 
     @Override
@@ -80,7 +89,7 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
     @Override
     public void låsOppAvtale(Avtale avtale) {
-
+        throw new NotImplementedException();
     }
 
     @Override
