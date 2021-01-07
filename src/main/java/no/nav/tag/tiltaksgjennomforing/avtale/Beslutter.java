@@ -29,7 +29,7 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
-        if (queryParametre.getErGodkjkentTilskudd()) {
+        if (queryParametre.getErGodkjkentTilskuddPerioder()) {
             return tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNotNull()
                 .stream().map(tilskudd -> tilskudd.getAvtaleInnhold().getAvtale())
                 .collect(Collectors.toList());

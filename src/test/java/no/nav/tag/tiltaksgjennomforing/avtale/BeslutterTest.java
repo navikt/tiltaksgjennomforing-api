@@ -31,7 +31,7 @@ class BeslutterTest {
     AvtaleRepository avtaleRepository = mock(AvtaleRepository.class);
 
     AvtalePredicate avtalePredicate = new AvtalePredicate();
-    avtalePredicate.setErGodkjkentTilskudd(true);
+    avtalePredicate.setErGodkjkentTilskuddPerioder(true);
 
     // NÅR
     when(tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNotNull()).thenReturn(avtale.gjeldendeInnhold().getTilskuddPeriode());
