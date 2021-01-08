@@ -34,7 +34,7 @@ public class JwtTokenGenerator {
     }
 
     public static SignedJWT createSignedJWT(String subject, long expiryInMinutes, Map<String, Object> claims, String issuer, String audience,
-        String acrLevel, List groups) {
+        String acrLevel, List<String> groups) {
         JWTClaimsSet claimsSet = buildClaimSet(subject, issuer, audience, acrLevel, TimeUnit.MINUTES.toMillis(expiryInMinutes), claims, groups);
         return createSignedJWT(JwkGenerator.getDefaultRSAKey(), claimsSet);
     }
@@ -49,7 +49,7 @@ public class JwtTokenGenerator {
         String audience,
         String authLevel,
         long expiry, Map<String, Object> additionalClaims,
-        List groups
+        List<String> groups
     ) {
         Date now = new Date();
         JWTClaimsSet.Builder claimSetBuilder = new JWTClaimsSet.Builder()
