@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Set;
 
 import static java.util.Collections.emptyList;
-import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentGeoLokasjonFraPdlRespons;
 import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
 public class Veileder extends Avtalepart<NavIdent> {

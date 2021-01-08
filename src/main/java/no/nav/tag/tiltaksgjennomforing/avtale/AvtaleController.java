@@ -169,4 +169,12 @@ public class AvtaleController {
         veileder.overtaAvtale(avtale);
         avtaleRepository.save(avtale);
     }
+
+    @PostMapping("/{avtaleId}/tilskuddsperiode/{tilskuddPeriodeId}/godkjenn")
+    @Transactional
+    public void godkjennTilskuddsperiode(@PathVariable("avtaleId") UUID avtaleId, @PathVariable("tilskuddPeriodeId") UUID tilskuddPeriodeId) {
+        Beslutter beslutter = innloggingService.hentBeslutter();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        beslutter.godkjennTilskuddsperiode(avtale, tilskuddPeriodeId);
+    }
 }

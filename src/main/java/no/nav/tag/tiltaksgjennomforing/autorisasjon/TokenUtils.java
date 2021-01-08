@@ -1,17 +1,17 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
-import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISSUER_ISSO;
-import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISSUER_SELVBETJENING;
-import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISSUER_SYSTEM;
-
 import com.nimbusds.jwt.JWTClaimsSet;
-import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import no.nav.security.oidc.context.OIDCRequestContextHolder;
 import no.nav.security.oidc.context.OIDCValidationContext;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.*;
 
 @Component
 @RequiredArgsConstructor
@@ -46,7 +46,16 @@ public class TokenUtils {
     }
 
     public boolean harAdGruppe(UUID gruppeAD) {
-        return hentClaim(ISSUER_ISSO, "groups").filter(sub -> sub.contains(gruppeAD.toString())).isPresent();
+        Optional<List<String>> groupsClaim = hentClaims(ISSUER_ISSO, "groups");
+        if (!groupsClaim.isPresent()) {
+            return false;
+        }
+        return groupsClaim.get().contains(gruppeAD.toString());
+    }
+
+    private Optional<List<String>> hentClaims(Issuer issuer, String claim) {
+        return hentClaimSet(issuer).filter(jwtClaimsSet -> innloggingsNivaOK(issuer, jwtClaimsSet))
+                .map(jwtClaimsSet -> (List<String>) jwtClaimsSet.getClaim(claim));
     }
 
     private Optional<String> hentClaim(Issuer issuer, String claim) {

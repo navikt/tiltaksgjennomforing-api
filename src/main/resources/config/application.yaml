@@ -36,7 +36,8 @@ no.nav.gcp.kafka.aiven:
   keystore-password: ${KAFKA_CREDSTORE_PASSWORD}
 
 tiltaksgjennomforing:
-  beslutter-ad-gruppe: ${beslutter.ad.gruppe}
+  beslutter-ad-gruppe:
+    id: ${beslutter.ad.gruppe}
   kafka:
     enabled: true
   persondata:
