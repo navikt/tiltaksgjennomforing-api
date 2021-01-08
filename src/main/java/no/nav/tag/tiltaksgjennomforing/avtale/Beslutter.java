@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 
@@ -54,7 +55,7 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
     @Override
     void godkjennForAvtalepart(Avtale avtale) {
-        throw new NotImplementedException();
+        throw new TilgangskontrollException("Beslutter kan ikke godkjenne avtaler");
     }
 
     @Override
@@ -64,7 +65,7 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
     @Override
     public AvtaleStatusDetaljer statusDetaljerForAvtale(Avtale avtale) {
-        return null;
+        throw new NotImplementedException();
     }
 
     @Override
@@ -79,7 +80,7 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
     @Override
     void opphevGodkjenningerSomAvtalepart(Avtale avtale) {
-        throw new NotImplementedException();
+        throw new TilgangskontrollException("Beslutter kan ikke oppheve godkjenninger av avtaler");
     }
 
     @Override
@@ -89,7 +90,7 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
     @Override
     public void låsOppAvtale(Avtale avtale) {
-        throw new NotImplementedException();
+        throw new TilgangskontrollException("Beslutter kan ikke låse opp avtaler");
     }
 
     @Override
