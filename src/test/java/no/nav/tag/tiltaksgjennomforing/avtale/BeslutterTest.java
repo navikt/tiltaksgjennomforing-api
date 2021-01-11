@@ -31,7 +31,7 @@ class BeslutterTest {
     AvtaleRepository avtaleRepository = mock(AvtaleRepository.class);
 
     AvtalePredicate avtalePredicate = new AvtalePredicate();
-    avtalePredicate.setErGodkjkentTilskuddPerioder(null);
+    avtalePredicate.setStatus(null);
 
     // NÅR
     when(tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNotNull()).thenReturn(avtale.gjeldendeInnhold().getTilskuddPeriode());
@@ -57,7 +57,7 @@ class BeslutterTest {
     AvtaleRepository avtaleRepository = mock(AvtaleRepository.class);
 
     AvtalePredicate avtalePredicate = new AvtalePredicate();
-    avtalePredicate.setErGodkjkentTilskuddPerioder(true);
+    avtalePredicate.setTilskuddPeriodeStatus(TilskuddPeriodeStatus.GODKJENT);
 
     // NÅR
     when(tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNotNull()).thenReturn(avtale.gjeldendeInnhold().getTilskuddPeriode());
@@ -83,7 +83,7 @@ class BeslutterTest {
     AvtaleRepository avtaleRepository = mock(AvtaleRepository.class);
 
     AvtalePredicate avtalePredicate = new AvtalePredicate();
-    avtalePredicate.setErGodkjkentTilskuddPerioder(false);
+    avtalePredicate.setTilskuddPeriodeStatus(null);
 
     // NÅR
     when(tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNull()).thenReturn(avtale.gjeldendeInnhold().getTilskuddPeriode());
