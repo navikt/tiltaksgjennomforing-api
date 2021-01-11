@@ -50,6 +50,7 @@ public class Beslutter extends Avtalepart<NavIdent> {
             .stream().map(tilskudd -> tilskudd.getAvtaleInnhold().getAvtale())
             .filter(avtale -> erTiltakstype(queryParametre, avtale))
             .peek(avtale -> avtale.setTilskuddPeriodeStatus(tilskuddPeriodeStatus))
+            .distinct()
             .collect(Collectors.toList());
 
     }
