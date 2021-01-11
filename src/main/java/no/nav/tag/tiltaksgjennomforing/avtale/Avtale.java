@@ -20,6 +20,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
+import javax.persistence.Transient;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -91,6 +92,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private String enhetGeografisk;
     @JsonIgnore
     private String enhetOppfolging;
+
+    @Transient
+    private String tilskuddPeriodeStatus = TilskuddPeriodeStatus.UKJENT.value();
 
     private Avtale(OpprettAvtale opprettAvtale) {
         this.id = UUID.randomUUID();

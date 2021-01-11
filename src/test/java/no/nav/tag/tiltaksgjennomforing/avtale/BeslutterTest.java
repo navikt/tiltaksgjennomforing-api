@@ -67,14 +67,19 @@ class BeslutterTest {
   }
 
   @Test
-  public void hentAlleAvtalerMedMuligTilgang_kan_hente_avtale_Med_ubehandlet_periode() {
+  public void hentAlleAvtalerMedMuligTilgang_kan_hente_kun_en_avtale_Med_to_ubehandlet_perioder() {
 
     // GITT
     Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
     TilskuddPeriode tilskuddPeriode = new TilskuddPeriode();
     tilskuddPeriode.setBeløp(1200);
     tilskuddPeriode.setAvtaleInnhold(avtale.gjeldendeInnhold());
-    avtale.gjeldendeInnhold().setTilskuddPeriode(Lists.list(tilskuddPeriode));
+
+    TilskuddPeriode tilskuddPeriode2 = new TilskuddPeriode();
+    tilskuddPeriode2.setBeløp(1250);
+    tilskuddPeriode2.setAvtaleInnhold(avtale.gjeldendeInnhold());
+
+    avtale.gjeldendeInnhold().setTilskuddPeriode(Lists.list(tilskuddPeriode, tilskuddPeriode2));
 
     TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
     TilskuddPeriodeRepository tilskuddPeriodeRepository = mock(TilskuddPeriodeRepository.class);
@@ -90,6 +95,7 @@ class BeslutterTest {
     List<Avtale> avtales = veileder.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
 
     assertThat(avtales).isNotEmpty();
+    assertThat(avtales.size()).isEqualTo(1);
   }
 
 

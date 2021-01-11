@@ -46,14 +46,14 @@ public class TilskuddPeriode {
 
     private LocalDateTime godkjentTidspunkt;
 
-    private TilskuddPeriodeStatus status;
-
+    private TilskuddPeriodeStatus status = TilskuddPeriodeStatus.UBEHANDLET;
 
     public TilskuddPeriode(TilskuddPeriode periode) {
         id = UUID.randomUUID();
         beløp = periode.beløp;
         startDato = periode.startDato;
         sluttDato = periode.sluttDato;
+        status = periode.status;
     }
 
     public boolean erGodkjent() {
