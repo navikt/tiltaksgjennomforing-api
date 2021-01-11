@@ -34,6 +34,7 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
+        //TODO: Håndter avslåtte tilskuddsperioder
         if (queryParametre.getTilskuddPeriodeStatus() != null && queryParametre.getTilskuddPeriodeStatus().equals(TilskuddPeriodeStatus.GODKJENT)) {
             return getAvtalesMedGodkjentTilskuddPerioder(queryParametre, tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNotNull());
         }
