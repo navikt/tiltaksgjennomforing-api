@@ -92,6 +92,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     @JsonIgnore
     private String enhetOppfolging;
 
+    private TilskuddPeriodeStatus tilskuddPeriodeStatus = TilskuddPeriodeStatus.UKJENT;
+
     private Avtale(OpprettAvtale opprettAvtale) {
         this.id = UUID.randomUUID();
         this.opprettetTidspunkt = LocalDateTime.now();
