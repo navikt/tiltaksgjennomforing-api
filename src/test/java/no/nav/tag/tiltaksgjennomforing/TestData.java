@@ -191,9 +191,9 @@ public class TestData {
 
     public static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
         return new Arbeidsgiver(
-            TestData.etFodselsnummer(),
-            Set.of(new AltinnReportee("Bedriftnavn", "", null, avtale.getBedriftNr().asString(), "", ""))
-            , Map.of(avtale.getBedriftNr(),
+                TestData.etFodselsnummer(),
+                Set.of(new AltinnReportee("Bedriftnavn", "", null, avtale.getBedriftNr().asString(), "", ""))
+                , Map.of(avtale.getBedriftNr(),
                 List.of(Tiltakstype.values())),
                 null,
                 null);
@@ -290,13 +290,17 @@ public class TestData {
         return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, persondataService, mock(Norg2Client.class));
     }
 
-    public static PdlRespons enPdlrespons(boolean harKode6eller7){
+    public static PdlRespons enPdlrespons(boolean harKode6eller7) {
         Adressebeskyttelse adressebeskyttelser[] = new Adressebeskyttelse[1];
-        if(harKode6eller7){
+        if (harKode6eller7) {
             adressebeskyttelser[0] = new Adressebeskyttelse("FORTROLIG");
         }
 
-        HentPerson hentPerson = new HentPerson(adressebeskyttelser, new Navn[]{new Navn("Donald", null, "Duck")});
+        HentPerson hentPerson = new HentPerson(adressebeskyttelser, new Navn[]{ new Navn("Donald", null, "Duck") });
         return new PdlRespons(new Data(hentPerson, null, new HentGeografiskTilknytning(null, "030101", null, null)));
+    }
+
+    public static TilskuddPeriode enTilskuddPeriode() {
+        return TestData.enLonnstilskuddAvtaleGodkjentAvVeileder().getTilskuddPeriode().get(0);
     }
 }

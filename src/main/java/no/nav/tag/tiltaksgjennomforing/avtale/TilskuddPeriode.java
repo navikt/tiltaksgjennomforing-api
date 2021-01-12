@@ -1,18 +1,16 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.UUID;
-import javax.persistence.*;
-
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+
+import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.EnumSet;
+import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -43,6 +41,15 @@ public class TilskuddPeriode {
     private LocalDateTime godkjentTidspunkt;
 
     @Enumerated(EnumType.STRING)
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<Avslagsårsak> avslagsårsaker = EnumSet.noneOf(Avslagsårsak.class);
+
+    private String avslagsforklaring;
+    @Convert(converter = NavIdentConverter.class)
+    private NavIdent avslåttAvNavIdent;
+    private LocalDateTime avslåttTidspunkt;
+
+    @Enumerated(EnumType.STRING)
     private TilskuddPeriodeStatus status = TilskuddPeriodeStatus.UBEHANDLET;
 
     public TilskuddPeriode(TilskuddPeriode periode) {
@@ -53,21 +60,39 @@ public class TilskuddPeriode {
         status = periode.status;
     }
 
-    public boolean erGodkjent() {
-        return godkjentTidspunkt != null && godkjentAvNavIdent != null;
+    private void sjekkOmKanBehandles() {
+        if (status != TilskuddPeriodeStatus.UBEHANDLET) {
+            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET);
+        }
+        if (!getAvtaleInnhold().getAvtale().erGodkjentAvVeileder()) {
+            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_KAN_KUN_BEHANDLES_VED_INNGAATT_AVTALE);
+        }
+        if (startDato.isBefore(LocalDate.now().minusWeeks(2))) {
+            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_BEHANDLE_FOR_TIDLIG);
+        }
     }
 
     public void godkjenn(NavIdent beslutter) {
-        if (erGodkjent()) {
-            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_GODKJENT);
-        }
-        if (!getAvtaleInnhold().getAvtale().erGodkjentAvVeileder()) {
-            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_KAN_KUN_GODKJENNES_VED_INNGAATT_AVTALE);
-        }
-        if (startDato.isBefore(LocalDate.now().minusWeeks(2))) {
-            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_GODKJENT_FOR_TIDLIG);
-        }
+        sjekkOmKanBehandles();
+
         setGodkjentTidspunkt(LocalDateTime.now());
         setGodkjentAvNavIdent(beslutter);
+        setStatus(TilskuddPeriodeStatus.GODKJENT);
+    }
+
+    public void avslå(NavIdent beslutter, EnumSet<Avslagsårsak> avslagsårsaker, String avslagsforklaring) {
+        sjekkOmKanBehandles();
+        if (avslagsforklaring.isBlank()) {
+            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_AVSLAGSFORKLARING_PAAKREVD);
+        }
+        if (avslagsårsaker.isEmpty()) {
+            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_INGEN_AVSLAGSAARSAKER);
+        }
+
+        setAvslåttTidspunkt(LocalDateTime.now());
+        setAvslåttAvNavIdent(beslutter);
+        this.avslagsårsaker.addAll(avslagsårsaker);
+        setAvslagsforklaring(avslagsforklaring);
+        setStatus(TilskuddPeriodeStatus.AVSLÅTT);
     }
 }

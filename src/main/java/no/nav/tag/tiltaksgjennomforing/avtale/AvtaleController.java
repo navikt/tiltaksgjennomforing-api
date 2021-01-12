@@ -177,4 +177,12 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         beslutter.godkjennTilskuddsperiode(avtale, tilskuddPeriodeId);
     }
+
+    @PostMapping("/{avtaleId}/tilskuddsperiode/{tilskuddPeriodeId}/avslag")
+    @Transactional
+    public void avslåTilskuddsperiode(@PathVariable("avtaleId") UUID avtaleId, @PathVariable("tilskuddPeriodeId") UUID tilskuddPeriodeId, @RequestBody AvslagRequest avslagRequest) {
+        Beslutter beslutter = innloggingService.hentBeslutter();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        beslutter.avslåTilskuddsperiode(avtale, tilskuddPeriodeId, avslagRequest.getAvslagsårsaker(), avslagRequest.getAvslagsforklaring());
+    }
 }

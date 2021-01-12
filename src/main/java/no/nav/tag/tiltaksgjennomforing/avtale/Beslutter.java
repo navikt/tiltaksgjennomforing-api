@@ -1,14 +1,16 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.EnumSet;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class Beslutter extends Avtalepart<NavIdent> {
 
@@ -25,6 +27,12 @@ public class Beslutter extends Avtalepart<NavIdent> {
         sjekkTilgang(avtale);
         TilskuddPeriode tilskuddPeriode = avtale.getTilskuddPeriode().stream().filter(it -> it.getId().equals(tilskuddPeriodeId)).findFirst().orElseThrow();
         tilskuddPeriode.godkjenn(getIdentifikator());
+    }
+
+    public void avslåTilskuddsperiode(Avtale avtale, UUID tilskuddPeriodeId, EnumSet<Avslagsårsak> avslagsårsaker, String avslagsforklaring) {
+        sjekkTilgang(avtale);
+        TilskuddPeriode tilskuddPeriode = avtale.getTilskuddPeriode().stream().filter(it -> it.getId().equals(tilskuddPeriodeId)).findFirst().orElseThrow();
+        tilskuddPeriode.avslå(getIdentifikator(), avslagsårsaker, avslagsforklaring);
     }
 
     @Override
