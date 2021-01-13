@@ -48,11 +48,11 @@ public class Beslutter extends Avtalepart<NavIdent> {
             .collect(Collectors.toList());
     }
 
-    private boolean harTiltakstype(Tiltakstype tiltakstype, Tiltakstype tiltakstypeForAvtale) {
-        if (tiltakstype == null) {
+    private boolean harTiltakstype(Tiltakstype valgtTiltakstype, Tiltakstype tiltakstypeForAvtale) {
+        if (valgtTiltakstype == null) {
             return true;
         }
-        return tiltakstypeForAvtale.equals(tiltakstype);
+        return tiltakstypeForAvtale.equals(valgtTiltakstype);
     }
 
     @Override
