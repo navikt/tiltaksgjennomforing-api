@@ -4,7 +4,7 @@ alter table tilskudd_periode add column avslått_tidspunkt timestamp without tim
 
 create table tilskudd_periode_avslagsårsaker
 (
-    tilskudd_periode_id  varchar references tilskudd_periode(id),
+    tilskudd_periode_id  uuid references tilskudd_periode(id),
     avslagsårsaker varchar,
     primary key (tilskudd_periode_id, avslagsårsaker)
 );
