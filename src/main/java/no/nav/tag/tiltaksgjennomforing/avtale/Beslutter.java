@@ -43,7 +43,9 @@ public class Beslutter extends Avtalepart<NavIdent> {
         TilskuddPeriodeStatus tilskuddPeriodeStatus =
             queryParametre.getTilskuddPeriodeStatus() == null ? TilskuddPeriodeStatus.UBEHANDLET : queryParametre.getTilskuddPeriodeStatus();
         return tilskuddPeriodeRepository.findAllByStatus(tilskuddPeriodeStatus)
-            .stream().map(tilskudd -> tilskudd.getAvtaleInnhold().getAvtale())
+            .stream()
+            .map(TilskuddPeriode::getAvtaleInnhold)
+            .map(AvtaleInnhold::getAvtale)
             .filter(avtale -> harRiktigTiltakstype(queryParametre.getTiltakstype(), avtale.getTiltakstype()))
             .distinct()
             .collect(Collectors.toList());
