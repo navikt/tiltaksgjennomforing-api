@@ -37,28 +37,30 @@ class TilskuddPeriodeRepositoryTest {
   }
 
   @Test
-  public void skalKunne_hente_avale_med_Ikke_godkjente_tilskuddPeriode() {
+  public void skalKunne_hente_avale_med_UBEHANDLET_tilskuddPeriode() {
     // Lage avtale
     tilskuddPeriode.setAvtaleInnhold(lagretAvtale.gjeldendeInnhold());
     lagretAvtale.gjeldendeInnhold().setTilskuddPeriode(Collections.singletonList(tilskuddPeriode));
     tilskuddPeriode.setBeløp(10);
+    tilskuddPeriode.setStatus(TilskuddPeriodeStatus.UBEHANDLET);
     tilskuddPeriodeRepository.save(tilskuddPeriode);
 
-    List<TilskuddPeriode> tilskuddPeriodes = tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNotNull();
-    assertThat(tilskuddPeriodes).isEmpty();
+    List<TilskuddPeriode> tilskuddPeriodes = tilskuddPeriodeRepository.findAllByStatus(TilskuddPeriodeStatus.UBEHANDLET);
+    assertThat(tilskuddPeriodes.get(0).getAvtaleInnhold().getAvtale()).isNotNull();
   }
 
 
   @Test
-  public void skalKunne_hente_avale_med_godkjente_tilskuddPeriode() {
+  public void skalKunne_hente_avale_med_GODKJENT_tilskuddPeriode() {
     // Lage avtale
     tilskuddPeriode.setAvtaleInnhold(lagretAvtale.gjeldendeInnhold());
     lagretAvtale.gjeldendeInnhold().setTilskuddPeriode(Collections.singletonList(tilskuddPeriode));
     tilskuddPeriode.setBeløp(25);
+    tilskuddPeriode.setStatus(TilskuddPeriodeStatus.GODKJENT);
     tilskuddPeriode.setGodkjentTidspunkt(LocalDateTime.now());
     tilskuddPeriodeRepository.save(tilskuddPeriode);
 
-    List<TilskuddPeriode> tilskuddPeriodes = tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNotNull();
+    List<TilskuddPeriode> tilskuddPeriodes = tilskuddPeriodeRepository.findAllByStatus(TilskuddPeriodeStatus.GODKJENT);
     assertThat(tilskuddPeriodes).isNotEmpty();
     assertThat(tilskuddPeriodes.get(0).getAvtaleInnhold().getAvtale()).isNotNull();
   }
