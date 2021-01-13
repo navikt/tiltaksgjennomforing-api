@@ -1,16 +1,14 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import java.util.EnumSet;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import org.apache.commons.lang3.NotImplementedException;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.EnumSet;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class Beslutter extends Avtalepart<NavIdent> {
 
@@ -42,25 +40,14 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
-        //TODO: Håndter avslåtte tilskuddsperioder
-        if (queryParametre.getTilskuddPeriodeStatus() != null && queryParametre.getTilskuddPeriodeStatus().equals(TilskuddPeriodeStatus.GODKJENT)) {
-            return getAvtalesMedGodkjentTilskuddPerioder(queryParametre, tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNotNull(),
-                TilskuddPeriodeStatus.GODKJENT.value());
-        }
-        return getAvtalesMedGodkjentTilskuddPerioder(queryParametre, tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNull(),
-            TilskuddPeriodeStatus.UBEHANDLET.value());
-    }
-
-    @NotNull
-    private List<Avtale> getAvtalesMedGodkjentTilskuddPerioder(AvtalePredicate queryParametre, List<TilskuddPeriode> allByGodkjentTidspunktIsNull,
-        String tilskuddPeriodeStatus) {
-        return allByGodkjentTidspunktIsNull
+        TilskuddPeriodeStatus tilskuddPeriodeStatus =
+            queryParametre.getTilskuddPeriodeStatus() == null ? TilskuddPeriodeStatus.UBEHANDLET : queryParametre.getTilskuddPeriodeStatus();
+        return tilskuddPeriodeRepository.findAllByStatus(tilskuddPeriodeStatus)
             .stream().map(tilskudd -> tilskudd.getAvtaleInnhold().getAvtale())
             .filter(avtale -> erTiltakstype(queryParametre, avtale))
-            .peek(avtale -> avtale.setTilskuddPeriodeStatus(tilskuddPeriodeStatus))
+            .peek(avtale -> avtale.setTilskuddPeriodeStatus(tilskuddPeriodeStatus.value()))
             .distinct()
             .collect(Collectors.toList());
-
     }
 
     private boolean erTiltakstype(AvtalePredicate queryParametre, Avtale avtale) {

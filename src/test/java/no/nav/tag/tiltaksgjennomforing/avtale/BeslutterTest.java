@@ -20,6 +20,7 @@ class BeslutterTest {
     // GITT
     Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
     TilskuddPeriode tilskuddPeriode = new TilskuddPeriode();
+    tilskuddPeriode.setStatus(TilskuddPeriodeStatus.UBEHANDLET);
     tilskuddPeriode.setBeløp(1200);
     tilskuddPeriode.setAvtaleInnhold(avtale.gjeldendeInnhold());
     avtale.gjeldendeInnhold().setTilskuddPeriode(Lists.list(tilskuddPeriode));
@@ -46,6 +47,7 @@ class BeslutterTest {
     // GITT
     Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
     TilskuddPeriode tilskuddPeriode = new TilskuddPeriode();
+    tilskuddPeriode.setStatus(TilskuddPeriodeStatus.GODKJENT);
     tilskuddPeriode.setBeløp(1200);
     tilskuddPeriode.setAvtaleInnhold(avtale.gjeldendeInnhold());
     avtale.gjeldendeInnhold().setTilskuddPeriode(Lists.list(tilskuddPeriode));
@@ -60,10 +62,10 @@ class BeslutterTest {
     avtalePredicate.setTilskuddPeriodeStatus(TilskuddPeriodeStatus.GODKJENT);
 
     // NÅR
-    when(tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNotNull()).thenReturn(avtale.gjeldendeInnhold().getTilskuddPeriode());
-    List<Avtale> avtales = veileder.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
+    when(tilskuddPeriodeRepository.findAllByStatus(TilskuddPeriodeStatus.GODKJENT)).thenReturn(avtale.gjeldendeInnhold().getTilskuddPeriode());
+    List<Avtale> avtaler = veileder.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
 
-    assertThat(avtales).isNotEmpty();
+    assertThat(avtaler).isNotEmpty();
   }
 
   @Test
@@ -73,10 +75,12 @@ class BeslutterTest {
     Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
     TilskuddPeriode tilskuddPeriode = new TilskuddPeriode();
     tilskuddPeriode.setBeløp(1200);
+    tilskuddPeriode.setStatus(TilskuddPeriodeStatus.UBEHANDLET);
     tilskuddPeriode.setAvtaleInnhold(avtale.gjeldendeInnhold());
 
     TilskuddPeriode tilskuddPeriode2 = new TilskuddPeriode();
     tilskuddPeriode2.setBeløp(1250);
+    tilskuddPeriode2.setStatus(TilskuddPeriodeStatus.UBEHANDLET);
     tilskuddPeriode2.setAvtaleInnhold(avtale.gjeldendeInnhold());
 
     avtale.gjeldendeInnhold().setTilskuddPeriode(Lists.list(tilskuddPeriode, tilskuddPeriode2));
@@ -91,7 +95,7 @@ class BeslutterTest {
     avtalePredicate.setTilskuddPeriodeStatus(null);
 
     // NÅR
-    when(tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNull()).thenReturn(avtale.gjeldendeInnhold().getTilskuddPeriode());
+    when(tilskuddPeriodeRepository.findAllByStatus(TilskuddPeriodeStatus.UBEHANDLET)).thenReturn(avtale.gjeldendeInnhold().getTilskuddPeriode());
     List<Avtale> avtales = veileder.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
 
     assertThat(avtales).isNotEmpty();

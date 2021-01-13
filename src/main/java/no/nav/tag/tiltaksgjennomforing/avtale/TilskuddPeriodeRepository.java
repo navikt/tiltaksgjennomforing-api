@@ -26,5 +26,7 @@ public interface TilskuddPeriodeRepository extends JpaRepository<TilskuddPeriode
 
     List<TilskuddPeriode> findAllByGodkjentTidspunktIsNull();
 
+    List<TilskuddPeriode> findAllByStatus(TilskuddPeriodeStatus status);
+
 }
 
