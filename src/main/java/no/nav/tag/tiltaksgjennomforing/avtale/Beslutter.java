@@ -40,9 +40,7 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
-        TilskuddPeriodeStatus status =
-            queryParametre.getTilskuddPeriodeStatus() == null ? TilskuddPeriodeStatus.UBEHANDLET : queryParametre.getTilskuddPeriodeStatus();
-        return tilskuddPeriodeRepository.findAllByStatus(status)
+        return tilskuddPeriodeRepository.findAllByStatus(queryParametre.hentTilskuddPeriodeStatus())
             .stream()
             .map(TilskuddPeriode::hentAvtale)
             .filter(avtale -> harTiltakstype(queryParametre.getTiltakstype(), avtale.getTiltakstype()))
