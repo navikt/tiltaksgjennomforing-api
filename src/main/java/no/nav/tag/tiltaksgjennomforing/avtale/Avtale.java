@@ -94,7 +94,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private String enhetOppfolging;
 
     @Transient
-    private String tilskuddPeriodeStatus = TilskuddPeriodeStatus.UKJENT.value();
+    public String tilskuddPeriodeStatus = TilskuddPeriodeStatus.UKJENT.value();
 
     private Avtale(OpprettAvtale opprettAvtale) {
         this.id = UUID.randomUUID();

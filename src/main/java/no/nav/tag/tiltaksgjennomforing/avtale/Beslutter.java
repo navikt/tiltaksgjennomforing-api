@@ -44,17 +44,16 @@ public class Beslutter extends Avtalepart<NavIdent> {
             queryParametre.getTilskuddPeriodeStatus() == null ? TilskuddPeriodeStatus.UBEHANDLET : queryParametre.getTilskuddPeriodeStatus();
         return tilskuddPeriodeRepository.findAllByStatus(tilskuddPeriodeStatus)
             .stream().map(tilskudd -> tilskudd.getAvtaleInnhold().getAvtale())
-            .filter(avtale -> erTiltakstype(queryParametre, avtale))
-            .peek(avtale -> avtale.setTilskuddPeriodeStatus(tilskuddPeriodeStatus.value()))
+            .filter(avtale -> harRiktigTiltakstype(queryParametre.getTiltakstype(), avtale.getTiltakstype()))
             .distinct()
             .collect(Collectors.toList());
     }
 
-    private boolean erTiltakstype(AvtalePredicate queryParametre, Avtale avtale) {
-        if (queryParametre.getTiltakstype() == null) {
+    private boolean harRiktigTiltakstype(Tiltakstype tiltakstype, Tiltakstype tiltakstypeForAvtale) {
+        if (tiltakstype == null) {
             return true;
         }
-        return avtale.getTiltakstype().equals(queryParametre.getTiltakstype());
+        return tiltakstypeForAvtale.equals(tiltakstype);
     }
 
     @Override
