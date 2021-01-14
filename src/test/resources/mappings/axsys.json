@@ -4,8 +4,8 @@
       "priority": 1,
       "request": {
         "method": "GET",
-        "urlPath": "/axsys/X123456",
-        "queryParameters" : {
+        "urlPathPattern": "/axsys/[X,Z]123456",
+        "queryParameters": {
           "inkluderAlleEnheter": {
             "equalTo": "false"
           }

@@ -9,6 +9,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.Tilgangskontroll
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +29,7 @@ public class InnloggingService {
     private final PersondataService persondataService;
     private final Norg2Client norg2Client;
     private final TilskuddPeriodeRepository tilskuddPeriodeRepository;
+    private final AxsysService axsysService;
 
     public Avtalepart hentAvtalepart(Avtalerolle avtalerolle) {
         BrukerOgIssuer brukerOgIssuer = tokenUtils.hentBrukerOgIssuer().orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget."));
@@ -49,7 +51,7 @@ public class InnloggingService {
         }
 
         else if (issuer == Issuer.ISSUER_ISSO && avtalerolle == Avtalerolle.BESLUTTER && tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId())) {
-            return new Beslutter(new NavIdent(brukerOgIssuer.getBrukerIdent()), tilgangskontrollService, tilskuddPeriodeRepository);
+            return new Beslutter(new NavIdent(brukerOgIssuer.getBrukerIdent()), tilgangskontrollService, tilskuddPeriodeRepository, axsysService);
         }
 
         else {

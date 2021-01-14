@@ -4,6 +4,8 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,11 +18,13 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
     private TilgangskontrollService tilgangskontrollService;
     private TilskuddPeriodeRepository tilskuddPeriodeRepository;
+    private AxsysService axsysService;
 
-    public Beslutter(NavIdent identifikator, TilgangskontrollService tilgangskontrollService, TilskuddPeriodeRepository tilskuddPeriodeRepository) {
+    public Beslutter(NavIdent identifikator, TilgangskontrollService tilgangskontrollService, TilskuddPeriodeRepository tilskuddPeriodeRepository, AxsysService axsysService) {
         super(identifikator);
         this.tilgangskontrollService = tilgangskontrollService;
         this.tilskuddPeriodeRepository = tilskuddPeriodeRepository;
+        this.axsysService = axsysService;
     }
 
     public void godkjennTilskuddsperiode(Avtale avtale, UUID tilskuddPeriodeId) {
@@ -42,6 +46,7 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
+        List<String> navEnheter = hentNavEnheter();
         //TODO: Håndter avslåtte tilskuddsperioder
         if (queryParametre.getTilskuddPeriodeStatus() != null && queryParametre.getTilskuddPeriodeStatus().equals(TilskuddPeriodeStatus.GODKJENT)) {
             return getAvtalesMedGodkjentTilskuddPerioder(queryParametre, tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNotNull(),
@@ -59,7 +64,7 @@ public class Beslutter extends Avtalepart<NavIdent> {
             .filter(avtale -> erTiltakstype(queryParametre, avtale))
             .peek(avtale -> avtale.setTilskuddPeriodeStatus(tilskuddPeriodeStatus))
             .distinct()
-            .collect(Collectors.toList());
+                .collect(Collectors.toList());
 
     }
 
@@ -68,6 +73,13 @@ public class Beslutter extends Avtalepart<NavIdent> {
             return true;
         }
         return avtale.getTiltakstype().equals(queryParametre.getTiltakstype());
+    }
+
+    private List<String> hentNavEnheter() {
+        return axsysService.hentEnheterNavAnsattHarTilgangTil(getIdentifikator())
+                .stream()
+                .map(NavEnhet::getVerdi)
+                .collect(Collectors.toList());
     }
 
     @Override

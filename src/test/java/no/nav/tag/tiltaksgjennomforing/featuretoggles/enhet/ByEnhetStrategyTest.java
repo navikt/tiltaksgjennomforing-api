@@ -1,9 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet;
 
+import no.finn.unleash.UnleashContext;
 import org.junit.Test;
 import org.springframework.web.client.RestClientException;
-
-import no.finn.unleash.UnleashContext;
 
 import java.util.Map;
 
@@ -11,7 +10,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.ByEnhetStrategy.PARAM;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class ByEnhetStrategyTest {
@@ -48,25 +47,25 @@ public class ByEnhetStrategyTest {
 
     @Test
     public void skal_være_disablet_hvis_bruker_har_definerte_enheter_men_ingen_er_i_listen() {
-        when(axsysService.hentEnheterVeilederHarTilgangTil(any())).thenReturn(newArrayList(new NavEnhet("1111"), new NavEnhet("2222")));
+        when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(newArrayList(new NavEnhet("1111"), new NavEnhet("2222")));
         assertThat(new ByEnhetStrategy(axsysService).isEnabled(Map.of(PARAM, "1234"), unleashContext)).isFalse();
     }
     
     @Test
     public void skal_være_enablet_hvis_bruker_har_definert_enhet() {
-        when(axsysService.hentEnheterVeilederHarTilgangTil(any())).thenReturn(newArrayList(new NavEnhet("1234")));
+        when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(newArrayList(new NavEnhet("1234")));
         assertThat(new ByEnhetStrategy(axsysService).isEnabled(Map.of(PARAM, "1234"), unleashContext)).isTrue();
     }
 
     @Test
     public void skal_være_enablet_hvis_en_av_brukers_enheter_er_i_listen() {
-        when(axsysService.hentEnheterVeilederHarTilgangTil(any())).thenReturn(newArrayList(new NavEnhet("1111"), new NavEnhet("1234")));
+        when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(newArrayList(new NavEnhet("1111"), new NavEnhet("1234")));
         assertThat(new ByEnhetStrategy(axsysService).isEnabled(Map.of(PARAM, "1234,5678"), unleashContext)).isTrue();
     }
     
     @Test(expected=RestClientException.class)
     public void skal_kaste_exception_hvis_axsys_kaster_exception() {
-        when(axsysService.hentEnheterVeilederHarTilgangTil(any())).thenThrow(new RestClientException("mock exception"));
+        when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenThrow(new RestClientException("mock exception"));
         new ByEnhetStrategy(axsysService).isEnabled(Map.of(PARAM, "1234"), unleashContext);
     }
 }

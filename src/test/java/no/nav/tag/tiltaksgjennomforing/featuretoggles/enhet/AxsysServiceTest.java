@@ -2,9 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,19 +25,19 @@ public class AxsysServiceTest {
 
     @Test
     public void hentEnheter__returnerer_riktige_enheter() {
-        List<NavEnhet> enheter = axsysService.hentEnheterVeilederHarTilgangTil(new NavIdent("X123456"));
+        List<NavEnhet> enheter = axsysService.hentEnheterNavAnsattHarTilgangTil(new NavIdent("X123456"));
         assertThat(enheter).containsOnly(new NavEnhet("0906"), new NavEnhet("0904"));
     }
 
     @Test
     public void hentEnheter__ugyldig_ident_skal_ikke_ha_enheter() {
-        List<NavEnhet> enheter = axsysService.hentEnheterVeilederHarTilgangTil(new NavIdent("X999999"));
+        List<NavEnhet> enheter = axsysService.hentEnheterNavAnsattHarTilgangTil(new NavIdent("X999999"));
         assertThat(enheter).isEmpty();
     }
 
     @Test
     public void pilotEnheter__inneholder_hentetEnheter() {
-        List<NavEnhet> enheter = axsysService.hentEnheterVeilederHarTilgangTil(new NavIdent("X123456"));
+        List<NavEnhet> enheter = axsysService.hentEnheterNavAnsattHarTilgangTil(new NavIdent("X123456"));
         List<NavEnhet> pilotEnheter = asList(new NavEnhet("0906"));
         assertThat(pilotEnheter).containsAnyElementsOf(enheter);
     }
