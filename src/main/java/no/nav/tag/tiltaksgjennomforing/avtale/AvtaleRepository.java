@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import io.micrometer.core.annotation.Timed;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,15 +28,18 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     @Timed(percentiles = { 0.5d, 0.75d, 0.9d, 0.99d, 0.999d })
     List<Avtale> findAllByDeltakerFnr(Fnr deltakerFnr);
 
-    @Timed(percentiles = { 0.5d, 0.75d, 0.9d, 0.99d, 0.999d })
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     List<Avtale> findAllByVeilederNavIdent(NavIdent veilederNavIdent);
 
-    @Timed(percentiles = { 0.5d, 0.75d, 0.9d, 0.99d, 0.999d })
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Override
     List<Avtale> findAll();
 
-    @Timed(percentiles = { 0.5d, 0.75d, 0.9d, 0.99d, 0.999d })
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Override
     Avtale save(Avtale entity);
+
+    @Query("select a from Avtale a where a.tiltakstype not in ('ARBEIDSTRENING') and a.enhetOppfolging in (?1)")
+    List<Avtale> finnAvtalerForBeslutter(List<String> navEnheter);
 }
 

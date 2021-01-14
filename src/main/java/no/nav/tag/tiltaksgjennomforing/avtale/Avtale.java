@@ -367,6 +367,53 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         return this.getVeilederNavIdent() == null;
     }
 
+    public void godkjennTilskuddsperiode(NavIdent beslutter) {
+        if (!erGodkjentAvVeileder()) {
+            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_KAN_KUN_BEHANDLES_VED_INNGAATT_AVTALE);
+        }
+        TilskuddPeriode gjeldendePeriode = gjeldendeTilskuddsperiode();
+        gjeldendePeriode.godkjenn(beslutter);
+    }
+
+    public void avslåTilskuddsperiode(NavIdent beslutter, EnumSet<Avslagsårsak> avslagsårsaker, String avslagsforklaring) {
+        if (!erGodkjentAvVeileder()) {
+            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_KAN_KUN_BEHANDLES_VED_INNGAATT_AVTALE);
+        }
+        TilskuddPeriode gjeldendePeriode = gjeldendeTilskuddsperiode();
+        gjeldendePeriode.avslå(beslutter, avslagsårsaker, avslagsforklaring);
+    }
+
+    @JsonProperty
+    public TilskuddPeriode gjeldendeTilskuddsperiode() {
+        if (gjeldendeInnhold().getTilskuddPeriode().isEmpty()) {
+            return null;
+        }
+
+        List<TilskuddPeriode> tilskuddsperioderSortert = gjeldendeInnhold().getTilskuddPeriode().stream()
+                .sorted(Comparator.comparing(TilskuddPeriode::getStartDato))
+                .collect(Collectors.toList());
+
+        // Finner første avslått
+        Optional<TilskuddPeriode> førsteAvslått = tilskuddsperioderSortert.stream().filter(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.AVSLÅTT).findFirst();
+        if (førsteAvslått.isPresent()) {
+            return førsteAvslått.get();
+        }
+
+        // Finn første som kan behandles
+        Optional<TilskuddPeriode> førsteSomKanBehandles = tilskuddsperioderSortert.stream().filter(TilskuddPeriode::kanBehandles).findFirst();
+        if (førsteSomKanBehandles.isPresent()) {
+            return førsteSomKanBehandles.get();
+        }
+
+        // Finn siste godkjent
+        Optional<TilskuddPeriode> sisteGodkjent = Lists.reverse(tilskuddsperioderSortert).stream().filter(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.GODKJENT).findFirst();
+        if (sisteGodkjent.isPresent()) {
+            return sisteGodkjent.get();
+        }
+
+        return tilskuddsperioderSortert.get(0);
+    }
+
     private interface MetoderSomIkkeSkalDelegeresFraAvtaleInnhold {
         UUID getId();
 

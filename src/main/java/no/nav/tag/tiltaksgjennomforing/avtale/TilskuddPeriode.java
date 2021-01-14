@@ -80,15 +80,12 @@ public class TilskuddPeriode {
         if (status != TilskuddPeriodeStatus.UBEHANDLET) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET);
         }
-        if (!getAvtaleInnhold().getAvtale().erGodkjentAvVeileder()) {
-            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_KAN_KUN_BEHANDLES_VED_INNGAATT_AVTALE);
-        }
-        if (startDato.isBefore(LocalDate.now().minusWeeks(2))) {
+        if (LocalDate.now().isBefore(startDato.minusWeeks(2))) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_BEHANDLE_FOR_TIDLIG);
         }
     }
 
-    public void godkjenn(NavIdent beslutter) {
+    void godkjenn(NavIdent beslutter) {
         sjekkOmKanBehandles();
 
         setGodkjentTidspunkt(LocalDateTime.now());
@@ -96,7 +93,7 @@ public class TilskuddPeriode {
         setStatus(TilskuddPeriodeStatus.GODKJENT);
     }
 
-    public void avslå(NavIdent beslutter, EnumSet<Avslagsårsak> avslagsårsaker, String avslagsforklaring) {
+    void avslå(NavIdent beslutter, EnumSet<Avslagsårsak> avslagsårsaker, String avslagsforklaring) {
         sjekkOmKanBehandles();
         if (avslagsforklaring.isBlank()) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_AVSLAGSFORKLARING_PAAKREVD);
@@ -110,5 +107,14 @@ public class TilskuddPeriode {
         this.avslagsårsaker.addAll(avslagsårsaker);
         setAvslagsforklaring(avslagsforklaring);
         setStatus(TilskuddPeriodeStatus.AVSLÅTT);
+    }
+
+    public boolean kanBehandles() {
+        try {
+            sjekkOmKanBehandles();
+            return true;
+        } catch (FeilkodeException e) {
+            return false;
+        }
     }
 }

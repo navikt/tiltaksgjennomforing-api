@@ -1,20 +1,14 @@
 package no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet;
 
+import lombok.RequiredArgsConstructor;
 import no.finn.unleash.UnleashContext;
 import no.finn.unleash.strategy.Strategy;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
-
 import org.springframework.stereotype.Component;
 
-import lombok.RequiredArgsConstructor;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -46,7 +40,7 @@ public class ByEnhetStrategy implements Strategy {
         if (!NavIdent.erNavIdent(currentUserId)) {
             return List.of();
         }
-        return axsysService.hentEnheterVeilederHarTilgangTil(new NavIdent(currentUserId)).stream()
+        return axsysService.hentEnheterNavAnsattHarTilgangTil(new NavIdent(currentUserId)).stream()
                 .map(enhet -> enhet.getVerdi()).collect(toList());
     }
 

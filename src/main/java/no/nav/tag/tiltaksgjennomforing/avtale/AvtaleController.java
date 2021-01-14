@@ -170,19 +170,19 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
-    @PostMapping("/{avtaleId}/tilskuddsperiode/{tilskuddPeriodeId}/godkjenn")
+    @PostMapping("/{avtaleId}/godkjenn-tilskuddsperiode")
     @Transactional
-    public void godkjennTilskuddsperiode(@PathVariable("avtaleId") UUID avtaleId, @PathVariable("tilskuddPeriodeId") UUID tilskuddPeriodeId) {
+    public void godkjennTilskuddsperiode(@PathVariable("avtaleId") UUID avtaleId) {
         Beslutter beslutter = innloggingService.hentBeslutter();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        beslutter.godkjennTilskuddsperiode(avtale, tilskuddPeriodeId);
+        beslutter.godkjennTilskuddsperiode(avtale);
     }
 
-    @PostMapping("/{avtaleId}/tilskuddsperiode/{tilskuddPeriodeId}/avslag")
+    @PostMapping("/{avtaleId}/avslag-tilskuddsperiode")
     @Transactional
-    public void avslåTilskuddsperiode(@PathVariable("avtaleId") UUID avtaleId, @PathVariable("tilskuddPeriodeId") UUID tilskuddPeriodeId, @RequestBody AvslagRequest avslagRequest) {
+    public void avslåTilskuddsperiode(@PathVariable("avtaleId") UUID avtaleId, @RequestBody AvslagRequest avslagRequest) {
         Beslutter beslutter = innloggingService.hentBeslutter();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        beslutter.avslåTilskuddsperiode(avtale, tilskuddPeriodeId, avslagRequest.getAvslagsårsaker(), avslagRequest.getAvslagsforklaring());
+        beslutter.avslåTilskuddsperiode(avtale, avslagRequest.getAvslagsårsaker(), avslagRequest.getAvslagsforklaring());
     }
 }

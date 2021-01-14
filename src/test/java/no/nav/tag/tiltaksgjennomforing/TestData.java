@@ -8,6 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.persondata.*;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelse;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
@@ -137,7 +138,7 @@ public class TestData {
         endreAvtale.setOppfolging("Telefon hver uke");
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(LocalDate.now());
-        endreAvtale.setSluttDato(endreAvtale.getStartDato().plusWeeks(2));
+        endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(12));
         endreAvtale.setStillingprosent(50);
         endreAvtale.setMaal(List.of(TestData.etMaal()));
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
@@ -212,8 +213,9 @@ public class TestData {
     public static Beslutter enBeslutter(Avtale avtale) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         TilskuddPeriodeRepository tilskuddPeriodeRepository = mock(TilskuddPeriodeRepository.class);
+        AxsysService axsysService = mock(AxsysService.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(avtale.getVeilederNavIdent()), eq(avtale.getDeltakerFnr()))).thenReturn(true);
-        return new Beslutter(avtale.getVeilederNavIdent(), tilgangskontrollService, tilskuddPeriodeRepository);
+        return new Beslutter(avtale.getVeilederNavIdent(), tilgangskontrollService, tilskuddPeriodeRepository, axsysService);
     }
 
     public static Maal etMaal() {

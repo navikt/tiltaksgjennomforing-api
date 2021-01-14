@@ -4,16 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.CorrelationIdSupplier;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.restservicecache.CacheConfiguration;
-
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -22,26 +23,25 @@ public class AxsysService {
     private final AxsysProperties axsysProperties;
     private final RestTemplate restTemplate;
 
-    public AxsysService(AxsysProperties axsysProperties) {
+    public AxsysService(AxsysProperties axsysProperties, RestTemplate restTemplate) {
         this.axsysProperties = axsysProperties;
-        restTemplate = new RestTemplate();
-        restTemplate.setInterceptors(Collections.singletonList((request, body, execution) -> {
-            request.getHeaders().add("Nav-Call-Id", CorrelationIdSupplier.get());
-            request.getHeaders().add("Nav-Consumer-Id", axsysProperties.getNavConsumerId());
-            return execution.execute(request, body);
-        }));
+        this.restTemplate = restTemplate;
     }
 
     @Cacheable(CacheConfiguration.AXSYS_CACHE)
-    public List<NavEnhet> hentEnheterVeilederHarTilgangTil(NavIdent ident) {
+    public List<NavEnhet> hentEnheterNavAnsattHarTilgangTil(NavIdent ident) {
         URI uri = UriComponentsBuilder.fromUri(axsysProperties.getUri())
                 .pathSegment(ident.asString())
                 .queryParam("inkluderAlleEnheter", "false")
                 .build()
                 .toUri();
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Nav-Call-Id", CorrelationIdSupplier.get());
+        headers.set("Nav-Consumer-Id", axsysProperties.getNavConsumerId());
+
         try {
-            AxsysRespons respons = restTemplate.getForObject(uri, AxsysRespons.class);
+            AxsysRespons respons = restTemplate.exchange(uri, HttpMethod.GET, new HttpEntity<>(headers), AxsysRespons.class).getBody();
             return respons.tilEnheter();
         } catch (RestClientException exception) {
             log.warn("Feil ved henting av enheter for ident " + ident, exception);

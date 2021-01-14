@@ -1,18 +1,26 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 
+import no.nav.tag.tiltaksgjennomforing.TestData;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
+import org.assertj.core.util.Lists;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
-import no.nav.tag.tiltaksgjennomforing.TestData;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
-import org.assertj.core.util.Lists;
-import org.junit.jupiter.api.Test;
-
 
 class BeslutterTest {
+
+  private TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+  private TilskuddPeriodeRepository tilskuddPeriodeRepository = mock(TilskuddPeriodeRepository.class);
+  private AvtaleRepository avtaleRepository = mock(AvtaleRepository.class);
+  private AxsysService axsysService = mock(AxsysService.class);
+
 
   @Test
   public void hentAlleAvtalerMedMuligTilgang_kan_hente_avtale_Med_godkjent_periode() {
@@ -25,11 +33,7 @@ class BeslutterTest {
     tilskuddPeriode.setAvtaleInnhold(avtale.gjeldendeInnhold());
     avtale.gjeldendeInnhold().setTilskuddPeriode(Lists.list(tilskuddPeriode));
 
-    TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-    TilskuddPeriodeRepository tilskuddPeriodeRepository = mock(TilskuddPeriodeRepository.class);
-    Beslutter veileder = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, tilskuddPeriodeRepository);
-
-    AvtaleRepository avtaleRepository = mock(AvtaleRepository.class);
+    Beslutter veileder = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, tilskuddPeriodeRepository, axsysService);
 
     AvtalePredicate avtalePredicate = new AvtalePredicate();
     avtalePredicate.setTilskuddPeriodeStatus(TilskuddPeriodeStatus.GODKJENT);
@@ -58,11 +62,7 @@ class BeslutterTest {
 
     avtale.gjeldendeInnhold().setTilskuddPeriode(Lists.list(tilskuddPeriode, tilskuddPeriode2));
 
-    TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-    TilskuddPeriodeRepository tilskuddPeriodeRepository = mock(TilskuddPeriodeRepository.class);
-    Beslutter veileder = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, tilskuddPeriodeRepository);
-
-    AvtaleRepository avtaleRepository = mock(AvtaleRepository.class);
+    Beslutter veileder = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, tilskuddPeriodeRepository, axsysService);
 
     AvtalePredicate avtalePredicate = new AvtalePredicate();
     avtalePredicate.setTilskuddPeriodeStatus(null);
