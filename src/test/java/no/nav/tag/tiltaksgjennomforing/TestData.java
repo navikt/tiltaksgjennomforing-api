@@ -138,7 +138,7 @@ public class TestData {
         endreAvtale.setOppfolging("Telefon hver uke");
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(LocalDate.now());
-        endreAvtale.setSluttDato(endreAvtale.getStartDato().plusWeeks(2));
+        endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(12));
         endreAvtale.setStillingprosent(50);
         endreAvtale.setMaal(List.of(TestData.etMaal()));
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");

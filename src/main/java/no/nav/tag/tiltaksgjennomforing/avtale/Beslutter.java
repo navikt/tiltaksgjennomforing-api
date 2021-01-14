@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class Beslutter extends Avtalepart<NavIdent> {
@@ -27,16 +26,14 @@ public class Beslutter extends Avtalepart<NavIdent> {
         this.axsysService = axsysService;
     }
 
-    public void godkjennTilskuddsperiode(Avtale avtale, UUID tilskuddPeriodeId) {
+    public void godkjennTilskuddsperiode(Avtale avtale) {
         sjekkTilgang(avtale);
-        TilskuddPeriode tilskuddPeriode = avtale.getTilskuddPeriode().stream().filter(it -> it.getId().equals(tilskuddPeriodeId)).findFirst().orElseThrow();
-        tilskuddPeriode.godkjenn(getIdentifikator());
+        avtale.godkjennTilskuddsperiode(getIdentifikator());
     }
 
-    public void avslåTilskuddsperiode(Avtale avtale, UUID tilskuddPeriodeId, EnumSet<Avslagsårsak> avslagsårsaker, String avslagsforklaring) {
+    public void avslåTilskuddsperiode(Avtale avtale, EnumSet<Avslagsårsak> avslagsårsaker, String avslagsforklaring) {
         sjekkTilgang(avtale);
-        TilskuddPeriode tilskuddPeriode = avtale.getTilskuddPeriode().stream().filter(it -> it.getId().equals(tilskuddPeriodeId)).findFirst().orElseThrow();
-        tilskuddPeriode.avslå(getIdentifikator(), avslagsårsaker, avslagsforklaring);
+        avtale.avslåTilskuddsperiode(getIdentifikator(), avslagsårsaker, avslagsforklaring);
     }
 
     @Override
@@ -49,23 +46,18 @@ public class Beslutter extends Avtalepart<NavIdent> {
         List<String> navEnheter = hentNavEnheter();
         //TODO: Håndter avslåtte tilskuddsperioder
         if (queryParametre.getTilskuddPeriodeStatus() != null && queryParametre.getTilskuddPeriodeStatus().equals(TilskuddPeriodeStatus.GODKJENT)) {
-            return getAvtalesMedGodkjentTilskuddPerioder(queryParametre, tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNotNull(),
-                TilskuddPeriodeStatus.GODKJENT.value());
+            return getAvtalesMedGodkjentTilskuddPerioder(queryParametre, tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNotNull());
         }
-        return getAvtalesMedGodkjentTilskuddPerioder(queryParametre, tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNull(),
-            TilskuddPeriodeStatus.UBEHANDLET.value());
+        return getAvtalesMedGodkjentTilskuddPerioder(queryParametre, tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNull());
     }
 
     @NotNull
-    private List<Avtale> getAvtalesMedGodkjentTilskuddPerioder(AvtalePredicate queryParametre, List<TilskuddPeriode> allByGodkjentTidspunktIsNull,
-        String tilskuddPeriodeStatus) {
+    private List<Avtale> getAvtalesMedGodkjentTilskuddPerioder(AvtalePredicate queryParametre, List<TilskuddPeriode> allByGodkjentTidspunktIsNull) {
         return allByGodkjentTidspunktIsNull
-            .stream().map(tilskudd -> tilskudd.getAvtaleInnhold().getAvtale())
-            .filter(avtale -> erTiltakstype(queryParametre, avtale))
-            .peek(avtale -> avtale.setTilskuddPeriodeStatus(tilskuddPeriodeStatus))
-            .distinct()
+                .stream().map(tilskudd -> tilskudd.getAvtaleInnhold().getAvtale())
+                .filter(avtale -> erTiltakstype(queryParametre, avtale))
+                .distinct()
                 .collect(Collectors.toList());
-
     }
 
     private boolean erTiltakstype(AvtalePredicate queryParametre, Avtale avtale) {

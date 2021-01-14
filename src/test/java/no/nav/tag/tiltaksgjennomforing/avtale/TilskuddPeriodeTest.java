@@ -4,20 +4,12 @@ import no.nav.tag.tiltaksgjennomforing.TestData;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
 import java.util.EnumSet;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class TilskuddPeriodeTest {
-    @Test
-    void godkjenn_for_tidlig() {
-        TilskuddPeriode tilskuddPeriode = TestData.enTilskuddPeriode();
-        tilskuddPeriode.setStartDato(LocalDate.now().minusWeeks(2).minusDays(1));
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_BEHANDLE_FOR_TIDLIG, () -> tilskuddPeriode.godkjenn(TestData.enNavIdent()));
-    }
-
     @Test
     void behandle_flere_ganger__etter_godkjenning() {
         TilskuddPeriode tilskuddPeriode = TestData.enTilskuddPeriode();
