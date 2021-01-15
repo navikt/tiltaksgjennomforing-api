@@ -1,13 +1,11 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.TestData;
-import org.junit.Test;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enLønnstilskuddsAvtaleMedStartOgSlutt;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.EnumSet;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.Test;
 
 public class GjeldendeTilskuddsperiodeTest {
 
@@ -81,15 +79,4 @@ public class GjeldendeTilskuddsperiodeTest {
     }
 
 
-    private static Avtale enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate startDato, LocalDate sluttDato) {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
-        EndreAvtale endring = TestData.endringPåAlleFelter();
-        endring.setStartDato(startDato);
-        endring.setSluttDato(sluttDato);
-        avtale.endreAvtale(Instant.now(), endring, Avtalerolle.VEILEDER);
-        avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
-        avtale.godkjennForDeltaker(TestData.enIdentifikator());
-        avtale.godkjennForVeileder(TestData.enNavIdent());
-        return avtale;
-    }
 }

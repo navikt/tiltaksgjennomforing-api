@@ -7,11 +7,11 @@ import static org.mockito.Mockito.verify;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.metrikker.MetrikkRegistrering;
 import org.junit.Test;
@@ -186,5 +186,28 @@ public class AvtaleRepositoryTest {
         TestData.enVeileder(avtale).opphevGodkjenninger(avtale);
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).godkjenningerOpphevet(any(GodkjenningerOpphevetAvVeileder.class));
+    }
+
+    @Test
+    public void finnGodkjenteAvtalerMedTilskuddsperiode__skal_kunne_hente_avtale_med_ubehandlet_tilskuddsperioder() {
+
+        Avtale lagretAvtale = avtaleRepository.save(TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate.now(), LocalDate.now().plusDays(15)));
+
+        List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiode(TilskuddPeriodeStatus.UBEHANDLET.name());
+
+        assertThat(avtalerMedTilskuddsperioder).containsOnly(lagretAvtale);
+    }
+
+    @Test
+    public void finnGodkjenteAvtalerMedTilskuddsperiode__skal_kunne_ikke_hente_avtale_med_godkjent_tilskuddsperioder() {
+
+        Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate.now(), LocalDate.now().plusMonths(2));
+
+        lagretAvtale.godkjennTilskuddsperiode(TestData.enInnloggetBeslutter().getIdentifikator());
+        avtaleRepository.save(lagretAvtale);
+
+        List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiode(TilskuddPeriodeStatus.UBEHANDLET.name());
+
+        assertThat(avtalerMedTilskuddsperioder).doesNotContain(lagretAvtale);
     }
 }

@@ -1,14 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import io.micrometer.core.annotation.Timed;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 
 public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecificationExecutor {
     @Timed(percentiles = { 0.5d, 0.75d, 0.9d, 0.99d, 0.999d })
@@ -41,5 +40,15 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
 
     @Query("select a from Avtale a where a.tiltakstype not in ('ARBEIDSTRENING') and a.enhetOppfolging in (?1)")
     List<Avtale> finnAvtalerForBeslutter(List<String> navEnheter);
+
+    @Query(value = "SELECT  * FROM AVTALE "
+        + "WHERE EXISTS (SELECT * FROM AVTALE_INNHOLD "
+        + "WHERE AVTALE.ID = AVTALE_INNHOLD.AVTALE "
+        + "AND AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null "
+        + "AND EXISTS (SELECT * FROM TILSKUDD_PERIODE "
+        + "WHERE TILSKUDD_PERIODE.STATUS = ?1 "
+        + "AND TILSKUDD_PERIODE.AVTALE_INNHOLD = AVTALE_INNHOLD.ID))", nativeQuery = true)
+    List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiode(String status);
+
 }
 

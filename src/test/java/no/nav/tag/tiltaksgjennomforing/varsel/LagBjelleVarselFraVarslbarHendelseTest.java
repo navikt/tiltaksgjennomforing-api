@@ -1,21 +1,28 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
-import no.nav.tag.tiltaksgjennomforing.TestData;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.DELT_MED_ARBEIDSGIVER;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.DELT_MED_DELTAKER;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.ENDRET;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.GODKJENT_AV_ARBEIDSGIVER;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.GODKJENT_AV_DELTAKER;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.GODKJENT_AV_VEILEDER;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.OPPRETTET;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.params.provider.Arguments.of;
+
+import java.util.List;
+import java.util.stream.Stream;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GamleVerdier;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import java.util.List;
-import java.util.stream.Stream;
-
-import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.params.provider.Arguments.of;
 
 public class LagBjelleVarselFraVarslbarHendelseTest {
     private static Avtale avtale;

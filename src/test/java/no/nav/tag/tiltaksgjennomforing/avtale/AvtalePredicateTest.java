@@ -1,11 +1,11 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.TestData;
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
+
 public class AvtalePredicateTest {
+
     private static Tiltakstype annenTiltakstypeEnnPåAvtale(Avtale avtale) {
         for (Tiltakstype t : Tiltakstype.values()) {
             if (!t.equals(avtale.getTiltakstype())) {

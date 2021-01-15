@@ -1,6 +1,20 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.TestData;
+import static java.util.Arrays.asList;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enArbeidstreningAvtale;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enNavIdent;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
@@ -20,15 +34,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import java.time.LocalDate;
-import java.util.*;
-
-import static java.util.Arrays.asList;
-import static no.nav.tag.tiltaksgjennomforing.TestData.enArbeidstreningAvtale;
-import static no.nav.tag.tiltaksgjennomforing.TestData.enNavIdent;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
 
 @SuppressWarnings("rawtypes")
 @RunWith(MockitoJUnitRunner.class)

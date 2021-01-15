@@ -1,13 +1,11 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.TestData;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import org.junit.jupiter.api.Test;
-
-import java.util.EnumSet;
-
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.EnumSet;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import org.junit.jupiter.api.Test;
 
 class TilskuddPeriodeTest {
     @Test

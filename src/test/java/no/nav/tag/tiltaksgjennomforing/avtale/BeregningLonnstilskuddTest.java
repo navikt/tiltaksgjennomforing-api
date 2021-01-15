@@ -4,7 +4,6 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.MIDLERTIDIG_LON
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
-import no.nav.tag.tiltaksgjennomforing.TestData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

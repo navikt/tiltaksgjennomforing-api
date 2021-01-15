@@ -1,27 +1,35 @@
-package no.nav.tag.tiltaksgjennomforing;
+package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
-import no.nav.tag.tiltaksgjennomforing.persondata.*;
+import no.nav.tag.tiltaksgjennomforing.persondata.Adressebeskyttelse;
+import no.nav.tag.tiltaksgjennomforing.persondata.Data;
+import no.nav.tag.tiltaksgjennomforing.persondata.HentGeografiskTilknytning;
+import no.nav.tag.tiltaksgjennomforing.persondata.HentPerson;
+import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
+import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelse;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
-
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class TestData {
     public static Avtale enArbeidstreningAvtale() {
@@ -46,6 +54,18 @@ public class TestData {
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
         avtale.setJournalpostId("1");
+        return avtale;
+    }
+
+    public static Avtale enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate startDato, LocalDate sluttDato) {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        EndreAvtale endring = TestData.endringPåAlleFelter();
+        endring.setStartDato(startDato);
+        endring.setSluttDato(sluttDato);
+        avtale.endreAvtale(Instant.now(), endring, Avtalerolle.VEILEDER);
+        avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
+        avtale.godkjennForDeltaker(TestData.enIdentifikator());
+        avtale.godkjennForVeileder(TestData.enNavIdent());
         return avtale;
     }
 
@@ -212,10 +232,9 @@ public class TestData {
 
     public static Beslutter enBeslutter(Avtale avtale) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        TilskuddPeriodeRepository tilskuddPeriodeRepository = mock(TilskuddPeriodeRepository.class);
         AxsysService axsysService = mock(AxsysService.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(avtale.getVeilederNavIdent()), eq(avtale.getDeltakerFnr()))).thenReturn(true);
-        return new Beslutter(avtale.getVeilederNavIdent(), tilgangskontrollService, tilskuddPeriodeRepository, axsysService);
+        return new Beslutter(avtale.getVeilederNavIdent(), tilgangskontrollService, axsysService);
     }
 
     public static Maal etMaal() {

@@ -1,13 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.TestData;
-import no.nav.tag.tiltaksgjennomforing.exceptions.*;
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørVeilederException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
+import org.junit.Test;
 
 public class AvtalepartTest {
     @Test(expected = KanIkkeEndreException.class)

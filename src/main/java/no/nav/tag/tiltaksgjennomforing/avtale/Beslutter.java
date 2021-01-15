@@ -1,5 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+
+import java.util.EnumSet;
+import java.util.List;
+import java.util.stream.Collectors;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
@@ -7,22 +11,15 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import org.apache.commons.lang3.NotImplementedException;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.EnumSet;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class Beslutter extends Avtalepart<NavIdent> {
 
     private TilgangskontrollService tilgangskontrollService;
-    private TilskuddPeriodeRepository tilskuddPeriodeRepository;
     private AxsysService axsysService;
 
-    public Beslutter(NavIdent identifikator, TilgangskontrollService tilgangskontrollService, TilskuddPeriodeRepository tilskuddPeriodeRepository, AxsysService axsysService) {
+    public Beslutter(NavIdent identifikator, TilgangskontrollService tilgangskontrollService, AxsysService axsysService) {
         super(identifikator);
         this.tilgangskontrollService = tilgangskontrollService;
-        this.tilskuddPeriodeRepository = tilskuddPeriodeRepository;
         this.axsysService = axsysService;
     }
 
@@ -43,28 +40,13 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
+        //TODO: Hent avtaler med samme oppfølgningsenhet som beslutteren.
         List<String> navEnheter = hentNavEnheter();
-        //TODO: Håndter avslåtte tilskuddsperioder
-        if (queryParametre.getTilskuddPeriodeStatus() != null && queryParametre.getTilskuddPeriodeStatus().equals(TilskuddPeriodeStatus.GODKJENT)) {
-            return getAvtalesMedGodkjentTilskuddPerioder(queryParametre, tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNotNull());
+        TilskuddPeriodeStatus status = queryParametre.getTilskuddPeriodeStatus();
+        if (status == null) {
+            status = TilskuddPeriodeStatus.UBEHANDLET;
         }
-        return getAvtalesMedGodkjentTilskuddPerioder(queryParametre, tilskuddPeriodeRepository.findAllByGodkjentTidspunktIsNull());
-    }
-
-    @NotNull
-    private List<Avtale> getAvtalesMedGodkjentTilskuddPerioder(AvtalePredicate queryParametre, List<TilskuddPeriode> allByGodkjentTidspunktIsNull) {
-        return allByGodkjentTidspunktIsNull
-                .stream().map(tilskudd -> tilskudd.getAvtaleInnhold().getAvtale())
-                .filter(avtale -> erTiltakstype(queryParametre, avtale))
-                .distinct()
-                .collect(Collectors.toList());
-    }
-
-    private boolean erTiltakstype(AvtalePredicate queryParametre, Avtale avtale) {
-        if (queryParametre.getTiltakstype() == null) {
-            return true;
-        }
-        return avtale.getTiltakstype().equals(queryParametre.getTiltakstype());
+        return avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiode(status.name());
     }
 
     private List<String> hentNavEnheter() {
