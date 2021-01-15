@@ -1,19 +1,20 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.TestData;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
-import no.nav.tag.tiltaksgjennomforing.persondata.*;
+import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.junit.Test;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
 
 public class VeilederTest {
     @Test(expected = VeilederSkalGodkjenneSistException.class)

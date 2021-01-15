@@ -1,17 +1,26 @@
 package no.nav.tag.tiltaksgjennomforing.journalfoering;
 
-import no.nav.tag.tiltaksgjennomforing.TestData;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import static no.nav.tag.tiltaksgjennomforing.journalfoering.AvtaleTilJournalfoeringMapper.tilJournalfoering;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.UUID;
-
-import static no.nav.tag.tiltaksgjennomforing.journalfoering.AvtaleTilJournalfoeringMapper.tilJournalfoering;
-import static org.junit.Assert.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
+import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
+import no.nav.tag.tiltaksgjennomforing.avtale.Maal;
+import no.nav.tag.tiltaksgjennomforing.avtale.MaalKategori;
+import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
+import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class AvtaleTilJournalfoeringMapperTest {
 

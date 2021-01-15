@@ -1,7 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
-import no.nav.tag.tiltaksgjennomforing.TestData;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+
+import java.util.List;
+import java.util.stream.Stream;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GamleVerdier;
 import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.BeforeAll;
@@ -9,12 +14,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import java.util.List;
-import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
 
 public class LagSmsVarselFraVarslbarHendelseTest {
     private static Avtale avtale;

@@ -1,9 +1,22 @@
 package no.nav.tag.tiltaksgjennomforing.hendelselogg;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.List;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.TestData;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvbruttInfo;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.avtale.Deltaker;
+import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
+import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,22 +24,23 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @SpringBootTest
-@ActiveProfiles({ Miljø.LOCAL, "wiremock" })
+@ActiveProfiles({Miljø.LOCAL, "wiremock"})
 @DirtiesContext
 class LyttPåHendelseTilHendelseloggTest {
+
     @Autowired
     ApplicationEventPublisher eventPublisher;
     @Autowired
     AvtaleRepository avtaleRepository;
     @Autowired
     HendelseloggRepository hendelseloggRepository;
+
+    @BeforeEach
+    public void setup() {
+        hendelseloggRepository.deleteAll();
+        avtaleRepository.deleteAll();
+    }
 
     @Test
     void skal_logge_opprett_kall() {

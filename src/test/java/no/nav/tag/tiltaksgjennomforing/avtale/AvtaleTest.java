@@ -7,7 +7,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import no.nav.tag.tiltaksgjennomforing.TestData;
 import no.nav.tag.tiltaksgjennomforing.exceptions.AltMåVæreFyltUtException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.AvtaleErIkkeFordeltException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;

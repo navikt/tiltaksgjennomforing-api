@@ -1,16 +1,14 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.TestData;
+import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.MENTOR;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.time.LocalDate;
 import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangMentorException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.time.LocalDate;
-
-import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.MENTOR;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class MentorStrategyTest {
 

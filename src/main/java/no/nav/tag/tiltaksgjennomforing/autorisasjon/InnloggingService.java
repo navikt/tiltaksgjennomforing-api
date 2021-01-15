@@ -1,21 +1,29 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.BrukerOgIssuer;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalepart;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Beslutter;
+import no.nav.tag.tiltaksgjennomforing.avtale.Deltaker;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.stereotype.Component;
-
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -28,7 +36,6 @@ public class InnloggingService {
     private final TilgangskontrollService tilgangskontrollService;
     private final PersondataService persondataService;
     private final Norg2Client norg2Client;
-    private final TilskuddPeriodeRepository tilskuddPeriodeRepository;
     private final AxsysService axsysService;
 
     public Avtalepart hentAvtalepart(Avtalerolle avtalerolle) {
@@ -51,7 +58,7 @@ public class InnloggingService {
         }
 
         else if (issuer == Issuer.ISSUER_ISSO && avtalerolle == Avtalerolle.BESLUTTER && tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId())) {
-            return new Beslutter(new NavIdent(brukerOgIssuer.getBrukerIdent()), tilgangskontrollService, tilskuddPeriodeRepository, axsysService);
+            return new Beslutter(new NavIdent(brukerOgIssuer.getBrukerIdent()), tilgangskontrollService, axsysService);
         }
 
         else {

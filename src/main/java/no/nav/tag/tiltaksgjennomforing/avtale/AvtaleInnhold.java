@@ -14,6 +14,7 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -25,6 +26,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 // Lombok
 @Data
@@ -96,11 +99,13 @@ public class AvtaleInnhold {
     @Enumerated(EnumType.STRING)
     private Stillingstype stillingstype;
 
-    @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
     private List<TilskuddPeriode> tilskuddPeriode = new ArrayList<>();
 
     // Arbeidstrening
-    @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
     private List<Maal> maal = new ArrayList<>();
 
     // Godkjenning
