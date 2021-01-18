@@ -229,4 +229,19 @@ public class AvtaleRepositoryTest {
 
         assertThat(avtalerMedTilskuddsperioder).doesNotContain(lagretAvtale);
     }
+
+    @Test
+    public void finnGodkjenteAvtalerMedTilskuddsperiode__skal_kunne_ikke_hente_avtale_med_feil_enhet() {
+
+        Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate.now(), LocalDate.now().plusMonths(2));
+        Set<String> navEnheter = Set.of("0000");
+
+        lagretAvtale.godkjennTilskuddsperiode(TestData.enInnloggetBeslutter().getIdentifikator());
+        avtaleRepository.save(lagretAvtale);
+
+        List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
+            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter);
+
+        assertThat(avtalerMedTilskuddsperioder).isEmpty();
+    }
 }
