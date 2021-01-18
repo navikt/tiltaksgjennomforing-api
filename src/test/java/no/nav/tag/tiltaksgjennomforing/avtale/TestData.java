@@ -33,7 +33,7 @@ import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 
 public class TestData {
 
-    public static String ENHET_OPPFØLGNING = "4806";
+    public static String ENHET_OPPFØLGNING = "0906";
 
     public static Avtale enArbeidstreningAvtale() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
