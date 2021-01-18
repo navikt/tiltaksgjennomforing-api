@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.metrikker.MetrikkRegistrering;
@@ -189,11 +190,27 @@ public class AvtaleRepositoryTest {
     }
 
     @Test
-    public void finnGodkjenteAvtalerMedTilskuddsperiode__skal_kunne_hente_avtale_med_ubehandlet_tilskuddsperioder() {
+    public void finnGodkjenteAvtalerMedTilskuddsperiode__skal_ikke_kunne_hente_avtale_med_tiltakstype_arbeidstrening() {
+
+        Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate.now(), LocalDate.now().plusMonths(2));
+        lagretAvtale.setTiltakstype(Tiltakstype.ARBEIDSTRENING);
+        avtaleRepository.save(lagretAvtale);
+        Set<String> navEnheter = Set.of(TestData.ENHET_OPPFØLGNING);
+
+        List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
+            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter);
+
+        assertThat(avtalerMedTilskuddsperioder).isEmpty();
+    }
+
+    @Test
+    public void finnGodkjenteAvtalerMedTilskuddsperiode__skal_kunne_hente_avtale_med_ubehandlet_tilskuddsperioder_for_riktig_enhet() {
 
         Avtale lagretAvtale = avtaleRepository.save(TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate.now(), LocalDate.now().plusDays(15)));
+        Set<String> navEnheter = Set.of(TestData.ENHET_OPPFØLGNING);
 
-        List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiode(TilskuddPeriodeStatus.UBEHANDLET.name());
+        List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
+            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter);
 
         assertThat(avtalerMedTilskuddsperioder).containsOnly(lagretAvtale);
     }
@@ -202,11 +219,13 @@ public class AvtaleRepositoryTest {
     public void finnGodkjenteAvtalerMedTilskuddsperiode__skal_kunne_ikke_hente_avtale_med_godkjent_tilskuddsperioder() {
 
         Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate.now(), LocalDate.now().plusMonths(2));
+        Set<String> navEnheter = Set.of(TestData.ENHET_OPPFØLGNING);
 
         lagretAvtale.godkjennTilskuddsperiode(TestData.enInnloggetBeslutter().getIdentifikator());
         avtaleRepository.save(lagretAvtale);
 
-        List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiode(TilskuddPeriodeStatus.UBEHANDLET.name());
+        List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
+            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter);
 
         assertThat(avtalerMedTilskuddsperioder).doesNotContain(lagretAvtale);
     }
