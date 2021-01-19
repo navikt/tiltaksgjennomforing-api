@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.security.oidc.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
@@ -24,6 +25,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
 @RequestMapping("/avtaler")
 @Timed
 @RequiredArgsConstructor
+@Slf4j
 public class AvtaleController {
 
     private final AvtaleRepository avtaleRepository;
@@ -40,7 +42,10 @@ public class AvtaleController {
     @GetMapping
     public List<Avtale> hentAlleAvtalerInnloggetBrukerHarTilgangTil(AvtalePredicate queryParametre, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        return avtalepart.hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre);
+        List<Avtale> avtaleList = avtalepart.hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre);
+
+        log.info("Hentet {} avtaler", avtaleList.size());
+        return avtaleList;
     }
 
     @GetMapping("/{avtaleId}/status-detaljer")
