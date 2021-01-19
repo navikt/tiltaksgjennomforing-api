@@ -52,6 +52,9 @@ public class TilskuddPeriode {
 
     private LocalDateTime godkjentTidspunkt;
 
+    @NonNull
+    private Integer lonnstilskuddProsent;
+
     @Enumerated(EnumType.STRING)
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<Avslagsårsak> avslagsårsaker = EnumSet.noneOf(Avslagsårsak.class);
@@ -70,6 +73,7 @@ public class TilskuddPeriode {
         startDato = periode.startDato;
         sluttDato = periode.sluttDato;
         status = periode.status;
+        lonnstilskuddProsent = periode.lonnstilskuddProsent;
     }
 
     public Avtale hentAvtale() {
