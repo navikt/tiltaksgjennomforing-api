@@ -38,16 +38,16 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     @Override
     Avtale save(Avtale entity);
 
-    @Query(value = "SELECT * FROM AVTALE "
-        + "WHERE AVTALE.tiltakstype not in ('ARBEIDSTRENING') "
-        + "AND EXISTS (SELECT * FROM AVTALE_INNHOLD "
-        + "WHERE AVTALE.ID = AVTALE_INNHOLD.AVTALE "
-        + "AND AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null "
-        + "AND EXISTS (SELECT * FROM TILSKUDD_PERIODE "
-        + "WHERE TILSKUDD_PERIODE.STATUS = ?1 "
-        + "AND TILSKUDD_PERIODE.AVTALE_INNHOLD = AVTALE_INNHOLD.ID))"
-        + "AND ENHET_OPPFOLGING IN (?2) "
-        + "OR ENHET_GEOGRAFISK IN (?2);", nativeQuery = true)
+    @Query(value =
+        "SELECT AVTALE.* FROM AVTALE " +
+            "LEFT JOIN AVTALE_INNHOLD " +
+            "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
+            "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
+            "AND AVTALE.tiltakstype not in ('ARBEIDSTRENING') " +
+            "AND EXISTS (SELECT * FROM TILSKUDD_PERIODE where TILSKUDD_PERIODE.status =  ?1 AND TILSKUDD_PERIODE.AVTALE_INNHOLD = AVTALE_INNHOLD.ID) "
+            +
+            "AND AVTALE.ENHET_OPPFOLGING IN (?2) " +
+            "OR AVTALE.ENHET_GEOGRAFISK IN (?2)", nativeQuery = true)
     List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(String tilskuddsperiodestatus, Set<String> navEnheter);
 
 }
