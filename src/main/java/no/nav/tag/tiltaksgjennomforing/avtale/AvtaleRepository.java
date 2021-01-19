@@ -38,7 +38,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     @Override
     Avtale save(Avtale entity);
 
-    @Query(value = "SELECT DISTINCT  * FROM AVTALE "
+    @Query(value = "SELECT * FROM AVTALE "
         + "WHERE AVTALE.tiltakstype not in ('ARBEIDSTRENING') "
         + "AND EXISTS (SELECT * FROM AVTALE_INNHOLD "
         + "WHERE AVTALE.ID = AVTALE_INNHOLD.AVTALE "
