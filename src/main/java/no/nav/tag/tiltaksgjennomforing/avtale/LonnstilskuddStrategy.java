@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
@@ -30,6 +31,24 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         regnUtTotalLonnstilskudd();
     }
 
+    private LocalDate getDatoForRedusertProsent(LocalDate startDato, LocalDate sluttDato, Tiltakstype tiltakstype, Integer lonnstilskuddprosent) {
+        if (startDato == null || sluttDato == null || lonnstilskuddprosent == null || tiltakstype != Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD) {
+            return null;
+        }
+        if (lonnstilskuddprosent == 40) {
+            if (startDato.plusMonths(6).isBefore(sluttDato)) {
+                return startDato.plusMonths(6);
+            }
+
+        } else if (lonnstilskuddprosent == 60) {
+            if (startDato.plusYears(1).isBefore(sluttDato)) {
+                return startDato.plusYears(1);
+            }
+        }
+
+        return null;
+    }
+
 
     private void regnUtTotalLonnstilskudd() {
         Integer feriepengerBelop = getFeriepengerBelop(avtaleInnhold.getFeriepengesats(), avtaleInnhold.getManedslonn());
@@ -38,6 +57,8 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
                 avtaleInnhold.getArbeidsgiveravgift());
         Integer sumLonnsutgifter = getSumLonnsutgifter(avtaleInnhold.getManedslonn(), feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgiftBelop);
         Integer sumlønnTilskudd = getSumLonnsTilskudd(sumLonnsutgifter, avtaleInnhold.getLonnstilskuddProsent());
+        Integer sumLønnstilskuddRedusert = getSumLonnsTilskudd(sumLonnsutgifter, avtaleInnhold.getLonnstilskuddProsent() - 10);
+        LocalDate datoForRedusertProsent = getDatoForRedusertProsent(avtaleInnhold.getStartDato(), avtaleInnhold.getSluttDato(), avtaleInnhold.getAvtale().getTiltakstype(), avtaleInnhold.getLonnstilskuddProsent());
         Integer månedslønnFullStilling = getLønnVedFullStilling(sumLonnsutgifter, avtaleInnhold.getStillingprosent());
         avtaleInnhold.setFeriepengerBelop(feriepengerBelop);
         avtaleInnhold.setOtpBelop(obligTjenestepensjon);
@@ -45,6 +66,8 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setSumLonnsutgifter(sumLonnsutgifter);
         avtaleInnhold.setSumLonnstilskudd(sumlønnTilskudd);
         avtaleInnhold.setManedslonn100pst(månedslønnFullStilling);
+        avtaleInnhold.setSumLønnstilskuddRedusert(sumLønnstilskuddRedusert);
+        avtaleInnhold.setDatoForRedusertProsent(datoForRedusertProsent);
         regnUtTilskuddsperioder();
     }
 
