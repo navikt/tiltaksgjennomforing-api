@@ -14,17 +14,16 @@ import java.util.Optional;
 import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
 import no.nav.tag.tiltaksgjennomforing.metrikker.MetrikkRegistrering;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles(Miljø.LOCAL)
 @DirtiesContext
@@ -33,8 +32,18 @@ public class AvtaleRepositoryTest {
     @Autowired
     private AvtaleRepository avtaleRepository;
 
+    @Autowired
+    private HendelseloggRepository hendelseloggRepository;
+
     @MockBean
     private MetrikkRegistrering metrikkRegistrering;
+
+    @BeforeEach
+    public void setup() {
+        hendelseloggRepository.deleteAll();
+        avtaleRepository.deleteAll();
+
+    }
 
     @Test
     public void nyAvtaleSkalKunneLagreOgReturneresAvRepository() {
