@@ -1,10 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
@@ -14,6 +11,12 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import org.apache.commons.lang3.NotImplementedException;
 
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Slf4j
 public class Beslutter extends Avtalepart<NavIdent> {
 
     private TilgangskontrollService tilgangskontrollService;
@@ -50,14 +53,16 @@ public class Beslutter extends Avtalepart<NavIdent> {
         if (status == null) {
             status = TilskuddPeriodeStatus.UBEHANDLET;
         }
-        return avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(status.name(), navEnheter);
+        List<Avtale> avtaleList = avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(status.name(), navEnheter);
+        log.info("Hentet {} avtaler med nav-enheter {}", avtaleList.size(), navEnheter);
+        return avtaleList;
     }
 
     private Set<String> hentNavEnheter() {
         return axsysService.hentEnheterNavAnsattHarTilgangTil(getIdentifikator())
-            .stream()
-            .map(NavEnhet::getVerdi)
-            .collect(Collectors.toSet());
+                .stream()
+                .map(NavEnhet::getVerdi)
+                .collect(Collectors.toSet());
     }
 
     @Override
