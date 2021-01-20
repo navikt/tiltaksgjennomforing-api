@@ -190,7 +190,7 @@ public class AvtaleRepositoryTest {
     }
 
     @Test
-    public void finnGodkjenteAvtalerMedTilskuddsperiode__skal_ikke_kunne_hente_avtale_med_tiltakstype_arbeidstrening() {
+    public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_ikke_kunne_hente_avtale_med_tiltakstype_arbeidstrening() {
 
         Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate.now(), LocalDate.now().plusMonths(2));
         lagretAvtale.setTiltakstype(Tiltakstype.ARBEIDSTRENING);
@@ -204,7 +204,7 @@ public class AvtaleRepositoryTest {
     }
 
     @Test
-    public void finnGodkjenteAvtalerMedTilskuddsperiode__skal_kunne_hente_avtale_med_ubehandlet_tilskuddsperioder_for_riktig_enhet() {
+    public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_kunne_hente_avtale_med_ubehandlet_tilskuddsperioder_for_riktig_enhet() {
 
         Avtale lagretAvtale = avtaleRepository.save(TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate.now(), LocalDate.now().plusDays(15)));
         Set<String> navEnheter = Set.of(TestData.ENHET_OPPFØLGNING);
@@ -216,7 +216,7 @@ public class AvtaleRepositoryTest {
     }
 
     @Test
-    public void finnGodkjenteAvtalerMedTilskuddsperiode__skal_kunne_ikke_hente_avtale_med_godkjent_tilskuddsperioder() {
+    public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_kunne_ikke_hente_avtale_med_godkjent_tilskuddsperioder() {
 
         Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate.now(), LocalDate.now().plusMonths(2));
         Set<String> navEnheter = Set.of(TestData.ENHET_OPPFØLGNING);
@@ -231,7 +231,7 @@ public class AvtaleRepositoryTest {
     }
 
     @Test
-    public void finnGodkjenteAvtalerMedTilskuddsperiode__skal_kunne_ikke_hente_avtale_med_feil_enhet() {
+    public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_kunne_ikke_hente_avtale_med_feil_enhet() {
 
         Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate.now(), LocalDate.now().plusMonths(2));
         Set<String> navEnheter = Set.of("0000");
