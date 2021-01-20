@@ -216,7 +216,7 @@ public class AvtaleRepositoryTest {
     }
 
     @Test
-    public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_kunne_ikke_hente_avtale_med_godkjent_tilskuddsperioder() {
+    public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_ikke_kunne_hente_avtale_med_godkjent_tilskuddsperioder() {
 
         Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate.now(), LocalDate.now().plusMonths(2));
         Set<String> navEnheter = Set.of(TestData.ENHET_OPPFØLGNING);
@@ -231,7 +231,7 @@ public class AvtaleRepositoryTest {
     }
 
     @Test
-    public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_kunne_ikke_hente_avtale_med_feil_enhet() {
+    public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_ikke_kunne_hente_avtale_med_feil_enhet() {
 
         Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate.now(), LocalDate.now().plusMonths(2));
         Set<String> navEnheter = Set.of("0000");
