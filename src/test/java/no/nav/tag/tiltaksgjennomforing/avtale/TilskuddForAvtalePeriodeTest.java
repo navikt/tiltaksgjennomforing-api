@@ -14,6 +14,7 @@ public class TilskuddForAvtalePeriodeTest {
     private final int månedslønn = 20000;
     private final LocalDate _1_JANUAR = LocalDate.of(2020, 1, 1);
     private final LocalDate _31_DES = LocalDate.of(2020, 12, 31);
+
     @Test
     public void beregnTilskuddFor3KalenderMåneder() {
         LocalDate datoFom = _1_JANUAR;
