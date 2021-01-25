@@ -25,7 +25,7 @@ public class GjeldendeTilskuddsperiodeTest {
 
         // 3
         avtale.godkjennTilskuddsperiode(TestData.enNavIdent());
-        assertThat(avtale.getTilskuddPeriode().indexOf(avtale.gjeldendeTilskuddsperiode())).isEqualTo(1);
+        assertThat(avtale.getTilskuddPeriode().indexOf(avtale.gjeldendeTilskuddsperiode())).isEqualTo(2);
     }
 
     // 2

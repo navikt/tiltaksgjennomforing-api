@@ -96,6 +96,8 @@ public class AvtaleInnhold {
     private Integer sumLonnsutgifter;
     private Integer sumLonnstilskudd;
     private Integer manedslonn100pst;
+    private Integer sumLønnstilskuddRedusert;
+    private LocalDate datoForRedusertProsent;
     @Enumerated(EnumType.STRING)
     private Stillingstype stillingstype;
 

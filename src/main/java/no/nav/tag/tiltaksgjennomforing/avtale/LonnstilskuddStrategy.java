@@ -28,10 +28,10 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setOtpSats(getOtpSats(nyAvtale));
         super.endre(nyAvtale);
         regnUtTotalLonnstilskudd();
+        regnUtTilskuddsperioder();
     }
 
-
-    private void regnUtTotalLonnstilskudd() {
+    void regnUtTotalLonnstilskudd() {
         Integer feriepengerBelop = getFeriepengerBelop(avtaleInnhold.getFeriepengesats(), avtaleInnhold.getManedslonn());
         Integer obligTjenestepensjon = getBeregnetOtpBelop(avtaleInnhold.getOtpSats(), avtaleInnhold.getManedslonn(), feriepengerBelop);
         Integer arbeidsgiveravgiftBelop = getArbeidsgiverAvgift(avtaleInnhold.getManedslonn(), feriepengerBelop, obligTjenestepensjon,
@@ -45,13 +45,12 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setSumLonnsutgifter(sumLonnsutgifter);
         avtaleInnhold.setSumLonnstilskudd(sumlønnTilskudd);
         avtaleInnhold.setManedslonn100pst(månedslønnFullStilling);
-        regnUtTilskuddsperioder();
     }
 
     private void regnUtTilskuddsperioder() {
         avtaleInnhold.getTilskuddPeriode().clear();
         if (harAllePåkrevdeFeltForRegneUtTilskuddsperiode()) {
-            List<TilskuddPeriode> tilskuddForAvtalePeriode = TilskuddForAvtalePeriode.beregnTilskuddsperioderForAvtale(avtaleInnhold.getSumLonnstilskudd(), avtaleInnhold.getStartDato(), avtaleInnhold.getSluttDato(), avtaleInnhold.getLonnstilskuddProsent());
+            List<TilskuddPeriode> tilskuddForAvtalePeriode = NyTilskuddForAvtalePeriode.beregnTilskuddsperioderForAvtale(avtaleInnhold.getSumLonnstilskudd(), avtaleInnhold.getStartDato(), avtaleInnhold.getSluttDato(), avtaleInnhold.getLonnstilskuddProsent(), avtaleInnhold.getDatoForRedusertProsent(), avtaleInnhold.getSumLønnstilskuddRedusert());
             avtaleInnhold.getTilskuddPeriode().addAll(tilskuddForAvtalePeriode);
             avtaleInnhold.getTilskuddPeriode().forEach(periode -> periode.setAvtaleInnhold(avtaleInnhold));
         }
@@ -76,7 +75,7 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         return (sumUtgifter * 100) / stillingsProsent;
     }
 
-    private Integer getSumLonnsTilskudd(Integer sumLonnsutgifter, Integer lonnstilskuddProsent) {
+    Integer getSumLonnsTilskudd(Integer sumLonnsutgifter, Integer lonnstilskuddProsent) {
         if (sumLonnsutgifter == null || lonnstilskuddProsent == null) {
             return null;
         }

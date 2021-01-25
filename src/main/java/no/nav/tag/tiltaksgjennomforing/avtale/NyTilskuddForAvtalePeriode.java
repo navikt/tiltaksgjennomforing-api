@@ -1,0 +1,79 @@
+package no.nav.tag.tiltaksgjennomforing.avtale;
+
+import lombok.Value;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class NyTilskuddForAvtalePeriode {
+
+    private final static BigDecimal DAGER_I_MÅNED = new BigDecimal("30.4375");
+    private final static int ANTALL_MÅNEDER_I_EN_PERIODE = 3;
+
+    public static List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(Integer sumLønnstilskuddPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed, Integer lonnstilskuddprosent, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMånedRedusert) {
+        if (datoForRedusertProsent == null) {
+            return lagDatoPar(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
+                Integer beløp = beløpForPeriode(datoPar.fraOgMed, datoPar.tilOgMed, sumLønnstilskuddPerMåned);
+                return new TilskuddPeriode(beløp, datoPar.fraOgMed, datoPar.tilOgMed, lonnstilskuddprosent);
+            }).collect(Collectors.toList());
+        } else {
+            List<TilskuddPeriode> tilskuddperioderFørRedusering = lagDatoPar(datoFraOgMed, datoForRedusertProsent.minusDays(1)).stream().map(datoPar -> {
+                Integer beløp = beløpForPeriode(datoPar.fraOgMed, datoPar.tilOgMed, sumLønnstilskuddPerMåned);
+                return new TilskuddPeriode(beløp, datoPar.fraOgMed, datoPar.tilOgMed, lonnstilskuddprosent);
+            }).collect(Collectors.toList());
+
+            List<TilskuddPeriode> tilskuddperioderEtterRedusering = lagDatoPar(datoForRedusertProsent, datoTilOgMed).stream().map(datoPar -> {
+                Integer beløp = beløpForPeriode(datoPar.fraOgMed, datoPar.tilOgMed, sumLønnstilskuddPerMånedRedusert);
+                return new TilskuddPeriode(beløp, datoPar.fraOgMed, datoPar.tilOgMed, lonnstilskuddprosent - 10);
+            }).collect(Collectors.toList());
+
+            ArrayList<TilskuddPeriode> tilskuddsperioder = new ArrayList<>();
+            tilskuddsperioder.addAll(tilskuddperioderFørRedusering);
+            tilskuddsperioder.addAll(tilskuddperioderEtterRedusering);
+            return tilskuddsperioder;
+        }
+
+    }
+
+    private static Integer beløpForPeriode(LocalDate fra, LocalDate til, Integer sumLønnstilskuddPerMåned) {
+        Period period = Period.between(fra, til.plusDays(1));
+        Integer sumHeleMåneder = period.getMonths() * sumLønnstilskuddPerMåned;
+        BigDecimal dagsats = new BigDecimal(sumLønnstilskuddPerMåned).divide(DAGER_I_MÅNED, RoundingMode.HALF_UP);
+        Integer sumEnkeltdager = dagsats.multiply(BigDecimal.valueOf(period.getDays()), MathContext.UNLIMITED).setScale(0, RoundingMode.HALF_UP).intValue();
+        return sumHeleMåneder + sumEnkeltdager;
+    }
+
+    private static List<DatoPar> lagDatoPar(LocalDate datoFraOgMed, LocalDate datoTilOgMed) {
+        List<LocalDate> startDatoer = datoFraOgMed.datesUntil(datoTilOgMed.plusDays(1), Period.ofMonths(ANTALL_MÅNEDER_I_EN_PERIODE)).collect(Collectors.toList());
+        ArrayList<DatoPar> datoPar = new ArrayList<>();
+        for (int i = 0; i < startDatoer.size() - 1; i++) {
+            LocalDate fra = startDatoer.get(i);
+            LocalDate til = startDatoer.get(i + 1).minusDays(1);
+            datoPar.addAll(splittHvisNyttÅr(fra, til));
+        }
+        datoPar.addAll(splittHvisNyttÅr(startDatoer.get(startDatoer.size() - 1), datoTilOgMed));
+        return datoPar;
+    }
+
+    @Value
+    static class DatoPar {
+        LocalDate fraOgMed;
+        LocalDate tilOgMed;
+    }
+
+    private static List<DatoPar> splittHvisNyttÅr (LocalDate fraDato, LocalDate tilDato) {
+        if (fraDato.getYear() != tilDato.getYear()) {
+            DatoPar datoPar1 = new DatoPar(fraDato, fraDato.withMonth(12).withDayOfMonth(31));
+            DatoPar datoPar2 = new DatoPar(tilDato.withMonth(1).withDayOfMonth(1), tilDato);
+            return List.of(datoPar1, datoPar2);
+        } else {
+            return List.of(new DatoPar(fraDato, tilDato));
+        }
+    }
+}
