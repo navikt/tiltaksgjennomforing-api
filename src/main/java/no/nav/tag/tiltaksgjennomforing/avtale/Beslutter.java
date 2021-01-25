@@ -1,16 +1,19 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 
-import java.util.EnumSet;
-import java.util.List;
-import java.util.stream.Collectors;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.exceptions.NavEnhetIkkeFunnetException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import org.apache.commons.lang3.NotImplementedException;
+
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Beslutter extends Avtalepart<NavIdent> {
 
@@ -40,20 +43,22 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
-        //TODO: Hent avtaler med samme oppfølgningsenhet som beslutteren.
-        List<String> navEnheter = hentNavEnheter();
+        Set<String> navEnheter = hentNavEnheter();
+        if (navEnheter.isEmpty()) {
+            throw new NavEnhetIkkeFunnetException();
+        }
         TilskuddPeriodeStatus status = queryParametre.getTilskuddPeriodeStatus();
         if (status == null) {
             status = TilskuddPeriodeStatus.UBEHANDLET;
         }
-        return avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiode(status.name());
+        return avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(status.name(), navEnheter);
     }
 
-    private List<String> hentNavEnheter() {
+    private Set<String> hentNavEnheter() {
         return axsysService.hentEnheterNavAnsattHarTilgangTil(getIdentifikator())
                 .stream()
                 .map(NavEnhet::getVerdi)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     @Override
