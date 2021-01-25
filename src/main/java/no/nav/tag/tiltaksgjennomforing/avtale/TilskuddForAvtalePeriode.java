@@ -13,23 +13,23 @@ public class TilskuddForAvtalePeriode {
     private final static BigDecimal DAGER_I_MÅNED = BigDecimal.valueOf(30.4375);
     private final static int ANTALL_MÅNEDER_I_EN_PERIODE = 3;
 
-    public static List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(final Integer lønnPrMåned, final LocalDate datoFraOgMed, final LocalDate datoTilOgMed, final Integer lonnstilskuddprosent, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddRedusert){
+    public static List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(final Integer lønnPrMåned, final LocalDate datoFraOgMed, final LocalDate datoTilOgMed, final Integer lonnstilskuddprosent){
         List<TilskuddPeriode> tilskuddPerioder = new ArrayList<>();
         LocalDate nyStartDato = datoFraOgMed;
-        nyStartDato = beregnTilskuddsPerioderForHvertHeleÅr(lønnPrMåned, datoTilOgMed, tilskuddPerioder, nyStartDato, lonnstilskuddprosent, datoForRedusertProsent, sumLønnstilskuddRedusert);
-        tilskuddPerioder.addAll(beregnTilskuddForPeriode(lønnPrMåned, nyStartDato, datoTilOgMed, lonnstilskuddprosent, datoForRedusertProsent, sumLønnstilskuddRedusert));
+        nyStartDato = beregnTilskuddsPerioderForHvertHeleÅr(lønnPrMåned, datoTilOgMed, tilskuddPerioder, nyStartDato, lonnstilskuddprosent);
+        tilskuddPerioder.addAll(beregnTilskuddForPeriode(lønnPrMåned, nyStartDato, datoTilOgMed, lonnstilskuddprosent));
         return tilskuddPerioder;
     }
 
-    private static LocalDate beregnTilskuddsPerioderForHvertHeleÅr(Integer lønnPrMåned, LocalDate datoTilOgMed, List<TilskuddPeriode> tilskuddPeriode, LocalDate nyStartDato, Integer lonnstilskuddprosent, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddRedusert) {
+    private static LocalDate beregnTilskuddsPerioderForHvertHeleÅr(Integer lønnPrMåned, LocalDate datoTilOgMed, List<TilskuddPeriode> tilskuddPeriode, LocalDate nyStartDato, Integer lonnstilskuddprosent) {
         while (nyStartDato.getYear() != datoTilOgMed.getYear()) {
-            tilskuddPeriode.addAll(beregnTilskuddForPeriode(lønnPrMåned, nyStartDato, LocalDate.of(nyStartDato.getYear(), 12, 31), lonnstilskuddprosent, datoForRedusertProsent, sumLønnstilskuddRedusert));
+            tilskuddPeriode.addAll(beregnTilskuddForPeriode(lønnPrMåned, nyStartDato, LocalDate.of(nyStartDato.getYear(), 12, 31), lonnstilskuddprosent));
             nyStartDato = LocalDate.of(nyStartDato.getYear() + 1, 1, 1);
         }
         return nyStartDato;
     }
 
-    private static List<TilskuddPeriode> beregnTilskuddForPeriode(final Integer lønnPrMåned, final LocalDate datoFraOgMed, final LocalDate datoTilOgMed, final Integer lonnstilskuddprosent, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddRedusert){
+    private static List<TilskuddPeriode> beregnTilskuddForPeriode(final Integer lønnPrMåned, final LocalDate datoFraOgMed, final LocalDate datoTilOgMed, final Integer lonnstilskuddprosent){
         Period period = lagPeriod(datoFraOgMed, datoTilOgMed);
         List<TilskuddPeriode> tilskuddPerioder = new ArrayList<>();
         LocalDate nyDatoFraOgMed = datoFraOgMed;
