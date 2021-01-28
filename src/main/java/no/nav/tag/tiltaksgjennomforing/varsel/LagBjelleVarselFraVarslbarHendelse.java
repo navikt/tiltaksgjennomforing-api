@@ -24,6 +24,7 @@ public class LagBjelleVarselFraVarslbarHendelse {
                 return List.of(factory.deltaker(), factory.arbeidsgiver());
             case GODKJENT_AV_DELTAKER:
             case GODKJENT_AV_ARBEIDSGIVER:
+            case TILSKUDDSPERIODE_AVSLATT:
                 return List.of(factory.veileder());
             case GODKJENT_PAA_VEGNE_AV:
                 return List.of(factory.arbeidsgiver());
