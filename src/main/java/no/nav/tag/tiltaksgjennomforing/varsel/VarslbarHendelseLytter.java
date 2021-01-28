@@ -26,6 +26,11 @@ public class VarslbarHendelseLytter {
     }
 
     @EventListener
+    public void tilskuddsperiodeAvslått(TilskuddAvslått event) {
+         varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.TILSKUDDSPERIODE_AVSLATT));
+    }
+
+    @EventListener
     public void avtaleEndret(AvtaleEndret event) {
         varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.ENDRET));
     }
