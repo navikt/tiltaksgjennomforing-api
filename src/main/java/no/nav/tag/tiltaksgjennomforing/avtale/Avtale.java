@@ -30,22 +30,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Delegate;
 import lombok.experimental.FieldNameConstants;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvbruttAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleGjenopprettet;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleLåstOpp;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiverErFordelt;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GamleVerdier;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvDeltaker;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAv;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.AltMåVæreFyltUtException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørVeilederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.AvtaleErIkkeFordeltException;
@@ -382,6 +367,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         TilskuddPeriode gjeldendePeriode = gjeldendeTilskuddsperiode();
         gjeldendePeriode.avslå(beslutter, avslagsårsaker, avslagsforklaring);
+        registerEvent(new TilskuddAvslått(this, beslutter));
     }
 
 
