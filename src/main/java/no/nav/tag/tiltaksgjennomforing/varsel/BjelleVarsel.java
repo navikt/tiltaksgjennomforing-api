@@ -12,7 +12,6 @@ import org.springframework.data.domain.AbstractAggregateRoot;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Locale;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -34,19 +33,20 @@ public class BjelleVarsel extends AbstractAggregateRoot<BjelleVarsel> {
     private UUID avtaleId;
     private LocalDateTime tidspunkt;
 
-    public static String getVarslbarHEndelseType(VarslbarHendelse varslbarHendelse, Avtale avtale) {
+    public static String getVarslbarHendelseTekst(VarslbarHendelse varslbarHendelse, Avtale avtale) {
         if (varslbarHendelse.getVarslbarHendelseType() == VarslbarHendelseType.TILSKUDDSPERIODE_AVSLATT) {
             TilskuddPeriode gjeldendePeriode = avtale.gjeldendeTilskuddsperiode();
             String avslagÅrsaker = gjeldendePeriode.getAvslagsårsaker().stream()
-                    .map(type ->  type.getTekst().toLowerCase(Locale.ROOT).concat(" ")).collect(Collectors.joining());
+                    .map(type ->  type.getTekst().toLowerCase()).collect(Collectors.joining(", "));
             return varslbarHendelse.getVarslbarHendelseType().getTekst()
-                    .concat(gjeldendePeriode.getAvslåttAvNavIdent().toString().substring(20, 27))
+                    .concat(gjeldendePeriode.getAvslåttAvNavIdent().asString())
                     .concat(". Årsak til retur: ")
                     .concat(avslagÅrsaker)
                     .concat("Forklaring: ")
                     .concat(gjeldendePeriode.getAvslagsforklaring());
 
         }
+
         return varslbarHendelse.getVarslbarHendelseType().getTekst();
     }
 
@@ -56,7 +56,7 @@ public class BjelleVarsel extends AbstractAggregateRoot<BjelleVarsel> {
         varsel.tidspunkt = LocalDateTime.now();
         varsel.identifikator = identifikator;
         varsel.varslbarHendelse = varslbarHendelse.getId();
-        varsel.varslingstekst = getVarslbarHEndelseType(varslbarHendelse, avtale);
+        varsel.varslingstekst = getVarslbarHendelseTekst(varslbarHendelse, avtale);
         varsel.varslbarHendelseType = varslbarHendelse.getVarslbarHendelseType();
         varsel.avtaleId = varslbarHendelse.getAvtaleId();
         return varsel;
