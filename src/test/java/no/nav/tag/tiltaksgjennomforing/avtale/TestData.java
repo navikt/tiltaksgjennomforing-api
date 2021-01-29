@@ -76,6 +76,7 @@ public class TestData {
 
     public static Avtale enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate startDato, LocalDate sluttDato) {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setEnhetGeografisk(ENHET_OPPFØLGING);
         avtale.setEnhetOppfolging(ENHET_OPPFØLGING);
         EndreAvtale endring = TestData.endringPåAlleFelter();
         endring.setStartDato(startDato);
