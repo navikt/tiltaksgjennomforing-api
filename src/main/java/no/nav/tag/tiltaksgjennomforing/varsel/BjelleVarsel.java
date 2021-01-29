@@ -42,7 +42,7 @@ public class BjelleVarsel extends AbstractAggregateRoot<BjelleVarsel> {
                     .concat(gjeldendePeriode.getAvslåttAvNavIdent().asString())
                     .concat(". Årsak til retur: ")
                     .concat(avslagÅrsaker)
-                    .concat("Forklaring: ")
+                    .concat(" Forklaring: ")
                     .concat(gjeldendePeriode.getAvslagsforklaring());
 
         }
