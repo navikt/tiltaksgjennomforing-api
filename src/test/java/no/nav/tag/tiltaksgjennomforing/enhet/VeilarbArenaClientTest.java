@@ -21,7 +21,7 @@ class VeilarbArenaClientTest {
   @Test
   public void hent_oppfølingsEnhet_fra_arena() {
     String oppfølgingsEnhet = veilarbArenaClient.hentOppfølgingsEnhet("12345678901");
-    assertThat(oppfølgingsEnhet).isEqualTo("1416");
+    assertThat(oppfølgingsEnhet).isEqualTo("0906");
   }
 
   @Test
