@@ -204,7 +204,7 @@ public class AvtaleRepositoryTest {
         Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate.now(), LocalDate.now().plusMonths(2));
         lagretAvtale.setTiltakstype(Tiltakstype.ARBEIDSTRENING);
         avtaleRepository.save(lagretAvtale);
-        Set<String> navEnheter = Set.of(TestData.ENHET_OPPFØLGNING);
+        Set<String> navEnheter = Set.of(TestData.ENHET_OPPFØLGING);
 
         List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
             .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter);
@@ -216,7 +216,7 @@ public class AvtaleRepositoryTest {
     public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_kunne_hente_avtale_med_ubehandlet_tilskuddsperioder_for_riktig_enhet() {
 
         Avtale lagretAvtale = avtaleRepository.save(TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate.now(), LocalDate.now().plusDays(15)));
-        Set<String> navEnheter = Set.of(TestData.ENHET_OPPFØLGNING);
+        Set<String> navEnheter = Set.of(TestData.ENHET_OPPFØLGING);
 
         List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
             .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter);
@@ -228,7 +228,7 @@ public class AvtaleRepositoryTest {
     public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_ikke_kunne_hente_avtale_med_godkjent_tilskuddsperioder() {
 
         Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate.now(), LocalDate.now().plusMonths(2));
-        Set<String> navEnheter = Set.of(TestData.ENHET_OPPFØLGNING);
+        Set<String> navEnheter = Set.of(TestData.ENHET_OPPFØLGING);
 
         lagretAvtale.godkjennTilskuddsperiode(TestData.enInnloggetBeslutter().getIdentifikator());
         avtaleRepository.save(lagretAvtale);

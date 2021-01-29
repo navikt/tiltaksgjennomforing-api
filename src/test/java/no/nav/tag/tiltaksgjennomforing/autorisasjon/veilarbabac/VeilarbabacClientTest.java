@@ -1,5 +1,15 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac;
 
+import static no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.VeilarbabacClient.DENY_RESPONSE;
+import static no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.VeilarbabacClient.PERMIT_RESPONSE;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Collections;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
@@ -10,15 +20,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-
-import static no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.VeilarbabacClient.DENY_RESPONSE;
-import static no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.VeilarbabacClient.PERMIT_RESPONSE;
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class VeilarbabacClientTest {
@@ -60,7 +67,7 @@ public class VeilarbabacClientTest {
     }
 
     private static InnloggetVeileder enVeileder() {
-        return new InnloggetVeileder(new NavIdent("X123456"));
+        return new InnloggetVeileder(new NavIdent("X123456"), Collections.emptySet());
     }
 
     @Test

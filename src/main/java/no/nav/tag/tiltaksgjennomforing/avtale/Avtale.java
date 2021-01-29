@@ -111,6 +111,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     public static Avtale veilederOppretterAvtale(OpprettAvtale opprettAvtale, NavIdent navIdent) {
         Avtale avtale = new Avtale(opprettAvtale);
+        avtale.setEnhetGeografisk("0906");
         avtale.veilederNavIdent = sjekkAtIkkeNull(navIdent, "Veileders NAV-ident må være satt.");
         avtale.registerEvent(new AvtaleOpprettetAvVeileder(avtale, navIdent));
         return avtale;
