@@ -63,7 +63,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         } else if (queryParametre.getBedriftNr() != null) {
             return avtaleRepository.findAllByBedriftNrIn(Set.of(queryParametre.getBedriftNr()));
         } else if (queryParametre.getNavEnhet() != null) {
-            return avtaleRepository.findAllByEnhet(queryParametre.getNavEnhet());
+            return avtaleRepository.findAllUfordelteByEnhet(queryParametre.getNavEnhet());
         } else {
             return emptyList();
         }

@@ -263,7 +263,7 @@ public class AvtaleRepositoryTest {
         avtaleRepository.save(lagretAvtale);
 
         List<Avtale> avtaleMedRiktigEnhet = avtaleRepository
-            .findAllByEnhet(ENHET_OPPFØLGING);
+            .findAllUfordelteByEnhet(ENHET_OPPFØLGING);
 
         assertThat(avtaleMedRiktigEnhet).isNotEmpty();
     }
@@ -275,7 +275,7 @@ public class AvtaleRepositoryTest {
         avtaleRepository.save(lagretAvtale);
 
         List<Avtale> avtaleMedRiktigEnhet = avtaleRepository
-            .findAllByEnhet(ENHET_GEOGRAFISK);
+            .findAllUfordelteByEnhet(ENHET_GEOGRAFISK);
 
         assertThat(avtaleMedRiktigEnhet).isEmpty();
     }
@@ -287,7 +287,7 @@ public class AvtaleRepositoryTest {
         avtaleRepository.save(lagretAvtale);
 
         List<Avtale> avtaleMedRiktigEnhet = avtaleRepository
-            .findAllByEnhet(ENHET_OPPFØLGING);
+            .findAllUfordelteByEnhet(ENHET_OPPFØLGING);
 
         assertThat(avtaleMedRiktigEnhet).isNotEmpty();
     }
@@ -299,7 +299,7 @@ public class AvtaleRepositoryTest {
         avtaleRepository.save(lagretAvtale);
 
         List<Avtale> avtaleMedRiktigEnhet = avtaleRepository
-            .findAllByEnhet(ENHET_GEOGRAFISK);
+            .findAllUfordelteByEnhet(ENHET_GEOGRAFISK);
 
         assertThat(avtaleMedRiktigEnhet).isNotEmpty();
     }
