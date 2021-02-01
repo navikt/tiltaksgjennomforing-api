@@ -359,6 +359,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         TilskuddPeriode gjeldendePeriode = gjeldendeTilskuddsperiode();
         gjeldendePeriode.godkjenn(beslutter);
+        registerEvent(new TilskuddsperiodeGodkjent(this, gjeldendePeriode, beslutter));
     }
 
     public void avslåTilskuddsperiode(NavIdent beslutter, EnumSet<Avslagsårsak> avslagsårsaker, String avslagsforklaring) {
@@ -367,7 +368,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         TilskuddPeriode gjeldendePeriode = gjeldendeTilskuddsperiode();
         gjeldendePeriode.avslå(beslutter, avslagsårsaker, avslagsforklaring);
-        registerEvent(new TilskuddAvslått(this, beslutter));
+        registerEvent(new TilskuddsperiodeAvslått(this, beslutter));
     }
 
 

@@ -27,6 +27,8 @@ tiltaksgjennomforing:
     id: 1a1d2745-952f-4a0f-839f-9530145b1d4a
   kafka:
     enabled: false
+    fake: true
+    fake-url: http://tiltak-refusjon-api/fake-kafka
   altinn-tilgangsstyring:
     uri: http://tiltaksgjennomforing-wiremock/altinn-tilgangsstyring
     proxyUri: http://heh:9090/

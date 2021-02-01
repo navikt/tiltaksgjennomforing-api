@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.tilskudd;
+package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -37,10 +37,10 @@ import org.springframework.test.context.ActiveProfiles;
 @DirtiesContext
 @ActiveProfiles({Miljø.LOCAL})
 @EmbeddedKafka(partitions = 1, topics = {Topics.REFUSJON})
-class TilskuddProducerTest {
+class TilskuddsperiodeKafkaProducerTest {
 
   @Autowired
-  private TilskuddProducer tilskuddProducer;
+  private TilskuddsperiodeKafkaProducer tilskuddsperiodeKafkaProducer;
 
   @Autowired
   private EmbeddedKafkaBroker embeddedKafka;
@@ -80,27 +80,32 @@ class TilskuddProducerTest {
     final LocalDate tilskuddFraDato = LocalDate.now().minusDays(15);
     final LocalDate tilskuddTilDato = LocalDate.now().plusMonths(2);
 
-    final TilskuddMelding tilskuddMelding = new TilskuddMelding(avtaleId,
+    final TilskuddsperiodeGodkjentMelding tilskuddMelding = new TilskuddsperiodeGodkjentMelding(avtaleId,
         tilskuddPeriodeId, avtaleInnholdId, tiltakstype, deltakerFornavn, deltakerEtternavn,
-        deltakerFnr, veilederNavIdent, bedriftNavn, bedriftnummer, tilskuddBeløp, tilskuddFraDato, tilskuddTilDato);
-
+        deltakerFnr, veilederNavIdent, bedriftNavn, bedriftnummer, tilskuddBeløp, tilskuddFraDato, tilskuddTilDato, 10.6, 0.02, 14.1, 60);
 
     //NÅR
-    tilskuddProducer.publiserTilskuddMelding(tilskuddMelding);
+    tilskuddsperiodeKafkaProducer.publiserTilskuddsperiodeGodkjentMelding(tilskuddMelding);
 
     //SÅ
     ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.REFUSJON);
     JSONObject jsonRefusjonRecord = new JSONObject(record.value());
     assertThat(jsonRefusjonRecord.get("avtaleId")).isNotNull();
-    assertThat(jsonRefusjonRecord.get("tilskuddPeriodeId")).isNotNull();
+    assertThat(jsonRefusjonRecord.get("tilskuddsperiodeId")).isNotNull();
     assertThat(jsonRefusjonRecord.get("avtaleInnholdId")).isNotNull();
     assertThat(jsonRefusjonRecord.get("tiltakstype")).isNotNull();
+    assertThat(jsonRefusjonRecord.get("deltakerFornavn")).isNotNull();
+    assertThat(jsonRefusjonRecord.get("deltakerEtternavn")).isNotNull();
     assertThat(jsonRefusjonRecord.get("deltakerFnr")).isNotNull();
     assertThat(jsonRefusjonRecord.get("veilederNavIdent")).isNotNull();
-    assertThat(jsonRefusjonRecord.get("bedriftnummer")).isNotNull();
-    assertThat(jsonRefusjonRecord.get("tilskuddBeløp")).isNotNull();
-    assertThat(jsonRefusjonRecord.get("tilskuddFraDato")).isNotNull();
-    assertThat(jsonRefusjonRecord.get("tilskuddTilDato")).isNotNull();
-    assertThat(jsonRefusjonRecord.get("deltakerFnr")).isEqualTo(deltakerFnr.asString());
+    assertThat(jsonRefusjonRecord.get("bedriftNavn")).isNotNull();
+    assertThat(jsonRefusjonRecord.get("bedriftNr")).isNotNull();
+    assertThat(jsonRefusjonRecord.get("tilskuddsbeløp")).isNotNull();
+    assertThat(jsonRefusjonRecord.get("tilskuddFom")).isNotNull().isOfAnyClassIn(String.class);
+    assertThat(jsonRefusjonRecord.get("tilskuddTom")).isNotNull().isOfAnyClassIn(String.class);
+    assertThat(jsonRefusjonRecord.get("feriepengerSats")).isNotNull();
+    assertThat(jsonRefusjonRecord.get("otpSats")).isNotNull();
+    assertThat(jsonRefusjonRecord.get("arbeidsgiveravgiftSats")).isNotNull();
+    assertThat(jsonRefusjonRecord.get("lønnstilskuddsprosent")).isNotNull();
   }
 }

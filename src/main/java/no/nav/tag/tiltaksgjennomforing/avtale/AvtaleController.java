@@ -176,6 +176,7 @@ public class AvtaleController {
         Beslutter beslutter = innloggingService.hentBeslutter();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         beslutter.godkjennTilskuddsperiode(avtale);
+        avtaleRepository.save(avtale);
     }
 
     @PostMapping("/{avtaleId}/avslag-tilskuddsperiode")

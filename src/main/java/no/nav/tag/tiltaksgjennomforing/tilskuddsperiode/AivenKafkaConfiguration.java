@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.tilskudd;
+package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,7 +53,7 @@ public class AivenKafkaConfiguration {
   }
 
   @Bean
-  public KafkaTemplate<String, TilskuddMelding> aivenKafkaTemplate() {
+  public KafkaTemplate<String, TilskuddsperiodeGodkjentMelding> aivenKafkaTemplate() {
     return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs()));
   }
 

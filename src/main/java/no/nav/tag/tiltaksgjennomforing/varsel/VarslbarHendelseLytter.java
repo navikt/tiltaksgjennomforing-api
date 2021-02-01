@@ -26,7 +26,7 @@ public class VarslbarHendelseLytter {
     }
 
     @EventListener
-    public void tilskuddsperiodeAvslått(TilskuddAvslått event) {
+    public void tilskuddsperiodeAvslått(TilskuddsperiodeAvslått event) {
          varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.TILSKUDDSPERIODE_AVSLATT));
     }
 

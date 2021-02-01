@@ -34,6 +34,8 @@ tiltaksgjennomforing:
     id: 1a1d2745-952f-4a0f-839f-9530145b1d4a
   kafka:
     enabled: false
+    fake: true
+    fake-url: http://localhost:8000/fake-kafka
   altinn-tilgangsstyring:
     uri: http://localhost:8090/altinn-tilgangsstyring
     proxyUri: http://heh:9090/
