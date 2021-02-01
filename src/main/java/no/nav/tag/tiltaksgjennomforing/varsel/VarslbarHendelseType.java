@@ -22,8 +22,9 @@ public enum VarslbarHendelseType {
     GJENOPPRETTET("Avtale gjenopprettet"),
     OPPRETTET_AV_ARBEIDSGIVER("Avtale er opprettet av arbeidsgiver"),
     NY_VEILEDER("Avtale tildelt ny veileder"),
-    AVTALE_FORDELT("Avtale tildelt veileder")
-    ;
+    AVTALE_FORDELT("Avtale tildelt veileder"),
+    TILSKUDDSPERIODE_AVSLATT("Avtalen har blitt sendt i retur av ");
 
     private final String tekst;
+
 }
