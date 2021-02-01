@@ -1,5 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.ENHET_GEOGRAFISK;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.ENHET_OPPFØLGING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -204,7 +206,7 @@ public class AvtaleRepositoryTest {
         Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate.now(), LocalDate.now().plusMonths(2));
         lagretAvtale.setTiltakstype(Tiltakstype.ARBEIDSTRENING);
         avtaleRepository.save(lagretAvtale);
-        Set<String> navEnheter = Set.of(TestData.ENHET_OPPFØLGNING);
+        Set<String> navEnheter = Set.of(ENHET_OPPFØLGING);
 
         List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
             .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter);
@@ -216,7 +218,7 @@ public class AvtaleRepositoryTest {
     public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_kunne_hente_avtale_med_ubehandlet_tilskuddsperioder_for_riktig_enhet() {
 
         Avtale lagretAvtale = avtaleRepository.save(TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate.now(), LocalDate.now().plusDays(15)));
-        Set<String> navEnheter = Set.of(TestData.ENHET_OPPFØLGNING);
+        Set<String> navEnheter = Set.of(ENHET_OPPFØLGING);
 
         List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
             .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter);
@@ -228,7 +230,7 @@ public class AvtaleRepositoryTest {
     public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_ikke_kunne_hente_avtale_med_godkjent_tilskuddsperioder() {
 
         Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate.now(), LocalDate.now().plusMonths(2));
-        Set<String> navEnheter = Set.of(TestData.ENHET_OPPFØLGNING);
+        Set<String> navEnheter = Set.of(ENHET_OPPFØLGING);
 
         lagretAvtale.godkjennTilskuddsperiode(TestData.enInnloggetBeslutter().getIdentifikator());
         avtaleRepository.save(lagretAvtale);
@@ -252,5 +254,53 @@ public class AvtaleRepositoryTest {
             .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter);
 
         assertThat(avtalerMedTilskuddsperioder).isEmpty();
+    }
+
+    @Test
+    public void findAllByEnhet__skal_kunne_hente_avtale_med_enhet() {
+
+        Avtale lagretAvtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet();
+        avtaleRepository.save(lagretAvtale);
+
+        List<Avtale> avtaleMedRiktigEnhet = avtaleRepository
+            .findAllUfordelteByEnhet(ENHET_OPPFØLGING);
+
+        assertThat(avtaleMedRiktigEnhet).isNotEmpty();
+    }
+
+    @Test
+    public void findAllByEnhet__skal_ikke_kunne_hente_avtale_med_feil_enhet() {
+
+        Avtale lagretAvtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet();
+        avtaleRepository.save(lagretAvtale);
+
+        List<Avtale> avtaleMedRiktigEnhet = avtaleRepository
+            .findAllUfordelteByEnhet(ENHET_GEOGRAFISK);
+
+        assertThat(avtaleMedRiktigEnhet).isEmpty();
+    }
+
+    @Test
+    public void findAllByEnhet__skal_kunne_hente_avtale_med_både_geografisk_og_oppfølgningsenhet() {
+
+        Avtale lagretAvtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhetOgGeografiskEnhet();
+        avtaleRepository.save(lagretAvtale);
+
+        List<Avtale> avtaleMedRiktigEnhet = avtaleRepository
+            .findAllUfordelteByEnhet(ENHET_OPPFØLGING);
+
+        assertThat(avtaleMedRiktigEnhet).isNotEmpty();
+    }
+
+    @Test
+    public void findAllByEnhet__skal_kunne_hente_avtale_med_både_oppfølgning_og_geografiskenhet() {
+
+        Avtale lagretAvtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhetOgGeografiskEnhet();
+        avtaleRepository.save(lagretAvtale);
+
+        List<Avtale> avtaleMedRiktigEnhet = avtaleRepository
+            .findAllUfordelteByEnhet(ENHET_GEOGRAFISK);
+
+        assertThat(avtaleMedRiktigEnhet).isNotEmpty();
     }
 }

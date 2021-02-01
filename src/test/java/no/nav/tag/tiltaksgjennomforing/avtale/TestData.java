@@ -33,16 +33,37 @@ import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 
 public class TestData {
 
-    public static String ENHET_OPPFØLGNING = "0906";
+    public static String ENHET_OPPFØLGING = "0906";
+    public static String ENHET_GEOGRAFISK = "0904";
 
     public static Avtale enArbeidstreningAvtale() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         return Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING), veilderNavIdent);
     }
 
-    public static Avtale enArbeidstreningAvtaleOpprettetAvArbeidsgiver() {
+    public static Avtale enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt() {
         return Avtale.arbeidsgiverOppretterAvtale(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING));
     }
+
+    public static Avtale enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet() {
+        Avtale avtale = enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
+        avtale.setEnhetOppfolging(ENHET_OPPFØLGING);
+        return avtale;
+    }
+
+    public static Avtale enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhetOgGeografiskEnhet() {
+        Avtale avtale = enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
+        avtale.setEnhetOppfolging(ENHET_OPPFØLGING);
+        avtale.setEnhetGeografisk(ENHET_GEOGRAFISK);
+        return avtale;
+    }
+
+    public static Avtale enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedGeografiskEnhet() {
+        Avtale avtale = enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
+        avtale.setEnhetGeografisk(ENHET_GEOGRAFISK);
+        return avtale;
+    }
+
 
     public static Avtale enAvtaleMedAltUtfylt() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
@@ -62,8 +83,8 @@ public class TestData {
 
     public static Avtale enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate startDato, LocalDate sluttDato) {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
-        avtale.setEnhetOppfolging(ENHET_OPPFØLGNING);
-        avtale.setEnhetGeografisk(ENHET_OPPFØLGNING);
+        avtale.setEnhetGeografisk(ENHET_OPPFØLGING);
+        avtale.setEnhetOppfolging(ENHET_GEOGRAFISK);
         EndreAvtale endring = TestData.endringPåAlleFelter();
         endring.setStartDato(startDato);
         endring.setSluttDato(sluttDato);
@@ -81,7 +102,7 @@ public class TestData {
     public static Avtale enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype tiltakstype) {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(tiltakstype), veilderNavIdent);
-        avtale.setEnhetOppfolging(ENHET_OPPFØLGNING);
+        avtale.setEnhetOppfolging(ENHET_OPPFØLGING);
         avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleFelter(), Avtalerolle.VEILEDER);
         avtale.setDeltakerFornavn("Lilly");
         avtale.setDeltakerEtternavn("Lønning");
@@ -209,7 +230,7 @@ public class TestData {
     }
 
     public static InnloggetVeileder enInnloggetVeileder() {
-        return new InnloggetVeileder(new NavIdent("F888888"));
+        return new InnloggetVeileder(new NavIdent("F888888"), Set.of(ENHET_OPPFØLGING));
     }
 
     public static InnloggetBeslutter enInnloggetBeslutter() {
@@ -237,7 +258,8 @@ public class TestData {
     public static Veileder enVeileder(Avtale avtale) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(avtale.getVeilederNavIdent()), eq(avtale.getDeltakerFnr()))).thenReturn(true);
-        return new Veileder(avtale.getVeilederNavIdent(), avtale, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class));
+        return new Veileder(avtale.getVeilederNavIdent(), avtale, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
+            Set.of("4802"));
     }
 
     public static Beslutter enBeslutter(Avtale avtale) {
@@ -312,13 +334,15 @@ public class TestData {
     }
 
     public static Veileder enVeileder(NavIdent navIdent) {
-        return new Veileder(navIdent, mock(TilgangskontrollService.class), mock(PersondataService.class), mock(Norg2Client.class));
+        return new Veileder(navIdent, mock(TilgangskontrollService.class), mock(PersondataService.class), mock(Norg2Client.class),
+            Set.of(ENHET_OPPFØLGING));
     }
 
     public static Veileder enVeileder(Avtale avtale, PersondataService persondataService) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(avtale.getVeilederNavIdent(), avtale.getDeltakerFnr())).thenReturn(true);
-        return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, persondataService, mock(Norg2Client.class));
+        return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, persondataService, mock(Norg2Client.class),
+            Set.of(ENHET_OPPFØLGING));
     }
 
     public static PdlRespons enPdlrespons(boolean harKode6eller7) {

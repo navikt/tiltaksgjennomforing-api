@@ -1,10 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.ENHET_OPPFØLGING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -14,6 +16,8 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -23,24 +27,27 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class InnloggingServiceTest {
 
-    @InjectMocks
-    private InnloggingService innloggingService;
+  @InjectMocks
+  private InnloggingService innloggingService;
 
-    @Mock
-    private TokenUtils tokenUtils;
+  @Mock
+  private TokenUtils tokenUtils;
 
-    @Mock
-    private AltinnTilgangsstyringService altinnTilgangsstyringService;
+  @Mock
+  private AltinnTilgangsstyringService altinnTilgangsstyringService;
 
-    @Mock
-    private SystembrukerProperties systembrukerProperties;
+  @Mock
+  private AxsysService axsysService;
 
-    @Mock
-    private BeslutterAdGruppeProperties beslutterAdGruppeProperties;
+  @Mock
+  private SystembrukerProperties systembrukerProperties;
 
-    @Test
-    public void hentInnloggetBruker__er_selvbetjeningbruker() {
-        InnloggetDeltaker selvbetjeningBruker = TestData.enInnloggetDeltaker();
+  @Mock
+  private BeslutterAdGruppeProperties beslutterAdGruppeProperties;
+
+  @Test
+  public void hentInnloggetBruker__er_selvbetjeningbruker() {
+    InnloggetDeltaker selvbetjeningBruker = TestData.enInnloggetDeltaker();
         værInnloggetDeltaker(selvbetjeningBruker);
         assertThat(innloggingService.hentInnloggetBruker(Avtalerolle.DELTAKER)).isEqualTo(selvbetjeningBruker);
     }
@@ -57,12 +64,14 @@ public class InnloggingServiceTest {
         verify(altinnTilgangsstyringService).hentAltinnOrganisasjoner(selvbetjeningBruker.getIdentifikator());
     }
 
-    @Test
-    public void hentInnloggetBruker__er_nav_ansatt() {
-        InnloggetVeileder navAnsatt = TestData.enInnloggetVeileder();
-        værInnloggetVeileder(navAnsatt);
-        assertThat(innloggingService.hentInnloggetBruker(Avtalerolle.VEILEDER)).isEqualTo(navAnsatt);
-    }
+  @Test
+  public void hentInnloggetBruker__er_nav_ansatt_og_har_enhet() {
+    InnloggetVeileder navAnsatt = TestData.enInnloggetVeileder();
+    when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(List.of(new NavEnhet(ENHET_OPPFØLGING)));
+    værInnloggetVeileder(navAnsatt);
+
+    assertThat(innloggingService.hentInnloggetBruker(Avtalerolle.VEILEDER)).isEqualTo(navAnsatt);
+  }
 
     @Test
     public void hentInnloggetBruker__er_nav_ansatt_og_beslutter() {

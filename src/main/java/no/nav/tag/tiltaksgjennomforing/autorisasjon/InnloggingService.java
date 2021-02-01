@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.BrukerOgIssuer;
@@ -22,6 +23,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.stereotype.Component;
 
@@ -54,16 +56,22 @@ public class InnloggingService {
         }
 
         else if (issuer == Issuer.ISSUER_ISSO && avtalerolle == Avtalerolle.VEILEDER) {
-            return new Veileder(new NavIdent(brukerOgIssuer.getBrukerIdent()), tilgangskontrollService, persondataService, norg2Client);
-        }
-
-        else if (issuer == Issuer.ISSUER_ISSO && avtalerolle == Avtalerolle.BESLUTTER && tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId())) {
+            NavIdent navIdent = new NavIdent(brukerOgIssuer.getBrukerIdent());
+            Set<String> navEnheter = hentNavEnheter(navIdent);
+            return new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, navEnheter);
+        } else if (issuer == Issuer.ISSUER_ISSO && avtalerolle == Avtalerolle.BESLUTTER && tokenUtils
+            .harAdGruppe(beslutterAdGruppeProperties.getId())) {
             return new Beslutter(new NavIdent(brukerOgIssuer.getBrukerIdent()), tilgangskontrollService, axsysService);
-        }
-
-        else {
+        } else {
             throw new TilgangskontrollException("Ugyldig kombinasjon av issuer og rolle.");
         }
+    }
+
+    private Set<String> hentNavEnheter(NavIdent navIdent) {
+        return axsysService.hentEnheterNavAnsattHarTilgangTil(navIdent)
+            .stream()
+            .map(NavEnhet::getVerdi)
+            .collect(Collectors.toSet());
     }
 
     public Veileder hentVeileder() {

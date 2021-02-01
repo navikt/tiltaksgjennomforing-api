@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
@@ -152,19 +153,19 @@ public class VeilederTest {
         PersondataService persondataService = mock(PersondataService.class);
         Norg2Client norg2Client = mock(Norg2Client.class);
         final PdlRespons pdlRespons = TestData.enPdlrespons(false);
-        final String navEnhet = "0411";
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(TestData.enNavIdent()), eq(TestData.etFodselsnummer()))).thenReturn(true);
         when(persondataService.hentPersondata(TestData.etFodselsnummer())).thenReturn(pdlRespons);
         when(persondataService.erKode6Eller7(pdlRespons)).thenCallRealMethod();
-        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel())).thenReturn(navEnhet);
+        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel())).thenReturn(TestData.ENHET_GEOGRAFISK);
 
-        Veileder veileder = new Veileder(TestData.enNavIdent(), tilgangskontrollService, persondataService, norg2Client);
+        Veileder veileder = new Veileder(TestData.enNavIdent(), tilgangskontrollService, persondataService, norg2Client,
+            Set.of(TestData.ENHET_GEOGRAFISK));
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
 
         assertThat(avtale.getVeilederNavIdent()).isEqualTo(TestData.enNavIdent());
         assertThat(avtale.getDeltakerFornavn()).isEqualTo("Donald");
         assertThat(avtale.getDeltakerEtternavn()).isEqualTo("Duck");
-        assertThat(avtale.getEnhetGeografisk()).isEqualTo(navEnhet);
+        assertThat(avtale.getEnhetGeografisk()).isEqualTo(TestData.ENHET_GEOGRAFISK);
     }
 }

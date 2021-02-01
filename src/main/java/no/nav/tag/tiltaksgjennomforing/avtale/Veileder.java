@@ -1,5 +1,11 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import static java.util.Collections.emptyList;
+import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
@@ -11,37 +17,36 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6E
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.Set;
-
-import static java.util.Collections.emptyList;
-import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
-
 public class Veileder extends Avtalepart<NavIdent> {
     static String tekstAvtaleVenterPaaDinGodkjenning = "Før du godkjenner avtalen må du sjekke at alt er i orden og innholdet er riktig.";
     static String ekstraTekstAvtleErGodkjentAvAllePartner = "Du må fullføre registreringen i Arena. Avtalen journalføres automatisk i Gosys.";
     static String tekstAvtaleAvbrutt = "Du eller en annen veileder har avbrutt tiltaket.";
     private final TilgangskontrollService tilgangskontrollService;
+
     private final PersondataService persondataService;
     private final Norg2Client norg2Client;
+    private Set<String> navEnheter;
     String venteListeForVeileder;
 
-    public Veileder(NavIdent identifikator, TilgangskontrollService tilgangskontrollService, PersondataService persondataService, Norg2Client norg2Client) {
+    public Veileder(NavIdent identifikator, TilgangskontrollService tilgangskontrollService, PersondataService persondataService,
+        Norg2Client norg2Client, Set<String> navEnheter) {
         super(identifikator);
         this.tilgangskontrollService = tilgangskontrollService;
         this.persondataService = persondataService;
         this.norg2Client = norg2Client;
+        this.navEnheter = navEnheter;
     }
 
-    public Veileder(NavIdent identifikator, Avtale avtale, TilgangskontrollService tilgangskontrollService, PersondataService persondataService, Norg2Client norg2Client) {
+    public Veileder(NavIdent identifikator, Avtale avtale, TilgangskontrollService tilgangskontrollService, PersondataService persondataService,
+        Norg2Client norg2Client, Set<String> navEnheter) {
         super(identifikator);
         this.venteListeForVeileder = "Du må vente for " + (!avtale.erGodkjentAvArbeidsgiver() ? "arbeidsgiver" : "");
         this.venteListeForVeileder = this.venteListeForVeileder +
-                ((!avtale.erGodkjentAvDeltaker() ? " og deltaker" : "") + " godkjenner avtale");
+            ((!avtale.erGodkjentAvDeltaker() ? " og deltaker" : "") + " godkjenner avtale");
         this.tilgangskontrollService = tilgangskontrollService;
         this.persondataService = persondataService;
         this.norg2Client = norg2Client;
+        this.navEnheter = navEnheter;
     }
 
     @Override
@@ -57,8 +62,8 @@ public class Veileder extends Avtalepart<NavIdent> {
             return avtaleRepository.findAllByDeltakerFnr(queryParametre.getDeltakerFnr());
         } else if (queryParametre.getBedriftNr() != null) {
             return avtaleRepository.findAllByBedriftNrIn(Set.of(queryParametre.getBedriftNr()));
-        } else if (queryParametre.getErUfordelt() == true) {
-            return avtaleRepository.findAllByVeilederNavIdent(null);
+        } else if (queryParametre.getNavEnhet() != null) {
+            return avtaleRepository.findAllUfordelteByEnhet(queryParametre.getNavEnhet());
         } else {
             return emptyList();
         }
@@ -163,7 +168,7 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     @Override
     public InnloggetBruker innloggetBruker() {
-        return new InnloggetVeileder(getIdentifikator());
+        return new InnloggetVeileder(getIdentifikator(), navEnheter);
     }
 
     public void delAvtaleMedAvtalepart(Avtalerolle avtalerolle, Avtale avtale) {

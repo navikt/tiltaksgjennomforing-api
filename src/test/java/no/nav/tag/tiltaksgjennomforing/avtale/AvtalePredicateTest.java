@@ -41,6 +41,22 @@ public class AvtalePredicateTest {
     }
 
     @Test
+    void enhet_oppfølgning_oppgitt() {
+        Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet();
+        AvtalePredicate query = new AvtalePredicate();
+        query.setNavEnhet(TestData.ENHET_OPPFØLGING);
+        assertThat(query.test(avtale)).isTrue();
+    }
+
+    @Test
+    void enhet_geografisk_oppgitt() {
+        Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedGeografiskEnhet();
+        AvtalePredicate query = new AvtalePredicate();
+        query.setNavEnhet(TestData.ENHET_GEOGRAFISK);
+        assertThat(query.test(avtale)).isTrue();
+    }
+
+    @Test
     void bedrift_oppgitt() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         AvtalePredicate query = new AvtalePredicate();

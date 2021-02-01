@@ -15,6 +15,7 @@ public class AvtalePredicate implements Predicate<Avtale> {
     private Status status;
     private Boolean erUfordelt;
     private TilskuddPeriodeStatus tilskuddPeriodeStatus;
+  private String navEnhet;
 
     private static boolean erLiktHvisOppgitt(Object kriterie, Object avtaleVerdi) {
         return kriterie == null || kriterie.equals(avtaleVerdi);
@@ -27,6 +28,7 @@ public class AvtalePredicate implements Predicate<Avtale> {
              && erLiktHvisOppgitt(deltakerFnr, avtale.getDeltakerFnr())
              && erLiktHvisOppgitt(tiltakstype, avtale.getTiltakstype())
              && erLiktHvisOppgitt(status, avtale.statusSomEnum())
-             && erLiktHvisOppgitt(tilskuddPeriodeStatus, avtale.getGjeldendeTilskuddsperiodestatus());
+             && erLiktHvisOppgitt(tilskuddPeriodeStatus, avtale.getGjeldendeTilskuddsperiodestatus())
+             && (erLiktHvisOppgitt(navEnhet, avtale.getEnhetGeografisk()) || erLiktHvisOppgitt(navEnhet, avtale.getEnhetOppfolging()));
     }
 }
