@@ -1,5 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.EnumSet;
+import java.util.List;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avslagsårsak;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -9,17 +13,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.EnumSet;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles(Miljø.LOCAL)
+@DirtiesContext
 public class VarslbarHendelseTest {
 
     @Autowired
