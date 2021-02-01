@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.ENHET_OPPFØLGING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -66,7 +67,7 @@ public class InnloggingServiceTest {
   @Test
   public void hentInnloggetBruker__er_nav_ansatt_og_har_enhet() {
     InnloggetVeileder navAnsatt = TestData.enInnloggetVeileder();
-    when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(List.of(new NavEnhet("4802")));
+    when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(List.of(new NavEnhet(ENHET_OPPFØLGING)));
     værInnloggetVeileder(navAnsatt);
 
     assertThat(innloggingService.hentInnloggetBruker(Avtalerolle.VEILEDER)).isEqualTo(navAnsatt);

@@ -51,6 +51,13 @@ public class TestData {
         return avtale;
     }
 
+    public static Avtale enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhetOgGeografiskEnhet() {
+        Avtale avtale = enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
+        avtale.setEnhetOppfolging(ENHET_OPPFØLGING);
+        avtale.setEnhetGeografisk(ENHET_GEOGRAFISK);
+        return avtale;
+    }
+
     public static Avtale enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedGeografiskEnhet() {
         Avtale avtale = enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
         avtale.setEnhetGeografisk(ENHET_GEOGRAFISK);
@@ -77,7 +84,7 @@ public class TestData {
     public static Avtale enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate startDato, LocalDate sluttDato) {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setEnhetGeografisk(ENHET_OPPFØLGING);
-        avtale.setEnhetOppfolging(ENHET_OPPFØLGING);
+        avtale.setEnhetOppfolging(ENHET_GEOGRAFISK);
         EndreAvtale endring = TestData.endringPåAlleFelter();
         endring.setStartDato(startDato);
         endring.setSluttDato(sluttDato);
@@ -223,7 +230,7 @@ public class TestData {
     }
 
     public static InnloggetVeileder enInnloggetVeileder() {
-        return new InnloggetVeileder(new NavIdent("F888888"), Set.of("4802"));
+        return new InnloggetVeileder(new NavIdent("F888888"), Set.of(ENHET_OPPFØLGING));
     }
 
     public static InnloggetBeslutter enInnloggetBeslutter() {
@@ -327,13 +334,15 @@ public class TestData {
     }
 
     public static Veileder enVeileder(NavIdent navIdent) {
-        return new Veileder(navIdent, mock(TilgangskontrollService.class), mock(PersondataService.class), mock(Norg2Client.class), Set.of("4802"));
+        return new Veileder(navIdent, mock(TilgangskontrollService.class), mock(PersondataService.class), mock(Norg2Client.class),
+            Set.of(ENHET_OPPFØLGING));
     }
 
     public static Veileder enVeileder(Avtale avtale, PersondataService persondataService) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(avtale.getVeilederNavIdent(), avtale.getDeltakerFnr())).thenReturn(true);
-        return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, persondataService, mock(Norg2Client.class), Set.of("4802"));
+        return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, persondataService, mock(Norg2Client.class),
+            Set.of(ENHET_OPPFØLGING));
     }
 
     public static PdlRespons enPdlrespons(boolean harKode6eller7) {
