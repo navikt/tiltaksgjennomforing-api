@@ -333,6 +333,17 @@ public class AvtaleTest {
     }
 
     @Test
+    public void avbryt_ufordelt_avtale_skal_bli_fordelt() {
+        Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
+        Veileder veileder = TestData.enVeileder(new NavIdent("Z123456"));
+        avtale.avbryt(veileder, new AvbruttInfo(LocalDate.now(), "grunnen"));
+
+        assertThat(avtale.status()).isEqualTo(Status.AVBRUTT.getStatusVerdi());
+        assertThat(avtale.erUfordelt()).isFalse();
+        assertThat(avtale.getVeilederNavIdent()).isEqualTo(veileder.getIdentifikator());
+    }
+
+    @Test
     public void tom_avtale_kan_avbrytes() {
         Avtale tomAvtale = TestData.enArbeidstreningAvtale();
         assertThat(tomAvtale.kanAvbrytes()).isTrue();
