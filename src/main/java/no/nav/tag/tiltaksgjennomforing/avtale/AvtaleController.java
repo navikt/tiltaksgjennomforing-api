@@ -38,9 +38,13 @@ public class AvtaleController {
     }
 
     @GetMapping
-    public List<Avtale> hentAlleAvtalerInnloggetBrukerHarTilgangTil(AvtalePredicate queryParametre, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+    public List<Avtale> hentAlleAvtalerInnloggetBrukerHarTilgangTil(AvtalePredicate queryParametre,
+                                                                    @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
+                                                                    @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        return avtalepart.hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre);
+        List<Avtale> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre);
+        AvtaleSorterer.sorterAvtaler(sorteringskolonne, avtaler);
+        return avtaler;
     }
 
     @GetMapping("/{avtaleId}/status-detaljer")
