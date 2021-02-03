@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import no.nav.tag.tiltaksgjennomforing.exceptions.AltMåVæreFyltUtException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.AvtaleErIkkeFordeltException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
@@ -564,10 +565,58 @@ public class AvtaleTest {
 
     @Test
     public void ufordelt_avtale_må_tildeles_før_veileder_godkjenner() {
-        Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
+        Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(
+            new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
         avtale.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER);
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
         avtale.godkjennForDeltaker(TestData.enIdentifikator());
         assertThatThrownBy(() -> avtale.godkjennForVeileder(TestData.enNavIdent())).isInstanceOf(AvtaleErIkkeFordeltException.class);
     }
+
+
+    @Test
+    public void ufordelt_midlertidig_lts_avtale_endrer_avtale_med_lavere_lønnstilskuddprosent_enn_mellom_kun_40_60_prosent() {
+        Avtale avtale = Avtale
+            .veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD),
+                new NavIdent("Z123456"));
+        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        endreAvtale.setLonnstilskuddProsent(20);
+        assertThatThrownBy(() -> avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER))
+            .isInstanceOf(FeilLonnstilskuddsprosentException.class);
+    }
+
+    @Test
+    public void ufordelt_midlertidig_lts_avtale_endrer_avtale_med_høyere_enn_maks_lønnstilskuddprosent_enn_60_prosent() {
+        Avtale avtale = Avtale
+            .veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD),
+                new NavIdent("Z123456"));
+        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        endreAvtale.setLonnstilskuddProsent(67);
+        assertThatThrownBy(() -> avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER))
+            .isInstanceOf(FeilLonnstilskuddsprosentException.class);
+    }
+
+
+    @Test
+    public void ufordelt_varig_lts_avtale_endrer_avtale_med_lavere_lønnstilskuddprosent_enn_0_prosent() {
+        Avtale avtale = Avtale
+            .veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.VARIG_LONNSTILSKUDD),
+                new NavIdent("Z123456"));
+        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        endreAvtale.setLonnstilskuddProsent(-1);
+        assertThatThrownBy(() -> avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER))
+            .isInstanceOf(FeilLonnstilskuddsprosentException.class);
+    }
+
+    @Test
+    public void ufordelt_varig_lts_avtale_endrer_avtale_med_høyere_enn_maks_lønnstilskuddprosent_enn_75_prosent() {
+        Avtale avtale = Avtale
+            .veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.VARIG_LONNSTILSKUDD),
+                new NavIdent("Z123456"));
+        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        endreAvtale.setLonnstilskuddProsent(100);
+        assertThatThrownBy(() -> avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER))
+            .isInstanceOf(FeilLonnstilskuddsprosentException.class);
+    }
+
 }

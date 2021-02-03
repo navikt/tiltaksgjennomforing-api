@@ -1,12 +1,22 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import java.time.LocalDate;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangMidlertidigLonnstilskuddException;
 
-import java.time.LocalDate;
-
 public class MidlertidigLonnstilskuddStrategy extends LonnstilskuddStrategy {
+
     public MidlertidigLonnstilskuddStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
+    }
+
+    @Override
+    public void endre(EndreAvtale endreAvtale) {
+        if (endreAvtale.getLonnstilskuddProsent() != null && (
+            endreAvtale.getLonnstilskuddProsent() != 40 && endreAvtale.getLonnstilskuddProsent() != 60)) {
+            throw new FeilLonnstilskuddsprosentException();
+        }
+        super.endre(endreAvtale);
     }
 
     @Override
