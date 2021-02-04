@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAnnullert;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeGodkjent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -26,9 +27,19 @@ public class TilskuddsperiodeFakeKafkaProducer {
 
     @TransactionalEventListener
     public void tilskuddsperiodeGodkjent(TilskuddsperiodeGodkjent event) {
-        TilskuddsperiodeGodkjentMelding tilskuddsperiodeMelding = TilskuddsperiodeGodkjentMelding.fraAvtale(event.getAvtale());
+        TilskuddsperiodeGodkjentMelding melding = TilskuddsperiodeGodkjentMelding.fraAvtale(event.getAvtale());
         try {
-            restTemplate.exchange(url + "/tilskuddsperiode-godkjent", HttpMethod.POST, new HttpEntity<>(tilskuddsperiodeMelding), Void.class);
+            restTemplate.exchange(url + "/tilskuddsperiode-godkjent", HttpMethod.POST, new HttpEntity<>(melding), Void.class);
+        } catch (RestClientException e) {
+            log.warn("Feil ved kall til tiltak-refusjon-api", e);
+        }
+    }
+
+    @TransactionalEventListener
+    public void tilskuddsperiodeAnnullert(TilskuddsperiodeAnnullert event) {
+        TilskuddsperiodeAnnullertMelding melding = new TilskuddsperiodeAnnullertMelding(event.getTilskuddsperiode().getId());
+        try {
+            restTemplate.exchange(url + "/tilskuddsperiode-annullert", HttpMethod.POST, new HttpEntity<>(melding), Void.class);
         } catch (RestClientException e) {
             log.warn("Feil ved kall til tiltak-refusjon-api", e);
         }
