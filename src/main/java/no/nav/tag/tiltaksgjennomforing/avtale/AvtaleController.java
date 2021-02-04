@@ -43,8 +43,7 @@ public class AvtaleController {
                                                                     @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         List<Avtale> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre);
-        AvtaleSorterer.sorterAvtaler(sorteringskolonne, avtaler);
-        return avtaler;
+        return AvtaleSorterer.sorterAvtaler(sorteringskolonne, avtaler);
     }
 
     @GetMapping("/{avtaleId}/status-detaljer")

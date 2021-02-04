@@ -2,15 +2,15 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import lombok.experimental.UtilityClass;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @UtilityClass
 public class AvtaleSorterer {
-    public void sorterAvtaler(String sorteringskolonne, List<Avtale> avtaler) {
-        Collections.sort(avtaler, comparatorForAvtale(sorteringskolonne));
+    public List<Avtale> sorterAvtaler(String sorteringskolonne, List<Avtale> avtaler) {
+        return avtaler.stream().sorted(comparatorForAvtale(sorteringskolonne)).collect(Collectors.toList());
     }
 
     private Comparator<Avtale> comparatorForAvtale(String sorteringskolonne) {
