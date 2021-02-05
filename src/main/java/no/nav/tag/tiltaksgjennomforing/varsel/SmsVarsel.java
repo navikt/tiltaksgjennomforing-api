@@ -10,9 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.varsel.events.SmsVarselOpprettet;
 import no.nav.tag.tiltaksgjennomforing.varsel.events.SmsVarselResultatMottatt;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.UUID;
 
 @Data
@@ -23,6 +21,7 @@ import java.util.UUID;
 public class SmsVarsel extends AbstractAggregateRoot<SmsVarsel> {
     @Id
     private UUID id;
+    @Enumerated(EnumType.STRING)
     private SmsVarselStatus status;
     private String telefonnummer;
     @Convert(converter = IdentifikatorConverter.class)
