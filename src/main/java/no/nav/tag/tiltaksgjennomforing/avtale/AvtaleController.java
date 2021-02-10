@@ -66,6 +66,17 @@ public class AvtaleController {
         return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
     }
 
+    @PutMapping("/{avtaleId}/dry-run")
+    public Avtale endreAvtaleDryRun(@PathVariable("avtaleId") UUID avtaleId,
+                                    @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
+                                    @RequestBody EndreAvtale endreAvtale, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
+        Avtale avtale = avtaleRepository.findById(avtaleId)
+                .orElseThrow(RessursFinnesIkkeException::new);
+        avtalepart.endreAvtale(sistEndret, endreAvtale, avtale);
+        return avtale;
+    }
+
     @PostMapping("/{avtaleId}/opphev-godkjenninger")
     @Transactional
     public void opphevGodkjenninger(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
