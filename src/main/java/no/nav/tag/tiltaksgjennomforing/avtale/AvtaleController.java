@@ -1,13 +1,19 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import io.micrometer.core.annotation.Timed;
+import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import no.nav.security.oidc.api.Protected;
+import no.nav.security.token.support.core.jwt.JwtToken;
+import no.nav.security.token.support.core.jwt.JwtTokenClaims;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
+import no.nav.tag.tiltaksgjennomforing.okonomi.client.DownstreamResourceClient;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +36,12 @@ public class AvtaleController {
     private final InnloggingService innloggingService;
     private final EregService eregService;
     private final VeilarbArenaClient veilarbArenaClient;
+    private final DownstreamResourceClient downstreamResourceClient;
+
+    @GetMapping(path = "/tokeninfo", produces= MediaType.APPLICATION_JSON_VALUE)
+    public String tokenInfoDownstreamApi() {
+        return downstreamResourceClient.tokeninfo();
+    }
 
     @GetMapping("/{avtaleId}")
     public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {

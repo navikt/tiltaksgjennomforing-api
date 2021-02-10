@@ -1,3 +1,5 @@
+DOWNSTREAM_CLIENT_ID: dev-fss.okonomi.sokos-kontoregister
+
 spring:
   datasource:
     platform: postgres
@@ -23,6 +25,8 @@ no.nav.security.oidc:
       accepted_audience: aud-isso
     
 tiltaksgjennomforing:
+  kontoregister:
+    fake: true
   beslutter-ad-gruppe:
     id: 1a1d2745-952f-4a0f-839f-9530145b1d4a
   kafka:

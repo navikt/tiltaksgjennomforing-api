@@ -27,6 +27,8 @@ no.nav.security.oidc:
       accepted_audience: ${tiltaksgjennomforing.audience.system}
 
 tiltaksgjennomforing:
+  kontoregister:
+    fake: true
   database:
     database-navn: tiltaksgjennomforing-prod
     database-url: ${spring.datasource.url}

@@ -27,6 +27,9 @@ no.nav.security.oidc:
       accepted_audience: ${tiltaksgjennomforing.audience.system}
 
 tiltaksgjennomforing:
+  kontoregister:
+    uri: https://sokos-kontoregister-q1.dev.adeo.no/kontoregister/api/v1/hent-kontonr-org/
+    consumer-id: tiltak-refusjon-api
   database:
     database-navn: tiltaksgjennomforing-preprod
     database-url: ${spring.datasource.url}
