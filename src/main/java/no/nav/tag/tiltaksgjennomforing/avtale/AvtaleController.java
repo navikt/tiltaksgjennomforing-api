@@ -4,7 +4,7 @@ import io.micrometer.core.annotation.Timed;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import no.nav.security.oidc.api.Protected;
+import no.nav.security.token.support.core.api.Protected;
 import no.nav.security.token.support.core.jwt.JwtToken;
 import no.nav.security.token.support.core.jwt.JwtTokenClaims;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;

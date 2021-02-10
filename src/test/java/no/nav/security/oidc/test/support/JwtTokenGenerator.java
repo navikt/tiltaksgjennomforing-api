@@ -69,7 +69,7 @@ public class JwtTokenGenerator {
         return claimSetBuilder.build();
     }
 
-    protected static SignedJWT createSignedJWT(RSAKey rsaJwk, JWTClaimsSet claimsSet) {
+    public static SignedJWT createSignedJWT(RSAKey rsaJwk, JWTClaimsSet claimsSet) {
         try {
             JWSHeader.Builder header = new Builder(JWSAlgorithm.RS256)
                     .keyID(rsaJwk.getKeyID())

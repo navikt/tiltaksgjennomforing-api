@@ -9,14 +9,14 @@ package no.nav.security.oidc.test.support;
 
 import com.nimbusds.jose.util.IOUtils;
 import com.nimbusds.jose.util.Resource;
-import no.nav.security.oidc.configuration.OIDCResourceRetriever;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
+import no.nav.security.token.support.core.validation.JwtTokenRetriever;
 
-public class FileResourceRetriever extends OIDCResourceRetriever {
+public class FileResourceRetriever extends JwtTokenRetriever {
 
     private final String metadataSelvbetjeningFile;
     private final String metadataIssoFile;
@@ -28,12 +28,6 @@ public class FileResourceRetriever extends OIDCResourceRetriever {
         this.metadataIssoFile = metadataIssoFile;
         this.metadataSystemFile = metadataSystemFile;
         this.jwksFile = jwksFile;
-    }
-
-    @Override
-    public Resource retrieveResource(URL url) throws IOException {
-        String content = getContentFromFile(url);
-        return new Resource(content, "application/json");
     }
 
     private String getContentFromFile(URL url) {
