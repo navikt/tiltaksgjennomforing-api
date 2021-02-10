@@ -1,5 +1,3 @@
-DOWNSTREAM_CLIENT_ID: dev-fss.okonomi.sokos-kontoregister
-
 spring:
   datasource:
     platform: postgres
