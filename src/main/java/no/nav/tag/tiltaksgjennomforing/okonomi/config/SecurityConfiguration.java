@@ -16,8 +16,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
-
-@EnableJwtTokenValidation
 @EnableOAuth2Client(cacheEnabled = true)
 @Configuration
 @Profile(Miljø.DEV_FSS)

@@ -13,7 +13,7 @@ spring:
         location: ${javax.net.ssl.trustStore}
         password: ${javax.net.ssl.trustStorePassword}
 
-no.nav.security.oidc:
+no.nav.security.jwt:
   issuers: selvbetjening, isso, system
   issuer:
     selvbetjening:
