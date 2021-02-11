@@ -1,5 +1,3 @@
-DOWNSTREAM_CLIENT_ID: dev-fss.okonomi.sokos-kontoregister
-
 spring:
   datasource:
     platform: postgres
@@ -29,14 +27,15 @@ no.nav.security.jwt:
       discoveryurl: http://security-token-service.default.svc.nais.local/rest/v1/sts/.well-known/openid-configuration
       accepted_audience: ${tiltaksgjennomforing.audience.system}
   client:
-    kontoregister:
-      token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
-      grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
-      scope: api://${DOWNSTREAM_CLIENT_ID}/.default
-      authentication:
-        client-id: ${AZURE_APP_CLIENT_ID}
-        client-secret: ${AZURE_APP_CLIENT_SECRET}
-        client-auth-method: client_secret_basic
+    registration:
+      kontoregister:
+        token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
+        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        scope: api://dev-fss.okonomi.sokos-kontoregister/.default
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_basic
 
 tiltaksgjennomforing:
   kontoregister:
