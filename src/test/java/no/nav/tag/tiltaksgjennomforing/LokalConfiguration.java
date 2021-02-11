@@ -11,5 +11,8 @@ import org.springframework.web.client.RestTemplate;
 @Import(TokenGeneratorConfiguration.class)
 @Configuration
 public class LokalConfiguration {
-
+  @Bean("azure")
+  RestTemplate restTemplate(){
+    return new RestTemplateBuilder().build();
+  }
 }
