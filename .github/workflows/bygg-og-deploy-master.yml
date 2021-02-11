@@ -59,7 +59,7 @@ jobs:
         run: |
           docker build --tag $IMAGE .
           echo $GITHUB_TOKEN | docker login ghcr.io -u ${{ secrets.GHCR_PUSH_USERNAME }} -p ${{ secrets.GHCR_PUSH_TOKEN }}
-          docker push $IMAGE_BASE
+          docker push $IMAGE
 
   deploy-dev:
     name: Deploy til dev
