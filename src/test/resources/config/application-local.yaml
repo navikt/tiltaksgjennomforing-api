@@ -18,28 +18,15 @@ no.nav.gcp.kafka.aiven:
 
 no.nav.security.jwt:
   issuer:
-    aad:
-      discoveryurl: https://tiltak-fakelogin.labs.nais.io/metadata?issuer=aad
-      accepted_audience: aud-aad
-      cookie_name: aad-token
-    tokenx:
-      discoveryurl: https://tiltak-fakelogin.labs.nais.io/metadata?issuer=tokenx
-      accepted_audience: aud-tokenx
-      cookie_name: tokenx-token
-  client: null
-
-no.nav.security.oidc:
-  issuers: selvbetjening, isso, system
-  issuer:
     selvbetjening:
-      discoveryurl: http://metadata-selvbetjening
+      discoveryurl: https://tiltak-fakelogin.labs.nais.io/metadata?issuer=selvbetjening
       accepted_audience: aud-selvbetjening
+      cookie_name: selvbetjening-idtoken
+
     isso:
-      discoveryurl: http://metadata-isso
+      discoveryurl: https://tiltak-fakelogin.labs.nais.io/metadata?issuer=isso
       accepted_audience: aud-isso
-    system:
-      discoveryurl: http://metadata-system
-      accepted_audience: aud-system
+      cookie_name: isso-idtoken
 
 tiltaksgjennomforing:
   kontoregister:

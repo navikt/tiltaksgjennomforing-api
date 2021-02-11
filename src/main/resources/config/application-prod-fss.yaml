@@ -14,7 +14,6 @@ spring:
         password: ${javax.net.ssl.trustStorePassword}
 
 no.nav.security.jwt:
-  issuers: selvbetjening, isso, system
   issuer:
     selvbetjening:
       discoveryurl: ${LOGINSERVICE_IDPORTEN_DISCOVERY_URL}
