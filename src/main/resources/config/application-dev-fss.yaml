@@ -25,7 +25,7 @@ no.nav.security.jwt:
       aad:
         client-id: ${AZURE_APP_CLIENT_ID}
         client-secret: ${AZURE_APP_CLIENT_SECRET}
-        authorization-grant-type: authorization_code
+        authorization-grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
         redirect-uri: '{baseUrl}/login/oauth2/code/{registrationId}'
         scope: openid, ${AZURE_APP_CLIENT_ID}/.default
       selvbetjening:
