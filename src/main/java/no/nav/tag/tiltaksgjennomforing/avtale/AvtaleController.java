@@ -6,8 +6,10 @@ import no.nav.security.token.support.core.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
+import no.nav.tag.tiltaksgjennomforing.okonomi.client.KontoregisterClient;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +32,12 @@ public class AvtaleController {
     private final InnloggingService innloggingService;
     private final EregService eregService;
     private final VeilarbArenaClient veilarbArenaClient;
+    private final KontoregisterClient KontoregisterClient;
+
+    @GetMapping(path = "/hentKontonummer", produces= MediaType.APPLICATION_JSON_VALUE)
+    public String hentKontoNummer() {
+        return KontoregisterClient.hentKontonummer();
+    }
 
     @GetMapping("/{avtaleId}")
     public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
