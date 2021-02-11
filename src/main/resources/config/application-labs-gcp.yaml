@@ -13,7 +13,6 @@ spring:
     banner-mode: "console"
 
 no.nav.security.jwt:
-  issuers: selvbetjening, isso
   issuer:
     selvbetjening:
       discoveryurl: http://tiltak-fakelogin/metadata?issuer=selvbetjening
@@ -21,7 +20,7 @@ no.nav.security.jwt:
     isso:
       discoveryurl: http://tiltak-fakelogin/metadata?issuer=isso
       accepted_audience: aud-isso
-    
+
 tiltaksgjennomforing:
   kontoregister:
     fake: true
