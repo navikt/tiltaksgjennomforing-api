@@ -6,8 +6,6 @@ on:
       - 'master'
 
 env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  IMAGE_BASE: ghcr.io/${{ github.repository }}
   IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
 
 jobs:
@@ -58,7 +56,7 @@ jobs:
       - name: Bygg, tag og push Docker-image
         run: |
           docker build --tag $IMAGE .
-          echo $GITHUB_TOKEN | docker login ghcr.io -u ${{ secrets.GHCR_PUSH_USERNAME }} -p ${{ secrets.GHCR_PUSH_TOKEN }}
+          echo ${{ secrets.GHCR_PUSH_TOKEN }} | docker login ghcr.io -u ${{ secrets.GHCR_PUSH_USERNAME }} --password-stdin
           docker push $IMAGE
 
   deploy-dev:

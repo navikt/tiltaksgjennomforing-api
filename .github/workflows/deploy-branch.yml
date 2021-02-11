@@ -3,8 +3,7 @@ on:
   repository_dispatch:
     types: [deploy-command]
 env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  IMAGE_BASE: docker.pkg.github.com/${{ github.repository }}/tiltaksgjennomforing-api
+  IMAGE_BASE: ghcr.io/${{ github.repository }}
       
 jobs:
   deploy-branch:

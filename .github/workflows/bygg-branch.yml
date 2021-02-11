@@ -7,7 +7,7 @@ on:
       - '!master'
 
 env:
-  IMAGE_BASE: docker.pkg.github.com/${{ github.repository }}/tiltaksgjennomforing-api
+  IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
 
 jobs:
   bygg:
@@ -50,9 +50,9 @@ jobs:
       - name: Bygg, tag og push Docker-image
         if: steps.sjekk-mot-master.outputs.oppdatert == 'ja'
         run: |
-          docker build --tag $IMAGE_BASE:$GITHUB_SHA .
-          echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_REPOSITORY --password-stdin
-          docker push $IMAGE_BASE
+          docker build --tag $IMAGE .
+          echo ${{ secrets.GHCR_PUSH_TOKEN }} | docker login ghcr.io -u ${{ secrets.GHCR_PUSH_USERNAME }} --password-stdin
+          docker push $IMAGE
 
       - name: Lukk gamle deployment-issues
         if: steps.sjekk-mot-master.outputs.oppdatert == 'ja'
