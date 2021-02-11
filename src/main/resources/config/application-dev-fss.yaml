@@ -22,6 +22,12 @@ no.nav.security.jwt:
       accepted_audience: ${AZURE_APP_CLIENT_ID}, api://${AZURE_APP_CLIENT_ID}
   client:
     registration:
+      aad:
+        client-id: ${AZURE_APP_CLIENT_ID}
+        client-secret: ${AZURE_APP_CLIENT_SECRET}
+        authorization-grant-type: authorization_code
+        redirect-uri: '{baseUrl}/login/oauth2/code/{registrationId}'
+        scope: openid, ${AZURE_APP_CLIENT_ID}/.default
       selvbetjening:
         discoveryurl: ${LOGINSERVICE_IDPORTEN_DISCOVERY_URL}
         accepted_audience: 0090b6e1-ffcc-4c37-bc21-049f7d1f0fe5
@@ -39,7 +45,6 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
-
 tiltaksgjennomforing:
   kontoregister:
     uri: https://sokos-kontoregister-q1.dev.adeo.no/kontoregister/api/v1/hent-kontonr-org/
