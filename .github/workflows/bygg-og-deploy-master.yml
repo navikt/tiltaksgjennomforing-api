@@ -7,8 +7,8 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  IMAGE_BASE: docker.pkg.github.com/${{ github.repository }}/tiltaksgjennomforing-api
-  IMAGE: docker.pkg.github.com/${{ github.repository }}/tiltaksgjennomforing-api:${{ github.sha }}
+  IMAGE_BASE: ghcr.io/${{ github.repository }}/tiltaksgjennomforing-api
+  IMAGE: ghcr.io/${{ github.repository }}/tiltaksgjennomforing-api:${{ github.sha }}
 
 jobs:
   bygg:
@@ -58,7 +58,7 @@ jobs:
       - name: Bygg, tag og push Docker-image
         run: |
           docker build --tag $IMAGE --tag $IMAGE_BASE:latest .
-          echo $GITHUB_TOKEN | docker login docker.pkg.github.com -u $GITHUB_REPOSITORY --password-stdin
+          echo $GITHUB_TOKEN | docker login ghcr.io -u ${{ secrets.GHCR_PUSH_USERNAME }} -p ${{ secrets.GHCR_PUSH_TOKEN }}
           docker push $IMAGE_BASE
 
   deploy-dev:
