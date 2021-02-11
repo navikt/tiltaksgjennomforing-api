@@ -5,7 +5,6 @@ import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISS
 import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISSUER_SELVBETJENING;
 import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISSUER_SYSTEM;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.when;
 
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -94,39 +93,46 @@ public class TokenUtilsTest {
     }
 
     private void vaerUinnlogget() {
-        when(contextHolder.getTokenValidationContext()).thenReturn(new TokenValidationContext(anyMap()));
+        JWTClaimsSet claimsSet = new Builder().build();
+        Map<String, JwtToken> tokenMap = new HashMap<>();
+        String tokenAsString = JwtTokenGenerator.createSignedJWT(JwkGenerator.getDefaultRSAKey(), claimsSet).serialize();
+        JwtToken token = new JwtToken(tokenAsString);
+        tokenMap.put(token.getIssuer(), token);
+        TokenValidationContext context = new TokenValidationContext(tokenMap);
+        when(contextHolder.getTokenValidationContext()).thenReturn(context);
     }
 
     private void vaerInnloggetSystem(String systemId) {
-        lagTokenValidationContext(ISSUER_SYSTEM, systemId, new HashMap<>(), null, null);
+        lagTokenValidationContext(ISSUER_SYSTEM, systemId, null, null, null);
     }
 
     private void vaerInnloggetSelvbetjening(InnloggetArbeidsgiver bruker) {
-        lagTokenValidationContext(ISSUER_SELVBETJENING, bruker.getIdentifikator().asString(), new HashMap<>(), ACR_LEVEL_4, null);
+        lagTokenValidationContext(ISSUER_SELVBETJENING, bruker.getIdentifikator().asString(), null, ACR_LEVEL_4, null);
     }
 
     private void vaerInnloggetSelvbetjeningNiva3(InnloggetArbeidsgiver bruker) {
-        lagTokenValidationContext(ISSUER_SELVBETJENING, bruker.getIdentifikator().asString(), new HashMap<>(), "Level3", null);
+        lagTokenValidationContext(ISSUER_SELVBETJENING, bruker.getIdentifikator().asString(), null, "Level3", null);
     }
 
     private void vaerInnloggetNavAnsatt(InnloggetVeileder innloggetBruker) {
-        lagTokenValidationContext(ISSUER_ISSO, "blablabla", Map.of("NAVident", innloggetBruker.getIdentifikator().asString()), null, null);
+        lagTokenValidationContext(ISSUER_ISSO, "blablabla",  innloggetBruker.getIdentifikator().asString(), null, null);
     }
 
     private void vaerInnloggetNavAnsatt(InnloggetBeslutter innloggetBruker) {
-        lagTokenValidationContext(ISSUER_ISSO, "blablabla", Map.of("NAVident", innloggetBruker.getIdentifikator().asString()), null,
+        lagTokenValidationContext(ISSUER_ISSO, "blablabla",  innloggetBruker.getIdentifikator().asString(), null,
             Arrays.asList("928636f4-fd0d-4149-978e-a6fb68bb19de", "158234a2-fd1d-4445-578e-a6fb68bb11das"));
     }
 
-    private void lagTokenValidationContext(Issuer issuer, String subject, Map<String, Object> claims, String acrLevel, List groups) {
-
+    private void lagTokenValidationContext(Issuer issuer, String subject, String navIdent, String acrLevel, List groups) {
         Date now = new Date();
         JWTClaimsSet claimsSet = new Builder()
             .subject(subject)
-            .claim("NAVident", subject)
+            .claim("NAVident", navIdent)
             .issuer(issuer.issuerName)
             .audience("aud-aad")
             .jwtID(UUID.randomUUID().toString())
+            .claim("groups", groups)
+            .claim("acr",acrLevel)
             .claim("ver", "1.0")
             .claim("auth_time", now)
             .claim("nonce", "myNonce")
@@ -134,20 +140,11 @@ public class TokenUtilsTest {
             .issueTime(now)
             .expirationTime(new Date(now.getTime() + 1000000)).build();
 
-
         String tokenAsString = JwtTokenGenerator.createSignedJWT(JwkGenerator.getDefaultRSAKey(), claimsSet).serialize();
-
         Map<String, JwtToken> tokenMap = new HashMap<>();
-
         JwtToken token = new JwtToken(tokenAsString);
         tokenMap.put(token.getIssuer(), token);
         TokenValidationContext context = new TokenValidationContext(tokenMap);
-
-
-        /*OIDCValidationContext context = new OIDCValidationContext();
-        TokenContext tokenContext = new TokenContext(issuer.issuerName, "");
-        OIDCClaims oidcClaims = new OIDCClaims(createSignedJWT(subject, 0, claims, issuer.issuerName, "audience", acrLevel, groups));
-        context.addValidatedToken(issuer.issuerName, tokenContext, oidcClaims);*/
 
         when(contextHolder.getTokenValidationContext()).thenReturn(context);
     }
