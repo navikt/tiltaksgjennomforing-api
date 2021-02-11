@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
-import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import no.nav.security.token.support.core.context.TokenValidationContext;
