@@ -7,7 +7,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class KontoregisterClient {
-
+/*
     private final String url;
     private final RestTemplate restTemplate;
 
@@ -23,4 +23,5 @@ public class KontoregisterClient {
     public String ping() {
         return restTemplate.getForObject(url, String.class);
     }
+    */
 }

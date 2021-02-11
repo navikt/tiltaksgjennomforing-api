@@ -34,11 +34,6 @@ public class AvtaleController {
     private final VeilarbArenaClient veilarbArenaClient;
     private final KontoregisterClient KontoregisterClient;
 
-    @GetMapping(path = "/hentKontonummer", produces= MediaType.APPLICATION_JSON_VALUE)
-    public String hentKontoNummer() {
-        return KontoregisterClient.hentKontonummer();
-    }
-
     @GetMapping("/{avtaleId}")
     public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
