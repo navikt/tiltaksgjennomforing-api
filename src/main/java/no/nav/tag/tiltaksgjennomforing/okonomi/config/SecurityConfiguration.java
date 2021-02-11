@@ -23,7 +23,7 @@ class SecurityConfiguration {
 
     /**
      * Create one RestTemplate per OAuth2 client entry to separate between different scopes per API
-     */
+
     @Bean("azure")
     RestTemplate downstreamResourceRestTemplate(RestTemplateBuilder restTemplateBuilder,
                                          ClientConfigurationProperties clientConfigurationProperties,
@@ -47,4 +47,5 @@ class SecurityConfiguration {
             return execution.execute(request, body);
         };
     }
+     */
 }

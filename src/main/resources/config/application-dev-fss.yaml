@@ -27,7 +27,6 @@ no.nav.security.jwt:
       discoveryurl: http://security-token-service.default.svc.nais.local/rest/v1/sts/.well-known/openid-configuration
       accepted_audience: ${tiltaksgjennomforing.audience.system}
 
-
 tiltaksgjennomforing:
   kontoregister:
     uri: https://sokos-kontoregister-q1.dev.adeo.no/kontoregister/api/v1/hent-kontonr-org/
