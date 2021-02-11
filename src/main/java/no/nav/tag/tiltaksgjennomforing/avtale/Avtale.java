@@ -277,7 +277,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
     }
 
-    public void overtaAvtale(NavIdent nyNavIdent) { // TODO Rettighetssjekk?
+    public void overtaAvtale(NavIdent nyNavIdent) {
         NavIdent gammelNavIdent = this.getVeilederNavIdent();
         this.setVeilederNavIdent(nyNavIdent);
         sistEndretNå();

@@ -127,8 +127,8 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     @Override
-    public Collection<Object> identifikatorer() {
-        return List.of(tilganger.keySet());
+    public Collection<BedriftNr> identifikatorer() {
+        return tilganger.keySet();
     }
 
     @Override

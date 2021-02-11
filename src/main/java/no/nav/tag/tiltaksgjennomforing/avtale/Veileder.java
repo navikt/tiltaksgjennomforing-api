@@ -1,11 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static java.util.Collections.emptyList;
-import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
-
-import java.time.Instant;
-import java.util.List;
-import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
@@ -16,6 +10,13 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6Eller7Exception;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.Set;
+
+import static java.util.Collections.emptyList;
+import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
 public class Veileder extends Avtalepart<NavIdent> {
     static String tekstAvtaleVenterPaaDinGodkjenning = "Før du godkjenner avtalen må du sjekke at alt er i orden og innholdet er riktig.";
@@ -176,6 +177,7 @@ public class Veileder extends Avtalepart<NavIdent> {
     }
 
     public void overtaAvtale(Avtale avtale) {
+        sjekkTilgang(avtale);
         if (this.getIdentifikator().equals(avtale.getVeilederNavIdent())) {
             throw new ErAlleredeVeilederException();
         }
