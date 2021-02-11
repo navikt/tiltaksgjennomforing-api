@@ -18,6 +18,7 @@ import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
 import no.nav.tag.tiltaksgjennomforing.metrikker.MetrikkRegistrering;
+import no.nav.tag.tiltaksgjennomforing.varsel.VarselRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,14 +38,17 @@ public class AvtaleRepositoryTest {
     @Autowired
     private HendelseloggRepository hendelseloggRepository;
 
+    @Autowired
+    private VarselRepository varselRepository;
+
     @MockBean
     private MetrikkRegistrering metrikkRegistrering;
 
     @BeforeEach
     public void setup() {
         hendelseloggRepository.deleteAll();
+        varselRepository.deleteAll();
         avtaleRepository.deleteAll();
-
     }
 
     @Test
