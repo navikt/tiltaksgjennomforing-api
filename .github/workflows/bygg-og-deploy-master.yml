@@ -7,7 +7,7 @@ on:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  IMAGE_BASE: ghcr.io/${{ github.repository }}/tiltaksgjennomforing-api
+  IMAGE_BASE: ghcr.io/${{ github.repository }}
   IMAGE: ghcr.io/${{ github.repository }}/tiltaksgjennomforing-api:${{ github.sha }}
 
 jobs:
