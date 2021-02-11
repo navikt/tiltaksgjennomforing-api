@@ -1,0 +1,45 @@
+{
+  "mappings": [
+    {
+      "priority": 1,
+      "request": {
+        "method": "POST",
+        "urlPath": "/kontoregister/api/v1/hent-kontonr-org/990983666"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept":"application/json",
+          "Nav-consumer-Id":"tiltaksgjennomforing-api",
+          "Nav-Call-Id":"hoppla1"
+        },
+        "jsonBody":
+        {
+          "mottaker": "889640782",
+          "kontonr": "10000008162"
+        }
+      }
+    },
+    {
+      "priority": 2,
+      "request": {
+        "method": "POST",
+        "urlPath": "/kontoregister/api/v1/hent-kontonr-org/111234567"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept":"application/json",
+          "Nav-consumer-Id":"tiltaksgjennomforing-api",
+          "Nav-Call-Id":"hoppla1"
+        },
+        "jsonBody":
+        {
+          "feilmelding": "Organisasjonsnummer ikke funnet i kontoregister"
+        }
+      }
+    }
+  ]
+}

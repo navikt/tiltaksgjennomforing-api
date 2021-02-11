@@ -34,11 +34,6 @@ public class AvtaleController {
     private final VeilarbArenaClient veilarbArenaClient;
     private final KontoregisterClient KontoregisterClient;
 
-    @GetMapping(path = "/hentKontonummer", produces= MediaType.APPLICATION_JSON_VALUE)
-    public String hentKontoNummer() {
-        return KontoregisterClient.hentKontonummer();
-    }
-
     @GetMapping("/{avtaleId}")
     public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
@@ -110,6 +105,14 @@ public class AvtaleController {
     public List<Avtale> hentAlleAvtalerForMinSideArbeidsgiver(@RequestParam("bedriftNr") BedriftNr bedriftNr) {
         Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
         return arbeidsgiver.hentAvtalerForMinsideArbeidsgiver(avtaleRepository, bedriftNr);
+    }
+
+    @PostMapping(path = "/{avtaleId}/set-kontonummer-for-arbeidsgiver")
+    public ResponseEntity<?>  hentKontoNummer(@PathVariable("avtaleId") UUID avtaleId) {
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        avtale.setArbeidsgiverKontonummer(KontoregisterClient.hentKontonummer());
+        avtaleRepository.save(avtale);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/opprett-som-arbeidsgiver")
