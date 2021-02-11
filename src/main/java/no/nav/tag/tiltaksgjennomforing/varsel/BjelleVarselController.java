@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @Protected
 @RestController
-@RequestMapping("/varsler")
+@RequestMapping({"/varsler", "/bjelle-varsler"})
 @Timed
 @RequiredArgsConstructor
 public class BjelleVarselController {
