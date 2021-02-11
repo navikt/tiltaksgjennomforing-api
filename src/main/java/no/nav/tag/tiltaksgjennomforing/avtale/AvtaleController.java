@@ -6,10 +6,9 @@ import no.nav.security.token.support.core.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
-import no.nav.tag.tiltaksgjennomforing.okonomi.client.KontoregisterClient;
+import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterClient;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -108,9 +107,9 @@ public class AvtaleController {
     }
 
     @PostMapping(path = "/{avtaleId}/set-kontonummer-for-arbeidsgiver")
-    public ResponseEntity<?>  hentKontoNummer(@PathVariable("avtaleId") UUID avtaleId) {
+    public ResponseEntity<?>  oppdatterBedriftKontonummer(@PathVariable("avtaleId") UUID avtaleId) {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        avtale.setArbeidsgiverKontonummer(KontoregisterClient.hentKontonummer());
+        avtale.setArbeidsgiverKontonummer(KontoregisterClient.hentKontonummer(avtale.getBedriftNr().asString()));
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();
     }

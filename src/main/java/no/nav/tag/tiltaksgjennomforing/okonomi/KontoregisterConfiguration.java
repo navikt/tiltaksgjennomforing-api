@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.okonomi.config;
+package no.nav.tag.tiltaksgjennomforing.okonomi;
 
 import no.nav.security.token.support.client.core.ClientProperties;
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenResponse;
@@ -19,7 +19,7 @@ import java.util.Optional;
 @EnableOAuth2Client(cacheEnabled = true)
 @Configuration
 @Profile(Miljø.DEV_FSS)
-class SecurityConfiguration {
+class KontoregisterConfiguration {
 
     /*
      * Create one RestTemplate per OAuth2 client entry to separate between different scopes per API
