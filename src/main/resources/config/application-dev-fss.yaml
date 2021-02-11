@@ -16,11 +16,10 @@ spring:
         password: ${javax.net.ssl.trustStorePassword}
 
 no.nav.security.jwt:
-  issuers: selvbetjening, isso, system
   issuer:
     aad:
-      discoveryurl: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/v2.0/.well-known/openid-configuration
-      accepted_audience: ${ACCEPTED_AUDIENCE}
+      discoveryurl: ${AZURE_APP_WELL_KNOWN_URL}
+      accepted_audience: ${AZURE_APP_CLIENT_ID}, api://${AZURE_APP_CLIENT_ID}
   client:
     registration:
       selvbetjening:
