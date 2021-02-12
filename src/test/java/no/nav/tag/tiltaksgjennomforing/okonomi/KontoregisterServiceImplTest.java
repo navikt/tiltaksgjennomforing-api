@@ -14,19 +14,19 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 @ActiveProfiles({ Miljø.LOCAL, "wiremock"})
 @DirtiesContext
-public class KontoregisterClientTest {
+public class KontoregisterServiceImplTest {
     @Autowired
-    private KontoregisterClient KontoregisterClient;
+    private KontoregisterService KontoregisterService;
 
     @Test
     public void hentKontonummer__skal_returnere_verdi_fra_kall() {
-        String kontonummerTilbake = KontoregisterClient.hentKontonummer("990983666");
+        String kontonummerTilbake = KontoregisterService.hentKontonummer("990983666");
         assertThat(kontonummerTilbake).isEqualTo("10000008162");
     }
 
     @Test
     public void hentKontonummer__skal_returnere_feilmelding() {
-        assertThatThrownBy(() ->  KontoregisterClient.hentKontonummer("111234567"))
+        assertThatThrownBy(() ->  KontoregisterService.hentKontonummer("111234567"))
             .isInstanceOf(KontoregisterFeilException.class);
     }
 }

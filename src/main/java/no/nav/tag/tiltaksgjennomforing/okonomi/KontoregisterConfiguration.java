@@ -7,6 +7,7 @@ import no.nav.security.token.support.client.spring.ClientConfigurationProperties
 import no.nav.security.token.support.client.spring.oauth2.EnableOAuth2Client;
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.utils.ConditionalOnPropertyNotEmpty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -19,13 +20,8 @@ import java.util.Optional;
 
 @EnableOAuth2Client(cacheEnabled = true)
 @Configuration
+@ConditionalOnPropertyNotEmpty("tiltaksgjennomforing.kontoregister.azureConfig")
 class KontoregisterConfiguration {
-
-    @ConditionalOnProperty("tiltaksgjennomforing.kontoregister.fake")
-    @Bean("azure")
-    RestTemplate restTemplate(){
-        return new RestTemplateBuilder().build();
-    }
 
     /*
      * Create one RestTemplate per OAuth2 client entry to separate between different scopes per API

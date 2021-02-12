@@ -6,7 +6,8 @@ import no.nav.security.token.support.core.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
-import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterClient;
+import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
+import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterServiceImpl;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class AvtaleController {
     private final InnloggingService innloggingService;
     private final EregService eregService;
     private final VeilarbArenaClient veilarbArenaClient;
-    private final KontoregisterClient kontoregisterClient;
+    private final KontoregisterService kontoregisterService;
 
     @GetMapping("/{avtaleId}")
     public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
@@ -109,7 +110,7 @@ public class AvtaleController {
     @PostMapping(path = "/{avtaleId}/set-kontonummer-for-arbeidsgiver-fra-kontoregister")
     public ResponseEntity<?> oppdatterBedriftKontonummer(@PathVariable("avtaleId") UUID avtaleId) {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        avtale.setArbeidsgiverKontonummer(kontoregisterClient.hentKontonummer("990983666"));
+        avtale.setArbeidsgiverKontonummer(kontoregisterService.hentKontonummer("990983666"));
         Avtale lagretAvtale = avtaleRepository.save(avtale);
         return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
     }

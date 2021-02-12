@@ -6,6 +6,7 @@ import java.net.URL;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KontoregisterFeilException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.CorrelationIdSupplier;
+import no.nav.tag.tiltaksgjennomforing.utils.ConditionalOnPropertyNotEmpty;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -15,13 +16,14 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 @Slf4j
-public class KontoregisterClient {
+@ConditionalOnPropertyNotEmpty("tiltaksgjennomforing.kontoregister.realClient")
+public class KontoregisterServiceImpl implements KontoregisterService{
 
     private final String url;
     private final RestTemplate restTemplate;
 
     //TODO: Hent fra properties object
-    public KontoregisterClient(@Value("${tiltaksgjennomforing.kontoregister.uri}") String url, @Qualifier("azure") RestTemplate restTemplate) {
+    public KontoregisterServiceImpl(@Value("${tiltaksgjennomforing.kontoregister.uri}") String url, @Qualifier("azure") RestTemplate restTemplate) {
         this.url = url;
         this.restTemplate = restTemplate;
     }
