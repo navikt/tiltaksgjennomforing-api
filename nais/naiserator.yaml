@@ -50,10 +50,6 @@ spec:
   prometheus:
     enabled: true
     path: /tiltaksgjennomforing-api/internal/actuator/prometheus
-  accessPolicy:
-    outbound:
-      rules:
-        - application: sokos-kontoregister
   {{#if labs}}
   accessPolicy:
     inbound:
