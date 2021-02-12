@@ -35,7 +35,7 @@ public class KontoregisterClient {
             return response.getKontonr();
 
         } catch (RestClientException exception) {
-            log.error("Feil fra kontoregister med request-url: " + url, exception);
+            log.error(String.format("Feil fra kontoregister med request-url: %s/%s", url,bedriftNr), exception);
             throw new KontoregisterFeilException();
         }
     }
@@ -47,9 +47,4 @@ public class KontoregisterClient {
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new HttpEntity(headers);
     }
-
-    public String ping() {
-        return restTemplate.getForObject(url, String.class);
-    }
-
 }
