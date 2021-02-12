@@ -50,7 +50,7 @@ tiltaksgjennomforing:
     max-lifetime: 300000
   altinn-tilgangsstyring:
     uri: https://api-gw-q1.adeo.no
-    proxyUri: https://arbeidsgiver.nais.preprod.local/altinn-rettigheter-proxy
+    proxyUri: https://arbeidsgiver.dev.intern.nav.no/altinn-rettigheter-proxy
     beOmRettighetBaseUrl: https://arbeidsgiver-q.nav.no/min-side-arbeidsgiver/?fragment=be-om-tilgang
     ltsMidlertidigServiceCode: 5516
     ltsMidlertidigServiceEdition: 1
