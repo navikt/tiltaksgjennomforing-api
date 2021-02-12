@@ -48,7 +48,6 @@ public class KontoregisterClient {
         return new HttpEntity(headers);
     }
 
-
     public String ping() {
         return restTemplate.getForObject(url, String.class);
     }

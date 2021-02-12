@@ -31,7 +31,7 @@ public class AvtaleController {
     private final InnloggingService innloggingService;
     private final EregService eregService;
     private final VeilarbArenaClient veilarbArenaClient;
-    private final KontoregisterClient KontoregisterClient;
+    private final KontoregisterClient kontoregisterClient;
 
     @GetMapping("/{avtaleId}")
     public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
@@ -106,10 +106,10 @@ public class AvtaleController {
         return arbeidsgiver.hentAvtalerForMinsideArbeidsgiver(avtaleRepository, bedriftNr);
     }
 
-    @PostMapping(path = "/{avtaleId}/set-kontonummer-for-arbeidsgiver")
+    @PostMapping(path = "/{avtaleId}/set-kontonummer-for-arbeidsgiver-fra-kontoregister")
     public ResponseEntity<?> oppdatterBedriftKontonummer(@PathVariable("avtaleId") UUID avtaleId) {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        avtale.setArbeidsgiverKontonummer(KontoregisterClient.hentKontonummer("990983666"));
+        avtale.setArbeidsgiverKontonummer(kontoregisterClient.hentKontonummer("990983666"));
         Avtale lagretAvtale = avtaleRepository.save(avtale);
         return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
     }

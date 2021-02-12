@@ -19,6 +19,7 @@ import java.util.Optional;
 @EnableOAuth2Client(cacheEnabled = true)
 @Configuration
 @Profile(Miljø.DEV_FSS)
+//TODO Conditional property
 class KontoregisterConfiguration {
 
     /*
