@@ -1,5 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.okonomi;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KontoregisterFeilException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.CorrelationIdSupplier;
@@ -23,18 +26,18 @@ public class KontoregisterClient {
         this.restTemplate = restTemplate;
     }
 
-    public String hentKontonummer(String bedriftNr) {
+    public String hentKontonummer(String bedriftNr)  {
         try {
-            KontoregisterResponse response = restTemplate.getForObject(String.format("%s/%s", url,bedriftNr),  KontoregisterResponse.class);
+            ResponseEntity<KontoregisterResponse> response = restTemplate.exchange(new URI(String.format("%s/%s", url,bedriftNr)),HttpMethod.GET,lagRequest(),  KontoregisterResponse.class);
 
-            if (response != null && response.getFeilmelding() != null) {
-                log.error("Kontoregister svarte med feil for bedrift : " + bedriftNr, response.getFeilmelding());
+            if (response.getBody() != null && response.getBody().getFeilmelding() != null) {
+                log.error("Kontoregister svarte med feil for bedrift : " + bedriftNr, response.getBody().getFeilmelding());
                 throw new KontoregisterFeilException();
             }
 
-            return response.getKontonr();
+            return response.getBody().getKontonr();
 
-        } catch (RestClientException exception) {
+        } catch (RestClientException | URISyntaxException exception) {
             log.error(String.format("Feil fra kontoregister med request-url: %s/%s", url,bedriftNr), exception);
             throw new KontoregisterFeilException();
         }
