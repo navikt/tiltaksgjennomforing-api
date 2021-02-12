@@ -39,7 +39,7 @@ no.nav.security.jwt:
 
 tiltaksgjennomforing:
   kontoregister:
-    uri: https://sokos-kontoregister-q1.dev.adeo.no/kontoregister/api/v1/hent-kontonr-org
+    uri: http://sokos-kontoregister/kontoregister/api/v1/hent-kontonr-org
     consumer-id: ${tiltaksgjennomforing.serviceuser.username}
   database:
     database-navn: tiltaksgjennomforing-preprod
