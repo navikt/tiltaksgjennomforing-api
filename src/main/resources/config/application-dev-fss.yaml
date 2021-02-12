@@ -41,6 +41,7 @@ tiltaksgjennomforing:
   kontoregister:
     uri: https://sokos-kontoregister-q1.dev.adeo.no/kontoregister/api/v1/hent-kontonr-org
     consumer-id: ${tiltaksgjennomforing.serviceuser.username}
+    fake: false
   database:
     database-navn: tiltaksgjennomforing-preprod
     database-url: ${spring.datasource.url}
