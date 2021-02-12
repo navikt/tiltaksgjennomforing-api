@@ -22,7 +22,7 @@
       }
     },
     {
-      "priority": 2,
+      "priority": 1,
       "request": {
         "method": "POST",
         "urlPath": "/kontoregister/api/v1/hent-kontonr-org/111234567"

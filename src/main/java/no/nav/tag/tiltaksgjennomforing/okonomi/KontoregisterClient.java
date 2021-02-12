@@ -1,10 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.okonomi;
 
-
-import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterResponse;
-import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
+import no.nav.tag.tiltaksgjennomforing.exceptions.KontoregisterFeilException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -26,10 +23,17 @@ public class KontoregisterClient {
 
     public String hentKontonummer(String bedriftNr) {
         try {
-        return restTemplate.postForObject(url + "/990983666", lagRequest(), KontoregisterResponse.class).getKontonr();
+            KontoregisterResponse response = restTemplate.postForObject(url + "/" +bedriftNr, lagRequest(), KontoregisterResponse.class);
+
+            if(response.getKontonr() == null && !response.getFeilmelding().isEmpty()){
+                log.error("Kontoregister svarte med feil for bedrift : " + bedriftNr, response.getFeilmelding());
+                throw new KontoregisterFeilException();
+            }
+
+            return response.getKontonr();
         } catch (RestClientException exception) {
             log.error("Feil fra kontoregister med request-url: " + url, exception);
-            throw exception;
+            throw new KontoregisterFeilException();
         }
 
     }
