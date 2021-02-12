@@ -10,9 +10,7 @@
         "status": 200,
         "headers": {
           "Content-Type": "application/json",
-          "Accept":"application/json",
-          "Nav-consumer-Id":"tiltaksgjennomforing-api",
-          "Nav-Call-Id":"hoppla1"
+          "Accept":"application/json"
         },
         "jsonBody":
         {
@@ -31,9 +29,7 @@
         "status": 200,
         "headers": {
           "Content-Type": "application/json",
-          "Accept":"application/json",
-          "Nav-consumer-Id":"tiltaksgjennomforing-api",
-          "Nav-Call-Id":"hoppla1"
+          "Accept":"application/json"
         },
         "jsonBody":
         {

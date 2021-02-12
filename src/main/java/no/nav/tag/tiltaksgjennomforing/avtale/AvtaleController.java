@@ -107,7 +107,7 @@ public class AvtaleController {
     }
 
     @PostMapping(path = "/{avtaleId}/set-kontonummer-for-arbeidsgiver")
-    public ResponseEntity<?>  oppdatterBedriftKontonummer(@PathVariable("avtaleId") UUID avtaleId) {
+    public ResponseEntity<?> oppdatterBedriftKontonummer(@PathVariable("avtaleId") UUID avtaleId) {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         avtale.setArbeidsgiverKontonummer(KontoregisterClient.hentKontonummer("990983666"));
         Avtale lagretAvtale = avtaleRepository.save(avtale);
