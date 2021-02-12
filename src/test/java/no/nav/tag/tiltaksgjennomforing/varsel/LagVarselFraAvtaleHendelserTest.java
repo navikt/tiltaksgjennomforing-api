@@ -2,7 +2,10 @@ package no.nav.tag.tiltaksgjennomforing.varsel;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
 import no.nav.tag.tiltaksgjennomforing.varsel.oppgave.LagGosysVarselLytter;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,8 +29,17 @@ class LagVarselFraAvtaleHendelserTest {
     AvtaleRepository avtaleRepository;
     @Autowired
     VarselRepository varselRepository;
+    @Autowired
+    HendelseloggRepository hendelseloggRepository;
     @MockBean
     LagGosysVarselLytter lagGosysVarselLytter;
+
+    @BeforeEach
+    void setUp() {
+        varselRepository.deleteAll();
+        hendelseloggRepository.deleteAll();
+        avtaleRepository.deleteAll();
+    }
 
     @Test
     void test_alt() {
