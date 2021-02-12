@@ -10,7 +10,7 @@ public enum VarslbarHendelseType {
     GODKJENT_AV_ARBEIDSGIVER("Avtale er godkjent av arbeidsgiver"),
     GODKJENT_AV_VEILEDER("Avtale er godkjent av veileder"),
     GODKJENT_AV_DELTAKER("Avtale er godkjent av deltaker"),
-    GODKJENT_PAA_VEGNE_AV("Avtalen ble godkjent på vegne av deltaker"),
+    GODKJENT_PAA_VEGNE_AV("Veileder godkjente avtalen på vegne av seg selv og deltaker"),
     GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER("Avtalens godkjenninger er opphevet av arbeidsgiver"),
     GODKJENNINGER_OPPHEVET_AV_VEILEDER("Avtalens godkjenninger er opphevet av veileder"),
     DELT_MED_DELTAKER("Avtale delt med deltaker"),
@@ -22,8 +22,8 @@ public enum VarslbarHendelseType {
     OPPRETTET_AV_ARBEIDSGIVER("Avtale er opprettet av arbeidsgiver"),
     NY_VEILEDER("Avtale tildelt ny veileder"),
     AVTALE_FORDELT("Avtale tildelt veileder"),
-    TILSKUDDSPERIODE_AVSLATT("Tilskuddsperioden har blitt sendt i retur av "),
-    TILSKUDDSPERIODE_GODKJENT("Tilskuddsperioden har blitt godkjent av beslutter");
+    TILSKUDDSPERIODE_AVSLATT("Tilskuddsperiode har blitt sendt i retur av "),
+    TILSKUDDSPERIODE_GODKJENT("Tilskuddsperiode har blitt godkjent av beslutter");
 
     private final String tekst;
 
