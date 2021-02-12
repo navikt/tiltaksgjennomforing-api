@@ -3,8 +3,8 @@
     {
       "priority": 1,
       "request": {
-        "method": "POST",
-        "urlPath": "/kontoregister/api/v1/hent-kontonr-org/889640782"
+        "method": "GET",
+        "urlPath": "/kontoregister/api/v1/hent-kontonr-org/990983666"
       },
       "response": {
         "status": 200,
@@ -22,7 +22,7 @@
     {
       "priority": 1,
       "request": {
-        "method": "POST",
+        "method": "GET",
         "urlPath": "/kontoregister/api/v1/hent-kontonr-org/111234567"
       },
       "response": {

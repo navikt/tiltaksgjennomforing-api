@@ -20,7 +20,7 @@ public class KontoregisterClientTest {
 
     @Test
     public void hentKontonummer__skal_returnere_verdi_fra_kall() {
-        String kontonummerTilbake = KontoregisterClient.hentKontonummer("889640782");
+        String kontonummerTilbake = KontoregisterClient.hentKontonummer("990983666");
         assertThat(kontonummerTilbake).isEqualTo("10000008162");
     }
 

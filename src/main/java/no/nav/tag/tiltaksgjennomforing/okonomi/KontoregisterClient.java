@@ -25,7 +25,7 @@ public class KontoregisterClient {
 
     public String hentKontonummer(String bedriftNr) {
         try {
-            KontoregisterResponse response = restTemplate.postForObject(String.format("%s/%s", url,bedriftNr), lagRequest(), KontoregisterResponse.class);
+            KontoregisterResponse response = restTemplate.getForObject(String.format("%s/%s", url,bedriftNr),  KontoregisterResponse.class);
 
             if (response != null && response.getFeilmelding() != null) {
                 log.error("Kontoregister svarte med feil for bedrift : " + bedriftNr, response.getFeilmelding());
