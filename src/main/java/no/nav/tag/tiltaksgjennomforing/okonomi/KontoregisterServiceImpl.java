@@ -19,18 +19,18 @@ import org.springframework.web.client.RestTemplate;
 @ConditionalOnPropertyNotEmpty("tiltaksgjennomforing.kontoregister.realClient")
 public class KontoregisterServiceImpl implements KontoregisterService{
 
-    private final String url;
+    private final KontoregisterProperties kontoregisterProperties;
     private final RestTemplate restTemplate;
 
     //TODO: Hent fra properties object
-    public KontoregisterServiceImpl(@Value("${tiltaksgjennomforing.kontoregister.uri}") String url, @Qualifier("azure") RestTemplate restTemplate) {
-        this.url = url;
+    public KontoregisterServiceImpl(KontoregisterProperties kontoregisterProperties, @Qualifier("azure") RestTemplate restTemplate) {
+        this.kontoregisterProperties = kontoregisterProperties;
         this.restTemplate = restTemplate;
     }
 
     public String hentKontonummer(String bedriftNr)  {
         try {
-            ResponseEntity<KontoregisterResponse> response = restTemplate.exchange(new URI(String.format("%s/%s", url,bedriftNr)),HttpMethod.GET,lagRequest(),  KontoregisterResponse.class);
+            ResponseEntity<KontoregisterResponse> response = restTemplate.exchange(new URI(String.format("%s/%s", kontoregisterProperties.getUri(),bedriftNr)),HttpMethod.GET,lagRequest(),  KontoregisterResponse.class);
 
             if (response.getBody() != null && response.getBody().getFeilmelding() != null) {
                 log.error("Kontoregister svarte med feil for bedrift : " + bedriftNr, response.getBody().getFeilmelding());
@@ -40,14 +40,14 @@ public class KontoregisterServiceImpl implements KontoregisterService{
             return response.getBody().getKontonr();
 
         } catch (RestClientException | URISyntaxException exception) {
-            log.error(String.format("Feil fra kontoregister med request-url: %s/%s", url,bedriftNr), exception);
+            log.error(String.format("Feil fra kontoregister med request-url: %s/%s", kontoregisterProperties.getUri(),bedriftNr), exception);
             throw new KontoregisterFeilException();
         }
     }
 
     private HttpEntity lagRequest(){
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Nav-consumer-Id", "tiltaksgjennomforing-api");
+        headers.set("Nav-consumer-Id", kontoregisterProperties.getConsumerId());
         headers.set("Nav-Call-Id", CorrelationIdSupplier.get());
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new HttpEntity(headers);
