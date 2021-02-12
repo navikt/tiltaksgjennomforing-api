@@ -30,7 +30,7 @@ no.nav.security.jwt:
     registration:
       kontoregister:
         token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
-        grant-type: urn:ietf:params:oauth:grant-type:jwt-bearer
+        grant-type: client_credentials
         scope: api://dev-fss.okonomi.sokos-kontoregister/.default
         authentication:
           client-id: ${AZURE_APP_CLIENT_ID}
