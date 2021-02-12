@@ -17,6 +17,11 @@ public class VarslbarHendelseLytter {
     }
 
     @EventListener
+    public void avtaleOpprettetAvArbeidsgiver(AvtaleOpprettetAvArbeidsgiver event) {
+        varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.OPPRETTET_AV_ARBEIDSGIVER));
+    }
+
+    @EventListener
     public void avtaleDeltMedAvtalepart(AvtaleDeltMedAvtalepart event) {
         if (event.getAvtalepart() == Avtalerolle.ARBEIDSGIVER) {
             varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.DELT_MED_ARBEIDSGIVER));
@@ -27,7 +32,12 @@ public class VarslbarHendelseLytter {
 
     @EventListener
     public void tilskuddsperiodeAvslått(TilskuddsperiodeAvslått event) {
-         varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.TILSKUDDSPERIODE_AVSLATT));
+        varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.TILSKUDDSPERIODE_AVSLATT));
+    }
+
+    @EventListener
+    public void tilskuddsperiodeGodkjent(TilskuddsperiodeGodkjent event) {
+        varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.TILSKUDDSPERIODE_GODKJENT));
     }
 
     @EventListener
@@ -63,5 +73,30 @@ public class VarslbarHendelseLytter {
     @EventListener
     public void godkjentPaVegneAv(GodkjentPaVegneAv event) {
         varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.GODKJENT_PAA_VEGNE_AV));
+    }
+
+    @EventListener
+    public void nyVeileder(AvtaleNyVeileder event) {
+        varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.NY_VEILEDER));
+    }
+
+    @EventListener
+    public void fordelt(AvtaleOpprettetAvArbeidsgiverErFordelt event) {
+        varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.AVTALE_FORDELT));
+    }
+
+    @EventListener
+    public void avbrutt(AvbruttAvVeileder event) {
+        varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.AVBRUTT));
+    }
+
+    @EventListener
+    public void låstOpp(AvtaleLåstOpp event) {
+        varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.LÅST_OPP));
+    }
+
+    @EventListener
+    public void gjenopprettet(AvtaleGjenopprettet event) {
+        varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.GJENOPPRETTET));
     }
 }
