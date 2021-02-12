@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @Protected
 @RestController
-@RequestMapping("/varsler-ny")
+@RequestMapping("/varsler")
 @Timed
 @RequiredArgsConstructor
 public class VarselController {
