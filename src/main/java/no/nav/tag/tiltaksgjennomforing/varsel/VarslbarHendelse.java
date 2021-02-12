@@ -38,14 +38,4 @@ public class VarslbarHendelse extends AbstractAggregateRoot<VarslbarHendelse> {
         varslbarHendelse.registerEvent(new VarslbarHendelseOppstaatt(avtale, varslbarHendelse, gamleVerdier));
         return varslbarHendelse;
     }
-
-    public void settIdOgOpprettetTidspunkt() {
-        if (id == null) {
-            id = UUID.randomUUID();
-        }
-        if (tidspunkt == null) {
-            tidspunkt = LocalDateTime.now();
-        }
-    }
-
 }
