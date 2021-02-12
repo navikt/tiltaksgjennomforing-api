@@ -170,11 +170,11 @@ public class TestData {
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setDeltakerFornavn("Dagny");
         endreAvtale.setDeltakerEtternavn("Deltaker");
-        endreAvtale.setDeltakerTlf("22334455");
+        endreAvtale.setDeltakerTlf("92334455");
         endreAvtale.setBedriftNavn("Pers butikk");
         endreAvtale.setArbeidsgiverFornavn("Per");
         endreAvtale.setArbeidsgiverEtternavn("Kremmer");
-        endreAvtale.setArbeidsgiverTlf("33333333");
+        endreAvtale.setArbeidsgiverTlf("43333333");
         endreAvtale.setVeilederFornavn("Vera");
         endreAvtale.setVeilederEtternavn("Veileder");
         endreAvtale.setVeilederTlf("44444444");

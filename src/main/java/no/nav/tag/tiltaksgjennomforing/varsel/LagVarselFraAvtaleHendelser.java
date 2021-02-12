@@ -50,19 +50,19 @@ public class LagVarselFraAvtaleHendelser {
 
     @EventListener
     public void avtaleEndret(AvtaleEndret event) {
-        VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.ENDRET);
-        varselRepository.saveAll(List.of(factory.veileder(), factory.arbeidsgiver()));
+        VarselFactory factory = new VarselFactory(event.getAvtale(), event.getUtfortAv(), VarslbarHendelseType.ENDRET);
+        varselRepository.saveAll(List.of(factory.veileder(), factory.arbeidsgiver(), factory.deltaker()));
     }
 
     @EventListener
     public void godkjenningerOpphevetAvArbeidsgiver(GodkjenningerOpphevetAvArbeidsgiver event) {
-        VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER);
+        VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.ARBEIDSGIVER, VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER);
         varselRepository.saveAll(List.of(factory.arbeidsgiver(), factory.deltaker(), factory.veileder()));
     }
 
     @EventListener
     public void godkjenningerOpphevetAvVeileder(GodkjenningerOpphevetAvVeileder event) {
-        VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.GODKJENT_AV_VEILEDER);
+        VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER);
         varselRepository.saveAll(List.of(factory.arbeidsgiver(), factory.deltaker(), factory.veileder()));
     }
 
@@ -74,13 +74,13 @@ public class LagVarselFraAvtaleHendelser {
 
     @EventListener
     public void godkjentAvArbeidsgiver(GodkjentAvArbeidsgiver event) {
-        VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.ARBEIDSGIVER, VarslbarHendelseType.GODKJENT_AV_DELTAKER);
+        VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.ARBEIDSGIVER, VarslbarHendelseType.GODKJENT_AV_ARBEIDSGIVER);
         varselRepository.saveAll(List.of(factory.deltaker(), factory.veileder(), factory.arbeidsgiver()));
     }
 
     @EventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
-        VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.GODKJENT_AV_DELTAKER);
+        VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.GODKJENT_AV_VEILEDER);
         varselRepository.saveAll(List.of(factory.deltaker(), factory.veileder(), factory.arbeidsgiver()));
     }
 
