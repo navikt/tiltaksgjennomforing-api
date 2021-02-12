@@ -14,27 +14,15 @@ public class VarselFactory {
         this.utførtAv = utførtAv;
     }
 
-    public Varsel deltaker(boolean bjelle) {
-        return Varsel.nyttVarsel(avtale.getDeltakerFnr(), bjelle, avtale, Avtalerolle.DELTAKER, utførtAv, hendelseType, avtale.getId());
-    }
-
-    public Varsel arbeidsgiver(boolean bjelle) {
-        return Varsel.nyttVarsel(avtale.getBedriftNr(), bjelle, avtale, Avtalerolle.ARBEIDSGIVER, utførtAv, hendelseType, avtale.getId());
-    }
-
-    public Varsel veileder(boolean bjelle) {
-        return Varsel.nyttVarsel(avtale.getVeilederNavIdent(), bjelle, avtale, Avtalerolle.VEILEDER, utførtAv, hendelseType, avtale.getId());
-    }
-
     public Varsel deltaker() {
-        return Varsel.nyttVarsel(avtale.getDeltakerFnr(), utførtAv == Avtalerolle.DELTAKER, avtale, Avtalerolle.DELTAKER, utførtAv, hendelseType, avtale.getId());
+        return Varsel.nyttVarsel(avtale.getDeltakerFnr(), utførtAv != Avtalerolle.DELTAKER, avtale, Avtalerolle.DELTAKER, utførtAv, hendelseType, avtale.getId());
     }
 
     public Varsel arbeidsgiver() {
-        return Varsel.nyttVarsel(avtale.getBedriftNr(), utførtAv == Avtalerolle.ARBEIDSGIVER, avtale, Avtalerolle.ARBEIDSGIVER, utførtAv, hendelseType, avtale.getId());
+        return Varsel.nyttVarsel(avtale.getBedriftNr(), utførtAv != Avtalerolle.ARBEIDSGIVER, avtale, Avtalerolle.ARBEIDSGIVER, utførtAv, hendelseType, avtale.getId());
     }
 
     public Varsel veileder() {
-        return Varsel.nyttVarsel(avtale.getVeilederNavIdent(), utførtAv == Avtalerolle.VEILEDER, avtale, Avtalerolle.VEILEDER, utførtAv, hendelseType, avtale.getId());
+        return Varsel.nyttVarsel(avtale.getVeilederNavIdent(), utførtAv != Avtalerolle.VEILEDER, avtale, Avtalerolle.VEILEDER, utførtAv, hendelseType, avtale.getId());
     }
 }

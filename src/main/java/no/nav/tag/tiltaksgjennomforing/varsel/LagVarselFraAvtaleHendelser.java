@@ -57,16 +57,13 @@ public class LagVarselFraAvtaleHendelser {
     @EventListener
     public void godkjenningerOpphevetAvArbeidsgiver(GodkjenningerOpphevetAvArbeidsgiver event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER);
-        boolean varGodkjentAvDeltaker = event.getGamleVerdier().isGodkjentAvDeltaker();
-        varselRepository.saveAll(List.of(factory.arbeidsgiver(), factory.deltaker(varGodkjentAvDeltaker), factory.veileder()));
+        varselRepository.saveAll(List.of(factory.arbeidsgiver(), factory.deltaker(), factory.veileder()));
     }
 
     @EventListener
     public void godkjenningerOpphevetAvVeileder(GodkjenningerOpphevetAvVeileder event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.GODKJENT_AV_VEILEDER);
-        boolean varGodkjentAvDeltaker = event.getGamleVerdier().isGodkjentAvDeltaker();
-        boolean varGodkjentAvArbeidsgiver = event.getGamleVerdier().isGodkjentAvDeltaker();
-        varselRepository.saveAll(List.of(factory.arbeidsgiver(varGodkjentAvArbeidsgiver), factory.deltaker(varGodkjentAvDeltaker), factory.veileder()));
+        varselRepository.saveAll(List.of(factory.arbeidsgiver(), factory.deltaker(), factory.veileder()));
     }
 
     @EventListener
