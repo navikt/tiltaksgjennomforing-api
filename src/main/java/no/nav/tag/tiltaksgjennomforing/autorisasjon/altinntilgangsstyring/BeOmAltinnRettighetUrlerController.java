@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring;
 
 import lombok.RequiredArgsConstructor;
-import no.nav.security.oidc.api.Unprotected;
+import no.nav.security.token.support.core.api.Unprotected;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

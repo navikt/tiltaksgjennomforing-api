@@ -13,20 +13,36 @@ spring:
         location: ${javax.net.ssl.trustStore}
         password: ${javax.net.ssl.trustStorePassword}
 
-no.nav.security.oidc:
-  issuers: selvbetjening, isso, system
+no.nav.security.jwt:
   issuer:
     selvbetjening:
       discoveryurl: ${LOGINSERVICE_IDPORTEN_DISCOVERY_URL}
       accepted_audience: 0090b6e1-ffcc-4c37-bc21-049f7d1f0fe5
+      cookie_name: selvbetjening-idtoken
     isso:
       discoveryurl: https://login.microsoftonline.com/NAVQ.onmicrosoft.com/.well-known/openid-configuration
       accepted_audience: 38e07d31-659d-4595-939a-f18dce3446c5
+      cookie_name: isso-idtoken
     system:
       discoveryurl: http://security-token-service.default.svc.nais.local/rest/v1/sts/.well-known/openid-configuration
       accepted_audience: ${tiltaksgjennomforing.audience.system}
+  client:
+    registration:
+      kontoregister:
+        token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
+        grant-type: client_credentials
+        scope: api://dev-fss.okonomi.sokos-kontoregister/.default
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_basic
 
 tiltaksgjennomforing:
+  kontoregister:
+    uri: https://sokos-kontoregister-q1.dev.adeo.no/kontoregister/api/v1/hent-kontonr-org
+    consumerId: ${tiltaksgjennomforing.serviceuser.username}
+    azureConfig: true
+    realClient: true
   database:
     database-navn: tiltaksgjennomforing-preprod
     database-url: ${spring.datasource.url}

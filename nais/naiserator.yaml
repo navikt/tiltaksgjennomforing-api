@@ -6,6 +6,9 @@ metadata:
   labels:
     team: arbeidsgiver
 spec:
+  azure:
+    application:
+      enabled: true
   kafka:
     pool: {{kafka-pool}}
   image: {{image}}
