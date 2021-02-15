@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
-import static no.nav.security.oidc.test.support.JwtTokenGenerator.ACR_LEVEL_4;
+import static no.nav.security.jwt.test.support.JwtTokenGenerator.ACR_LEVEL_4;
 import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISSUER_ISSO;
 import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISSUER_SELVBETJENING;
 import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISSUER_SYSTEM;
@@ -15,8 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import no.nav.security.oidc.test.support.JwkGenerator;
-import no.nav.security.oidc.test.support.JwtTokenGenerator;
+import no.nav.security.jwt.test.support.JwkGenerator;
+import no.nav.security.jwt.test.support.JwtTokenGenerator;
 import no.nav.security.token.support.core.context.TokenValidationContext;
 import no.nav.security.token.support.core.context.TokenValidationContextHolder;
 import no.nav.security.token.support.core.jwt.JwtToken;

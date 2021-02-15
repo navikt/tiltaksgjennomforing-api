@@ -1,4 +1,4 @@
-package no.nav.security.oidc.test.support;
+package no.nav.security.jwt.test.support;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JOSEObjectType;
