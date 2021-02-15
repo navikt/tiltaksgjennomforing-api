@@ -22,7 +22,6 @@ public class KontoregisterServiceImpl implements KontoregisterService{
     private final KontoregisterProperties kontoregisterProperties;
     private final RestTemplate restTemplate;
 
-    //TODO: Hent fra properties object
     public KontoregisterServiceImpl(KontoregisterProperties kontoregisterProperties, @Qualifier("azure") RestTemplate restTemplate) {
         this.kontoregisterProperties = kontoregisterProperties;
         this.restTemplate = restTemplate;
@@ -32,8 +31,9 @@ public class KontoregisterServiceImpl implements KontoregisterService{
         try {
             ResponseEntity<KontoregisterResponse> response = restTemplate.exchange(new URI(String.format("%s/%s", kontoregisterProperties.getUri(),bedriftNr)),HttpMethod.GET,lagRequest(),  KontoregisterResponse.class);
 
-            if (response.getBody() != null && response.getBody().getFeilmelding() != null) {
-                log.error("Kontoregister svarte med feil for bedrift : " + bedriftNr, response.getBody().getFeilmelding());
+            if (response.getStatusCode() != HttpStatus.OK ) {
+                String feilmeldingFraTjenesten = response.getBody() != null ? response.getBody().getFeilmelding() : "";
+                log.error(String.format("Kontoregister svarte med feil for bedrift : %s",bedriftNr), feilmeldingFraTjenesten);
                 throw new KontoregisterFeilException();
             }
 
