@@ -1,16 +1,22 @@
 package no.nav.tag.tiltaksgjennomforing.okonomi;
 
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.exceptions.KontoregisterFantIkkeBedriftFeilException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KontoregisterFeilException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.CorrelationIdSupplier;
 import no.nav.tag.tiltaksgjennomforing.utils.ConditionalOnPropertyNotEmpty;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -30,16 +36,17 @@ public class KontoregisterServiceImpl implements KontoregisterService{
     public String hentKontonummer(String bedriftNr)  {
         try {
             ResponseEntity<KontoregisterResponse> response = restTemplate.exchange(new URI(String.format("%s/%s", kontoregisterProperties.getUri(),bedriftNr)),HttpMethod.GET,lagRequest(),  KontoregisterResponse.class);
-
-            if (response.getStatusCode() != HttpStatus.OK ) {
-                String feilmeldingFraTjenesten = response.getBody() != null ? response.getBody().getFeilmelding() : "";
-                log.error(String.format("Kontoregister svarte med feil for bedrift : %s",bedriftNr), feilmeldingFraTjenesten);
-                throw new KontoregisterFeilException();
-            }
-
             return response.getBody().getKontonr();
 
-        } catch (RestClientException | URISyntaxException exception) {
+        } catch (RestClientException | URISyntaxException  exception) {
+            if(exception instanceof HttpClientErrorException){
+                HttpClientErrorException hcee = (HttpClientErrorException)exception;
+                if(hcee.getStatusCode() == NOT_FOUND) {
+                    log.error(String.format("Kontoregister svarte med fant ikke kontonummer for bedrift : %s",bedriftNr));
+                    throw new KontoregisterFantIkkeBedriftFeilException();
+                }
+
+            }
             log.error(String.format("Feil fra kontoregister med request-url: %s/%s", kontoregisterProperties.getUri(),bedriftNr), exception);
             throw new KontoregisterFeilException();
         }

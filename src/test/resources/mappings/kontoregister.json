@@ -36,6 +36,23 @@
           "feilmelding": "Organisasjonsnummer ikke funnet i kontoregister"
         }
       }
+    },{
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPath": "/kontoregister/api/v1/hent-kontonr-org/777333333"
+      },
+      "response": {
+        "status": 500,
+        "headers": {
+          "Content-Type": "application/json",
+          "Accept":"application/json"
+        },
+        "jsonBody":
+        {
+          "feilmelding": "Organisasjonsnummer ikke funnet i kontoregister"
+        }
+      }
     }
   ]
 }
