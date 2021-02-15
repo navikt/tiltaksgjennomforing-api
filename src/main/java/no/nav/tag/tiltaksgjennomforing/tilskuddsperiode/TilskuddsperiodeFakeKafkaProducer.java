@@ -27,7 +27,7 @@ public class TilskuddsperiodeFakeKafkaProducer {
 
     @TransactionalEventListener
     public void tilskuddsperiodeGodkjent(TilskuddsperiodeGodkjent event) {
-        TilskuddsperiodeGodkjentMelding melding = TilskuddsperiodeGodkjentMelding.fraAvtale(event.getAvtale());
+        TilskuddsperiodeGodkjentMelding melding = TilskuddsperiodeGodkjentMelding.create(event.getAvtale(), event.getTilskuddsperiode());
         try {
             restTemplate.exchange(url + "/tilskuddsperiode-godkjent", HttpMethod.POST, new HttpEntity<>(melding), Void.class);
         } catch (RestClientException e) {

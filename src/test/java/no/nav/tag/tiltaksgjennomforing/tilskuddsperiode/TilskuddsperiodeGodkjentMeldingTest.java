@@ -28,7 +28,7 @@ class TilskuddsperiodeGodkjentMeldingTest {
         avtale.setTilskuddPeriode(List.of(tilskuddPeriode));
 
         // WHEN
-        TilskuddsperiodeGodkjentMelding tilskuddMelding = TilskuddsperiodeGodkjentMelding.fraAvtale(avtale);
+        TilskuddsperiodeGodkjentMelding tilskuddMelding = TilskuddsperiodeGodkjentMelding.create(avtale, tilskuddPeriode);
 
         // THEN
         assertThat(tilskuddMelding.getTilskuddsperiodeId()).isEqualTo(tilskuddsperiodeId);
