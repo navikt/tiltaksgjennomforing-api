@@ -2,7 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.varsel;
 
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
-import no.nav.security.oidc.api.Protected;
+import no.nav.security.token.support.core.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalepart;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;

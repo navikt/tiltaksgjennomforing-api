@@ -1,10 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
-import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
-import no.nav.security.oidc.context.OIDCRequestContextHolder;
-import no.nav.security.oidc.context.OIDCValidationContext;
+import no.nav.security.token.support.core.context.TokenValidationContext;
+import no.nav.security.token.support.core.context.TokenValidationContextHolder;
+import no.nav.security.token.support.core.jwt.JwtTokenClaims;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -37,7 +37,7 @@ public class TokenUtils {
         String brukerIdent;
     }
 
-    private final OIDCRequestContextHolder contextHolder;
+    private final TokenValidationContextHolder contextHolder;
 
     public Optional<BrukerOgIssuer> hentBrukerOgIssuer() {
         return hentClaim(ISSUER_SYSTEM, "sub").map(sub -> new BrukerOgIssuer(ISSUER_SYSTEM, sub))
@@ -55,33 +55,33 @@ public class TokenUtils {
 
     private Optional<List<String>> hentClaims(Issuer issuer, String claim) {
         return hentClaimSet(issuer).filter(jwtClaimsSet -> innloggingsNivaOK(issuer, jwtClaimsSet))
-                .map(jwtClaimsSet -> (List<String>) jwtClaimsSet.getClaim(claim));
+                .map(jwtClaimsSet -> (List<String>) jwtClaimsSet.get(claim));
     }
 
     private Optional<String> hentClaim(Issuer issuer, String claim) {
         return hentClaimSet(issuer).filter(jwtClaimsSet -> innloggingsNivaOK(issuer, jwtClaimsSet))
-            .map(jwtClaimsSet -> String.valueOf(jwtClaimsSet.getClaim(claim)));
+            .map(jwtClaimsSet -> String.valueOf(jwtClaimsSet.get(claim)));
     }
 
-    private boolean innloggingsNivaOK(Issuer issuer, JWTClaimsSet jwtClaimsSet) {
+    private boolean innloggingsNivaOK(Issuer issuer, JwtTokenClaims jwtClaimsSet) {
 
-        return issuer != ISSUER_SELVBETJENING || LEVEL4.equals(jwtClaimsSet.getClaim(ACR));
+        return issuer != ISSUER_SELVBETJENING || LEVEL4.equals(jwtClaimsSet.get(ACR));
     }
 
-    private Optional<JWTClaimsSet> hentClaimSet(Issuer issuer) {
-        OIDCValidationContext oidcValidationContext;
+    private Optional<JwtTokenClaims> hentClaimSet(Issuer issuer) {
+        TokenValidationContext tokenValidationContext;
         try {
-            oidcValidationContext = contextHolder.getOIDCValidationContext();
+            tokenValidationContext = contextHolder.getTokenValidationContext();
         } catch (IllegalStateException e) {
             // Er ikke i kontekst av en request
             return Optional.empty();
         }
-        return Optional.ofNullable(oidcValidationContext.getClaims(issuer.issuerName))
-                .map(claims -> claims.getClaimSet());
+        return Optional.ofNullable(tokenValidationContext.getClaims(issuer.issuerName));
+
     }
 
     public String hentSelvbetjeningToken() {
-        return contextHolder.getOIDCValidationContext().getToken(ISSUER_SELVBETJENING.issuerName).getIdToken();
+        return contextHolder.getTokenValidationContext().getJwtToken(ISSUER_SELVBETJENING.issuerName).getTokenAsString();
     }
 
 }

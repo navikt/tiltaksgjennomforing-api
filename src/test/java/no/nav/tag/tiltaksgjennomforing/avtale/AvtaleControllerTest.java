@@ -1,13 +1,32 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import static java.util.Arrays.asList;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enArbeidstreningAvtale;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enNavIdent;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6Eller7Exception;
+import no.nav.tag.tiltaksgjennomforing.exceptions.KontoregisterFeilException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
@@ -19,15 +38,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import java.time.LocalDate;
-import java.util.*;
-
-import static java.util.Arrays.asList;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enArbeidstreningAvtale;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enNavIdent;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
 
 @SuppressWarnings("rawtypes")
 @RunWith(MockitoJUnitRunner.class)
@@ -53,6 +63,10 @@ public class AvtaleControllerTest {
 
     @Mock
     VeilarbArenaClient veilarbArenaClient;
+
+
+    @Mock
+    KontoregisterService kontoregisterService;
 
     @Mock
     Norg2Client norg2Client;
@@ -390,5 +404,48 @@ public class AvtaleControllerTest {
         Avtale hentetAvtale = avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER);
         assertThat(hentetAvtale.getEnhetGeografisk()).isNull();
         assertThat(hentetAvtale.getEnhetOppfolging()).isNull();
+    }
+
+
+    @Test
+    public void oppdatterBedriftKontonummer_skal_returnere_avtaler_med_nytt_bedriftKontonummer() {
+        NavIdent veilederNavIdent = new NavIdent("Z222222");
+        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), veilederNavIdent);
+        NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
+        Veileder veileder = new Veileder(identTilInnloggetVeileder, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet());
+        værInnloggetSom(veileder);
+        when(kontoregisterService.hentKontonummer(anyString())).thenReturn("990983666");
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(identTilInnloggetVeileder), any(Fnr.class))).thenReturn(true);
+        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
+        when(avtaleRepository.save(any())).thenReturn(avtale);
+        avtaleController.oppdatterBedriftKontonummer(avtale.getId(), Avtalerolle.VEILEDER);
+        Avtale avtaleTilbake = avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER);
+        assertThat(avtaleTilbake.gjeldendeInnhold().getArbeidsgiverKontonummer())
+            .isEqualTo("990983666");
+    }
+
+    @Test(expected = TilgangskontrollException.class)
+    public void oppdatterBedriftKontonummer_skal_kaste_en_feil_når_innlogget_part_ikke_har_tilgang_til_Avtale() throws TilgangskontrollException {
+        NavIdent veilederNavIdent = new NavIdent("Z222222");
+        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), veilederNavIdent);
+        NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
+        Veileder veileder = new Veileder(identTilInnloggetVeileder, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet());
+        værInnloggetSom(veileder);
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(identTilInnloggetVeileder), any(Fnr.class))).thenReturn(false);
+        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
+        avtaleController.oppdatterBedriftKontonummer(avtale.getId(), Avtalerolle.VEILEDER);
+    }
+
+    @Test(expected = KontoregisterFeilException.class)
+    public void oppdatterBedriftKontonummer_skal_kaste_en_feil_når_kontonummer_rest_service_svarer_med_feil_response_status_og_kaster_en_exception()  {
+        NavIdent veilederNavIdent = new NavIdent("Z222222");
+        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), veilederNavIdent);
+        NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
+        Veileder veileder = new Veileder(identTilInnloggetVeileder, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet());
+        værInnloggetSom(veileder);
+        when(kontoregisterService.hentKontonummer(anyString())).thenThrow(KontoregisterFeilException.class);
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(identTilInnloggetVeileder), any(Fnr.class))).thenReturn(true);
+        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
+        ResponseEntity responseEntity = avtaleController.oppdatterBedriftKontonummer(avtale.getId(), Avtalerolle.VEILEDER);
     }
 }

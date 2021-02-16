@@ -16,20 +16,22 @@ spring:
 no.nav.gcp.kafka.aiven:
   bootstrap-servers: ${spring.embedded.kafka.brokers}
 
-no.nav.security.oidc:
-  issuers: selvbetjening, isso, system
+no.nav.security.jwt:
   issuer:
     selvbetjening:
-      discoveryurl: http://metadata-selvbetjening
+      discoveryurl: https://tiltak-fakelogin.labs.nais.io/metadata?issuer=selvbetjening
       accepted_audience: aud-selvbetjening
+      cookie_name: selvbetjening-idtoken
     isso:
-      discoveryurl: http://metadata-isso
+      discoveryurl: https://tiltak-fakelogin.labs.nais.io/metadata?issuer=isso
       accepted_audience: aud-isso
-    system:
-      discoveryurl: http://metadata-system
-      accepted_audience: aud-system
+      cookie_name: isso-idtoken
 
 tiltaksgjennomforing:
+  kontoregister:
+    uri: http://localhost:8090/kontoregister/api/v1/hent-kontonr-org
+    consumerId: tiltak-refusjon-api
+    realClient: true
   beslutter-ad-gruppe:
     id: 1a1d2745-952f-4a0f-839f-9530145b1d4a
   kafka:

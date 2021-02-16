@@ -1,23 +1,32 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import io.micrometer.core.annotation.Timed;
-import lombok.RequiredArgsConstructor;
-import no.nav.security.oidc.api.Protected;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
-import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
-import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
 
+import io.micrometer.core.annotation.Timed;
 import java.net.URI;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
-
-import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
+import lombok.RequiredArgsConstructor;
+import no.nav.security.token.support.core.api.Protected;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
+import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
+import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
+import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
+import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Protected
 @RestController
@@ -30,6 +39,7 @@ public class AvtaleController {
     private final InnloggingService innloggingService;
     private final EregService eregService;
     private final VeilarbArenaClient veilarbArenaClient;
+    private final KontoregisterService kontoregisterService;
 
     @GetMapping("/{avtaleId}")
     public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
@@ -102,6 +112,15 @@ public class AvtaleController {
     public List<Avtale> hentAlleAvtalerForMinSideArbeidsgiver(@RequestParam("bedriftNr") BedriftNr bedriftNr) {
         Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
         return arbeidsgiver.hentAvtalerForMinsideArbeidsgiver(avtaleRepository, bedriftNr);
+    }
+
+    @PostMapping(path = "/{avtaleId}/set-kontonummer-for-arbeidsgiver-fra-kontoregister")
+    public ResponseEntity<?> oppdatterBedriftKontonummer(@PathVariable("avtaleId") UUID avtaleId,@CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
+        Avtale avtale = avtalepart.hentAvtale(avtaleRepository,avtaleId);
+        avtale.setArbeidsgiverKontonummer(kontoregisterService.hentKontonummer(avtale.getBedriftNr().asString()));
+        Avtale lagretAvtale = avtaleRepository.save(avtale);
+        return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
     }
 
     @PostMapping("/opprett-som-arbeidsgiver")
