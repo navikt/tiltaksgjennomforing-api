@@ -31,9 +31,11 @@ public class TilskuddsperiodeGodkjentMelding {
     Double arbeidsgiveravgiftSats;
     Integer lønnstilskuddsprosent;
 
-    public static TilskuddsperiodeGodkjentMelding create(Avtale avtale, TilskuddPeriode tilskuddsperiode) {
+    public static TilskuddsperiodeGodkjentMelding fraAvtale(Avtale avtale) {
+        TilskuddPeriode gjeldendeTilskuddPeriode = avtale.gjeldendeTilskuddsperiode();
+
         return new TilskuddsperiodeGodkjentMelding(avtale.getId(),
-                tilskuddsperiode.getId(),
+                gjeldendeTilskuddPeriode.getId(),
                 avtale.getAvtaleInnholdId(),
                 avtale.getTiltakstype(),
                 avtale.getDeltakerFornavn(),
@@ -42,13 +44,13 @@ public class TilskuddsperiodeGodkjentMelding {
                 avtale.getVeilederNavIdent(),
                 avtale.getBedriftNavn(),
                 avtale.getBedriftNr(),
-                tilskuddsperiode.getBeløp(),
-                tilskuddsperiode.getStartDato(),
-                tilskuddsperiode.getSluttDato(),
+                gjeldendeTilskuddPeriode.getBeløp(),
+                gjeldendeTilskuddPeriode.getStartDato(),
+                gjeldendeTilskuddPeriode.getSluttDato(),
                 avtale.getFeriepengesats().doubleValue(),
                 avtale.getOtpSats(),
                 avtale.getArbeidsgiveravgift().doubleValue(),
-                tilskuddsperiode.getLonnstilskuddProsent()
+                gjeldendeTilskuddPeriode.getLonnstilskuddProsent()
         );
     }
 }

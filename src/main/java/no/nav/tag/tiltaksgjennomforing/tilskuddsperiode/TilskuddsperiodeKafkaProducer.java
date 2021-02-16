@@ -23,7 +23,7 @@ public class TilskuddsperiodeKafkaProducer {
 
     @TransactionalEventListener
     public void tilskuddsperiodeGodkjent(TilskuddsperiodeGodkjent event) {
-        TilskuddsperiodeGodkjentMelding tilskuddMelding = TilskuddsperiodeGodkjentMelding.create(event.getAvtale(), event.getTilskuddsperiode());
+        TilskuddsperiodeGodkjentMelding tilskuddMelding = TilskuddsperiodeGodkjentMelding.fraAvtale(event.getAvtale());
         publiserTilskuddsperiodeGodkjentMelding(tilskuddMelding);
     }
 
