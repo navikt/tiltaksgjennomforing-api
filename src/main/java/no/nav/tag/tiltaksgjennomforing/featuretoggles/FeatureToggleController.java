@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 
 import no.finn.unleash.Variant;
-import no.nav.security.token.support.core.api.Unprotected;
+import no.nav.security.oidc.api.Unprotected;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

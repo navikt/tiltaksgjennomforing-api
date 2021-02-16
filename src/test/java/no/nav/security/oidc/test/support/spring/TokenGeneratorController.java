@@ -1,6 +1,6 @@
-package no.nav.security.jwt.test.support;
+package no.nav.security.oidc.test.support.spring;
 
-import static no.nav.security.jwt.test.support.JwtTokenGenerator.ACR_LEVEL_4;
+import static no.nav.security.oidc.test.support.JwtTokenGenerator.ACR_LEVEL_4;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.util.IOUtils;
@@ -14,7 +14,9 @@ import java.util.Map;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import no.nav.security.token.support.core.api.Unprotected;
+import no.nav.security.oidc.api.Unprotected;
+import no.nav.security.oidc.test.support.JwkGenerator;
+import no.nav.security.oidc.test.support.JwtTokenGenerator;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.BeslutterAdGruppeProperties;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;

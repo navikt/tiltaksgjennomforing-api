@@ -2,7 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.orgenhet;
 
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
-import no.nav.security.token.support.core.api.Protected;
+import no.nav.security.oidc.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

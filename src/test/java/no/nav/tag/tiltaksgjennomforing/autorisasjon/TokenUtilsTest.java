@@ -1,25 +1,22 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
-import static no.nav.security.jwt.test.support.JwtTokenGenerator.ACR_LEVEL_4;
+import static no.nav.security.oidc.test.support.JwtTokenGenerator.ACR_LEVEL_4;
+import static no.nav.security.oidc.test.support.JwtTokenGenerator.createSignedJWT;
 import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISSUER_ISSO;
 import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISSUER_SELVBETJENING;
 import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISSUER_SYSTEM;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.JWTClaimsSet.Builder;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import no.nav.security.jwt.test.support.JwkGenerator;
-import no.nav.security.jwt.test.support.JwtTokenGenerator;
-import no.nav.security.token.support.core.context.TokenValidationContext;
-import no.nav.security.token.support.core.context.TokenValidationContextHolder;
-import no.nav.security.token.support.core.jwt.JwtToken;
+import no.nav.security.oidc.context.OIDCClaims;
+import no.nav.security.oidc.context.OIDCRequestContextHolder;
+import no.nav.security.oidc.context.OIDCValidationContext;
+import no.nav.security.oidc.context.TokenContext;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.BrukerOgIssuer;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
@@ -36,7 +33,7 @@ public class TokenUtilsTest {
     private TokenUtils tokenUtils;
 
     @Mock
-    private TokenValidationContextHolder contextHolder;
+    private OIDCRequestContextHolder contextHolder;
 
     @Test
     public void hentInnloggetBruker__er_selvbetjeningbruker() {
@@ -93,59 +90,36 @@ public class TokenUtilsTest {
     }
 
     private void vaerUinnlogget() {
-        JWTClaimsSet claimsSet = new Builder().build();
-        Map<String, JwtToken> tokenMap = new HashMap<>();
-        String tokenAsString = JwtTokenGenerator.createSignedJWT(JwkGenerator.getDefaultRSAKey(), claimsSet).serialize();
-        JwtToken token = new JwtToken(tokenAsString);
-        tokenMap.put(token.getIssuer(), token);
-        TokenValidationContext context = new TokenValidationContext(tokenMap);
-        when(contextHolder.getTokenValidationContext()).thenReturn(context);
+        when(contextHolder.getOIDCValidationContext()).thenReturn(new OIDCValidationContext());
     }
 
     private void vaerInnloggetSystem(String systemId) {
-        lagTokenValidationContext(ISSUER_SYSTEM, systemId, null, null, null);
+        lagOidcContext(ISSUER_SYSTEM, systemId, new HashMap<>(), null, null);
     }
 
     private void vaerInnloggetSelvbetjening(InnloggetArbeidsgiver bruker) {
-        lagTokenValidationContext(ISSUER_SELVBETJENING, bruker.getIdentifikator().asString(), null, ACR_LEVEL_4, null);
+        lagOidcContext(ISSUER_SELVBETJENING, bruker.getIdentifikator().asString(), new HashMap<>(), ACR_LEVEL_4, null);
     }
 
     private void vaerInnloggetSelvbetjeningNiva3(InnloggetArbeidsgiver bruker) {
-        lagTokenValidationContext(ISSUER_SELVBETJENING, bruker.getIdentifikator().asString(), null, "Level3", null);
+        lagOidcContext(ISSUER_SELVBETJENING, bruker.getIdentifikator().asString(), new HashMap<>(), "Level3", null);
     }
 
     private void vaerInnloggetNavAnsatt(InnloggetVeileder innloggetBruker) {
-        lagTokenValidationContext(ISSUER_ISSO, "blablabla",  innloggetBruker.getIdentifikator().asString(), null, null);
+        lagOidcContext(ISSUER_ISSO, "blablabla", Map.of("NAVident", innloggetBruker.getIdentifikator().asString()), null, null);
     }
 
     private void vaerInnloggetNavAnsatt(InnloggetBeslutter innloggetBruker) {
-        lagTokenValidationContext(ISSUER_ISSO, "blablabla",  innloggetBruker.getIdentifikator().asString(), null,
+        lagOidcContext(ISSUER_ISSO, "blablabla", Map.of("NAVident", innloggetBruker.getIdentifikator().asString()), null,
             Arrays.asList("928636f4-fd0d-4149-978e-a6fb68bb19de", "158234a2-fd1d-4445-578e-a6fb68bb11das"));
     }
 
-    private void lagTokenValidationContext(Issuer issuer, String subject, String navIdent, String acrLevel, List groups) {
-        Date now = new Date();
-        JWTClaimsSet claimsSet = new Builder()
-            .subject(subject)
-            .claim("NAVident", navIdent)
-            .issuer(issuer.issuerName)
-            .audience("aud-aad")
-            .jwtID(UUID.randomUUID().toString())
-            .claim("groups", groups)
-            .claim("acr",acrLevel)
-            .claim("ver", "1.0")
-            .claim("auth_time", now)
-            .claim("nonce", "myNonce")
-            .notBeforeTime(now)
-            .issueTime(now)
-            .expirationTime(new Date(now.getTime() + 1000000)).build();
+    private void lagOidcContext(Issuer issuer, String subject, Map<String, Object> claims, String acrLevel, List groups) {
+        OIDCValidationContext context = new OIDCValidationContext();
+        TokenContext tokenContext = new TokenContext(issuer.issuerName, "");
+        OIDCClaims oidcClaims = new OIDCClaims(createSignedJWT(subject, 0, claims, issuer.issuerName, "audience", acrLevel, groups));
+        context.addValidatedToken(issuer.issuerName, tokenContext, oidcClaims);
 
-        String tokenAsString = JwtTokenGenerator.createSignedJWT(JwkGenerator.getDefaultRSAKey(), claimsSet).serialize();
-        Map<String, JwtToken> tokenMap = new HashMap<>();
-        JwtToken token = new JwtToken(tokenAsString);
-        tokenMap.put(token.getIssuer(), token);
-        TokenValidationContext context = new TokenValidationContext(tokenMap);
-
-        when(contextHolder.getTokenValidationContext()).thenReturn(context);
+        when(contextHolder.getOIDCValidationContext()).thenReturn(context);
     }
 }

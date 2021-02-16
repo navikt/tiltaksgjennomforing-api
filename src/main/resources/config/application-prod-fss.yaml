@@ -13,7 +13,8 @@ spring:
         location: ${javax.net.ssl.trustStore}
         password: ${javax.net.ssl.trustStorePassword}
 
-no.nav.security.jwt:
+no.nav.security.oidc:
+  issuers: selvbetjening, isso, system
   issuer:
     selvbetjening:
       discoveryurl: ${LOGINSERVICE_IDPORTEN_DISCOVERY_URL}
@@ -26,8 +27,6 @@ no.nav.security.jwt:
       accepted_audience: ${tiltaksgjennomforing.audience.system}
 
 tiltaksgjennomforing:
-  kontoregister:
-    fake: true
   database:
     database-navn: tiltaksgjennomforing-prod
     database-url: ${spring.datasource.url}
