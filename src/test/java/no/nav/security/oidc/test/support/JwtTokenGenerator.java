@@ -1,4 +1,4 @@
-package no.nav.security.jwt.test.support;
+package no.nav.security.oidc.test.support;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JOSEObjectType;
@@ -69,7 +69,7 @@ public class JwtTokenGenerator {
         return claimSetBuilder.build();
     }
 
-    public static SignedJWT createSignedJWT(RSAKey rsaJwk, JWTClaimsSet claimsSet) {
+    protected static SignedJWT createSignedJWT(RSAKey rsaJwk, JWTClaimsSet claimsSet) {
         try {
             JWSHeader.Builder header = new Builder(JWSAlgorithm.RS256)
                     .keyID(rsaJwk.getKeyID())

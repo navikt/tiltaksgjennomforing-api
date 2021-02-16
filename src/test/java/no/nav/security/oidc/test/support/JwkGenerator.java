@@ -1,8 +1,9 @@
-package no.nav.security.jwt.test.support;
+package no.nav.security.oidc.test.support;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.util.IOUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
