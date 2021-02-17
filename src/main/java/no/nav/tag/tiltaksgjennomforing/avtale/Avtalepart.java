@@ -46,7 +46,7 @@ public abstract class Avtalepart<T extends Identifikator> {
         return harTilgangTilAvtale(avtale);
     }
 
-    public abstract boolean harTilgangTilAvtale(Avtale avtale);
+    abstract boolean harTilgangTilAvtale(Avtale avtale);
 
     abstract List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre);
 

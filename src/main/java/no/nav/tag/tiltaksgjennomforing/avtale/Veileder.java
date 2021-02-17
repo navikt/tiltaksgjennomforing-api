@@ -191,6 +191,7 @@ public class Veileder extends Avtalepart<NavIdent> {
     }
 
     public void slettemerk(Avtale avtale) {
+        this.sjekkTilgang(avtale);
         List<NavIdent> identer = slettemerkeProperties.getIdent();
         if (!identer.contains(this.getIdentifikator())) {
             throw new IkkeAdminTilgangException();
