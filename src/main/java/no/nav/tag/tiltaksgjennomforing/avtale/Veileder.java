@@ -2,12 +2,10 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6Eller7Exception;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 
@@ -25,33 +23,22 @@ public class Veileder extends Avtalepart<NavIdent> {
     private final TilgangskontrollService tilgangskontrollService;
 
     private final PersondataService persondataService;
+    private final SlettemerkeProperties slettemerkeProperties;
     private final Norg2Client norg2Client;
     private Set<String> navEnheter;
-    String venteListeForVeileder;
 
     public Veileder(NavIdent identifikator, TilgangskontrollService tilgangskontrollService, PersondataService persondataService,
-        Norg2Client norg2Client, Set<String> navEnheter) {
+                    Norg2Client norg2Client, Set<String> navEnheter, SlettemerkeProperties slettemerkeProperties) {
         super(identifikator);
         this.tilgangskontrollService = tilgangskontrollService;
         this.persondataService = persondataService;
         this.norg2Client = norg2Client;
         this.navEnheter = navEnheter;
-    }
-
-    public Veileder(NavIdent identifikator, Avtale avtale, TilgangskontrollService tilgangskontrollService, PersondataService persondataService,
-        Norg2Client norg2Client, Set<String> navEnheter) {
-        super(identifikator);
-        this.venteListeForVeileder = "Du må vente for " + (!avtale.erGodkjentAvArbeidsgiver() ? "arbeidsgiver" : "");
-        this.venteListeForVeileder = this.venteListeForVeileder +
-            ((!avtale.erGodkjentAvDeltaker() ? " og deltaker" : "") + " godkjenner avtale");
-        this.tilgangskontrollService = tilgangskontrollService;
-        this.persondataService = persondataService;
-        this.norg2Client = norg2Client;
-        this.navEnheter = navEnheter;
+        this.slettemerkeProperties = slettemerkeProperties;
     }
 
     @Override
-    public boolean harTilgang(Avtale avtale) {
+    public boolean harTilgangTilAvtale(Avtale avtale) {
         return tilgangskontrollService.harSkrivetilgangTilKandidat(getIdentifikator(), avtale.getDeltakerFnr());
     }
 
@@ -201,5 +188,14 @@ public class Veileder extends Avtalepart<NavIdent> {
         avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(persondata));
         leggTilGeografiskEnhet(avtale, persondata, norg2Client);
         return avtale;
+    }
+
+    public void slettemerk(Avtale avtale) {
+        List<NavIdent> identer = slettemerkeProperties.getIdent();
+        if (!identer.contains(this.getIdentifikator())) {
+            throw new IkkeAdminTilgangException();
+        }
+        avtale.slettemerk(this.getIdentifikator());
+
     }
 }

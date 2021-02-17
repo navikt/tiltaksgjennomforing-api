@@ -39,6 +39,7 @@ public class InnloggingService {
     private final PersondataService persondataService;
     private final Norg2Client norg2Client;
     private final AxsysService axsysService;
+    private final SlettemerkeProperties slettemerkeProperties;
 
     public Avtalepart hentAvtalepart(Avtalerolle avtalerolle) {
         BrukerOgIssuer brukerOgIssuer = tokenUtils.hentBrukerOgIssuer().orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget."));
@@ -58,7 +59,7 @@ public class InnloggingService {
         else if (issuer == Issuer.ISSUER_ISSO && avtalerolle == Avtalerolle.VEILEDER) {
             NavIdent navIdent = new NavIdent(brukerOgIssuer.getBrukerIdent());
             Set<String> navEnheter = hentNavEnheter(navIdent);
-            return new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, navEnheter);
+            return new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, navEnheter, slettemerkeProperties);
         } else if (issuer == Issuer.ISSUER_ISSO && avtalerolle == Avtalerolle.BESLUTTER && tokenUtils
             .harAdGruppe(beslutterAdGruppeProperties.getId())) {
             return new Beslutter(new NavIdent(brukerOgIssuer.getBrukerIdent()), tilgangskontrollService, axsysService);

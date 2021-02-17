@@ -19,7 +19,7 @@ public class Deltaker extends Avtalepart<Fnr> {
     static String tekstTiltaketErAvsluttet = "Hvis du har spørsmål må du kontakte veilederen din.";
 
     @Override
-    public boolean harTilgang(Avtale avtale) {
+    public boolean harTilgangTilAvtale(Avtale avtale) {
         return avtale.getDeltakerFnr().equals(getIdentifikator());
     }
 

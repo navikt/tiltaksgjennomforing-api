@@ -17,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentGeoLokasjonFraPdlRespons;
@@ -38,7 +39,14 @@ public abstract class Avtalepart<T extends Identifikator> {
     static String tekstAvtaleAvbrutt = "Veilederen har bestemt at tiltaket og avtalen skal avbrytes.";
     static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd. MMMM yyyy");
 
-    public abstract boolean harTilgang(Avtale avtale);
+    public boolean harTilgang(Avtale avtale) {
+        if (avtale.isSlettemerket()) {
+            return false;
+        }
+        return harTilgangTilAvtale(avtale);
+    }
+
+    public abstract boolean harTilgangTilAvtale(Avtale avtale);
 
     abstract List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre);
 
@@ -46,11 +54,14 @@ public abstract class Avtalepart<T extends Identifikator> {
         return hentAlleAvtalerMedMuligTilgang(avtaleRepository, queryParametre).stream()
                 .filter(queryParametre)
                 .filter(this::harTilgang)
+                .filter(avtale -> !avtale.isSlettemerket())
                 .collect(Collectors.toList());
     }
 
     public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
-        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        Avtale avtale = avtaleRepository.findById(avtaleId)
+                .filter(Predicate.not(Avtale::isSlettemerket))
+                .orElseThrow(RessursFinnesIkkeException::new);
         sjekkTilgang(avtale);
         return avtale;
     }

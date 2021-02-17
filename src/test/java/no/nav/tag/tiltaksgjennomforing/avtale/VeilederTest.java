@@ -7,10 +7,14 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
+
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
@@ -160,12 +164,44 @@ public class VeilederTest {
         when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel())).thenReturn(TestData.ENHET_GEOGRAFISK);
 
         Veileder veileder = new Veileder(TestData.enNavIdent(), tilgangskontrollService, persondataService, norg2Client,
-            Set.of(TestData.ENHET_GEOGRAFISK));
+            Set.of(TestData.ENHET_GEOGRAFISK), new SlettemerkeProperties());
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
 
         assertThat(avtale.getVeilederNavIdent()).isEqualTo(TestData.enNavIdent());
         assertThat(avtale.getDeltakerFornavn()).isEqualTo("Donald");
         assertThat(avtale.getDeltakerEtternavn()).isEqualTo("Duck");
         assertThat(avtale.getEnhetGeografisk()).isEqualTo(TestData.ENHET_GEOGRAFISK);
+    }
+
+    @Test
+    public void opprettAvtale__skal_ikke_slettemerkes() {
+        OpprettAvtale opprettAvtale = new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+        Veileder veileder = TestData.enVeileder(new NavIdent("Z123456"));
+        Avtale avtale = veileder.opprettAvtale(opprettAvtale);
+        assertThat(avtale.isSlettemerket()).isFalse();
+    }
+    @Test
+    public void slettemerke__avtale_med_tilgang() {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        SlettemerkeProperties slettemerkeProperties = new SlettemerkeProperties();
+        slettemerkeProperties.setIdent(List.of(new NavIdent("Z123456")));
+        Veileder veileder = new Veileder(new NavIdent("Z123456"), mock(TilgangskontrollService.class), mock(PersondataService.class), mock(Norg2Client.class), Set.of("4802"), slettemerkeProperties);
+        veileder.slettemerk(avtale);
+        assertThat(avtale.isSlettemerket()).isTrue();
+    }
+    @Test (expected = IkkeTilgangTilDeltakerException.class)
+    public void slettemerke__avtale_uten_tilgang() {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        SlettemerkeProperties slettemerkeProperties = new SlettemerkeProperties();
+        slettemerkeProperties.setIdent(List.of(new NavIdent("Z123456")));
+        Veileder veileder = new Veileder(new NavIdent("X123456"), mock(TilgangskontrollService.class), mock(PersondataService.class), mock(Norg2Client.class), Set.of("4802"), slettemerkeProperties);
+        veileder.slettemerk(avtale);
+    }
+    @Test
+    public void slettemerket_ikke_tilgang_til_avtale() {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setSlettemerket(true);
+        Veileder veileder = TestData.enVeileder(avtale);
+        assertThat(veileder.harTilgang(avtale)).isFalse();
     }
 }
