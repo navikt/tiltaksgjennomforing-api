@@ -54,13 +54,11 @@ public abstract class Avtalepart<T extends Identifikator> {
         return hentAlleAvtalerMedMuligTilgang(avtaleRepository, queryParametre).stream()
                 .filter(queryParametre)
                 .filter(this::harTilgang)
-                .filter(avtale -> !avtale.isSlettemerket())
                 .collect(Collectors.toList());
     }
 
     public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
         Avtale avtale = avtaleRepository.findById(avtaleId)
-                .filter(Predicate.not(Avtale::isSlettemerket))
                 .orElseThrow(RessursFinnesIkkeException::new);
         sjekkTilgang(avtale);
         return avtale;
