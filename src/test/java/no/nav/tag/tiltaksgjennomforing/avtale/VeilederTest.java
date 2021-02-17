@@ -13,10 +13,7 @@ import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
-import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.junit.Test;
@@ -183,18 +180,29 @@ public class VeilederTest {
     @Test
     public void slettemerke__avtale_med_tilgang() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        NavIdent navIdent = new NavIdent("Z123456");
+
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), eq(avtale.getDeltakerFnr()))).thenReturn(true);
+
         SlettemerkeProperties slettemerkeProperties = new SlettemerkeProperties();
-        slettemerkeProperties.setIdent(List.of(new NavIdent("Z123456")));
-        Veileder veileder = new Veileder(new NavIdent("Z123456"), mock(TilgangskontrollService.class), mock(PersondataService.class), mock(Norg2Client.class), Set.of("4802"), slettemerkeProperties);
+        slettemerkeProperties.setIdent(List.of(navIdent));
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class), Set.of("4802"), slettemerkeProperties);
         veileder.slettemerk(avtale);
         assertThat(avtale.isSlettemerket()).isTrue();
     }
-    @Test (expected = IkkeTilgangTilDeltakerException.class)
+    @Test (expected = IkkeAdminTilgangException.class)
     public void slettemerke__avtale_uten_tilgang() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+
+        NavIdent navIdent = new NavIdent("X123456");
+
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), eq(avtale.getDeltakerFnr()))).thenReturn(true);
+
         SlettemerkeProperties slettemerkeProperties = new SlettemerkeProperties();
         slettemerkeProperties.setIdent(List.of(new NavIdent("Z123456")));
-        Veileder veileder = new Veileder(new NavIdent("X123456"), mock(TilgangskontrollService.class), mock(PersondataService.class), mock(Norg2Client.class), Set.of("4802"), slettemerkeProperties);
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class), Set.of("4802"), slettemerkeProperties);
         veileder.slettemerk(avtale);
     }
     @Test
