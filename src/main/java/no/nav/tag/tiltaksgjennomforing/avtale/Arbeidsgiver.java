@@ -132,7 +132,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     @Override
-    public boolean harTilgang(Avtale avtale) {
+    public boolean harTilgangTilAvtale(Avtale avtale) {
         if (sluttdatoPassertMedMerEnn12Uker(avtale)) {
             return false;
         }

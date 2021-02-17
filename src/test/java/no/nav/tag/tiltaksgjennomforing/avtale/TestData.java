@@ -1,10 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.*;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
@@ -250,8 +247,8 @@ public class TestData {
     public static Veileder enVeileder(Avtale avtale) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(avtale.getVeilederNavIdent()), eq(avtale.getDeltakerFnr()))).thenReturn(true);
-        return new Veileder(avtale.getVeilederNavIdent(), avtale, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
-            Set.of("4802"));
+        return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
+            Set.of("4802"), new SlettemerkeProperties());
     }
 
     public static Beslutter enBeslutter(Avtale avtale) {
@@ -329,14 +326,14 @@ public class TestData {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any())).thenReturn(true);
         return new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
-            Set.of(ENHET_OPPFØLGING));
+            Set.of(ENHET_OPPFØLGING), new SlettemerkeProperties());
     }
 
     public static Veileder enVeileder(Avtale avtale, PersondataService persondataService) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(avtale.getVeilederNavIdent(), avtale.getDeltakerFnr())).thenReturn(true);
         return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, persondataService, mock(Norg2Client.class),
-            Set.of(ENHET_OPPFØLGING));
+            Set.of(ENHET_OPPFØLGING), new SlettemerkeProperties());
     }
 
     public static PdlRespons enPdlrespons(boolean harKode6eller7) {

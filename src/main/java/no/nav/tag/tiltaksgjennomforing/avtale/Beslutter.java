@@ -37,7 +37,7 @@ public class Beslutter extends Avtalepart<NavIdent> {
     }
 
     @Override
-    public boolean harTilgang(Avtale avtale) {
+    public boolean harTilgangTilAvtale(Avtale avtale) {
         return tilgangskontrollService.harSkrivetilgangTilKandidat(getIdentifikator(), avtale.getDeltakerFnr());
     }
 

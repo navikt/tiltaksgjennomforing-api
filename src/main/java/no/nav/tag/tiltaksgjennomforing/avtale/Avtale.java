@@ -53,6 +53,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     private Instant sistEndret;
     private boolean avbrutt;
+    private boolean slettemerket;
     private LocalDate avbruttDato;
     private String avbruttGrunn;
     private boolean opprettetAvArbeidsgiver;
@@ -393,6 +394,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
 
         return tilskuddsperioderSortert.get(0);
+    }
+
+    public void slettemerk(NavIdent utførtAv) {
+        this.setSlettemerket(true);
+        registerEvent(new AvtaleSlettemerket(this, utførtAv));
     }
 
     private interface MetoderSomIkkeSkalDelegeresFraAvtaleInnhold {

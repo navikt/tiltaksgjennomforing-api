@@ -144,6 +144,10 @@ public class MetrikkRegistrering {
         }
         counter("avtale.endretVEileder", rolle, tiltakstype).increment();
     }
+    @EventListener
+    public void avtaleSlettemerket(AvtaleSlettemerket event) {
+        log.info("Avtale slettemerket, utfortAv={}, avtaleId={}", event.getUtfortAv().asString(), event.getAvtale().getId());
+    }
 
     private Counter counter(String navn, Avtalerolle avtalerolle, Tiltakstype tiltakstype) {
         var builder = Counter.builder("tiltaksgjennomforing." + navn)

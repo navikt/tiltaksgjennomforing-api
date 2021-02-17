@@ -176,6 +176,14 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
+    @PostMapping("/{avtaleId}/slettemerk")
+    public void slettemerk(@PathVariable("avtaleId") UUID avtaleId) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        veileder.slettemerk(avtale);
+        avtaleRepository.save(avtale);
+    }
+
     @PostMapping("/{avtaleId}/laas-opp")
     @Transactional
     public void laasOpp(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
