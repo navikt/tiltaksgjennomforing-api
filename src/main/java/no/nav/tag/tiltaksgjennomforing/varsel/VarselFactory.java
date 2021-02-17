@@ -3,6 +3,8 @@ package no.nav.tag.tiltaksgjennomforing.varsel;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 
+import java.util.List;
+
 public class VarselFactory {
     private final Avtale avtale;
     private final Avtalerolle utførtAv;
@@ -24,5 +26,9 @@ public class VarselFactory {
 
     public Varsel veileder() {
         return Varsel.nyttVarsel(avtale.getVeilederNavIdent(), utførtAv != Avtalerolle.VEILEDER, avtale, Avtalerolle.VEILEDER, utførtAv, hendelseType, avtale.getId());
+    }
+
+    public List<Varsel> alleParter() {
+        return List.of(deltaker(), arbeidsgiver(), veileder());
     }
 }
