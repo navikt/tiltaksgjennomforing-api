@@ -84,15 +84,15 @@ FROM varslbar_hendelse WHERE varslbar_hendelse_type = 'GODKJENT_PAA_VEGNE_AV' an
 
 -- GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER
 INSERT INTO varsel (id, lest, identifikator, tekst, avtale_id, hendelse_type, tidspunkt, bjelle, utført_av, mottaker)
-SELECT uuid_in(md5(random()::text || clock_timestamp()::text)::cstring), true, (select deltaker_fnr from avtale where avtale.id = varslbar_hendelse.avtale_id), 'Avtalens godkjenninger er opphevet av arbeidsgiver', avtale_id, varslbar_hendelse_type, tidspunkt, true, 'VEILEDER', 'DELTAKER'
+SELECT uuid_in(md5(random()::text || clock_timestamp()::text)::cstring), true, (select deltaker_fnr from avtale where avtale.id = varslbar_hendelse.avtale_id), 'Avtalens godkjenninger er opphevet av arbeidsgiver', avtale_id, varslbar_hendelse_type, tidspunkt, true, 'ARBEIDSGIVER', 'DELTAKER'
 FROM varslbar_hendelse WHERE varslbar_hendelse_type = 'GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER' and exists (select 1 from avtale where avtale.id = varslbar_hendelse.avtale_id);
 
 INSERT INTO varsel (id, lest, identifikator, tekst, avtale_id, hendelse_type, tidspunkt, bjelle, utført_av, mottaker)
-SELECT uuid_in(md5(random()::text || clock_timestamp()::text)::cstring), true, (select veileder_nav_ident from avtale where avtale.id = varslbar_hendelse.avtale_id), 'Avtalens godkjenninger er opphevet av arbeidsgiver', avtale_id, varslbar_hendelse_type, tidspunkt, false, 'VEILEDER', 'VEILEDER'
+SELECT uuid_in(md5(random()::text || clock_timestamp()::text)::cstring), true, (select veileder_nav_ident from avtale where avtale.id = varslbar_hendelse.avtale_id), 'Avtalens godkjenninger er opphevet av arbeidsgiver', avtale_id, varslbar_hendelse_type, tidspunkt, false, 'ARBEIDSGIVER', 'VEILEDER'
 FROM varslbar_hendelse WHERE varslbar_hendelse_type = 'GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER' and exists (select 1 from avtale where avtale.id = varslbar_hendelse.avtale_id);
 
 INSERT INTO varsel (id, lest, identifikator, tekst, avtale_id, hendelse_type, tidspunkt, bjelle, utført_av, mottaker)
-SELECT uuid_in(md5(random()::text || clock_timestamp()::text)::cstring), true, (select bedrift_nr from avtale where avtale.id = varslbar_hendelse.avtale_id), 'Avtalens godkjenninger er opphevet av arbeidsgiver', avtale_id, varslbar_hendelse_type, tidspunkt, true, 'VEILEDER', 'ARBEIDSGIVER'
+SELECT uuid_in(md5(random()::text || clock_timestamp()::text)::cstring), true, (select bedrift_nr from avtale where avtale.id = varslbar_hendelse.avtale_id), 'Avtalens godkjenninger er opphevet av arbeidsgiver', avtale_id, varslbar_hendelse_type, tidspunkt, true, 'ARBEIDSGIVER', 'ARBEIDSGIVER'
 FROM varslbar_hendelse WHERE varslbar_hendelse_type = 'GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER' and exists (select 1 from avtale where avtale.id = varslbar_hendelse.avtale_id);
 ---------------------------------------------
 
@@ -198,3 +198,18 @@ FROM hendelselogg WHERE hendelse = 'AVTALE_FORDELT';
 INSERT INTO varsel (id, lest, identifikator, tekst, avtale_id, hendelse_type, tidspunkt, bjelle, utført_av, mottaker)
 SELECT uuid_in(md5(random()::text || clock_timestamp()::text)::cstring), true, (select deltaker_fnr from avtale where avtale.id = hendelselogg.avtale_id), 'Avtale tildelt veileder', avtale_id, hendelse, tidspunkt, true, 'VEILEDER', 'DELTAKER'
 FROM hendelselogg WHERE hendelse = 'AVTALE_FORDELT';
+
+--------------------------------------------
+
+-- ENDRET
+INSERT INTO varsel (id, lest, identifikator, tekst, avtale_id, hendelse_type, tidspunkt, bjelle, utført_av, mottaker)
+SELECT uuid_in(md5(random()::text || clock_timestamp()::text)::cstring), true, (select veileder_nav_ident from avtale where avtale.id = hendelselogg.avtale_id), 'Avtale endret', avtale_id, hendelse, tidspunkt, false, utført_av, 'VEILEDER'
+FROM hendelselogg WHERE hendelse = 'ENDRET';
+
+INSERT INTO varsel (id, lest, identifikator, tekst, avtale_id, hendelse_type, tidspunkt, bjelle, utført_av, mottaker)
+SELECT uuid_in(md5(random()::text || clock_timestamp()::text)::cstring), true, (select bedrift_nr from avtale where avtale.id = hendelselogg.avtale_id), 'Avtale endret', avtale_id, hendelse, tidspunkt, false, utført_av, 'ARBEIDSGIVER'
+FROM hendelselogg WHERE hendelse = 'ENDRET';
+
+INSERT INTO varsel (id, lest, identifikator, tekst, avtale_id, hendelse_type, tidspunkt, bjelle, utført_av, mottaker)
+SELECT uuid_in(md5(random()::text || clock_timestamp()::text)::cstring), true, (select deltaker_fnr from avtale where avtale.id = hendelselogg.avtale_id), 'Avtale endret', avtale_id, hendelse, tidspunkt, false, utført_av, 'DELTAKER'
+FROM hendelselogg WHERE hendelse = 'ENDRET';
