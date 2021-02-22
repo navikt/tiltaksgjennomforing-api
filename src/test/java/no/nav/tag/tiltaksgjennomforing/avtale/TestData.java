@@ -198,10 +198,6 @@ public class TestData {
         endreAvtale.setHarFamilietilknytning(true);
         endreAvtale.setFamilietilknytningForklaring("En middels god forklaring");
         endreAvtale.setOtpSats(0.02);
-        endreAvtale.setOtpBelop(448);
-        endreAvtale.setArbeidsgiveravgiftBelop(3222);
-        endreAvtale.setSumLonnsutgifter(26070);
-        endreAvtale.setSumLonnstilskudd(15642);
         endreAvtale.setStillingstype(Stillingstype.FAST);
         return endreAvtale;
     }

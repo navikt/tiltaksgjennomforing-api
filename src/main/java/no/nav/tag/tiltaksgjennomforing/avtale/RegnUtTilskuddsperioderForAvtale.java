@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import lombok.Value;
+import lombok.experimental.UtilityClass;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -11,7 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class NyTilskuddForAvtalePeriode {
+@UtilityClass
+public class RegnUtTilskuddsperioderForAvtale {
 
     private final static BigDecimal DAGER_I_MÅNED = new BigDecimal("30.4375");
     private final static int ANTALL_MÅNEDER_I_EN_PERIODE = 3;

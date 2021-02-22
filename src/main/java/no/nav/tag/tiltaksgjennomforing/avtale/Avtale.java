@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.List.copyOf;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 
 @Data
@@ -407,9 +408,24 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new AvtaleSlettemerket(this, utførtAv));
     }
 
-    public void annullerTilskuddsperiode(TilskuddPeriode tilskuddPeriode) {
-        tilskuddPeriode.setStatus(TilskuddPeriodeStatus.ANNULLERT);
-        registerEvent(new TilskuddsperiodeAnnullert(this, tilskuddPeriode));
+
+    public void endreTilskuddsperiode(List<TilskuddPeriode> nye) {
+        ytre:
+        for (TilskuddPeriode ny : nye) {
+            for (TilskuddPeriode gammel : copyOf(tilskuddPeriode)) {
+                if (gammel.getStartDato().equals(ny.getStartDato()) && gammel.getSluttDato().equals(ny.getSluttDato()) && gammel.getStatus() == TilskuddPeriodeStatus.UTBETALT) {
+                    // skal beholde utbetalt periode
+                    continue ytre;
+                } else if (gammel.getStartDato().equals(ny.getStartDato()) && gammel.getSluttDato().equals(ny.getSluttDato()) && gammel.getStatus() == TilskuddPeriodeStatus.GODKJENT && !ny.getBeløp().equals(gammel.getBeløp())) {
+                    gammel.setStatus(TilskuddPeriodeStatus.ANNULLERT);
+                    registerEvent(new TilskuddsperiodeAnnullert(this, gammel));
+                } else if (gammel.getStartDato().equals(ny.getStartDato()) && gammel.getSluttDato().equals(ny.getSluttDato()) && gammel.getStatus() == TilskuddPeriodeStatus.GODKJENT && ny.getBeløp().equals(gammel.getBeløp())) {
+                    continue ytre;
+                }
+            }
+            ny.setAvtale(this);
+            tilskuddPeriode.add(ny);
+        }
     }
 
     private interface MetoderSomIkkeSkalDelegeresFraAvtaleInnhold {
