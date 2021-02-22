@@ -35,10 +35,10 @@ public class TilskuddPeriode {
     private UUID id;
 
     @ManyToOne
-    @JoinColumn(name = "avtale_innhold")
+    @JoinColumn(name = "avtale_id")
     @JsonIgnore
     @ToString.Exclude
-    private AvtaleInnhold avtaleInnhold;
+    private Avtale avtale;
 
     @NonNull
     private Integer beløp;
@@ -74,10 +74,6 @@ public class TilskuddPeriode {
         sluttDato = periode.sluttDato;
         status = periode.status;
         lonnstilskuddProsent = periode.lonnstilskuddProsent;
-    }
-
-    public Avtale hentAvtale() {
-        return getAvtaleInnhold().getAvtale();
     }
 
     private void sjekkOmKanBehandles() {

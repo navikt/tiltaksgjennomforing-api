@@ -124,7 +124,7 @@ public class AvtaleRepositoryTest {
 
         List<TilskuddPeriode> perioder = nyLagretAvtale.getTilskuddPeriode();
         assertThat(perioder).isNotEmpty();
-        assertThat(lagretAvtale.getVersjoner().get(0).getId()).isEqualTo(perioder.get(0).getAvtaleInnhold().getId());
+        assertThat(lagretAvtale.getId()).isEqualTo(perioder.get(0).getAvtale().getId());
     }
 
     @Test

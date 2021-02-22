@@ -13,6 +13,8 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
 import javax.persistence.*;
@@ -61,6 +63,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private String enhetGeografisk;
     @JsonIgnore
     private String enhetOppfolging;
+
+    @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
+    private List<TilskuddPeriode> tilskuddPeriode = new ArrayList<>();
 
     private Avtale(OpprettAvtale opprettAvtale) {
         this.id = UUID.randomUUID();
@@ -365,11 +371,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     @JsonProperty
     public TilskuddPeriode gjeldendeTilskuddsperiode() {
-        if (gjeldendeInnhold().getTilskuddPeriode().isEmpty()) {
+        if (tilskuddPeriode.isEmpty()) {
             return null;
         }
 
-        List<TilskuddPeriode> tilskuddsperioderSortert = gjeldendeInnhold().getTilskuddPeriode().stream()
+        List<TilskuddPeriode> tilskuddsperioderSortert = tilskuddPeriode.stream()
                 .sorted(Comparator.comparing(TilskuddPeriode::getStartDato))
                 .collect(Collectors.toList());
 
@@ -399,6 +405,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     public void slettemerk(NavIdent utførtAv) {
         this.setSlettemerket(true);
         registerEvent(new AvtaleSlettemerket(this, utførtAv));
+    }
+
+    public void annullerTilskuddsperiode(TilskuddPeriode tilskuddPeriode) {
+        tilskuddPeriode.setStatus(TilskuddPeriodeStatus.ANNULLERT);
+        registerEvent(new TilskuddsperiodeAnnullert(this, tilskuddPeriode));
     }
 
     private interface MetoderSomIkkeSkalDelegeresFraAvtaleInnhold {
