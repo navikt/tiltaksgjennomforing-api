@@ -421,6 +421,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
                     registerEvent(new TilskuddsperiodeAnnullert(this, gammel));
                 } else if (gammel.getStartDato().equals(ny.getStartDato()) && gammel.getSluttDato().equals(ny.getSluttDato()) && gammel.getStatus() == TilskuddPeriodeStatus.GODKJENT && ny.getBeløp().equals(gammel.getBeløp())) {
                     continue ytre;
+                } else if (gammel.getStartDato().equals(ny.getStartDato()) && ny.getSluttDato().isBefore(gammel.getSluttDato()) && gammel.getStatus() == TilskuddPeriodeStatus.GODKJENT) {
+                    gammel.setStatus(TilskuddPeriodeStatus.ANNULLERT);
+                    registerEvent(new TilskuddsperiodeAnnullert(this, gammel));
                 }
             }
             ny.setAvtale(this);

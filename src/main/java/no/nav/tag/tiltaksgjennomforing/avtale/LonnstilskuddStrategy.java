@@ -3,7 +3,9 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
@@ -50,7 +52,14 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
     private void regnUtTilskuddsperioder() {
         avtaleInnhold.getAvtale().getTilskuddPeriode().removeIf(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET);
         if (harAllePåkrevdeFeltForRegneUtTilskuddsperiode()) {
-            List<TilskuddPeriode> nye = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForAvtale(avtaleInnhold.getSumLonnstilskudd(), avtaleInnhold.getStartDato(), avtaleInnhold.getSluttDato(), avtaleInnhold.getLonnstilskuddProsent(), avtaleInnhold.getDatoForRedusertProsent(), avtaleInnhold.getSumLønnstilskuddRedusert());
+            LocalDate startDato = avtaleInnhold.getAvtale().getTilskuddPeriode().stream()
+                    .filter(t -> t.getStatus() == TilskuddPeriodeStatus.UTBETALT)
+                    .map(t -> t.getSluttDato())
+                    .collect((Collectors.maxBy(LocalDate::compareTo)))
+                    .map(t -> t.plusDays(1))
+                    .orElse(avtaleInnhold.getStartDato());
+
+            List<TilskuddPeriode> nye = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForAvtale(avtaleInnhold.getSumLonnstilskudd(), startDato, avtaleInnhold.getSluttDato(), avtaleInnhold.getLonnstilskuddProsent(), avtaleInnhold.getDatoForRedusertProsent(), avtaleInnhold.getSumLønnstilskuddRedusert());
             avtaleInnhold.getAvtale().endreTilskuddsperiode(nye);
         }
     }
