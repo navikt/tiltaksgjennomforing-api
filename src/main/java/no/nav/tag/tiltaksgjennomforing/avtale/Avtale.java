@@ -12,6 +12,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
+import no.nav.tag.tiltaksgjennomforing.utils.PeriodeOverlapp;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -410,18 +411,26 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
 
     public void endreTilskuddsperiode(List<TilskuddPeriode> nye) {
+        tilskuddPeriode.removeIf(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET);
+
         ytre:
         for (TilskuddPeriode ny : nye) {
             for (TilskuddPeriode gammel : copyOf(tilskuddPeriode)) {
-                if (gammel.getStartDato().equals(ny.getStartDato()) && gammel.getSluttDato().equals(ny.getSluttDato()) && gammel.getStatus() == TilskuddPeriodeStatus.UTBETALT) {
-                    // skal beholde utbetalt periode
-                    continue ytre;
-                } else if (gammel.getStartDato().equals(ny.getStartDato()) && gammel.getSluttDato().equals(ny.getSluttDato()) && gammel.getStatus() == TilskuddPeriodeStatus.GODKJENT && !ny.getBeløp().equals(gammel.getBeløp())) {
+                if (gammel.overlapper(ny) == PeriodeOverlapp.HELT) {
+                    if (gammel.getStatus() == TilskuddPeriodeStatus.GODKJENT && !ny.getBeløp().equals(gammel.getBeløp())) {
+                        gammel.setStatus(TilskuddPeriodeStatus.ANNULLERT);
+                        registerEvent(new TilskuddsperiodeAnnullert(this, gammel));
+                    }
+                    if (gammel.getStatus() == TilskuddPeriodeStatus.GODKJENT && ny.getBeløp().equals(gammel.getBeløp())) {
+                        continue ytre;
+                    }
+                    if (gammel.getStatus() == TilskuddPeriodeStatus.UTBETALT) {
+                        continue ytre;
+                    }
+                } else if (gammel.overlapper(ny) == PeriodeOverlapp.FORKORTET && gammel.getStatus() == TilskuddPeriodeStatus.GODKJENT) {
                     gammel.setStatus(TilskuddPeriodeStatus.ANNULLERT);
                     registerEvent(new TilskuddsperiodeAnnullert(this, gammel));
-                } else if (gammel.getStartDato().equals(ny.getStartDato()) && gammel.getSluttDato().equals(ny.getSluttDato()) && gammel.getStatus() == TilskuddPeriodeStatus.GODKJENT && ny.getBeløp().equals(gammel.getBeløp())) {
-                    continue ytre;
-                } else if (gammel.getStartDato().equals(ny.getStartDato()) && ny.getSluttDato().isBefore(gammel.getSluttDato()) && gammel.getStatus() == TilskuddPeriodeStatus.GODKJENT) {
+                } else if (gammel.overlapper(ny) == PeriodeOverlapp.FORLENGET && gammel.getStatus() == TilskuddPeriodeStatus.GODKJENT) {
                     gammel.setStatus(TilskuddPeriodeStatus.ANNULLERT);
                     registerEvent(new TilskuddsperiodeAnnullert(this, gammel));
                 }

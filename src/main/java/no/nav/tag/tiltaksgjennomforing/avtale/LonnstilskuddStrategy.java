@@ -50,7 +50,6 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
     }
 
     private void regnUtTilskuddsperioder() {
-        avtaleInnhold.getAvtale().getTilskuddPeriode().removeIf(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET);
         if (harAllePåkrevdeFeltForRegneUtTilskuddsperiode()) {
             LocalDate startDato = avtaleInnhold.getAvtale().getTilskuddPeriode().stream()
                     .filter(t -> t.getStatus() == TilskuddPeriodeStatus.UTBETALT)
@@ -61,6 +60,8 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
 
             List<TilskuddPeriode> nye = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForAvtale(avtaleInnhold.getSumLonnstilskudd(), startDato, avtaleInnhold.getSluttDato(), avtaleInnhold.getLonnstilskuddProsent(), avtaleInnhold.getDatoForRedusertProsent(), avtaleInnhold.getSumLønnstilskuddRedusert());
             avtaleInnhold.getAvtale().endreTilskuddsperiode(nye);
+        } else {
+            avtaleInnhold.getAvtale().getTilskuddPeriode().removeIf(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET);
         }
     }
 

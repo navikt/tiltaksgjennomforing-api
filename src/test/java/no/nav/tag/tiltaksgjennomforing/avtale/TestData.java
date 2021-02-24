@@ -69,8 +69,17 @@ public class TestData {
         avtale.setJournalpostId("1");
         return avtale;
     }
-
     public static Avtale enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate startDato, LocalDate sluttDato) {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setEnhetGeografisk(ENHET_OPPFØLGING);
+        avtale.setEnhetOppfolging(ENHET_GEOGRAFISK);
+        EndreAvtale endring = TestData.endringPåAlleFelter();
+        endring.setStartDato(startDato);
+        endring.setSluttDato(sluttDato);
+        avtale.endreAvtale(Instant.now(), endring, Avtalerolle.VEILEDER);
+        return avtale;
+    }
+    public static Avtale enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate startDato, LocalDate sluttDato) {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setEnhetGeografisk(ENHET_OPPFØLGING);
         avtale.setEnhetOppfolging(ENHET_GEOGRAFISK);

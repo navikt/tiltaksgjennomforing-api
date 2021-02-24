@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.time.Instant;
@@ -171,7 +172,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
     @Test
     public void sjekk_at_nye_perioder_ved_forlengelse_starter_etter_utbetalte_perioder() {
-        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 4, 1));
+        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 4, 1));
         avtale.opphevGodkjenningerSomVeileder();
 
 
@@ -235,6 +236,61 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
         assertThat(avtale.getTilskuddPeriode().get(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.ANNULLERT);
         assertThat(avtale.getTilskuddPeriode().get(0).getId()).isEqualTo(idPåGodkjentTilskuddsperiode);
+
+        harOverlappendeDatoer(avtale.getTilskuddPeriode());
+        harAlleDageneIAvtalenperioden(avtale.getTilskuddPeriode(), avtale.getStartDato(), avtale.getSluttDato());
+    }
+
+    // Alternativ 1: Beholde det som er godkjent, når ikke endring på økonomi
+    @Test
+    @Ignore("Støtter alternativ 2 i stedet for denne")
+    public void sjekk_at_godkjent_periode_ikke_annulleres_ved_forlengelse() {
+        LocalDate avtaleStart = LocalDate.of(2021, 1, 1);
+        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(avtaleStart, avtaleStart);
+
+        avtale.getTilskuddPeriode().get(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
+        UUID idPåGodkjentTilskuddsperiode = avtale.getTilskuddPeriode().get(0).getId();
+
+        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        endreAvtale.setStartDato(avtaleStart);
+        endreAvtale.setSluttDato(avtaleStart.plusDays(1));
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+
+        assertThat(avtale.getTilskuddPeriode().get(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
+        assertThat(avtale.getTilskuddPeriode().get(0).getId()).isEqualTo(idPåGodkjentTilskuddsperiode);
+        assertThat(avtale.getTilskuddPeriode().get(0).getStartDato()).isEqualTo(avtaleStart);
+        assertThat(avtale.getTilskuddPeriode().get(0).getSluttDato()).isEqualTo(avtaleStart);
+
+        assertThat(avtale.getTilskuddPeriode().get(1).getStatus()).isEqualTo(TilskuddPeriodeStatus.UBEHANDLET);
+        assertThat(avtale.getTilskuddPeriode().get(1).getStartDato()).isEqualTo(avtaleStart.plusDays(1));
+        assertThat(avtale.getTilskuddPeriode().get(1).getSluttDato()).isEqualTo(avtaleStart.plusDays(1));
+
+        harOverlappendeDatoer(avtale.getTilskuddPeriode());
+        harAlleDageneIAvtalenperioden(avtale.getTilskuddPeriode(), avtale.getStartDato(), avtale.getSluttDato());
+    }
+
+    // Alternativ 2: Ikke beholde det som er godkjent, når ikke endring på økonomi, men lage lengst mulig perioder
+    @Test
+    public void sjekk_at_godkjent_periode_annulleres_ved_forlengelse() {
+        LocalDate avtaleStart = LocalDate.of(2021, 1, 1);
+        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(avtaleStart, avtaleStart);
+
+        avtale.getTilskuddPeriode().get(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
+        UUID idPåGodkjentTilskuddsperiode = avtale.getTilskuddPeriode().get(0).getId();
+
+        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        endreAvtale.setStartDato(avtaleStart);
+        endreAvtale.setSluttDato(avtaleStart.plusDays(1));
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+
+        assertThat(avtale.getTilskuddPeriode().get(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.ANNULLERT);
+        assertThat(avtale.getTilskuddPeriode().get(0).getId()).isEqualTo(idPåGodkjentTilskuddsperiode);
+        assertThat(avtale.getTilskuddPeriode().get(0).getStartDato()).isEqualTo(avtaleStart);
+        assertThat(avtale.getTilskuddPeriode().get(0).getSluttDato()).isEqualTo(avtaleStart);
+
+        assertThat(avtale.getTilskuddPeriode().get(1).getStatus()).isEqualTo(TilskuddPeriodeStatus.UBEHANDLET);
+        assertThat(avtale.getTilskuddPeriode().get(1).getStartDato()).isEqualTo(avtaleStart);
+        assertThat(avtale.getTilskuddPeriode().get(1).getSluttDato()).isEqualTo(avtaleStart.plusDays(1));
 
         harOverlappendeDatoer(avtale.getTilskuddPeriode());
         harAlleDageneIAvtalenperioden(avtale.getTilskuddPeriode(), avtale.getStartDato(), avtale.getSluttDato());
