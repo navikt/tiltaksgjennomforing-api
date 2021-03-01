@@ -1,5 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 public enum TilskuddPeriodeStatus {
-    UBEHANDLET, GODKJENT, AVSLÅTT, ANNULLERT, UTBETALT
+    ANNULLERT, GODKJENT, AVSLÅTT, UTBETALT, UBEHANDLET
 }

@@ -25,9 +25,8 @@ import java.util.UUID;
 public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
 
     @Id
-    @GeneratedValue
     @EqualsAndHashCode.Include
-    private UUID id;
+    private UUID id = UUID.randomUUID();
 
     @ManyToOne
     @JoinColumn(name = "avtale_id")
@@ -117,18 +116,7 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     public int compareTo(@NotNull TilskuddPeriode o) {
         return new CompareToBuilder()
                 .append(this.getStartDato(), o.getStartDato())
+                .append(this.getStatus(), o.getStatus())
                 .toComparison();
-    }
-
-    public TilskuddPeriode annullerOgLagNyForkortet(LocalDate nySluttDato) {
-        TilskuddPeriode ny = new TilskuddPeriode(this);
-        setStatus(TilskuddPeriodeStatus.ANNULLERT);
-        ny.setSluttDato(nySluttDato);
-        ny.setBeløp(RegnUtTilskuddsperioderForAvtale.beløpForPeriode(ny.getStartDato(), ny.getSluttDato(), ny.getAvtale().getSumLonnstilskudd()));
-        return ny;
-    }
-
-    public TilskuddPeriode annullerOgLagNy() {
-        return annullerOgLagNyForkortet(sluttDato);
     }
 }

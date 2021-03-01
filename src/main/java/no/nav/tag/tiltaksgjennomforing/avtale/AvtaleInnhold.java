@@ -144,6 +144,17 @@ public class AvtaleInnhold {
         return nyVersjon;
     }
 
+    public AvtaleInnhold nyGodkjentVersjon() {
+        AvtaleInnhold nyVersjon = toBuilder()
+            .id(UUID.randomUUID())
+            .maal(kopiAvMål())
+            .journalpostId(null)
+            .versjon(versjon + 1)
+            .build();
+        nyVersjon.getMaal().forEach(m -> m.setAvtaleInnhold(nyVersjon));
+        return nyVersjon;
+    }
+
     private List<Maal> kopiAvMål() {
         return maal.stream().map(m -> new Maal(m)).collect(Collectors.toList());
     }

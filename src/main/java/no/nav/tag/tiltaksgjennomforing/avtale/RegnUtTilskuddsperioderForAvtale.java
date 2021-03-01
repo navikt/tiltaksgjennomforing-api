@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import lombok.Value;
 import lombok.experimental.UtilityClass;
 import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 
@@ -42,6 +41,14 @@ public class RegnUtTilskuddsperioderForAvtale {
             return tilskuddsperioder;
         }
 
+    }
+
+    public static Integer beløpForPeriode(LocalDate datoFraOgMed, LocalDate datoTilOgMed, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMåned, Integer sumLønnstilskuddPerMånedRedusert) {
+        if (datoForRedusertProsent == null || datoTilOgMed.isBefore(datoForRedusertProsent)) {
+            return beløpForPeriode(datoFraOgMed, datoTilOgMed, sumLønnstilskuddPerMåned);
+        } else {
+            return beløpForPeriode(datoFraOgMed, datoTilOgMed, sumLønnstilskuddPerMånedRedusert);
+        }
     }
 
     public static Integer beløpForPeriode(LocalDate fra, LocalDate til, Integer sumLønnstilskuddPerMåned) {

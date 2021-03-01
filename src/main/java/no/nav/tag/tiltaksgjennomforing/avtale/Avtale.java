@@ -12,8 +12,8 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
-import no.nav.tag.tiltaksgjennomforing.utils.PeriodeOverlapp;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
+import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.SortNatural;
@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.util.List.copyOf;
+import static java.util.Set.copyOf;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 
 @Data
@@ -70,7 +70,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
     @SortNatural
-    @OrderBy("startDato ASC")
     private SortedSet<TilskuddPeriode> tilskuddPeriode = new TreeSet<>();
 
     private Avtale(OpprettAvtale opprettAvtale) {
@@ -103,6 +102,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         sjekkOmAvtalenKanEndres();
         sjekkSistEndret(sistEndret);
         gjeldendeInnhold().endreAvtale(nyAvtale);
+        nyeTilskuddsperioder();
         sistEndretNå();
         registerEvent(new AvtaleEndret(this, utfortAv));
     }
@@ -416,35 +416,96 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new AvtaleSlettemerket(this, utførtAv));
     }
 
+    void forlengTilskuddsperioder(LocalDate gammelSluttDato, LocalDate nySluttDato) {
+        TilskuddPeriode sisteTilskuddsperiode = tilskuddPeriode.last();
+        if (sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) {
+            // Kan utvide siste tilskuddsperiode hvis den er ubehandlet
+            tilskuddPeriode.addAll(beregnTilskuddsperioder(sisteTilskuddsperiode.getStartDato(), nySluttDato));
+            tilskuddPeriode.remove(sisteTilskuddsperiode);
+        } else {
+            // Regner ut nye perioder fra gammel avtaleslutt til ny avtaleslutt
+            tilskuddPeriode.addAll(beregnTilskuddsperioder(gammelSluttDato.plusDays(1), nySluttDato));
+        }
+    }
 
-    public void endreTilskuddsperiode(List<TilskuddPeriode> nye) {
-        tilskuddPeriode.removeIf(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET);
-
-        ytre:
-        for (TilskuddPeriode ny : nye) {
-            for (TilskuddPeriode gammel : copyOf(tilskuddPeriode)) {
-                if (gammel.overlapper(ny) == PeriodeOverlapp.HELT) {
-                    if (gammel.getStatus() == TilskuddPeriodeStatus.GODKJENT && !ny.getBeløp().equals(gammel.getBeløp())) {
-                        gammel.setStatus(TilskuddPeriodeStatus.ANNULLERT);
-                        registerEvent(new TilskuddsperiodeAnnullert(this, gammel));
-                    }
-                    if (gammel.getStatus() == TilskuddPeriodeStatus.GODKJENT && ny.getBeløp().equals(gammel.getBeløp())) {
-                        continue ytre;
-                    }
-                    if (gammel.getStatus() == TilskuddPeriodeStatus.UTBETALT) {
-                        continue ytre;
-                    }
-                } else if (gammel.overlapper(ny) == PeriodeOverlapp.FORKORTET && gammel.getStatus() == TilskuddPeriodeStatus.GODKJENT) {
-                    gammel.setStatus(TilskuddPeriodeStatus.ANNULLERT);
-                    registerEvent(new TilskuddsperiodeAnnullert(this, gammel));
-                } else if (gammel.overlapper(ny) == PeriodeOverlapp.FORLENGET && gammel.getStatus() == TilskuddPeriodeStatus.GODKJENT) {
-                    gammel.setStatus(TilskuddPeriodeStatus.ANNULLERT);
-                    registerEvent(new TilskuddsperiodeAnnullert(this, gammel));
+    public void forkortTilskuddsperioder(LocalDate nySluttDato) {
+        for (TilskuddPeriode tilskuddsperiode : Set.copyOf(tilskuddPeriode)) {
+            TilskuddPeriodeStatus status = tilskuddsperiode.getStatus();
+            if (tilskuddsperiode.getStartDato().isAfter(nySluttDato)) {
+                if (status == TilskuddPeriodeStatus.UBEHANDLET) {
+                    tilskuddPeriode.remove(tilskuddsperiode);
+                } else {
+                    tilskuddsperiode.setStatus(TilskuddPeriodeStatus.ANNULLERT);
+                }
+            } else if (tilskuddsperiode.getSluttDato().isAfter(nySluttDato)) {
+                if (status == TilskuddPeriodeStatus.UBEHANDLET) {
+                    tilskuddsperiode.setSluttDato(nySluttDato);
+                    tilskuddsperiode.setBeløp(beregnTilskuddsbeløp(tilskuddsperiode.getStartDato(), tilskuddsperiode.getSluttDato()));
+                } else if (status == TilskuddPeriodeStatus.GODKJENT) {
+                    TilskuddPeriode ny = new TilskuddPeriode(tilskuddsperiode);
+                    ny.setSluttDato(nySluttDato);
+                    ny.setBeløp(beregnTilskuddsbeløp(tilskuddsperiode.getStartDato(), tilskuddsperiode.getSluttDato()));
+                    tilskuddsperiode.setStatus(TilskuddPeriodeStatus.ANNULLERT);
+                    tilskuddPeriode.add(ny);
                 }
             }
-            ny.setAvtale(this);
-            tilskuddPeriode.add(ny);
         }
+    }
+
+    void endreBeløpITilskuddsperioder() {
+        for (TilskuddPeriode tilskuddsperiode : Set.copyOf(tilskuddPeriode)) {
+            if (tilskuddsperiode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) {
+                tilskuddsperiode.setBeløp(beregnTilskuddsbeløp(tilskuddsperiode.getStartDato(), tilskuddsperiode.getSluttDato()));
+            } else if (tilskuddsperiode.getStatus() == TilskuddPeriodeStatus.GODKJENT) {
+                TilskuddPeriode ny = new TilskuddPeriode(tilskuddsperiode);
+                ny.setBeløp(beregnTilskuddsbeløp(tilskuddsperiode.getStartDato(), tilskuddsperiode.getSluttDato()));
+//                boolean beløpetHarØkt = ny.getBeløp() > tilskuddsperiode.getBeløp();
+//                ny.setStatus(beløpetHarØkt ? TilskuddPeriodeStatus.UBEHANDLET : TilskuddPeriodeStatus.GODKJENT);
+                ny.setStatus(TilskuddPeriodeStatus.UBEHANDLET);
+                tilskuddsperiode.setStatus(TilskuddPeriodeStatus.ANNULLERT);
+                tilskuddPeriode.add(ny);
+            }
+        }
+    }
+
+    private Integer beregnTilskuddsbeløp(LocalDate startDato, LocalDate sluttDato) {
+        return RegnUtTilskuddsperioderForAvtale.beløpForPeriode(startDato, sluttDato, getDatoForRedusertProsent(), getSumLonnstilskudd(), getSumLønnstilskuddRedusert());
+    }
+
+
+    private List<TilskuddPeriode> beregnTilskuddsperioder(LocalDate startDato, LocalDate sluttDato) {
+        return RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForAvtale(getSumLonnstilskudd(), startDato, sluttDato, getLonnstilskuddProsent(), getDatoForRedusertProsent(), getSumLønnstilskuddRedusert());
+    }
+
+    private void nyeTilskuddsperioder() {
+        tilskuddPeriode.clear();
+        if (Utils.erIkkeTomme(getStartDato(), getSluttDato(), getSumLonnstilskudd())) {
+            tilskuddPeriode.addAll(beregnTilskuddsperioder(getStartDato(), getSluttDato()));
+        }
+    }
+
+    public void forlengAvtale(LocalDate nySluttDato) {
+        forlengTilskuddsperioder(this.getSluttDato(), nySluttDato);
+        versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
+        gjeldendeInnhold().setSluttDato(nySluttDato);
+        registerEvent(new AvtaleForlenget(this));
+    }
+
+    public void endreTilskuddsberegning(EndreAvtale tilskuddsberegning) {
+        versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
+        gjeldendeInnhold().endreAvtale(tilskuddsberegning);
+        endreBeløpITilskuddsperioder();
+        registerEvent(new TilskuddsberegningEndret(this, null));
+    }
+
+    public void forkortAvtale(LocalDate nySluttDato) {
+        if (nySluttDato.isAfter(getSluttDato()) || nySluttDato.isBefore(getStartDato())) {
+            // Ikke forkortelse, kast feil
+        }
+        forkortTilskuddsperioder(nySluttDato);
+        versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
+        gjeldendeInnhold().setSluttDato(nySluttDato);
+        registerEvent(new AvtaleForlenget(this));
     }
 
     private interface MetoderSomIkkeSkalDelegeresFraAvtaleInnhold {

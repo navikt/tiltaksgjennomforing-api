@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 

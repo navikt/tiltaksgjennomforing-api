@@ -162,9 +162,6 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.UTBETALT);
         UUID idPåUtbetaltTilskuddsperiode = avtale.tilskuddsperiode(0).getId();
         Integer beløpPåUtbetaltTilskuddsperiode = avtale.tilskuddsperiode(0).getBeløp();
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
-        endreAvtale.setManedslonn(99999);
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
 
         assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.UTBETALT);
         assertThat(avtale.tilskuddsperiode(0).getId()).isEqualTo(idPåUtbetaltTilskuddsperiode);
@@ -181,12 +178,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.UTBETALT);
         avtale.tilskuddsperiode(1).setStatus(TilskuddPeriodeStatus.UTBETALT);
 
-
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
-        endreAvtale.setStartDato(avtale.getStartDato());
-        endreAvtale.setSluttDato(avtale.getSluttDato().plusMonths(3));
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
-
+        avtale.forlengAvtale(avtale.getSluttDato().plusMonths(3));
 
         assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.UTBETALT);
         assertThat(avtale.tilskuddsperiode(1).getStatus()).isEqualTo(TilskuddPeriodeStatus.UTBETALT);
@@ -203,9 +195,8 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
         UUID idPåGodkjentTilskuddsperiode = avtale.tilskuddsperiode(0).getId();
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
-        endreAvtale.setSluttDato(avtale.getSluttDato().plusDays(1));
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+
+        avtale.forlengAvtale(avtale.getSluttDato().plusDays(1));
 
         assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
         assertThat(avtale.tilskuddsperiode(0).getId()).isEqualTo(idPåGodkjentTilskuddsperiode);
@@ -217,9 +208,10 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
     public void sjekk_at_godkjent_perioder_ikke_beholdes_ved_endring_som_påvirker_økonomi() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
+
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         endreAvtale.setManedslonn(99999);
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreTilskuddsberegning(endreAvtale);
 
         assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.ANNULLERT);
         harOverlappendeDatoer(avtale.getTilskuddPeriode());
@@ -231,10 +223,8 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
         UUID idPåGodkjentTilskuddsperiode = avtale.tilskuddsperiode(0).getId();
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
 
-        endreAvtale.setSluttDato(avtale.getStartDato().plusDays(1));
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.forkortAvtale(avtale.getStartDato().plusDays(1));
 
         assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.ANNULLERT);
         assertThat(avtale.tilskuddsperiode(0).getId()).isEqualTo(idPåGodkjentTilskuddsperiode);
@@ -243,59 +233,27 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         harAlleDageneIAvtalenperioden(avtale.getTilskuddPeriode(), avtale.getStartDato(), avtale.getSluttDato());
     }
 
-    // Alternativ 1: Beholde det som er godkjent, når ikke endring på økonomi
     @Test
-    @Ignore("Støtter alternativ 2 i stedet for denne")
     public void sjekk_at_godkjent_periode_ikke_annulleres_ved_forlengelse() {
-        LocalDate avtaleStart = LocalDate.of(2021, 1, 1);
-        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(avtaleStart, avtaleStart);
+        LocalDate avtaleFørsteDag = LocalDate.of(2021, 1, 1);
+        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(avtaleFørsteDag, avtaleFørsteDag);
 
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
         UUID idPåGodkjentTilskuddsperiode = avtale.tilskuddsperiode(0).getId();
 
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
-        endreAvtale.setStartDato(avtaleStart);
-        endreAvtale.setSluttDato(avtaleStart.plusDays(1));
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.forlengAvtale(avtaleFørsteDag.plusDays(1));
 
         assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
         assertThat(avtale.tilskuddsperiode(0).getId()).isEqualTo(idPåGodkjentTilskuddsperiode);
-        assertThat(avtale.tilskuddsperiode(0).getStartDato()).isEqualTo(avtaleStart);
-        assertThat(avtale.tilskuddsperiode(0).getSluttDato()).isEqualTo(avtaleStart);
+        assertThat(avtale.tilskuddsperiode(0).getStartDato()).isEqualTo(avtaleFørsteDag);
+        assertThat(avtale.tilskuddsperiode(0).getSluttDato()).isEqualTo(avtaleFørsteDag);
 
         assertThat(avtale.tilskuddsperiode(1).getStatus()).isEqualTo(TilskuddPeriodeStatus.UBEHANDLET);
-        assertThat(avtale.tilskuddsperiode(1).getStartDato()).isEqualTo(avtaleStart.plusDays(1));
-        assertThat(avtale.tilskuddsperiode(1).getSluttDato()).isEqualTo(avtaleStart.plusDays(1));
+        assertThat(avtale.tilskuddsperiode(1).getStartDato()).isEqualTo(avtaleFørsteDag.plusDays(1));
+        assertThat(avtale.tilskuddsperiode(1).getSluttDato()).isEqualTo(avtaleFørsteDag.plusDays(1));
 
         harOverlappendeDatoer(avtale.getTilskuddPeriode());
-        harAlleDageneIAvtalenperioden(avtale.getTilskuddPeriode(), avtale.getStartDato(), avtale.getSluttDato());
-    }
-
-    // Alternativ 2: Ikke beholde det som er godkjent, når ikke endring på økonomi, men lage lengst mulig perioder
-    @Test
-    public void sjekk_at_godkjent_periode_annulleres_ved_forlengelse() {
-        LocalDate avtaleStart = LocalDate.of(2021, 1, 1);
-        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(avtaleStart, avtaleStart);
-
-        avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
-        UUID idPåGodkjentTilskuddsperiode = avtale.tilskuddsperiode(0).getId();
-
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
-        endreAvtale.setStartDato(avtaleStart);
-        endreAvtale.setSluttDato(avtaleStart.plusDays(1));
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
-
-        assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.ANNULLERT);
-        assertThat(avtale.tilskuddsperiode(0).getId()).isEqualTo(idPåGodkjentTilskuddsperiode);
-        assertThat(avtale.tilskuddsperiode(0).getStartDato()).isEqualTo(avtaleStart);
-        assertThat(avtale.tilskuddsperiode(0).getSluttDato()).isEqualTo(avtaleStart);
-
-        assertThat(avtale.tilskuddsperiode(1).getStatus()).isEqualTo(TilskuddPeriodeStatus.UBEHANDLET);
-        assertThat(avtale.tilskuddsperiode(1).getStartDato()).isEqualTo(avtaleStart);
-        assertThat(avtale.tilskuddsperiode(1).getSluttDato()).isEqualTo(avtaleStart.plusDays(1));
-
-        harOverlappendeDatoer(avtale.getTilskuddPeriode());
-        harAlleDageneIAvtalenperioden(avtale.getTilskuddPeriode(), avtale.getStartDato(), avtale.getSluttDato());
+        harAlleDageneIAvtalenperioden(avtale.getTilskuddPeriode(), avtaleFørsteDag, avtaleFørsteDag.plusDays(1));
     }
 
     private List<TilskuddPeriode> sorter(List<TilskuddPeriode> liste) {
@@ -316,11 +274,11 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         endreAvtale.setStartDato(avtaleStart);
         endreAvtale.setSluttDato(avtaleSlutt);
         endreAvtale.setManedslonn(77777);
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreTilskuddsberegning(endreAvtale);
 
         assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.UTBETALT);
         assertThat(avtale.tilskuddsperiode(1).getStatus()).isEqualTo(TilskuddPeriodeStatus.ANNULLERT);
-        assertThat(avtale.tilskuddsperiode(2).getStatus()).isEqualTo(TilskuddPeriodeStatus.UTBETALT);
+        assertThat(avtale.tilskuddsperiode(2).getStatus()).isEqualTo(TilskuddPeriodeStatus.UBEHANDLET);
         assertThat(avtale.tilskuddsperiode(3).getStatus()).isEqualTo(TilskuddPeriodeStatus.UTBETALT);
 
         harOverlappendeDatoer(avtale.getTilskuddPeriode());
