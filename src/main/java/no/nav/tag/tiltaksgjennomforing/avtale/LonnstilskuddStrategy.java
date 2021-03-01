@@ -3,9 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
@@ -30,7 +27,6 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setOtpSats(getOtpSats(nyAvtale));
         super.endre(nyAvtale);
         regnUtTotalLonnstilskudd();
-        regnUtTilskuddsperioder();
     }
 
     void regnUtTotalLonnstilskudd() {
@@ -49,21 +45,7 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setManedslonn100pst(månedslønnFullStilling);
     }
 
-    private void regnUtTilskuddsperioder() {
-        if (harAllePåkrevdeFeltForRegneUtTilskuddsperiode()) {
-            LocalDate startDato = avtaleInnhold.getAvtale().getTilskuddPeriode().stream()
-                    .filter(t -> t.getStatus() == TilskuddPeriodeStatus.UTBETALT)
-                    .map(t -> t.getSluttDato())
-                    .collect((Collectors.maxBy(LocalDate::compareTo)))
-                    .map(t -> t.plusDays(1))
-                    .orElse(avtaleInnhold.getStartDato());
 
-            List<TilskuddPeriode> nye = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForAvtale(avtaleInnhold.getSumLonnstilskudd(), startDato, avtaleInnhold.getSluttDato(), avtaleInnhold.getLonnstilskuddProsent(), avtaleInnhold.getDatoForRedusertProsent(), avtaleInnhold.getSumLønnstilskuddRedusert());
-            avtaleInnhold.getAvtale().endreTilskuddsperiode(nye);
-        } else {
-            avtaleInnhold.getAvtale().getTilskuddPeriode().removeIf(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET);
-        }
-    }
 
     private double getOtpSats(EndreAvtale nyAvtale) {
         double OBLIG_TJENESTEPENSJON_PROSENT_SATS = 0.02;
@@ -73,9 +55,6 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         return OBLIG_TJENESTEPENSJON_PROSENT_SATS;
     }
 
-    private boolean harAllePåkrevdeFeltForRegneUtTilskuddsperiode() {
-        return avtaleInnhold.getSumLonnstilskudd() != null && avtaleInnhold.getStartDato() != null && avtaleInnhold.getSluttDato() != null;
-    }
 
     private Integer getLønnVedFullStilling(Integer sumUtgifter, Integer stillingsProsent) {
         if (sumUtgifter == null || stillingsProsent == null) {

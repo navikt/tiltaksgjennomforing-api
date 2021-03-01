@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import lombok.Value;
 import lombok.experimental.UtilityClass;
+import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -20,19 +21,19 @@ public class RegnUtTilskuddsperioderForAvtale {
 
     public static List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(Integer sumLønnstilskuddPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed, Integer lonnstilskuddprosent, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMånedRedusert) {
         if (datoForRedusertProsent == null) {
-            return lagDatoPar(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
-                Integer beløp = beløpForPeriode(datoPar.fraOgMed, datoPar.tilOgMed, sumLønnstilskuddPerMåned);
-                return new TilskuddPeriode(beløp, datoPar.fraOgMed, datoPar.tilOgMed, lonnstilskuddprosent);
+            return lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
+                Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMåned);
+                return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), lonnstilskuddprosent);
             }).collect(Collectors.toList());
         } else {
-            List<TilskuddPeriode> tilskuddperioderFørRedusering = lagDatoPar(datoFraOgMed, datoForRedusertProsent.minusDays(1)).stream().map(datoPar -> {
-                Integer beløp = beløpForPeriode(datoPar.fraOgMed, datoPar.tilOgMed, sumLønnstilskuddPerMåned);
-                return new TilskuddPeriode(beløp, datoPar.fraOgMed, datoPar.tilOgMed, lonnstilskuddprosent);
+            List<TilskuddPeriode> tilskuddperioderFørRedusering = lagPeriode(datoFraOgMed, datoForRedusertProsent.minusDays(1)).stream().map(datoPar -> {
+                Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMåned);
+                return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), lonnstilskuddprosent);
             }).collect(Collectors.toList());
 
-            List<TilskuddPeriode> tilskuddperioderEtterRedusering = lagDatoPar(datoForRedusertProsent, datoTilOgMed).stream().map(datoPar -> {
-                Integer beløp = beløpForPeriode(datoPar.fraOgMed, datoPar.tilOgMed, sumLønnstilskuddPerMånedRedusert);
-                return new TilskuddPeriode(beløp, datoPar.fraOgMed, datoPar.tilOgMed, lonnstilskuddprosent - 10);
+            List<TilskuddPeriode> tilskuddperioderEtterRedusering = lagPeriode(datoForRedusertProsent, datoTilOgMed).stream().map(datoPar -> {
+                Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMånedRedusert);
+                return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), lonnstilskuddprosent - 10);
             }).collect(Collectors.toList());
 
             ArrayList<TilskuddPeriode> tilskuddsperioder = new ArrayList<>();
@@ -43,7 +44,7 @@ public class RegnUtTilskuddsperioderForAvtale {
 
     }
 
-    private static Integer beløpForPeriode(LocalDate fra, LocalDate til, Integer sumLønnstilskuddPerMåned) {
+    public static Integer beløpForPeriode(LocalDate fra, LocalDate til, Integer sumLønnstilskuddPerMåned) {
         Period period = Period.between(fra, til.plusDays(1));
         Integer sumHeleMåneder = period.getMonths() * sumLønnstilskuddPerMåned;
         BigDecimal dagsats = new BigDecimal(sumLønnstilskuddPerMåned).divide(DAGER_I_MÅNED, RoundingMode.HALF_UP);
@@ -51,9 +52,9 @@ public class RegnUtTilskuddsperioderForAvtale {
         return sumHeleMåneder + sumEnkeltdager;
     }
 
-    private static List<DatoPar> lagDatoPar(LocalDate datoFraOgMed, LocalDate datoTilOgMed) {
+    private static List<Periode> lagPeriode(LocalDate datoFraOgMed, LocalDate datoTilOgMed) {
         List<LocalDate> startDatoer = datoFraOgMed.datesUntil(datoTilOgMed.plusDays(1), Period.ofMonths(ANTALL_MÅNEDER_I_EN_PERIODE)).collect(Collectors.toList());
-        ArrayList<DatoPar> datoPar = new ArrayList<>();
+        ArrayList<Periode> datoPar = new ArrayList<>();
         for (int i = 0; i < startDatoer.size() - 1; i++) {
             LocalDate fra = startDatoer.get(i);
             LocalDate til = startDatoer.get(i + 1).minusDays(1);
@@ -63,19 +64,13 @@ public class RegnUtTilskuddsperioderForAvtale {
         return datoPar;
     }
 
-    @Value
-    static class DatoPar {
-        LocalDate fraOgMed;
-        LocalDate tilOgMed;
-    }
-
-    private static List<DatoPar> splittHvisNyttÅr (LocalDate fraDato, LocalDate tilDato) {
+    private static List<Periode> splittHvisNyttÅr (LocalDate fraDato, LocalDate tilDato) {
         if (fraDato.getYear() != tilDato.getYear()) {
-            DatoPar datoPar1 = new DatoPar(fraDato, fraDato.withMonth(12).withDayOfMonth(31));
-            DatoPar datoPar2 = new DatoPar(tilDato.withMonth(1).withDayOfMonth(1), tilDato);
+            Periode datoPar1 = new Periode(fraDato, fraDato.withMonth(12).withDayOfMonth(31));
+            Periode datoPar2 = new Periode(tilDato.withMonth(1).withDayOfMonth(1), tilDato);
             return List.of(datoPar1, datoPar2);
         } else {
-            return List.of(new DatoPar(fraDato, tilDato));
+            return List.of(new Periode(fraDato, tilDato));
         }
     }
 }

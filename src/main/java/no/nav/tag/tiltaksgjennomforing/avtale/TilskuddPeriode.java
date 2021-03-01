@@ -6,10 +6,13 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 import no.nav.tag.tiltaksgjennomforing.utils.PeriodeOverlapp;
+import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.UUID;
@@ -18,10 +21,12 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @RequiredArgsConstructor
-public class TilskuddPeriode {
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
 
     @Id
     @GeneratedValue
+    @EqualsAndHashCode.Include
     private UUID id;
 
     @ManyToOne
@@ -66,14 +71,6 @@ public class TilskuddPeriode {
         lonnstilskuddProsent = periode.lonnstilskuddProsent;
     }
 
-    public Periode getPeriode() {
-        return new Periode(startDato, sluttDato);
-    }
-
-    public PeriodeOverlapp overlapper(TilskuddPeriode annenTilskuddsperiode) {
-        return getPeriode().overlapper(annenTilskuddsperiode.getPeriode());
-    }
-
     private void sjekkOmKanBehandles() {
         if (status != TilskuddPeriodeStatus.UBEHANDLET) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET);
@@ -114,5 +111,24 @@ public class TilskuddPeriode {
         } catch (FeilkodeException e) {
             return false;
         }
+    }
+
+    @Override
+    public int compareTo(@NotNull TilskuddPeriode o) {
+        return new CompareToBuilder()
+                .append(this.getStartDato(), o.getStartDato())
+                .toComparison();
+    }
+
+    public TilskuddPeriode annullerOgLagNyForkortet(LocalDate nySluttDato) {
+        TilskuddPeriode ny = new TilskuddPeriode(this);
+        setStatus(TilskuddPeriodeStatus.ANNULLERT);
+        ny.setSluttDato(nySluttDato);
+        ny.setBeløp(RegnUtTilskuddsperioderForAvtale.beløpForPeriode(ny.getStartDato(), ny.getSluttDato(), ny.getAvtale().getSumLonnstilskudd()));
+        return ny;
+    }
+
+    public TilskuddPeriode annullerOgLagNy() {
+        return annullerOgLagNyForkortet(sluttDato);
     }
 }

@@ -123,9 +123,9 @@ public class AvtaleRepositoryTest {
         lagretAvtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
         Avtale nyLagretAvtale = avtaleRepository.save(lagretAvtale);
 
-        List<TilskuddPeriode> perioder = nyLagretAvtale.getTilskuddPeriode();
+        var perioder = nyLagretAvtale.getTilskuddPeriode();
         assertThat(perioder).isNotEmpty();
-        assertThat(lagretAvtale.getId()).isEqualTo(perioder.get(0).getAvtale().getId());
+        assertThat(lagretAvtale.getId()).isEqualTo(perioder.first().getAvtale().getId());
     }
 
     @Test

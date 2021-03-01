@@ -16,6 +16,7 @@ import no.nav.tag.tiltaksgjennomforing.utils.PeriodeOverlapp;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.SortNatural;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
 import javax.persistence.*;
@@ -68,7 +69,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
-    private List<TilskuddPeriode> tilskuddPeriode = new ArrayList<>();
+    @SortNatural
+    @OrderBy("startDato ASC")
+    private SortedSet<TilskuddPeriode> tilskuddPeriode = new TreeSet<>();
 
     private Avtale(OpprettAvtale opprettAvtale) {
         this.id = UUID.randomUUID();
@@ -369,6 +372,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             return null;
         }
         return tilskuddPeriode.getStatus();
+    }
+
+    public TilskuddPeriode tilskuddsperiode(int index) {
+        return tilskuddPeriode.toArray(new TilskuddPeriode[0])[index];
     }
 
     @JsonProperty

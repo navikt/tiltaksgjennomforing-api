@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -32,7 +33,7 @@ class BeslutterTest {
         tilskuddPeriode.setStatus(TilskuddPeriodeStatus.GODKJENT);
         tilskuddPeriode.setBeløp(1200);
         tilskuddPeriode.setAvtale(avtale);
-        avtale.setTilskuddPeriode(List.of(tilskuddPeriode));
+        avtale.setTilskuddPeriode(new TreeSet<>(List.of(tilskuddPeriode)));
 
         Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService);
 
@@ -58,7 +59,7 @@ class BeslutterTest {
         tilskuddPeriode.setStatus(TilskuddPeriodeStatus.GODKJENT);
         tilskuddPeriode.setBeløp(1200);
         tilskuddPeriode.setAvtale(avtale);
-        avtale.setTilskuddPeriode(List.of(tilskuddPeriode));
+        avtale.setTilskuddPeriode(new TreeSet<>(List.of(tilskuddPeriode)));
 
         Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService);
 
@@ -90,7 +91,7 @@ class BeslutterTest {
         tilskuddPeriode2.setStatus(TilskuddPeriodeStatus.UBEHANDLET);
         tilskuddPeriode2.setAvtale(avtale);
 
-        avtale.setTilskuddPeriode(List.of(tilskuddPeriode, tilskuddPeriode2));
+        avtale.setTilskuddPeriode(new TreeSet<>(List.of(tilskuddPeriode, tilskuddPeriode2)));
 
         Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService);
 
@@ -122,7 +123,7 @@ class BeslutterTest {
         tilskuddPeriode2.setStatus(TilskuddPeriodeStatus.UBEHANDLET);
         tilskuddPeriode2.setAvtale(avtale);
 
-        avtale.setTilskuddPeriode(List.of(tilskuddPeriode, tilskuddPeriode2));
+        avtale.setTilskuddPeriode(new TreeSet<>(List.of(tilskuddPeriode, tilskuddPeriode2)));
 
         Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService);
 

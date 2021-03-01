@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,7 +26,7 @@ class TilskuddsperiodeGodkjentMeldingTest {
         tilskuddPeriode.setStartDato(LocalDate.now().minusDays(1));
         tilskuddPeriode.setSluttDato(LocalDate.now());
 
-        avtale.setTilskuddPeriode(List.of(tilskuddPeriode));
+        avtale.setTilskuddPeriode(new TreeSet<>(List.of(tilskuddPeriode)));
 
         // WHEN
         TilskuddsperiodeGodkjentMelding tilskuddMelding = TilskuddsperiodeGodkjentMelding.create(avtale, tilskuddPeriode);
