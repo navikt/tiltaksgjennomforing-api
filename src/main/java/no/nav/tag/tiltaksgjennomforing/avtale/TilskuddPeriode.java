@@ -4,15 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import no.nav.tag.tiltaksgjennomforing.utils.Periode;
-import no.nav.tag.tiltaksgjennomforing.utils.PeriodeOverlapp;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.UUID;
@@ -117,6 +114,7 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
         return new CompareToBuilder()
                 .append(this.getStartDato(), o.getStartDato())
                 .append(this.getStatus(), o.getStatus())
+                .append(this.getId(), o.getId())
                 .toComparison();
     }
 }
