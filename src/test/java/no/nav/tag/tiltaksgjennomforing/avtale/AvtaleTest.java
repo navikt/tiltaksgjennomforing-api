@@ -1,21 +1,18 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
+import org.assertj.core.api.SoftAssertions;
+import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AltMåVæreFyltUtException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AvtaleErIkkeFordeltException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangArbeidstreningException;
-import org.assertj.core.api.SoftAssertions;
-import org.junit.Test;
+
+import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class AvtaleTest {
 
@@ -619,4 +616,58 @@ public class AvtaleTest {
             .isInstanceOf(FeilLonnstilskuddsprosentException.class);
     }
 
+    @Test
+    public void endre_tilskuddsberegning_setter_riktige_felter() {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
+        double otpSats = 0.048;
+        BigDecimal feriepengesats = new BigDecimal("0.166");
+        BigDecimal arbeidsgiveravgift = BigDecimal.ZERO;
+        int manedslonn = 44444;
+
+        avtale.endreTilskuddsberegning(EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).build());
+
+        assertThat(avtale.getVersjoner()).hasSize(2);
+        assertThat(avtale.erGodkjentAvVeileder()).isTrue();
+        assertThat(avtale.getSumLonnstilskudd()).isPositive();
+        assertThat(avtale.getOtpSats()).isEqualTo(otpSats);
+        assertThat(avtale.getFeriepengesats()).isEqualTo(feriepengesats);
+        assertThat(avtale.getArbeidsgiveravgift()).isEqualTo(arbeidsgiveravgift);
+        assertThat(avtale.getManedslonn()).isEqualTo(manedslonn);
+    }
+
+    @Test
+    public void endre_tilskuddsberegning_kun_inngått_avtale() {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        assertFeilkode(Feilkode.KAN_IKKE_ENDRE_OKONOMI_IKKE_GODKJENT_AVTALE, () -> avtale.endreTilskuddsberegning(TestData.enEndreTilskuddsberegning()));
+    }
+
+    @Test
+    public void endre_tilskuddsberegning_ugyldig_input() {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        assertFeilkode(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT, () -> avtale.endreTilskuddsberegning(TestData.enEndreTilskuddsberegning().toBuilder().manedslonn(null).build()));
+    }
+
+    @Test
+    public void forleng_setter_riktige_felter() {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
+        LocalDate nySluttDato = avtale.getSluttDato().plusMonths(1);
+
+        avtale.forlengAvtale(nySluttDato);
+
+        assertThat(avtale.getVersjoner()).hasSize(2);
+        assertThat(avtale.erGodkjentAvVeileder()).isTrue();
+        assertThat(avtale.getSluttDato()).isEqualTo(nySluttDato);
+    }
+
+    @Test
+    public void forleng_kun_ved_inngått_avtale() {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        assertFeilkode(Feilkode.KAN_IKKE_FORLENGE_IKKE_GODKJENT_AVTALE, () -> avtale.forlengAvtale(avtale.getSluttDato().plusMonths(1)));
+    }
+
+    @Test
+    public void forleng_kun_fremover() {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
+        assertFeilkode(Feilkode.KAN_IKKE_FORLENGE_FEIL_SLUTTDATO, () -> avtale.forlengAvtale(avtale.getSluttDato().minusDays(1)));
+    }
 }

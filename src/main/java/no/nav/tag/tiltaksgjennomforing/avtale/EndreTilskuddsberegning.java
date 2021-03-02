@@ -6,7 +6,7 @@ import lombok.Value;
 import java.math.BigDecimal;
 
 @Value
-@Builder
+@Builder(toBuilder = true)
 public class EndreTilskuddsberegning {
     Integer manedslonn;
     BigDecimal feriepengesats;

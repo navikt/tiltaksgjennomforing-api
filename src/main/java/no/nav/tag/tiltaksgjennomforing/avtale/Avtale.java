@@ -477,6 +477,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void forlengAvtale(LocalDate nySluttDato) {
+        if (!nySluttDato.isAfter(getSluttDato())) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_FORLENGE_FEIL_SLUTTDATO);
+        }
+        if (!erGodkjentAvVeileder()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_FORLENGE_IKKE_GODKJENT_AVTALE);
+        }
         forlengTilskuddsperioder(this.getSluttDato(), nySluttDato);
         versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
         gjeldendeInnhold().setSluttDato(nySluttDato);
@@ -484,6 +490,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning) {
+        if (!erGodkjentAvVeileder()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_IKKE_GODKJENT_AVTALE);
+        }
+        if (Utils.erNoenTomme(tilskuddsberegning.getArbeidsgiveravgift(), tilskuddsberegning.getFeriepengesats(), tilskuddsberegning.getManedslonn(), tilskuddsberegning.getOtpSats())) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
+        }
         versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
         gjeldendeInnhold().setArbeidsgiveravgift(tilskuddsberegning.getArbeidsgiveravgift());
         gjeldendeInnhold().setOtpSats(tilskuddsberegning.getOtpSats());
@@ -497,9 +509,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void forkortAvtale(LocalDate nySluttDato) {
-        if (nySluttDato.isAfter(getSluttDato()) || nySluttDato.isBefore(getStartDato())) {
-            // Ikke forkortelse, kast feil
-        }
         forkortTilskuddsperioder(nySluttDato);
         versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
         gjeldendeInnhold().setSluttDato(nySluttDato);

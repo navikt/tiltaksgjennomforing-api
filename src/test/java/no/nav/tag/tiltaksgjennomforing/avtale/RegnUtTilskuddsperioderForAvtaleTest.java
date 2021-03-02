@@ -171,7 +171,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
     @Test
     public void sjekk_at_nye_perioder_ved_forlengelse_starter_etter_utbetalte_perioder() {
-        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 4, 1));
+        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 4, 1));
 
 
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.UTBETALT);
@@ -191,7 +191,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
     @Test
     public void sjekk_at_godkjent_perioder_beholdes_ved_endring_som_ikke_påvirker_økonomi() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
         UUID idPåGodkjentTilskuddsperiode = avtale.tilskuddsperiode(0).getId();
 
@@ -205,7 +205,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
     @Test
     public void sjekk_at_godkjent_perioder_ikke_beholdes_ved_endring_som_påvirker_økonomi() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
 
         EndreTilskuddsberegning endreTilskuddsberegning = EndreTilskuddsberegning.builder()
@@ -239,7 +239,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
     @Test
     public void sjekk_at_godkjent_periode_ikke_annulleres_ved_forlengelse() {
         LocalDate avtaleFørsteDag = LocalDate.of(2021, 1, 1);
-        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(avtaleFørsteDag, avtaleFørsteDag);
+        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleFørsteDag, avtaleFørsteDag);
 
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
         UUID idPåGodkjentTilskuddsperiode = avtale.tilskuddsperiode(0).getId();
@@ -267,7 +267,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
     public void sjekk_at_godkjent_periode_annulleres_ved_økonomiendring_i_et_hull() {
         LocalDate avtaleStart = LocalDate.of(2021, 1, 1);
         LocalDate avtaleSlutt = LocalDate.of(2021, 8, 1);
-        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(avtaleStart, avtaleSlutt);
+        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
 
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.UTBETALT);
         avtale.tilskuddsperiode(1).setStatus(TilskuddPeriodeStatus.GODKJENT);
