@@ -384,31 +384,26 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             return null;
         }
 
-        List<TilskuddPeriode> tilskuddsperioderSortert = tilskuddPeriode.stream()
-                .sorted(Comparator.comparing(TilskuddPeriode::getStartDato))
-                .collect(Collectors.toList());
-
         // Finner første avslått
-        Optional<TilskuddPeriode> førsteAvslått = tilskuddsperioderSortert.stream().filter(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.AVSLÅTT).findFirst();
+        Optional<TilskuddPeriode> førsteAvslått = tilskuddPeriode.stream().filter(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.AVSLÅTT).findFirst();
         if (førsteAvslått.isPresent()) {
             return førsteAvslått.get();
         }
 
         // Finn første som kan behandles
-        Optional<TilskuddPeriode> førsteSomKanBehandles = tilskuddsperioderSortert.stream().filter(TilskuddPeriode::kanBehandles).findFirst();
+        Optional<TilskuddPeriode> førsteSomKanBehandles = tilskuddPeriode.stream().filter(TilskuddPeriode::kanBehandles).findFirst();
         if (førsteSomKanBehandles.isPresent()) {
             return førsteSomKanBehandles.get();
         }
 
         // Finn siste godkjent
-        Optional<TilskuddPeriode> sisteGodkjent = Lists
-                .reverse(tilskuddsperioderSortert).stream().filter(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.GODKJENT)
+        Optional<TilskuddPeriode> sisteGodkjent = new TreeSet<>(tilskuddPeriode).descendingSet().stream().filter(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.GODKJENT)
                 .findFirst();
         if (sisteGodkjent.isPresent()) {
             return sisteGodkjent.get();
         }
 
-        return tilskuddsperioderSortert.get(0);
+        return tilskuddPeriode.first();
     }
 
     public void slettemerk(NavIdent utførtAv) {
@@ -420,8 +415,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         TilskuddPeriode sisteTilskuddsperiode = tilskuddPeriode.last();
         if (sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) {
             // Kan utvide siste tilskuddsperiode hvis den er ubehandlet
-            tilskuddPeriode.addAll(beregnTilskuddsperioder(sisteTilskuddsperiode.getStartDato(), nySluttDato));
             tilskuddPeriode.remove(sisteTilskuddsperiode);
+            tilskuddPeriode.addAll(beregnTilskuddsperioder(sisteTilskuddsperiode.getStartDato(), nySluttDato));
         } else {
             // Regner ut nye perioder fra gammel avtaleslutt til ny avtaleslutt
             tilskuddPeriode.addAll(beregnTilskuddsperioder(gammelSluttDato.plusDays(1), nySluttDato));
@@ -472,9 +467,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         return RegnUtTilskuddsperioderForAvtale.beløpForPeriode(startDato, sluttDato, getDatoForRedusertProsent(), getSumLonnstilskudd(), getSumLønnstilskuddRedusert());
     }
 
-
     private List<TilskuddPeriode> beregnTilskuddsperioder(LocalDate startDato, LocalDate sluttDato) {
-        return RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForAvtale(getSumLonnstilskudd(), startDato, sluttDato, getLonnstilskuddProsent(), getDatoForRedusertProsent(), getSumLønnstilskuddRedusert());
+        List<TilskuddPeriode> tilskuddsperioder = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForAvtale(getSumLonnstilskudd(), startDato, sluttDato, getLonnstilskuddProsent(), getDatoForRedusertProsent(), getSumLønnstilskuddRedusert());
+        tilskuddsperioder.forEach(t -> t.setAvtale(this));
+        return tilskuddsperioder;
     }
 
     private void nyeTilskuddsperioder() {

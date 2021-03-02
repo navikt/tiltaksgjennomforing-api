@@ -54,7 +54,7 @@ public class GjeldendeTilskuddsperiodeTest {
         LocalDate avtaleSlutt = LocalDate.now().plusMonths(8);
         Avtale avtale = enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
         avtale.avslåTilskuddsperiode(TestData.enNavIdent(), EnumSet.of(Avslagsårsak.ANNET), "Forklaring");
-        assertThat(avtale.tilskuddsperiode(1)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
+        assertThat(avtale.tilskuddsperiode(0)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
     }
 
     // 7
