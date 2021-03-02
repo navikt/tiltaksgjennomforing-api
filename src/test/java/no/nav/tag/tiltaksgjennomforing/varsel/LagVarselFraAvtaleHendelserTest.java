@@ -82,6 +82,12 @@ class LagVarselFraAvtaleHendelserTest {
         assertHendelse(GODKJENNINGER_OPPHEVET_AV_VEILEDER, VEILEDER, DELTAKER, true);
 
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
+        arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
+        avtale = avtaleRepository.save(avtale);
+        assertHendelse(GODKJENT_AV_ARBEIDSGIVER, ARBEIDSGIVER, VEILEDER, true);
+        assertHendelse(GODKJENT_AV_ARBEIDSGIVER, ARBEIDSGIVER, ARBEIDSGIVER, false);
+        assertHendelse(GODKJENT_AV_ARBEIDSGIVER, ARBEIDSGIVER, DELTAKER, true);
+
         arbeidsgiver.opphevGodkjenninger(avtale);
         avtale = avtaleRepository.save(avtale);
         assertHendelse(GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER, ARBEIDSGIVER, VEILEDER, true);
@@ -89,11 +95,6 @@ class LagVarselFraAvtaleHendelserTest {
         assertHendelse(GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER, ARBEIDSGIVER, DELTAKER, true);
 
         arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
-        avtale = avtaleRepository.save(avtale);
-        assertHendelse(GODKJENT_AV_ARBEIDSGIVER, ARBEIDSGIVER, VEILEDER, true);
-        assertHendelse(GODKJENT_AV_ARBEIDSGIVER, ARBEIDSGIVER, ARBEIDSGIVER, false);
-        assertHendelse(GODKJENT_AV_ARBEIDSGIVER, ARBEIDSGIVER, DELTAKER, true);
-
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
         avtale = avtaleRepository.save(avtale);
         assertHendelse(GODKJENT_PAA_VEGNE_AV, VEILEDER, VEILEDER, false);

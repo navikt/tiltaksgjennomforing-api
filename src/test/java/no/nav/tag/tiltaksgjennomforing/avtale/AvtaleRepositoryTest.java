@@ -200,6 +200,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void opphevGodkjenning__skal_publisere_domainevent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        TestData.enArbeidsgiver(avtale).godkjennForAvtalepart(avtale);
         TestData.enVeileder(avtale).opphevGodkjenninger(avtale);
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).godkjenningerOpphevet(any(GodkjenningerOpphevetAvVeileder.class));

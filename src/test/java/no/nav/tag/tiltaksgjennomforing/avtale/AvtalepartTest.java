@@ -1,13 +1,16 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.time.Instant;
-import java.time.LocalDateTime;
 import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørVeilederException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
 import org.junit.Test;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+
+import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class AvtalepartTest {
     @Test(expected = KanIkkeEndreException.class)
@@ -96,5 +99,22 @@ public class AvtalepartTest {
         Veileder veileder = TestData.enVeileder(avtale);
         veileder.opphevGodkjenninger(avtale);
         assertThat(avtale.erGodkjentAvVeileder()).isFalse();
+    }
+
+    @Test
+    public void opphevGodkjenninger__feiler_hvis_ingen_har_godkjent() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        Veileder veileder = TestData.enVeileder(avtale);
+        assertFeilkode(Feilkode.KAN_IKKE_OPPHEVE, () -> veileder.opphevGodkjenninger(avtale));
+    }
+
+    @Test
+    public void opphevGodkjenninger__kan_ikke_utfores_flere_ganger_etter_hverandre() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
+        arbeidsgiver.godkjennForAvtalepart(avtale);
+
+        arbeidsgiver.opphevGodkjenninger(avtale);
+        assertFeilkode(Feilkode.KAN_IKKE_OPPHEVE, () -> arbeidsgiver.opphevGodkjenninger(avtale));
     }
 }
