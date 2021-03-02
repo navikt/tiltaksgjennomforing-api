@@ -142,6 +142,31 @@ public class AvtaleController {
         return ResponseEntity.created(uri).build();
     }
 
+    @PostMapping("/{avtaleId}/forleng")
+    @Transactional
+    public ResponseEntity<?> forlengAvtale(@PathVariable("avtaleId") UUID avtaleId,
+                                           @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
+                                           @RequestBody ForlengAvtale forlengAvtale) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId)
+                .orElseThrow(RessursFinnesIkkeException::new);
+        veileder.forlengAvtale(sistEndret, forlengAvtale.getSluttDato(), avtale);
+        Avtale lagretAvtale = avtaleRepository.save(avtale);
+        return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
+    }
+
+    @PostMapping("/{avtaleId}/endre-tilskuddsberegning")
+    @Transactional
+    public ResponseEntity<?> endreTilskuddsberegning(@PathVariable("avtaleId") UUID avtaleId,
+                                           @RequestBody EndreTilskuddsberegning endreTilskuddsberegning) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId)
+                .orElseThrow(RessursFinnesIkkeException::new);
+        veileder.endreTilskuddsberegning(Instant.now(), endreTilskuddsberegning, avtale);
+        Avtale lagretAvtale = avtaleRepository.save(avtale);
+        return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
+    }
+
     @PostMapping("/{avtaleId}/godkjenn-paa-vegne-av")
     @Transactional
     public void godkjennPaVegneAv(@PathVariable("avtaleId") UUID avtaleId, @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {

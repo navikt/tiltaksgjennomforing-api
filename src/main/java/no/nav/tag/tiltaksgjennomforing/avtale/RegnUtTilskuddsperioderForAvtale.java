@@ -60,6 +60,9 @@ public class RegnUtTilskuddsperioderForAvtale {
     }
 
     private static List<Periode> lagPeriode(LocalDate datoFraOgMed, LocalDate datoTilOgMed) {
+        if (datoFraOgMed.isAfter(datoTilOgMed)) {
+            return List.of();
+        }
         List<LocalDate> startDatoer = datoFraOgMed.datesUntil(datoTilOgMed.plusDays(1), Period.ofMonths(ANTALL_MÅNEDER_I_EN_PERIODE)).collect(Collectors.toList());
         ArrayList<Periode> datoPar = new ArrayList<>();
         for (int i = 0; i < startDatoer.size() - 1; i++) {

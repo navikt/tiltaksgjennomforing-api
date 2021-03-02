@@ -2,7 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.collect.Lists;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -24,9 +23,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
-import static java.util.Set.copyOf;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 
 @Data
@@ -454,9 +451,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             } else if (tilskuddsperiode.getStatus() == TilskuddPeriodeStatus.GODKJENT) {
                 TilskuddPeriode ny = new TilskuddPeriode(tilskuddsperiode);
                 ny.setBeløp(beregnTilskuddsbeløp(tilskuddsperiode.getStartDato(), tilskuddsperiode.getSluttDato()));
-//                boolean beløpetHarØkt = ny.getBeløp() > tilskuddsperiode.getBeløp();
-//                ny.setStatus(beløpetHarØkt ? TilskuddPeriodeStatus.UBEHANDLET : TilskuddPeriodeStatus.GODKJENT);
-                ny.setStatus(TilskuddPeriodeStatus.UBEHANDLET);
+                boolean beløpetHarØkt = ny.getBeløp() > tilskuddsperiode.getBeløp();
+                ny.setStatus(beløpetHarØkt ? TilskuddPeriodeStatus.UBEHANDLET : TilskuddPeriodeStatus.GODKJENT);
                 tilskuddsperiode.setStatus(TilskuddPeriodeStatus.ANNULLERT);
                 tilskuddPeriode.add(ny);
             }
@@ -487,9 +483,15 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new AvtaleForlenget(this));
     }
 
-    public void endreTilskuddsberegning(EndreAvtale tilskuddsberegning) {
+    public void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning) {
         versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
-        gjeldendeInnhold().endreAvtale(tilskuddsberegning);
+        gjeldendeInnhold().setArbeidsgiveravgift(tilskuddsberegning.getArbeidsgiveravgift());
+        gjeldendeInnhold().setOtpSats(tilskuddsberegning.getOtpSats());
+        gjeldendeInnhold().setManedslonn(tilskuddsberegning.getManedslonn());
+        gjeldendeInnhold().setFeriepengesats(tilskuddsberegning.getFeriepengesats());
+        AvtaleInnholdStrategy avtaleInnholdStrategy = AvtaleInnholdStrategyFactory.create(gjeldendeInnhold(), tiltakstype);
+        ((LonnstilskuddStrategy) avtaleInnholdStrategy).regnUtTotalLonnstilskudd();
+        // regn ut lønnstilskudd
         endreBeløpITilskuddsperioder();
         registerEvent(new TilskuddsberegningEndret(this, null));
     }

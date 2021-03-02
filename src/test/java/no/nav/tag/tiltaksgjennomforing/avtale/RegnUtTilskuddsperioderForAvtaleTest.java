@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.time.Instant;
@@ -209,9 +208,13 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
 
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
-        endreAvtale.setManedslonn(99999);
-        avtale.endreTilskuddsberegning(endreAvtale);
+        EndreTilskuddsberegning endreTilskuddsberegning = EndreTilskuddsberegning.builder()
+                .manedslonn(99999)
+                .arbeidsgiveravgift(avtale.getArbeidsgiveravgift())
+                .feriepengesats(avtale.getFeriepengesats())
+                .otpSats(avtale.getOtpSats())
+                .build();
+        avtale.endreTilskuddsberegning(endreTilskuddsberegning);
 
         assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.ANNULLERT);
         harOverlappendeDatoer(avtale.getTilskuddPeriode());
@@ -270,11 +273,13 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         avtale.tilskuddsperiode(1).setStatus(TilskuddPeriodeStatus.GODKJENT);
         avtale.tilskuddsperiode(2).setStatus(TilskuddPeriodeStatus.UTBETALT);
 
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
-        endreAvtale.setStartDato(avtaleStart);
-        endreAvtale.setSluttDato(avtaleSlutt);
-        endreAvtale.setManedslonn(77777);
-        avtale.endreTilskuddsberegning(endreAvtale);
+        EndreTilskuddsberegning endreTilskuddsberegning = EndreTilskuddsberegning.builder()
+                .manedslonn(77777)
+                .arbeidsgiveravgift(avtale.getArbeidsgiveravgift())
+                .feriepengesats(avtale.getFeriepengesats())
+                .otpSats(avtale.getOtpSats())
+                .build();
+        avtale.endreTilskuddsberegning(endreTilskuddsberegning);
 
         assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.UTBETALT);
         assertThat(avtale.tilskuddsperiode(1).getStatus()).isEqualTo(TilskuddPeriodeStatus.ANNULLERT);

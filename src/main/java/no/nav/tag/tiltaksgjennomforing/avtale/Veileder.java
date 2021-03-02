@@ -10,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -198,5 +199,15 @@ public class Veileder extends Avtalepart<NavIdent> {
         }
         avtale.slettemerk(this.getIdentifikator());
 
+    }
+
+    public void forlengAvtale(Instant sistEndret, LocalDate sluttDato, Avtale avtale) {
+        sjekkTilgang(avtale);
+        avtale.forlengAvtale(sluttDato);
+    }
+
+    public void endreTilskuddsberegning(Instant sistEndret, EndreTilskuddsberegning endreTilskuddsberegning, Avtale avtale) {
+        sjekkTilgang(avtale);
+        avtale.endreTilskuddsberegning(endreTilskuddsberegning);
     }
 }
