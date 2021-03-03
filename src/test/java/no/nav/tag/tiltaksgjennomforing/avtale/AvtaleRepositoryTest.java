@@ -1,19 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.ENHET_GEOGRAFISK;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.ENHET_OPPFØLGING;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-
-import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
@@ -26,6 +12,21 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.ENHET_GEOGRAFISK;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.ENHET_OPPFØLGING;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @ActiveProfiles(Miljø.LOCAL)
@@ -122,9 +123,9 @@ public class AvtaleRepositoryTest {
         lagretAvtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
         Avtale nyLagretAvtale = avtaleRepository.save(lagretAvtale);
 
-        List<TilskuddPeriode> perioder = nyLagretAvtale.getTilskuddPeriode();
+        var perioder = nyLagretAvtale.getTilskuddPeriode();
         assertThat(perioder).isNotEmpty();
-        assertThat(lagretAvtale.getVersjoner().get(0).getId()).isEqualTo(perioder.get(0).getAvtaleInnhold().getId());
+        assertThat(lagretAvtale.getId()).isEqualTo(perioder.first().getAvtale().getId());
     }
 
     @Test
@@ -208,7 +209,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_ikke_kunne_hente_avtale_med_tiltakstype_arbeidstrening() {
 
-        Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate.now(), LocalDate.now().plusMonths(2));
+        Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.now(), LocalDate.now().plusMonths(2));
         lagretAvtale.setTiltakstype(Tiltakstype.ARBEIDSTRENING);
         avtaleRepository.save(lagretAvtale);
         Set<String> navEnheter = Set.of(ENHET_OPPFØLGING);
@@ -222,7 +223,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_kunne_hente_avtale_med_ubehandlet_tilskuddsperioder_for_riktig_enhet() {
 
-        Avtale lagretAvtale = avtaleRepository.save(TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate.now(), LocalDate.now().plusDays(15)));
+        Avtale lagretAvtale = avtaleRepository.save(TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.now(), LocalDate.now().plusDays(15)));
         Set<String> navEnheter = Set.of(ENHET_OPPFØLGING);
 
         List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
@@ -234,7 +235,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_ikke_kunne_hente_avtale_med_godkjent_tilskuddsperioder() {
 
-        Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate.now(), LocalDate.now().plusMonths(2));
+        Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.now(), LocalDate.now().plusMonths(2));
         Set<String> navEnheter = Set.of(ENHET_OPPFØLGING);
 
         lagretAvtale.godkjennTilskuddsperiode(TestData.enInnloggetBeslutter().getIdentifikator());
@@ -249,7 +250,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_ikke_kunne_hente_avtale_med_feil_enhet() {
 
-        Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate.now(), LocalDate.now().plusMonths(2));
+        Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.now(), LocalDate.now().plusMonths(2));
         Set<String> navEnheter = Set.of("0000");
 
         lagretAvtale.godkjennTilskuddsperiode(TestData.enInnloggetBeslutter().getIdentifikator());

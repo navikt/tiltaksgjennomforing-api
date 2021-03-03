@@ -1,6 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
+import lombok.experimental.FieldNameConstants;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -8,26 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.persistence.CascadeType;
-import javax.persistence.Convert;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.experimental.FieldNameConstants;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 // Lombok
 @Data
@@ -101,10 +87,6 @@ public class AvtaleInnhold {
     @Enumerated(EnumType.STRING)
     private Stillingstype stillingstype;
 
-    @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @Fetch(FetchMode.SUBSELECT)
-    private List<TilskuddPeriode> tilskuddPeriode = new ArrayList<>();
-
     // Arbeidstrening
     @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
@@ -143,15 +125,20 @@ public class AvtaleInnhold {
             .godkjentPaVegneGrunn(null)
             .journalpostId(null)
             .versjon(versjon + 1)
-            .tilskuddPeriode(kopiAvTilskuddPeriode())
             .build();
         nyVersjon.getMaal().forEach(m -> m.setAvtaleInnhold(nyVersjon));
-        nyVersjon.getTilskuddPeriode().forEach(tp -> tp.setAvtaleInnhold(nyVersjon));
         return nyVersjon;
     }
 
-    private List<TilskuddPeriode> kopiAvTilskuddPeriode() {
-        return tilskuddPeriode.stream().map(periode -> new TilskuddPeriode(periode)).collect(Collectors.toList());
+    public AvtaleInnhold nyGodkjentVersjon() {
+        AvtaleInnhold nyVersjon = toBuilder()
+            .id(UUID.randomUUID())
+            .maal(kopiAvMål())
+            .journalpostId(null)
+            .versjon(versjon + 1)
+            .build();
+        nyVersjon.getMaal().forEach(m -> m.setAvtaleInnhold(nyVersjon));
+        return nyVersjon;
     }
 
     private List<Maal> kopiAvMål() {
@@ -172,6 +159,10 @@ public class AvtaleInnhold {
 
     public boolean skalJournalfores() {
         return this.godkjentAvVeileder != null && this.getJournalpostId() == null;
+    }
+
+    public void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning) {
+        innholdStrategi().endreTilskuddsberegning(tilskuddsberegning);
     }
 }
 

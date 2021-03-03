@@ -1,12 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
-
 import io.micrometer.core.annotation.Timed;
-import java.net.URI;
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import no.nav.security.token.support.core.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
@@ -17,16 +11,14 @@ import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
 
 @Protected
 @RestController
@@ -148,6 +140,31 @@ public class AvtaleController {
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
+    }
+
+    @PostMapping("/{avtaleId}/forleng")
+    @Transactional
+    public ResponseEntity<?> forlengAvtale(@PathVariable("avtaleId") UUID avtaleId,
+                                           @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
+                                           @RequestBody ForlengAvtale forlengAvtale) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId)
+                .orElseThrow(RessursFinnesIkkeException::new);
+        veileder.forlengAvtale(sistEndret, forlengAvtale.getSluttDato(), avtale);
+        Avtale lagretAvtale = avtaleRepository.save(avtale);
+        return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
+    }
+
+    @PostMapping("/{avtaleId}/endre-tilskuddsberegning")
+    @Transactional
+    public ResponseEntity<?> endreTilskuddsberegning(@PathVariable("avtaleId") UUID avtaleId,
+                                           @RequestBody EndreTilskuddsberegning endreTilskuddsberegning) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId)
+                .orElseThrow(RessursFinnesIkkeException::new);
+        veileder.endreTilskuddsberegning(Instant.now(), endreTilskuddsberegning, avtale);
+        Avtale lagretAvtale = avtaleRepository.save(avtale);
+        return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
     }
 
     @PostMapping("/{avtaleId}/godkjenn-paa-vegne-av")

@@ -1,12 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -44,13 +45,9 @@ public class EndreAvtale {
     private Integer manedslonn;
     private BigDecimal feriepengesats;
     private BigDecimal arbeidsgiveravgift;
+    private Double otpSats;
     private Boolean harFamilietilknytning;
     private String familietilknytningForklaring;
-    private Double otpSats;
-    private Integer otpBelop;
-    private Integer arbeidsgiveravgiftBelop;
-    private Integer sumLonnsutgifter;
-    private Integer sumLonnstilskudd;
     private Stillingstype stillingstype;
 
     // Mentorfelter

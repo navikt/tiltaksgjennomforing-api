@@ -2,10 +2,10 @@ package no.nav.tag.tiltaksgjennomforing.avtale.events;
 
 import lombok.Value;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
+import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 
 @Value
-public class TilskuddsperiodeAnnullert {
+public class TilskuddsberegningEndret {
     Avtale avtale;
-    TilskuddPeriode tilskuddsperiode;
+    Identifikator utførtAv;
 }

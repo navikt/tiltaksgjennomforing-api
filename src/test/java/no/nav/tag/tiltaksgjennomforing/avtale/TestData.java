@@ -78,6 +78,17 @@ public class TestData {
         endring.setStartDato(startDato);
         endring.setSluttDato(sluttDato);
         avtale.endreAvtale(Instant.now(), endring, Avtalerolle.VEILEDER);
+        return avtale;
+    }
+
+    public static Avtale enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate startDato, LocalDate sluttDato) {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setEnhetGeografisk(ENHET_OPPFØLGING);
+        avtale.setEnhetOppfolging(ENHET_GEOGRAFISK);
+        EndreAvtale endring = TestData.endringPåAlleFelter();
+        endring.setStartDato(startDato);
+        endring.setSluttDato(sluttDato);
+        avtale.endreAvtale(Instant.now(), endring, Avtalerolle.VEILEDER);
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
         avtale.godkjennForDeltaker(TestData.enIdentifikator());
         avtale.godkjennForVeileder(TestData.enNavIdent());
@@ -198,10 +209,6 @@ public class TestData {
         endreAvtale.setHarFamilietilknytning(true);
         endreAvtale.setFamilietilknytningForklaring("En middels god forklaring");
         endreAvtale.setOtpSats(0.02);
-        endreAvtale.setOtpBelop(448);
-        endreAvtale.setArbeidsgiveravgiftBelop(3222);
-        endreAvtale.setSumLonnsutgifter(26070);
-        endreAvtale.setSumLonnstilskudd(15642);
         endreAvtale.setStillingstype(Stillingstype.FAST);
         return endreAvtale;
     }
@@ -347,6 +354,24 @@ public class TestData {
     }
 
     public static TilskuddPeriode enTilskuddPeriode() {
-        return TestData.enLonnstilskuddAvtaleGodkjentAvVeileder().getTilskuddPeriode().get(0);
+        return TestData.enLonnstilskuddAvtaleGodkjentAvVeileder().getTilskuddPeriode().first();
+    }
+
+    public static EndreTilskuddsberegning enEndreTilskuddsberegning() {
+        double otpSats = 0.048;
+        BigDecimal feriepengesats = new BigDecimal("0.166");
+        BigDecimal arbeidsgiveravgift = BigDecimal.ZERO;
+        int manedslonn = 44444;
+        return EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).build();
+    }
+
+    public static Avtale enArbeidstreningAvtaleGodkjentAvVeileder() {
+        Avtale avtale = TestData.enArbeidstreningAvtale();
+        avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleFelter(), Avtalerolle.VEILEDER);
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setJournalpostId("1");
+        return avtale;
     }
 }

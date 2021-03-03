@@ -2,7 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.collect.Lists;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -13,6 +12,10 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
+import no.nav.tag.tiltaksgjennomforing.utils.Utils;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.SortNatural;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
 import javax.persistence.*;
@@ -20,7 +23,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 
@@ -62,6 +64,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     @JsonIgnore
     private String enhetOppfolging;
 
+    @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
+    @SortNatural
+    private SortedSet<TilskuddPeriode> tilskuddPeriode = new TreeSet<>();
+
     private Avtale(OpprettAvtale opprettAvtale) {
         this.id = UUID.randomUUID();
         this.opprettetTidspunkt = LocalDateTime.now();
@@ -92,6 +99,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         sjekkOmAvtalenKanEndres();
         sjekkSistEndret(sistEndret);
         gjeldendeInnhold().endreAvtale(nyAvtale);
+        nyeTilskuddsperioder();
         sistEndretNå();
         registerEvent(new AvtaleEndret(this, utfortAv));
     }
@@ -363,42 +371,145 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         return tilskuddPeriode.getStatus();
     }
 
+    public TilskuddPeriode tilskuddsperiode(int index) {
+        return tilskuddPeriode.toArray(new TilskuddPeriode[0])[index];
+    }
+
     @JsonProperty
     public TilskuddPeriode gjeldendeTilskuddsperiode() {
-        if (gjeldendeInnhold().getTilskuddPeriode().isEmpty()) {
+        if (tilskuddPeriode.isEmpty()) {
             return null;
         }
 
-        List<TilskuddPeriode> tilskuddsperioderSortert = gjeldendeInnhold().getTilskuddPeriode().stream()
-                .sorted(Comparator.comparing(TilskuddPeriode::getStartDato))
-                .collect(Collectors.toList());
-
         // Finner første avslått
-        Optional<TilskuddPeriode> førsteAvslått = tilskuddsperioderSortert.stream().filter(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.AVSLÅTT).findFirst();
+        Optional<TilskuddPeriode> førsteAvslått = tilskuddPeriode.stream().filter(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.AVSLÅTT).findFirst();
         if (førsteAvslått.isPresent()) {
             return førsteAvslått.get();
         }
 
         // Finn første som kan behandles
-        Optional<TilskuddPeriode> førsteSomKanBehandles = tilskuddsperioderSortert.stream().filter(TilskuddPeriode::kanBehandles).findFirst();
+        Optional<TilskuddPeriode> førsteSomKanBehandles = tilskuddPeriode.stream().filter(TilskuddPeriode::kanBehandles).findFirst();
         if (førsteSomKanBehandles.isPresent()) {
             return førsteSomKanBehandles.get();
         }
 
         // Finn siste godkjent
-        Optional<TilskuddPeriode> sisteGodkjent = Lists
-                .reverse(tilskuddsperioderSortert).stream().filter(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.GODKJENT)
+        Optional<TilskuddPeriode> sisteGodkjent = new TreeSet<>(tilskuddPeriode).descendingSet().stream().filter(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.GODKJENT)
                 .findFirst();
         if (sisteGodkjent.isPresent()) {
             return sisteGodkjent.get();
         }
 
-        return tilskuddsperioderSortert.get(0);
+        return tilskuddPeriode.first();
     }
 
     public void slettemerk(NavIdent utførtAv) {
         this.setSlettemerket(true);
         registerEvent(new AvtaleSlettemerket(this, utførtAv));
+    }
+
+    void forlengTilskuddsperioder(LocalDate gammelSluttDato, LocalDate nySluttDato) {
+        if (tilskuddPeriode.isEmpty()) {
+            return;
+        }
+        TilskuddPeriode sisteTilskuddsperiode = tilskuddPeriode.last();
+        if (sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) {
+            // Kan utvide siste tilskuddsperiode hvis den er ubehandlet
+            tilskuddPeriode.remove(sisteTilskuddsperiode);
+            tilskuddPeriode.addAll(beregnTilskuddsperioder(sisteTilskuddsperiode.getStartDato(), nySluttDato));
+        } else {
+            // Regner ut nye perioder fra gammel avtaleslutt til ny avtaleslutt
+            tilskuddPeriode.addAll(beregnTilskuddsperioder(gammelSluttDato.plusDays(1), nySluttDato));
+        }
+    }
+
+    public void forkortTilskuddsperioder(LocalDate nySluttDato) {
+        for (TilskuddPeriode tilskuddsperiode : Set.copyOf(tilskuddPeriode)) {
+            TilskuddPeriodeStatus status = tilskuddsperiode.getStatus();
+            if (tilskuddsperiode.getStartDato().isAfter(nySluttDato)) {
+                if (status == TilskuddPeriodeStatus.UBEHANDLET) {
+                    tilskuddPeriode.remove(tilskuddsperiode);
+                } else {
+                    tilskuddsperiode.setStatus(TilskuddPeriodeStatus.ANNULLERT);
+                }
+            } else if (tilskuddsperiode.getSluttDato().isAfter(nySluttDato)) {
+                if (status == TilskuddPeriodeStatus.UBEHANDLET) {
+                    tilskuddsperiode.setSluttDato(nySluttDato);
+                    tilskuddsperiode.setBeløp(beregnTilskuddsbeløp(tilskuddsperiode.getStartDato(), tilskuddsperiode.getSluttDato()));
+                } else if (status == TilskuddPeriodeStatus.GODKJENT) {
+                    TilskuddPeriode ny = new TilskuddPeriode(tilskuddsperiode);
+                    ny.setSluttDato(nySluttDato);
+                    ny.setBeløp(beregnTilskuddsbeløp(tilskuddsperiode.getStartDato(), tilskuddsperiode.getSluttDato()));
+                    tilskuddsperiode.setStatus(TilskuddPeriodeStatus.ANNULLERT);
+                    tilskuddPeriode.add(ny);
+                }
+            }
+        }
+    }
+
+    void endreBeløpITilskuddsperioder() {
+        for (TilskuddPeriode tilskuddsperiode : Set.copyOf(tilskuddPeriode)) {
+            if (tilskuddsperiode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) {
+                tilskuddsperiode.setBeløp(beregnTilskuddsbeløp(tilskuddsperiode.getStartDato(), tilskuddsperiode.getSluttDato()));
+            } else if (tilskuddsperiode.getStatus() == TilskuddPeriodeStatus.GODKJENT) {
+                TilskuddPeriode ny = new TilskuddPeriode(tilskuddsperiode);
+                ny.setBeløp(beregnTilskuddsbeløp(tilskuddsperiode.getStartDato(), tilskuddsperiode.getSluttDato()));
+                boolean beløpetHarØkt = ny.getBeløp() > tilskuddsperiode.getBeløp();
+                ny.setStatus(beløpetHarØkt ? TilskuddPeriodeStatus.UBEHANDLET : TilskuddPeriodeStatus.GODKJENT);
+                tilskuddsperiode.setStatus(TilskuddPeriodeStatus.ANNULLERT);
+                tilskuddPeriode.add(ny);
+            }
+        }
+    }
+
+    private Integer beregnTilskuddsbeløp(LocalDate startDato, LocalDate sluttDato) {
+        return RegnUtTilskuddsperioderForAvtale.beløpForPeriode(startDato, sluttDato, getDatoForRedusertProsent(), getSumLonnstilskudd(), getSumLønnstilskuddRedusert());
+    }
+
+    private List<TilskuddPeriode> beregnTilskuddsperioder(LocalDate startDato, LocalDate sluttDato) {
+        List<TilskuddPeriode> tilskuddsperioder = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForAvtale(getSumLonnstilskudd(), startDato, sluttDato, getLonnstilskuddProsent(), getDatoForRedusertProsent(), getSumLønnstilskuddRedusert());
+        tilskuddsperioder.forEach(t -> t.setAvtale(this));
+        return tilskuddsperioder;
+    }
+
+    private void nyeTilskuddsperioder() {
+        tilskuddPeriode.clear();
+        if (Utils.erIkkeTomme(getStartDato(), getSluttDato(), getSumLonnstilskudd())) {
+            tilskuddPeriode.addAll(beregnTilskuddsperioder(getStartDato(), getSluttDato()));
+        }
+    }
+
+    public void forlengAvtale(LocalDate nySluttDato) {
+        if (!nySluttDato.isAfter(getSluttDato())) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_FORLENGE_FEIL_SLUTTDATO);
+        }
+        if (!erGodkjentAvVeileder()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_FORLENGE_IKKE_GODKJENT_AVTALE);
+        }
+        forlengTilskuddsperioder(this.getSluttDato(), nySluttDato);
+        versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
+        gjeldendeInnhold().setSluttDato(nySluttDato);
+        registerEvent(new AvtaleForlenget(this));
+    }
+
+    public void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning) {
+        if (!erGodkjentAvVeileder()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_IKKE_GODKJENT_AVTALE);
+        }
+        if (Utils.erNoenTomme(tilskuddsberegning.getArbeidsgiveravgift(), tilskuddsberegning.getFeriepengesats(), tilskuddsberegning.getManedslonn(), tilskuddsberegning.getOtpSats())) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
+        }
+        versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
+        gjeldendeInnhold().endreTilskuddsberegning(tilskuddsberegning);
+        endreBeløpITilskuddsperioder();
+        registerEvent(new TilskuddsberegningEndret(this, null));
+    }
+
+    public void forkortAvtale(LocalDate nySluttDato) {
+        forkortTilskuddsperioder(nySluttDato);
+        versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
+        gjeldendeInnhold().setSluttDato(nySluttDato);
+        registerEvent(new AvtaleForlenget(this));
     }
 
     private interface MetoderSomIkkeSkalDelegeresFraAvtaleInnhold {
@@ -407,5 +518,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         void setId(UUID id);
 
         Avtale getAvtale();
+
+        void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning);
     }
 }

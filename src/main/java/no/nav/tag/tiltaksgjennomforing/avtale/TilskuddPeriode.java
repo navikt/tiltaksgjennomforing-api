@@ -1,44 +1,35 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.jetbrains.annotations.NotNull;
+
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.UUID;
-import javax.persistence.Convert;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
 @Entity
 @Data
 @NoArgsConstructor
 @RequiredArgsConstructor
-public class TilskuddPeriode {
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
 
     @Id
-    @GeneratedValue
-    private UUID id;
+    @EqualsAndHashCode.Include
+    private UUID id = UUID.randomUUID();
 
     @ManyToOne
-    @JoinColumn(name = "avtale_innhold")
+    @JoinColumn(name = "avtale_id")
     @JsonIgnore
     @ToString.Exclude
-    private AvtaleInnhold avtaleInnhold;
+    private Avtale avtale;
 
     @NonNull
     private Integer beløp;
@@ -74,10 +65,6 @@ public class TilskuddPeriode {
         sluttDato = periode.sluttDato;
         status = periode.status;
         lonnstilskuddProsent = periode.lonnstilskuddProsent;
-    }
-
-    public Avtale hentAvtale() {
-        return getAvtaleInnhold().getAvtale();
     }
 
     private void sjekkOmKanBehandles() {
@@ -120,5 +107,14 @@ public class TilskuddPeriode {
         } catch (FeilkodeException e) {
             return false;
         }
+    }
+
+    @Override
+    public int compareTo(@NotNull TilskuddPeriode o) {
+        return new CompareToBuilder()
+                .append(this.getStartDato(), o.getStartDato())
+                .append(this.getStatus(), o.getStatus())
+                .append(this.getId(), o.getId())
+                .toComparison();
     }
 }
