@@ -643,13 +643,13 @@ public class AvtaleTest {
 
     @Test
     public void endre_tilskuddsberegning_ugyldig_input() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
         assertFeilkode(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT, () -> avtale.endreTilskuddsberegning(TestData.enEndreTilskuddsberegning().toBuilder().manedslonn(null).build()));
     }
 
     @Test
     public void forleng_setter_riktige_felter() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
+        Avtale avtale = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         LocalDate nySluttDato = avtale.getSluttDato().plusMonths(1);
 
         avtale.forlengAvtale(nySluttDato);

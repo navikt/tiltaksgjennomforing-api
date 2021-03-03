@@ -409,6 +409,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     void forlengTilskuddsperioder(LocalDate gammelSluttDato, LocalDate nySluttDato) {
+        if (tilskuddPeriode.isEmpty()) {
+            return;
+        }
         TilskuddPeriode sisteTilskuddsperiode = tilskuddPeriode.last();
         if (sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) {
             // Kan utvide siste tilskuddsperiode hvis den er ubehandlet
@@ -497,13 +500,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
         }
         versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
-        gjeldendeInnhold().setArbeidsgiveravgift(tilskuddsberegning.getArbeidsgiveravgift());
-        gjeldendeInnhold().setOtpSats(tilskuddsberegning.getOtpSats());
-        gjeldendeInnhold().setManedslonn(tilskuddsberegning.getManedslonn());
-        gjeldendeInnhold().setFeriepengesats(tilskuddsberegning.getFeriepengesats());
-        AvtaleInnholdStrategy avtaleInnholdStrategy = AvtaleInnholdStrategyFactory.create(gjeldendeInnhold(), tiltakstype);
-        ((LonnstilskuddStrategy) avtaleInnholdStrategy).regnUtTotalLonnstilskudd();
-        // regn ut lønnstilskudd
+        gjeldendeInnhold().endreTilskuddsberegning(tilskuddsberegning);
         endreBeløpITilskuddsperioder();
         registerEvent(new TilskuddsberegningEndret(this, null));
     }
@@ -521,5 +518,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         void setId(UUID id);
 
         Avtale getAvtale();
+
+        void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning);
     }
 }

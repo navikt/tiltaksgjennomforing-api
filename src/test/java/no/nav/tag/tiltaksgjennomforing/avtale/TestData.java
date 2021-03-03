@@ -364,4 +364,14 @@ public class TestData {
         int manedslonn = 44444;
         return EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).build();
     }
+
+    public static Avtale enArbeidstreningAvtaleGodkjentAvVeileder() {
+        Avtale avtale = TestData.enArbeidstreningAvtale();
+        avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleFelter(), Avtalerolle.VEILEDER);
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setJournalpostId("1");
+        return avtale;
+    }
 }

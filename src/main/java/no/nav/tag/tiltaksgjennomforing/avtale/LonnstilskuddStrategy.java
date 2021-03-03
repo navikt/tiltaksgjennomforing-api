@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
@@ -30,6 +29,15 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         regnUtTotalLonnstilskudd();
     }
 
+    @Override
+    public void endreTilskuddsberegning(EndreTilskuddsberegning endreTilskuddsberegning) {
+        avtaleInnhold.setArbeidsgiveravgift(endreTilskuddsberegning.getArbeidsgiveravgift());
+        avtaleInnhold.setOtpSats(endreTilskuddsberegning.getOtpSats());
+        avtaleInnhold.setManedslonn(endreTilskuddsberegning.getManedslonn());
+        avtaleInnhold.setFeriepengesats(endreTilskuddsberegning.getFeriepengesats());
+        regnUtTotalLonnstilskudd();
+    }
+
     void regnUtTotalLonnstilskudd() {
         Integer feriepengerBelop = getFeriepengerBelop(avtaleInnhold.getFeriepengesats(), avtaleInnhold.getManedslonn());
         Integer obligTjenestepensjon = getBeregnetOtpBelop(avtaleInnhold.getOtpSats(), avtaleInnhold.getManedslonn(), feriepengerBelop);
@@ -45,8 +53,6 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setSumLonnstilskudd(sumlønnTilskudd);
         avtaleInnhold.setManedslonn100pst(månedslønnFullStilling);
     }
-
-
 
     private double getOtpSats(EndreAvtale nyAvtale) {
         double OBLIG_TJENESTEPENSJON_PROSENT_SATS = 0.02;
