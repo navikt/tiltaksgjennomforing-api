@@ -4,7 +4,6 @@ import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
 import no.nav.tag.tiltaksgjennomforing.varsel.oppgave.LagGosysVarselLytter;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -158,6 +157,32 @@ class LagVarselFraAvtaleHendelserTest {
         assertHendelse(AVTALE_FORDELT, VEILEDER, VEILEDER, false);
         assertHendelse(AVTALE_FORDELT, VEILEDER, ARBEIDSGIVER, true);
         assertHendelse(AVTALE_FORDELT, VEILEDER, DELTAKER, true);
+    }
+
+    @Test
+    void forleng_avtale() {
+        Avtale avtale = avtaleRepository.save(TestData.enLonnstilskuddAvtaleGodkjentAvVeileder());
+        Veileder veileder = TestData.enVeileder(avtale);
+
+        veileder.forlengAvtale(Instant.now(), avtale.getSluttDato().plusMonths(1), avtale);
+        avtaleRepository.save(avtale);
+
+        assertHendelse(AVTALE_FORLENGET, VEILEDER, VEILEDER, false);
+        assertHendelse(AVTALE_FORLENGET, VEILEDER, ARBEIDSGIVER, true);
+        assertHendelse(AVTALE_FORLENGET, VEILEDER, DELTAKER, true);
+    }
+
+    @Test
+    void endre_tilskuddsberegning() {
+        Avtale avtale = avtaleRepository.save(TestData.enLonnstilskuddAvtaleGodkjentAvVeileder());
+        Veileder veileder = TestData.enVeileder(avtale);
+
+        veileder.endreTilskuddsberegning(Instant.now(), TestData.enEndreTilskuddsberegning(), avtale);
+        avtaleRepository.save(avtale);
+
+        assertHendelse(TILSKUDDSBEREGNING_ENDRET, VEILEDER, VEILEDER, false);
+        assertHendelse(TILSKUDDSBEREGNING_ENDRET, VEILEDER, ARBEIDSGIVER, true);
+        assertHendelse(TILSKUDDSBEREGNING_ENDRET, VEILEDER, DELTAKER, true);
     }
 
     private void assertHendelse(VarslbarHendelseType hendelseType, Avtalerolle utførtAv, Avtalerolle mottaker, boolean bjelle) {

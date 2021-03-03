@@ -119,4 +119,16 @@ public class LagVarselFraAvtaleHendelser {
         VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.GJENOPPRETTET);
         varselRepository.saveAll(factory.alleParter());
     }
+
+    @EventListener
+    public void forlengAvtale(AvtaleForlenget event) {
+        VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.AVTALE_FORLENGET);
+        varselRepository.saveAll(factory.alleParter());
+    }
+
+    @EventListener
+    public void endreTilskuddsberegning(TilskuddsberegningEndret event) {
+        VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.TILSKUDDSBEREGNING_ENDRET);
+        varselRepository.saveAll(factory.alleParter());
+    }
 }

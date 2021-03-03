@@ -18,7 +18,9 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @RequiredArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Builder(toBuilder = true)
 public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
 
     @Id
@@ -58,13 +60,8 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     @Enumerated(EnumType.STRING)
     private TilskuddPeriodeStatus status = TilskuddPeriodeStatus.UBEHANDLET;
 
-    public TilskuddPeriode(TilskuddPeriode periode) {
-        id = UUID.randomUUID();
-        beløp = periode.beløp;
-        startDato = periode.startDato;
-        sluttDato = periode.sluttDato;
-        status = periode.status;
-        lonnstilskuddProsent = periode.lonnstilskuddProsent;
+    public TilskuddPeriode kopi() {
+        return toBuilder().id(UUID.randomUUID()).build();
     }
 
     private void sjekkOmKanBehandles() {

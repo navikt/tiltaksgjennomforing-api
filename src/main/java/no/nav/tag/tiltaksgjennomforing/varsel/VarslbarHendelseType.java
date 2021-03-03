@@ -23,7 +23,9 @@ public enum VarslbarHendelseType {
     NY_VEILEDER("Avtale tildelt ny veileder"),
     AVTALE_FORDELT("Avtale tildelt veileder"),
     TILSKUDDSPERIODE_AVSLATT("Tilskuddsperiode har blitt sendt i retur av "),
-    TILSKUDDSPERIODE_GODKJENT("Tilskuddsperiode har blitt godkjent av beslutter");
+    TILSKUDDSPERIODE_GODKJENT("Tilskuddsperiode har blitt godkjent av beslutter"),
+    AVTALE_FORLENGET("Avtale forlenget av veileder"),
+    TILSKUDDSBEREGNING_ENDRET("Tilskuddsberegning endret av veileder");
 
     private final String tekst;
 
