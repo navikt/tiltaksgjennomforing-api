@@ -460,21 +460,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     void endreBeløpITilskuddsperioder() {
-        for (TilskuddPeriode tilskuddsperiode : Set.copyOf(tilskuddPeriode)) {
-            if (tilskuddsperiode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) {
-                tilskuddsperiode.setBeløp(beregnTilskuddsbeløp(tilskuddsperiode.getStartDato(), tilskuddsperiode.getSluttDato()));
-            } else if (tilskuddsperiode.getStatus() == TilskuddPeriodeStatus.GODKJENT) {
-                TilskuddPeriode ny = tilskuddsperiode.kopi();
-                ny.setBeløp(beregnTilskuddsbeløp(tilskuddsperiode.getStartDato(), tilskuddsperiode.getSluttDato()));
-                boolean beløpetHarØkt = ny.getBeløp() > tilskuddsperiode.getBeløp();
-                ny.setStatus(beløpetHarØkt ? TilskuddPeriodeStatus.UBEHANDLET : TilskuddPeriodeStatus.GODKJENT);
-                annullerTilskuddsperiode(tilskuddsperiode);
-                if (ny.getStatus() == TilskuddPeriodeStatus.GODKJENT) {
-                    registerEvent(new TilskuddsperiodeGodkjent(this, ny, ny.getGodkjentAvNavIdent()));
-                }
-                tilskuddPeriode.add(ny);
-            }
-        }
+        tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET).forEach(t -> t.setBeløp(beregnTilskuddsbeløp(t.getStartDato(), t.getSluttDato())));
     }
 
     private Integer beregnTilskuddsbeløp(LocalDate startDato, LocalDate sluttDato) {
