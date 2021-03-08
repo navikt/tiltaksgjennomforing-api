@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
-import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")

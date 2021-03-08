@@ -44,23 +44,17 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
 
     @MockBean
     private FeatureToggleService featureToggleService;
-    private ConsumerFactory<String, String> consumerFactory;
 
-
-    @BeforeEach
-    public void setUp() {
+    @Test
+    public void skal_kunne_sende_tilskuddperiode_godkjent_på_kafka_topic() throws JSONException {
         when(featureToggleService.isEnabled(anyString())).thenReturn(true);
 
         Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "false", embeddedKafka);
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        consumerFactory = new DefaultKafkaConsumerFactory<>(consumerProps);
-    }
-
-    @Test
-    public void skal_kunne_sende_tilskuddperiode_godkjent_på_kafka_topic() throws JSONException {
+        var consumerFactory = new DefaultKafkaConsumerFactory<String, String>(consumerProps);
         var consumer = consumerFactory.createConsumer();
-        embeddedKafka.consumeFromAnEmbeddedTopic(consumer, Topics.TILSKUDDSPERIODE_GODKJENT);
+        embeddedKafka.consumeFromAllEmbeddedTopics(consumer);
 
         // GITT
         final UUID avtaleId = UUID.randomUUID();

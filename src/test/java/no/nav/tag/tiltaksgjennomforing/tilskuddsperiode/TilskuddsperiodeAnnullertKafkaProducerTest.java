@@ -23,6 +23,8 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(properties = { "tiltaksgjennomforing.kafka.enabled=true" })
 @DirtiesContext
@@ -41,6 +43,8 @@ class TilskuddsperiodeAnnullertKafkaProducerTest {
 
     @Test
     public void skal_kunne_sende_tilskuddperiode_annullert_på_kafka_topic() throws JSONException {
+        when(featureToggleService.isEnabled(anyString())).thenReturn(true);
+
         var consumerProps = KafkaTestUtils.consumerProps("testGroup", "false", embeddedKafka);
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
