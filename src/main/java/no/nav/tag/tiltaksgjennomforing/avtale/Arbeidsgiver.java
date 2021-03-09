@@ -4,6 +4,7 @@ import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErTilbakeITidException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
@@ -43,6 +44,13 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     private static Avtale fjernAvbruttGrunn(Avtale avtale) {
         avtale.setAvbruttGrunn(null);
         return avtale;
+    }
+
+    @Override
+    protected void sjekkGyldigFraDato(LocalDate startDato) {
+        if (startDato != null && startDato.isBefore(LocalDate.now())) {
+            throw new StartDatoErTilbakeITidException();
+        }
     }
 
     @Override
