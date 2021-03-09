@@ -4,11 +4,16 @@ import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import no.nav.security.token.support.core.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
+import no.nav.tag.tiltaksgjennomforing.dokgen.DokgenService;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +37,7 @@ public class AvtaleController {
     private final EregService eregService;
     private final VeilarbArenaClient veilarbArenaClient;
     private final KontoregisterService kontoregisterService;
+    private final DokgenService dokgenService;
 
     @GetMapping("/{avtaleId}")
     public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
@@ -53,6 +59,26 @@ public class AvtaleController {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         return avtalepart.statusDetaljerForAvtale(avtale);
+    }
+
+    @GetMapping("/{avtaleId}/pdf")
+    public HttpEntity<?> hentAvtalePdf(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
+        Avtale avtale = avtalepart.hentAvtale(avtaleRepository, avtaleId);
+
+        if (!avtale.erGodkjentAvVeileder()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_LASTE_NED_PDF);
+        }
+
+        byte[] avtalePdf = dokgenService.avtalePdf(avtale);
+
+        HttpHeaders header = new HttpHeaders();
+        header.setContentType(MediaType.APPLICATION_PDF);
+        header.set(HttpHeaders.CONTENT_DISPOSITION,
+                "inline; filename=Avtale om " + avtale.getTiltakstype().getNavn() + ".pdf");
+        header.setContentLength(avtalePdf.length);
+
+        return new HttpEntity<>(avtalePdf, header);
     }
 
     @PutMapping("/{avtaleId}")

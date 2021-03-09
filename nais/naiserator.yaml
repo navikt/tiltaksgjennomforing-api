@@ -60,6 +60,7 @@ spec:
         - application: tiltak-fakelogin
         - application: tiltaksgjennomforing-wiremock
         - application: tiltak-refusjon-api
+        - application: tag-dokgen
   {{/if}}
   envFrom:
     - configmap: loginservice-idporten
