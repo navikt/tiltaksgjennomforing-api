@@ -19,6 +19,8 @@ public class DokgenService {
 
     public byte[] avtalePdf(Avtale avtale) {
         var avtaleTilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale.gjeldendeInnhold());
+        avtaleTilJournalfoering.setGodkjentPaVegneAv(false);
+        avtaleTilJournalfoering.setGodkjentPaVegneGrunn(null);
         return restOperations().postForObject(dokgenProperties.getUri(), avtaleTilJournalfoering, byte[].class);
     }
 
