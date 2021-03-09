@@ -10,8 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.converter.StringJsonMessageConverter;
-import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,14 +27,14 @@ public class AivenKafkaConfiguration {
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         return props;
     }
 
     @Bean
-    public KafkaTemplate<String, TilskuddsperiodeGodkjentMelding> aivenKafkaTemplate() {
-        KafkaTemplate<String, TilskuddsperiodeGodkjentMelding> kafkaTemplate = new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs()));
-        kafkaTemplate.setMessageConverter(new StringJsonMessageConverter());
+    public KafkaTemplate<String, String> aivenKafkaTemplate() {
+        KafkaTemplate<String, String> kafkaTemplate = new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs()));
+//        kafkaTemplate.setMessageConverter(new StringJsonMessageConverter());
         return kafkaTemplate;
     }
 }

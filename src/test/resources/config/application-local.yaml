@@ -37,7 +37,7 @@ tiltaksgjennomforing:
   kafka:
     enabled: false
     fake: true
-    fake-url: http://localhost:8000/fake-kafka
+    fake-url: http://localhost:8081/fake-kafka
   altinn-tilgangsstyring:
     uri: http://localhost:8090/altinn-tilgangsstyring
     proxyUri: http://heh:9090/
