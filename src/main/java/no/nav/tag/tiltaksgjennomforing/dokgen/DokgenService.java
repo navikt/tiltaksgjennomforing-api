@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -23,15 +24,19 @@ public class DokgenService {
     private static final BigDecimal HUNDRE = new BigDecimal("100");
 
     private final DokgenProperties dokgenProperties;
+    private final MeterRegistry meterRegistry;
 
     public byte[] avtalePdf(Avtale avtale) {
         var avtaleTilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale.gjeldendeInnhold());
         gangOppSatserMed100(avtaleTilJournalfoering);
         fjernGodkjentPåVegneAv(avtaleTilJournalfoering);
         try {
-            return restOperations().postForObject(dokgenProperties.getUri(), avtaleTilJournalfoering, byte[].class);
+            byte[] bytes = restOperations().postForObject(dokgenProperties.getUri(), avtaleTilJournalfoering, byte[].class);
+            meterRegistry.counter("tiltaksgjennomforing.pdf.ok").increment();
+            return bytes;
         } catch (RestClientException e) {
             log.error("Feil ved kall til dokgen for henting av PDF", e);
+            meterRegistry.counter("tiltaksgjennomforing.pdf.feil").increment();
             throw e;
         }
     }
