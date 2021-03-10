@@ -98,7 +98,6 @@ public abstract class Avtalepart<T extends Identifikator> {
     }
 
     protected void avvisDatoerTilbakeITid(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
-        return;
     }
 
     protected abstract Avtalerolle rolle();
