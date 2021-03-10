@@ -5,15 +5,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.journalfoering.AvtaleTilJournalfoeringMapper;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DokgenService {
     private final DokgenProperties dokgenProperties;
 
@@ -21,7 +24,12 @@ public class DokgenService {
         var avtaleTilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale.gjeldendeInnhold());
         avtaleTilJournalfoering.setGodkjentPaVegneAv(false);
         avtaleTilJournalfoering.setGodkjentPaVegneGrunn(null);
-        return restOperations().postForObject(dokgenProperties.getUri(), avtaleTilJournalfoering, byte[].class);
+        try {
+            return restOperations().postForObject(dokgenProperties.getUri(), avtaleTilJournalfoering, byte[].class);
+        } catch (RestClientException e) {
+            log.error("Feil ved kall til dokgen for henting av PDF", e);
+            throw e;
+        }
     }
 
     // Lager ny instans av RestOperations i stedet for å wire inn RestTemplate fordi det var vanskelig å få den til å bruke en ObjectMapper som hadde datoer på format 'yyyy-MM-dd' i stedet for et array
