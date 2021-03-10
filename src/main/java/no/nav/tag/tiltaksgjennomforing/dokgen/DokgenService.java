@@ -14,22 +14,46 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class DokgenService {
+    private static final BigDecimal HUNDRE = new BigDecimal("100");
+
     private final DokgenProperties dokgenProperties;
 
     public byte[] avtalePdf(Avtale avtale) {
         var avtaleTilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale.gjeldendeInnhold());
-        avtaleTilJournalfoering.setGodkjentPaVegneAv(false);
-        avtaleTilJournalfoering.setGodkjentPaVegneGrunn(null);
+        gangOppSatserMed100(avtaleTilJournalfoering);
+        fjernGodkjentPåVegneAv(avtaleTilJournalfoering);
         try {
             return restOperations().postForObject(dokgenProperties.getUri(), avtaleTilJournalfoering, byte[].class);
         } catch (RestClientException e) {
             log.error("Feil ved kall til dokgen for henting av PDF", e);
             throw e;
         }
+    }
+
+    // TODO: Det bør heller ganges med 100 fra starten av i AvtaleTilJournalfoering.
+    //  Slik som det er nå så gjøres det ganging med 100 både her og i tiltaksgjennomforing-prosess.
+    //  Endring på dette krever en synkronisert fiks både her og i tiltaksgjennomforing-prosess.
+    private void gangOppSatserMed100(no.nav.tag.tiltaksgjennomforing.journalfoering.AvtaleTilJournalfoering avtaleTilJournalfoering) {
+        if (avtaleTilJournalfoering.getArbeidsgiveravgift() != null) {
+            avtaleTilJournalfoering.setArbeidsgiveravgift(avtaleTilJournalfoering.getArbeidsgiveravgift().multiply(HUNDRE));
+        }
+        if (avtaleTilJournalfoering.getFeriepengesats() != null) {
+            avtaleTilJournalfoering.setFeriepengesats(avtaleTilJournalfoering.getFeriepengesats().multiply(HUNDRE));
+        }
+        if (avtaleTilJournalfoering.getOtpSats() != null) {
+            avtaleTilJournalfoering.setOtpSats(avtaleTilJournalfoering.getOtpSats() * 100);
+        }
+    }
+
+    private void fjernGodkjentPåVegneAv(no.nav.tag.tiltaksgjennomforing.journalfoering.AvtaleTilJournalfoering avtaleTilJournalfoering) {
+        avtaleTilJournalfoering.setGodkjentPaVegneAv(false);
+        avtaleTilJournalfoering.setGodkjentPaVegneGrunn(null);
     }
 
     // Lager ny instans av RestOperations i stedet for å wire inn RestTemplate fordi det var vanskelig å få den til å bruke en ObjectMapper som hadde datoer på format 'yyyy-MM-dd' i stedet for et array

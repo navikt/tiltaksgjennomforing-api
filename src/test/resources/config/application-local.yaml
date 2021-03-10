@@ -74,4 +74,4 @@ tiltaksgjennomforing:
   norg2:
     url: http://localhost:8090/norg2/api/v1/enhet/navkontor/
   dokgen:
-    uri: https://tag-dokgen.labs.nais.io/template/tiltak-avtale/create-pdf
+    uri: http://localhost:9000/template/tiltak-avtale/create-pdf
