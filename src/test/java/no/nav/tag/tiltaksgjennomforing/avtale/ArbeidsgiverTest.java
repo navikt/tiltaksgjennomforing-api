@@ -1,18 +1,21 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Set;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.junit.Test;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 public class ArbeidsgiverTest {
@@ -57,5 +60,19 @@ public class ArbeidsgiverTest {
         assertThat(avtale.getDeltakerFornavn()).isNull();
         assertThat(avtale.getDeltakerEtternavn()).isNull();
         assertThat(avtale.getEnhetGeografisk()).isEqualTo(navEnhet);
+    }
+
+    @Test(expected = VarighetDatoErTilbakeITidException.class)
+    public void endreAvtale_validererFraDato() {
+        Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
+        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(null, null, null, null, null);
+        arbeidsgiver.avvisDatoerTilbakeITid(avtale, LocalDate.now().minusDays(1), null);
+    }
+
+    @Test(expected = VarighetDatoErTilbakeITidException.class)
+    public void endreAvtale_validererTilDato() {
+        Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
+        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(null, null, null, null, null);
+        arbeidsgiver.avvisDatoerTilbakeITid(avtale, LocalDate.now(), LocalDate.now().minusDays(1));
     }
 }

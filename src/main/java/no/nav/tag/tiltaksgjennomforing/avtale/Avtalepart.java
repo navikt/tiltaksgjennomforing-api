@@ -13,11 +13,11 @@ import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentGeoLokasjonFraPdlRespons;
@@ -93,7 +93,11 @@ public abstract class Avtalepart<T extends Identifikator> {
         if (!kanEndreAvtale()) {
             throw new KanIkkeEndreException();
         }
+        avvisDatoerTilbakeITid(avtale, endreAvtale.getStartDato(), endreAvtale.getSluttDato());
         avtale.endreAvtale(sistEndret, endreAvtale, rolle());
+    }
+
+    protected void avvisDatoerTilbakeITid(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
     }
 
     protected abstract Avtalerolle rolle();

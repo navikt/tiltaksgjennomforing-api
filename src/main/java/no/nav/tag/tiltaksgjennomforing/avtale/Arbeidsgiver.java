@@ -5,6 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 
@@ -43,6 +44,19 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     private static Avtale fjernAvbruttGrunn(Avtale avtale) {
         avtale.setAvbruttGrunn(null);
         return avtale;
+    }
+
+    @Override
+    protected void avvisDatoerTilbakeITid(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
+        if (!avtale.erUfordelt()) {
+            return;
+        }
+        if (startDato != null && startDato.isBefore(LocalDate.now())) {
+            throw new VarighetDatoErTilbakeITidException();
+        }
+        if (sluttDato != null && sluttDato.isBefore(LocalDate.now())) {
+            throw new VarighetDatoErTilbakeITidException();
+        }
     }
 
     @Override
