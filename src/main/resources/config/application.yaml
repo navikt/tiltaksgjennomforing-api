@@ -43,4 +43,4 @@ tiltaksgjennomforing:
   persondata:
     uri: http://pdl-api.default.svc.nais.local/graphql
   dokgen:
-    uri: http://tag-dokgen/template/tiltak-avtale/create-pdf
+    uri: http://tag-dokgen.default.svc.nais.local/template/tiltak-avtale/create-pdf
