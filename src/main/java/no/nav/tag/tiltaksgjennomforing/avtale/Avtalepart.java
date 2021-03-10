@@ -93,11 +93,11 @@ public abstract class Avtalepart<T extends Identifikator> {
         if (!kanEndreAvtale()) {
             throw new KanIkkeEndreException();
         }
-        avvisDatoerTilbakeITid(endreAvtale.getStartDato(), endreAvtale.getSluttDato());
+        avvisDatoerTilbakeITid(avtale, endreAvtale.getStartDato(), endreAvtale.getSluttDato());
         avtale.endreAvtale(sistEndret, endreAvtale, rolle());
     }
 
-    protected void avvisDatoerTilbakeITid(LocalDate startDato, LocalDate sluttDato) {
+    protected void avvisDatoerTilbakeITid(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
         return;
     }
 
