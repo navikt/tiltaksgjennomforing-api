@@ -70,6 +70,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private SortedSet<TilskuddPeriode> tilskuddPeriode = new TreeSet<>();
 
     private Avtale(OpprettAvtale opprettAvtale) {
+        if (opprettAvtale.getDeltakerFnr().erUnder16år()) {
+            throw new FeilkodeException(Feilkode.IKKE_GAMMEL_NOK);
+        }
+        if (opprettAvtale.getTiltakstype() == Tiltakstype.SOMMERJOBB && opprettAvtale.getDeltakerFnr().erOver30år()) {
+            throw new FeilkodeException(Feilkode.FOR_GAMMEL);
+        }
         this.id = UUID.randomUUID();
         this.opprettetTidspunkt = LocalDateTime.now();
         this.deltakerFnr = sjekkAtIkkeNull(opprettAvtale.getDeltakerFnr(), "Deltakers fnr må være satt.");
