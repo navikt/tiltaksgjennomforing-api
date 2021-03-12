@@ -70,6 +70,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private SortedSet<TilskuddPeriode> tilskuddPeriode = new TreeSet<>();
 
     private Avtale(OpprettAvtale opprettAvtale) {
+        sjekkAtIkkeNull(opprettAvtale.getDeltakerFnr(), "Deltakers fnr må være satt.");
+        sjekkAtIkkeNull(opprettAvtale.getBedriftNr(), "Arbeidsgivers bedriftnr må være satt.");
         if (opprettAvtale.getDeltakerFnr().erUnder16år()) {
             throw new FeilkodeException(Feilkode.IKKE_GAMMEL_NOK);
         }
@@ -78,8 +80,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         this.id = UUID.randomUUID();
         this.opprettetTidspunkt = LocalDateTime.now();
-        this.deltakerFnr = sjekkAtIkkeNull(opprettAvtale.getDeltakerFnr(), "Deltakers fnr må være satt.");
-        this.bedriftNr = sjekkAtIkkeNull(opprettAvtale.getBedriftNr(), "Arbeidsgivers bedriftnr må være satt.");
+        this.deltakerFnr = opprettAvtale.getDeltakerFnr();
+        this.bedriftNr = opprettAvtale.getBedriftNr();
         this.tiltakstype = opprettAvtale.getTiltakstype();
         this.sistEndret = Instant.now();
         var innhold = AvtaleInnhold.nyttTomtInnhold();
