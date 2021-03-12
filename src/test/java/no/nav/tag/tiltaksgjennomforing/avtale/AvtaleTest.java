@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import org.assertj.core.api.SoftAssertions;
+import org.checkerframework.dataflow.qual.TerminatesExecution;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -63,6 +64,15 @@ public class AvtaleTest {
     @Test(expected = TiltaksgjennomforingException.class)
     public void nyAvtaleSkalFeileHvisManglerVeileder() {
         Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("23078637692"), new BedriftNr("000111222"), Tiltakstype.ARBEIDSTRENING), null);
+    }
+
+    @Test
+    public void nyAvtaleSkalFeileHvisDeltakerErForUng() {
+        assertFeilkode(Feilkode.IKKE_GAMMEL_NOK, () -> Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("24010970772"), new BedriftNr("000111222"), Tiltakstype.ARBEIDSTRENING), null));
+    }
+    @Test
+    public void nyAvtaleSkalFeileHvisDeltakerErForGammelForSommerjobb() {
+        assertFeilkode(Feilkode.FOR_GAMMEL, () -> Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("08098114468"), new BedriftNr("000111222"), Tiltakstype.SOMMERJOBB), null));
     }
 
     @Test(expected = SamtidigeEndringerException.class)
