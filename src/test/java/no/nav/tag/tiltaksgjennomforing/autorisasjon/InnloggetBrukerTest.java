@@ -40,7 +40,7 @@ public class InnloggetBrukerTest {
 
     @Before
     public void setup() {
-        deltaker = new Fnr("10000000000");
+        deltaker = new Fnr("00000000000");
         navIdent = new NavIdent("X100000");
         bedriftNr = new BedriftNr("12345678901");
         avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(deltaker, bedriftNr, Tiltakstype.ARBEIDSTRENING), navIdent);

@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import org.junit.Test;
 
@@ -37,5 +36,40 @@ public class FnrTest {
     public void fnrSkalInneholde11Tall() {
         String gyldigFnr = "01234567890";
         assertThat(new Fnr(gyldigFnr).asString()).isEqualTo(gyldigFnr);
+    }
+
+    @Test
+    public void testFnr1() {
+        Fnr fnrOver16 = new Fnr("29110976648");
+        assertThat(fnrOver16.erUnder16år()).isTrue();
+        assertThat(fnrOver16.erOver30år()).isFalse();
+    }
+
+    @Test
+    public void testFnr2() {
+        Fnr fnr = new Fnr("19109613897");
+        assertThat(fnr.erUnder16år()).isFalse();
+        assertThat(fnr.erOver30år()).isFalse();
+    }
+
+    @Test
+    public void testFnr3() {
+        Fnr fnr = new Fnr("25128626630");
+        assertThat(fnr.erOver30år()).isTrue();
+        assertThat(fnr.erUnder16år()).isFalse();
+    }
+
+
+    @Test
+    public void testDnr1() {
+        Fnr fnr = new Fnr("49120799125");
+        assertThat(fnr.erUnder16år()).isTrue();
+        assertThat(fnr.erOver30år()).isFalse();
+    }
+    @Test
+    public void testDnr2() {
+        Fnr fnr = new Fnr("64090099076");
+        assertThat(fnr.erUnder16år()).isFalse();
+        assertThat(fnr.erOver30år()).isFalse();
     }
 }

@@ -66,7 +66,7 @@ class StatistikkformidlingProducerTest {
   public void statisktikkformidlingMelding__skal_sendes_på_kafka_topic_med_riktige_felter() throws JSONException, InterruptedException {
 
     // GITT
-    Fnr deltakerFnr = new Fnr("01234567890");
+    Fnr deltakerFnr = new Fnr("00000000000");
     NavIdent veilederNavIdent = new NavIdent("X123456");
     BedriftNr bedriftNr = new BedriftNr("000111222");
     Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(deltakerFnr, bedriftNr, Tiltakstype.VARIG_LONNSTILSKUDD), veilederNavIdent);

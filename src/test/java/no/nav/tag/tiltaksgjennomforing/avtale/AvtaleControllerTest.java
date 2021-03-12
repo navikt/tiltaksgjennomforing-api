@@ -81,7 +81,7 @@ public class AvtaleControllerTest {
     }
 
     private static OpprettAvtale lagOpprettAvtale() {
-        Fnr deltakerFnr = new Fnr("88888899999");
+        Fnr deltakerFnr = new Fnr("00000000000");
         BedriftNr bedriftNr = new BedriftNr("12345678");
         return new OpprettAvtale(deltakerFnr, bedriftNr, Tiltakstype.ARBEIDSTRENING);
     }
@@ -210,7 +210,7 @@ public class AvtaleControllerTest {
     @Test
     public void hentAlleAvtalerInnloggetBrukerHarTilgangTilSkalIkkeReturnereAvtalerManIkkeHarTilgangTil() {
         Avtale avtaleMedTilgang = TestData.enArbeidstreningAvtale();
-        Avtale avtaleUtenTilgang = Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("89898989898"), new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), new NavIdent("X643564"));
+        Avtale avtaleUtenTilgang = Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("01039513753"), new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), new NavIdent("X643564"));
         Deltaker deltaker = TestData.enDeltaker(avtaleMedTilgang);
         værInnloggetSom(deltaker);
         List<Avtale> avtalerBrukerHarTilgangTil = lagListeMedAvtaler(avtaleMedTilgang, 5);
