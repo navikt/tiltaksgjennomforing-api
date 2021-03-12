@@ -2,7 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import org.assertj.core.api.SoftAssertions;
-import org.checkerframework.dataflow.qual.TerminatesExecution;
 import org.junit.Test;
 
 import java.math.BigDecimal;
