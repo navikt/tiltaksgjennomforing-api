@@ -14,5 +14,10 @@ spec:
     - alert: applikasjon nede
       expr: up{app="tiltaksgjennomforing-api", job="kubernetes-pods"} == 0
       for: 5m
-      description: "{{ $labels.app }} er nede i {{ $labels.kubernetes_namespace }}"
+      description: "tiltaksgjennomforing-api er nede"
+      action: "`kubectl describe pod {{ $labels.kubernetes_pod_name }} -n {{ $labels.kubernetes_namespace }}` for events, og `kubectl logs {{ $labels.kubernetes_pod_name }} -n {{ $labels.kubernetes_namespace }}` for logger"
+    - alert: last ned pdf feiler
+      expr: sum(increase(tiltaksgjennomforing_pdf_feil_total[15m])) > 0
+      for: 15m
+      description: "tiltaksgjennomforing-api feiler med pdf-generering"
       action: "`kubectl describe pod {{ $labels.kubernetes_pod_name }} -n {{ $labels.kubernetes_namespace }}` for events, og `kubectl logs {{ $labels.kubernetes_pod_name }} -n {{ $labels.kubernetes_namespace }}` for logger"

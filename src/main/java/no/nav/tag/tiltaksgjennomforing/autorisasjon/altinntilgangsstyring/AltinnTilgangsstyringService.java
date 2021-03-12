@@ -72,6 +72,8 @@ public class AltinnTilgangsstyringService {
         AltinnReportee[] midlLtsOrger = kallAltinn(altinnTilgangsstyringProperties.getLtsMidlertidigServiceCode(), altinnTilgangsstyringProperties.getLtsMidlertidigServiceEdition(), fnr);
         leggTil(tilganger, midlLtsOrger, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
 
+        leggTil(tilganger, midlLtsOrger, Tiltakstype.SOMMERJOBB);
+
         return tilganger.asMap();
     }
 
