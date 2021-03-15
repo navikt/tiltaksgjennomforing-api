@@ -255,6 +255,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         return statusSomEnum().getStatusVerdi();
     }
 
+    @JsonProperty
     public Status statusSomEnum() {
         if (isAvbrutt()) {
             return Status.AVBRUTT;
