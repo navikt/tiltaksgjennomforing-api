@@ -84,7 +84,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         this.bedriftNr = opprettAvtale.getBedriftNr();
         this.tiltakstype = opprettAvtale.getTiltakstype();
         this.sistEndret = Instant.now();
-        var innhold = AvtaleInnhold.nyttTomtInnhold();
+        var innhold = AvtaleInnhold.nyttTomtInnhold(tiltakstype);
         innhold.setAvtale(this);
         this.versjoner.add(innhold);
     }

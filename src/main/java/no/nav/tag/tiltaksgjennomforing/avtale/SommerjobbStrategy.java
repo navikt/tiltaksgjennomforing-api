@@ -37,6 +37,7 @@ public class SommerjobbStrategy extends LonnstilskuddStrategy {
         if (lonnstilskuddProsent != null && !(lonnstilskuddProsent == 75 || lonnstilskuddProsent == 50)) {
             throw new FeilLonnstilskuddsprosentException();
         }
+        endreAvtale.setStillingstype(Stillingstype.MIDLERTIDIG);
         super.endre(endreAvtale);
     }
 

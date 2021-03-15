@@ -103,10 +103,13 @@ public class AvtaleInnhold {
     private GodkjentPaVegneGrunn godkjentPaVegneGrunn;
     private boolean godkjentPaVegneAv;
 
-    public static AvtaleInnhold nyttTomtInnhold() {
+    public static AvtaleInnhold nyttTomtInnhold(Tiltakstype tiltakstype) {
         var innhold = new AvtaleInnhold();
         innhold.setId(UUID.randomUUID());
         innhold.setVersjon(1);
+        if (tiltakstype == Tiltakstype.SOMMERJOBB) {
+            innhold.setStillingstype(Stillingstype.MIDLERTIDIG);
+        }
         return innhold;
     }
 
