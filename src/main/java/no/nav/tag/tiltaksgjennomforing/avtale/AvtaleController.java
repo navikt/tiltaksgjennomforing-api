@@ -181,6 +181,17 @@ public class AvtaleController {
         return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
     }
 
+    @PostMapping("/{avtaleId}/forleng-dry-run")
+    public Avtale forlengAvtaleDryRun(@PathVariable("avtaleId") UUID avtaleId,
+                                           @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
+                                           @RequestBody ForlengAvtale forlengAvtale) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId)
+                .orElseThrow(RessursFinnesIkkeException::new);
+        veileder.forlengAvtale(sistEndret, forlengAvtale.getSluttDato(), avtale);
+        return avtale;
+    }
+
     @PostMapping("/{avtaleId}/endre-tilskuddsberegning")
     @Transactional
     public ResponseEntity<?> endreTilskuddsberegning(@PathVariable("avtaleId") UUID avtaleId,
