@@ -245,7 +245,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     void sjekkOmAltErUtfylt() {
-        if (!felterSomIkkeErFyltUt().isEmpty()) {
+        if (!erAltUtfylt()) {
             throw new AltMåVæreFyltUtException();
         }
     }
@@ -317,7 +317,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     private boolean erAltUtfylt() {
-        return gjeldendeInnhold().erAltUtfylt();
+        return felterSomIkkeErFyltUt().isEmpty();
     }
 
     public void leggTilBedriftNavn(String bedriftNavn) {
@@ -335,7 +335,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         return gjeldendeInnhold().felterSomIkkeErFyltUt();
     }
 
-        @JsonProperty
+    @JsonProperty
     public boolean kanLåsesOpp() {
         return erGodkjentAvVeileder();
     }

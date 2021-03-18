@@ -152,10 +152,6 @@ public class AvtaleInnhold {
         innholdStrategi().endre(nyAvtale);
     }
 
-    boolean erAltUtfylt() {
-        return felterSomIkkeErFyltUt().isEmpty();
-    }
-
     public Set<String> felterSomIkkeErFyltUt() {
         return innholdStrategi().alleFelterSomMåFyllesUt()
                 .entrySet().stream()
