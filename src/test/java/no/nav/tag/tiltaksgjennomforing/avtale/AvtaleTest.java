@@ -3,12 +3,15 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -224,6 +227,52 @@ public class AvtaleTest {
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setDeltakerTlf(null);
         avtale.sjekkOmAltErUtfylt();
+    }
+
+    @Test
+    public void kanIkkeGodkjennesNårNoeMangler__arbeidstrening() {
+        Set<String> arbeidstreningsfelter = Set.of(
+                AvtaleInnhold.Fields.deltakerFornavn,
+                AvtaleInnhold.Fields.deltakerEtternavn,
+                AvtaleInnhold.Fields.deltakerTlf,
+                AvtaleInnhold.Fields.bedriftNavn,
+                AvtaleInnhold.Fields.arbeidsgiverFornavn,
+                AvtaleInnhold.Fields.arbeidsgiverEtternavn,
+                AvtaleInnhold.Fields.arbeidsgiverTlf,
+                AvtaleInnhold.Fields.veilederFornavn,
+                AvtaleInnhold.Fields.veilederEtternavn,
+                AvtaleInnhold.Fields.veilederTlf,
+                AvtaleInnhold.Fields.stillingstittel,
+                AvtaleInnhold.Fields.arbeidsoppgaver,
+                AvtaleInnhold.Fields.stillingprosent,
+                AvtaleInnhold.Fields.maal,
+                AvtaleInnhold.Fields.startDato,
+                AvtaleInnhold.Fields.sluttDato,
+                AvtaleInnhold.Fields.tilrettelegging,
+                AvtaleInnhold.Fields.oppfolging
+        );
+        {
+            Avtale avtale = TestData.enArbeidstreningAvtale();
+            assertThat(avtale.felterSomIkkeErFyltUt()).containsExactlyInAnyOrderElementsOf(arbeidstreningsfelter);
+        }
+        for (String felt : arbeidstreningsfelter) {
+            Avtale avtale = TestData.enArbeidstreningAvtale();
+            EndreAvtale endreAvtale = endringPåAltUtenom(felt);
+            avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+            assertThat(avtale.felterSomIkkeErFyltUt()).containsOnly(felt);
+            assertFeilkode(Feilkode.ALT_MA_VAERE_FYLT_UT, () -> avtale.godkjennForArbeidsgiver(TestData.enIdentifikator()));
+        }
+    }
+
+    private static EndreAvtale endringPåAltUtenom(String felt) {
+        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        Object field = ReflectionTestUtils.getField(endreAvtale, felt);
+        if (field instanceof Collection) {
+            ((Collection) field).clear();
+        } else {
+            ReflectionTestUtils.setField(endreAvtale, felt, null);
+        }
+        return endreAvtale;
     }
 
     @Test

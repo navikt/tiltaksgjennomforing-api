@@ -191,7 +191,7 @@ public class TestData {
         endreAvtale.setStartDato(LocalDate.now());
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(12));
         endreAvtale.setStillingprosent(50);
-        endreAvtale.setMaal(List.of(TestData.etMaal()));
+        endreAvtale.getMaal().add(TestData.etMaal());
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
         endreAvtale.setArbeidsgiverKontonummer("000111222");
         endreAvtale.setStillingstittel("Butikkbetjent");
