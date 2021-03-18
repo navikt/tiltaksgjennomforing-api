@@ -1,8 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
@@ -106,26 +106,21 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         return null;
     }
 
-    private boolean erFamiletilknytningForklaringFylltUtHvisDetTrengs() {
-        if (avtaleInnhold.getHarFamilietilknytning()) {
-            return StringUtils.isNotBlank(avtaleInnhold.getFamilietilknytningForklaring());
-        } else {
-            return true;
-        }
-    }
-
     @Override
-    public boolean erAltUtfylt() {
-        return super.erAltUtfylt() && erIkkeTomme(
-                avtaleInnhold.getArbeidsgiverKontonummer(),
-                avtaleInnhold.getStillingstittel(),
-                avtaleInnhold.getArbeidsoppgaver(),
-                avtaleInnhold.getLonnstilskuddProsent(),
-                avtaleInnhold.getManedslonn(),
-                avtaleInnhold.getFeriepengesats(),
-                avtaleInnhold.getArbeidsgiveravgift(),
-                avtaleInnhold.getHarFamilietilknytning(),
-                avtaleInnhold.getStillingstype()
-        ) && erFamiletilknytningForklaringFylltUtHvisDetTrengs();
+    public Map<String, Object> alleFelterSomMåFyllesUt() {
+        HashMap<String, Object> alleFelter = new HashMap<>();
+        alleFelter.putAll(super.alleFelterSomMåFyllesUt());
+        alleFelter.put(AvtaleInnhold.Fields.arbeidsgiverKontonummer, avtaleInnhold.getArbeidsgiverKontonummer());
+        alleFelter.put(AvtaleInnhold.Fields.stillingstittel, avtaleInnhold.getStillingstittel());
+        alleFelter.put(AvtaleInnhold.Fields.lonnstilskuddProsent, avtaleInnhold.getLonnstilskuddProsent());
+        alleFelter.put(AvtaleInnhold.Fields.manedslonn, avtaleInnhold.getManedslonn());
+        alleFelter.put(AvtaleInnhold.Fields.feriepengesats, avtaleInnhold.getFeriepengesats());
+        alleFelter.put(AvtaleInnhold.Fields.arbeidsgiveravgift, avtaleInnhold.getArbeidsgiveravgift());
+        alleFelter.put(AvtaleInnhold.Fields.harFamilietilknytning, avtaleInnhold.getHarFamilietilknytning());
+        alleFelter.put(AvtaleInnhold.Fields.stillingstype, avtaleInnhold.getStillingstype());
+        if (avtaleInnhold.getHarFamilietilknytning() != null && avtaleInnhold.getHarFamilietilknytning()) {
+            alleFelter.put(AvtaleInnhold.Fields.familietilknytningForklaring, avtaleInnhold.getFamilietilknytningForklaring());
+        }
+        return alleFelter;
     }
 }

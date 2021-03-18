@@ -3,8 +3,8 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangMentorException;
 
 import java.time.LocalDate;
-
-import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MentorStrategy extends BaseAvtaleInnholdStrategy {
 
@@ -25,14 +25,15 @@ public class MentorStrategy extends BaseAvtaleInnholdStrategy {
     }
 
     @Override
-    public boolean erAltUtfylt() {
-        return super.erAltUtfylt() && erIkkeTomme(
-                avtaleInnhold.getMentorFornavn(),
-                avtaleInnhold.getMentorEtternavn(),
-                avtaleInnhold.getMentorOppgaver(),
-                avtaleInnhold.getMentorAntallTimer(),
-                avtaleInnhold.getMentorTimelonn()
-        );
+    public Map<String, Object> alleFelterSomMåFyllesUt() {
+        HashMap<String, Object> alleFelter = new HashMap<>();
+        alleFelter.putAll(super.alleFelterSomMåFyllesUt());
+        alleFelter.put(AvtaleInnhold.Fields.mentorFornavn, avtaleInnhold.getMentorFornavn());
+        alleFelter.put(AvtaleInnhold.Fields.mentorFornavn, avtaleInnhold.getMentorEtternavn());
+        alleFelter.put(AvtaleInnhold.Fields.mentorFornavn, avtaleInnhold.getMentorOppgaver());
+        alleFelter.put(AvtaleInnhold.Fields.mentorFornavn, avtaleInnhold.getMentorAntallTimer());
+        alleFelter.put(AvtaleInnhold.Fields.mentorFornavn, avtaleInnhold.getMentorTimelonn());
+        return alleFelter;
     }
 
     @Override

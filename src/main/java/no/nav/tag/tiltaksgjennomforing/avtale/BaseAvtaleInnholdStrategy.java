@@ -1,11 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
-
-import java.time.LocalDate;
 import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
 
-public class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy {
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+public abstract class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy {
     final AvtaleInnhold avtaleInnhold;
 
     public BaseAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
@@ -35,25 +37,30 @@ public class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy {
     }
 
     @Override
-    public boolean erAltUtfylt() {
-        return erIkkeTomme(
-                avtaleInnhold.getDeltakerFornavn(),
-                avtaleInnhold.getDeltakerEtternavn(),
-                avtaleInnhold.getDeltakerTlf(),
-                avtaleInnhold.getBedriftNavn(),
-                avtaleInnhold.getArbeidsgiverFornavn(),
-                avtaleInnhold.getArbeidsgiverEtternavn(),
-                avtaleInnhold.getArbeidsgiverTlf(),
-            avtaleInnhold.getVeilederFornavn(),
-            avtaleInnhold.getVeilederEtternavn(),
-            avtaleInnhold.getVeilederTlf(),
-            avtaleInnhold.getOppfolging(),
-            avtaleInnhold.getTilrettelegging(),
-            avtaleInnhold.getStartDato(),
-            avtaleInnhold.getSluttDato(),
-            avtaleInnhold.getStillingprosent()
-        );
+    public Map<String, Object> alleFelterSomMåFyllesUt() {
+        // Felter som er felles for alle tiltakstyper
+
+        Map<String, Object> alleFelter = new HashMap<>();
+        alleFelter.put(AvtaleInnhold.Fields.deltakerFornavn, avtaleInnhold.getDeltakerFornavn());
+        alleFelter.put(AvtaleInnhold.Fields.deltakerEtternavn, avtaleInnhold.getDeltakerEtternavn());
+        alleFelter.put(AvtaleInnhold.Fields.deltakerTlf, avtaleInnhold.getDeltakerTlf());
+        alleFelter.put(AvtaleInnhold.Fields.bedriftNavn, avtaleInnhold.getBedriftNavn());
+        alleFelter.put(AvtaleInnhold.Fields.arbeidsgiverFornavn, avtaleInnhold.getArbeidsgiverFornavn());
+        alleFelter.put(AvtaleInnhold.Fields.arbeidsgiverEtternavn, avtaleInnhold.getArbeidsgiverEtternavn());
+        alleFelter.put(AvtaleInnhold.Fields.arbeidsgiverTlf, avtaleInnhold.getArbeidsgiverTlf());
+        alleFelter.put(AvtaleInnhold.Fields.veilederFornavn, avtaleInnhold.getVeilederFornavn());
+        alleFelter.put(AvtaleInnhold.Fields.veilederEtternavn, avtaleInnhold.getVeilederEtternavn());
+        alleFelter.put(AvtaleInnhold.Fields.veilederTlf, avtaleInnhold.getVeilederTlf());
+        alleFelter.put(AvtaleInnhold.Fields.oppfolging, avtaleInnhold.getOppfolging());
+        alleFelter.put(AvtaleInnhold.Fields.tilrettelegging, avtaleInnhold.getTilrettelegging());
+        alleFelter.put(AvtaleInnhold.Fields.startDato, avtaleInnhold.getStartDato());
+        alleFelter.put(AvtaleInnhold.Fields.sluttDato, avtaleInnhold.getSluttDato());
+        alleFelter.put(AvtaleInnhold.Fields.stillingstittel, avtaleInnhold.getStillingstittel());
+        alleFelter.put(AvtaleInnhold.Fields.stillingprosent, avtaleInnhold.getStillingprosent());
+        alleFelter.put(AvtaleInnhold.Fields.arbeidsoppgaver, avtaleInnhold.getArbeidsoppgaver());
+        return alleFelter;
     }
+
 
     protected void sjekkAtStartDatoErEtterSluttDato(LocalDate startDato, LocalDate sluttDato) {
         if (startDato != null && sluttDato != null) {

@@ -3,8 +3,8 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangArbeidstreningException;
 
 import java.time.LocalDate;
-
-import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ArbeidstreningStrategy extends BaseAvtaleInnholdStrategy {
 
@@ -25,10 +25,11 @@ public class ArbeidstreningStrategy extends BaseAvtaleInnholdStrategy {
     }
 
     @Override
-    public boolean erAltUtfylt() {
-        return super.erAltUtfylt()
-                && erIkkeTomme(avtaleInnhold.getStillingstittel())
-                && !avtaleInnhold.getMaal().isEmpty();
+    public Map<String, Object> alleFelterSomMåFyllesUt() {
+        HashMap<String, Object> alleFelterSomMåFyllesUt = new HashMap<>();
+        alleFelterSomMåFyllesUt.putAll(super.alleFelterSomMåFyllesUt());
+        alleFelterSomMåFyllesUt.put(AvtaleInnhold.Fields.maal, avtaleInnhold.getMaal());
+        return alleFelterSomMåFyllesUt;
     }
 
     @Override

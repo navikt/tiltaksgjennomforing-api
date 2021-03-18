@@ -50,7 +50,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private UUID id;
 
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @OrderBy(AvtaleInnhold.Fields.versjon)
+    @OrderBy("versjon")
     private List<AvtaleInnhold> versjoner = new ArrayList<>();
 
     private Instant sistEndret;
@@ -245,8 +245,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     void sjekkOmAltErUtfylt() {
-        if (!erAltUtfylt()) {
-            throw new AltMåVæreFyltUtException();
+        Set<String> felterSomIkkeErFyltUt = gjeldendeInnhold().felterSomIkkeErFyltUt();
+        if (!felterSomIkkeErFyltUt.isEmpty()) {
+            throw new AltMåVæreFyltUtException(felterSomIkkeErFyltUt);
         }
     }
 
@@ -316,7 +317,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
     }
 
-    boolean erAltUtfylt() {
+    private boolean erAltUtfylt() {
         return gjeldendeInnhold().erAltUtfylt();
     }
 
@@ -331,6 +332,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     @JsonProperty
+    public Set<String> felterSomIkkeErFyltUt() {
+        return gjeldendeInnhold().felterSomIkkeErFyltUt();
+    }
+
+        @JsonProperty
     public boolean kanLåsesOpp() {
         return erGodkjentAvVeileder();
     }
@@ -530,5 +536,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         Avtale getAvtale();
 
         void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning);
+
+        Set<String> felterSomIkkeErFyltUt();
     }
 }
