@@ -245,9 +245,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     void sjekkOmAltErUtfylt() {
-        Set<String> felterSomIkkeErFyltUt = gjeldendeInnhold().felterSomIkkeErFyltUt();
-        if (!felterSomIkkeErFyltUt.isEmpty()) {
-            throw new AltMåVæreFyltUtException(felterSomIkkeErFyltUt);
+        if (!felterSomIkkeErFyltUt().isEmpty()) {
+            throw new AltMåVæreFyltUtException();
         }
     }
 
