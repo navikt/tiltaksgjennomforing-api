@@ -50,7 +50,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private UUID id;
 
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @OrderBy("versjon")
+    @OrderBy(AvtaleInnhold.Fields.versjon)
     private List<AvtaleInnhold> versjoner = new ArrayList<>();
 
     private Instant sistEndret;
