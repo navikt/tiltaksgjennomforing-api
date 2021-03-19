@@ -316,8 +316,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
     }
 
-    boolean erAltUtfylt() {
-        return gjeldendeInnhold().erAltUtfylt();
+    private boolean erAltUtfylt() {
+        return felterSomIkkeErFyltUt().isEmpty();
     }
 
     public void leggTilBedriftNavn(String bedriftNavn) {
@@ -328,6 +328,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         NavnFormaterer formaterer = new NavnFormaterer(navn);
         this.setDeltakerFornavn(formaterer.getFornavn());
         this.setDeltakerEtternavn(formaterer.getEtternavn());
+    }
+
+    @JsonProperty
+    public Set<String> felterSomIkkeErFyltUt() {
+        return gjeldendeInnhold().felterSomIkkeErFyltUt();
     }
 
     @JsonProperty
@@ -530,5 +535,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         Avtale getAvtale();
 
         void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning);
+
+        Set<String> felterSomIkkeErFyltUt();
     }
 }

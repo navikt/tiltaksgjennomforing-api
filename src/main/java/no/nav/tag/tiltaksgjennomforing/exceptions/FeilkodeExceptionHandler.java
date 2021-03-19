@@ -13,12 +13,11 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class FeilkodeExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String FEILKODE = "feilkode";
 
-    @ExceptionHandler({FeilkodeException.class})
+    @ExceptionHandler({ FeilkodeException.class })
     public ResponseEntity<Object> feilkodeException(FeilkodeException e) {
         log.info("Feilkode inntruffet: {}", e.getFeilkode());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .header(FEILKODE, e.getFeilkode().name())
                 .build();
     }
-
 }

@@ -10,10 +10,10 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erTom;
 
 // Lombok
 @Data
@@ -119,27 +119,27 @@ public class AvtaleInnhold {
 
     public AvtaleInnhold nyVersjon() {
         AvtaleInnhold nyVersjon = toBuilder()
-            .id(UUID.randomUUID())
-            .maal(kopiAvMål())
-            .godkjentAvDeltaker(null)
-            .godkjentAvArbeidsgiver(null)
-            .godkjentAvVeileder(null)
-            .godkjentPaVegneAv(false)
-            .godkjentPaVegneGrunn(null)
-            .journalpostId(null)
-            .versjon(versjon + 1)
-            .build();
+                .id(UUID.randomUUID())
+                .maal(kopiAvMål())
+                .godkjentAvDeltaker(null)
+                .godkjentAvArbeidsgiver(null)
+                .godkjentAvVeileder(null)
+                .godkjentPaVegneAv(false)
+                .godkjentPaVegneGrunn(null)
+                .journalpostId(null)
+                .versjon(versjon + 1)
+                .build();
         nyVersjon.getMaal().forEach(m -> m.setAvtaleInnhold(nyVersjon));
         return nyVersjon;
     }
 
     public AvtaleInnhold nyGodkjentVersjon() {
         AvtaleInnhold nyVersjon = toBuilder()
-            .id(UUID.randomUUID())
-            .maal(kopiAvMål())
-            .journalpostId(null)
-            .versjon(versjon + 1)
-            .build();
+                .id(UUID.randomUUID())
+                .maal(kopiAvMål())
+                .journalpostId(null)
+                .versjon(versjon + 1)
+                .build();
         nyVersjon.getMaal().forEach(m -> m.setAvtaleInnhold(nyVersjon));
         return nyVersjon;
     }
@@ -152,8 +152,12 @@ public class AvtaleInnhold {
         innholdStrategi().endre(nyAvtale);
     }
 
-    boolean erAltUtfylt() {
-        return innholdStrategi().erAltUtfylt();
+    public Set<String> felterSomIkkeErFyltUt() {
+        return innholdStrategi().alleFelterSomMåFyllesUt()
+                .entrySet().stream()
+                .filter(entry -> erTom(entry.getValue()))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
     }
 
     private AvtaleInnholdStrategy innholdStrategi() {

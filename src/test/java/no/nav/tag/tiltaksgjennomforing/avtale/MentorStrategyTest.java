@@ -39,8 +39,6 @@ public class MentorStrategyTest {
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
         strategy.endre(endreAvtale);
-
-        assertThat(strategy.erAltUtfylt()).isTrue();
     }
 
     @Test
