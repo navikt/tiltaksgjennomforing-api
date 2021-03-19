@@ -24,7 +24,7 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setStillingstittel(nyAvtale.getStillingstittel());
         avtaleInnhold.setStillingStyrk08(nyAvtale.getStillingStyrk08());
         avtaleInnhold.setStillingKonseptId(nyAvtale.getStillingKonseptId());
-        avtaleInnhold.setOtpSats(getOtpSats(nyAvtale));
+        avtaleInnhold.setOtpSats(nyAvtale.getOtpSats());
         super.endre(nyAvtale);
         regnUtTotalLonnstilskudd();
     }
@@ -53,15 +53,6 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setSumLonnstilskudd(sumlønnTilskudd);
         avtaleInnhold.setManedslonn100pst(månedslønnFullStilling);
     }
-
-    private double getOtpSats(EndreAvtale nyAvtale) {
-        double OBLIG_TJENESTEPENSJON_PROSENT_SATS = 0.02;
-        if (erIkkeTomme(nyAvtale.getOtpSats())) {
-            return nyAvtale.getOtpSats();
-        }
-        return OBLIG_TJENESTEPENSJON_PROSENT_SATS;
-    }
-
 
     private Integer getLønnVedFullStilling(Integer sumUtgifter, Integer stillingsProsent) {
         if (sumUtgifter == null || stillingsProsent == null) {
@@ -110,6 +101,9 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
     public Map<String, Object> alleFelterSomMåFyllesUt() {
         HashMap<String, Object> alleFelter = new HashMap<>();
         alleFelter.putAll(super.alleFelterSomMåFyllesUt());
+        alleFelter.put(AvtaleInnhold.Fields.stillingstittel, avtaleInnhold.getStillingstittel());
+        alleFelter.put(AvtaleInnhold.Fields.stillingprosent, avtaleInnhold.getStillingprosent());
+        alleFelter.put(AvtaleInnhold.Fields.arbeidsoppgaver, avtaleInnhold.getArbeidsoppgaver());
         alleFelter.put(AvtaleInnhold.Fields.arbeidsgiverKontonummer, avtaleInnhold.getArbeidsgiverKontonummer());
         alleFelter.put(AvtaleInnhold.Fields.lonnstilskuddProsent, avtaleInnhold.getLonnstilskuddProsent());
         alleFelter.put(AvtaleInnhold.Fields.manedslonn, avtaleInnhold.getManedslonn());

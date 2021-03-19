@@ -212,23 +212,6 @@ public class AvtaleTest {
         assertThat(avtale.getSistEndret()).isAfter(førstEndret);
     }
 
-    @Test(expected = AltMåVæreFyltUtException.class)
-    public void kanIkkeGodkjennesNaarIkkeAltErUtfylt() {
-        Avtale avtale = TestData.enArbeidstreningAvtale();
-        avtale.sjekkOmAltErUtfylt();
-    }
-
-    @Test(expected = AltMåVæreFyltUtException.class)
-    public void kanIkkeGodkjennesNaarDeltakerTlfMangler() {
-        // Deltaker tlf ble innført etter at avtaler er opprettet. Det kan derfor være
-        // avtaler som er godkjent av deltaker og AG som mangler tlf.
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
-        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
-        avtale.setDeltakerTlf(null);
-        avtale.sjekkOmAltErUtfylt();
-    }
-
     @Test
     public void kanIkkeGodkjennesNårNoeMangler__arbeidstrening() {
         Set<String> arbeidstreningsfelter = Set.of(
@@ -251,17 +234,90 @@ public class AvtaleTest {
                 AvtaleInnhold.Fields.tilrettelegging,
                 AvtaleInnhold.Fields.oppfolging
         );
-        {
-            Avtale avtale = TestData.enArbeidstreningAvtale();
-            assertThat(avtale.felterSomIkkeErFyltUt()).containsExactlyInAnyOrderElementsOf(arbeidstreningsfelter);
-        }
-        for (String felt : arbeidstreningsfelter) {
-            Avtale avtale = TestData.enArbeidstreningAvtale();
+
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.ARBEIDSTRENING), TestData.enNavIdent());
+
+        testAtAlleFelterMangler(avtale, arbeidstreningsfelter);
+        testAtHvertEnkeltFeltMangler(avtale, arbeidstreningsfelter);
+    }
+
+    @Test
+    public void kanIkkeGodkjennesNårNoeMangler__lønnstilskudd() {
+        Set<String> lønnstilskuddfelter = Set.of(
+                AvtaleInnhold.Fields.deltakerFornavn,
+                AvtaleInnhold.Fields.deltakerEtternavn,
+                AvtaleInnhold.Fields.deltakerTlf,
+                AvtaleInnhold.Fields.bedriftNavn,
+                AvtaleInnhold.Fields.arbeidsgiverFornavn,
+                AvtaleInnhold.Fields.arbeidsgiverEtternavn,
+                AvtaleInnhold.Fields.arbeidsgiverTlf,
+                AvtaleInnhold.Fields.veilederFornavn,
+                AvtaleInnhold.Fields.veilederEtternavn,
+                AvtaleInnhold.Fields.veilederTlf,
+                AvtaleInnhold.Fields.stillingstittel,
+                AvtaleInnhold.Fields.arbeidsoppgaver,
+                AvtaleInnhold.Fields.stillingprosent,
+                AvtaleInnhold.Fields.stillingstype,
+                AvtaleInnhold.Fields.startDato,
+                AvtaleInnhold.Fields.sluttDato,
+                AvtaleInnhold.Fields.lonnstilskuddProsent,
+                AvtaleInnhold.Fields.arbeidsgiverKontonummer,
+                AvtaleInnhold.Fields.manedslonn,
+                AvtaleInnhold.Fields.feriepengesats,
+                AvtaleInnhold.Fields.otpSats,
+                AvtaleInnhold.Fields.arbeidsgiveravgift,
+                AvtaleInnhold.Fields.tilrettelegging,
+                AvtaleInnhold.Fields.oppfolging,
+                AvtaleInnhold.Fields.harFamilietilknytning
+        );
+
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
+
+        testAtAlleFelterMangler(avtale, lønnstilskuddfelter);
+        testAtHvertEnkeltFeltMangler(avtale, lønnstilskuddfelter);
+    }
+
+    @Test
+    public void kanIkkeGodkjennesNårNoeMangler__mentor() {
+        Set<String> mentorfelter = Set.of(
+                AvtaleInnhold.Fields.deltakerFornavn,
+                AvtaleInnhold.Fields.deltakerEtternavn,
+                AvtaleInnhold.Fields.deltakerTlf,
+                AvtaleInnhold.Fields.bedriftNavn,
+                AvtaleInnhold.Fields.arbeidsgiverFornavn,
+                AvtaleInnhold.Fields.arbeidsgiverEtternavn,
+                AvtaleInnhold.Fields.arbeidsgiverTlf,
+                AvtaleInnhold.Fields.veilederFornavn,
+                AvtaleInnhold.Fields.veilederEtternavn,
+                AvtaleInnhold.Fields.veilederTlf,
+                AvtaleInnhold.Fields.startDato,
+                AvtaleInnhold.Fields.sluttDato,
+                AvtaleInnhold.Fields.mentorFornavn,
+                AvtaleInnhold.Fields.mentorEtternavn,
+                AvtaleInnhold.Fields.mentorTimelonn,
+                AvtaleInnhold.Fields.mentorAntallTimer,
+                AvtaleInnhold.Fields.mentorOppgaver,
+                AvtaleInnhold.Fields.tilrettelegging,
+                AvtaleInnhold.Fields.oppfolging
+        );
+
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), TestData.enNavIdent());
+
+        testAtAlleFelterMangler(avtale, mentorfelter);
+        testAtHvertEnkeltFeltMangler(avtale, mentorfelter);
+    }
+
+    private static void testAtHvertEnkeltFeltMangler(Avtale avtale, Set<String> felterSomKrevesForTiltakstype) {
+        for (String felt : felterSomKrevesForTiltakstype) {
             EndreAvtale endreAvtale = endringPåAltUtenom(felt);
             avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
             assertThat(avtale.felterSomIkkeErFyltUt()).containsOnly(felt);
             assertFeilkode(Feilkode.ALT_MA_VAERE_FYLT_UT, () -> avtale.godkjennForArbeidsgiver(TestData.enIdentifikator()));
         }
+    }
+
+    private static void testAtAlleFelterMangler(Avtale avtale, Set<String> arbeidstreningsfelter) {
+        assertThat(avtale.felterSomIkkeErFyltUt()).containsExactlyInAnyOrderElementsOf(arbeidstreningsfelter);
     }
 
     private static EndreAvtale endringPåAltUtenom(String felt) {

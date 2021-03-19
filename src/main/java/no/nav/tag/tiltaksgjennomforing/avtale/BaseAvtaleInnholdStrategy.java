@@ -52,9 +52,6 @@ public abstract class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy
         alleFelter.put(AvtaleInnhold.Fields.veilederTlf, avtaleInnhold.getVeilederTlf());
         alleFelter.put(AvtaleInnhold.Fields.startDato, avtaleInnhold.getStartDato());
         alleFelter.put(AvtaleInnhold.Fields.sluttDato, avtaleInnhold.getSluttDato());
-        alleFelter.put(AvtaleInnhold.Fields.stillingprosent, avtaleInnhold.getStillingprosent());
-        alleFelter.put(AvtaleInnhold.Fields.stillingstittel, avtaleInnhold.getStillingstittel());
-        alleFelter.put(AvtaleInnhold.Fields.arbeidsoppgaver, avtaleInnhold.getArbeidsoppgaver());
         alleFelter.put(AvtaleInnhold.Fields.oppfolging, avtaleInnhold.getOppfolging());
         alleFelter.put(AvtaleInnhold.Fields.tilrettelegging, avtaleInnhold.getTilrettelegging());
         return alleFelter;

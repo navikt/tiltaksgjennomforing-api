@@ -28,6 +28,9 @@ public class ArbeidstreningStrategy extends BaseAvtaleInnholdStrategy {
     public Map<String, Object> alleFelterSomMåFyllesUt() {
         HashMap<String, Object> alleFelterSomMåFyllesUt = new HashMap<>();
         alleFelterSomMåFyllesUt.putAll(super.alleFelterSomMåFyllesUt());
+        alleFelterSomMåFyllesUt.put(AvtaleInnhold.Fields.stillingprosent, avtaleInnhold.getStillingprosent());
+        alleFelterSomMåFyllesUt.put(AvtaleInnhold.Fields.stillingstittel, avtaleInnhold.getStillingstittel());
+        alleFelterSomMåFyllesUt.put(AvtaleInnhold.Fields.arbeidsoppgaver, avtaleInnhold.getArbeidsoppgaver());
         alleFelterSomMåFyllesUt.put(AvtaleInnhold.Fields.maal, avtaleInnhold.getMaal());
         return alleFelterSomMåFyllesUt;
     }
