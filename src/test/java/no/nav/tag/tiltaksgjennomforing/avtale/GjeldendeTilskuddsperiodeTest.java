@@ -11,11 +11,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class GjeldendeTilskuddsperiodeTest {
 
     // 1 og 4
+    // Bør skrives om til å bruke fastsatte tider, i stedet for LocalDate.now(). Slik den er nå utledes det 4 perioder
+    // hvis avtalestart blir før nyttår og avtaleslutt er etter nyttår. 3 perioder utledes hvis avtalestart og avtaleslutt er innenfor samme år.
     @Test
     public void godkjenner_og_neste_kan_behandles() {
         LocalDate avtaleStart = LocalDate.now().minusMonths(3).plusDays(13);
         LocalDate avtaleSlutt = LocalDate.now().plusMonths(6);
         Avtale avtale = enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
+
+        boolean bådeGammeltOgNyttår = avtale.getTilskuddPeriode().size() == 4;
 
         // 4
         assertThat(avtale.tilskuddsperiode(0)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
@@ -26,7 +30,7 @@ public class GjeldendeTilskuddsperiodeTest {
 
         // 3
         avtale.godkjennTilskuddsperiode(TestData.enNavIdent());
-        assertThat(avtale.tilskuddsperiode(2)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
+        assertThat(bådeGammeltOgNyttår ? avtale.tilskuddsperiode(2) : avtale.tilskuddsperiode(1)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
     }
 
     // 2
