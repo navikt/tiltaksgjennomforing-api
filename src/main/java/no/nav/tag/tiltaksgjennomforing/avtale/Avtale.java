@@ -436,10 +436,20 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) {
             // Kan utvide siste tilskuddsperiode hvis den er ubehandlet
             tilskuddPeriode.remove(sisteTilskuddsperiode);
-            tilskuddPeriode.addAll(beregnTilskuddsperioder(sisteTilskuddsperiode.getStartDato(), nySluttDato));
+            List<TilskuddPeriode> nyeTilskuddperioder = beregnTilskuddsperioder(sisteTilskuddsperiode.getStartDato(), nySluttDato);
+            fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer());
+            tilskuddPeriode.addAll(nyeTilskuddperioder);
         } else {
             // Regner ut nye perioder fra gammel avtaleslutt til ny avtaleslutt
-            tilskuddPeriode.addAll(beregnTilskuddsperioder(gammelSluttDato.plusDays(1), nySluttDato));
+            List<TilskuddPeriode> nyeTilskuddperioder = beregnTilskuddsperioder(gammelSluttDato.plusDays(1), nySluttDato);
+            fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer() + 1);
+            tilskuddPeriode.addAll(nyeTilskuddperioder);
+        }
+    }
+
+    private void fikseLøpenumre(List<TilskuddPeriode> tilskuddperioder, int startPåLøpenummer) {
+        for (int i = 0; i < tilskuddperioder.size(); i++) {
+            tilskuddperioder.get(i).setLøpenummer(startPåLøpenummer + i);
         }
     }
 
@@ -490,7 +500,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private void nyeTilskuddsperioder() {
         tilskuddPeriode.removeIf(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET);
         if (Utils.erIkkeTomme(getStartDato(), getSluttDato(), getSumLonnstilskudd())) {
-            tilskuddPeriode.addAll(beregnTilskuddsperioder(getStartDato(), getSluttDato()));
+            List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioder(getStartDato(), getSluttDato());
+            fikseLøpenumre(tilskuddsperioder, 1);
+            tilskuddPeriode.addAll(tilskuddsperioder);
         }
     }
 

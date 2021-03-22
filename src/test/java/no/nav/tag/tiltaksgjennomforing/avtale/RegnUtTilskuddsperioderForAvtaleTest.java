@@ -13,7 +13,6 @@ import static org.assertj.core.api.Assertions.fail;
 
 public class RegnUtTilskuddsperioderForAvtaleTest {
 
-
     @Test
     public void en_tilskuddsperiode() {
         LocalDate fra = LocalDate.of(2021, 1, 1);
@@ -27,8 +26,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(1);
         assertThat(avtale.getTilskuddPeriode().first().getBeløp()).isEqualTo(avtale.getSumLonnstilskudd() * 3);
-        harOverlappendeDatoer(avtale.getTilskuddPeriode());
-        harAlleDageneIAvtalenperioden(avtale.getTilskuddPeriode(), fra, til);
+        harRiktigeEgenskaper(avtale);
     }
 
     @Test
@@ -48,8 +46,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         TilskuddPeriode første = iterator.next();
         TilskuddPeriode andre = iterator.next();
         assertThat(første.getBeløp()).isEqualTo(andre.getBeløp());
-        harOverlappendeDatoer(tilskuddPerioder);
-        harAlleDageneIAvtalenperioden(tilskuddPerioder, fra, til);
+        harRiktigeEgenskaper(avtale);
     }
 
     @Test
@@ -59,8 +56,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         endreAvtale.setLonnstilskuddProsent(40);
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
         assertThat(avtale.tilskuddsperiode(2).getLonnstilskuddProsent()).isEqualTo(30);
-        harOverlappendeDatoer(avtale.getTilskuddPeriode());
-        harAlleDageneIAvtalenperioden(avtale.getTilskuddPeriode(), avtale.getStartDato(), avtale.getSluttDato());
+        harRiktigeEgenskaper(avtale);
     }
 
     @Test
@@ -73,8 +69,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
         TilskuddPeriode sisteTilskuddsperiode = avtale.tilskuddsperiode(avtale.getTilskuddPeriode().size() - 1);
         assertThat(sisteTilskuddsperiode.getLonnstilskuddProsent()).isEqualTo(50);
-        harOverlappendeDatoer(avtale.getTilskuddPeriode());
-        harAlleDageneIAvtalenperioden(avtale.getTilskuddPeriode(), avtale.getStartDato(), avtale.getSluttDato());
+        harRiktigeEgenskaper(avtale);
     }
 
     @Test
@@ -90,8 +85,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(4);
-        harOverlappendeDatoer(avtale.getTilskuddPeriode());
-        harAlleDageneIAvtalenperioden(avtale.getTilskuddPeriode(), avtale.getStartDato(), avtale.getSluttDato());
+        harRiktigeEgenskaper(avtale);
     }
 
     @Test
@@ -106,8 +100,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
 
         assertThat(avtale.getDatoForRedusertProsent()).isEqualTo(LocalDate.of(2021, 7, 1));
-        harOverlappendeDatoer(avtale.getTilskuddPeriode());
-        harAlleDageneIAvtalenperioden(avtale.getTilskuddPeriode(), avtale.getStartDato(), avtale.getSluttDato());
+        harRiktigeEgenskaper(avtale);
     }
 
     @Test
@@ -122,8 +115,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
 
         assertThat(avtale.getDatoForRedusertProsent()).isEqualTo(LocalDate.of(2022, 1, 1));
-        harOverlappendeDatoer(avtale.getTilskuddPeriode());
-        harAlleDageneIAvtalenperioden(avtale.getTilskuddPeriode(), avtale.getStartDato(), avtale.getSluttDato());
+        harRiktigeEgenskaper(avtale);
     }
 
     @Test
@@ -138,8 +130,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
 
         assertThat(avtale.getDatoForRedusertProsent()).isNull();
-        harOverlappendeDatoer(avtale.getTilskuddPeriode());
-        harAlleDageneIAvtalenperioden(avtale.getTilskuddPeriode(), avtale.getStartDato(), avtale.getSluttDato());
+        harRiktigeEgenskaper(avtale);
     }
 
     @Test
@@ -165,8 +156,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.UTBETALT);
         assertThat(avtale.tilskuddsperiode(0).getId()).isEqualTo(idPåUtbetaltTilskuddsperiode);
         assertThat(avtale.tilskuddsperiode(0).getBeløp()).isEqualTo(beløpPåUtbetaltTilskuddsperiode);
-        harOverlappendeDatoer(avtale.getTilskuddPeriode());
-        harAlleDageneIAvtalenperioden(avtale.getTilskuddPeriode(), avtale.getStartDato(), avtale.getSluttDato());
+        harRiktigeEgenskaper(avtale);
     }
 
     @Test
@@ -185,8 +175,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         assertThat(avtale.tilskuddsperiode(1).getStartDato()).isEqualTo(avtale.tilskuddsperiode(0).getSluttDato().plusDays(1));
         assertThat(avtale.tilskuddsperiode(2).getStatus()).isEqualTo(TilskuddPeriodeStatus.UBEHANDLET);
 
-        harOverlappendeDatoer(avtale.getTilskuddPeriode());
-        harAlleDageneIAvtalenperioden(avtale.getTilskuddPeriode(), avtale.getStartDato(), avtale.getSluttDato());
+        harRiktigeEgenskaper(avtale);
     }
 
     @Test
@@ -199,8 +188,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
         assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
         assertThat(avtale.tilskuddsperiode(0).getId()).isEqualTo(idPåGodkjentTilskuddsperiode);
-        harOverlappendeDatoer(avtale.getTilskuddPeriode());
-        harAlleDageneIAvtalenperioden(avtale.getTilskuddPeriode(), avtale.getStartDato(), avtale.getSluttDato());
+        harRiktigeEgenskaper(avtale);
     }
 
     @Test
@@ -219,8 +207,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
         assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
         assertThat(avtale.tilskuddsperiode(0).getBeløp()).isEqualTo(beløpFørEndring);
-        harOverlappendeDatoer(avtale.getTilskuddPeriode());
-        harAlleDageneIAvtalenperioden(avtale.getTilskuddPeriode(), avtale.getStartDato(), avtale.getSluttDato());
+        harRiktigeEgenskaper(avtale);
     }
 
     @Test
@@ -234,8 +221,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.ANNULLERT);
         assertThat(avtale.tilskuddsperiode(0).getId()).isEqualTo(idPåGodkjentTilskuddsperiode);
 
-        harOverlappendeDatoer(avtale.getTilskuddPeriode());
-        harAlleDageneIAvtalenperioden(avtale.getTilskuddPeriode(), avtale.getStartDato(), avtale.getSluttDato());
+        harRiktigeEgenskaper(avtale);
     }
 
     @Test
@@ -257,12 +243,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         assertThat(avtale.tilskuddsperiode(1).getStartDato()).isEqualTo(avtaleFørsteDag.plusDays(1));
         assertThat(avtale.tilskuddsperiode(1).getSluttDato()).isEqualTo(avtaleFørsteDag.plusDays(1));
 
-        harOverlappendeDatoer(avtale.getTilskuddPeriode());
-        harAlleDageneIAvtalenperioden(avtale.getTilskuddPeriode(), avtaleFørsteDag, avtaleFørsteDag.plusDays(1));
-    }
-
-    private List<TilskuddPeriode> sorter(List<TilskuddPeriode> liste) {
-        return liste.stream().sorted(Comparator.comparing(TilskuddPeriode::getStartDato)).collect(Collectors.toList());
+        harRiktigeEgenskaper(avtale);
     }
 
     @Test
@@ -287,12 +268,15 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         assertThat(avtale.tilskuddsperiode(1).getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
         assertThat(avtale.tilskuddsperiode(2).getStatus()).isEqualTo(TilskuddPeriodeStatus.UTBETALT);
 
+        harRiktigeEgenskaper(avtale);
+    }
+    
+    /* ------------ Metoder som kun brukes innad i denne test-klassen ------------ */
+    private void harRiktigeEgenskaper(Avtale avtale) {
         harOverlappendeDatoer(avtale.getTilskuddPeriode());
         harAlleDageneIAvtalenperioden(avtale.getTilskuddPeriode(), avtale.getStartDato(), avtale.getSluttDato());
-    }
-
-
-    /* ------------ Metoder som kun brukes innad i denne test-klassen ------------ */
+        harRiktigeLøpenumre(avtale.getTilskuddPeriode());
+    }    
 
     private void harAlleDageneIAvtalenperioden(Collection<TilskuddPeriode> tilskuddPerioder, LocalDate avtaleStart, LocalDate avtaleSlutt) {
         long antallDager = avtaleStart.until(avtaleSlutt.plusDays(1), ChronoUnit.DAYS);
@@ -319,6 +303,13 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
             } else {
                 dateSet.addAll(localDates);
             }
+        }
+    }
+
+    private void harRiktigeLøpenumre(Collection<TilskuddPeriode> tilskuddPerioder) {
+        int løpenummer = 1;
+        for (TilskuddPeriode tilskuddPeriode : tilskuddPerioder.stream().filter(tp -> tp.getStatus() != TilskuddPeriodeStatus.ANNULLERT).collect(Collectors.toList())) {
+            assertThat(tilskuddPeriode.getLøpenummer()).isEqualTo(løpenummer++);
         }
     }
 
