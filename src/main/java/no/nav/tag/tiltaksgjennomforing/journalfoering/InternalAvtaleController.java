@@ -22,15 +22,20 @@ import java.util.stream.Collectors;
 @ProtectedWithClaims(issuer = "system")
 public class InternalAvtaleController {
 
+    private static final String journalfører = "PÅGÅR";
     private final AvtaleInnholdRepository avtaleInnholdRepository;
     private final InnloggingService innloggingService;
 
     @GetMapping
+    @Transactional
     public List<AvtaleTilJournalfoering> hentIkkeJournalfoerteAvtaler() {
         innloggingService.validerSystembruker();
         List<AvtaleInnhold> avtaleVersjoner = avtaleInnholdRepository.finnAvtaleVersjonerTilJournalfoering();
-        return avtaleVersjoner.stream().map(AvtaleTilJournalfoeringMapper::tilJournalfoering).collect(Collectors.toList());
-
+        avtaleVersjoner.forEach(avtaleInnhold -> avtaleInnhold.setJournalpostId(journalfører));
+        return avtaleInnholdRepository.saveAll(avtaleVersjoner)
+                .stream()
+                .map(AvtaleTilJournalfoeringMapper::tilJournalfoering)
+                .collect(Collectors.toList());
     }
 
     @PutMapping
