@@ -56,7 +56,7 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     @Convert(converter = NavIdentConverter.class)
     private NavIdent avslåttAvNavIdent;
     private LocalDateTime avslåttTidspunkt;
-    private int løpenummer;
+    private Integer løpenummer;
 
     @Enumerated(EnumType.STRING)
     private TilskuddPeriodeStatus status = TilskuddPeriodeStatus.UBEHANDLET;
