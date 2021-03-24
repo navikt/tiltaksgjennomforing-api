@@ -13,11 +13,12 @@ import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.SortNatural;
+import org.hibernate.annotations.*;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OrderBy;
 import javax.persistence.*;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -49,7 +50,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     @EqualsAndHashCode.Include
     private UUID id;
 
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Generated(GenerationTime.INSERT)
     private Integer avtaleNr;
 
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
