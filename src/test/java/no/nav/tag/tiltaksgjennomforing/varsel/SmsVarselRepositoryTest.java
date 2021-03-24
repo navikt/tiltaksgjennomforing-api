@@ -29,8 +29,6 @@ public class SmsVarselRepositoryTest {
     private VarslbarHendelseRepository varslbarHendelseRepository;
     private Avtale avtale;
     private VarslbarHendelse varslbarHendelse;
-    @Autowired
-    private EntityManager entityManager;
 
     @Before
     public void setUp() {

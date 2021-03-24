@@ -49,6 +49,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     @EqualsAndHashCode.Include
     private UUID id;
 
+    @GeneratedValue
+    private Integer avtaleNr;
+
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @OrderBy(AvtaleInnhold.Fields.versjon)
     private List<AvtaleInnhold> versjoner = new ArrayList<>();
