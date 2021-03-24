@@ -68,4 +68,4 @@ tiltaksgjennomforing:
   unleash:
     mock: true
   dokgen:
-    uri: http://tiltak-dokgen.arbeidsgiver.svc.nais.local/template/tiltak-avtale/create-pdf
+    uri: http://tiltak-dokgen/template/tiltak-avtale/create-pdf
