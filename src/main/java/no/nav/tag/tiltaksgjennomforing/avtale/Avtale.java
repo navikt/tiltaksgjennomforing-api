@@ -49,7 +49,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     @EqualsAndHashCode.Include
     private UUID id;
 
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer avtaleNr;
 
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
