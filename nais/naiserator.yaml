@@ -60,7 +60,6 @@ spec:
         - application: tiltak-fakelogin
         - application: tiltaksgjennomforing-wiremock
         - application: tiltak-refusjon-api
-        - application: tag-dokgen
         - application: tiltak-dokgen
   {{/if}}
   envFrom:
