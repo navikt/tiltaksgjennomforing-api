@@ -89,8 +89,9 @@ public class PersondataService {
     }
 
     private PdlRespons utførKallTilPdl(PdlRequest pdlRequest) {
+        HttpEntity<String> requestEntity = createRequestEntity(pdlRequest);
         try {
-            return restTemplate.postForObject(persondataProperties.getUri(), createRequestEntity(pdlRequest), PdlRespons.class);
+            return restTemplate.postForObject(persondataProperties.getUri(), requestEntity, PdlRespons.class);
         } catch (RestClientException exception) {
             stsClient.evictToken();
             log.error("Feil fra PDL med request-url: " + persondataProperties.getUri(), exception);

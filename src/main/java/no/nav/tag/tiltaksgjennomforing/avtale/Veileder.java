@@ -116,9 +116,9 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     @Override
     void godkjennForAvtalepart(Avtale avtale) {
-        if (persondataService.erKode6(avtale.getDeltakerFnr())) {
+      /*  if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
-        }
+        }*/
         avtale.godkjennForVeileder(getIdentifikator());
     }
 
@@ -134,9 +134,9 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     public void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn, Avtale avtale) {
         sjekkTilgang(avtale);
-        if (persondataService.erKode6(avtale.getDeltakerFnr())) {
+    /*    if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
-        }
+        }*/
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
     }
 
