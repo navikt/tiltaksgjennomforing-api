@@ -1,5 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +16,9 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
 
     @Override
     public void endre(EndreAvtale nyAvtale) {
+        if (nyAvtale.getOtpSats() != null && (nyAvtale.getOtpSats() > 0.3 || nyAvtale.getOtpSats() < 0.0)) {
+            throw new FeilkodeException(Feilkode.FEIL_OTP_SATS);
+        }
         avtaleInnhold.setArbeidsgiverKontonummer(nyAvtale.getArbeidsgiverKontonummer());
         avtaleInnhold.setLonnstilskuddProsent(nyAvtale.getLonnstilskuddProsent());
         avtaleInnhold.setManedslonn(nyAvtale.getManedslonn());

@@ -1,5 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.AssertFeilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangMidlertidigLonnstilskuddException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -78,6 +80,25 @@ class LonnstilskuddStrategyTest {
         LocalDate sluttDato = startDato.plusMonths(24).plusDays(1);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
+        strategy.endre(endreAvtale);
+    }
+
+    @Test
+    public void sjekk_riktig_otp_sats() {
+        strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, VARIG_LONNSTILSKUDD);
+        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        endreAvtale.setOtpSats(0.301);
+        AssertFeilkode.assertFeilkode(Feilkode.FEIL_OTP_SATS, () -> strategy.endre(endreAvtale));
+        endreAvtale.setOtpSats(-0.001);
+        AssertFeilkode.assertFeilkode(Feilkode.FEIL_OTP_SATS, () -> strategy.endre(endreAvtale));
+
+        endreAvtale.setOtpSats(0.0);
+        strategy.endre(endreAvtale);
+
+        endreAvtale.setOtpSats(null);
+        strategy.endre(endreAvtale);
+
+        endreAvtale.setOtpSats(0.3);
         strategy.endre(endreAvtale);
     }
 }

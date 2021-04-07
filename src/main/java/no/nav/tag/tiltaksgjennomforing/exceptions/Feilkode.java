@@ -49,4 +49,5 @@ public enum Feilkode {
     SOMMERJOBB_FOR_LANG_VARIGHET,
     IKKE_GAMMEL_NOK,
     FOR_GAMMEL,
+    FEIL_OTP_SATS
 }
