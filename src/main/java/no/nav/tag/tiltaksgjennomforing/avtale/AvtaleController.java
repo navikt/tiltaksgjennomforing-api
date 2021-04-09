@@ -204,9 +204,21 @@ public class AvtaleController {
         return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
     }
 
+    @PostMapping("/{avtaleId}/endre-tilskuddsberegning-dry-run")
+    public Avtale endreTilskuddsberegningDryRun(@PathVariable("avtaleId") UUID avtaleId,
+                                                     @RequestBody EndreTilskuddsberegning endreTilskuddsberegning) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId)
+                .orElseThrow(RessursFinnesIkkeException::new);
+        veileder.endreTilskuddsberegning(Instant.now(), endreTilskuddsberegning, avtale);
+        return avtale;
+    }
+
     @PostMapping("/{avtaleId}/godkjenn-paa-vegne-av")
     @Transactional
-    public void godkjennPaVegneAv(@PathVariable("avtaleId") UUID avtaleId, @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+    public void godkjennPaVegneAv(@PathVariable("avtaleId") UUID avtaleId,
+                                  @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn,
+                                  @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         veileder.godkjennForVeilederOgDeltaker(paVegneAvGrunn, avtale);
