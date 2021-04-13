@@ -211,14 +211,28 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
     }
 
     @Test
-    public void sjekk_at_godkjent_periode_annulleres_ved_avbrytelse() {
+    public void sjekk_at_godkjent_periode_annulleres_ved_avbrytelse_før_oppstart() {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
+        UUID idPåGodkjentTilskuddsperiode = avtale.tilskuddsperiode(0).getId();
+
+        avtale.avbryt(TestData.enVeileder(avtale), new AvbruttInfo(avtale.getStartDato().minusDays(1), ""));
+
+        assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.ANNULLERT);
+        assertThat(avtale.tilskuddsperiode(0).getId()).isEqualTo(idPåGodkjentTilskuddsperiode);
+
+        harRiktigeEgenskaper(avtale);
+    }
+
+    @Test
+    public void sjekk_at_godkjent_periode_ikke_annulleres_ved_avbrytelse_etter_oppstart() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
         UUID idPåGodkjentTilskuddsperiode = avtale.tilskuddsperiode(0).getId();
 
         avtale.avbryt(TestData.enVeileder(avtale), new AvbruttInfo(avtale.getStartDato().plusDays(1), ""));
 
-        assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.ANNULLERT);
+        assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
         assertThat(avtale.tilskuddsperiode(0).getId()).isEqualTo(idPåGodkjentTilskuddsperiode);
 
         harRiktigeEgenskaper(avtale);

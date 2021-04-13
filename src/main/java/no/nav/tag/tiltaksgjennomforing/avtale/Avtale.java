@@ -295,9 +295,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             if (erUfordelt()) {
                 setVeilederNavIdent(veileder.getIdentifikator());
             }
-            forkortTilskuddsperioder(nySluttDato);
             versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
             gjeldendeInnhold().setSluttDato(nySluttDato);
+            forkortTilskuddsperioder(nySluttDato);
             sistEndretNå();
             registerEvent(new AvbruttAvVeileder(this, veileder.getIdentifikator()));
         }
@@ -467,16 +467,16 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             if (tilskuddsperiode.getStartDato().isAfter(nySluttDato)) {
                 if (status == TilskuddPeriodeStatus.UBEHANDLET) {
                     tilskuddPeriode.remove(tilskuddsperiode);
-                } else {
+                } else if (status == TilskuddPeriodeStatus.GODKJENT) {
                     annullerTilskuddsperiode(tilskuddsperiode);
                 }
             } else if (tilskuddsperiode.getSluttDato().isAfter(nySluttDato)) {
-                if (status == TilskuddPeriodeStatus.UBEHANDLET) {
+                if (status == TilskuddPeriodeStatus.UBEHANDLET || status == TilskuddPeriodeStatus.GODKJENT) {
                     tilskuddsperiode.setSluttDato(nySluttDato);
                     tilskuddsperiode.setBeløp(beregnTilskuddsbeløp(tilskuddsperiode.getStartDato(), tilskuddsperiode.getSluttDato()));
-                } else if (status == TilskuddPeriodeStatus.GODKJENT) {
-                    TilskuddPeriode ny = annullerOgLagNyGodkjent(tilskuddsperiode, nySluttDato);
-                    tilskuddPeriode.add(ny);
+                    if (status == TilskuddPeriodeStatus.GODKJENT) {
+                        registerEvent(new TilskuddsperiodeForkortet(this, tilskuddsperiode));
+                    }
                 }
             }
         }
