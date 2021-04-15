@@ -7,6 +7,8 @@ import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
@@ -70,10 +72,12 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
         final Integer tilskuddBeløp = 12000;
         final LocalDate tilskuddFraDato = LocalDate.now().minusDays(15);
         final LocalDate tilskuddTilDato = LocalDate.now().plusMonths(2);
+        final Integer avtaleNr = 234234234;
+        final Integer løpenummer = 3;
 
         final TilskuddsperiodeGodkjentMelding tilskuddMelding = new TilskuddsperiodeGodkjentMelding(avtaleId,
                 tilskuddPeriodeId, avtaleInnholdId, tiltakstype, deltakerFornavn, deltakerEtternavn,
-                deltakerFnr, veilederNavIdent, bedriftNavn, bedriftnummer, tilskuddBeløp, tilskuddFraDato, tilskuddTilDato, 10.6, 0.02, 14.1, 60);
+                deltakerFnr, veilederNavIdent, bedriftNavn, bedriftnummer, tilskuddBeløp, tilskuddFraDato, tilskuddTilDato, 10.6, 0.02, 14.1, 60, avtaleNr, løpenummer);
 
         //NÅR
         tilskuddsperiodeKafkaProducer.publiserTilskuddsperiodeGodkjentMelding(tilskuddMelding);
@@ -98,5 +102,7 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
         assertThat(jsonRefusjonRecord.get("otpSats")).isNotNull();
         assertThat(jsonRefusjonRecord.get("arbeidsgiveravgiftSats")).isNotNull();
         assertThat(jsonRefusjonRecord.get("lønnstilskuddsprosent")).isNotNull();
+        assertThat(jsonRefusjonRecord.get("avtaleNr")).isNotNull();
+        assertThat(jsonRefusjonRecord.get("løpenummer")).isNotNull();
     }
 }

@@ -30,6 +30,8 @@ public class TilskuddsperiodeGodkjentMelding {
     Double otpSats;
     Double arbeidsgiveravgiftSats;
     Integer lønnstilskuddsprosent;
+    Integer avtaleNr;
+    Integer løpenummer;
 
     public static TilskuddsperiodeGodkjentMelding create(Avtale avtale, TilskuddPeriode tilskuddsperiode) {
         return new TilskuddsperiodeGodkjentMelding(avtale.getId(),
@@ -48,7 +50,9 @@ public class TilskuddsperiodeGodkjentMelding {
                 avtale.getFeriepengesats().doubleValue(),
                 avtale.getOtpSats(),
                 avtale.getArbeidsgiveravgift().doubleValue(),
-                tilskuddsperiode.getLonnstilskuddProsent()
+                tilskuddsperiode.getLonnstilskuddProsent(),
+                avtale.getAvtaleNr(),
+                tilskuddsperiode.getLøpenummer()
         );
     }
 }
