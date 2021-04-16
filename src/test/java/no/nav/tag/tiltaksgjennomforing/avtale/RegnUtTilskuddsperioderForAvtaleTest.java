@@ -211,31 +211,25 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
     }
 
     @Test
-    public void sjekk_at_godkjent_periode_annulleres_ved_avbrytelse_før_oppstart() {
+    public void sjekk_at_godkjent_periode_annulleres() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
         UUID idPåGodkjentTilskuddsperiode = avtale.tilskuddsperiode(0).getId();
 
-        avtale.avbryt(TestData.enVeileder(avtale), new AvbruttInfo(avtale.getStartDato().minusDays(1), ""));
+        avtale.annuller(TestData.enVeileder(avtale), "");
 
         assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.ANNULLERT);
         assertThat(avtale.tilskuddsperiode(0).getId()).isEqualTo(idPåGodkjentTilskuddsperiode);
-
-        harRiktigeEgenskaper(avtale);
     }
 
     @Test
-    public void sjekk_at_godkjent_periode_ikke_annulleres_ved_avbrytelse_etter_oppstart() {
+    public void sjekk_at_ubehandlet_periode_slettes() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
-        avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
-        UUID idPåGodkjentTilskuddsperiode = avtale.tilskuddsperiode(0).getId();
+        avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.UBEHANDLET);
 
-        avtale.avbryt(TestData.enVeileder(avtale), new AvbruttInfo(avtale.getStartDato().plusDays(1), ""));
+        avtale.annuller(TestData.enVeileder(avtale), "");
 
-        assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
-        assertThat(avtale.tilskuddsperiode(0).getId()).isEqualTo(idPåGodkjentTilskuddsperiode);
-
-        harRiktigeEgenskaper(avtale);
+        assertThat(avtale.getTilskuddPeriode()).isEmpty();
     }
 
     @Test
@@ -284,13 +278,13 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
         harRiktigeEgenskaper(avtale);
     }
-    
+
     /* ------------ Metoder som kun brukes innad i denne test-klassen ------------ */
     private void harRiktigeEgenskaper(Avtale avtale) {
         harOverlappendeDatoer(avtale.getTilskuddPeriode());
         harAlleDageneIAvtalenperioden(avtale.getTilskuddPeriode(), avtale.getStartDato(), avtale.getSluttDato());
         harRiktigeLøpenumre(avtale.getTilskuddPeriode());
-    }    
+    }
 
     private void harAlleDageneIAvtalenperioden(Collection<TilskuddPeriode> tilskuddPerioder, LocalDate avtaleStart, LocalDate avtaleSlutt) {
         long antallDager = avtaleStart.until(avtaleSlutt.plusDays(1), ChronoUnit.DAYS);
