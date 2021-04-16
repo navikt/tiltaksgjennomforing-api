@@ -109,6 +109,12 @@ public class LagVarselFraAvtaleHendelser {
     }
 
     @EventListener
+    public void annullert(AnnullertAvVeileder event) {
+        VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.ANNULLERT);
+        varselRepository.saveAll(factory.alleParter());
+    }
+
+    @EventListener
     public void låstOpp(AvtaleLåstOpp event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.LÅST_OPP);
         varselRepository.saveAll(factory.alleParter());
@@ -117,6 +123,12 @@ public class LagVarselFraAvtaleHendelser {
     @EventListener
     public void gjenopprettet(AvtaleGjenopprettet event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.GJENOPPRETTET);
+        varselRepository.saveAll(factory.alleParter());
+    }
+
+    @EventListener
+    public void forkortAvtale(AvtaleForkortet event) {
+        VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.AVTALE_FORKORTET);
         varselRepository.saveAll(factory.alleParter());
     }
 

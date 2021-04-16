@@ -58,6 +58,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private List<AvtaleInnhold> versjoner = new ArrayList<>();
 
     private Instant sistEndret;
+    private Instant annullertTidspunkt;
+    private String annullertGrunn;
     private boolean avbrutt;
     private boolean slettemerket;
     private LocalDate avbruttDato;
@@ -261,7 +263,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     @JsonProperty
     public Status statusSomEnum() {
-        if (isAvbrutt()) {
+        if (getAnnullertTidspunkt() != null) {
+            return Status.ANNULLERT;
+        } else if (isAvbrutt()) {
             return Status.AVBRUTT;
         } else if (erGodkjentAvVeileder() && (this.getSluttDato().isBefore(LocalDate.now()))) {
             return Status.AVSLUTTET;
@@ -284,6 +288,36 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     @JsonProperty
     public boolean kanGjenopprettes() {
         return isAvbrutt();
+    }
+
+    public void forkortAvtale(LocalDate nySluttDato) {
+        // Avslutter tidligere enn først planlagt
+        if (!nySluttDato.isBefore(getSluttDato())) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_FEIL_SLUTTDATO);
+        }
+        if (!erGodkjentAvVeileder()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_IKKE_GODKJENT_AVTALE);
+        }
+        forkortTilskuddsperioder(nySluttDato);
+        versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
+        gjeldendeInnhold().setSluttDato(nySluttDato);
+        registerEvent(new AvtaleForkortet(this));
+    }
+
+    public void annuller(Veileder veileder, String annullerGrunn) {
+        if (!kanAvbrytes()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_AVBRYTES_ALLEREDE_AVBRUTT);
+        }
+
+        annullerTilskuddsperioder();
+        setAnnullertTidspunkt(Instant.now());
+        setAnnullertGrunn(annullerGrunn);
+        if (erUfordelt()) {
+            setVeilederNavIdent(veileder.getIdentifikator());
+        }
+
+        sistEndretNå();
+        registerEvent(new AnnullertAvVeileder(this, veileder.getIdentifikator()));
     }
 
     public void avbryt(Veileder veileder, AvbruttInfo avbruttInfo) {
@@ -458,6 +492,17 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private void fikseLøpenumre(List<TilskuddPeriode> tilskuddperioder, int startPåLøpenummer) {
         for (int i = 0; i < tilskuddperioder.size(); i++) {
             tilskuddperioder.get(i).setLøpenummer(startPåLøpenummer + i);
+        }
+    }
+
+    private void annullerTilskuddsperioder() {
+        for (TilskuddPeriode tilskuddsperiode : Set.copyOf(tilskuddPeriode)) {
+            TilskuddPeriodeStatus status = tilskuddsperiode.getStatus();
+            if (status == TilskuddPeriodeStatus.UBEHANDLET) {
+                tilskuddPeriode.remove(tilskuddsperiode);
+            } else if (status == TilskuddPeriodeStatus.GODKJENT) {
+                annullerTilskuddsperiode(tilskuddsperiode);
+            }
         }
     }
 
