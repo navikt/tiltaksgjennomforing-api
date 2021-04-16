@@ -523,15 +523,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
     }
 
-    private TilskuddPeriode annullerOgLagNyGodkjent(TilskuddPeriode tilskuddsperiode, LocalDate nySluttDato) {
-        TilskuddPeriode ny = tilskuddsperiode.kopi();
-        ny.setSluttDato(nySluttDato);
-        ny.setBeløp(beregnTilskuddsbeløp(tilskuddsperiode.getStartDato(), tilskuddsperiode.getSluttDato()));
-        annullerTilskuddsperiode(tilskuddsperiode);
-        registerEvent(new TilskuddsperiodeGodkjent(this, tilskuddsperiode, tilskuddsperiode.getGodkjentAvNavIdent()));
-        return ny;
-    }
-
     void endreBeløpITilskuddsperioder() {
         tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET).forEach(t -> t.setBeløp(beregnTilskuddsbeløp(t.getStartDato(), t.getSluttDato())));
     }
