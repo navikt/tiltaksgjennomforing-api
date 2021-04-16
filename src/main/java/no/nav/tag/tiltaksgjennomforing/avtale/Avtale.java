@@ -305,7 +305,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void annuller(Veileder veileder, String annullerGrunn) {
-        if (!kanAvbrytes()) {
+        if (isAvbrutt() || annullertTidspunkt != null) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_AVBRYTES_ALLEREDE_AVBRUTT);
         }
 
@@ -321,17 +321,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void avbryt(Veileder veileder, AvbruttInfo avbruttInfo) {
-        if (kanAvbrytes()) {
-            setAvbrutt(true);
-            LocalDate nySluttDato = avbruttInfo.getAvbruttDato();
-            setAvbruttDato(nySluttDato);
-            setAvbruttGrunn(avbruttInfo.getAvbruttGrunn());
-            if (erUfordelt()) {
-                setVeilederNavIdent(veileder.getIdentifikator());
+        if (this.kanAvbrytes()) {
+            this.setAvbrutt(true);
+            this.setAvbruttDato(avbruttInfo.getAvbruttDato());
+            this.setAvbruttGrunn(avbruttInfo.getAvbruttGrunn());
+            if (this.erUfordelt()) {
+                this.setVeilederNavIdent(veileder.getIdentifikator());
             }
-            versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
-            gjeldendeInnhold().setSluttDato(nySluttDato);
-            forkortTilskuddsperioder(nySluttDato);
             sistEndretNå();
             registerEvent(new AvbruttAvVeileder(this, veileder.getIdentifikator()));
         }
