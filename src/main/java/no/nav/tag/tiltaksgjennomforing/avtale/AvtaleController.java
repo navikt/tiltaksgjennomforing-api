@@ -168,6 +168,30 @@ public class AvtaleController {
         return ResponseEntity.created(uri).build();
     }
 
+    @PostMapping("/{avtaleId}/forkort")
+    @Transactional
+    public ResponseEntity<?> forkortAvtale(@PathVariable("avtaleId") UUID avtaleId,
+                                           @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
+                                           @RequestBody ForkortAvtale forkortAvtale) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId)
+                .orElseThrow(RessursFinnesIkkeException::new);
+        veileder.forkortAvtale(sistEndret, forkortAvtale.getSluttDato(), avtale);
+        Avtale lagretAvtale = avtaleRepository.save(avtale);
+        return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
+    }
+
+    @PostMapping("/{avtaleId}/forkort-dry-run")
+    public Avtale forkortAvtaleDryRun(@PathVariable("avtaleId") UUID avtaleId,
+                                      @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
+                                      @RequestBody ForkortAvtale forkortAvtale) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId)
+                .orElseThrow(RessursFinnesIkkeException::new);
+        veileder.forkortAvtale(sistEndret, forkortAvtale.getSluttDato(), avtale);
+        return avtale;
+    }
+
     @PostMapping("/{avtaleId}/forleng")
     @Transactional
     public ResponseEntity<?> forlengAvtale(@PathVariable("avtaleId") UUID avtaleId,
@@ -239,6 +263,14 @@ public class AvtaleController {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         veileder.avbrytAvtale(sistEndret, avbruttInfo, avtale);
+        avtaleRepository.save(avtale);
+    }
+
+    @PostMapping("/{avtaleId}/annuller")
+    public void annuller(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret, @RequestBody AnnullertInfo annullertInfo) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        veileder.annullerAvtale(sistEndret, annullertInfo.getAnnullertGrunn(), avtale);
         avtaleRepository.save(avtale);
     }
 

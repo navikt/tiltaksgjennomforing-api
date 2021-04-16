@@ -7,6 +7,7 @@ import com.google.common.annotations.VisibleForTesting;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAnnullert;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeForkortet;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeGodkjent;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -41,6 +42,13 @@ public class TilskuddsperiodeKafkaProducer {
         publiserTilskuddsperiodeAnnullertMelding(melding);
     }
 
+    @TransactionalEventListener
+    public void tilskuddsperiodeForkortet(TilskuddsperiodeForkortet event) {
+        UUID tilskuddsperiodeId = event.getTilskuddsperiode().getId();
+        TilskuddsperiodeForkortetMelding melding = new TilskuddsperiodeForkortetMelding(tilskuddsperiodeId, event.getTilskuddsperiode().getBeløp(), event.getTilskuddsperiode().getSluttDato());
+        publiserTilskuddsperiodeForkortetMelding(melding);
+    }
+
     @VisibleForTesting
     public void publiserTilskuddsperiodeGodkjentMelding(TilskuddsperiodeGodkjentMelding melding) {
         publiserMelding(Topics.TILSKUDDSPERIODE_GODKJENT, melding.getTilskuddsperiodeId().toString(), melding);
@@ -51,6 +59,10 @@ public class TilskuddsperiodeKafkaProducer {
         publiserMelding(Topics.TILSKUDDSPERIODE_ANNULLERT, melding.getTilskuddsperiodeId().toString(), melding);
     }
 
+    @VisibleForTesting
+    public void publiserTilskuddsperiodeForkortetMelding(TilskuddsperiodeForkortetMelding melding) {
+        publiserMelding(Topics.TILSKUDDSPERIODE_FORKORTET, melding.getTilskuddsperiodeId().toString(), melding);
+    }
 
     private void publiserMelding(String topic, String meldingId, Object melding) {
         String meldingSomString;

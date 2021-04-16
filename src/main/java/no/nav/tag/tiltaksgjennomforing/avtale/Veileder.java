@@ -64,6 +64,11 @@ public class Veileder extends Avtalepart<NavIdent> {
         avtale.avbryt(this, avbruttInfo);
     }
 
+    public void annullerAvtale(Instant sistEndret, String annullerGrunn, Avtale avtale) {
+        avtale.sjekkSistEndret(sistEndret);
+        avtale.annuller(this, annullerGrunn);
+    }
+
     public void gjenopprettAvtale(Avtale avtale) {
         avtale.gjenopprett(this);
     }
@@ -80,6 +85,9 @@ public class Veileder extends Avtalepart<NavIdent> {
 
 
         switch (avtale.statusSomEnum()) {
+            case ANNULLERT:
+                avtaleStatusDetaljer.setInnloggetBrukerStatus("Tiltaket er annullert", "Du eller en annen veileder har annullert tiltaket.", "");
+                break;
             case AVBRUTT:
                 avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleAvbrutt, tekstAvtaleAvbrutt, "");
                 break;
@@ -199,6 +207,11 @@ public class Veileder extends Avtalepart<NavIdent> {
         }
         avtale.slettemerk(this.getIdentifikator());
 
+    }
+
+    public void forkortAvtale(Instant sistEndret, LocalDate sluttDato, Avtale avtale) {
+        sjekkTilgang(avtale);
+        avtale.forkortAvtale(sluttDato);
     }
 
     public void forlengAvtale(Instant sistEndret, LocalDate sluttDato, Avtale avtale) {

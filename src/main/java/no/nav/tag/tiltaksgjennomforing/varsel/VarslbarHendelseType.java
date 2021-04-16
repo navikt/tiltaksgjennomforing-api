@@ -17,6 +17,7 @@ public enum VarslbarHendelseType {
     DELT_MED_ARBEIDSGIVER("Avtale delt med arbeidsgiver"),
     ENDRET("Avtale endret"),
     AVBRUTT("Avtale avbrutt av veileder"),
+    ANNULLERT("Avtale annullert av veileder"),
     LÅST_OPP("Avtale låst opp av veileder"),
     GJENOPPRETTET("Avtale gjenopprettet"),
     OPPRETTET_AV_ARBEIDSGIVER("Avtale er opprettet av arbeidsgiver"),
@@ -24,6 +25,7 @@ public enum VarslbarHendelseType {
     AVTALE_FORDELT("Avtale tildelt veileder"),
     TILSKUDDSPERIODE_AVSLATT("Tilskuddsperiode har blitt sendt i retur av "),
     TILSKUDDSPERIODE_GODKJENT("Tilskuddsperiode har blitt godkjent av beslutter"),
+    AVTALE_FORKORTET("Avtale forkortet av veileder"),
     AVTALE_FORLENGET("Avtale forlenget av veileder"),
     TILSKUDDSBEREGNING_ENDRET("Tilskuddsberegning endret av veileder");
 
