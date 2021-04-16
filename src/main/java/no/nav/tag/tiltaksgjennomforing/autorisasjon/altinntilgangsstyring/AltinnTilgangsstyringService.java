@@ -38,7 +38,9 @@ public class AltinnTilgangsstyringService {
                 altinnTilgangsstyringProperties.getLtsMidlertidigServiceCode(),
                 altinnTilgangsstyringProperties.getLtsMidlertidigServiceEdition(),
                 altinnTilgangsstyringProperties.getLtsVarigServiceCode(),
-                altinnTilgangsstyringProperties.getLtsVarigServiceEdition())) {
+                altinnTilgangsstyringProperties.getLtsVarigServiceEdition(),
+                altinnTilgangsstyringProperties.getSommerjobbServiceCode(),
+                altinnTilgangsstyringProperties.getSommerjobbServiceEdition())) {
             throw new TiltaksgjennomforingException("Altinn konfigurasjon ikke komplett");
         }
         this.altinnTilgangsstyringProperties = altinnTilgangsstyringProperties;
@@ -72,7 +74,8 @@ public class AltinnTilgangsstyringService {
         AltinnReportee[] midlLtsOrger = kallAltinn(altinnTilgangsstyringProperties.getLtsMidlertidigServiceCode(), altinnTilgangsstyringProperties.getLtsMidlertidigServiceEdition(), fnr);
         leggTil(tilganger, midlLtsOrger, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
 
-        leggTil(tilganger, midlLtsOrger, Tiltakstype.SOMMERJOBB);
+        AltinnReportee[] sommerjobbOrger = kallAltinn(altinnTilgangsstyringProperties.getSommerjobbServiceCode(), altinnTilgangsstyringProperties.getSommerjobbServiceEdition(), fnr);
+        leggTil(tilganger, sommerjobbOrger, Tiltakstype.SOMMERJOBB);
 
         return tilganger.asMap();
     }

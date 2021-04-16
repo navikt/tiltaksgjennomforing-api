@@ -21,4 +21,6 @@ public class AltinnTilgangsstyringProperties {
     private Integer ltsVarigServiceEdition;
     private Integer arbtreningServiceCode;
     private Integer arbtreningServiceEdition;
+    private Integer sommerjobbServiceCode;
+    private Integer sommerjobbServiceEdition;
 }
