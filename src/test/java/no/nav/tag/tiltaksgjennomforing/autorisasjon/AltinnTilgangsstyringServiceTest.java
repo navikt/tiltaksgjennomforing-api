@@ -58,15 +58,15 @@ public class AltinnTilgangsstyringServiceTest {
         assertThat(organisasjoner).extracting(org -> new BedriftNr(org.getOrganizationNumber())).containsAll(tilganger.keySet());
 
         // Sjekk at uvesentilg tilgang er med i organisasjoner
-        assertThat(organisasjoner).extracting(AltinnReportee::getOrganizationNumber).contains("980712306", "980825560");
+        assertThat(organisasjoner).extracting(AltinnReportee::getOrganizationNumber).contains("980712306", "910825555");
 
 
         // Parents skal ikke være i tilgang-map
         assertThat(tilganger).doesNotContainKeys(new BedriftNr("910825550"), new BedriftNr("910825555"));
 
         // Virksomheter skal være i tilgang-map
-        assertThat(tilganger.get(new BedriftNr("999999999"))).containsOnly(Tiltakstype.ARBEIDSTRENING, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB); // TODO: Tilgangsstyring skal skille på midlertidig lønnstilskudd og sommerjobb
-        assertThat(tilganger.get(new BedriftNr("910712314"))).containsOnly(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB); // TODO: Tilgangsstyring skal skille på midlertidig lønnstilskudd og sommerjobb
+        assertThat(tilganger.get(new BedriftNr("999999999"))).containsOnly(Tiltakstype.ARBEIDSTRENING, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
+        assertThat(tilganger.get(new BedriftNr("910712314"))).containsOnly(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         assertThat(tilganger.get(new BedriftNr("910712306"))).containsOnly(Tiltakstype.VARIG_LONNSTILSKUDD);
 
         // Ingen tilganger på ingen tiltak
