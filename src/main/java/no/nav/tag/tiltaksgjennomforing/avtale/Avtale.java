@@ -293,7 +293,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     public void forkortAvtale(LocalDate nySluttDato, String grunn, String annetGrunn) {
         // Avslutter tidligere enn først planlagt
         if (!nySluttDato.isBefore(getSluttDato())) {
-            throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_FEIL_SLUTTDATO);
+            throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_ETTER_SLUTTDATO);
+        }
+        if (nySluttDato.isBefore(getStartDato())) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_FOR_STARTDATO);
         }
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_IKKE_GODKJENT_AVTALE);
