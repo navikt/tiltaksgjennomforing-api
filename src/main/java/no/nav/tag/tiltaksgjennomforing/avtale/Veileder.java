@@ -209,9 +209,9 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     }
 
-    public void forkortAvtale(Instant sistEndret, LocalDate sluttDato, Avtale avtale) {
+    public void forkortAvtale(Instant sistEndret, Avtale avtale, LocalDate sluttDato, String grunn, String annetGrunn) {
         sjekkTilgang(avtale);
-        avtale.forkortAvtale(sluttDato);
+        avtale.forkortAvtale(sluttDato, grunn, annetGrunn);
     }
 
     public void forlengAvtale(Instant sistEndret, LocalDate sluttDato, Avtale avtale) {

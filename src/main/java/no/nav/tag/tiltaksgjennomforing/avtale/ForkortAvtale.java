@@ -7,4 +7,6 @@ import java.time.LocalDate;
 @Value
 public class ForkortAvtale {
     LocalDate sluttDato;
+    String grunn;
+    String annetGrunn;
 }
