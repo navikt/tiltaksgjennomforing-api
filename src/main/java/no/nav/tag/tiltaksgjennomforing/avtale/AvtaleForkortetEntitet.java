@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table("avtale_forkortet")
+@Table(name = "avtale_forkortet")
 public class AvtaleForkortetEntitet {
     @Id
     private UUID id;
