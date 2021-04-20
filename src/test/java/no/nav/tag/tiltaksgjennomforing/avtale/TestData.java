@@ -127,6 +127,19 @@ public class TestData {
         return avtale;
     }
 
+    public static Avtale enLonnstilskuddAvtaleGodkjentAvVeilederTilbakeITid() {
+        Avtale avtale = enLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setDeltakerFornavn("Geir");
+        avtale.setDeltakerEtternavn("Geirsen");
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setStartDato(LocalDate.now().minusMonths(3));
+        avtale.setSluttDato(LocalDate.now().plusMonths(1));
+        avtale.setJournalpostId("1");
+        return avtale;
+    }
+
     public static Avtale enMentorAvtaleMedMedAltUtfylt() {
         Avtale avtale = enAvtaleMedAltUtfyltGodkjentAvVeileder();
         avtale.setTiltakstype(Tiltakstype.MENTOR);

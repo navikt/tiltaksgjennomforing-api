@@ -314,7 +314,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     public void annuller(Veileder veileder, String annullerGrunn) {
         if (isAvbrutt() || annullertTidspunkt != null) {
-            throw new FeilkodeException(Feilkode.KAN_IKKE_AVBRYTES_ALLEREDE_AVBRUTT);
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ANNULLERES_ALLEREDE_ANNULLERT);
         }
 
         annullerTilskuddsperioder();
