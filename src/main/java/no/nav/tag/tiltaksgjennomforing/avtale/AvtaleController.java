@@ -188,7 +188,8 @@ public class AvtaleController {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
-        veileder.forkortAvtale(sistEndret, avtale, forkortAvtale.getSluttDato(), forkortAvtale.getGrunn(), forkortAvtale.getAnnetGrunn());
+        // Er ikke nødvending med en reell grunn siden det ikke påvirker tilskuddsperioder
+        veileder.forkortAvtale(sistEndret, avtale, forkortAvtale.getSluttDato(), "dry run", "");
         return avtale;
     }
 

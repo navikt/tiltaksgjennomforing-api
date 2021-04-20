@@ -9,6 +9,7 @@ import org.springframework.data.domain.AbstractAggregateRoot;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -47,10 +48,16 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
     }
 
     private static String getVarslbarHendelseTekst(Avtale avtale, VarslbarHendelseType hendelseType) {
-        if (hendelseType == VarslbarHendelseType.TILSKUDDSPERIODE_AVSLATT) {
-            return tilskuddsperiodeAvslåttTekst(avtale, hendelseType.getTekst());
+        switch (hendelseType) {
+            case TILSKUDDSPERIODE_AVSLATT:
+                return tilskuddsperiodeAvslåttTekst(avtale, hendelseType.getTekst());
+            case AVTALE_FORKORTET:
+                return "Avtale forkortet til " + avtale.getSluttDato().format(DateTimeFormatter.ofPattern("dd.MM.YYYY"));
+            case AVTALE_FORLENGET:
+                return "Avtale forlenget til " + avtale.getSluttDato().format(DateTimeFormatter.ofPattern("dd.MM.YYYY"));
+            default:
+                return hendelseType.getTekst();
         }
-        return hendelseType.getTekst();
     }
 
     public static Varsel nyttVarsel(Identifikator identifikator, boolean bjelle, Avtale avtale, Avtalerolle mottaker, Avtalerolle utførtAv, VarslbarHendelseType varslbarHendelseType, UUID avtaleId) {
