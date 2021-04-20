@@ -42,7 +42,7 @@ tiltaksgjennomforing:
     proxyUri: https://arbeidsgiver.intern.nav.no/altinn-rettigheter-proxy/
     beOmRettighetBaseUrl: https://arbeidsgiver.nav.no/min-side-arbeidsgiver/?fragment=be-om-tilgang
     sommerjobbServiceCode: 5516
-    sommerjobbServiceEdition: 3
+    sommerjobbServiceEdition: 1
     ltsMidlertidigServiceCode: 5516
     ltsMidlertidigServiceEdition: 1
     ltsVarigServiceCode: 5516
