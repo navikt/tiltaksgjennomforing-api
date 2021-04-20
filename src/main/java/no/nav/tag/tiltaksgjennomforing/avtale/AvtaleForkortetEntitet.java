@@ -4,12 +4,14 @@ import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
 @Data
 @Entity
+@Table("avtale_forkortet")
 public class AvtaleForkortetEntitet {
     @Id
     private UUID id;

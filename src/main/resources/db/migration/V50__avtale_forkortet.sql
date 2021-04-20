@@ -1,4 +1,4 @@
-create table avtale_forkortet_entitet(
+create table avtale_forkortet(
     id uuid,
     avtale_id uuid references avtale(id),
     avtale_innhold_id uuid references avtale_innhold(id),
