@@ -223,6 +223,7 @@ public class TestData {
         endreAvtale.setFamilietilknytningForklaring("En middels god forklaring");
         endreAvtale.setOtpSats(0.02);
         endreAvtale.setStillingstype(Stillingstype.FAST);
+        endreAvtale.setAntallDagerPerUke(5);
         return endreAvtale;
     }
 

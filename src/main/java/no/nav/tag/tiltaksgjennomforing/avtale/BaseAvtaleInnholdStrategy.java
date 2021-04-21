@@ -33,6 +33,7 @@ public abstract class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy
         avtaleInnhold.setStartDato(nyAvtale.getStartDato());
         avtaleInnhold.setSluttDato(nyAvtale.getSluttDato());
         avtaleInnhold.setStillingprosent(nyAvtale.getStillingprosent());
+        avtaleInnhold.setAntallDagerPerUke(nyAvtale.getAntallDagerPerUke());
     }
 
     @Override
