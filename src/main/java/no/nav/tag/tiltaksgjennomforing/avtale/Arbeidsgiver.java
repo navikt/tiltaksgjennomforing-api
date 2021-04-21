@@ -46,6 +46,11 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         return avtale;
     }
 
+    private static Avtale fjernAnnullertGrunn(Avtale avtale) {
+        avtale.setAnnullertGrunn(null);
+        return avtale;
+    }
+
     @Override
     protected void avvisDatoerTilbakeITid(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
         if (!avtale.erUfordelt()) {
@@ -75,6 +80,9 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         avtaleStatusDetaljer.setGodkjentAvInnloggetBruker(erGodkjentAvInnloggetBruker(avtale));
 
         switch (avtale.statusSomEnum()) {
+            case ANNULLERT:
+                avtaleStatusDetaljer.setInnloggetBrukerStatus("Tiltaket er annullert", "Veileder har annullert tiltaket.", "");
+                break;
             case AVBRUTT:
                 avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleAvbrutt, tekstAvtaleAvbrutt, "");
                 break;
@@ -169,7 +177,11 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         if (tilganger.isEmpty()) {
             return Collections.emptyList();
         }
-        return avtaleRepository.findAllByBedriftNrIn(tilganger.keySet()).stream().map(Arbeidsgiver::fjernAvbruttGrunn).collect(Collectors.toList());
+        return avtaleRepository.findAllByBedriftNrIn(tilganger.keySet()).stream()
+                .filter(avtale -> !avtale.isFeilregistrert())
+                .map(Arbeidsgiver::fjernAvbruttGrunn)
+                .map(Arbeidsgiver::fjernAnnullertGrunn)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -181,6 +193,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         return avtaleRepository.findAllByBedriftNr(bedriftNr).stream()
                 .filter(this::harTilgang)
                 .map(Arbeidsgiver::fjernAvbruttGrunn)
+                .map(Arbeidsgiver::fjernAnnullertGrunn)
                 .collect(Collectors.toList());
     }
 
@@ -197,6 +210,8 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     @Override
     public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
         Avtale avtale = super.hentAvtale(avtaleRepository, avtaleId);
-        return fjernAvbruttGrunn(avtale);
+        fjernAvbruttGrunn(avtale);
+        fjernAnnullertGrunn(avtale);
+        return avtale;
     }
 }

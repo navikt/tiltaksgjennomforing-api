@@ -75,6 +75,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     @Fetch(FetchMode.SUBSELECT)
     @SortNatural
     private SortedSet<TilskuddPeriode> tilskuddPeriode = new TreeSet<>();
+    private boolean feilregistrert;
 
     private Avtale(OpprettAvtale opprettAvtale) {
         sjekkAtIkkeNull(opprettAvtale.getDeltakerFnr(), "Deltakers fnr må være satt.");
@@ -323,7 +324,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (erUfordelt()) {
             setVeilederNavIdent(veileder.getIdentifikator());
         }
-
+        if ("Feilregistrering".equals(annullerGrunn)) {
+            setFeilregistrert(true);
+        }
         sistEndretNå();
         registerEvent(new AnnullertAvVeileder(this, veileder.getIdentifikator()));
     }

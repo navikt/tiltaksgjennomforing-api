@@ -5,6 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Deltaker extends Avtalepart<Fnr> {
 
@@ -25,7 +26,9 @@ public class Deltaker extends Avtalepart<Fnr> {
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
-        return avtaleRepository.findAllByDeltakerFnr(getIdentifikator());
+        return avtaleRepository.findAllByDeltakerFnr(getIdentifikator()).stream()
+                .filter(avtale -> !avtale.isFeilregistrert())
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -43,6 +46,9 @@ public class Deltaker extends Avtalepart<Fnr> {
         AvtaleStatusDetaljer avtaleStatusDetaljer = new AvtaleStatusDetaljer();
         avtaleStatusDetaljer.setGodkjentAvInnloggetBruker(erGodkjentAvInnloggetBruker(avtale));
         switch (avtale.statusSomEnum()) {
+            case ANNULLERT:
+                avtaleStatusDetaljer.setInnloggetBrukerStatus("Tiltaket er annullert", "Veileder har annullert tiltaket.", "");
+                break;
             case AVBRUTT:
                 avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleAvbrutt, tekstAvtaleAvbrutt, "");
                 break;
