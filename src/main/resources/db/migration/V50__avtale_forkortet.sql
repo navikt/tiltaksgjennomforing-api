@@ -1,5 +1,5 @@
 create table avtale_forkortet(
-    id uuid,
+    id uuid primary key,
     avtale_id uuid references avtale(id),
     avtale_innhold_id uuid references avtale_innhold(id),
     tidspunkt timestamp,
