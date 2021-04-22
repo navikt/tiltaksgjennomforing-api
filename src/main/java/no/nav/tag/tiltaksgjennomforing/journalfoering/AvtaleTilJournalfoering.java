@@ -46,6 +46,7 @@ public class AvtaleTilJournalfoering {
     private String stillingstittel;
     private Stillingstype stillingstype;
     private String arbeidsoppgaver;
+    private Integer antallDagerPerUke;
 
     // Lønnstilskudd
     private String arbeidsgiverKontonummer;

@@ -1,26 +1,16 @@
 package no.nav.tag.tiltaksgjennomforing.journalfoering;
 
-import static no.nav.tag.tiltaksgjennomforing.journalfoering.AvtaleTilJournalfoeringMapper.tilJournalfoering;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.UUID;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
-import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
-import no.nav.tag.tiltaksgjennomforing.avtale.Maal;
-import no.nav.tag.tiltaksgjennomforing.avtale.MaalKategori;
-import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
-import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+
+import static no.nav.tag.tiltaksgjennomforing.journalfoering.AvtaleTilJournalfoeringMapper.tilJournalfoering;
+import static org.junit.Assert.*;
 
 public class AvtaleTilJournalfoeringMapperTest {
 
@@ -73,6 +63,7 @@ public class AvtaleTilJournalfoeringMapperTest {
         assertEquals(avtale.getStartDato(), tilJournalfoering.getStartDato());
         assertEquals(avtale.getSluttDato(), tilJournalfoering.getSluttDato());
         assertEquals(avtale.getStillingprosent(), tilJournalfoering.getStillingprosent());
+        assertEquals(avtale.getAntallDagerPerUke(), tilJournalfoering.getAntallDagerPerUke());
         assertEquals(avtale.getGodkjentAvDeltaker().toLocalDate(), tilJournalfoering.getGodkjentAvDeltaker());
         assertEquals(avtale.getGodkjentAvArbeidsgiver().toLocalDate(), tilJournalfoering.getGodkjentAvArbeidsgiver());
         assertEquals(avtale.getGodkjentAvVeileder().toLocalDate(), tilJournalfoering.getGodkjentAvVeileder());
