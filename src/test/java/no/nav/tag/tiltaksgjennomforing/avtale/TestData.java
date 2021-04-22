@@ -181,6 +181,7 @@ public class TestData {
         endreAvtale.setStartDato(LocalDate.now());
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusWeeks(2));
         endreAvtale.setStillingprosent(50);
+        endreAvtale.setAntallDagerPerUke(4);
         endreAvtale.setMaal(List.of(TestData.etMaal()));
         endreAvtale.setStillingstittel("Butikksjef");
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
