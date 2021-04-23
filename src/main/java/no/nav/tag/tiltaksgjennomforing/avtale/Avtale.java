@@ -223,6 +223,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
         this.setGodkjentAvVeileder(LocalDateTime.now());
         this.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
+        this.setIkrafttredelsestidspunkt(LocalDateTime.now());
         sistEndretNå();
         registerEvent(new GodkjentAvVeileder(this, utfortAv));
     }
@@ -241,6 +242,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         this.setGodkjentPaVegneAv(true);
         this.setGodkjentPaVegneGrunn(paVegneAvGrunn);
         this.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
+        this.setIkrafttredelsestidspunkt(LocalDateTime.now());
         sistEndretNå();
         registerEvent(new GodkjentPaVegneAv(this, utfortAv));
     }
@@ -310,6 +312,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         AvtaleInnhold nyAvtaleInnholdVersjon = gjeldendeInnhold().nyGodkjentVersjon();
         versjoner.add(nyAvtaleInnholdVersjon);
         gjeldendeInnhold().setSluttDato(nySluttDato);
+        gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
         registerEvent(new AvtaleForkortet(this, nyAvtaleInnholdVersjon, nySluttDato, grunn, annetGrunn, utførtAv));
     }
 
@@ -567,6 +570,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         forlengTilskuddsperioder(this.getSluttDato(), nySluttDato);
         versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
         gjeldendeInnhold().setSluttDato(nySluttDato);
+        gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
         registerEvent(new AvtaleForlenget(this));
     }
 
@@ -579,6 +583,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
         gjeldendeInnhold().endreTilskuddsberegning(tilskuddsberegning);
+        gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
         endreBeløpITilskuddsperioder();
         registerEvent(new TilskuddsberegningEndret(this, null));
     }
