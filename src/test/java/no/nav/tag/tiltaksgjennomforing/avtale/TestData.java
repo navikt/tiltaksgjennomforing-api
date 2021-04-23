@@ -66,6 +66,7 @@ public class TestData {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setIkrafttredelsestidspunkt(LocalDateTime.now());
         avtale.setJournalpostId("1");
         return avtale;
     }
@@ -123,6 +124,7 @@ public class TestData {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setIkrafttredelsestidspunkt(LocalDateTime.now());
         avtale.setJournalpostId("1");
         return avtale;
     }
@@ -134,6 +136,7 @@ public class TestData {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setIkrafttredelsestidspunkt(LocalDateTime.now());
         avtale.setStartDato(LocalDate.now().minusMonths(3));
         avtale.setSluttDato(LocalDate.now().plusMonths(1));
         avtale.setJournalpostId("1");
@@ -322,6 +325,7 @@ public class TestData {
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setIkrafttredelsestidspunkt(LocalDateTime.now());
         return avtale;
     }
 
@@ -332,6 +336,7 @@ public class TestData {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setIkrafttredelsestidspunkt(LocalDateTime.now());
         avtale.setJournalpostId("1");
         return avtale;
     }
@@ -386,6 +391,7 @@ public class TestData {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setIkrafttredelsestidspunkt(LocalDateTime.now());
         avtale.setJournalpostId("1");
         return avtale;
     }

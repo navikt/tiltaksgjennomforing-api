@@ -562,6 +562,7 @@ public class AvtaleTest {
                 AvtaleInnhold.Fields.godkjentAvDeltaker,
                 AvtaleInnhold.Fields.godkjentAvArbeidsgiver,
                 AvtaleInnhold.Fields.godkjentAvVeileder,
+                AvtaleInnhold.Fields.ikrafttredelsestidspunkt,
                 AvtaleInnhold.Fields.journalpostId);
     }
 

@@ -97,6 +97,7 @@ public class AvtaleInnhold {
     private LocalDateTime godkjentAvDeltaker;
     private LocalDateTime godkjentAvArbeidsgiver;
     private LocalDateTime godkjentAvVeileder;
+    private LocalDateTime ikrafttredelsestidspunkt;
     @Convert(converter = NavIdentConverter.class)
     private NavIdent godkjentAvNavIdent;
 
@@ -125,6 +126,7 @@ public class AvtaleInnhold {
                 .godkjentAvDeltaker(null)
                 .godkjentAvArbeidsgiver(null)
                 .godkjentAvVeileder(null)
+                .ikrafttredelsestidspunkt(null)
                 .godkjentPaVegneAv(false)
                 .godkjentPaVegneGrunn(null)
                 .journalpostId(null)
