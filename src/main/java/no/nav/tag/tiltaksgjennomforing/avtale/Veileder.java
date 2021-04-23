@@ -211,7 +211,7 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     public void forkortAvtale(Instant sistEndret, Avtale avtale, LocalDate sluttDato, String grunn, String annetGrunn) {
         sjekkTilgang(avtale);
-        avtale.forkortAvtale(sluttDato, grunn, annetGrunn);
+        avtale.forkortAvtale(sluttDato, grunn, annetGrunn, getIdentifikator());
     }
 
     public void forlengAvtale(Instant sistEndret, LocalDate sluttDato, Avtale avtale) {

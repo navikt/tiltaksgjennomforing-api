@@ -12,6 +12,6 @@ public class AvtaleForkortetLytter {
 
     @EventListener
     public void avtaleForkortet(AvtaleForkortet event) {
-        avtaleForkortetRepository.save(new AvtaleForkortetEntitet(event.getAvtale(), event.getAvtaleInnhold(), event.getNySluttDato(), event.getGrunn(), event.getAnnetGrunn()));
+        avtaleForkortetRepository.save(new AvtaleForkortetEntitet(event.getAvtale(), event.getAvtaleInnhold(), event.getUtførtAv(), event.getNySluttDato(), event.getGrunn(), event.getAnnetGrunn()));
     }
 }

@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import lombok.Data;
 
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -18,6 +19,8 @@ public class AvtaleForkortetEntitet {
     private UUID avtaleId;
     private UUID avtaleInnholdId;
     private Instant tidspunkt;
+    @Convert(converter = NavIdentConverter.class)
+    private NavIdent utførtAv;
     private LocalDate nySluttDato;
     private String grunn;
     private String annetGrunn;
@@ -25,11 +28,12 @@ public class AvtaleForkortetEntitet {
     public AvtaleForkortetEntitet() {
     }
 
-    public AvtaleForkortetEntitet(Avtale avtale, AvtaleInnhold avtaleInnhold, LocalDate nySluttDato, String grunn, String annetGrunn) {
+    public AvtaleForkortetEntitet(Avtale avtale, AvtaleInnhold avtaleInnhold, NavIdent utførtAv, LocalDate nySluttDato, String grunn, String annetGrunn) {
         this.id = UUID.randomUUID();
         this.avtaleId = avtale.getId();
         this.avtaleInnholdId = avtaleInnhold.getId();
         this.tidspunkt = Instant.now();
+        this.utførtAv = utførtAv;
         this.nySluttDato = nySluttDato;
         this.grunn = grunn;
         this.annetGrunn = annetGrunn;

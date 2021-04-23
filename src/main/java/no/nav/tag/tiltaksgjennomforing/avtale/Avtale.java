@@ -292,7 +292,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         return isAvbrutt();
     }
 
-    public void forkortAvtale(LocalDate nySluttDato, String grunn, String annetGrunn) {
+    public void forkortAvtale(LocalDate nySluttDato, String grunn, String annetGrunn, NavIdent utførtAv) {
         // Avslutter tidligere enn først planlagt
         if (!nySluttDato.isBefore(getSluttDato())) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_ETTER_SLUTTDATO);
@@ -310,7 +310,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         AvtaleInnhold nyAvtaleInnholdVersjon = gjeldendeInnhold().nyGodkjentVersjon();
         versjoner.add(nyAvtaleInnholdVersjon);
         gjeldendeInnhold().setSluttDato(nySluttDato);
-        registerEvent(new AvtaleForkortet(this, nyAvtaleInnholdVersjon, nySluttDato, grunn, annetGrunn));
+        registerEvent(new AvtaleForkortet(this, nyAvtaleInnholdVersjon, nySluttDato, grunn, annetGrunn, utførtAv));
     }
 
     public void annuller(Veileder veileder, String annullerGrunn) {
