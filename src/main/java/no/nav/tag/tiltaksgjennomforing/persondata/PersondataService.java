@@ -5,7 +5,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
-import org.apache.commons.io.Charsets;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
@@ -16,6 +15,7 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Slf4j
@@ -37,7 +37,7 @@ public class PersondataService {
 
     @SneakyThrows
     private static String resourceAsString(Resource adressebeskyttelseQuery) {
-        String filinnhold = StreamUtils.copyToString(adressebeskyttelseQuery.getInputStream(), Charsets.UTF_8);
+        String filinnhold = StreamUtils.copyToString(adressebeskyttelseQuery.getInputStream(), StandardCharsets.UTF_8);
         return filinnhold.replaceAll("\\s+", " ");
     }
 
