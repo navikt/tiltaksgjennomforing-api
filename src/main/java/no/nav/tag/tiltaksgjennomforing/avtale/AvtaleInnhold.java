@@ -174,6 +174,15 @@ public class AvtaleInnhold {
     public void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning) {
         innholdStrategi().endreTilskuddsberegning(tilskuddsberegning);
     }
+
+    public void endreKontaktInfo(EndreKontaktInformasjon endreKontaktInformasjon) {
+        setVeilederFornavn(endreKontaktInformasjon.getVeilederFornavn());
+        setVeilederEtternavn(endreKontaktInformasjon.getVeilederEtternavn());
+        setVeilederTlf(endreKontaktInformasjon.getVeilederTlf());
+        setArbeidsgiverFornavn(endreKontaktInformasjon.getArbeidsgiverFornavn());
+        setArbeidsgiverEtternavn(endreKontaktInformasjon.getArbeidsgiverEtternavn());
+        setArbeidsgiverTlf(endreKontaktInformasjon.getArbeidsgiverTlf());
+    }
 }
 
 

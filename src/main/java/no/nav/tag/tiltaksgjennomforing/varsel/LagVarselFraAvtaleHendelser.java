@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.varsel;
 
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.avtale.EndreKontaktInformasjon;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -141,6 +142,12 @@ public class LagVarselFraAvtaleHendelser {
     @EventListener
     public void endreTilskuddsberegning(TilskuddsberegningEndret event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.TILSKUDDSBEREGNING_ENDRET);
+        varselRepository.saveAll(factory.alleParter());
+    }
+
+    @EventListener
+    public void endreKontaktInformasjon(KontaktinformasjonEndret event) {
+        VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.KONTAKTINFORMASJON_ENDRET);
         varselRepository.saveAll(factory.alleParter());
     }
 }

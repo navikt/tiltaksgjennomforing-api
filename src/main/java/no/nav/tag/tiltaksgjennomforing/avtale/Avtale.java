@@ -588,6 +588,25 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new TilskuddsberegningEndret(this, null));
     }
 
+    public void endreKontaktInformasjon(EndreKontaktInformasjon endreKontaktInformasjon) {
+        if (!erGodkjentAvVeileder()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_KONTAKTINFO_GRUNN_IKKE_GODKJENT_AVTALE);
+        }
+        if (Utils.erNoenTomme(endreKontaktInformasjon.getVeilederFornavn(),
+                endreKontaktInformasjon.getVeilederEtternavn(),
+                endreKontaktInformasjon.getVeilederTlf(),
+                endreKontaktInformasjon.getArbeidsgiverFornavn(),
+                endreKontaktInformasjon.getArbeidsgiverEtternavn(),
+                endreKontaktInformasjon.getArbeidsgiverTlf())
+        ) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_KONTAKTINFO_GRUNN_MANGLER);
+        }
+        versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
+        gjeldendeInnhold().endreKontaktInfo(endreKontaktInformasjon);
+        gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
+        registerEvent(new KontaktinformasjonEndret(this));
+    }
+
     private interface MetoderSomIkkeSkalDelegeresFraAvtaleInnhold {
         UUID getId();
 
