@@ -3,10 +3,9 @@ package no.nav.tag.tiltaksgjennomforing.datavarehus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -20,5 +19,7 @@ public class DvhMeldingEntitet {
     private UUID meldingId;
     private UUID avtaleId;
     private LocalDateTime tidspunkt;
+    @Enumerated(EnumType.STRING)
+    private Status tiltakStatus;
     private String json;
 }

@@ -21,7 +21,7 @@ public class DvhProdusent {
         UUID meldingId = UUID.randomUUID();
         DvhHendelseType hendelseType = DvhHendelseType.INNGÅTT;
         var melding = lagMelding(event.getAvtale(), tidspunkt, meldingId, hendelseType);
-        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, event.getAvtale().getId(), tidspunkt, melding.toString());
+        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, event.getAvtale().getId(), tidspunkt, event.getAvtale().statusSomEnum(), melding.toString());
         repository.save(entitet);
     }
 
@@ -31,7 +31,7 @@ public class DvhProdusent {
         UUID meldingId = UUID.randomUUID();
         DvhHendelseType hendelseType = DvhHendelseType.INNGÅTT;
         var melding = lagMelding(event.getAvtale(), tidspunkt, meldingId, hendelseType);
-        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, event.getAvtale().getId(), tidspunkt, melding.toString());
+        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, event.getAvtale().getId(), tidspunkt, event.getAvtale().statusSomEnum(), melding.toString());
         repository.save(entitet);
     }
 
@@ -41,7 +41,7 @@ public class DvhProdusent {
         UUID meldingId = UUID.randomUUID();
         DvhHendelseType hendelseType = DvhHendelseType.FORLENGET;
         var melding = lagMelding(event.getAvtale(), tidspunkt, meldingId, hendelseType);
-        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, event.getAvtale().getId(), tidspunkt, melding.toString());
+        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, event.getAvtale().getId(), tidspunkt, event.getAvtale().statusSomEnum(), melding.toString());
         repository.save(entitet);
     }
 
@@ -51,7 +51,7 @@ public class DvhProdusent {
         UUID meldingId = UUID.randomUUID();
         DvhHendelseType hendelseType = DvhHendelseType.FORKORTET;
         var melding = lagMelding(event.getAvtale(), tidspunkt, meldingId, hendelseType);
-        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, event.getAvtale().getId(), tidspunkt, melding.toString());
+        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, event.getAvtale().getId(), tidspunkt, event.getAvtale().statusSomEnum(), melding.toString());
         repository.save(entitet);
     }
 
@@ -61,7 +61,7 @@ public class DvhProdusent {
         UUID meldingId = UUID.randomUUID();
         DvhHendelseType hendelseType = DvhHendelseType.ANNULLERT;
         var melding = lagMelding(event.getAvtale(), tidspunkt, meldingId, hendelseType);
-        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, event.getAvtale().getId(), tidspunkt, melding.toString());
+        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, event.getAvtale().getId(), tidspunkt, event.getAvtale().statusSomEnum(), melding.toString());
         repository.save(entitet);
     }
 
@@ -71,7 +71,7 @@ public class DvhProdusent {
         UUID meldingId = UUID.randomUUID();
         DvhHendelseType hendelseType = DvhHendelseType.ENDRET;
         var melding = lagMelding(event.getAvtale(), tidspunkt, meldingId, hendelseType);
-        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, event.getAvtale().getId(), tidspunkt, melding.toString());
+        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, event.getAvtale().getId(), tidspunkt, event.getAvtale().statusSomEnum(), melding.toString());
         repository.save(entitet);
     }
 
