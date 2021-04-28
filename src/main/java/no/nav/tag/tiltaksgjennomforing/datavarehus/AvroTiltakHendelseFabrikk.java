@@ -1,81 +1,15 @@
 package no.nav.tag.tiltaksgjennomforing.datavarehus;
 
-import lombok.RequiredArgsConstructor;
+import lombok.experimental.UtilityClass;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
-import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.UUID;
 
-@Component
-@RequiredArgsConstructor
-public class DvhProdusent {
-    private final DvhMeldingEntitetRepository repository;
-
-    @EventListener
-    public void godkjentPaVegneAv(GodkjentPaVegneAv event) {
-        LocalDateTime tidspunkt = LocalDateTime.now();
-        UUID meldingId = UUID.randomUUID();
-        DvhHendelseType hendelseType = DvhHendelseType.INNGÅTT;
-        var melding = lagMelding(event.getAvtale(), tidspunkt, meldingId, hendelseType);
-        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, event.getAvtale().getId(), tidspunkt, event.getAvtale().statusSomEnum(), melding.toString());
-        repository.save(entitet);
-    }
-
-    @EventListener
-    public void godkjentAvVeileder(GodkjentAvVeileder event) {
-        LocalDateTime tidspunkt = LocalDateTime.now();
-        UUID meldingId = UUID.randomUUID();
-        DvhHendelseType hendelseType = DvhHendelseType.INNGÅTT;
-        var melding = lagMelding(event.getAvtale(), tidspunkt, meldingId, hendelseType);
-        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, event.getAvtale().getId(), tidspunkt, event.getAvtale().statusSomEnum(), melding.toString());
-        repository.save(entitet);
-    }
-
-    @EventListener
-    public void avtaleForlenget(AvtaleForlenget event) {
-        LocalDateTime tidspunkt = LocalDateTime.now();
-        UUID meldingId = UUID.randomUUID();
-        DvhHendelseType hendelseType = DvhHendelseType.FORLENGET;
-        var melding = lagMelding(event.getAvtale(), tidspunkt, meldingId, hendelseType);
-        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, event.getAvtale().getId(), tidspunkt, event.getAvtale().statusSomEnum(), melding.toString());
-        repository.save(entitet);
-    }
-
-    @EventListener
-    public void avtaleForkortet(AvtaleForkortet event) {
-        LocalDateTime tidspunkt = LocalDateTime.now();
-        UUID meldingId = UUID.randomUUID();
-        DvhHendelseType hendelseType = DvhHendelseType.FORKORTET;
-        var melding = lagMelding(event.getAvtale(), tidspunkt, meldingId, hendelseType);
-        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, event.getAvtale().getId(), tidspunkt, event.getAvtale().statusSomEnum(), melding.toString());
-        repository.save(entitet);
-    }
-
-    @EventListener
-    public void avtaleAnnullert(AnnullertAvVeileder event) {
-        LocalDateTime tidspunkt = LocalDateTime.now();
-        UUID meldingId = UUID.randomUUID();
-        DvhHendelseType hendelseType = DvhHendelseType.ANNULLERT;
-        var melding = lagMelding(event.getAvtale(), tidspunkt, meldingId, hendelseType);
-        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, event.getAvtale().getId(), tidspunkt, event.getAvtale().statusSomEnum(), melding.toString());
-        repository.save(entitet);
-    }
-
-    @EventListener
-    public void tilskuddsberegningEndret(TilskuddsberegningEndret event) {
-        LocalDateTime tidspunkt = LocalDateTime.now();
-        UUID meldingId = UUID.randomUUID();
-        DvhHendelseType hendelseType = DvhHendelseType.ENDRET;
-        var melding = lagMelding(event.getAvtale(), tidspunkt, meldingId, hendelseType);
-        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, event.getAvtale().getId(), tidspunkt, event.getAvtale().statusSomEnum(), melding.toString());
-        repository.save(entitet);
-    }
-
-    private static AvroTiltakHendelse lagMelding(Avtale avtale, LocalDateTime tidspunkt, UUID meldingId, DvhHendelseType hendelseType) {
+@UtilityClass
+public class AvroTiltakHendelseFabrikk {
+    public static AvroTiltakHendelse konstruer(Avtale avtale, LocalDateTime tidspunkt, UUID meldingId, DvhHendelseType hendelseType) {
         AvroTiltakHendelse hendelse = new AvroTiltakHendelse();
         hendelse.setMeldingId(meldingId.toString());
         hendelse.setTidspunkt(tidspunkt.toString());
