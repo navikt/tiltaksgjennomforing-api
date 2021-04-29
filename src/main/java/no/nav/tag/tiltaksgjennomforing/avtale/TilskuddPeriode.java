@@ -69,7 +69,7 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
         if (status != TilskuddPeriodeStatus.UBEHANDLET) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET);
         }
-        if (LocalDate.now().isBefore(startDato.minusWeeks(2))) {
+        if (løpenummer > 1 && LocalDate.now().isBefore(startDato.minusWeeks(2))) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_BEHANDLE_FOR_TIDLIG);
         }
     }
