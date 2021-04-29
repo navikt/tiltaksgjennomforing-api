@@ -15,6 +15,9 @@ public class DvhAvtalehendelseLytter {
 
     @EventListener
     public void godkjentPaVegneAv(GodkjentPaVegneAv event) {
+        if (!DvhMeldingFilter.skalTilDatavarehus(event.getAvtale())) {
+            return;
+        }
         LocalDateTime tidspunkt = LocalDateTime.now();
         UUID meldingId = UUID.randomUUID();
         DvhHendelseType hendelseType = DvhHendelseType.INNGÅTT;
@@ -25,6 +28,9 @@ public class DvhAvtalehendelseLytter {
 
     @EventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
+        if (!DvhMeldingFilter.skalTilDatavarehus(event.getAvtale())) {
+            return;
+        }
         LocalDateTime tidspunkt = LocalDateTime.now();
         UUID meldingId = UUID.randomUUID();
         DvhHendelseType hendelseType = DvhHendelseType.INNGÅTT;
@@ -35,6 +41,9 @@ public class DvhAvtalehendelseLytter {
 
     @EventListener
     public void avtaleForlenget(AvtaleForlenget event) {
+        if (!DvhMeldingFilter.skalTilDatavarehus(event.getAvtale())) {
+            return;
+        }
         LocalDateTime tidspunkt = LocalDateTime.now();
         UUID meldingId = UUID.randomUUID();
         DvhHendelseType hendelseType = DvhHendelseType.FORLENGET;
@@ -45,6 +54,9 @@ public class DvhAvtalehendelseLytter {
 
     @EventListener
     public void avtaleForkortet(AvtaleForkortet event) {
+        if (!DvhMeldingFilter.skalTilDatavarehus(event.getAvtale())) {
+            return;
+        }
         LocalDateTime tidspunkt = LocalDateTime.now();
         UUID meldingId = UUID.randomUUID();
         DvhHendelseType hendelseType = DvhHendelseType.FORKORTET;
@@ -55,6 +67,9 @@ public class DvhAvtalehendelseLytter {
 
     @EventListener
     public void avtaleAnnullert(AnnullertAvVeileder event) {
+        if (!DvhMeldingFilter.skalTilDatavarehus(event.getAvtale())) {
+            return;
+        }
         LocalDateTime tidspunkt = LocalDateTime.now();
         UUID meldingId = UUID.randomUUID();
         DvhHendelseType hendelseType = DvhHendelseType.ANNULLERT;
@@ -65,6 +80,9 @@ public class DvhAvtalehendelseLytter {
 
     @EventListener
     public void tilskuddsberegningEndret(TilskuddsberegningEndret event) {
+        if (!DvhMeldingFilter.skalTilDatavarehus(event.getAvtale())) {
+            return;
+        }
         LocalDateTime tidspunkt = LocalDateTime.now();
         UUID meldingId = UUID.randomUUID();
         DvhHendelseType hendelseType = DvhHendelseType.ENDRET;
