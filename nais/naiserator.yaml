@@ -64,3 +64,4 @@ spec:
   {{/if}}
   envFrom:
     - configmap: loginservice-idporten
+  leaderElection: true
