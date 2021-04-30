@@ -1,31 +1,13 @@
 spring:
   datasource:
-    platform: postgres
-    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
-    username: sa
-    password: sa
-    driverClassName: org.h2.Driver
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-  main:
-    banner-mode: "console"
+    url: "jdbc:postgresql://localhost:6432/sample?user=sample&password=sample"
   kafka:
-    bootstrap-servers: ${spring.embedded.kafka.brokers}
-no.nav.gcp.kafka.aiven:
-  bootstrap-servers: ${spring.embedded.kafka.brokers}
-
-no.nav.security.jwt:
-  issuer:
-    selvbetjening:
-      discoveryurl: https://tiltak-fakelogin.labs.nais.io/metadata?issuer=selvbetjening
-      accepted_audience: aud-selvbetjening
-      cookie_name: selvbetjening-idtoken
-    isso:
-      discoveryurl: https://tiltak-fakelogin.labs.nais.io/metadata?issuer=isso
-      accepted_audience: aud-isso
-      cookie_name: isso-idtoken
+    properties:
+      security.protocol: PLAINTEXT
+      ssl:
+        keystore: null
+        truststore: null
+    bootstrap-servers: localhost:29092
 
 tiltaksgjennomforing:
   kontoregister:
@@ -35,9 +17,7 @@ tiltaksgjennomforing:
   beslutter-ad-gruppe:
     id: 1a1d2745-952f-4a0f-839f-9530145b1d4a
   kafka:
-    enabled: false
-    fake: true
-    fake-url: http://localhost:8081/fake-kafka
+    enabled: true
   altinn-tilgangsstyring:
     uri: http://localhost:8090/altinn-tilgangsstyring
     proxyUri: http://heh:9090/
@@ -82,4 +62,17 @@ tiltaksgjennomforing:
     gruppe-tilgang: 1a1d2745-952f-4a0f-839f-9530145b1d4a
     fixed-delay: 20000
 
-ELECTOR_PATH: null
+no.nav.gcp.kafka.aiven:
+  bootstrap-servers: localhost:29092
+
+no.nav.security.jwt:
+  issuer:
+    selvbetjening:
+      discoveryurl: https://tiltak-fakelogin.labs.nais.io/metadata?issuer=selvbetjening
+      accepted_audience: aud-selvbetjening
+      cookie_name: selvbetjening-idtoken
+    isso:
+      discoveryurl: https://tiltak-fakelogin.labs.nais.io/metadata?issuer=isso
+      accepted_audience: aud-isso
+      cookie_name: isso-idtoken
+
