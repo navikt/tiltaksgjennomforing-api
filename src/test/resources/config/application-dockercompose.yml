@@ -57,6 +57,10 @@ tiltaksgjennomforing:
     url: http://localhost:8090/norg2/api/v1/enhet/navkontor/
   dokgen:
     uri: http://localhost:9000/template/tiltak-avtale/create-pdf
+  dvh-melding:
+    feature-enabled: true
+    gruppe-tilgang: 1a1d2745-952f-4a0f-839f-9530145b1d4a
+    fixed-delay: 20000
 
 no.nav.gcp.kafka.aiven:
   bootstrap-servers: localhost:29092

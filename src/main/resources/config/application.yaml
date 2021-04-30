@@ -44,3 +44,6 @@ tiltaksgjennomforing:
     uri: http://pdl-api.default.svc.nais.local/graphql
   dokgen:
     uri: http://tiltak-dokgen.arbeidsgiver.svc.nais.local/template/tiltak-avtale/create-pdf
+  dvh-melding:
+    feature-enabled: false
+    fixed-delay: 600000

@@ -149,7 +149,11 @@ public class TestData {
     public static Avtale enSommerjobbAvtaleGodkjentAvVeileder() {
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.SOMMERJOBB), new NavIdent("Z123456"));
         EndreAvtale endreAvtale = endringPåAlleFelter();
+        endreAvtale.setDeltakerFornavn("Solveig");
+        endreAvtale.setDeltakerEtternavn("Sommerfeldt");
         endreAvtale.setLonnstilskuddProsent(50);
+        endreAvtale.setFeriepengesats(new BigDecimal("0.12"));
+        endreAvtale.setArbeidsgiveravgift(new BigDecimal("0.141"));
         endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
         endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4));
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
@@ -157,6 +161,22 @@ public class TestData {
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
         avtale.setGodkjentAvNavIdent(TestData.enNavIdent());
+        return avtale;
+    }
+
+    public static Avtale enSommerjobbAvtaleGodkjentAvArbeidsgiver() {
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.SOMMERJOBB), new NavIdent("Z123456"));
+        EndreAvtale endreAvtale = endringPåAlleFelter();
+        endreAvtale.setDeltakerFornavn("Solfrid");
+        endreAvtale.setDeltakerEtternavn("Sommerfeldt");
+        endreAvtale.setLonnstilskuddProsent(50);
+        endreAvtale.setFeriepengesats(new BigDecimal("0.12"));
+        endreAvtale.setArbeidsgiveravgift(new BigDecimal("0.141"));
+        endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
+        endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4));
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         return avtale;
     }
 

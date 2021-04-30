@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.datavarehus;
 
 import lombok.RequiredArgsConstructor;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -12,36 +13,33 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class DvhAvtalehendelseLytter {
     private final DvhMeldingEntitetRepository repository;
+    private final DvhMeldingFilter dvhMeldingFilter;
 
     @EventListener
     public void godkjentPaVegneAv(GodkjentPaVegneAv event) {
-        if (!DvhMeldingFilter.skalTilDatavarehus(event.getAvtale())) {
-            return;
-        }
-        LocalDateTime tidspunkt = LocalDateTime.now();
-        UUID meldingId = UUID.randomUUID();
-        DvhHendelseType hendelseType = DvhHendelseType.INNGÅTT;
-        var melding = AvroTiltakHendelseFabrikk.konstruer(event.getAvtale(), tidspunkt, meldingId, hendelseType);
-        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, event.getAvtale().getId(), tidspunkt, event.getAvtale().statusSomEnum(), melding);
-        repository.save(entitet);
+        avtaleInngått(event.getAvtale());
     }
 
     @EventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
-        if (!DvhMeldingFilter.skalTilDatavarehus(event.getAvtale())) {
+        avtaleInngått(event.getAvtale());
+    }
+
+    private void avtaleInngått(Avtale avtale) {
+        if (!dvhMeldingFilter.skalTilDatavarehus(avtale)) {
             return;
         }
         LocalDateTime tidspunkt = LocalDateTime.now();
         UUID meldingId = UUID.randomUUID();
         DvhHendelseType hendelseType = DvhHendelseType.INNGÅTT;
-        var melding = AvroTiltakHendelseFabrikk.konstruer(event.getAvtale(), tidspunkt, meldingId, hendelseType);
-        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, event.getAvtale().getId(), tidspunkt, event.getAvtale().statusSomEnum(), melding);
+        var melding = AvroTiltakHendelseFabrikk.konstruer(avtale, tidspunkt, meldingId, hendelseType);
+        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, avtale.getId(), tidspunkt, avtale.statusSomEnum(), melding);
         repository.save(entitet);
     }
 
     @EventListener
     public void avtaleForlenget(AvtaleForlenget event) {
-        if (!DvhMeldingFilter.skalTilDatavarehus(event.getAvtale())) {
+        if (!dvhMeldingFilter.skalTilDatavarehus(event.getAvtale())) {
             return;
         }
         LocalDateTime tidspunkt = LocalDateTime.now();
@@ -54,7 +52,7 @@ public class DvhAvtalehendelseLytter {
 
     @EventListener
     public void avtaleForkortet(AvtaleForkortet event) {
-        if (!DvhMeldingFilter.skalTilDatavarehus(event.getAvtale())) {
+        if (!dvhMeldingFilter.skalTilDatavarehus(event.getAvtale())) {
             return;
         }
         LocalDateTime tidspunkt = LocalDateTime.now();
@@ -67,7 +65,7 @@ public class DvhAvtalehendelseLytter {
 
     @EventListener
     public void avtaleAnnullert(AnnullertAvVeileder event) {
-        if (!DvhMeldingFilter.skalTilDatavarehus(event.getAvtale())) {
+        if (!dvhMeldingFilter.skalTilDatavarehus(event.getAvtale())) {
             return;
         }
         LocalDateTime tidspunkt = LocalDateTime.now();
@@ -80,7 +78,7 @@ public class DvhAvtalehendelseLytter {
 
     @EventListener
     public void tilskuddsberegningEndret(TilskuddsberegningEndret event) {
-        if (!DvhMeldingFilter.skalTilDatavarehus(event.getAvtale())) {
+        if (!dvhMeldingFilter.skalTilDatavarehus(event.getAvtale())) {
             return;
         }
         LocalDateTime tidspunkt = LocalDateTime.now();
