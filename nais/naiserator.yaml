@@ -43,6 +43,7 @@ spec:
     - {{ingress}}
   {{/if}}
   {{#unless labs}}
+  leaderElection: true
   vault:
     enabled: true
   webproxy: true
@@ -64,4 +65,3 @@ spec:
   {{/if}}
   envFrom:
     - configmap: loginservice-idporten
-  leaderElection: true
