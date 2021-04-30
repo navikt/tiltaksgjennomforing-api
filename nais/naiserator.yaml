@@ -43,6 +43,7 @@ spec:
     - {{ingress}}
   {{/if}}
   {{#unless labs}}
+  leaderElection: true
   vault:
     enabled: true
   webproxy: true
