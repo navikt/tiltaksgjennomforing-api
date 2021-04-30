@@ -45,8 +45,8 @@
     { "name": "godkjentAvArbeidsgiver", "type": "string" },
     { "name": "godkjentAvVeileder", "type": "string" },
     { "name": "godkjentAvNavIdent", "type": "string" },
-    { "name": "enhetOppfolging", "type": "string" },
-    { "name": "enhetGeografisk", "type": "string" },
+    { "name": "enhetOppfolging", "type": ["null", "string"] },
+    { "name": "enhetGeografisk", "type": ["null", "string"] },
     { "name": "opprettetAvArbeidsgiver", "type": "boolean" },
     { "name": "annullertTidspunkt", "type": ["null", "string"] },
     { "name": "annullertGrunn", "type": ["null", "string"] }
