@@ -227,15 +227,6 @@ public class AvtaleController {
         return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
     }
 
-    @PostMapping("/{avtaleId}/endre-kontaktinfo-dry-run")
-    public Avtale endreKontaktInformasjonDryRun(@PathVariable("avtaleId") UUID avtaleId,
-                                                @RequestBody EndreKontaktInformasjon endreKontaktInformasjon) {
-        Veileder veileder = innloggingService.hentVeileder();
-        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        veileder.endreKontaktinfo(endreKontaktInformasjon, avtale);
-        return avtale;
-    }
-
     @PostMapping("/{avtaleId}/endre-tilskuddsberegning")
     @Transactional
     public ResponseEntity<?> endreTilskuddsberegning(@PathVariable("avtaleId") UUID avtaleId,
