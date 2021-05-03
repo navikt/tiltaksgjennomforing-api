@@ -41,7 +41,7 @@ tiltaksgjennomforing:
   altinn-tilgangsstyring:
     uri: http://localhost:8090/altinn-tilgangsstyring
     proxyUri: http://heh:9090/
-    beOmRettighetBaseUrl: https://arbeidsgiver-q.nav.no/min-side-arbeidsgiver/?fragment=be-om-tilgang
+    beOmRettighetBaseUrl: https://min-side-arbeidsgiver.dev.nav.no/min-side-arbeidsgiver/?fragment=be-om-tilgang
     ltsMidlertidigServiceCode: 5516
     ltsMidlertidigServiceEdition: 1
     ltsVarigServiceCode: 5516
