@@ -30,6 +30,6 @@ public class DvhMeldingKafkaProdusent {
             public void onFailure(Throwable ex) {
                 log.warn("DvhMelding med id {} kunne ikke sendes til Kafka topic {}", meldingId, topic);
             }
-        });;
+        });
     }
 }

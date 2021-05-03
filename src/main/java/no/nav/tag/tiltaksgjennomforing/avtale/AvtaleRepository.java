@@ -48,7 +48,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     Avtale save(Avtale entity);
 
     @Query(value =
-            "SELECT AVTALE.* FROM AVTALE " +
+            "SELECT distinct AVTALE.* FROM AVTALE " +
                     "LEFT JOIN AVTALE_INNHOLD " +
                     "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
                     "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
