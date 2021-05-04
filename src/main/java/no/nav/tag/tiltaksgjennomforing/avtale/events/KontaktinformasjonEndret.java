@@ -1,11 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.events;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Value;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 
-@Data
-@AllArgsConstructor
+@Value
 public class KontaktinformasjonEndret {
     Avtale avtale;
 }
