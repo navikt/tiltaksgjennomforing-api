@@ -147,7 +147,8 @@ public class TestData {
     }
 
     public static Avtale enSommerjobbAvtaleGodkjentAvVeileder() {
-        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.SOMMERJOBB), new NavIdent("Z123456"));
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), new NavIdent("Z123456"));
+        avtale.setEnhetOppfolging(ENHET_OPPFØLGING);
         EndreAvtale endreAvtale = endringPåAlleFelter();
         endreAvtale.setDeltakerFornavn("Solveig");
         endreAvtale.setDeltakerEtternavn("Sommerfeldt");
@@ -165,7 +166,8 @@ public class TestData {
     }
 
     public static Avtale enSommerjobbAvtaleGodkjentAvArbeidsgiver() {
-        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.SOMMERJOBB), new NavIdent("Z123456"));
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), new NavIdent("Z123456"));
+        avtale.setEnhetOppfolging(ENHET_OPPFØLGING);
         EndreAvtale endreAvtale = endringPåAlleFelter();
         endreAvtale.setDeltakerFornavn("Solfrid");
         endreAvtale.setDeltakerEtternavn("Sommerfeldt");

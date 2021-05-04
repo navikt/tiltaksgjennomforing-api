@@ -197,6 +197,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     @JsonProperty
     public boolean erLaast() {
+        if (versjoner.size() > 1) {
+            return true;
+        }
         return erGodkjentAvVeileder() && erGodkjentAvArbeidsgiver() && erGodkjentAvDeltaker();
     }
 
@@ -630,7 +633,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (Utils.erNoenTomme(tilskuddsberegning.getArbeidsgiveravgift(), tilskuddsberegning.getFeriepengesats(), tilskuddsberegning.getManedslonn(), tilskuddsberegning.getOtpSats())) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
         }
-        versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
+        AvtaleInnhold avtaleInnhold = statusSomEnum() == Status.KLAR_FOR_OPPSTART ? nyVersjon() : nyGodkjentVersjon();
+        versjoner.add(avtaleInnhold);
         gjeldendeInnhold().endreTilskuddsberegning(tilskuddsberegning);
         gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
         endreBeløpITilskuddsperioder();
