@@ -59,7 +59,7 @@ public class DvhMeldingKafkaConfiguration {
 
         props.put("schema.registry.url", schemaRegistryUrl);
         props.put("basic.auth.credentials.source", schemaRegistryCredentialsSource);
-        props.put("basic.auth.user.info=fred:letmein", schemaRegistryUserInfo);
+        props.put("basic.auth.user.info", schemaRegistryUserInfo);
         return props;
     }
 
