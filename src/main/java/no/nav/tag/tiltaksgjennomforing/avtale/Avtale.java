@@ -657,7 +657,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public String hentEnhet() {
-        return "4808";
+        return getEnhetOppfolging();
     }
 
     private interface MetoderSomIkkeSkalDelegeresFraAvtaleInnhold {

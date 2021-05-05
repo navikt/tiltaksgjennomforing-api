@@ -29,8 +29,9 @@ public class AvtaleTest {
         Fnr deltakerFnr = new Fnr("23078637692");
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), new NavIdent("X123456"));
 
-
-        assertThat(avtale.hentEnhet()).isEqualTo("4808");
+        avtale.setEnhetGeografisk("4808");
+        avtale.setEnhetOppfolging("4606");
+        assertThat(avtale.hentEnhet()).isEqualTo("4606");
     }
 
 
