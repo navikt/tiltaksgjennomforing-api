@@ -7,7 +7,7 @@ spring:
       ssl:
         keystore: null
         truststore: null
-    bootstrap-servers: localhost:29092
+    bootstrap-servers: localhost:9092
 
 tiltaksgjennomforing:
   kontoregister:
@@ -63,7 +63,13 @@ tiltaksgjennomforing:
     fixed-delay: 20000
 
 no.nav.gcp.kafka.aiven:
-  bootstrap-servers: localhost:29092
+  bootstrap-servers: localhost:9092
+  truststore-path: null
+  truststore-password: null
+  keystore-path: null
+  keystore-password: null
+  schema-registry-url: http://localhost:8081
+  security-protocol: PLAINTEXT
 
 no.nav.security.jwt:
   issuer:
@@ -76,3 +82,4 @@ no.nav.security.jwt:
       accepted_audience: aud-isso
       cookie_name: isso-idtoken
 
+ELECTOR_PATH: null
