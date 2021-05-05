@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.datavarehus;
 import lombok.experimental.UtilityClass;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.UUID;
@@ -12,23 +13,23 @@ public class AvroTiltakHendelseFabrikk {
     public static AvroTiltakHendelse konstruer(Avtale avtale, LocalDateTime tidspunkt, UUID meldingId, DvhHendelseType hendelseType) {
         AvroTiltakHendelse hendelse = new AvroTiltakHendelse();
         hendelse.setMeldingId(meldingId.toString());
-        hendelse.setTidspunkt(tidspunkt.toString());
+        hendelse.setTidspunkt(toInstant(tidspunkt));
         hendelse.setAvtaleId(avtale.getId().toString());
         hendelse.setAvtaleInnholdId(avtale.gjeldendeInnhold().getId().toString());
-        hendelse.setTiltakstype(avtale.getTiltakstype().name());
-        hendelse.setTiltakskodeArena(avtale.getTiltakstype().getTiltakskodeArena());
+        hendelse.setTiltakstype(TiltakType.valueOf(avtale.getTiltakstype().name()));
+        hendelse.setTiltakskodeArena(avtale.getTiltakstype().getTiltakskodeArena() != null ? TiltakKodeArena.valueOf(avtale.getTiltakstype().getTiltakskodeArena()) : null);
         hendelse.setHendelseType(hendelseType.name());
-        hendelse.setTiltakStatus(avtale.statusSomEnum().name());
+        hendelse.setTiltakStatus(TiltakStatus.valueOf(avtale.statusSomEnum().name()));
         hendelse.setDeltakerFnr(avtale.getDeltakerFnr().asString());
         hendelse.setBedriftNr(avtale.getBedriftNr().asString());
         hendelse.setHarFamilietilknytning(avtale.getHarFamilietilknytning());
         hendelse.setVeilederNavIdent(avtale.getVeilederNavIdent().asString());
-        hendelse.setStartDato(avtale.getStartDato().toString());
-        hendelse.setSluttDato(avtale.getSluttDato().toString());
+        hendelse.setStartDato(avtale.getStartDato());
+        hendelse.setSluttDato(avtale.getSluttDato());
         hendelse.setStillingprosent(avtale.getStillingprosent());
         hendelse.setAntallDagerPerUke(avtale.getAntallDagerPerUke());
         hendelse.setStillingstittel(avtale.getStillingstittel());
-        hendelse.setStillingstype(avtale.getStillingstype() != null ? avtale.getStillingstype().name() : null);
+        hendelse.setStillingstype(avtale.getStillingstype() != null ? StillingType.valueOf(avtale.getStillingstype().name()) : null);
         hendelse.setStillingStyrk08(avtale.getStillingStyrk08());
         hendelse.setStillingKonseptId(avtale.getStillingKonseptId());
         hendelse.setLonnstilskuddProsent(avtale.getLonnstilskuddProsent());
@@ -42,20 +43,24 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setSumLonnsutgifter(avtale.getSumLonnsutgifter());
         hendelse.setSumLonnstilskudd(avtale.getSumLonnstilskudd());
         hendelse.setSumLonnstilskuddRedusert(avtale.getSumLønnstilskuddRedusert());
-        hendelse.setDatoForRedusertProsent(avtale.getDatoForRedusertProsent() != null ? avtale.getDatoForRedusertProsent().toString() : null);
+        hendelse.setDatoForRedusertProsent(avtale.getDatoForRedusertProsent());
         hendelse.setGodkjentPaVegneAv(avtale.isGodkjentPaVegneAv());
-        hendelse.setIkkeBankId(avtale.getGodkjentPaVegneGrunn() != null ? avtale.getGodkjentPaVegneGrunn().isIkkeBankId() : false);
-        hendelse.setReservert(avtale.getGodkjentPaVegneGrunn() != null ? avtale.getGodkjentPaVegneGrunn().isReservert() : false);
-        hendelse.setDigitalKompetanse(avtale.getGodkjentPaVegneGrunn() != null ? avtale.getGodkjentPaVegneGrunn().isDigitalKompetanse() : false);
-        hendelse.setGodkjentAvDeltaker(avtale.getGodkjentAvDeltaker().toString());
-        hendelse.setGodkjentAvArbeidsgiver(avtale.getGodkjentAvArbeidsgiver().toString());
-        hendelse.setGodkjentAvVeileder(avtale.getGodkjentAvVeileder().toString());
-        hendelse.setGodkjentAvNavIdent(avtale.getGodkjentAvNavIdent().asString());
+        hendelse.setIkkeBankId(avtale.getGodkjentPaVegneGrunn() != null && avtale.getGodkjentPaVegneGrunn().isIkkeBankId());
+        hendelse.setReservert(avtale.getGodkjentPaVegneGrunn() != null && avtale.getGodkjentPaVegneGrunn().isReservert());
+        hendelse.setDigitalKompetanse(avtale.getGodkjentPaVegneGrunn() != null && avtale.getGodkjentPaVegneGrunn().isDigitalKompetanse());
+        hendelse.setGodkjentAvDeltaker(toInstant(avtale.getGodkjentAvDeltaker()));
+        hendelse.setGodkjentAvArbeidsgiver(toInstant(avtale.getGodkjentAvArbeidsgiver()));
+        hendelse.setGodkjentAvVeileder(toInstant(avtale.getGodkjentAvVeileder()));
+        hendelse.setUtfortAv(avtale.getGodkjentAvNavIdent().asString());
         hendelse.setEnhetOppfolging(avtale.getEnhetOppfolging());
         hendelse.setEnhetGeografisk(avtale.getEnhetGeografisk());
         hendelse.setOpprettetAvArbeidsgiver(avtale.isOpprettetAvArbeidsgiver());
-        hendelse.setAnnullertTidspunkt(avtale.getAnnullertTidspunkt() != null ? avtale.getAnnullertTidspunkt().atZone(ZoneId.systemDefault()).toLocalDateTime().toString() : null);
+        hendelse.setAnnullertTidspunkt(avtale.getAnnullertTidspunkt());
         hendelse.setAnnullertGrunn(avtale.getAnnullertGrunn());
         return hendelse;
+    }
+
+    private static Instant toInstant(LocalDateTime tidspunkt) {
+        return tidspunkt.atZone(ZoneId.systemDefault()).toInstant();
     }
 }
