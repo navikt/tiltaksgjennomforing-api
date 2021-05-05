@@ -34,7 +34,7 @@ no.nav.gcp.kafka.aiven:
   truststore-password: ${KAFKA_CREDSTORE_PASSWORD}
   keystore-path: ${KAFKA_KEYSTORE_PATH}
   keystore-password: ${KAFKA_CREDSTORE_PASSWORD}
-  schema-registry-url: ${KAFKA_SCHEMA_REGISTRY_URL}
+  schema-registry-url: ${KAFKA_SCHEMA_REGISTRY}
   security-protocol: SSL
 
 tiltaksgjennomforing:
