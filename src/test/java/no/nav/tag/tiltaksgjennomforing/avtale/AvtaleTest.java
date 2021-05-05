@@ -1,9 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.exceptions.*;
-import org.assertj.core.api.SoftAssertions;
-import org.junit.Test;
-import org.springframework.test.util.ReflectionTestUtils;
+import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -12,12 +11,49 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-
-import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import no.nav.tag.tiltaksgjennomforing.exceptions.AvtaleErIkkeFordeltException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangArbeidstreningException;
+import org.assertj.core.api.SoftAssertions;
+import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public class AvtaleTest {
+
+    @Test
+    public void hentOppfølgningsenhetOmDenErSatt(){
+        Fnr deltakerFnr = new Fnr("23078637692");
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), new NavIdent("X123456"));
+
+        avtale.setEnhetGeografisk("4808");
+        avtale.setEnhetOppfolging("4606");
+        assertThat(avtale.hentEnhet()).isEqualTo("4606");
+    }
+
+    @Test
+    public void hentEnhetReturnererNullOmBådeGeografiskEnhetOgOppfølgninsenhetIkkeErSatt(){
+        Fnr deltakerFnr = new Fnr("23078637692");
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), new NavIdent("X123456"));
+
+        avtale.setEnhetGeografisk(null);
+        avtale.setEnhetOppfolging(null);
+        assertThat(avtale.hentEnhet()).isNull();
+    }
+
+    @Test
+    public void hentGeografiskEnhetOmOppfølgningsenhetIkkeErSatt(){
+        Fnr deltakerFnr = new Fnr("23078637692");
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), new NavIdent("X123456"));
+
+        avtale.setEnhetGeografisk("4808");
+        avtale.setEnhetOppfolging(null);
+        assertThat(avtale.hentEnhet()).isEqualTo("4808");
+    }
+
 
     @Test
     public void nyAvtaleFactorySkalReturnereRiktigeStandardverdier() {
