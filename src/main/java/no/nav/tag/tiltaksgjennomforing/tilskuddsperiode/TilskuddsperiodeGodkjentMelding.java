@@ -2,11 +2,15 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Value;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
-
 import java.time.LocalDate;
 import java.util.UUID;
+import lombok.Value;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 
 @Value
 public class TilskuddsperiodeGodkjentMelding {
@@ -32,6 +36,7 @@ public class TilskuddsperiodeGodkjentMelding {
     Integer lønnstilskuddsprosent;
     Integer avtaleNr;
     Integer løpenummer;
+    String enhet;
 
     public static TilskuddsperiodeGodkjentMelding create(Avtale avtale, TilskuddPeriode tilskuddsperiode) {
         return new TilskuddsperiodeGodkjentMelding(avtale.getId(),
@@ -52,7 +57,8 @@ public class TilskuddsperiodeGodkjentMelding {
                 avtale.getArbeidsgiveravgift().doubleValue(),
                 tilskuddsperiode.getLonnstilskuddProsent(),
                 avtale.getAvtaleNr(),
-                tilskuddsperiode.getLøpenummer()
+                tilskuddsperiode.getLøpenummer(),
+                avtale.hentEnhet()
         );
     }
 }
