@@ -34,6 +34,16 @@ public class AvtaleTest {
         assertThat(avtale.hentEnhet()).isEqualTo("4606");
     }
 
+    @Test
+    public void hentGeografiskEnhetOmOppfølgningsenhetIkkeErSatt(){
+        Fnr deltakerFnr = new Fnr("23078637692");
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), new NavIdent("X123456"));
+
+        avtale.setEnhetGeografisk("4808");
+        avtale.setEnhetOppfolging(null);
+        assertThat(avtale.hentEnhet()).isEqualTo("4808");
+    }
+
 
     @Test
     public void nyAvtaleFactorySkalReturnereRiktigeStandardverdier() {

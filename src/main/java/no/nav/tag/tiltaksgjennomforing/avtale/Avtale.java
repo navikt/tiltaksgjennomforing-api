@@ -657,6 +657,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public String hentEnhet() {
+        if(getEnhetOppfolging() == null){
+            return getEnhetGeografisk();
+        }
         return getEnhetOppfolging();
     }
 
