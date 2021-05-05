@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.experimental.FieldNameConstants;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.StillingsbeskrivelseEndret;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -182,6 +183,11 @@ public class AvtaleInnhold {
         setArbeidsgiverFornavn(endreKontaktInformasjon.getArbeidsgiverFornavn());
         setArbeidsgiverEtternavn(endreKontaktInformasjon.getArbeidsgiverEtternavn());
         setArbeidsgiverTlf(endreKontaktInformasjon.getArbeidsgiverTlf());
+    }
+
+    public void endreStillingsInfo(EndreStillingsbeskrivelse endreStillingsbeskrivelse) {
+        setStillingstittel(endreStillingsbeskrivelse.getStillingstittel());
+        setArbeidsoppgaver(endreStillingsbeskrivelse.getArbeidsoppgaver());
     }
 }
 

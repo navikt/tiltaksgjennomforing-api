@@ -4,6 +4,7 @@ import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import no.nav.security.token.support.core.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.StillingsbeskrivelseEndret;
 import no.nav.tag.tiltaksgjennomforing.dokgen.DokgenService;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
@@ -217,6 +218,16 @@ public class AvtaleController {
         return avtale;
     }
 
+    @PostMapping("/{avtaleId}/endre-stillingbeskrivelse")
+    public ResponseEntity<Avtale> endreStillingsbeskrivelse(@PathVariable("avtaleId") UUID avtaleId,
+                                                          @RequestBody EndreStillingsbeskrivelse endreStillingsbeskrivelse) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        veileder.endreStillingsinfo(endreStillingsbeskrivelse, avtale);
+        Avtale lagretAvtale = avtaleRepository.save(avtale);
+        return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
+    }
+
     @PostMapping("/{avtaleId}/endre-kontaktinfo")
     public ResponseEntity<Avtale> endreKontaktInformasjon(@PathVariable("avtaleId") UUID avtaleId,
                                                           @RequestBody EndreKontaktInformasjon endreKontaktInformasjon) {
@@ -225,15 +236,6 @@ public class AvtaleController {
         veileder.endreKontaktinfo(endreKontaktInformasjon, avtale);
         Avtale lagretAvtale = avtaleRepository.save(avtale);
         return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
-    }
-
-    @PostMapping("/{avtaleId}/endre-kontaktinfo-dry-run")
-    public Avtale endreKontaktInformasjonDryRun(@PathVariable("avtaleId") UUID avtaleId,
-                                                @RequestBody EndreKontaktInformasjon endreKontaktInformasjon) {
-        Veileder veileder = innloggingService.hentVeileder();
-        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        veileder.endreKontaktinfo(endreKontaktInformasjon, avtale);
-        return avtale;
     }
 
     @PostMapping("/{avtaleId}/endre-tilskuddsberegning")

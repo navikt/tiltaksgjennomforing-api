@@ -607,6 +607,21 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new KontaktinformasjonEndret(this));
     }
 
+    public void endreStillingsbeskrivelse(EndreStillingsbeskrivelse endreStillingsbeskrivelse) {
+        if (!erGodkjentAvVeileder()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_STILLINGSBESKRIVELSE_GRUNN_IKKE_GODKJENT_AVTALE);
+        }
+        if (Utils.erNoenTomme(endreStillingsbeskrivelse.getStillingstittel(),
+                endreStillingsbeskrivelse.getArbeidsoppgaver())
+        ) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_STILLINGSBESKRIVELSE_GRUNN_MANGLER);
+        }
+        versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
+        gjeldendeInnhold().endreStillingsInfo(endreStillingsbeskrivelse);
+        gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
+        registerEvent(new KontaktinformasjonEndret(this));
+    }
+
     private interface MetoderSomIkkeSkalDelegeresFraAvtaleInnhold {
         UUID getId();
 

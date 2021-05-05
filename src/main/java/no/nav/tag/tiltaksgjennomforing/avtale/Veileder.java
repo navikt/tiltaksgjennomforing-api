@@ -219,13 +219,17 @@ public class Veileder extends Avtalepart<NavIdent> {
         avtale.forlengAvtale(sluttDato);
     }
 
+    public void endreStillingsinfo(EndreStillingsbeskrivelse endreStillingsbeskrivelse, Avtale avtale) {
+        sjekkTilgang(avtale);
+        avtale.endreStillingsbeskrivelse(endreStillingsbeskrivelse);
+    }
+
     public void endreKontaktinfo(EndreKontaktInformasjon endreKontaktInformasjon, Avtale avtale) {
         sjekkTilgang(avtale);
         avtale.endreKontaktInformasjon(endreKontaktInformasjon);
-
     }
 
-    public void endreTilskuddsberegning(Instant sistEndret, EndreTilskuddsberegning endreTilskuddsberegning, Avtale avtale) {
+    public void endreTilskuddsberegning(EndreTilskuddsberegning endreTilskuddsberegning, Avtale avtale) {
         sjekkTilgang(avtale);
         avtale.endreTilskuddsberegning(endreTilskuddsberegning);
     }
