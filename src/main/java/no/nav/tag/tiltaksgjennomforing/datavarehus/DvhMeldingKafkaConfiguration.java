@@ -25,8 +25,6 @@ public class DvhMeldingKafkaConfiguration {
 
     @Value("${no.nav.gcp.kafka.aiven.bootstrap-servers}")
     private String gcpBootstrapServers;
-    @Value("${no.nav.gcp.kafka.aiven.schema-registry-url}")
-    private String schemaRegistryUrl;
     @Value("${no.nav.gcp.kafka.aiven.security-protocol}")
     private String securityProtocol;
     @Value("${no.nav.gcp.kafka.aiven.truststore-path}")
@@ -37,6 +35,12 @@ public class DvhMeldingKafkaConfiguration {
     private String sslKeystoreLocationEnvKey;
     @Value("${no.nav.gcp.kafka.aiven.keystore-password}")
     private String sslKeystorePasswordEnvKey;
+    @Value("${no.nav.gcp.kafka.aiven.schema-registry-url}")
+    private String schemaRegistryUrl;
+    @Value("${no.nav.gcp.kafka.aiven.schema-registry-credentials-source}")
+    private String schemaRegistryCredentialsSource;
+    @Value("${no.nav.gcp.kafka.aiven.schema-registry-user-info}")
+    private String schemaRegistryUserInfo;
 
     private Map<String, Object> producerConfigs() {
         Map<String, Object> props = new HashMap<>();
@@ -54,6 +58,8 @@ public class DvhMeldingKafkaConfiguration {
         props.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, sslKeystorePasswordEnvKey);
 
         props.put("schema.registry.url", schemaRegistryUrl);
+        props.put("basic.auth.credentials.source", schemaRegistryCredentialsSource);
+        props.put("basic.auth.user.info=fred:letmein", schemaRegistryUserInfo);
         return props;
     }
 

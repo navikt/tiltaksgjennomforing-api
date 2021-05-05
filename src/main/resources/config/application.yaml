@@ -35,6 +35,8 @@ no.nav.gcp.kafka.aiven:
   keystore-path: ${KAFKA_KEYSTORE_PATH}
   keystore-password: ${KAFKA_CREDSTORE_PASSWORD}
   schema-registry-url: ${KAFKA_SCHEMA_REGISTRY}
+  schema-registry-credentials-source: USER_INFO
+  schema-registry-user-info: "${KAFKA_SCHEMA_REGISTRY_USER}:${KAFKA_SCHEMA_REGISTRY_PASSWORD}"
   security-protocol: SSL
 
 tiltaksgjennomforing:

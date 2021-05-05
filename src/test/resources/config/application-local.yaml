@@ -20,6 +20,8 @@ no.nav.gcp.kafka.aiven:
   keystore-path: null
   keystore-password: null
   schema-registry-url: null
+  schema-registry-credentials-source: null
+  schema-registry-user-info: null
   security-protocol: PLAINTEXT
 
 no.nav.security.jwt:
