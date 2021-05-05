@@ -35,6 +35,16 @@ public class AvtaleTest {
     }
 
     @Test
+    public void hentEnhetReturnererNullOmBådeGeografiskEnhetOgOppfølgninsenhetIkkeErSatt(){
+        Fnr deltakerFnr = new Fnr("23078637692");
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), new NavIdent("X123456"));
+
+        avtale.setEnhetGeografisk(null);
+        avtale.setEnhetOppfolging(null);
+        assertThat(avtale.hentEnhet()).isNull();
+    }
+
+    @Test
     public void hentGeografiskEnhetOmOppfølgningsenhetIkkeErSatt(){
         Fnr deltakerFnr = new Fnr("23078637692");
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), new NavIdent("X123456"));
