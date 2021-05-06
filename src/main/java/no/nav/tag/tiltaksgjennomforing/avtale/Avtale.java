@@ -656,6 +656,22 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new KontaktinformasjonEndret(this));
     }
 
+    public void endreOppfølgingOgTilrettelegging(EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging) {
+        if (!erGodkjentAvVeileder()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_KONTAKTINFO_GRUNN_IKKE_GODKJENT_AVTALE);
+        }
+        if (Utils.erNoenTomme(endreOppfølgingOgTilrettelegging.getOppfolging(),
+                endreOppfølgingOgTilrettelegging.getTilrettelegging())
+
+        ) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_KONTAKTINFO_GRUNN_MANGLER);
+        }
+        versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
+        gjeldendeInnhold().endreOppfølgingOgTilretteleggingInfo(endreOppfølgingOgTilrettelegging);
+        gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
+        registerEvent(new KontaktinformasjonEndret(this));
+    }
+
     public String hentEnhet() {
         if(getEnhetOppfolging() == null){
             return getEnhetGeografisk();

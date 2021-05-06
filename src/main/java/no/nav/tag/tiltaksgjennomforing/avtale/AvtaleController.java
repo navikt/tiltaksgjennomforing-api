@@ -217,6 +217,16 @@ public class AvtaleController {
         return avtale;
     }
 
+    @PostMapping("/{avtaleId}/endre-oppfølging-og-tilrettelegging")
+    public ResponseEntity<Avtale> endreOppfølgingOgTilrettelegging(@PathVariable("avtaleId") UUID avtaleId,
+                                                          @RequestBody EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        veileder.endreOppfølgingOgTilrettelegginginfo(endreOppfølgingOgTilrettelegging, avtale);
+        Avtale lagretAvtale = avtaleRepository.save(avtale);
+        return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
+    }
+
     @PostMapping("/{avtaleId}/endre-kontaktinfo")
     public ResponseEntity<Avtale> endreKontaktInformasjon(@PathVariable("avtaleId") UUID avtaleId,
                                                           @RequestBody EndreKontaktInformasjon endreKontaktInformasjon) {
