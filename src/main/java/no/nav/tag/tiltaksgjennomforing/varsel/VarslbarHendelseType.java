@@ -31,6 +31,7 @@ public enum VarslbarHendelseType {
     KONTAKTINFORMASJON_ENDRET("Kontaktinformasjon endret av veileder"),
     STILLINGSBESKRIVELSE_ENDRET("Stillingsbeskrivelse endret av veileder" );
 
+
     private final String tekst;
 
 }

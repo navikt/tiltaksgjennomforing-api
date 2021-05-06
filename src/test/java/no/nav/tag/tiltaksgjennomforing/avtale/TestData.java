@@ -66,6 +66,7 @@ public class TestData {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setGodkjentAvNavIdent(TestData.enNavIdent());
         avtale.setIkrafttredelsestidspunkt(LocalDateTime.now());
         avtale.setJournalpostId("1");
         return avtale;
@@ -124,6 +125,7 @@ public class TestData {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setGodkjentAvNavIdent(TestData.enNavIdent());
         avtale.setIkrafttredelsestidspunkt(LocalDateTime.now());
         avtale.setJournalpostId("1");
         return avtale;
@@ -136,10 +138,45 @@ public class TestData {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setGodkjentAvNavIdent(TestData.enNavIdent());
         avtale.setIkrafttredelsestidspunkt(LocalDateTime.now());
         avtale.setStartDato(LocalDate.now().minusMonths(3));
         avtale.setSluttDato(LocalDate.now().plusMonths(1));
         avtale.setJournalpostId("1");
+        return avtale;
+    }
+
+    public static Avtale enSommerjobbAvtaleGodkjentAvVeileder() {
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.SOMMERJOBB), new NavIdent("Z123456"));
+        EndreAvtale endreAvtale = endringPåAlleFelter();
+        endreAvtale.setDeltakerFornavn("Solveig");
+        endreAvtale.setDeltakerEtternavn("Sommerfeldt");
+        endreAvtale.setLonnstilskuddProsent(50);
+        endreAvtale.setFeriepengesats(new BigDecimal("0.12"));
+        endreAvtale.setArbeidsgiveravgift(new BigDecimal("0.141"));
+        endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
+        endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4));
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setGodkjentAvNavIdent(TestData.enNavIdent());
+        return avtale;
+    }
+
+    public static Avtale enSommerjobbAvtaleGodkjentAvArbeidsgiver() {
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.SOMMERJOBB), new NavIdent("Z123456"));
+        EndreAvtale endreAvtale = endringPåAlleFelter();
+        endreAvtale.setDeltakerFornavn("Solfrid");
+        endreAvtale.setDeltakerEtternavn("Sommerfeldt");
+        endreAvtale.setLonnstilskuddProsent(50);
+        endreAvtale.setFeriepengesats(new BigDecimal("0.12"));
+        endreAvtale.setArbeidsgiveravgift(new BigDecimal("0.141"));
+        endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
+        endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4));
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         return avtale;
     }
 
@@ -184,6 +221,8 @@ public class TestData {
         endreAvtale.setStartDato(LocalDate.now());
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusWeeks(2));
         endreAvtale.setStillingprosent(50);
+        endreAvtale.setStillingStyrk08(500);
+        endreAvtale.setStillingKonseptId(50000);
         endreAvtale.setAntallDagerPerUke(4);
         endreAvtale.setMaal(List.of(TestData.etMaal()));
         endreAvtale.setStillingstittel("Butikksjef");
@@ -336,6 +375,7 @@ public class TestData {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setGodkjentAvNavIdent(TestData.enNavIdent());
         avtale.setIkrafttredelsestidspunkt(LocalDateTime.now());
         avtale.setJournalpostId("1");
         return avtale;

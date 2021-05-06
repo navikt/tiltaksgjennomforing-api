@@ -22,7 +22,8 @@ public class BeOmAltinnRettighetUrlerController {
         return Map.of(
                 Tiltakstype.ARBEIDSTRENING, beOmRettighetUrl(orgNr, props.getArbtreningServiceCode(), props.getArbtreningServiceEdition()),
                 Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, beOmRettighetUrl(orgNr, props.getLtsMidlertidigServiceCode(), props.getLtsMidlertidigServiceEdition()),
-                Tiltakstype.VARIG_LONNSTILSKUDD, beOmRettighetUrl(orgNr, props.getLtsVarigServiceCode(), props.getLtsVarigServiceEdition())
+                Tiltakstype.VARIG_LONNSTILSKUDD, beOmRettighetUrl(orgNr, props.getLtsVarigServiceCode(), props.getLtsVarigServiceEdition()),
+                Tiltakstype.SOMMERJOBB, beOmRettighetUrl(orgNr, props.getSommerjobbServiceCode(), props.getSommerjobbServiceEdition())
         );
     }
 

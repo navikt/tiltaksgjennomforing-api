@@ -184,7 +184,6 @@ public class AvtaleInnhold {
         setArbeidsgiverEtternavn(endreKontaktInformasjon.getArbeidsgiverEtternavn());
         setArbeidsgiverTlf(endreKontaktInformasjon.getArbeidsgiverTlf());
     }
-
     public void endreStillingsInfo(EndreStillingsbeskrivelse endreStillingsbeskrivelse) {
         setStillingstittel(endreStillingsbeskrivelse.getStillingstittel());
         setArbeidsoppgaver(endreStillingsbeskrivelse.getArbeidsoppgaver());
