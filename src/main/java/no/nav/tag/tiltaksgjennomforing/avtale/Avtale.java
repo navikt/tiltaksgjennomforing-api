@@ -544,8 +544,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     void endreBeløpITilskuddsperioder() {
-        tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET).forEach(t -> t.setBeløp(beregnTilskuddsbeløp(t.getStartDato(), t.getSluttDato())));
         sendTilbakeTilBeslutter();
+        tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET).forEach(t -> t.setBeløp(beregnTilskuddsbeløp(t.getStartDato(), t.getSluttDato())));
     }
 
     public void sendTilbakeTilBeslutter() {
@@ -600,8 +600,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
         gjeldendeInnhold().endreTilskuddsberegning(tilskuddsberegning);
-        gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
         endreBeløpITilskuddsperioder();
+        gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
         registerEvent(new TilskuddsberegningEndret(this, null));
     }
 
