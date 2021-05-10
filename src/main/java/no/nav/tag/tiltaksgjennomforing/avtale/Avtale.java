@@ -149,9 +149,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     @JsonProperty
     public boolean erLaast() {
-        if (versjoner.size() > 1) {
-            return true;
-        }
         return erGodkjentAvVeileder() && erGodkjentAvArbeidsgiver() && erGodkjentAvDeltaker();
     }
 
