@@ -4,12 +4,12 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAnnullert;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeForkortet;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeGodkjent;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -22,12 +22,17 @@ import java.util.UUID;
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
 @Component
 @Slf4j
-@RequiredArgsConstructor
 public class TilskuddsperiodeKafkaProducer {
 
     private final KafkaTemplate<String, String> aivenKafkaTemplate;
     private final FeatureToggleService featureToggleService;
     private final ObjectMapper objectMapper;
+
+    public TilskuddsperiodeKafkaProducer(@Qualifier("aivenKafkaTemplate") KafkaTemplate<String, String> aivenKafkaTemplate, FeatureToggleService featureToggleService, ObjectMapper objectMapper) {
+        this.aivenKafkaTemplate = aivenKafkaTemplate;
+        this.featureToggleService = featureToggleService;
+        this.objectMapper = objectMapper;
+    }
 
     @TransactionalEventListener
     public void tilskuddsperiodeGodkjent(TilskuddsperiodeGodkjent event) {
