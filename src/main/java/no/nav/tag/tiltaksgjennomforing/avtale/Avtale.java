@@ -636,13 +636,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     public void endreOppfølgingOgTilrettelegging(EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging) {
         if (!erGodkjentAvVeileder()) {
-            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_KONTAKTINFO_GRUNN_IKKE_GODKJENT_AVTALE);
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OPPFØLGING_OG_TILRETTELEGGING_GRUNN_IKKE_GODKJENT_AVTALE);
         }
         if (Utils.erNoenTomme(endreOppfølgingOgTilrettelegging.getOppfolging(),
                 endreOppfølgingOgTilrettelegging.getTilrettelegging())
 
         ) {
-            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_KONTAKTINFO_GRUNN_MANGLER);
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OPPFØLGING_OG_TILRETTELEGGING_GRUNN_MANGLER);
         }
         versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
         gjeldendeInnhold().endreOppfølgingOgTilretteleggingInfo(endreOppfølgingOgTilrettelegging);

@@ -217,7 +217,7 @@ public class AvtaleController {
         return avtale;
     }
 
-    @PostMapping("/{avtaleId}/endre-oppfølging-og-tilrettelegging")
+    @PostMapping("/{avtaleId}/endre-oppfolging-og-tilrettelegging")
     public ResponseEntity<Avtale> endreOppfølgingOgTilrettelegging(@PathVariable("avtaleId") UUID avtaleId,
                                                           @RequestBody EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging) {
         Veileder veileder = innloggingService.hentVeileder();
