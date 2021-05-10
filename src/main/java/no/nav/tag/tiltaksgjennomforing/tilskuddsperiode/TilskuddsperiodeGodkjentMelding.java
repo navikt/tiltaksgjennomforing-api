@@ -58,7 +58,7 @@ public class TilskuddsperiodeGodkjentMelding {
                 tilskuddsperiode.getLonnstilskuddProsent(),
                 avtale.getAvtaleNr(),
                 tilskuddsperiode.getLøpenummer(),
-                avtale.hentEnhet()
+                avtale.getEnhetOppfolging()
         );
     }
 }
