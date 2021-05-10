@@ -1,1 +1,1 @@
-alter table tilskudd_periode add column aktiv boolean default true;
+alter table tilskudd_periode add column aktiv boolean not null default true;

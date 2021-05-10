@@ -598,8 +598,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (Utils.erNoenTomme(tilskuddsberegning.getArbeidsgiveravgift(), tilskuddsberegning.getFeriepengesats(), tilskuddsberegning.getManedslonn(), tilskuddsberegning.getOtpSats())) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
         }
-        AvtaleInnhold avtaleInnhold = statusSomEnum() == Status.KLAR_FOR_OPPSTART ? nyVersjon() : nyGodkjentVersjon();
-        versjoner.add(avtaleInnhold);
+        versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
         gjeldendeInnhold().endreTilskuddsberegning(tilskuddsberegning);
         gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
         endreBeløpITilskuddsperioder();
