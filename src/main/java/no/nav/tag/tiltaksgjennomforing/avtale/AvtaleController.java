@@ -133,9 +133,9 @@ public class AvtaleController {
     }
 
     @PostMapping(path = "/{avtaleId}/set-kontonummer-for-arbeidsgiver-fra-kontoregister")
-    public ResponseEntity<?> oppdatterBedriftKontonummer(@PathVariable("avtaleId") UUID avtaleId,@CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+    public ResponseEntity<?> oppdatterBedriftKontonummer(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        Avtale avtale = avtalepart.hentAvtale(avtaleRepository,avtaleId);
+        Avtale avtale = avtalepart.hentAvtale(avtaleRepository, avtaleId);
         avtale.setArbeidsgiverKontonummer(kontoregisterService.hentKontonummer(avtale.getBedriftNr().asString()));
         Avtale lagretAvtale = avtaleRepository.save(avtale);
         return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
@@ -208,8 +208,8 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/forleng-dry-run")
     public Avtale forlengAvtaleDryRun(@PathVariable("avtaleId") UUID avtaleId,
-                                           @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
-                                           @RequestBody ForlengAvtale forlengAvtale) {
+                                      @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
+                                      @RequestBody ForlengAvtale forlengAvtale) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
@@ -230,7 +230,7 @@ public class AvtaleController {
     @PostMapping("/{avtaleId}/endre-tilskuddsberegning")
     @Transactional
     public ResponseEntity<?> endreTilskuddsberegning(@PathVariable("avtaleId") UUID avtaleId,
-                                           @RequestBody EndreTilskuddsberegning endreTilskuddsberegning) {
+                                                     @RequestBody EndreTilskuddsberegning endreTilskuddsberegning) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
@@ -241,12 +241,22 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/endre-tilskuddsberegning-dry-run")
     public Avtale endreTilskuddsberegningDryRun(@PathVariable("avtaleId") UUID avtaleId,
-                                                     @RequestBody EndreTilskuddsberegning endreTilskuddsberegning) {
+                                                @RequestBody EndreTilskuddsberegning endreTilskuddsberegning) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
         veileder.endreTilskuddsberegning(Instant.now(), endreTilskuddsberegning, avtale);
         return avtale;
+    }
+
+    @PostMapping("/{avtaleId}/send-tilbake-til-beslutter")
+    @Transactional
+    public void sendTilbakeTilBeslutter(@PathVariable("avtaleId") UUID avtaleId) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId)
+                .orElseThrow(RessursFinnesIkkeException::new);
+        veileder.sendTilbakeTilBeslutter(avtale);
+        avtaleRepository.save(avtale);
     }
 
     @PostMapping("/{avtaleId}/godkjenn-paa-vegne-av")
