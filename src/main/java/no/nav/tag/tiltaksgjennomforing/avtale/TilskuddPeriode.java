@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
@@ -61,17 +62,38 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     @Enumerated(EnumType.STRING)
     private TilskuddPeriodeStatus status = TilskuddPeriodeStatus.UBEHANDLET;
 
-    public TilskuddPeriode kopi() {
-        return toBuilder().id(UUID.randomUUID()).build();
+    private boolean aktiv = true;
+
+    public TilskuddPeriode deaktiverOgLagNyUbehandlet() {
+        this.aktiv = false;
+        TilskuddPeriode kopi = new TilskuddPeriode();
+        kopi.id = UUID.randomUUID();
+        kopi.løpenummer = this.løpenummer;
+        kopi.beløp = this.beløp;
+        kopi.lonnstilskuddProsent = this.lonnstilskuddProsent;
+        kopi.startDato = this.startDato;
+        kopi.sluttDato = this.sluttDato;
+        kopi.avtale = this.avtale;
+        kopi.aktiv = true;
+        kopi.status = TilskuddPeriodeStatus.UBEHANDLET;
+        return kopi;
     }
 
     private void sjekkOmKanBehandles() {
         if (status != TilskuddPeriodeStatus.UBEHANDLET) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET);
         }
-        if (løpenummer > 1 && LocalDate.now().isBefore(startDato.minusWeeks(2))) {
+        if (LocalDate.now().isBefore(kanBesluttesFom())) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_BEHANDLE_FOR_TIDLIG);
         }
+    }
+
+    @JsonProperty
+    private LocalDate kanBesluttesFom() {
+        if (løpenummer == 1) {
+            return LocalDate.MIN;
+        }
+        return startDato.minusMonths(1);
     }
 
     void godkjenn(NavIdent beslutter) {
@@ -111,6 +133,7 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     public int compareTo(@NotNull TilskuddPeriode o) {
         return new CompareToBuilder()
                 .append(this.getStartDato(), o.getStartDato())
+                .append(this.isAktiv(), o.isAktiv())
                 .append(this.getStatus(), o.getStatus())
                 .append(this.getId(), o.getId())
                 .toComparison();
