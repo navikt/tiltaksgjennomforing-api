@@ -625,13 +625,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new KontaktinformasjonEndret(this));
     }
 
-    public String hentEnhet() {
-        if (getEnhetOppfolging() == null) {
-            return getEnhetGeografisk();
-        }
-        return getEnhetOppfolging();
-    }
-
     private interface MetoderSomIkkeSkalDelegeresFraAvtaleInnhold {
         UUID getId();
 
