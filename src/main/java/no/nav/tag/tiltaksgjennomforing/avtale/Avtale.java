@@ -149,7 +149,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     @JsonProperty
     public boolean erLaast() {
-        return erGodkjentAvVeileder() && erGodkjentAvArbeidsgiver() && erGodkjentAvDeltaker();
+        return erGodkjentAvVeileder();
     }
 
     @JsonProperty
@@ -165,6 +165,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     @JsonProperty
     public boolean erGodkjentAvVeileder() {
         return this.getGodkjentAvVeileder() != null;
+    }
+
+    @JsonProperty
+    public boolean erAvtaleInngått() {
+        return this.getAvtaleInngått() != null;
     }
 
     private void sjekkOmAvtalenKanEndres() {
@@ -222,9 +227,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             throw new VeilederSkalGodkjenneSistException();
         }
 
-        this.setGodkjentAvVeileder(LocalDateTime.now());
+        LocalDateTime tidspunkt = LocalDateTime.now();
+        this.setGodkjentAvVeileder(tidspunkt);
         this.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
-        this.setIkrafttredelsestidspunkt(LocalDateTime.now());
+        if (tiltakstype != Tiltakstype.SOMMERJOBB) {
+            this.setAvtaleInngått(tidspunkt);
+        }
+        this.setIkrafttredelsestidspunkt(tidspunkt);
         sistEndretNå();
         registerEvent(new GodkjentAvVeileder(this, utfortAv));
     }
@@ -238,12 +247,16 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             throw new ArbeidsgiverSkalGodkjenneFørVeilederException();
         }
         paVegneAvGrunn.valgtMinstEnGrunn();
-        this.setGodkjentAvVeileder(LocalDateTime.now());
-        this.setGodkjentAvDeltaker(LocalDateTime.now());
+        LocalDateTime tidspunkt = LocalDateTime.now();
+        this.setGodkjentAvVeileder(tidspunkt);
+        this.setGodkjentAvDeltaker(tidspunkt);
         this.setGodkjentPaVegneAv(true);
         this.setGodkjentPaVegneGrunn(paVegneAvGrunn);
         this.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
-        this.setIkrafttredelsestidspunkt(LocalDateTime.now());
+        this.setIkrafttredelsestidspunkt(tidspunkt);
+        if (tiltakstype != Tiltakstype.SOMMERJOBB) {
+            this.setAvtaleInngått(tidspunkt);
+        }
         sistEndretNå();
         registerEvent(new GodkjentPaVegneAv(this, utfortAv));
     }
@@ -272,11 +285,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             return Status.ANNULLERT;
         } else if (isAvbrutt()) {
             return Status.AVBRUTT;
-        } else if (erGodkjentAvVeileder() && (this.getSluttDato().isBefore(LocalDate.now()))) {
+        } else if (erAvtaleInngått() && (this.getSluttDato().isBefore(LocalDate.now()))) {
             return Status.AVSLUTTET;
-        } else if (erGodkjentAvVeileder() && (this.getStartDato().isBefore(LocalDate.now().plusDays(1)))) {
+        } else if (erAvtaleInngått() && (this.getStartDato().isBefore(LocalDate.now().plusDays(1)))) {
             return Status.GJENNOMFØRES;
-        } else if (erGodkjentAvVeileder()) {
+        } else if (erAvtaleInngått()) {
             return Status.KLAR_FOR_OPPSTART;
         } else if (erAltUtfylt()) {
             return Status.MANGLER_GODKJENNING;
@@ -424,6 +437,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         TilskuddPeriode gjeldendePeriode = gjeldendeTilskuddsperiode();
         gjeldendePeriode.godkjenn(beslutter);
+        if (!erAvtaleInngått()) {
+            setAvtaleInngått(LocalDateTime.now());
+            registerEvent(new AvtaleInngått(this));
+        }
         sistEndretNå();
         registerEvent(new TilskuddsperiodeGodkjent(this, gjeldendePeriode, beslutter));
     }

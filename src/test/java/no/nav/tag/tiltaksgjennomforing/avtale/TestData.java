@@ -66,6 +66,7 @@ public class TestData {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setAvtaleInngått(LocalDateTime.now());
         avtale.setGodkjentAvNavIdent(TestData.enNavIdent());
         avtale.setIkrafttredelsestidspunkt(LocalDateTime.now());
         avtale.setJournalpostId("1");
@@ -125,6 +126,7 @@ public class TestData {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setAvtaleInngått(LocalDateTime.now());
         avtale.setGodkjentAvNavIdent(TestData.enNavIdent());
         avtale.setIkrafttredelsestidspunkt(LocalDateTime.now());
         avtale.setJournalpostId("1");
@@ -138,6 +140,7 @@ public class TestData {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setAvtaleInngått(LocalDateTime.now());
         avtale.setGodkjentAvNavIdent(TestData.enNavIdent());
         avtale.setIkrafttredelsestidspunkt(LocalDateTime.now());
         avtale.setStartDato(LocalDate.now().minusMonths(3));
@@ -161,6 +164,27 @@ public class TestData {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setGodkjentAvNavIdent(TestData.enNavIdent());
+        return avtale;
+    }
+
+    public static Avtale enSommerjobbAvtaleGodkjentAvBeslutter() {
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), new NavIdent("Z123456"));
+        avtale.setEnhetOppfolging(ENHET_OPPFØLGING);
+        EndreAvtale endreAvtale = endringPåAlleFelter();
+        endreAvtale.setDeltakerFornavn("Solbe");
+        endreAvtale.setDeltakerEtternavn("Sommerfeldt");
+        endreAvtale.setLonnstilskuddProsent(50);
+        endreAvtale.setFeriepengesats(new BigDecimal("0.12"));
+        endreAvtale.setArbeidsgiveravgift(new BigDecimal("0.141"));
+        endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
+        endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4));
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setGodkjentAvBeslutter(LocalDateTime.now());
+        avtale.setAvtaleInngått(LocalDateTime.now());
         avtale.setGodkjentAvNavIdent(TestData.enNavIdent());
         return avtale;
     }
@@ -366,6 +390,7 @@ public class TestData {
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setAvtaleInngått(LocalDateTime.now());
         avtale.setIkrafttredelsestidspunkt(LocalDateTime.now());
         return avtale;
     }
@@ -377,6 +402,7 @@ public class TestData {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setAvtaleInngått(LocalDateTime.now());
         avtale.setGodkjentAvNavIdent(TestData.enNavIdent());
         avtale.setIkrafttredelsestidspunkt(LocalDateTime.now());
         avtale.setJournalpostId("1");
@@ -433,6 +459,7 @@ public class TestData {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setAvtaleInngått(LocalDateTime.now());
         avtale.setIkrafttredelsestidspunkt(LocalDateTime.now());
         avtale.setJournalpostId("1");
         return avtale;
