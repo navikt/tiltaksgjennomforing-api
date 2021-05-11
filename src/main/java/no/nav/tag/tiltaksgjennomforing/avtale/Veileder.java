@@ -233,4 +233,9 @@ public class Veileder extends Avtalepart<NavIdent> {
         sjekkTilgang(avtale);
         avtale.endreTilskuddsberegning(endreTilskuddsberegning);
     }
+
+    public void sendTilbakeTilBeslutter(Avtale avtale) {
+        sjekkTilgang(avtale);
+        avtale.sendTilbakeTilBeslutter();
+    }
 }

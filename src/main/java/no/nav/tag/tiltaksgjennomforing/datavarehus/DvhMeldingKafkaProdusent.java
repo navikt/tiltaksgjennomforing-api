@@ -1,7 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.datavarehus;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -10,19 +11,22 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
 public class DvhMeldingKafkaProdusent {
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, AvroTiltakHendelse> dvhMeldingKafkaTemplate;
+
+    public DvhMeldingKafkaProdusent(@Autowired @Qualifier("dvhMeldingKafkaTemplate") KafkaTemplate<String, AvroTiltakHendelse> dvhMeldingKafkaTemplate) {
+        this.dvhMeldingKafkaTemplate = dvhMeldingKafkaTemplate;
+    }
 
     @TransactionalEventListener
     public void dvhMeldingOpprettet(DvhMeldingOpprettet event) {
         String meldingId = event.getAvroTiltakHendelse().getMeldingId();
         String topic = Topics.DVH_MELDING;
-        kafkaTemplate.send(topic, meldingId, event.getAvroTiltakHendelse().toString()).addCallback(new ListenableFutureCallback<>() {
+        dvhMeldingKafkaTemplate.send(topic, meldingId, event.getAvroTiltakHendelse()).addCallback(new ListenableFutureCallback<>() {
             @Override
-            public void onSuccess(SendResult<String, String> result) {
+            public void onSuccess(SendResult<String, AvroTiltakHendelse> result) {
                 log.info("DvhMelding med id {} sendt til Kafka topic {}", meldingId, topic);
             }
 
