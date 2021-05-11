@@ -217,14 +217,14 @@ public class AvtaleController {
     }
 
     @PostMapping("/{avtaleId}/endre-stillingbeskrivelse")
-    public ResponseEntity<Avtale> endreStillingsbeskrivelse(@PathVariable("avtaleId") UUID avtaleId,
+    public void endreStillingsbeskrivelse(@PathVariable("avtaleId") UUID avtaleId,
                                                           @RequestBody EndreStillingsbeskrivelse endreStillingsbeskrivelse) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         veileder.endreStillingsinfo(endreStillingsbeskrivelse, avtale);
         avtaleRepository.save(avtale);
-
     }
+
     @PostMapping("/{avtaleId}/endre-oppfolging-og-tilrettelegging")
     public ResponseEntity<Avtale> endreOppfølgingOgTilrettelegging(@PathVariable("avtaleId") UUID avtaleId,
                                                           @RequestBody EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging) {
