@@ -1,6 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
+
 import io.micrometer.core.annotation.Timed;
+import java.net.URI;
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import no.nav.security.token.support.core.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
@@ -16,14 +22,16 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
-
-import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Protected
 @RestController
@@ -213,6 +221,16 @@ public class AvtaleController {
                 .orElseThrow(RessursFinnesIkkeException::new);
         veileder.forlengAvtale(sistEndret, forlengAvtale.getSluttDato(), avtale);
         return avtale;
+    }
+
+    @PostMapping("/{avtaleId}/endre-oppfolging-og-tilrettelegging")
+    public ResponseEntity<Avtale> endreOppfølgingOgTilrettelegging(@PathVariable("avtaleId") UUID avtaleId,
+                                                          @RequestBody EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        veileder.endreOppfølgingOgTilrettelegginginfo(endreOppfølgingOgTilrettelegging, avtale);
+        Avtale lagretAvtale = avtaleRepository.save(avtale);
+        return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
     }
 
     @PostMapping("/{avtaleId}/endre-kontaktinfo")
