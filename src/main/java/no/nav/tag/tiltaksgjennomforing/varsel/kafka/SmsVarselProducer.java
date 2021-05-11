@@ -1,9 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
@@ -12,9 +11,12 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
 @Component
 @Slf4j
-@RequiredArgsConstructor
 public class SmsVarselProducer {
     private final KafkaTemplate<String, SmsVarselMelding> kafkaTemplate;
+
+    public SmsVarselProducer(@Qualifier("kafkaTemplateSmsVarselMelding") KafkaTemplate<String, SmsVarselMelding> kafkaTemplate) {
+        this.kafkaTemplate = kafkaTemplate;
+    }
 
     public void sendSmsVarselMeldingTilKafka(SmsVarselMelding smsVarsel) {
         kafkaTemplate.send(Topics.SMS_VARSEL, smsVarsel.getSmsVarselId().toString(), smsVarsel).addCallback(new ListenableFutureCallback<>() {

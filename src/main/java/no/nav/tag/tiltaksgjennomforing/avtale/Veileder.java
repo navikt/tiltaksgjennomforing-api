@@ -219,9 +219,15 @@ public class Veileder extends Avtalepart<NavIdent> {
         avtale.forlengAvtale(sluttDato);
     }
 
+
     public void endreStillingsinfo(EndreStillingsbeskrivelse endreStillingsbeskrivelse, Avtale avtale) {
         sjekkTilgang(avtale);
         avtale.endreStillingsbeskrivelse(endreStillingsbeskrivelse);
+    }
+
+    public void endreOppfølgingOgTilrettelegginginfo(EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging, Avtale avtale) {
+        sjekkTilgang(avtale);
+        avtale.endreOppfølgingOgTilrettelegging(endreOppfølgingOgTilrettelegging);
     }
 
     public void endreKontaktinfo(EndreKontaktInformasjon endreKontaktInformasjon, Avtale avtale) {
@@ -232,5 +238,10 @@ public class Veileder extends Avtalepart<NavIdent> {
     public void endreTilskuddsberegning(Instant sistEndret,  EndreTilskuddsberegning endreTilskuddsberegning, Avtale avtale) {
         sjekkTilgang(avtale);
         avtale.endreTilskuddsberegning(endreTilskuddsberegning);
+    }
+
+    public void sendTilbakeTilBeslutter(Avtale avtale) {
+        sjekkTilgang(avtale);
+        avtale.sendTilbakeTilBeslutter();
     }
 }

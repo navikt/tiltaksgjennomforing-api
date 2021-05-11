@@ -30,7 +30,7 @@ public enum VarslbarHendelseType {
     TILSKUDDSBEREGNING_ENDRET("Tilskuddsberegning endret av veileder"),
     KONTAKTINFORMASJON_ENDRET("Kontaktinformasjon endret av veileder"),
     STILLINGSBESKRIVELSE_ENDRET("Stillingsbeskrivelse endret av veileder" );
-
+    OPPFØLGING_OG_TILRETTELEGGING_ENDRET("Oppfølging og tilrettelegging endret av veileder");
 
     private final String tekst;
 

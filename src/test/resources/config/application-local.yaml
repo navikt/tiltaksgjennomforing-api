@@ -15,6 +15,14 @@ spring:
     bootstrap-servers: ${spring.embedded.kafka.brokers}
 no.nav.gcp.kafka.aiven:
   bootstrap-servers: ${spring.embedded.kafka.brokers}
+  truststore-path: null
+  truststore-password: null
+  keystore-path: null
+  keystore-password: null
+  schema-registry-url: null
+  schema-registry-credentials-source: null
+  schema-registry-user-info: null
+  security-protocol: PLAINTEXT
 
 no.nav.security.jwt:
   issuer:

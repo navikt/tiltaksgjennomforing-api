@@ -1,9 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -13,11 +14,15 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
 @Component
 @Slf4j
-@RequiredArgsConstructor
 public class StatistikkformidlingProducer {
 
     private final KafkaTemplate<String, Statistikkformidlingsmelding> kafkaTemplate;
     private final FeatureToggleService featureToggleService;
+
+    public StatistikkformidlingProducer(@Qualifier("kafkaTemplateStatistikkformidlingsmelding") KafkaTemplate<String, Statistikkformidlingsmelding> kafkaTemplate, FeatureToggleService featureToggleService) {
+        this.kafkaTemplate = kafkaTemplate;
+        this.featureToggleService = featureToggleService;
+    }
 
     public void publiserStatistikkformidlingMelding(Statistikkformidlingsmelding melding) {
         boolean brukStatistikkformidling = featureToggleService.isEnabled("arbeidsgiver.tiltaksgjennomforing-api.statistikkformidling");
