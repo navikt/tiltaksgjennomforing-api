@@ -2,7 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -117,7 +116,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private LocalDate avbruttDato;
     private String avbruttGrunn;
     private boolean opprettetAvArbeidsgiver;
-    @JsonIgnore
     private String enhetGeografisk;
     private String enhetOppfolging;
 
