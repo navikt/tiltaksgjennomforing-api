@@ -28,7 +28,8 @@ public enum VarslbarHendelseType {
     AVTALE_FORKORTET(""),
     AVTALE_FORLENGET("Avtale forlenget av veileder"),
     TILSKUDDSBEREGNING_ENDRET("Tilskuddsberegning endret av veileder"),
-    KONTAKTINFORMASJON_ENDRET("Kontaktinformasjon endret av veileder");
+    KONTAKTINFORMASJON_ENDRET("Kontaktinformasjon endret av veileder"),
+    OPPFØLGING_OG_TILRETTELEGGING_ENDRET("Oppfølging og tilrettelegging endret av veileder");
 
     private final String tekst;
 

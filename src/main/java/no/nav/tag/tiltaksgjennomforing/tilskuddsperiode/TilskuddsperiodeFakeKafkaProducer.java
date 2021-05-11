@@ -55,5 +55,4 @@ public class TilskuddsperiodeFakeKafkaProducer {
             log.warn("Feil ved kall til tiltak-refusjon-api", e);
         }
     }
-
 }
