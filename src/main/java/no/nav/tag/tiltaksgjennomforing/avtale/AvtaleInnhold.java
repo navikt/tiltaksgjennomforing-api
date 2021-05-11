@@ -183,6 +183,11 @@ public class AvtaleInnhold {
         setArbeidsgiverEtternavn(endreKontaktInformasjon.getArbeidsgiverEtternavn());
         setArbeidsgiverTlf(endreKontaktInformasjon.getArbeidsgiverTlf());
     }
+
+    public void endreOppfølgingOgTilretteleggingInfo(EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging) {
+        setOppfolging(endreOppfølgingOgTilrettelegging.getOppfolging());
+        setTilrettelegging(endreOppfølgingOgTilrettelegging.getTilrettelegging());
+    }
 }
 
 

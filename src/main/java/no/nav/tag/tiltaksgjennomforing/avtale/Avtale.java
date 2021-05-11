@@ -587,6 +587,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
         gjeldendeInnhold().setSluttDato(nySluttDato);
         gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
+        sistEndretNå();
         sendTilbakeTilBeslutter();
         registerEvent(new AvtaleForlenget(this));
     }
@@ -601,6 +602,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
         gjeldendeInnhold().endreTilskuddsberegning(tilskuddsberegning);
         endreBeløpITilskuddsperioder();
+        sistEndretNå();
         gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
         registerEvent(new TilskuddsberegningEndret(this, null));
     }
@@ -621,8 +623,34 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
         gjeldendeInnhold().endreKontaktInfo(endreKontaktInformasjon);
         gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
+        sistEndretNå();
         sendTilbakeTilBeslutter();
         registerEvent(new KontaktinformasjonEndret(this));
+    }
+
+    public void endreOppfølgingOgTilrettelegging(EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging) {
+        if (!erGodkjentAvVeileder()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OPPFØLGING_OG_TILRETTELEGGING_GRUNN_IKKE_GODKJENT_AVTALE);
+        }
+        if (Utils.erNoenTomme(endreOppfølgingOgTilrettelegging.getOppfolging(),
+                endreOppfølgingOgTilrettelegging.getTilrettelegging())
+
+        ) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OPPFØLGING_OG_TILRETTELEGGING_GRUNN_MANGLER);
+        }
+        versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
+        gjeldendeInnhold().endreOppfølgingOgTilretteleggingInfo(endreOppfølgingOgTilrettelegging);
+        gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
+        sistEndretNå();
+        sendTilbakeTilBeslutter();
+        registerEvent(new OppfølgingOgTilretteleggingEndret(this));
+    }
+
+    public String hentEnhet() {
+        if(getEnhetOppfolging() == null){
+            return getEnhetGeografisk();
+        }
+        return getEnhetOppfolging();
     }
 
     private interface MetoderSomIkkeSkalDelegeresFraAvtaleInnhold {
