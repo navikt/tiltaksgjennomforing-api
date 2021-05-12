@@ -16,16 +16,8 @@ public class DvhAvtalehendelseLytter {
     private final DvhMeldingFilter dvhMeldingFilter;
 
     @EventListener
-    public void godkjentPaVegneAv(GodkjentPaVegneAv event) {
-        avtaleInngått(event.getAvtale());
-    }
-
-    @EventListener
-    public void godkjentAvVeileder(GodkjentAvVeileder event) {
-        avtaleInngått(event.getAvtale());
-    }
-
-    private void avtaleInngått(Avtale avtale) {
+    public void avtaleInngått(AvtaleInngått event) {
+        Avtale avtale = event.getAvtale();
         if (!dvhMeldingFilter.skalTilDatavarehus(avtale)) {
             return;
         }
