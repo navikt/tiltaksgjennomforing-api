@@ -150,7 +150,7 @@ public class LagVarselFraAvtaleHendelser {
         VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.KONTAKTINFORMASJON_ENDRET);
         varselRepository.saveAll(factory.alleParter());
     }
-
+    //fix
     @EventListener
     public void endreStillingbeskrivelse(StillingsbeskrivelseEndret event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.STILLINGSBESKRIVELSE_ENDRET);
