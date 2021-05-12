@@ -642,7 +642,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
         sistEndretNå();
         sendTilbakeTilBeslutter();
-        registerEvent(new KontaktinformasjonEndret(this));
+        registerEvent(new StillingsbeskrivelseEndret(this));
     }
 
     public void endreOppfølgingOgTilrettelegging(EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging) {
