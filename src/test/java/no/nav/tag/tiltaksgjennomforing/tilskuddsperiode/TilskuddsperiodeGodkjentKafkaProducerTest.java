@@ -72,11 +72,12 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
         final LocalDate tilskuddTilDato = LocalDate.now().plusMonths(2);
         final Integer avtaleNr = 234234234;
         final Integer løpenummer = 3;
+        final NavIdent beslutterNavIdent = new NavIdent("X234567");
 
         final TilskuddsperiodeGodkjentMelding tilskuddMelding = new TilskuddsperiodeGodkjentMelding(avtaleId,
                 tilskuddPeriodeId, avtaleInnholdId, tiltakstype, deltakerFornavn, deltakerEtternavn,
                 deltakerFnr, veilederNavIdent, bedriftNavn, bedriftnummer, tilskuddBeløp, tilskuddFraDato, tilskuddTilDato, 10.6, 0.02, 14.1, 60, avtaleNr, løpenummer,
-            "4808");
+            "4808", beslutterNavIdent);
 
         //NÅR
         tilskuddsperiodeKafkaProducer.publiserTilskuddsperiodeGodkjentMelding(tilskuddMelding);
@@ -103,5 +104,6 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
         assertThat(jsonRefusjonRecord.get("lønnstilskuddsprosent")).isNotNull();
         assertThat(jsonRefusjonRecord.get("avtaleNr")).isNotNull();
         assertThat(jsonRefusjonRecord.get("løpenummer")).isNotNull();
+        assertThat(jsonRefusjonRecord.get("beslutterNavIdent")).isNotNull();
     }
 }
