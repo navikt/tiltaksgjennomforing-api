@@ -67,19 +67,8 @@
     },
     {
       "name": "tiltakStatus",
-      "type": {
-        "type": "enum",
-        "name": "TiltakStatus",
-        "symbols": [
-          "ANNULLERT",
-          "AVBRUTT",
-          "PÅBEGYNT",
-          "MANGLER_GODKJENNING",
-          "KLAR_FOR_OPPSTART",
-          "GJENNOMFØRES",
-          "AVSLUTTET"
-        ]
-      }
+      "type": "string",
+      "doc": "Gyldige verdier: KLAR_FOR_OPPSTART, GJENNOMFØRES, AVSLUTTET, ANNULLERT"
     },
     {
       "name": "deltakerFnr",
