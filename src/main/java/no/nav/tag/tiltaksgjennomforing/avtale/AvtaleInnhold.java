@@ -120,6 +120,8 @@ public class AvtaleInnhold {
     private LocalDateTime ikrafttredelsestidspunkt;
     @Convert(converter = NavIdentConverter.class)
     private NavIdent godkjentAvNavIdent;
+    @Convert(converter = NavIdentConverter.class)
+    private NavIdent godkjentAvBeslutterNavIdent;
 
     @Embedded
     private GodkjentPaVegneGrunn godkjentPaVegneGrunn;

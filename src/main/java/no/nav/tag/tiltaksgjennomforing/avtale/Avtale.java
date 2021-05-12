@@ -228,11 +228,16 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         this.setGodkjentAvVeileder(tidspunkt);
         this.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
         if (tiltakstype != Tiltakstype.SOMMERJOBB) {
-            this.setAvtaleInngått(tidspunkt);
+            avtaleInngått(tidspunkt, Avtalerolle.VEILEDER);
         }
         this.setIkrafttredelsestidspunkt(tidspunkt);
         sistEndretNå();
         registerEvent(new GodkjentAvVeileder(this, utfortAv));
+    }
+
+    private void avtaleInngått(LocalDateTime tidspunkt, Avtalerolle utførtAv) {
+        setAvtaleInngått(tidspunkt);
+        registerEvent(new AvtaleInngått(this, utførtAv));
     }
 
     void godkjennForVeilederOgDeltaker(Identifikator utfortAv, GodkjentPaVegneGrunn paVegneAvGrunn) {
@@ -252,7 +257,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         this.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
         this.setIkrafttredelsestidspunkt(tidspunkt);
         if (tiltakstype != Tiltakstype.SOMMERJOBB) {
-            this.setAvtaleInngått(tidspunkt);
+            avtaleInngått(tidspunkt, Avtalerolle.VEILEDER);
         }
         sistEndretNå();
         registerEvent(new GodkjentPaVegneAv(this, utfortAv));
@@ -435,11 +440,17 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         TilskuddPeriode gjeldendePeriode = gjeldendeTilskuddsperiode();
         gjeldendePeriode.godkjenn(beslutter);
         if (!erAvtaleInngått()) {
-            setAvtaleInngått(LocalDateTime.now());
-            registerEvent(new AvtaleInngått(this));
+            LocalDateTime tidspunkt = LocalDateTime.now();
+            godkjennForBeslutter(tidspunkt, beslutter);
+            avtaleInngått(tidspunkt, Avtalerolle.BESLUTTER);
         }
         sistEndretNå();
         registerEvent(new TilskuddsperiodeGodkjent(this, gjeldendePeriode, beslutter));
+    }
+
+    private void godkjennForBeslutter(LocalDateTime tidspunkt, NavIdent beslutter) {
+        setGodkjentAvBeslutter(tidspunkt);
+        setGodkjentAvBeslutterNavIdent(beslutter);
     }
 
     public void avslåTilskuddsperiode(NavIdent beslutter, EnumSet<Avslagsårsak> avslagsårsaker, String avslagsforklaring) {
