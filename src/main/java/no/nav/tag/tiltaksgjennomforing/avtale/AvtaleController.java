@@ -10,6 +10,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import no.nav.security.token.support.core.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.StillingsbeskrivelseEndret;
 import no.nav.tag.tiltaksgjennomforing.dokgen.DokgenService;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
@@ -221,6 +222,15 @@ public class AvtaleController {
                 .orElseThrow(RessursFinnesIkkeException::new);
         veileder.forlengAvtale(sistEndret, forlengAvtale.getSluttDato(), avtale);
         return avtale;
+    }
+
+    @PostMapping("/{avtaleId}/endre-stillingbeskrivelse")
+    public void endreStillingsbeskrivelse(@PathVariable("avtaleId") UUID avtaleId,
+                                                          @RequestBody EndreStillingsbeskrivelse endreStillingsbeskrivelse) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        veileder.endreStillingsinfo(endreStillingsbeskrivelse, avtale);
+        avtaleRepository.save(avtale);
     }
 
     @PostMapping("/{avtaleId}/endre-oppfolging-og-tilrettelegging")
