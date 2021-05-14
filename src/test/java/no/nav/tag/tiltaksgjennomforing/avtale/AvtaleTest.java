@@ -746,8 +746,10 @@ public class AvtaleTest {
         BigDecimal feriepengesats = new BigDecimal("0.166");
         BigDecimal arbeidsgiveravgift = BigDecimal.ZERO;
         int manedslonn = 44444;
+        int stillingprosent = 50;
+        int antallDagerPerUke = 5;
 
-        avtale.endreTilskuddsberegning(EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).build());
+        avtale.endreTilskuddsberegning(EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).stillingprosent(stillingprosent).antallDagerPerUke(antallDagerPerUke).build());
 
         assertThat(avtale.getVersjoner()).hasSize(2);
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
@@ -756,6 +758,8 @@ public class AvtaleTest {
         assertThat(avtale.getFeriepengesats()).isEqualTo(feriepengesats);
         assertThat(avtale.getArbeidsgiveravgift()).isEqualTo(arbeidsgiveravgift);
         assertThat(avtale.getManedslonn()).isEqualTo(manedslonn);
+        assertThat(avtale.getStillingprosent()).isEqualTo(stillingprosent);
+        assertThat(avtale.getAntallDagerPerUke()).isEqualTo(antallDagerPerUke);
     }
 
     @Test

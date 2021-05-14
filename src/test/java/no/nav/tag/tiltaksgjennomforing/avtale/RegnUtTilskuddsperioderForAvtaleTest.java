@@ -202,6 +202,8 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
                 .arbeidsgiveravgift(avtale.getArbeidsgiveravgift())
                 .feriepengesats(avtale.getFeriepengesats())
                 .otpSats(avtale.getOtpSats())
+                .stillingprosent(avtale.getStillingprosent())
+                .antallDagerPerUke(avtale.getAntallDagerPerUke())
                 .build();
         avtale.endreTilskuddsberegning(endreTilskuddsberegning);
 
@@ -269,6 +271,8 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
                 .arbeidsgiveravgift(avtale.getArbeidsgiveravgift())
                 .feriepengesats(avtale.getFeriepengesats())
                 .otpSats(avtale.getOtpSats())
+                .stillingprosent(avtale.getStillingprosent())
+                .antallDagerPerUke(avtale.getAntallDagerPerUke())
                 .build();
         avtale.endreTilskuddsberegning(endreTilskuddsberegning);
 

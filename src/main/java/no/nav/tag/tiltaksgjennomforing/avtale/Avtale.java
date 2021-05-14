@@ -617,7 +617,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_IKKE_GODKJENT_AVTALE);
         }
-        if (Utils.erNoenTomme(tilskuddsberegning.getArbeidsgiveravgift(), tilskuddsberegning.getFeriepengesats(), tilskuddsberegning.getManedslonn(), tilskuddsberegning.getOtpSats())) {
+        if (Utils.erNoenTomme(tilskuddsberegning.getArbeidsgiveravgift(),
+                tilskuddsberegning.getFeriepengesats(),
+                tilskuddsberegning.getManedslonn(),
+                tilskuddsberegning.getOtpSats(),
+                tilskuddsberegning.getStillingprosent(),
+                tilskuddsberegning.getAntallDagerPerUke())) {
+
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
         }
         versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());

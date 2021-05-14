@@ -199,6 +199,8 @@ public class AvtaleInnhold {
 
     public void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning) {
         innholdStrategi().endreTilskuddsberegning(tilskuddsberegning);
+        setStillingprosent(tilskuddsberegning.getStillingprosent());
+        setAntallDagerPerUke(tilskuddsberegning.getAntallDagerPerUke());
     }
 
     public void endreKontaktInfo(EndreKontaktInformasjon endreKontaktInformasjon) {
