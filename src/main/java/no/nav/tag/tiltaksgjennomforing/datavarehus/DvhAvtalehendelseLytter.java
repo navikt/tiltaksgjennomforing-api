@@ -18,66 +18,53 @@ public class DvhAvtalehendelseLytter {
     @EventListener
     public void avtaleInngått(AvtaleInngått event) {
         Avtale avtale = event.getAvtale();
+        lagHendelse(avtale, DvhHendelseType.INNGÅTT);
+    }
+
+    @EventListener
+    public void avtaleForlenget(AvtaleForlenget event) {
+        lagHendelse(event.getAvtale(), DvhHendelseType.FORLENGET);
+    }
+
+    @EventListener
+    public void avtaleForkortet(AvtaleForkortet event) {
+        lagHendelse(event.getAvtale(), DvhHendelseType.FORKORTET);
+    }
+
+    @EventListener
+    public void avtaleAnnullert(AnnullertAvVeileder event) {
+        lagHendelse(event.getAvtale(), DvhHendelseType.ANNULLERT);
+    }
+
+    @EventListener
+    public void tilskuddsberegningEndret(TilskuddsberegningEndret event) {
+        lagHendelse(event.getAvtale(), DvhHendelseType.ENDRET);
+    }
+
+    @EventListener
+    public void stillingsbeskrivelseEndret(StillingsbeskrivelseEndret event) {
+        lagHendelse(event.getAvtale(), DvhHendelseType.ENDRET);
+    }
+
+    @EventListener
+    public void kontaktinformasjonEndret(KontaktinformasjonEndret event) {
+        lagHendelse(event.getAvtale(), DvhHendelseType.ENDRET);
+    }
+
+    @EventListener
+    public void oppfølgingOgTilretteleggingEndret(OppfølgingOgTilretteleggingEndret event) {
+        lagHendelse(event.getAvtale(), DvhHendelseType.ENDRET);
+    }
+
+    private void lagHendelse(Avtale avtale, DvhHendelseType endret) {
         if (!dvhMeldingFilter.skalTilDatavarehus(avtale)) {
             return;
         }
         LocalDateTime tidspunkt = LocalDateTime.now();
         UUID meldingId = UUID.randomUUID();
-        DvhHendelseType hendelseType = DvhHendelseType.INNGÅTT;
+        DvhHendelseType hendelseType = endret;
         var melding = AvroTiltakHendelseFabrikk.konstruer(avtale, tidspunkt, meldingId, hendelseType);
         DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, avtale.getId(), tidspunkt, avtale.statusSomEnum(), melding);
-        repository.save(entitet);
-    }
-
-    @EventListener
-    public void avtaleForlenget(AvtaleForlenget event) {
-        if (!dvhMeldingFilter.skalTilDatavarehus(event.getAvtale())) {
-            return;
-        }
-        LocalDateTime tidspunkt = LocalDateTime.now();
-        UUID meldingId = UUID.randomUUID();
-        DvhHendelseType hendelseType = DvhHendelseType.FORLENGET;
-        var melding = AvroTiltakHendelseFabrikk.konstruer(event.getAvtale(), tidspunkt, meldingId, hendelseType);
-        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, event.getAvtale().getId(), tidspunkt, event.getAvtale().statusSomEnum(), melding);
-        repository.save(entitet);
-    }
-
-    @EventListener
-    public void avtaleForkortet(AvtaleForkortet event) {
-        if (!dvhMeldingFilter.skalTilDatavarehus(event.getAvtale())) {
-            return;
-        }
-        LocalDateTime tidspunkt = LocalDateTime.now();
-        UUID meldingId = UUID.randomUUID();
-        DvhHendelseType hendelseType = DvhHendelseType.FORKORTET;
-        var melding = AvroTiltakHendelseFabrikk.konstruer(event.getAvtale(), tidspunkt, meldingId, hendelseType);
-        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, event.getAvtale().getId(), tidspunkt, event.getAvtale().statusSomEnum(), melding);
-        repository.save(entitet);
-    }
-
-    @EventListener
-    public void avtaleAnnullert(AnnullertAvVeileder event) {
-        if (!dvhMeldingFilter.skalTilDatavarehus(event.getAvtale())) {
-            return;
-        }
-        LocalDateTime tidspunkt = LocalDateTime.now();
-        UUID meldingId = UUID.randomUUID();
-        DvhHendelseType hendelseType = DvhHendelseType.ANNULLERT;
-        var melding = AvroTiltakHendelseFabrikk.konstruer(event.getAvtale(), tidspunkt, meldingId, hendelseType);
-        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, event.getAvtale().getId(), tidspunkt, event.getAvtale().statusSomEnum(), melding);
-        repository.save(entitet);
-    }
-
-    @EventListener
-    public void tilskuddsberegningEndret(TilskuddsberegningEndret event) {
-        if (!dvhMeldingFilter.skalTilDatavarehus(event.getAvtale())) {
-            return;
-        }
-        LocalDateTime tidspunkt = LocalDateTime.now();
-        UUID meldingId = UUID.randomUUID();
-        DvhHendelseType hendelseType = DvhHendelseType.ENDRET;
-        var melding = AvroTiltakHendelseFabrikk.konstruer(event.getAvtale(), tidspunkt, meldingId, hendelseType);
-        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, event.getAvtale().getId(), tidspunkt, event.getAvtale().statusSomEnum(), melding);
         repository.save(entitet);
     }
 }

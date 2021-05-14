@@ -51,8 +51,8 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setGodkjentAvDeltaker(toInstant(avtale.getGodkjentAvDeltaker()));
         hendelse.setGodkjentAvArbeidsgiver(toInstant(avtale.getGodkjentAvArbeidsgiver()));
         hendelse.setGodkjentAvVeileder(toInstant(avtale.getGodkjentAvVeileder()));
-        hendelse.setGodkjentAvBeslutter(null);
-        hendelse.setAvtaleInngaatt(toInstant(avtale.getGodkjentAvVeileder()));
+        hendelse.setGodkjentAvBeslutter(toInstant(avtale.getGodkjentAvBeslutter()));
+        hendelse.setAvtaleInngaatt(toInstant(avtale.getAvtaleInngått()));
         hendelse.setUtfortAv(avtale.getGodkjentAvNavIdent().asString());
         hendelse.setEnhetOppfolging(avtale.getEnhetOppfolging());
         hendelse.setEnhetGeografisk(avtale.getEnhetGeografisk());
@@ -63,6 +63,9 @@ public class AvroTiltakHendelseFabrikk {
     }
 
     private static Instant toInstant(LocalDateTime tidspunkt) {
+        if (tidspunkt == null) {
+            return null;
+        }
         return tidspunkt.atZone(ZoneId.systemDefault()).toInstant();
     }
 }
