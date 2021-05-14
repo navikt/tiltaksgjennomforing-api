@@ -22,9 +22,8 @@ public class LagSmsVarselFraVarslbarHendelse {
             case GODKJENT_AV_DELTAKER:
             case GODKJENT_AV_ARBEIDSGIVER:
                 return List.of(factory.veileder());
-            case GODKJENT_AV_VEILEDER:
+            case AVTALE_INNGÅTT:
                 return List.of(factory.deltaker(), factory.arbeidsgiver());
-            case GODKJENT_PAA_VEGNE_AV:
             case DELT_MED_ARBEIDSGIVER:
                 return List.of(factory.arbeidsgiver());
             case GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER: {

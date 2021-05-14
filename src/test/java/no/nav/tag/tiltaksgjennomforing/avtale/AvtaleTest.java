@@ -376,6 +376,7 @@ public class AvtaleTest {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setAvtaleInngått(LocalDateTime.now());
         assertThat(avtale.status()).isEqualTo(Status.AVSLUTTET.getStatusVerdi());
     }
 
@@ -387,6 +388,7 @@ public class AvtaleTest {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setAvtaleInngått(LocalDateTime.now());
         assertThat(avtale.status()).isEqualTo(Status.GJENNOMFØRES.getStatusVerdi());
     }
 
@@ -398,6 +400,7 @@ public class AvtaleTest {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setAvtaleInngått(LocalDateTime.now());
         assertThat(avtale.status()).isEqualTo(Status.GJENNOMFØRES.getStatusVerdi());
     }
 
@@ -409,6 +412,7 @@ public class AvtaleTest {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setAvtaleInngått(LocalDateTime.now());
         assertThat(avtale.status()).isEqualTo(Status.KLAR_FOR_OPPSTART.getStatusVerdi());
     }
 
@@ -426,6 +430,7 @@ public class AvtaleTest {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setAvtaleInngått(LocalDateTime.now());
         assertThat(avtale.status()).isEqualTo(Status.KLAR_FOR_OPPSTART.getStatusVerdi());
     }
 
@@ -439,6 +444,7 @@ public class AvtaleTest {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setAvtaleInngått(LocalDateTime.now());
         avtale.setDeltakerTlf(null);
         assertThat(avtale.status()).isEqualTo(Status.GJENNOMFØRES.getStatusVerdi());
     }
@@ -567,6 +573,7 @@ public class AvtaleTest {
                 AvtaleInnhold.Fields.godkjentAvDeltaker,
                 AvtaleInnhold.Fields.godkjentAvArbeidsgiver,
                 AvtaleInnhold.Fields.godkjentAvVeileder,
+                AvtaleInnhold.Fields.avtaleInngått,
                 AvtaleInnhold.Fields.ikrafttredelsestidspunkt,
                 AvtaleInnhold.Fields.journalpostId);
     }
@@ -796,5 +803,15 @@ public class AvtaleTest {
     public void forleng_kun_fremover() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
         assertFeilkode(Feilkode.KAN_IKKE_FORLENGE_FEIL_SLUTTDATO, () -> avtale.forlengAvtale(avtale.getSluttDato().minusDays(1)));
+    }
+
+    @Test
+    public void sommerjobb_må_være_godkjent_av_beslutter() {
+        Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();
+        assertThat(avtale.statusSomEnum()).isEqualTo(Status.MANGLER_GODKJENNING);
+        assertThat(avtale.getAvtaleInngått()).isNull();
+        avtale.godkjennTilskuddsperiode(TestData.enNavIdent());
+        assertThat(avtale.statusSomEnum()).isEqualTo(Status.KLAR_FOR_OPPSTART);
+        assertThat(avtale.getAvtaleInngått()).isNotNull();
     }
 }

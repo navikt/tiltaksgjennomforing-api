@@ -86,7 +86,6 @@ public class Veileder extends Avtalepart<NavIdent> {
         AvtaleStatusDetaljer avtaleStatusDetaljer = new AvtaleStatusDetaljer();
         avtaleStatusDetaljer.setGodkjentAvInnloggetBruker(erGodkjentAvInnloggetBruker(avtale));
 
-
         switch (avtale.statusSomEnum()) {
             case ANNULLERT:
                 avtaleStatusDetaljer.setInnloggetBrukerStatus("Tiltaket er annullert", "Du eller en annen veileder har annullert tiltaket.", "");

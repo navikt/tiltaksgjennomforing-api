@@ -1,11 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -80,12 +81,18 @@ public class LagVarselFraAvtaleHendelser {
     @EventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.GODKJENT_AV_VEILEDER);
-        varselRepository.saveAll(factory.alleParter());
+        varselRepository.save(factory.veileder());
     }
 
     @EventListener
     public void godkjentPaVegneAv(GodkjentPaVegneAv event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.GODKJENT_PAA_VEGNE_AV);
+        varselRepository.save(factory.veileder());
+    }
+
+    @EventListener
+    public void avtaleInngått(AvtaleInngått event) {
+        VarselFactory factory = new VarselFactory(event.getAvtale(), event.getUtførtAv(), VarslbarHendelseType.AVTALE_INNGÅTT);
         varselRepository.saveAll(factory.alleParter());
     }
 

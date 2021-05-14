@@ -1,56 +1,32 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Delegate;
 import lombok.experimental.FieldNameConstants;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AltMåVæreFyltUtException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørVeilederException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AvtaleErIkkeFordeltException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.DeltakerHarGodkjentException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
-import org.hibernate.annotations.SortNatural;
+import org.hibernate.annotations.*;
 import org.springframework.data.domain.AbstractAggregateRoot;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OrderBy;
+import javax.persistence.*;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -188,6 +164,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         return this.getGodkjentAvVeileder() != null;
     }
 
+    @JsonProperty
+    public boolean erAvtaleInngått() {
+        return this.getAvtaleInngått() != null;
+    }
+
     private void sjekkOmAvtalenKanEndres() {
         if (erGodkjentAvDeltaker() || erGodkjentAvArbeidsgiver() || erGodkjentAvVeileder()) {
             throw new TilgangskontrollException("Godkjenninger må oppheves før avtalen kan endres.");
@@ -243,11 +224,20 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             throw new VeilederSkalGodkjenneSistException();
         }
 
-        this.setGodkjentAvVeileder(LocalDateTime.now());
+        LocalDateTime tidspunkt = LocalDateTime.now();
+        this.setGodkjentAvVeileder(tidspunkt);
         this.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
-        this.setIkrafttredelsestidspunkt(LocalDateTime.now());
+        if (tiltakstype != Tiltakstype.SOMMERJOBB) {
+            avtaleInngått(tidspunkt, Avtalerolle.VEILEDER);
+        }
+        this.setIkrafttredelsestidspunkt(tidspunkt);
         sistEndretNå();
         registerEvent(new GodkjentAvVeileder(this, utfortAv));
+    }
+
+    private void avtaleInngått(LocalDateTime tidspunkt, Avtalerolle utførtAv) {
+        setAvtaleInngått(tidspunkt);
+        registerEvent(new AvtaleInngått(this, utførtAv));
     }
 
     void godkjennForVeilederOgDeltaker(Identifikator utfortAv, GodkjentPaVegneGrunn paVegneAvGrunn) {
@@ -259,12 +249,16 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             throw new ArbeidsgiverSkalGodkjenneFørVeilederException();
         }
         paVegneAvGrunn.valgtMinstEnGrunn();
-        this.setGodkjentAvVeileder(LocalDateTime.now());
-        this.setGodkjentAvDeltaker(LocalDateTime.now());
+        LocalDateTime tidspunkt = LocalDateTime.now();
+        this.setGodkjentAvVeileder(tidspunkt);
+        this.setGodkjentAvDeltaker(tidspunkt);
         this.setGodkjentPaVegneAv(true);
         this.setGodkjentPaVegneGrunn(paVegneAvGrunn);
         this.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
-        this.setIkrafttredelsestidspunkt(LocalDateTime.now());
+        this.setIkrafttredelsestidspunkt(tidspunkt);
+        if (tiltakstype != Tiltakstype.SOMMERJOBB) {
+            avtaleInngått(tidspunkt, Avtalerolle.VEILEDER);
+        }
         sistEndretNå();
         registerEvent(new GodkjentPaVegneAv(this, utfortAv));
     }
@@ -293,11 +287,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             return Status.ANNULLERT;
         } else if (isAvbrutt()) {
             return Status.AVBRUTT;
-        } else if (erGodkjentAvVeileder() && (this.getSluttDato().isBefore(LocalDate.now()))) {
+        } else if (erAvtaleInngått() && (this.getSluttDato().isBefore(LocalDate.now()))) {
             return Status.AVSLUTTET;
-        } else if (erGodkjentAvVeileder() && (this.getStartDato().isBefore(LocalDate.now().plusDays(1)))) {
+        } else if (erAvtaleInngått() && (this.getStartDato().isBefore(LocalDate.now().plusDays(1)))) {
             return Status.GJENNOMFØRES;
-        } else if (erGodkjentAvVeileder()) {
+        } else if (erAvtaleInngått()) {
             return Status.KLAR_FOR_OPPSTART;
         } else if (erAltUtfylt()) {
             return Status.MANGLER_GODKJENNING;
@@ -445,8 +439,18 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         TilskuddPeriode gjeldendePeriode = gjeldendeTilskuddsperiode();
         gjeldendePeriode.godkjenn(beslutter);
+        if (!erAvtaleInngått()) {
+            LocalDateTime tidspunkt = LocalDateTime.now();
+            godkjennForBeslutter(tidspunkt, beslutter);
+            avtaleInngått(tidspunkt, Avtalerolle.BESLUTTER);
+        }
         sistEndretNå();
         registerEvent(new TilskuddsperiodeGodkjent(this, gjeldendePeriode, beslutter));
+    }
+
+    private void godkjennForBeslutter(LocalDateTime tidspunkt, NavIdent beslutter) {
+        setGodkjentAvBeslutter(tidspunkt);
+        setGodkjentAvBeslutterNavIdent(beslutter);
     }
 
     public void avslåTilskuddsperiode(NavIdent beslutter, EnumSet<Avslagsårsak> avslagsårsaker, String avslagsforklaring) {
