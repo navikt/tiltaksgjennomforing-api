@@ -21,6 +21,7 @@ public class DvhMeldingEntitet extends AbstractAggregateRoot<DvhMeldingEntitet> 
     @Enumerated(EnumType.STRING)
     private Status tiltakStatus;
     private String json;
+    private boolean sendt;
 
     public DvhMeldingEntitet(UUID meldingId, UUID avtaleId, LocalDateTime tidspunkt, Status tiltakStatus, AvroTiltakHendelse avroTiltakHendelse) {
         this.meldingId = meldingId;

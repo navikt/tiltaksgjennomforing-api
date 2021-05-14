@@ -10,14 +10,18 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 
+import java.util.UUID;
+
 @Component
 @Slf4j
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
 public class DvhMeldingKafkaProdusent {
     private final KafkaTemplate<String, AvroTiltakHendelse> dvhMeldingKafkaTemplate;
+    private final DvhMeldingEntitetRepository repository;
 
-    public DvhMeldingKafkaProdusent(@Autowired @Qualifier("dvhMeldingKafkaTemplate") KafkaTemplate<String, AvroTiltakHendelse> dvhMeldingKafkaTemplate) {
+    public DvhMeldingKafkaProdusent(@Autowired @Qualifier("dvhMeldingKafkaTemplate") KafkaTemplate<String, AvroTiltakHendelse> dvhMeldingKafkaTemplate, DvhMeldingEntitetRepository repository) {
         this.dvhMeldingKafkaTemplate = dvhMeldingKafkaTemplate;
+        this.repository = repository;
     }
 
     @TransactionalEventListener
@@ -28,6 +32,12 @@ public class DvhMeldingKafkaProdusent {
             @Override
             public void onSuccess(SendResult<String, AvroTiltakHendelse> result) {
                 log.info("DvhMelding med id {} sendt til Kafka topic {}", meldingId, topic);
+                repository.findById(UUID.fromString(meldingId)).ifPresentOrElse(dvhMeldingEntitet -> {
+                    dvhMeldingEntitet.setSendt(true);
+                    repository.save(dvhMeldingEntitet);
+                }, () -> {
+                    log.warn("DvhMelding med id {} fikk ikke lagret status til databasen", meldingId);
+                });
             }
 
             @Override
