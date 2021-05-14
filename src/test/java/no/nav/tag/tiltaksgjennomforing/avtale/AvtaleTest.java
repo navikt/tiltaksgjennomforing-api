@@ -804,4 +804,14 @@ public class AvtaleTest {
         Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
         assertFeilkode(Feilkode.KAN_IKKE_FORLENGE_FEIL_SLUTTDATO, () -> avtale.forlengAvtale(avtale.getSluttDato().minusDays(1)));
     }
+
+    @Test
+    public void sommerjobb_må_være_godkjent_av_beslutter() {
+        Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();
+        assertThat(avtale.statusSomEnum()).isEqualTo(Status.MANGLER_GODKJENNING);
+        assertThat(avtale.getAvtaleInngått()).isNull();
+        avtale.godkjennTilskuddsperiode(TestData.enNavIdent());
+        assertThat(avtale.statusSomEnum()).isEqualTo(Status.KLAR_FOR_OPPSTART);
+        assertThat(avtale.getAvtaleInngått()).isNotNull();
+    }
 }
