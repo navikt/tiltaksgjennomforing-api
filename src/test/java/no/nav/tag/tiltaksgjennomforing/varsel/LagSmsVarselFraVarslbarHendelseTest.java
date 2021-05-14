@@ -1,10 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
-
-import java.util.List;
-import java.util.stream.Stream;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GamleVerdier;
@@ -14,6 +9,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
+import java.util.List;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 public class LagSmsVarselFraVarslbarHendelseTest {
     private static Avtale avtale;
@@ -54,7 +55,7 @@ public class LagSmsVarselFraVarslbarHendelseTest {
                 Arguments.of(VarslbarHendelseType.ENDRET, new GamleVerdier(), List.of()),
                 Arguments.of(VarslbarHendelseType.GODKJENT_AV_DELTAKER, new GamleVerdier(), List.of(veileder)),
                 Arguments.of(VarslbarHendelseType.GODKJENT_AV_ARBEIDSGIVER, new GamleVerdier(), List.of(veileder)),
-                Arguments.of(VarslbarHendelseType.GODKJENT_AV_VEILEDER, new GamleVerdier(), List.of(deltaker, arbeidsgiver)),
+                Arguments.of(VarslbarHendelseType.AVTALE_INNGÅTT, new GamleVerdier(), List.of(deltaker, arbeidsgiver)),
                 Arguments.of(VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER, new GamleVerdier(true, false), List.of(deltaker, veileder)),
                 Arguments.of(VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER, new GamleVerdier(false, false), List.of(veileder)),
                 Arguments.of(VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, new GamleVerdier(true, false), List.of(deltaker)),

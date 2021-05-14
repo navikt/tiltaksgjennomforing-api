@@ -98,7 +98,7 @@ class LagVarselFraAvtaleHendelserTest {
         avtale = avtaleRepository.save(avtale);
         assertHendelse(GODKJENT_PAA_VEGNE_AV, VEILEDER, VEILEDER, false);
         assertIngenHendelse(GODKJENT_PAA_VEGNE_AV, ARBEIDSGIVER);
-        assertHendelse(GODKJENT_PAA_VEGNE_AV, VEILEDER, DELTAKER, true);
+        assertIngenHendelse(GODKJENT_PAA_VEGNE_AV, DELTAKER);
 
         Beslutter beslutter = TestData.enBeslutter(avtale);
         beslutter.godkjennTilskuddsperiode(avtale);

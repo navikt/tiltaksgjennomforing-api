@@ -71,6 +71,11 @@ public class VarslbarHendelseLytter {
     }
 
     @EventListener
+    public void avtaleInngått(AvtaleInngått event) {
+        varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.AVTALE_INNGÅTT));
+    }
+
+    @EventListener
     public void godkjentPaVegneAv(GodkjentPaVegneAv event) {
         varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.GODKJENT_PAA_VEGNE_AV));
     }
