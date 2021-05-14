@@ -157,7 +157,6 @@ public class AvtaleInnhold {
                 .godkjentAvArbeidsgiver(null)
                 .godkjentAvVeileder(null)
                 .godkjentAvBeslutter(null)
-                .godkjentAvBeslutter(null)
                 .avtaleInngått(null)
                 .ikrafttredelsestidspunkt(null)
                 .godkjentPaVegneAv(false)
