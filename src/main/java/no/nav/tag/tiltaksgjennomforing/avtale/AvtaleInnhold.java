@@ -1,6 +1,14 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
+import lombok.experimental.FieldNameConstants;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.StillingsbeskrivelseEndret;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erTom;
+
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.math.BigDecimal;
@@ -198,6 +206,8 @@ public class AvtaleInnhold {
 
     public void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning) {
         innholdStrategi().endreTilskuddsberegning(tilskuddsberegning);
+        setStillingprosent(tilskuddsberegning.getStillingprosent());
+        setAntallDagerPerUke(tilskuddsberegning.getAntallDagerPerUke());
     }
 
     public void endreKontaktInfo(EndreKontaktInformasjon endreKontaktInformasjon) {
@@ -207,6 +217,11 @@ public class AvtaleInnhold {
         setArbeidsgiverFornavn(endreKontaktInformasjon.getArbeidsgiverFornavn());
         setArbeidsgiverEtternavn(endreKontaktInformasjon.getArbeidsgiverEtternavn());
         setArbeidsgiverTlf(endreKontaktInformasjon.getArbeidsgiverTlf());
+    }
+
+    public void endreStillingsInfo(EndreStillingsbeskrivelse endreStillingsbeskrivelse) {
+        setStillingstittel(endreStillingsbeskrivelse.getStillingstittel());
+        setArbeidsoppgaver(endreStillingsbeskrivelse.getArbeidsoppgaver());
     }
 
     public void endreOppfølgingOgTilretteleggingInfo(EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging) {

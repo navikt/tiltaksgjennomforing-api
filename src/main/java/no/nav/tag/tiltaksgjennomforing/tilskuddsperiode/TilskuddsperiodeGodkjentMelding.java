@@ -37,6 +37,7 @@ public class TilskuddsperiodeGodkjentMelding {
     Integer avtaleNr;
     Integer løpenummer;
     String enhet;
+    NavIdent beslutterNavIdent;
 
     public static TilskuddsperiodeGodkjentMelding create(Avtale avtale, TilskuddPeriode tilskuddsperiode) {
         return new TilskuddsperiodeGodkjentMelding(avtale.getId(),
@@ -58,7 +59,8 @@ public class TilskuddsperiodeGodkjentMelding {
                 tilskuddsperiode.getLonnstilskuddProsent(),
                 avtale.getAvtaleNr(),
                 tilskuddsperiode.getLøpenummer(),
-                avtale.getEnhetOppfolging()
+                avtale.getEnhetOppfolging(),
+                tilskuddsperiode.getGodkjentAvNavIdent()
         );
     }
 }

@@ -51,6 +51,8 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setGodkjentAvDeltaker(toInstant(avtale.getGodkjentAvDeltaker()));
         hendelse.setGodkjentAvArbeidsgiver(toInstant(avtale.getGodkjentAvArbeidsgiver()));
         hendelse.setGodkjentAvVeileder(toInstant(avtale.getGodkjentAvVeileder()));
+        hendelse.setGodkjentAvBeslutter(null);
+        hendelse.setAvtaleInngaatt(toInstant(avtale.getGodkjentAvVeileder()));
         hendelse.setUtfortAv(avtale.getGodkjentAvNavIdent().asString());
         hendelse.setEnhetOppfolging(avtale.getEnhetOppfolging());
         hendelse.setEnhetGeografisk(avtale.getEnhetGeografisk());

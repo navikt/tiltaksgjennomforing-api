@@ -269,6 +269,23 @@
       }
     },
     {
+      "name": "godkjentAvBeslutter",
+      "type": [
+        "null",
+        {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      ]
+    },
+    {
+      "name": "avtaleInngaatt",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
       "name": "enhetOppfolging",
       "type": [
         "null",

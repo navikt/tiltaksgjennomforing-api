@@ -221,6 +221,12 @@ public class Veileder extends Avtalepart<NavIdent> {
         avtale.forlengAvtale(sluttDato);
     }
 
+
+    public void endreStillingsinfo(EndreStillingsbeskrivelse endreStillingsbeskrivelse, Avtale avtale) {
+        sjekkTilgang(avtale);
+        avtale.endreStillingsbeskrivelse(endreStillingsbeskrivelse);
+    }
+
     public void endreOppfølgingOgTilrettelegginginfo(EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging, Avtale avtale) {
         sjekkTilgang(avtale);
         avtale.endreOppfølgingOgTilrettelegging(endreOppfølgingOgTilrettelegging);

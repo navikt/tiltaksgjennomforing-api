@@ -621,7 +621,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_IKKE_GODKJENT_AVTALE);
         }
-        if (Utils.erNoenTomme(tilskuddsberegning.getArbeidsgiveravgift(), tilskuddsberegning.getFeriepengesats(), tilskuddsberegning.getManedslonn(), tilskuddsberegning.getOtpSats())) {
+        if (Utils.erNoenTomme(tilskuddsberegning.getArbeidsgiveravgift(),
+                tilskuddsberegning.getFeriepengesats(),
+                tilskuddsberegning.getManedslonn(),
+                tilskuddsberegning.getOtpSats(),
+                tilskuddsberegning.getStillingprosent(),
+                tilskuddsberegning.getAntallDagerPerUke())) {
+
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
         }
         versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
@@ -651,6 +657,23 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         sistEndretNå();
         sendTilbakeTilBeslutter();
         registerEvent(new KontaktinformasjonEndret(this));
+    }
+
+    public void endreStillingsbeskrivelse(EndreStillingsbeskrivelse endreStillingsbeskrivelse) {
+        if (!erGodkjentAvVeileder()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_STILLINGSBESKRIVELSE_GRUNN_IKKE_GODKJENT_AVTALE);
+        }
+        if (Utils.erNoenTomme(endreStillingsbeskrivelse.getStillingstittel(),
+                endreStillingsbeskrivelse.getArbeidsoppgaver())
+        ) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_STILLINGSBESKRIVELSE_GRUNN_MANGLER);
+        }
+        versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
+        gjeldendeInnhold().endreStillingsInfo(endreStillingsbeskrivelse);
+        gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
+        sistEndretNå();
+        sendTilbakeTilBeslutter();
+        registerEvent(new StillingsbeskrivelseEndret(this));
     }
 
     public void endreOppfølgingOgTilrettelegging(EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging) {
