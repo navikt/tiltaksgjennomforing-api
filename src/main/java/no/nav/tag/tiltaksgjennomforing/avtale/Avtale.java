@@ -327,7 +327,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_GRUNN_MANGLER);
         }
         forkortTilskuddsperioder(nySluttDato);
-        AvtaleInnhold nyAvtaleInnholdVersjon = gjeldendeInnhold().nyGodkjentVersjon();
+        AvtaleInnhold nyAvtaleInnholdVersjon = gjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORKORTE);
         versjoner.add(nyAvtaleInnholdVersjon);
         gjeldendeInnhold().setSluttDato(nySluttDato);
         gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
@@ -425,7 +425,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     public void låsOppAvtale() {
         sjekkOmKanLåsesOpp();
         tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.GODKJENT).forEach(this::annullerTilskuddsperiode);
-        versjoner.add(this.gjeldendeInnhold().nyVersjon());
+        versjoner.add(this.gjeldendeInnhold().nyVersjon(AvtaleInnholdType.LÅSE_OPP));
         sistEndretNå();
         registerEvent(new AvtaleLåstOpp(this));
     }
@@ -611,7 +611,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORLENGE_IKKE_GODKJENT_AVTALE);
         }
         forlengTilskuddsperioder(this.getSluttDato(), nySluttDato);
-        versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
+        AvtaleInnhold nyVersjon = gjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORLENGE);
+        versjoner.add(nyVersjon);
         gjeldendeInnhold().setSluttDato(nySluttDato);
         gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
         sistEndretNå();
@@ -632,7 +633,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
         }
-        versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
+        versjoner.add(gjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_TILSKUDDSBEREGNING));
         gjeldendeInnhold().endreTilskuddsberegning(tilskuddsberegning);
         endreBeløpITilskuddsperioder();
         sistEndretNå();
@@ -653,7 +654,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         ) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_KONTAKTINFO_GRUNN_MANGLER);
         }
-        versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
+        versjoner.add(gjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_KONTAKTINFO));
         gjeldendeInnhold().endreKontaktInfo(endreKontaktInformasjon);
         gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
         sistEndretNå();
@@ -670,7 +671,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         ) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_STILLINGSBESKRIVELSE_GRUNN_MANGLER);
         }
-        versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
+        versjoner.add(gjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_STILLING));
         gjeldendeInnhold().endreStillingsInfo(endreStillingsbeskrivelse);
         gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
         sistEndretNå();
@@ -688,7 +689,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         ) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OPPFØLGING_OG_TILRETTELEGGING_GRUNN_MANGLER);
         }
-        versjoner.add(gjeldendeInnhold().nyGodkjentVersjon());
+        versjoner.add(gjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_OPPFØLGING_OG_TILRETTELEGGING));
         gjeldendeInnhold().endreOppfølgingOgTilretteleggingInfo(endreOppfølgingOgTilrettelegging);
         gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
         sistEndretNå();

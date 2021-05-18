@@ -1,16 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
 import lombok.experimental.FieldNameConstants;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.StillingsbeskrivelseEndret;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erTom;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -37,9 +34,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import lombok.experimental.FieldNameConstants;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 // Lombok
 @Data
@@ -135,10 +129,14 @@ public class AvtaleInnhold {
     private GodkjentPaVegneGrunn godkjentPaVegneGrunn;
     private boolean godkjentPaVegneAv;
 
+    @Enumerated(EnumType.STRING)
+    private AvtaleInnholdType innholdType;
+
     public static AvtaleInnhold nyttTomtInnhold(Tiltakstype tiltakstype) {
         var innhold = new AvtaleInnhold();
         innhold.setId(UUID.randomUUID());
         innhold.setVersjon(1);
+        innhold.setInnholdType(AvtaleInnholdType.INNGÅ);
         if (tiltakstype == Tiltakstype.SOMMERJOBB) {
             innhold.setStillingstype(Stillingstype.MIDLERTIDIG);
         }
@@ -149,7 +147,7 @@ public class AvtaleInnhold {
         return id;
     }
 
-    public AvtaleInnhold nyVersjon() {
+    public AvtaleInnhold nyVersjon(AvtaleInnholdType innholdType) {
         AvtaleInnhold nyVersjon = toBuilder()
                 .id(UUID.randomUUID())
                 .maal(kopiAvMål())
@@ -163,17 +161,19 @@ public class AvtaleInnhold {
                 .godkjentPaVegneGrunn(null)
                 .journalpostId(null)
                 .versjon(versjon + 1)
+                .innholdType(innholdType)
                 .build();
         nyVersjon.getMaal().forEach(m -> m.setAvtaleInnhold(nyVersjon));
         return nyVersjon;
     }
 
-    public AvtaleInnhold nyGodkjentVersjon() {
+    public AvtaleInnhold nyGodkjentVersjon(AvtaleInnholdType innholdType) {
         AvtaleInnhold nyVersjon = toBuilder()
                 .id(UUID.randomUUID())
                 .maal(kopiAvMål())
                 .journalpostId(null)
                 .versjon(versjon + 1)
+                .innholdType(innholdType)
                 .build();
         nyVersjon.getMaal().forEach(m -> m.setAvtaleInnhold(nyVersjon));
         return nyVersjon;
