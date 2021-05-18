@@ -21,6 +21,8 @@ import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
@@ -60,9 +62,13 @@ public class InnloggingService {
             NavIdent navIdent = new NavIdent(brukerOgIssuer.getBrukerIdent());
             Set<String> navEnheter = hentNavEnheter(navIdent);
             return new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, navEnheter, slettemerkeProperties);
-        } else if (issuer == Issuer.ISSUER_ISSO && avtalerolle == Avtalerolle.BESLUTTER && tokenUtils
-            .harAdGruppe(beslutterAdGruppeProperties.getId())) {
-            return new Beslutter(new NavIdent(brukerOgIssuer.getBrukerIdent()), tilgangskontrollService, axsysService);
+        } else if (issuer == Issuer.ISSUER_ISSO && avtalerolle == Avtalerolle.BESLUTTER) {
+            boolean harAdGruppeForBeslutter = tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId());
+            if (harAdGruppeForBeslutter) {
+                return new Beslutter(new NavIdent(brukerOgIssuer.getBrukerIdent()), tilgangskontrollService, axsysService);
+            } else {
+                throw new FeilkodeException(Feilkode.MANGLER_AD_GRUPPE_BESLUTTER);
+            }
         } else {
             throw new TilgangskontrollException("Ugyldig kombinasjon av issuer og rolle.");
         }
