@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.EnumSet;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,7 +18,7 @@ public class AvtalepartTest {
     public void endreAvtale__skal_feile_for_deltaker() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Deltaker deltaker = TestData.enDeltaker(avtale);
-        deltaker.endreAvtale(avtale.getSistEndret(), TestData.ingenEndring(), avtale);
+        deltaker.endreAvtale(avtale.getSistEndret(), TestData.ingenEndring(), avtale, EnumSet.of(avtale.getTiltakstype()));
     }
 
     @Test(expected = ArbeidsgiverSkalGodkjenneFørVeilederException.class)
@@ -45,14 +46,14 @@ public class AvtalepartTest {
     public void endreAvtale__skal_fungere_for_arbeidsgiver() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.endreAvtale(Instant.now(), TestData.ingenEndring(), avtale);
+        arbeidsgiver.endreAvtale(Instant.now(), TestData.ingenEndring(), avtale, EnumSet.of(avtale.getTiltakstype()));
     }
 
     @Test
     public void endreAvtale__skal_fungere_for_veileder() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.endreAvtale(Instant.now(), TestData.ingenEndring(), avtale);
+        veileder.endreAvtale(Instant.now(), TestData.ingenEndring(), avtale, EnumSet.of(avtale.getTiltakstype()));
     }
 
     @Test(expected = SamtidigeEndringerException.class)

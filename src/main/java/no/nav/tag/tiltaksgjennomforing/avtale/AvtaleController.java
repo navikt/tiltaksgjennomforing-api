@@ -1,16 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
-
 import io.micrometer.core.annotation.Timed;
-import java.net.URI;
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import no.nav.security.token.support.core.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.StillingsbeskrivelseEndret;
 import no.nav.tag.tiltaksgjennomforing.dokgen.DokgenService;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
@@ -23,16 +16,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
 
 @Protected
 @RestController
@@ -47,6 +38,7 @@ public class AvtaleController {
     private final VeilarbArenaClient veilarbArenaClient;
     private final KontoregisterService kontoregisterService;
     private final DokgenService dokgenService;
+    private final TilskuddsperiodeConfig tilskuddsperiodeConfig;
 
     @GetMapping("/{avtaleId}")
     public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
@@ -98,7 +90,7 @@ public class AvtaleController {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
-        avtalepart.endreAvtale(sistEndret, endreAvtale, avtale);
+        avtalepart.endreAvtale(sistEndret, endreAvtale, avtale, tilskuddsperiodeConfig.getTiltakstyper());
         Avtale lagretAvtale = avtaleRepository.save(avtale);
         return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
     }
@@ -110,7 +102,7 @@ public class AvtaleController {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
-        avtalepart.endreAvtale(sistEndret, endreAvtale, avtale);
+        avtalepart.endreAvtale(sistEndret, endreAvtale, avtale, tilskuddsperiodeConfig.getTiltakstyper());
         return avtale;
     }
 

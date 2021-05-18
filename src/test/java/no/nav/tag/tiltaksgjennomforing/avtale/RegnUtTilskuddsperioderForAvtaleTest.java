@@ -22,7 +22,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         endreAvtale.setStartDato(fra);
         endreAvtale.setSluttDato(til);
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
 
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(1);
         assertThat(avtale.getTilskuddPeriode().first().getBeløp()).isEqualTo(avtale.getSumLonnstilskudd() * 3);
@@ -38,7 +38,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         endreAvtale.setStartDato(fra);
         endreAvtale.setSluttDato(til);
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
         var tilskuddPerioder = avtale.getTilskuddPeriode();
 
         assertThat(tilskuddPerioder.size()).isEqualTo(2);
@@ -54,7 +54,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         endreAvtale.setLonnstilskuddProsent(40);
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
         assertThat(avtale.tilskuddsperiode(2).getLonnstilskuddProsent()).isEqualTo(30);
         harRiktigeEgenskaper(avtale);
     }
@@ -65,7 +65,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         endreAvtale.setLonnstilskuddProsent(60);
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(13));
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
 
         TilskuddPeriode sisteTilskuddsperiode = avtale.tilskuddsperiode(avtale.getTilskuddPeriode().size() - 1);
         assertThat(sisteTilskuddsperiode.getLonnstilskuddProsent()).isEqualTo(50);
@@ -83,7 +83,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
 
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(4);
         harRiktigeEgenskaper(avtale);
     }
@@ -97,7 +97,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
         endreAvtale.setLonnstilskuddProsent(40);
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
 
         assertThat(avtale.getDatoForRedusertProsent()).isEqualTo(LocalDate.of(2021, 7, 1));
         harRiktigeEgenskaper(avtale);
@@ -112,7 +112,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
         endreAvtale.setLonnstilskuddProsent(60);
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
 
         assertThat(avtale.getDatoForRedusertProsent()).isEqualTo(LocalDate.of(2022, 1, 1));
         harRiktigeEgenskaper(avtale);
@@ -127,7 +127,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
         endreAvtale.setLonnstilskuddProsent(60);
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
 
         assertThat(avtale.getDatoForRedusertProsent()).isNull();
         harRiktigeEgenskaper(avtale);
@@ -140,7 +140,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         endreAvtale.setStartDato(LocalDate.of(2021, 1, 1));
         endreAvtale.setSluttDato(LocalDate.of(2031, 1, 1));
         endreAvtale.setLonnstilskuddProsent(60);
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
 
         assertThat(avtale.tilskuddsperiode(avtale.getTilskuddPeriode().size() - 1).getLonnstilskuddProsent()).isEqualTo(60);
         assertThat(avtale.getDatoForRedusertProsent()).isNull();

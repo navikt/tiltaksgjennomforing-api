@@ -1,26 +1,22 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
+import org.assertj.core.api.SoftAssertions;
+import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AvtaleErIkkeFordeltException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangArbeidstreningException;
-import org.assertj.core.api.SoftAssertions;
-import org.junit.Test;
-import org.springframework.test.util.ReflectionTestUtils;
+
+import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class AvtaleTest {
 
@@ -104,7 +100,7 @@ public class AvtaleTest {
     public void endreAvtaleSkalOppdatereRiktigeFelt() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         EndreAvtale endreAvtale = TestData.endringPåAlleArbeidstreningFelter();
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
 
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(avtale.getDeltakerFornavn()).isEqualTo(endreAvtale.getDeltakerFornavn());
@@ -134,7 +130,7 @@ public class AvtaleTest {
         etMaal.setBeskrivelse("Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.");
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setMaal(List.of(etMaal));
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
     }
 
     @Test
@@ -143,7 +139,7 @@ public class AvtaleTest {
         EndreAvtale endreAvtale = new EndreAvtale();
         LocalDate startDato = LocalDate.now();
         endreAvtale.setStartDato(startDato);
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
         assertThat(avtale.getStartDato()).isEqualTo(startDato);
     }
 
@@ -153,7 +149,7 @@ public class AvtaleTest {
         EndreAvtale endreAvtale = new EndreAvtale();
         LocalDate sluttDato = LocalDate.now();
         endreAvtale.setSluttDato(sluttDato);
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
         assertThat(avtale.getSluttDato()).isEqualTo(sluttDato);
     }
 
@@ -165,7 +161,7 @@ public class AvtaleTest {
         LocalDate sluttDato = startDato.plusMonths(18);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
         assertThat(avtale.getStartDato()).isEqualTo(startDato);
         assertThat(avtale.getSluttDato()).isEqualTo(sluttDato);
     }
@@ -178,7 +174,7 @@ public class AvtaleTest {
         LocalDate sluttDato = startDato.plusMonths(18).plusDays(1);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
     }
 
     @Test(expected = StartDatoErEtterSluttDatoException.class)
@@ -189,7 +185,7 @@ public class AvtaleTest {
         LocalDate sluttDato = startDato.minusDays(1);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
     }
 
     @Test
@@ -199,7 +195,7 @@ public class AvtaleTest {
         boolean arbeidsgiverGodkjenningFoerEndring = avtale.erGodkjentAvArbeidsgiver();
         boolean veilederGodkjenningFoerEndring = avtale.erGodkjentAvVeileder();
 
-        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
 
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(deltakerGodkjenningFoerEndring).isEqualTo(avtale.erGodkjentAvDeltaker());
@@ -213,7 +209,7 @@ public class AvtaleTest {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         Instant førstEndret = avtale.getSistEndret();
         Thread.sleep(10);
-        avtale.endreAvtale(førstEndret, TestData.ingenEndring(), Avtalerolle.VEILEDER);
+        avtale.endreAvtale(førstEndret, TestData.ingenEndring(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
         assertThat(avtale.getSistEndret()).isAfter(førstEndret);
     }
 
@@ -318,7 +314,7 @@ public class AvtaleTest {
     private static void testAtHvertEnkeltFeltMangler(Avtale avtale, Set<String> felterSomKrevesForTiltakstype) {
         for (String felt : felterSomKrevesForTiltakstype) {
             EndreAvtale endreAvtale = endringPåAltUtenom(felt);
-            avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+            avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
             assertThat(avtale.felterSomIkkeErFyltUt()).containsOnly(felt);
             assertFeilkode(Feilkode.ALT_MA_VAERE_FYLT_UT, () -> avtale.godkjennForArbeidsgiver(TestData.enIdentifikator()));
         }
@@ -583,7 +579,7 @@ public class AvtaleTest {
         Instant førEndringen = Instant.now();
         Avtale avtale = TestData.enArbeidstreningAvtale();
         Thread.sleep(10);
-        avtale.endreAvtale(Instant.MAX, TestData.ingenEndring(), Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.MAX, TestData.ingenEndring(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
         assertThat(avtale.getSistEndret()).isAfter(førEndringen);
     }
 
@@ -676,14 +672,14 @@ public class AvtaleTest {
     @Test
     public void avtale_kan_være_ufordelt_selv_om_alt_er_utfylt() {
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
-        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER);
+        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()));
         assertThat(avtale.erUfordelt()).isTrue();
     }
 
     @Test
     public void avtale_skal_kunne_godkjennes_når_den_erUfordelt() {
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
-        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER);
+        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()));
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
         avtale.godkjennForDeltaker(TestData.enIdentifikator());
         assertThat(avtale.erGodkjentAvArbeidsgiver());
@@ -694,7 +690,7 @@ public class AvtaleTest {
     public void ufordelt_avtale_må_tildeles_før_veileder_godkjenner() {
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(
             new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
-        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER);
+        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()));
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
         avtale.godkjennForDeltaker(TestData.enIdentifikator());
         assertThatThrownBy(() -> avtale.godkjennForVeileder(TestData.enNavIdent())).isInstanceOf(AvtaleErIkkeFordeltException.class);
@@ -708,7 +704,7 @@ public class AvtaleTest {
                 new NavIdent("Z123456"));
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         endreAvtale.setLonnstilskuddProsent(20);
-        assertThatThrownBy(() -> avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER))
+        assertThatThrownBy(() -> avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype())))
             .isInstanceOf(FeilLonnstilskuddsprosentException.class);
     }
 
@@ -719,7 +715,7 @@ public class AvtaleTest {
                 new NavIdent("Z123456"));
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         endreAvtale.setLonnstilskuddProsent(67);
-        assertThatThrownBy(() -> avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER))
+        assertThatThrownBy(() -> avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype())))
             .isInstanceOf(FeilLonnstilskuddsprosentException.class);
     }
 
@@ -731,7 +727,7 @@ public class AvtaleTest {
                 new NavIdent("Z123456"));
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         endreAvtale.setLonnstilskuddProsent(-1);
-        assertThatThrownBy(() -> avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER))
+        assertThatThrownBy(() -> avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype())))
             .isInstanceOf(FeilLonnstilskuddsprosentException.class);
     }
 
@@ -742,7 +738,7 @@ public class AvtaleTest {
                 new NavIdent("Z123456"));
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         endreAvtale.setLonnstilskuddProsent(100);
-        assertThatThrownBy(() -> avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER))
+        assertThatThrownBy(() -> avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype())))
             .isInstanceOf(FeilLonnstilskuddsprosentException.class);
     }
 

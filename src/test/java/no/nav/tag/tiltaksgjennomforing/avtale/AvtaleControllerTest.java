@@ -1,32 +1,11 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static java.util.Arrays.asList;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enArbeidstreningAvtale;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enNavIdent;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
-import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6Eller7Exception;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KontoregisterFeilException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
@@ -36,9 +15,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.time.LocalDate;
+import java.util.*;
+
+import static java.util.Arrays.asList;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enArbeidstreningAvtale;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enNavIdent;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 @SuppressWarnings("rawtypes")
 @RunWith(MockitoJUnitRunner.class)
@@ -71,6 +60,9 @@ public class AvtaleControllerTest {
 
     @Mock
     Norg2Client norg2Client;
+
+    @Spy
+    TilskuddsperiodeConfig tilskuddsperiodeConfig = new TilskuddsperiodeConfig();
 
     private static List<Avtale> lagListeMedAvtaler(Avtale avtale, int antall) {
         List<Avtale> avtaler = new ArrayList<>();

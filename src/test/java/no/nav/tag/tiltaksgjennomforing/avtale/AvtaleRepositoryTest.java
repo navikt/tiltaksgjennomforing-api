@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -69,7 +70,7 @@ public class AvtaleRepositoryTest {
         EndreAvtale endreAvtale = new EndreAvtale();
         Maal maal = TestData.etMaal();
         endreAvtale.setMaal(List.of(maal));
-        lagretAvtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        lagretAvtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale.getTiltakstype()));
         avtaleRepository.save(lagretAvtale);
 
         // Lage ny avtale
@@ -79,7 +80,7 @@ public class AvtaleRepositoryTest {
         EndreAvtale endreAvtale2 = new EndreAvtale();
         Maal maal2 = TestData.etMaal();
         endreAvtale2.setMaal(List.of(maal2));
-        lagretAvtale2.endreAvtale(Instant.now(), endreAvtale2, Avtalerolle.VEILEDER);
+        lagretAvtale2.endreAvtale(Instant.now(), endreAvtale2, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale.getTiltakstype()));
         avtaleRepository.save(lagretAvtale2);
     }
 
@@ -90,7 +91,7 @@ public class AvtaleRepositoryTest {
 
         // Lagre maal skal fungere
         EndreAvtale endreAvtale = new EndreAvtale();
-        lagretAvtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        lagretAvtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale.getTiltakstype()));
         avtaleRepository.save(lagretAvtale);
 
         // Lage ny avtale
@@ -98,7 +99,7 @@ public class AvtaleRepositoryTest {
 
         // Lagre maal skal enda fungere
         EndreAvtale endreAvtale2 = new EndreAvtale();
-        lagretAvtale2.endreAvtale(Instant.now(), endreAvtale2, Avtalerolle.VEILEDER);
+        lagretAvtale2.endreAvtale(Instant.now(), endreAvtale2, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale2.getTiltakstype()));
         avtaleRepository.save(lagretAvtale2);
     }
 
@@ -120,7 +121,7 @@ public class AvtaleRepositoryTest {
         endreAvtale.setArbeidsgiveravgift(BigDecimal.valueOf(0.141));
         endreAvtale.setLonnstilskuddProsent(40);
 
-        lagretAvtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER);
+        lagretAvtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale.getTiltakstype()));
         Avtale nyLagretAvtale = avtaleRepository.save(lagretAvtale);
 
         var perioder = nyLagretAvtale.getTilskuddPeriode();
@@ -166,7 +167,7 @@ public class AvtaleRepositoryTest {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering, never()).avtaleEndret(any());
-        avtale.endreAvtale(Instant.now(), TestData.ingenEndring(), Avtalerolle.VEILEDER);
+        avtale.endreAvtale(Instant.now(), TestData.ingenEndring(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).avtaleEndret(any());
     }

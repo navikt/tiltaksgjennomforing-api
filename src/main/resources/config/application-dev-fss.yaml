@@ -90,6 +90,8 @@ tiltaksgjennomforing:
     url: https://app-q1.adeo.no/norg2/api/v1/enhet/navkontor/
   dvh-melding:
     feature-enabled: true
+  tilskuddsperioder:
+    tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD
 
 http:
   proxy:

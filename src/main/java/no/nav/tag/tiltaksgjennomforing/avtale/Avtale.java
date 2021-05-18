@@ -109,11 +109,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         return avtale;
     }
 
-    public void endreAvtale(Instant sistEndret, EndreAvtale nyAvtale, Avtalerolle utfortAv) {
+    public void endreAvtale(Instant sistEndret, EndreAvtale nyAvtale, Avtalerolle utfortAv, EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder) {
         sjekkOmAvtalenKanEndres();
         sjekkSistEndret(sistEndret);
         gjeldendeInnhold().endreAvtale(nyAvtale);
-        nyeTilskuddsperioder();
+        if (tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
+            nyeTilskuddsperioder();
+        }
         sistEndretNå();
         registerEvent(new AvtaleEndret(this, utfortAv));
     }

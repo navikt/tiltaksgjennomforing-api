@@ -71,3 +71,5 @@ tiltaksgjennomforing:
     mock: true
   dokgen:
     uri: http://tiltak-dokgen/template/tiltak-avtale/create-pdf
+  tilskuddsperioder:
+    tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD
