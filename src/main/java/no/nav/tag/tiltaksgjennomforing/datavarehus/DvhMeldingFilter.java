@@ -17,7 +17,7 @@ public class DvhMeldingFilter {
             log.info("Feature arbeidsgiver.tiltaksgjennomforing-api.dvh-melding er ikke skrudd på, sender ingen melding til datavarehus");
             return false;
         }
-        return avtale.erGodkjentAvVeileder() && avtale.getTiltakstype() == Tiltakstype.SOMMERJOBB;
+        return avtale.getTiltakstype() == Tiltakstype.SOMMERJOBB;
     }
 
     public boolean erFeatureSkruddPå() {

@@ -3,8 +3,8 @@ package no.nav.tag.tiltaksgjennomforing.datavarehus;
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -15,43 +15,43 @@ public class DvhAvtalehendelseLytter {
     private final DvhMeldingEntitetRepository repository;
     private final DvhMeldingFilter dvhMeldingFilter;
 
-    @EventListener
+    @TransactionalEventListener
     public void avtaleInngått(AvtaleInngått event) {
         Avtale avtale = event.getAvtale();
         lagHendelse(avtale, DvhHendelseType.INNGÅTT);
     }
 
-    @EventListener
+    @TransactionalEventListener
     public void avtaleForlenget(AvtaleForlenget event) {
         lagHendelse(event.getAvtale(), DvhHendelseType.FORLENGET);
     }
 
-    @EventListener
+    @TransactionalEventListener
     public void avtaleForkortet(AvtaleForkortet event) {
         lagHendelse(event.getAvtale(), DvhHendelseType.FORKORTET);
     }
 
-    @EventListener
+    @TransactionalEventListener
     public void avtaleAnnullert(AnnullertAvVeileder event) {
         lagHendelse(event.getAvtale(), DvhHendelseType.ANNULLERT);
     }
 
-    @EventListener
+    @TransactionalEventListener
     public void tilskuddsberegningEndret(TilskuddsberegningEndret event) {
         lagHendelse(event.getAvtale(), DvhHendelseType.ENDRET);
     }
 
-    @EventListener
+    @TransactionalEventListener
     public void stillingsbeskrivelseEndret(StillingsbeskrivelseEndret event) {
         lagHendelse(event.getAvtale(), DvhHendelseType.ENDRET);
     }
 
-    @EventListener
+    @TransactionalEventListener
     public void kontaktinformasjonEndret(KontaktinformasjonEndret event) {
         lagHendelse(event.getAvtale(), DvhHendelseType.ENDRET);
     }
 
-    @EventListener
+    @TransactionalEventListener
     public void oppfølgingOgTilretteleggingEndret(OppfølgingOgTilretteleggingEndret event) {
         lagHendelse(event.getAvtale(), DvhHendelseType.ENDRET);
     }
