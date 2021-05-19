@@ -185,6 +185,7 @@ public class TestData {
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
         avtale.setGodkjentAvBeslutter(LocalDateTime.now());
         avtale.setAvtaleInngått(LocalDateTime.now());
+        avtale.setIkrafttredelsestidspunkt(LocalDateTime.now());
         avtale.setGodkjentAvNavIdent(TestData.enNavIdent());
         return avtale;
     }
