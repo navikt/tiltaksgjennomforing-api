@@ -73,3 +73,5 @@ tiltaksgjennomforing:
     uri: http://tiltak-dokgen/template/tiltak-avtale/create-pdf
   tilskuddsperioder:
     tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD
+
+ELECTOR_PATH: null
