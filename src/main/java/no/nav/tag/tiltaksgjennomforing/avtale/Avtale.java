@@ -462,7 +462,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         TilskuddPeriode gjeldendePeriode = gjeldendeTilskuddsperiode();
         gjeldendePeriode.avslå(beslutter, avslagsårsaker, avslagsforklaring);
         sistEndretNå();
-        registerEvent(new TilskuddsperiodeAvslått(this, beslutter));
+        registerEvent(new TilskuddsperiodeAvslått(this, beslutter, gjeldendePeriode));
     }
 
 

@@ -110,6 +110,30 @@ public class MetrikkRegistrering {
     }
 
     @EventListener
+    public void avtaleInngått(AvtaleInngått event) {
+        Avtalerolle rolle = event.getUtførtAv();
+        Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
+        log.info("Avtale inngått, avtaleId={}, avtalepart={}, tiltakstype={}", event.getAvtale().getId(), rolle, tiltakstype);
+        counter("avtale.godkjenning.inngaatt", rolle, tiltakstype).increment();
+    }
+
+    @EventListener
+    public void tilskuddsperiodeGodkjent(TilskuddsperiodeGodkjent event) {
+        Avtalerolle rolle = Avtalerolle.BESLUTTER;
+        Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
+        log.info("Tilskuddsperiode godkjent, avtaleId={}, tilskuddsperiodeId={}, løpenummer={}, avtalepart={}, tiltakstype={}", event.getAvtale().getId(), event.getTilskuddsperiode().getId(), event.getTilskuddsperiode().getLøpenummer(), rolle, tiltakstype);
+        counter("avtale.tilskuddsperiode.godkjent", rolle, tiltakstype).increment();
+    }
+
+    @EventListener
+    public void tilskuddsperiodeAvslått(TilskuddsperiodeAvslått event) {
+        Avtalerolle rolle = Avtalerolle.BESLUTTER;
+        Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
+        log.info("Tilskuddsperiode avslått, avtaleId={}, tilskuddsperiodeId={}, løpenummer={}, avtalepart={}, tiltakstype={}", event.getAvtale().getId(), event.getTilskuddsperiode().getId(), event.getTilskuddsperiode().getLøpenummer(), rolle, tiltakstype);
+        counter("avtale.tilskuddsperiode.avslaatt", rolle, tiltakstype).increment();
+    }
+
+    @EventListener
     public void godkjentPaVegneAv(GodkjentPaVegneAv event) {
         Avtalerolle rolle = Avtalerolle.VEILEDER;
         Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
