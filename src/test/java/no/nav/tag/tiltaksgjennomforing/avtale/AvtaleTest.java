@@ -558,10 +558,13 @@ public class AvtaleTest {
         AvtaleInnhold førsteVersjon = versjoner.get(0);
         AvtaleInnhold andreVersjon = versjoner.get(1);
         assertThat(førsteVersjon.getVersjon()).isEqualTo(1);
+        assertThat(førsteVersjon.getInnholdType()).isEqualTo(AvtaleInnholdType.INNGÅ);
+        assertThat(førsteVersjon.getVersjon()).isEqualTo(1);
         assertThat(andreVersjon.getVersjon()).isEqualTo(2);
         assertThat(andreVersjon.getMaal())
                 .usingElementComparatorOnFields(Maal.Fields.kategori, Maal.Fields.beskrivelse)
                 .isEqualTo(førsteVersjon.getMaal());
+        assertThat(andreVersjon.getInnholdType()).isEqualTo(AvtaleInnholdType.LÅSE_OPP);
         assertThat(andreVersjon).isEqualToIgnoringGivenFields(førsteVersjon,
                 AvtaleInnhold.Fields.id,
                 AvtaleInnhold.Fields.versjon,
@@ -571,7 +574,8 @@ public class AvtaleTest {
                 AvtaleInnhold.Fields.godkjentAvVeileder,
                 AvtaleInnhold.Fields.avtaleInngått,
                 AvtaleInnhold.Fields.ikrafttredelsestidspunkt,
-                AvtaleInnhold.Fields.journalpostId);
+                AvtaleInnhold.Fields.journalpostId,
+                AvtaleInnhold.Fields.innholdType);
     }
 
     @Test
