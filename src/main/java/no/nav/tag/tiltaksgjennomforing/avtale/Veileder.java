@@ -208,38 +208,42 @@ public class Veileder extends Avtalepart<NavIdent> {
             throw new IkkeAdminTilgangException();
         }
         avtale.slettemerk(this.getIdentifikator());
-
     }
 
-    public void forkortAvtale(Instant sistEndret, Avtale avtale, LocalDate sluttDato, String grunn, String annetGrunn) {
+    public void endreMål(EndreMål endreMål, Avtale avtale) {
+        sjekkTilgang(avtale);
+        avtale.endreMål(endreMål, getIdentifikator());
+    }
+
+    public void forkortAvtale(Avtale avtale, LocalDate sluttDato, String grunn, String annetGrunn) {
         sjekkTilgang(avtale);
         avtale.forkortAvtale(sluttDato, grunn, annetGrunn, getIdentifikator());
     }
 
-    public void forlengAvtale(Instant sistEndret, LocalDate sluttDato, Avtale avtale) {
+    public void forlengAvtale(LocalDate sluttDato, Avtale avtale) {
         sjekkTilgang(avtale);
-        avtale.forlengAvtale(sluttDato);
+        avtale.forlengAvtale(sluttDato, getIdentifikator());
     }
 
 
-    public void endreStillingsinfo(EndreStillingsbeskrivelse endreStillingsbeskrivelse, Avtale avtale) {
+    public void endreStillingbeskrivelse(EndreStillingsbeskrivelse endreStillingsbeskrivelse, Avtale avtale) {
         sjekkTilgang(avtale);
-        avtale.endreStillingsbeskrivelse(endreStillingsbeskrivelse);
+        avtale.endreStillingsbeskrivelse(endreStillingsbeskrivelse, getIdentifikator());
     }
 
-    public void endreOppfølgingOgTilrettelegginginfo(EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging, Avtale avtale) {
+    public void endreOppfølgingOgTilrettelegging(EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging, Avtale avtale) {
         sjekkTilgang(avtale);
-        avtale.endreOppfølgingOgTilrettelegging(endreOppfølgingOgTilrettelegging);
+        avtale.endreOppfølgingOgTilrettelegging(endreOppfølgingOgTilrettelegging, getIdentifikator());
     }
 
     public void endreKontaktinfo(EndreKontaktInformasjon endreKontaktInformasjon, Avtale avtale) {
         sjekkTilgang(avtale);
-        avtale.endreKontaktInformasjon(endreKontaktInformasjon);
+        avtale.endreKontaktInformasjon(endreKontaktInformasjon, getIdentifikator());
     }
 
-    public void endreTilskuddsberegning(Instant sistEndret, EndreTilskuddsberegning endreTilskuddsberegning, Avtale avtale) {
+    public void endreTilskuddsberegning(EndreTilskuddsberegning endreTilskuddsberegning, Avtale avtale) {
         sjekkTilgang(avtale);
-        avtale.endreTilskuddsberegning(endreTilskuddsberegning);
+        avtale.endreTilskuddsberegning(endreTilskuddsberegning, getIdentifikator());
     }
 
     public void sendTilbakeTilBeslutter(Avtale avtale) {

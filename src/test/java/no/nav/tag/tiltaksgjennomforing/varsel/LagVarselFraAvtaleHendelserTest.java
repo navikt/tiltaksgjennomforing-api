@@ -164,7 +164,7 @@ class LagVarselFraAvtaleHendelserTest {
         Avtale avtale = avtaleRepository.save(TestData.enLonnstilskuddAvtaleGodkjentAvVeileder());
         Veileder veileder = TestData.enVeileder(avtale);
 
-        veileder.forlengAvtale(Instant.now(), avtale.getSluttDato().plusMonths(1), avtale);
+        veileder.forlengAvtale(avtale.getSluttDato().plusMonths(1), avtale);
         avtaleRepository.save(avtale);
 
         assertHendelse(AVTALE_FORLENGET, VEILEDER, VEILEDER, false);
@@ -177,7 +177,7 @@ class LagVarselFraAvtaleHendelserTest {
         Avtale avtale = avtaleRepository.save(TestData.enLonnstilskuddAvtaleGodkjentAvVeileder());
         Veileder veileder = TestData.enVeileder(avtale);
 
-        veileder.endreTilskuddsberegning(Instant.now(), TestData.enEndreTilskuddsberegning(), avtale);
+        veileder.endreTilskuddsberegning(TestData.enEndreTilskuddsberegning(), avtale);
         avtaleRepository.save(avtale);
 
         assertHendelse(TILSKUDDSBEREGNING_ENDRET, VEILEDER, VEILEDER, false);

@@ -411,7 +411,7 @@ public class AvtaleControllerTest {
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(identTilInnloggetVeileder), any(Fnr.class))).thenReturn(true);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         when(avtaleRepository.save(any())).thenReturn(avtale);
-        avtaleController.oppdatterBedriftKontonummer(avtale.getId(), Avtalerolle.VEILEDER);
+        avtaleController.oppdaterBedriftKontonummer(avtale.getId(), Avtalerolle.VEILEDER);
         Avtale avtaleTilbake = avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER);
         assertThat(avtaleTilbake.gjeldendeInnhold().getArbeidsgiverKontonummer())
             .isEqualTo("990983666");
@@ -426,7 +426,7 @@ public class AvtaleControllerTest {
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(identTilInnloggetVeileder), any(Fnr.class))).thenReturn(false);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        avtaleController.oppdatterBedriftKontonummer(avtale.getId(), Avtalerolle.VEILEDER);
+        avtaleController.oppdaterBedriftKontonummer(avtale.getId(), Avtalerolle.VEILEDER);
     }
 
     @Test(expected = KontoregisterFeilException.class)
@@ -439,6 +439,6 @@ public class AvtaleControllerTest {
         when(kontoregisterService.hentKontonummer(anyString())).thenThrow(KontoregisterFeilException.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(identTilInnloggetVeileder), any(Fnr.class))).thenReturn(true);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        ResponseEntity responseEntity = avtaleController.oppdatterBedriftKontonummer(avtale.getId(), Avtalerolle.VEILEDER);
+        ResponseEntity responseEntity = avtaleController.oppdaterBedriftKontonummer(avtale.getId(), Avtalerolle.VEILEDER);
     }
 }

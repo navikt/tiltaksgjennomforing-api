@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 
@@ -320,7 +321,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (nySluttDato.isBefore(getStartDato())) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_FOR_STARTDATO);
         }
-        if (!erGodkjentAvVeileder()) {
+        if (!erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_IKKE_GODKJENT_AVTALE);
         }
         if (StringUtils.isBlank(grunn) || (grunn.equals("Annet") && StringUtils.isBlank(annetGrunn))) {
@@ -603,11 +604,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
     }
 
-    public void forlengAvtale(LocalDate nySluttDato) {
+    public void forlengAvtale(LocalDate nySluttDato, NavIdent utførtAv) {
         if (!nySluttDato.isAfter(getSluttDato())) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORLENGE_FEIL_SLUTTDATO);
         }
-        if (!erGodkjentAvVeileder()) {
+        if (!erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORLENGE_IKKE_GODKJENT_AVTALE);
         }
         forlengTilskuddsperioder(this.getSluttDato(), nySluttDato);
@@ -617,11 +618,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
         sistEndretNå();
         sendTilbakeTilBeslutter();
-        registerEvent(new AvtaleForlenget(this));
+        registerEvent(new AvtaleForlenget(this, utførtAv));
     }
 
-    public void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning) {
-        if (!erGodkjentAvVeileder()) {
+    public void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning, NavIdent utførtAv) {
+        krevEnAvTiltakstyper(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
+        if (!erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_IKKE_GODKJENT_AVTALE);
         }
         if (Utils.erNoenTomme(tilskuddsberegning.getArbeidsgiveravgift(),
@@ -638,11 +640,17 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         endreBeløpITilskuddsperioder();
         sistEndretNå();
         gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
-        registerEvent(new TilskuddsberegningEndret(this, null));
+        registerEvent(new TilskuddsberegningEndret(this, utførtAv));
     }
 
-    public void endreKontaktInformasjon(EndreKontaktInformasjon endreKontaktInformasjon) {
-        if (!erGodkjentAvVeileder()) {
+    private void krevEnAvTiltakstyper(Tiltakstype... tiltakstyper) {
+        if (Stream.of(tiltakstyper).noneMatch(t -> t == tiltakstype)) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_FEIL_TILTAKSTYPE);
+        }
+    }
+
+    public void endreKontaktInformasjon(EndreKontaktInformasjon endreKontaktInformasjon, NavIdent utførtAv) {
+        if (!erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_KONTAKTINFO_GRUNN_IKKE_GODKJENT_AVTALE);
         }
         if (Utils.erNoenTomme(endreKontaktInformasjon.getVeilederFornavn(),
@@ -659,11 +667,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
         sistEndretNå();
         sendTilbakeTilBeslutter();
-        registerEvent(new KontaktinformasjonEndret(this));
+        registerEvent(new KontaktinformasjonEndret(this, utførtAv));
     }
 
-    public void endreStillingsbeskrivelse(EndreStillingsbeskrivelse endreStillingsbeskrivelse) {
-        if (!erGodkjentAvVeileder()) {
+    public void endreStillingsbeskrivelse(EndreStillingsbeskrivelse endreStillingsbeskrivelse, NavIdent utførtAv) {
+        if (!erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_STILLINGSBESKRIVELSE_GRUNN_IKKE_GODKJENT_AVTALE);
         }
         if (Utils.erNoenTomme(endreStillingsbeskrivelse.getStillingstittel(),
@@ -676,16 +684,15 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
         sistEndretNå();
         sendTilbakeTilBeslutter();
-        registerEvent(new StillingsbeskrivelseEndret(this));
+        registerEvent(new StillingsbeskrivelseEndret(this, utførtAv));
     }
 
-    public void endreOppfølgingOgTilrettelegging(EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging) {
-        if (!erGodkjentAvVeileder()) {
+    public void endreOppfølgingOgTilrettelegging(EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging, NavIdent utførtAv) {
+        if (!erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OPPFØLGING_OG_TILRETTELEGGING_GRUNN_IKKE_GODKJENT_AVTALE);
         }
         if (Utils.erNoenTomme(endreOppfølgingOgTilrettelegging.getOppfolging(),
                 endreOppfølgingOgTilrettelegging.getTilrettelegging())
-
         ) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OPPFØLGING_OG_TILRETTELEGGING_GRUNN_MANGLER);
         }
@@ -694,7 +701,31 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
         sistEndretNå();
         sendTilbakeTilBeslutter();
-        registerEvent(new OppfølgingOgTilretteleggingEndret(this));
+        registerEvent(new OppfølgingOgTilretteleggingEndret(this, utførtAv));
+    }
+
+    public void endreMål(EndreMål endreMål, NavIdent utførtAv) {
+        krevEnAvTiltakstyper(Tiltakstype.ARBEIDSTRENING);
+        if (!erAvtaleInngått()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_MAAL_IKKE_INNGAATT_AVTALE);
+        }
+        if (endreMål.getMaal().isEmpty()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_MAAL_TOM_LISTE);
+        }
+        for (Maal m : endreMål.getMaal()) {
+            if (Utils.erNoenTomme(m.getBeskrivelse(), m.getKategori())) {
+                throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_MAAL_IKKE_BESKRIVELSE_ELLER_KATEGORI);
+            }
+        }
+        versjoner.add(gjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_MÅL));
+        gjeldendeInnhold().getMaal().clear();
+        List<Maal> nyeMål = endreMål.getMaal().stream().map(m -> new Maal().setId(UUID.randomUUID()).setBeskrivelse(m.getBeskrivelse()).setKategori(m.getKategori())).collect(Collectors.toList());
+        gjeldendeInnhold().getMaal().addAll(nyeMål);
+        gjeldendeInnhold().getMaal().forEach(m -> m.setAvtaleInnhold(gjeldendeInnhold()));
+        gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
+        sistEndretNå();
+        sendTilbakeTilBeslutter();
+        registerEvent(new MålEndret(this, utførtAv));
     }
 
     private interface MetoderSomIkkeSkalDelegeresFraAvtaleInnhold {
