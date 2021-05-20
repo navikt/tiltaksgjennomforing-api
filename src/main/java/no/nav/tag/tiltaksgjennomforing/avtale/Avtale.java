@@ -218,7 +218,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new GodkjentAvArbeidsgiver(this, utfortAv));
     }
 
-    void godkjennForVeileder(Identifikator utfortAv) {
+    void godkjennForVeileder(NavIdent utfortAv) {
         sjekkOmAltErUtfylt();
         if (erUfordelt()) {
             throw new AvtaleErIkkeFordeltException();
@@ -231,19 +231,19 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         this.setGodkjentAvVeileder(tidspunkt);
         this.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
         if (tiltakstype != Tiltakstype.SOMMERJOBB) {
-            avtaleInngått(tidspunkt, Avtalerolle.VEILEDER);
+            avtaleInngått(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
         }
         this.setIkrafttredelsestidspunkt(tidspunkt);
         sistEndretNå();
         registerEvent(new GodkjentAvVeileder(this, utfortAv));
     }
 
-    private void avtaleInngått(LocalDateTime tidspunkt, Avtalerolle utførtAv) {
+    private void avtaleInngått(LocalDateTime tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
         setAvtaleInngått(tidspunkt);
-        registerEvent(new AvtaleInngått(this, utførtAv));
+        registerEvent(new AvtaleInngått(this, utførtAvRolle, utførtAv));
     }
 
-    void godkjennForVeilederOgDeltaker(Identifikator utfortAv, GodkjentPaVegneGrunn paVegneAvGrunn) {
+    void godkjennForVeilederOgDeltaker(NavIdent utfortAv, GodkjentPaVegneGrunn paVegneAvGrunn) {
         sjekkOmAltErUtfylt();
         if (erGodkjentAvDeltaker()) {
             throw new DeltakerHarGodkjentException();
@@ -260,7 +260,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         this.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
         this.setIkrafttredelsestidspunkt(tidspunkt);
         if (tiltakstype != Tiltakstype.SOMMERJOBB) {
-            avtaleInngått(tidspunkt, Avtalerolle.VEILEDER);
+            avtaleInngått(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
         }
         sistEndretNå();
         registerEvent(new GodkjentPaVegneAv(this, utfortAv));
@@ -445,7 +445,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (!erAvtaleInngått()) {
             LocalDateTime tidspunkt = LocalDateTime.now();
             godkjennForBeslutter(tidspunkt, beslutter);
-            avtaleInngått(tidspunkt, Avtalerolle.BESLUTTER);
+            avtaleInngått(tidspunkt, Avtalerolle.BESLUTTER, beslutter);
         }
         sistEndretNå();
         registerEvent(new TilskuddsperiodeGodkjent(this, gjeldendePeriode, beslutter));

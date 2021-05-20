@@ -92,7 +92,7 @@ public class LagVarselFraAvtaleHendelser {
 
     @EventListener
     public void avtaleInngått(AvtaleInngått event) {
-        VarselFactory factory = new VarselFactory(event.getAvtale(), event.getUtførtAv(), VarslbarHendelseType.AVTALE_INNGÅTT);
+        VarselFactory factory = new VarselFactory(event.getAvtale(), event.getUtførtAvRolle(), VarslbarHendelseType.AVTALE_INNGÅTT);
         varselRepository.saveAll(factory.alleParter());
     }
 

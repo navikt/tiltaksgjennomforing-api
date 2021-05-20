@@ -111,7 +111,7 @@ public class MetrikkRegistrering {
 
     @EventListener
     public void avtaleInngått(AvtaleInngått event) {
-        Avtalerolle rolle = event.getUtførtAv();
+        Avtalerolle rolle = event.getUtførtAvRolle();
         Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
         log.info("Avtale inngått, avtaleId={}, avtalepart={}, tiltakstype={}", event.getAvtale().getId(), rolle, tiltakstype);
         counter("avtale.godkjenning.inngaatt", rolle, tiltakstype).increment();
