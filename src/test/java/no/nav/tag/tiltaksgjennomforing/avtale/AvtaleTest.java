@@ -686,8 +686,8 @@ public class AvtaleTest {
         avtale.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()));
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
         avtale.godkjennForDeltaker(TestData.enIdentifikator());
-        assertThat(avtale.erGodkjentAvArbeidsgiver());
-        assertThat(avtale.erGodkjentAvDeltaker());
+        assertThat(avtale.erGodkjentAvArbeidsgiver()).isTrue();
+        assertThat(avtale.erGodkjentAvDeltaker()).isTrue();
     }
 
     @Test
@@ -756,7 +756,7 @@ public class AvtaleTest {
         int stillingprosent = 50;
         int antallDagerPerUke = 5;
 
-        avtale.endreTilskuddsberegning(EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).stillingprosent(stillingprosent).antallDagerPerUke(antallDagerPerUke).build());
+        avtale.endreTilskuddsberegning(EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).stillingprosent(stillingprosent).antallDagerPerUke(antallDagerPerUke).build(), TestData.enNavIdent());
 
         assertThat(avtale.getVersjoner()).hasSize(2);
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
@@ -772,13 +772,13 @@ public class AvtaleTest {
     @Test
     public void endre_tilskuddsberegning_kun_inngått_avtale() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
-        assertFeilkode(Feilkode.KAN_IKKE_ENDRE_OKONOMI_IKKE_GODKJENT_AVTALE, () -> avtale.endreTilskuddsberegning(TestData.enEndreTilskuddsberegning()));
+        assertFeilkode(Feilkode.KAN_IKKE_ENDRE_OKONOMI_IKKE_GODKJENT_AVTALE, () -> avtale.endreTilskuddsberegning(TestData.enEndreTilskuddsberegning(), TestData.enNavIdent()));
     }
 
     @Test
     public void endre_tilskuddsberegning_ugyldig_input() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
-        assertFeilkode(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT, () -> avtale.endreTilskuddsberegning(TestData.enEndreTilskuddsberegning().toBuilder().manedslonn(null).build()));
+        assertFeilkode(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT, () -> avtale.endreTilskuddsberegning(TestData.enEndreTilskuddsberegning().toBuilder().manedslonn(null).build(), TestData.enNavIdent()));
     }
 
     @Test
@@ -786,7 +786,7 @@ public class AvtaleTest {
         Avtale avtale = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         LocalDate nySluttDato = avtale.getSluttDato().plusMonths(1);
 
-        avtale.forlengAvtale(nySluttDato);
+        avtale.forlengAvtale(nySluttDato, TestData.enNavIdent());
 
         assertThat(avtale.getVersjoner()).hasSize(2);
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
@@ -796,13 +796,13 @@ public class AvtaleTest {
     @Test
     public void forleng_kun_ved_inngått_avtale() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
-        assertFeilkode(Feilkode.KAN_IKKE_FORLENGE_IKKE_GODKJENT_AVTALE, () -> avtale.forlengAvtale(avtale.getSluttDato().plusMonths(1)));
+        assertFeilkode(Feilkode.KAN_IKKE_FORLENGE_IKKE_GODKJENT_AVTALE, () -> avtale.forlengAvtale(avtale.getSluttDato().plusMonths(1), TestData.enNavIdent()));
     }
 
     @Test
     public void forleng_kun_fremover() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
-        assertFeilkode(Feilkode.KAN_IKKE_FORLENGE_FEIL_SLUTTDATO, () -> avtale.forlengAvtale(avtale.getSluttDato().minusDays(1)));
+        assertFeilkode(Feilkode.KAN_IKKE_FORLENGE_FEIL_SLUTTDATO, () -> avtale.forlengAvtale(avtale.getSluttDato().minusDays(1), TestData.enNavIdent()));
     }
 
     @Test

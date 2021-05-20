@@ -92,7 +92,7 @@ public class LagVarselFraAvtaleHendelser {
 
     @EventListener
     public void avtaleInngått(AvtaleInngått event) {
-        VarselFactory factory = new VarselFactory(event.getAvtale(), event.getUtførtAv(), VarslbarHendelseType.AVTALE_INNGÅTT);
+        VarselFactory factory = new VarselFactory(event.getAvtale(), event.getUtførtAvRolle(), VarslbarHendelseType.AVTALE_INNGÅTT);
         varselRepository.saveAll(factory.alleParter());
     }
 
@@ -141,6 +141,12 @@ public class LagVarselFraAvtaleHendelser {
     @EventListener
     public void forlengAvtale(AvtaleForlenget event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.AVTALE_FORLENGET);
+        varselRepository.saveAll(factory.alleParter());
+    }
+
+    @EventListener
+    public void målEndret(MålEndret event) {
+        VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.MÅL_ENDRET);
         varselRepository.saveAll(factory.alleParter());
     }
 

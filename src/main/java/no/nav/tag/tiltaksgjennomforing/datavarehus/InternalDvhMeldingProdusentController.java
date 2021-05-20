@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,45 +37,11 @@ public class InternalDvhMeldingProdusentController {
         }
         avtaleRepository.findAllById(request.getAvtaleIder()).forEach(avtale -> {
             UUID meldingId = UUID.randomUUID();
-            AvroTiltakHendelse avroTiltakHendelse = AvroTiltakHendelseFabrikk.konstruer(avtale, LocalDateTime.now(), meldingId, DvhHendelseType.PATCHING);
+            String utførtAv = tokenUtils.hentBrukerOgIssuer().map(TokenUtils.BrukerOgIssuer::getBrukerIdent).orElse("patch");
+            AvroTiltakHendelse avroTiltakHendelse = AvroTiltakHendelseFabrikk.konstruer(avtale, LocalDateTime.now(), meldingId, DvhHendelseType.PATCHING, utførtAv);
             dvhMeldingRepository.save(new DvhMeldingEntitet(meldingId, avtale.getId(), LocalDateTime.now(), avtale.statusSomEnum(), avroTiltakHendelse));
             log.info("Patchet avtale {}, sendt melding med id {} til datavarehus", avtale.getId(), meldingId);
         });
-    }
-
-//    @GetMapping("/migrer")
-//    public void migrer() {
-//        if (!tokenUtils.harAdGruppe(poArbeidsgiverAadProperties.getId())) {
-//            throw new HttpClientErrorException(HttpStatus.FORBIDDEN);
-//        }
-//        avtaleRepository.findAll().forEach(avtale -> {
-//            if (!dvhMeldingFilter.skalTilDatavarehus(avtale)) {
-//                return;
-//            }
-//            if (!dvhMeldingRepository.existsByAvtaleId(avtale.getId())) {
-//                LocalDateTime now = LocalDateTime.now();
-//                AvroTiltakHendelse avroTiltakHendelse = AvroTiltakHendelseFabrikk.konstruer(avtale, now, UUID.randomUUID(), DvhHendelseType.MIGRERING);
-//                dvhMeldingRepository.save(new DvhMeldingEntitet(UUID.randomUUID(), avtale.getId(), now, avtale.statusSomEnum(), avroTiltakHendelse));
-//            }
-//        });
-//    }
-
-    @PostMapping("/migrer-dry-run")
-    public List<DvhMeldingEntitet> migrerDryRun(@RequestBody MigrerRequest request) {
-        if (!tokenUtils.harAdGruppe(dvhMeldingProperties.getGruppeTilgang())) {
-            throw new RuntimeException("Ikke tilgang");
-        }
-        var liste = new ArrayList<DvhMeldingEntitet>();
-        avtaleRepository.findAll().forEach(avtale -> {
-            if (avtale.erGodkjentAvVeileder() && request.tiltakstype == avtale.getTiltakstype()) {
-                if (!dvhMeldingRepository.existsByAvtaleId(avtale.getId())) {
-                    LocalDateTime now = LocalDateTime.now();
-                    AvroTiltakHendelse avroTiltakHendelse = AvroTiltakHendelseFabrikk.konstruer(avtale, now, UUID.randomUUID(), DvhHendelseType.MIGRERING);
-                    liste.add(new DvhMeldingEntitet(UUID.randomUUID(), avtale.getId(), now, avtale.statusSomEnum(), avroTiltakHendelse));
-                }
-            }
-        });
-        return liste;
     }
 
     @Value

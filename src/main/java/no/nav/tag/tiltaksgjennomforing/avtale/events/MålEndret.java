@@ -5,7 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 
 @Value
-public class TilskuddsberegningEndret {
+public class MålEndret {
     Avtale avtale;
     NavIdent utførtAv;
 }

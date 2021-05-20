@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @UtilityClass
 public class AvroTiltakHendelseFabrikk {
-    public static AvroTiltakHendelse konstruer(Avtale avtale, LocalDateTime tidspunkt, UUID meldingId, DvhHendelseType hendelseType) {
+    public static AvroTiltakHendelse konstruer(Avtale avtale, LocalDateTime tidspunkt, UUID meldingId, DvhHendelseType hendelseType, String utførtAv) {
         AvroTiltakHendelse hendelse = new AvroTiltakHendelse();
         hendelse.setMeldingId(meldingId.toString());
         hendelse.setTidspunkt(toInstant(tidspunkt));
@@ -53,7 +53,7 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setGodkjentAvVeileder(toInstant(avtale.getGodkjentAvVeileder()));
         hendelse.setGodkjentAvBeslutter(toInstant(avtale.getGodkjentAvBeslutter()));
         hendelse.setAvtaleInngaatt(toInstant(avtale.getAvtaleInngått()));
-        hendelse.setUtfortAv(avtale.getGodkjentAvNavIdent().asString());
+        hendelse.setUtfortAv(utførtAv);
         hendelse.setEnhetOppfolging(avtale.getEnhetOppfolging());
         hendelse.setEnhetGeografisk(avtale.getEnhetGeografisk());
         hendelse.setOpprettetAvArbeidsgiver(avtale.isOpprettetAvArbeidsgiver());

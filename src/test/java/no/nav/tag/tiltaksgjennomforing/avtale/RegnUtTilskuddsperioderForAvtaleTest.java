@@ -167,7 +167,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.UTBETALT);
         avtale.tilskuddsperiode(1).setStatus(TilskuddPeriodeStatus.UTBETALT);
 
-        avtale.forlengAvtale(avtale.getSluttDato().plusMonths(3));
+        avtale.forlengAvtale(avtale.getSluttDato().plusMonths(3), TestData.enNavIdent());
 
         assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.UTBETALT);
         assertThat(avtale.tilskuddsperiode(1).getStatus()).isEqualTo(TilskuddPeriodeStatus.UTBETALT);
@@ -184,7 +184,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
         UUID idPåGodkjentTilskuddsperiode = avtale.tilskuddsperiode(0).getId();
 
-        avtale.forlengAvtale(avtale.getSluttDato().plusDays(1));
+        avtale.forlengAvtale(avtale.getSluttDato().plusDays(1), TestData.enNavIdent());
 
         assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
         assertThat(avtale.tilskuddsperiode(0).getId()).isEqualTo(idPåGodkjentTilskuddsperiode);
@@ -205,7 +205,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
                 .stillingprosent(avtale.getStillingprosent())
                 .antallDagerPerUke(avtale.getAntallDagerPerUke())
                 .build();
-        avtale.endreTilskuddsberegning(endreTilskuddsberegning);
+        avtale.endreTilskuddsberegning(endreTilskuddsberegning, TestData.enNavIdent());
 
         assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
         assertThat(avtale.tilskuddsperiode(0).getBeløp()).isEqualTo(beløpFørEndring);
@@ -242,7 +242,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
         UUID idPåGodkjentTilskuddsperiode = avtale.tilskuddsperiode(0).getId();
 
-        avtale.forlengAvtale(avtaleFørsteDag.plusDays(1));
+        avtale.forlengAvtale(avtaleFørsteDag.plusDays(1), TestData.enNavIdent());
 
         assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
         assertThat(avtale.tilskuddsperiode(0).getId()).isEqualTo(idPåGodkjentTilskuddsperiode);
@@ -274,7 +274,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
                 .stillingprosent(avtale.getStillingprosent())
                 .antallDagerPerUke(avtale.getAntallDagerPerUke())
                 .build();
-        avtale.endreTilskuddsberegning(endreTilskuddsberegning);
+        avtale.endreTilskuddsberegning(endreTilskuddsberegning, TestData.enNavIdent());
 
         assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.UTBETALT);
         assertThat(avtale.tilskuddsperiode(1).getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
