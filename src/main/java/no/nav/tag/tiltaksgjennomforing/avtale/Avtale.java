@@ -436,12 +436,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         return this.getVeilederNavIdent() == null;
     }
 
-    public void godkjennTilskuddsperiode(NavIdent beslutter) {
+    public void godkjennTilskuddsperiode(NavIdent beslutter, String enhet) {
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_KAN_KUN_BEHANDLES_VED_INNGAATT_AVTALE);
         }
         TilskuddPeriode gjeldendePeriode = gjeldendeTilskuddsperiode();
-        gjeldendePeriode.godkjenn(beslutter);
+        gjeldendePeriode.godkjenn(beslutter, enhet);
         if (!erAvtaleInngått()) {
             LocalDateTime tidspunkt = LocalDateTime.now();
             godkjennForBeslutter(tidspunkt, beslutter);

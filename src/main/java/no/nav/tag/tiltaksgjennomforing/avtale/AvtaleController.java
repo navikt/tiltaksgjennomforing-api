@@ -363,10 +363,10 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/godkjenn-tilskuddsperiode")
     @Transactional
-    public void godkjennTilskuddsperiode(@PathVariable("avtaleId") UUID avtaleId) {
+    public void godkjennTilskuddsperiode(@PathVariable("avtaleId") UUID avtaleId, @RequestBody GodkjennTilskuddsperiodeRequest godkjennTilskuddsperiodeRequest) {
         Beslutter beslutter = innloggingService.hentBeslutter();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        beslutter.godkjennTilskuddsperiode(avtale);
+        beslutter.godkjennTilskuddsperiode(avtale, godkjennTilskuddsperiodeRequest.getEnhet());
         avtaleRepository.save(avtale);
     }
 

@@ -239,7 +239,7 @@ public class AvtaleRepositoryTest {
         Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.now(), LocalDate.now().plusMonths(2));
         Set<String> navEnheter = Set.of(ENHET_OPPFØLGING);
 
-        lagretAvtale.godkjennTilskuddsperiode(TestData.enInnloggetBeslutter().getIdentifikator());
+        lagretAvtale.godkjennTilskuddsperiode(TestData.enInnloggetBeslutter().getIdentifikator(), lagretAvtale.getEnhetGeografisk());
         avtaleRepository.save(lagretAvtale);
 
         List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
@@ -254,7 +254,7 @@ public class AvtaleRepositoryTest {
         Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.now(), LocalDate.now().plusMonths(2));
         Set<String> navEnheter = Set.of("0000");
 
-        lagretAvtale.godkjennTilskuddsperiode(TestData.enInnloggetBeslutter().getIdentifikator());
+        lagretAvtale.godkjennTilskuddsperiode(TestData.enInnloggetBeslutter().getIdentifikator(), lagretAvtale.getEnhetGeografisk());
         avtaleRepository.save(lagretAvtale);
 
         List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository

@@ -11,8 +11,8 @@ class TilskuddPeriodeTest {
     @Test
     void behandle_flere_ganger__etter_godkjenning() {
         TilskuddPeriode tilskuddPeriode = TestData.enTilskuddPeriode();
-        tilskuddPeriode.godkjenn(TestData.enNavIdent());
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET, () -> tilskuddPeriode.godkjenn(TestData.enNavIdent()));
+        tilskuddPeriode.godkjenn(TestData.enNavIdent(), TestData.ENHET_GEOGRAFISK);
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET, () -> tilskuddPeriode.godkjenn(TestData.enNavIdent(), TestData.ENHET_GEOGRAFISK));
         assertFeilkode(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET, () -> tilskuddPeriode.avslå(TestData.enNavIdent(), EnumSet.of(Avslagsårsak.FEIL_I_FAKTA), "Faktafeil"));
     }
 
@@ -20,7 +20,7 @@ class TilskuddPeriodeTest {
     void behandle_flere_ganger__etter_avslag() {
         TilskuddPeriode tilskuddPeriode = TestData.enTilskuddPeriode();
         tilskuddPeriode.avslå(TestData.enNavIdent(), EnumSet.of(Avslagsårsak.FEIL_I_FAKTA), "Faktafeil");
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET, () -> tilskuddPeriode.godkjenn(TestData.enNavIdent()));
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET, () -> tilskuddPeriode.godkjenn(TestData.enNavIdent(), TestData.ENHET_GEOGRAFISK));
         assertFeilkode(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET, () -> tilskuddPeriode.avslå(TestData.enNavIdent(), EnumSet.of(Avslagsårsak.FEIL_I_FAKTA), "Faktafeil"));
     }
 
@@ -28,7 +28,7 @@ class TilskuddPeriodeTest {
     void godkjenn_setter_riktige_felter() {
         TilskuddPeriode tilskuddPeriode = TestData.enTilskuddPeriode();
         NavIdent beslutter = TestData.enNavIdent();
-        tilskuddPeriode.godkjenn(beslutter);
+        tilskuddPeriode.godkjenn(beslutter, TestData.ENHET_GEOGRAFISK);
         assertThat(tilskuddPeriode.getGodkjentAvNavIdent()).isEqualTo(beslutter);
         assertThat(tilskuddPeriode.getGodkjentTidspunkt()).isNotNull();
         assertThat(tilskuddPeriode.getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);

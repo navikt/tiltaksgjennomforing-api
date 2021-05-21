@@ -26,9 +26,9 @@ public class Beslutter extends Avtalepart<NavIdent> {
         this.axsysService = axsysService;
     }
 
-    public void godkjennTilskuddsperiode(Avtale avtale) {
+    public void godkjennTilskuddsperiode(Avtale avtale, String enhet) {
         sjekkTilgang(avtale);
-        avtale.godkjennTilskuddsperiode(getIdentifikator());
+        avtale.godkjennTilskuddsperiode(getIdentifikator(), enhet);
     }
 
     public void avslåTilskuddsperiode(Avtale avtale, EnumSet<Avslagsårsak> avslagsårsaker, String avslagsforklaring) {
