@@ -814,4 +814,15 @@ public class AvtaleTest {
         assertThat(avtale.statusSomEnum()).isEqualTo(Status.KLAR_FOR_OPPSTART);
         assertThat(avtale.getAvtaleInngått()).isNotNull();
     }
+
+    @Test
+    public void godkjenn_tilskuddsperiode_feil_enhet() {
+        Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(TestData.enNavIdent(), " 4444"));
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(TestData.enNavIdent(), "444"));
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(TestData.enNavIdent(), "44455"));
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(TestData.enNavIdent(), ""));
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(TestData.enNavIdent(), null));
+        avtale.godkjennTilskuddsperiode(TestData.enNavIdent(), "4444");
+    }
 }

@@ -440,6 +440,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_KAN_KUN_BEHANDLES_VED_INNGAATT_AVTALE);
         }
+        if (enhet == null || !enhet.matches("^\\d{4}$")) {
+            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER);
+        }
         TilskuddPeriode gjeldendePeriode = gjeldendeTilskuddsperiode();
         gjeldendePeriode.godkjenn(beslutter, enhet);
         if (!erAvtaleInngått()) {
