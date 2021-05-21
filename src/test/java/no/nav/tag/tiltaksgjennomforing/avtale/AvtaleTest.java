@@ -810,7 +810,7 @@ public class AvtaleTest {
         Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();
         assertThat(avtale.statusSomEnum()).isEqualTo(Status.MANGLER_GODKJENNING);
         assertThat(avtale.getAvtaleInngått()).isNull();
-        avtale.godkjennTilskuddsperiode(TestData.enNavIdent(), avtale.getEnhetGeografisk());
+        avtale.godkjennTilskuddsperiode(TestData.enNavIdent(), TestData.ENHET_OPPFØLGING);
         assertThat(avtale.statusSomEnum()).isEqualTo(Status.KLAR_FOR_OPPSTART);
         assertThat(avtale.getAvtaleInngått()).isNotNull();
     }
