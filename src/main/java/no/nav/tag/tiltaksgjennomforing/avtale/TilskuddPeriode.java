@@ -61,6 +61,8 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
 
     private LocalDateTime godkjentTidspunkt;
 
+    private String enhet;
+
     @NonNull
     private Integer lonnstilskuddProsent;
 
@@ -111,11 +113,12 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
         return startDato.minusMonths(1);
     }
 
-    void godkjenn(NavIdent beslutter) {
+    void godkjenn(NavIdent beslutter, String enhet) {
         sjekkOmKanBehandles();
 
         setGodkjentTidspunkt(LocalDateTime.now());
         setGodkjentAvNavIdent(beslutter);
+        setEnhet(enhet);
         setStatus(TilskuddPeriodeStatus.GODKJENT);
     }
 
