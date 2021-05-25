@@ -6,6 +6,7 @@ import no.nav.security.token.support.core.api.Unprotected;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +19,7 @@ import java.util.UUID;
 @Unprotected
 @RequiredArgsConstructor
 @RequestMapping("/internal/tilskuddsperiode")
+@ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
 public class InternalTilskuddsperiodeController {
     private final TilskuddsperiodeKafkaProducer tilskuddsperiodeKafkaProducer;
     private final AvtaleRepository avtaleRepository;
