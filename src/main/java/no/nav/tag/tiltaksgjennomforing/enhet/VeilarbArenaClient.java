@@ -38,7 +38,8 @@ public class VeilarbArenaClient {
                 return null;
             }
             log.error("Kunne ikke hente Oppfølgingsstatus fra veilarbarena: status=" + exception.getRawStatusCode(), exception);
-            throw new VeilarbArenaException("Kunne ikke hente Oppfølgingsstatus fra veilarbarena");
+            return null;
+//            throw new VeilarbArenaException("Kunne ikke hente Oppfølgingsstatus fra veilarbarena");
         }
     }
 
