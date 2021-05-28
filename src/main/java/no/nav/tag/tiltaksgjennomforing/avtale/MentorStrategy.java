@@ -1,14 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangMentorException;
-
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MentorStrategy extends BaseAvtaleInnholdStrategy {
-
-    private static final int MAKSIMALT_ANTALL_MÅNEDER_VARIGHET = 36;
 
     public MentorStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
@@ -34,12 +29,5 @@ public class MentorStrategy extends BaseAvtaleInnholdStrategy {
         alleFelter.put(AvtaleInnhold.Fields.mentorAntallTimer, avtaleInnhold.getMentorAntallTimer());
         alleFelter.put(AvtaleInnhold.Fields.mentorTimelonn, avtaleInnhold.getMentorTimelonn());
         return alleFelter;
-    }
-
-    @Override
-    public void sjekkOmVarighetErForLang(LocalDate startDato, LocalDate sluttDato) {
-        if (startDato != null && sluttDato != null && startDato.plusMonths(MAKSIMALT_ANTALL_MÅNEDER_VARIGHET).isBefore(sluttDato)) {
-            throw new VarighetForLangMentorException();
-        }
     }
 }

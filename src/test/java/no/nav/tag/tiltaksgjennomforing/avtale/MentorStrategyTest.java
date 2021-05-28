@@ -1,24 +1,23 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.MENTOR;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.time.LocalDate;
-import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangMentorException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.EnumSet;
+
+import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
+import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.MENTOR;
+
 public class MentorStrategyTest {
 
-    private AvtaleInnhold avtaleInnhold;
-    private AvtaleInnholdStrategy strategy;
+    private Avtale avtale;
 
     @BeforeEach
     public void setUp() {
-        avtaleInnhold = new AvtaleInnhold();
-        strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, MENTOR);
+        avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), MENTOR), TestData.enNavIdent());
     }
 
     @Test
@@ -28,7 +27,11 @@ public class MentorStrategyTest {
         LocalDate sluttDato = startDato.minusDays(1);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
-        assertThatThrownBy(() -> strategy.endre(endreAvtale)).isInstanceOf(StartDatoErEtterSluttDatoException.class);
+        assertFeilkode(Feilkode.START_ETTER_SLUTT, () -> endreAvtale(endreAvtale));
+    }
+
+    private void endreAvtale(EndreAvtale endreAvtale) {
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.noneOf(Tiltakstype.class));
     }
 
     @Test
@@ -38,7 +41,7 @@ public class MentorStrategyTest {
         LocalDate sluttDato = startDato.plusMonths(36);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
-        strategy.endre(endreAvtale);
+        endreAvtale(endreAvtale);
     }
 
     @Test
@@ -48,6 +51,6 @@ public class MentorStrategyTest {
         LocalDate sluttDato = startDato.plusMonths(36).plusDays(1);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
-        assertThatThrownBy(() -> strategy.endre(endreAvtale)).isInstanceOf(VarighetForLangMentorException.class);
+        assertFeilkode(Feilkode.VARIGHET_FOR_LANG_MENTOR, () -> endreAvtale(endreAvtale));
     }
 }

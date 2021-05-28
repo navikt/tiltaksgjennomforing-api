@@ -2,16 +2,12 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.AssertFeilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangMidlertidigLonnstilskuddException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.time.LocalDate;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD;
 import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.VARIG_LONNSTILSKUDD;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LonnstilskuddStrategyTest {
 
@@ -49,37 +45,6 @@ class LonnstilskuddStrategyTest {
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         endreAvtale.setHarFamilietilknytning(true);
         endreAvtale.setFamilietilknytningForklaring("En god forklaring");
-        strategy.endre(endreAvtale);
-    }
-
-    @Test
-    public void endreMidlertidigLønnstilskudd__startdato_og_sluttdato_satt_24mnd() {
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
-        LocalDate startDato = LocalDate.now();
-        LocalDate sluttDato = startDato.plusMonths(24);
-        endreAvtale.setStartDato(startDato);
-        endreAvtale.setSluttDato(sluttDato);
-        strategy.endre(endreAvtale);
-    }
-
-    @Test
-    public void endreMidlertidigLønnstilskudd__startdato_og_sluttdato_satt_over_24mnd() {
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
-        LocalDate startDato = LocalDate.now();
-        LocalDate sluttDato = startDato.plusMonths(24).plusDays(1);
-        endreAvtale.setStartDato(startDato);
-        endreAvtale.setSluttDato(sluttDato);
-        assertThatThrownBy(() -> strategy.endre(endreAvtale)).isInstanceOf(VarighetForLangMidlertidigLonnstilskuddException.class);
-    }
-
-    @Test
-    public void endreVarigLønnstilskudd__startdato_og_sluttdato_satt_over_24mnd() {
-        strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, VARIG_LONNSTILSKUDD);
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
-        LocalDate startDato = LocalDate.now();
-        LocalDate sluttDato = startDato.plusMonths(24).plusDays(1);
-        endreAvtale.setStartDato(startDato);
-        endreAvtale.setSluttDato(sluttDato);
         strategy.endre(endreAvtale);
     }
 

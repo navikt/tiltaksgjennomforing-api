@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Delegate;
 import lombok.experimental.FieldNameConstants;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttDatoStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
@@ -113,6 +114,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     public void endreAvtale(Instant sistEndret, EndreAvtale nyAvtale, Avtalerolle utfortAv, EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder) {
         sjekkOmAvtalenKanEndres();
         sjekkSistEndret(sistEndret);
+        sjekkStartOgSluttDato(nyAvtale.getStartDato(), nyAvtale.getSluttDato());
         gjeldendeInnhold().endreAvtale(nyAvtale);
         if (tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
             nyeTilskuddsperioder();
@@ -311,29 +313,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     @JsonProperty
     public boolean kanGjenopprettes() {
         return isAvbrutt();
-    }
-
-    public void forkortAvtale(LocalDate nySluttDato, String grunn, String annetGrunn, NavIdent utførtAv) {
-        // Avslutter tidligere enn først planlagt
-        if (!nySluttDato.isBefore(getSluttDato())) {
-            throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_ETTER_SLUTTDATO);
-        }
-        if (nySluttDato.isBefore(getStartDato())) {
-            throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_FOR_STARTDATO);
-        }
-        if (!erAvtaleInngått()) {
-            throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_IKKE_GODKJENT_AVTALE);
-        }
-        if (StringUtils.isBlank(grunn) || (grunn.equals("Annet") && StringUtils.isBlank(annetGrunn))) {
-            throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_GRUNN_MANGLER);
-        }
-        forkortTilskuddsperioder(nySluttDato);
-        AvtaleInnhold nyAvtaleInnholdVersjon = gjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORKORTE);
-        versjoner.add(nyAvtaleInnholdVersjon);
-        gjeldendeInnhold().setSluttDato(nySluttDato);
-        gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
-        sendTilbakeTilBeslutter();
-        registerEvent(new AvtaleForkortet(this, nyAvtaleInnholdVersjon, nySluttDato, grunn, annetGrunn, utførtAv));
     }
 
     public void annuller(Veileder veileder, String annullerGrunn) {
@@ -607,13 +586,34 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
     }
 
+    public void forkortAvtale(LocalDate nySluttDato, String grunn, String annetGrunn, NavIdent utførtAv) {
+        if (!erGodkjentAvVeileder()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_IKKE_GODKJENT_AVTALE);
+        }
+        if (!nySluttDato.isBefore(getSluttDato())) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_ETTER_SLUTTDATO);
+        }
+        sjekkStartOgSluttDato(getStartDato(), nySluttDato);
+        if (StringUtils.isBlank(grunn) || (grunn.equals("Annet") && StringUtils.isBlank(annetGrunn))) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_GRUNN_MANGLER);
+        }
+        forkortTilskuddsperioder(nySluttDato);
+        AvtaleInnhold nyAvtaleInnholdVersjon = gjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORKORTE);
+        versjoner.add(nyAvtaleInnholdVersjon);
+        gjeldendeInnhold().setSluttDato(nySluttDato);
+        gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
+        sendTilbakeTilBeslutter();
+        registerEvent(new AvtaleForkortet(this, nyAvtaleInnholdVersjon, nySluttDato, grunn, annetGrunn, utførtAv));
+    }
+
     public void forlengAvtale(LocalDate nySluttDato, NavIdent utførtAv) {
+        if (!erGodkjentAvVeileder()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_FORLENGE_IKKE_GODKJENT_AVTALE);
+        }
         if (!nySluttDato.isAfter(getSluttDato())) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORLENGE_FEIL_SLUTTDATO);
         }
-        if (!erAvtaleInngått()) {
-            throw new FeilkodeException(Feilkode.KAN_IKKE_FORLENGE_IKKE_GODKJENT_AVTALE);
-        }
+        sjekkStartOgSluttDato(getStartDato(), nySluttDato);
         forlengTilskuddsperioder(this.getSluttDato(), nySluttDato);
         AvtaleInnhold nyVersjon = gjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORLENGE);
         versjoner.add(nyVersjon);
@@ -624,9 +624,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new AvtaleForlenget(this, utførtAv));
     }
 
+    private void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
+        StartOgSluttDatoStrategyFactory.create(getTiltakstype()).sjekkStartOgSluttDato(startDato, sluttDato);
+    }
+
     public void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning, NavIdent utførtAv) {
         krevEnAvTiltakstyper(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
-        if (!erAvtaleInngått()) {
+        if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_IKKE_GODKJENT_AVTALE);
         }
         if (Utils.erNoenTomme(tilskuddsberegning.getArbeidsgiveravgift(),
@@ -653,7 +657,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void endreKontaktInformasjon(EndreKontaktInformasjon endreKontaktInformasjon, NavIdent utførtAv) {
-        if (!erAvtaleInngått()) {
+        if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_KONTAKTINFO_GRUNN_IKKE_GODKJENT_AVTALE);
         }
         if (Utils.erNoenTomme(endreKontaktInformasjon.getVeilederFornavn(),
@@ -674,7 +678,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void endreStillingsbeskrivelse(EndreStillingsbeskrivelse endreStillingsbeskrivelse, NavIdent utførtAv) {
-        if (!erAvtaleInngått()) {
+        if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_STILLINGSBESKRIVELSE_GRUNN_IKKE_GODKJENT_AVTALE);
         }
         if (Utils.erNoenTomme(endreStillingsbeskrivelse.getStillingstittel(),
@@ -691,7 +695,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void endreOppfølgingOgTilrettelegging(EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging, NavIdent utførtAv) {
-        if (!erAvtaleInngått()) {
+        if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OPPFØLGING_OG_TILRETTELEGGING_GRUNN_IKKE_GODKJENT_AVTALE);
         }
         if (Utils.erNoenTomme(endreOppfølgingOgTilrettelegging.getOppfolging(),
@@ -709,7 +713,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     public void endreMål(EndreMål endreMål, NavIdent utførtAv) {
         krevEnAvTiltakstyper(Tiltakstype.ARBEIDSTRENING);
-        if (!erAvtaleInngått()) {
+        if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_MAAL_IKKE_INNGAATT_AVTALE);
         }
         if (endreMål.getMaal().isEmpty()) {

@@ -1,8 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import java.time.LocalDate;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangMidlertidigLonnstilskuddException;
+
+import java.time.LocalDate;
 
 public class MidlertidigLonnstilskuddStrategy extends LonnstilskuddStrategy {
 
@@ -17,13 +17,6 @@ public class MidlertidigLonnstilskuddStrategy extends LonnstilskuddStrategy {
             throw new FeilLonnstilskuddsprosentException();
         }
         super.endre(endreAvtale);
-    }
-
-    @Override
-    public void sjekkOmVarighetErForLang(LocalDate startDato, LocalDate sluttDato) {
-        if (startDato != null && sluttDato != null && startDato.plusMonths(24).isBefore(sluttDato)) {
-            throw new VarighetForLangMidlertidigLonnstilskuddException();
-        }
     }
 
     @Override

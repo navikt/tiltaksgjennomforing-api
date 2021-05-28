@@ -1,8 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangArbeidstreningException;
-
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,12 +30,5 @@ public class ArbeidstreningStrategy extends BaseAvtaleInnholdStrategy {
         alleFelterSomMåFyllesUt.put(AvtaleInnhold.Fields.arbeidsoppgaver, avtaleInnhold.getArbeidsoppgaver());
         alleFelterSomMåFyllesUt.put(AvtaleInnhold.Fields.maal, avtaleInnhold.getMaal());
         return alleFelterSomMåFyllesUt;
-    }
-
-    @Override
-    public void sjekkOmVarighetErForLang(LocalDate startDato, LocalDate sluttDato) {
-        if (startDato != null && sluttDato != null && startDato.plusMonths(18).isBefore(sluttDato)) {
-            throw new VarighetForLangArbeidstreningException();
-        }
     }
 }

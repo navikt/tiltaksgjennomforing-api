@@ -1,8 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.exceptions.StartDatoErEtterSluttDatoException;
-
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,8 +12,6 @@ public abstract class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy
 
     @Override
     public void endre(EndreAvtale nyAvtale) {
-        this.sjekkAtStartDatoErEtterSluttDato(nyAvtale.getStartDato(), nyAvtale.getSluttDato());
-        this.sjekkOmVarighetErForLang(nyAvtale.getStartDato(), nyAvtale.getSluttDato());
         avtaleInnhold.setDeltakerFornavn(nyAvtale.getDeltakerFornavn());
         avtaleInnhold.setDeltakerEtternavn(nyAvtale.getDeltakerEtternavn());
         avtaleInnhold.setDeltakerTlf(nyAvtale.getDeltakerTlf());
@@ -57,14 +52,5 @@ public abstract class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy
         alleFelter.put(AvtaleInnhold.Fields.oppfolging, avtaleInnhold.getOppfolging());
         alleFelter.put(AvtaleInnhold.Fields.tilrettelegging, avtaleInnhold.getTilrettelegging());
         return alleFelter;
-    }
-
-
-    protected void sjekkAtStartDatoErEtterSluttDato(LocalDate startDato, LocalDate sluttDato) {
-        if (startDato != null && sluttDato != null) {
-            if (startDato.isAfter(sluttDato)) {
-                throw new StartDatoErEtterSluttDatoException();
-            }
-        }
     }
 }

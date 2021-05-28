@@ -177,7 +177,7 @@ public class AvtaleTest {
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
     }
 
-    @Test(expected = StartDatoErEtterSluttDatoException.class)
+    @Test
     public void endreAvtale__startdato_er_etter_sluttdato() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         EndreAvtale endreAvtale = new EndreAvtale();
@@ -185,7 +185,7 @@ public class AvtaleTest {
         LocalDate sluttDato = startDato.minusDays(1);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+        assertFeilkode(Feilkode.START_ETTER_SLUTT, () -> avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype())));
     }
 
     @Test
@@ -803,6 +803,24 @@ public class AvtaleTest {
     public void forleng_kun_fremover() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
         assertFeilkode(Feilkode.KAN_IKKE_FORLENGE_FEIL_SLUTTDATO, () -> avtale.forlengAvtale(avtale.getSluttDato().minusDays(1), TestData.enNavIdent()));
+    }
+
+    @Test
+    public void forleng_over_4_uker_sommerjobb() {
+        Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();
+        assertFeilkode(Feilkode.SOMMERJOBB_FOR_LANG_VARIGHET, () -> avtale.forlengAvtale(avtale.getStartDato().plusWeeks(4).plusDays(1), TestData.enNavIdent()));
+    }
+
+    @Test
+    public void forleng_24_mnd_midl_lts() {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
+        avtale.forlengAvtale(avtale.getStartDato().plusMonths(24), TestData.enNavIdent());
+    }
+
+    @Test
+    public void forleng_over_24_mnd_midl_lts() {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
+        assertFeilkode(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD, () -> avtale.forlengAvtale(avtale.getStartDato().plusMonths(24).plusDays(1), TestData.enNavIdent()));
     }
 
     @Test
