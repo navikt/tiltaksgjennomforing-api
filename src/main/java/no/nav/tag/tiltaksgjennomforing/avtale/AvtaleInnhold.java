@@ -210,6 +210,9 @@ public class AvtaleInnhold {
     }
 
     public void endreKontaktInfo(EndreKontaktInformasjon endreKontaktInformasjon) {
+        setDeltakerFornavn(endreKontaktInformasjon.getDeltakerFornavn());
+        setDeltakerEtternavn(endreKontaktInformasjon.getDeltakerEtternavn());
+        setDeltakerTlf(endreKontaktInformasjon.getDeltakerTlf());
         setVeilederFornavn(endreKontaktInformasjon.getVeilederFornavn());
         setVeilederEtternavn(endreKontaktInformasjon.getVeilederEtternavn());
         setVeilederTlf(endreKontaktInformasjon.getVeilederTlf());
