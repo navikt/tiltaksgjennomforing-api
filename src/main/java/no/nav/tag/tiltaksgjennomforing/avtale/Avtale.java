@@ -660,7 +660,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_KONTAKTINFO_GRUNN_IKKE_GODKJENT_AVTALE);
         }
-        if (Utils.erNoenTomme(endreKontaktInformasjon.getVeilederFornavn(),
+        if (Utils.erNoenTomme(endreKontaktInformasjon.getDeltakerFornavn(),
+                endreKontaktInformasjon.getDeltakerEtternavn(),
+                endreKontaktInformasjon.getDeltakerTlf(),endreKontaktInformasjon.getVeilederFornavn(),
                 endreKontaktInformasjon.getVeilederEtternavn(),
                 endreKontaktInformasjon.getVeilederTlf(),
                 endreKontaktInformasjon.getArbeidsgiverFornavn(),

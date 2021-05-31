@@ -6,6 +6,9 @@ import lombok.Value;
 @Value
 @Builder(toBuilder = true)
 public class EndreKontaktInformasjon {
+    String deltakerFornavn;
+    String deltakerEtternavn;
+    String deltakerTlf;
     String veilederFornavn;
     String veilederEtternavn;
     String veilederTlf;
