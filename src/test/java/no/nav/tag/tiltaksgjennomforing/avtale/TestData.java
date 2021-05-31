@@ -159,7 +159,7 @@ public class TestData {
         endreAvtale.setFeriepengesats(new BigDecimal("0.12"));
         endreAvtale.setArbeidsgiveravgift(new BigDecimal("0.141"));
         endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
-        endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4));
+        endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
@@ -180,7 +180,7 @@ public class TestData {
         endreAvtale.setFeriepengesats(new BigDecimal("0.12"));
         endreAvtale.setArbeidsgiveravgift(new BigDecimal("0.141"));
         endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
-        endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4));
+        endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
@@ -202,7 +202,7 @@ public class TestData {
         endreAvtale.setFeriepengesats(new BigDecimal("0.12"));
         endreAvtale.setArbeidsgiveravgift(new BigDecimal("0.141"));
         endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
-        endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4));
+        endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());

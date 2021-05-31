@@ -20,7 +20,7 @@ public class SommerjobbStartOgSluttDatoStrategy implements StartOgSluttDatoStrat
             }
         }
         if (startDato != null && sluttDato != null) {
-            if (startDato.plusWeeks(4).isBefore(sluttDato)) {
+            if (startDato.plusWeeks(4).minusDays(1).isBefore(sluttDato)) {
                 throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_LANG_VARIGHET);
             }
         }
