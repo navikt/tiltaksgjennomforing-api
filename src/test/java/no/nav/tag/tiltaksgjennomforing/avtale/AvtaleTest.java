@@ -828,7 +828,7 @@ public class AvtaleTest {
         Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();
         assertThat(avtale.statusSomEnum()).isEqualTo(Status.MANGLER_GODKJENNING);
         assertThat(avtale.getAvtaleInngått()).isNull();
-        avtale.godkjennTilskuddsperiode(TestData.enNavIdent(), TestData.ENHET_OPPFØLGING);
+        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"), TestData.ENHET_OPPFØLGING);
         assertThat(avtale.statusSomEnum()).isEqualTo(Status.KLAR_FOR_OPPSTART);
         assertThat(avtale.getAvtaleInngått()).isNotNull();
     }
@@ -836,11 +836,18 @@ public class AvtaleTest {
     @Test
     public void godkjenn_tilskuddsperiode_feil_enhet() {
         Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(TestData.enNavIdent(), " 4444"));
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(TestData.enNavIdent(), "444"));
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(TestData.enNavIdent(), "44455"));
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(TestData.enNavIdent(), ""));
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(TestData.enNavIdent(), null));
-        avtale.godkjennTilskuddsperiode(TestData.enNavIdent(), "4444");
+        NavIdent beslutter = new NavIdent("B999999");
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(beslutter, " 4444"));
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(beslutter, "444"));
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(beslutter, "44455"));
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(beslutter, ""));
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER, () -> avtale.godkjennTilskuddsperiode(beslutter, null));
+        avtale.godkjennTilskuddsperiode(beslutter, "4444");
+    }
+
+    @Test
+    public void godkjenn_tilskuddsperiode_samme_veileder_og_beslutter() {
+        Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE, () -> avtale.godkjennTilskuddsperiode(avtale.getVeilederNavIdent(), "4444"));
     }
 }

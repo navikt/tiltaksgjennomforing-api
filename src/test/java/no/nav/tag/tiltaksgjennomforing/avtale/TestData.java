@@ -164,7 +164,9 @@ public class TestData {
         avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
-        avtale.setGodkjentAvNavIdent(TestData.enNavIdent());
+        NavIdent veileder = TestData.enNavIdent();
+        avtale.setGodkjentAvNavIdent(veileder);
+        avtale.setVeilederNavIdent(veileder);
         return avtale;
     }
 
@@ -345,8 +347,9 @@ public class TestData {
     public static Beslutter enBeslutter(Avtale avtale) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         AxsysService axsysService = mock(AxsysService.class);
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(avtale.getVeilederNavIdent()), eq(avtale.getDeltakerFnr()))).thenReturn(true);
-        return new Beslutter(avtale.getVeilederNavIdent(), tilgangskontrollService, axsysService);
+        NavIdent navIdent = new NavIdent("B999999");
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), eq(avtale.getDeltakerFnr()))).thenReturn(true);
+        return new Beslutter(navIdent, tilgangskontrollService, axsysService);
     }
 
     public static Maal etMaal() {

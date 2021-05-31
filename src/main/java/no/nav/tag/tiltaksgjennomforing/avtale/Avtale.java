@@ -422,6 +422,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (enhet == null || !enhet.matches("^\\d{4}$")) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER);
         }
+        if (beslutter.equals(veilederNavIdent)) {
+            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE);
+        }
         TilskuddPeriode gjeldendePeriode = gjeldendeTilskuddsperiode();
         gjeldendePeriode.godkjenn(beslutter, enhet);
         if (!erAvtaleInngått()) {
@@ -682,7 +685,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_STILLINGSBESKRIVELSE_GRUNN_IKKE_GODKJENT_AVTALE);
         }
         if (Utils.erNoenTomme(endreStillingsbeskrivelse.getStillingstittel(),
-                endreStillingsbeskrivelse.getArbeidsoppgaver())
+                endreStillingsbeskrivelse.getArbeidsoppgaver(),
+                endreStillingsbeskrivelse.getStillingStyrk08(),
+                endreStillingsbeskrivelse.getStillingKonseptId())
         ) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_STILLINGSBESKRIVELSE_GRUNN_MANGLER);
         }
