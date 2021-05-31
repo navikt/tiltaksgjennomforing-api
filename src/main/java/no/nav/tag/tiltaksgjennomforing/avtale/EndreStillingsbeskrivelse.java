@@ -8,4 +8,6 @@ import lombok.Value;
 public class EndreStillingsbeskrivelse {
     String stillingstittel;
     String arbeidsoppgaver;
+    Integer stillingStyrk08;
+    Integer stillingKonseptId;
 }

@@ -221,6 +221,8 @@ public class AvtaleInnhold {
     public void endreStillingsInfo(EndreStillingsbeskrivelse endreStillingsbeskrivelse) {
         setStillingstittel(endreStillingsbeskrivelse.getStillingstittel());
         setArbeidsoppgaver(endreStillingsbeskrivelse.getArbeidsoppgaver());
+        setStillingStyrk08(endreStillingsbeskrivelse.getStillingStyrk08());
+        setStillingKonseptId(endreStillingsbeskrivelse.getStillingKonseptId());
     }
 
     public void endreOppfølgingOgTilretteleggingInfo(EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging) {
