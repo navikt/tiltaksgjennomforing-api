@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
@@ -24,6 +25,7 @@ import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 
 @AllArgsConstructor
+@Slf4j
 @Data
 public abstract class Avtalepart<T extends Identifikator> {
     private final T identifikator;
@@ -134,6 +136,9 @@ public abstract class Avtalepart<T extends Identifikator> {
     }
 
     protected void leggTilArbeidsgiverKontonummer(Avtale avtale, KontoregisterService kontoregisterService){
-        avtale.setArbeidsgiverKontonummer(kontoregisterService.hentKontonummer(avtale.getBedriftNr().asString()));
+        log.info("**** KONTONUMMER: HENTER...");
+        String kontonummer = kontoregisterService.hentKontonummer(avtale.getBedriftNr().asString());
+        log.info("**** KONTONUMMER: {},{}", kontonummer, kontoregisterService);
+        avtale.setArbeidsgiverKontonummer(kontonummer);
     }
 }
