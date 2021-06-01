@@ -36,14 +36,12 @@ public class KontoregisterServiceImpl implements KontoregisterService{
     public String hentKontonummer(String bedriftNr)  {
         try {
             ResponseEntity<KontoregisterResponse> response = restTemplate.exchange(new URI(String.format("%s/%s", kontoregisterProperties.getUri(),bedriftNr)),HttpMethod.GET,lagRequest(),  KontoregisterResponse.class);
-            log.info("***** KONTONUMMER: {}",response.getBody());
             return response.getBody().getKontonr();
 
         } catch (RestClientException | URISyntaxException  exception) {
             if(exception instanceof HttpClientErrorException){
                 HttpClientErrorException hcee = (HttpClientErrorException)exception;
                 if(hcee.getStatusCode() == NOT_FOUND) {
-                    log.error(String.format("Kontoregister svarte med fant ikke kontonummer for bedrift : %s",bedriftNr));
                     throw new KontoregisterFantIkkeBedriftFeilException();
                 }
 

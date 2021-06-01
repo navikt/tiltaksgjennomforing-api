@@ -12,7 +12,6 @@ import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
-import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.junit.Test;
@@ -41,12 +40,10 @@ public class ArbeidsgiverTest {
         OpprettAvtale opprettAvtale = new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.ARBEIDSTRENING);
 
         PersondataService persondataService = mock(PersondataService.class);
-        KontoregisterService kontoregisterService = mock(KontoregisterService.class);
         Norg2Client norg2Client = mock(Norg2Client.class);
         final PdlRespons pdlRespons = TestData.enPdlrespons(false);
         final String navEnhet = "0411";
 
-        when(kontoregisterService.hentKontonummer(TestData.etBedriftNr().asString())).thenReturn("123");
         when(persondataService.hentPersondata(TestData.etFodselsnummer())).thenReturn(pdlRespons);
         when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel())).thenReturn(navEnhet);
 
@@ -55,27 +52,26 @@ public class ArbeidsgiverTest {
                 Set.of(new AltinnReportee("", "", null, TestData.etBedriftNr().asString(), null, null)),
                 Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
                 persondataService,
-                norg2Client,kontoregisterService);
+                norg2Client);
 
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
         assertThat(avtale.isOpprettetAvArbeidsgiver()).isTrue();
         assertThat(avtale.getDeltakerFornavn()).isNull();
         assertThat(avtale.getDeltakerEtternavn()).isNull();
         assertThat(avtale.getEnhetGeografisk()).isEqualTo(navEnhet);
-        assertThat(avtale.getArbeidsgiverKontonummer()).isEqualTo("123");
     }
 
     @Test(expected = VarighetDatoErTilbakeITidException.class)
     public void endreAvtale_validererFraDato() {
         Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
-        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(null, null, null, null, null,null);
+        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(null, null, null, null, null);
         arbeidsgiver.avvisDatoerTilbakeITid(avtale, LocalDate.now().minusDays(1), null);
     }
 
     @Test(expected = VarighetDatoErTilbakeITidException.class)
     public void endreAvtale_validererTilDato() {
         Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
-        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(null, null, null, null, null,null);
+        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(null, null, null, null, null);
         arbeidsgiver.avvisDatoerTilbakeITid(avtale, LocalDate.now(), LocalDate.now().minusDays(1));
     }
 }

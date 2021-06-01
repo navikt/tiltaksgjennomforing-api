@@ -21,7 +21,6 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.hendelselogg.Hendelselogg;
 import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
-import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 
 @AllArgsConstructor
@@ -133,12 +132,5 @@ public abstract class Avtalepart<T extends Identifikator> {
                 .map(geoLokasjon -> norg2Client.hentGeografiskEnhet(geoLokasjon))
                 .orElse(null);
         avtale.setEnhetGeografisk(enhet);
-    }
-
-    protected void leggTilArbeidsgiverKontonummer(Avtale avtale, KontoregisterService kontoregisterService){
-        log.info("**** KONTONUMMER: HENTER...");
-        String kontonummer = kontoregisterService.hentKontonummer(avtale.getBedriftNr().asString());
-        log.info("**** KONTONUMMER: {},{}", kontonummer, kontoregisterService);
-        avtale.setArbeidsgiverKontonummer(kontonummer);
     }
 }

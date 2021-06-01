@@ -17,7 +17,6 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeAdminTilgangException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6Eller7Exception;
-import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 
@@ -28,19 +27,17 @@ public class Veileder extends Avtalepart<NavIdent> {
     private final TilgangskontrollService tilgangskontrollService;
 
     private final PersondataService persondataService;
-    private final KontoregisterService kontoregisterService;
     private final SlettemerkeProperties slettemerkeProperties;
     private final Norg2Client norg2Client;
     private Set<String> navEnheter;
 
     public Veileder(NavIdent identifikator, TilgangskontrollService tilgangskontrollService, PersondataService persondataService,
-                    Norg2Client norg2Client, Set<String> navEnheter, SlettemerkeProperties slettemerkeProperties,KontoregisterService kontoregisterService) {
+                    Norg2Client norg2Client, Set<String> navEnheter, SlettemerkeProperties slettemerkeProperties) {
         super(identifikator);
         this.tilgangskontrollService = tilgangskontrollService;
         this.persondataService = persondataService;
         this.norg2Client = norg2Client;
         this.navEnheter = navEnheter;
-        this.kontoregisterService = kontoregisterService;
         this.slettemerkeProperties = slettemerkeProperties;
     }
 
@@ -200,7 +197,6 @@ public class Veileder extends Avtalepart<NavIdent> {
 
         Avtale avtale = Avtale.veilederOppretterAvtale(opprettAvtale, getIdentifikator());
         avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(persondata));
-        leggTilArbeidsgiverKontonummer(avtale, kontoregisterService);
         leggTilGeografiskEnhet(avtale, persondata, norg2Client);
         return avtale;
     }

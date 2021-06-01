@@ -154,26 +154,23 @@ public class VeilederTest {
     public void oprettAvtale__setter_startverdier_på_avtale() {
         OpprettAvtale opprettAvtale = new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        KontoregisterService kontoregisterService = mock(KontoregisterService.class);
         PersondataService persondataService = mock(PersondataService.class);
         Norg2Client norg2Client = mock(Norg2Client.class);
         final PdlRespons pdlRespons = TestData.enPdlrespons(false);
 
-        when(kontoregisterService.hentKontonummer(eq(TestData.etBedriftNr().asString()))).thenReturn("123");
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(TestData.enNavIdent()), eq(TestData.etFodselsnummer()))).thenReturn(true);
         when(persondataService.hentPersondata(TestData.etFodselsnummer())).thenReturn(pdlRespons);
         when(persondataService.erKode6Eller7(pdlRespons)).thenCallRealMethod();
         when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel())).thenReturn(TestData.ENHET_GEOGRAFISK);
 
         Veileder veileder = new Veileder(TestData.enNavIdent(), tilgangskontrollService, persondataService, norg2Client,
-            Set.of(TestData.ENHET_GEOGRAFISK), new SlettemerkeProperties(),kontoregisterService);
+            Set.of(TestData.ENHET_GEOGRAFISK), new SlettemerkeProperties());
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
 
         assertThat(avtale.getVeilederNavIdent()).isEqualTo(TestData.enNavIdent());
         assertThat(avtale.getDeltakerFornavn()).isEqualTo("Donald");
         assertThat(avtale.getDeltakerEtternavn()).isEqualTo("Duck");
         assertThat(avtale.getEnhetGeografisk()).isEqualTo(TestData.ENHET_GEOGRAFISK);
-        assertThat(avtale.getArbeidsgiverKontonummer()).isEqualTo("123");
     }
 
     @Test
@@ -194,7 +191,7 @@ public class VeilederTest {
         SlettemerkeProperties slettemerkeProperties = new SlettemerkeProperties();
         slettemerkeProperties.setIdent(List.of(navIdent));
         Veileder veileder = new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class),
-            mock(Norg2Client.class), Set.of("4802"), slettemerkeProperties,kontoregisterService);
+            mock(Norg2Client.class), Set.of("4802"), slettemerkeProperties);
         veileder.slettemerk(avtale);
         assertThat(avtale.isSlettemerket()).isTrue();
     }
@@ -210,7 +207,7 @@ public class VeilederTest {
         SlettemerkeProperties slettemerkeProperties = new SlettemerkeProperties();
         slettemerkeProperties.setIdent(List.of(new NavIdent("Z123456")));
         Veileder veileder = new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class),
-            mock(Norg2Client.class), Set.of("4802"), slettemerkeProperties,kontoregisterService);
+            mock(Norg2Client.class), Set.of("4802"), slettemerkeProperties);
         veileder.slettemerk(avtale);
     }
     @Test

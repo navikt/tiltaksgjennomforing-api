@@ -335,7 +335,7 @@ public class TestData {
     }
 
     public static Arbeidsgiver enArbeidsgiver() {
-        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of(), null, null,null);
+        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of(), null, null);
     }
 
     public static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
@@ -345,7 +345,7 @@ public class TestData {
                 , Map.of(avtale.getBedriftNr(),
                 List.of(Tiltakstype.values())),
                 null,
-                null,null);
+                null);
     }
 
     public static Fnr etFodselsnummer() {
@@ -357,7 +357,7 @@ public class TestData {
         KontoregisterService kontoregisterService = mock(KontoregisterService.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(avtale.getVeilederNavIdent()), eq(avtale.getDeltakerFnr()))).thenReturn(true);
         return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
-            Set.of("4802"), new SlettemerkeProperties(),kontoregisterService);
+            Set.of("4802"), new SlettemerkeProperties());
     }
 
     public static Beslutter enBeslutter(Avtale avtale) {
@@ -446,7 +446,7 @@ public class TestData {
         KontoregisterService kontoregisterService = mock(KontoregisterService.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any())).thenReturn(true);
         return new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
-            Set.of(ENHET_OPPFØLGING), new SlettemerkeProperties(),kontoregisterService);
+            Set.of(ENHET_OPPFØLGING), new SlettemerkeProperties());
     }
 
     public static Veileder enVeileder(Avtale avtale, PersondataService persondataService) {
@@ -454,7 +454,7 @@ public class TestData {
         KontoregisterService kontoregisterService = mock(KontoregisterService.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(avtale.getVeilederNavIdent(), avtale.getDeltakerFnr())).thenReturn(true);
         return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, persondataService, mock(Norg2Client.class),
-            Set.of(ENHET_OPPFØLGING), new SlettemerkeProperties(),kontoregisterService);
+            Set.of(ENHET_OPPFØLGING), new SlettemerkeProperties());
     }
 
     public static PdlRespons enPdlrespons(boolean harKode6eller7) {

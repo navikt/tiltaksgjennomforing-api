@@ -16,7 +16,6 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
-import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 
@@ -29,16 +28,14 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     private final Set<AltinnReportee> altinnOrganisasjoner;
     private final PersondataService persondataService;
     private final Norg2Client norg2Client;
-    private final KontoregisterService kontoregisterService;
 
 
-    public Arbeidsgiver(Fnr identifikator, Set<AltinnReportee> altinnOrganisasjoner, Map<BedriftNr, Collection<Tiltakstype>> tilganger, PersondataService persondataService, Norg2Client norg2Client, KontoregisterService kontoregisterService) {
+    public Arbeidsgiver(Fnr identifikator, Set<AltinnReportee> altinnOrganisasjoner, Map<BedriftNr, Collection<Tiltakstype>> tilganger, PersondataService persondataService, Norg2Client norg2Client) {
         super(identifikator);
         this.altinnOrganisasjoner = altinnOrganisasjoner;
         this.tilganger = tilganger;
         this.persondataService = persondataService;
         this.norg2Client = norg2Client;
-        this.kontoregisterService = kontoregisterService;
     }
 
     private static boolean avbruttForMerEnn12UkerSiden(Avtale avtale) {
@@ -211,7 +208,6 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         }
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(opprettAvtale);
         final PdlRespons persondata = persondataService.hentPersondata(opprettAvtale.getDeltakerFnr());
-        leggTilArbeidsgiverKontonummer(avtale, kontoregisterService);
         leggTilGeografiskEnhet(avtale, persondata, norg2Client);
         return avtale;
     }
