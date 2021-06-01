@@ -437,6 +437,10 @@ public class TestData {
         return new NavIdent("Q987654");
     }
 
+    public static NavIdent enNavIdent2() {
+        return new NavIdent("B987654");
+    }
+
     public static Veileder enVeileder(NavIdent navIdent) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         KontoregisterService kontoregisterService = mock(KontoregisterService.class);

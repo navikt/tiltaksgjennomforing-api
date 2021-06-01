@@ -10,4 +10,9 @@ public class FeilkodeException extends RuntimeException {
     public Feilkode getFeilkode() {
         return feilkode;
     }
+
+    @Override
+    public String getMessage() {
+        return feilkode.name();
+    }
 }
