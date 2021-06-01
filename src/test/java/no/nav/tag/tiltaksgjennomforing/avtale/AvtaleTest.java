@@ -848,6 +848,12 @@ public class AvtaleTest {
     @Test
     public void godkjenn_tilskuddsperiode_samme_veileder_og_beslutter() {
         Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();
-        assertFeilkode(Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE, () -> avtale.godkjennTilskuddsperiode(avtale.getVeilederNavIdent(), "4444"));
+
+        // Kan ikke godkjenne når avtalen er tildelt seg selv
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE, () -> avtale.godkjennTilskuddsperiode(avtale.getGodkjentAvNavIdent(), "4444"));
+
+        // Kan heller ikke godkjenne når avtalen er tildelt en annen
+        avtale.overtaAvtale(new NavIdent("P887766"));
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE, () -> avtale.godkjennTilskuddsperiode(avtale.getGodkjentAvNavIdent(), "4444"));
     }
 }

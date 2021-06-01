@@ -422,7 +422,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (enhet == null || !enhet.matches("^\\d{4}$")) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER);
         }
-        if (beslutter.equals(veilederNavIdent)) {
+        if (beslutter.equals(getGodkjentAvNavIdent())) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE);
         }
         TilskuddPeriode gjeldendePeriode = gjeldendeTilskuddsperiode();
