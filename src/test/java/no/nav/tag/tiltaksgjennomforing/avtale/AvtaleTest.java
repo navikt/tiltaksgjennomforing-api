@@ -829,7 +829,7 @@ public class AvtaleTest {
         assertThat(avtale.statusSomEnum()).isEqualTo(Status.MANGLER_GODKJENNING);
         assertThat(avtale.getAvtaleInngått()).isNull();
         avtale.godkjennTilskuddsperiode(new NavIdent("B999999"), TestData.ENHET_OPPFØLGING);
-        assertThat(avtale.statusSomEnum()).isEqualTo(Status.KLAR_FOR_OPPSTART);
+        assertThat(avtale.statusSomEnum()).isEqualTo(Status.GJENNOMFØRES);
         assertThat(avtale.getAvtaleInngått()).isNotNull();
     }
 
