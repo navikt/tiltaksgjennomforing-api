@@ -143,13 +143,11 @@ public class AvtaleController {
         return arbeidsgiver.hentAvtalerForMinsideArbeidsgiver(avtaleRepository, bedriftNr);
     }
 
-    @PostMapping(path = "/{avtaleId}/set-kontonummer-for-arbeidsgiver-fra-kontoregister")
-    public ResponseEntity<?> oppdaterBedriftKontonummer(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+    @GetMapping(path = "/{avtaleId}/kontonummer-arbeidsgiver")
+    public String hentBedriftKontonummer(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtalepart.hentAvtale(avtaleRepository, avtaleId);
-        avtale.setArbeidsgiverKontonummer(kontoregisterService.hentKontonummer(avtale.getBedriftNr().asString()));
-        Avtale lagretAvtale = avtaleRepository.save(avtale);
-        return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
+        return kontoregisterService.hentKontonummer(avtale.getBedriftNr().asString());
     }
 
     @PostMapping("/opprett-som-arbeidsgiver")

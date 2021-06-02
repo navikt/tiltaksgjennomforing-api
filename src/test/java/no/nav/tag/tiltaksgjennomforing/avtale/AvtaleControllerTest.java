@@ -414,7 +414,7 @@ public class AvtaleControllerTest {
 
 
     @Test
-    public void oppdatterBedriftKontonummer_skal_returnere_avtaler_med_nytt_bedriftKontonummer() {
+    public void hentBedriftKontonummer_skal_returnere_nytt_bedriftKontonummer() {
         NavIdent veilederNavIdent = new NavIdent("Z222222");
         Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), veilederNavIdent);
         NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
@@ -423,15 +423,12 @@ public class AvtaleControllerTest {
         when(kontoregisterService.hentKontonummer(anyString())).thenReturn("990983666");
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(identTilInnloggetVeileder), any(Fnr.class))).thenReturn(true);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        when(avtaleRepository.save(any())).thenReturn(avtale);
-        avtaleController.oppdaterBedriftKontonummer(avtale.getId(), Avtalerolle.VEILEDER);
-        Avtale avtaleTilbake = avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER);
-        assertThat(avtaleTilbake.gjeldendeInnhold().getArbeidsgiverKontonummer())
-            .isEqualTo("990983666");
+        String kontonummer = avtaleController.hentBedriftKontonummer(avtale.getId(), Avtalerolle.VEILEDER);
+        assertThat(kontonummer).isEqualTo("990983666");
     }
 
     @Test(expected = TilgangskontrollException.class)
-    public void oppdatterBedriftKontonummer_skal_kaste_en_feil_når_innlogget_part_ikke_har_tilgang_til_Avtale() throws TilgangskontrollException {
+    public void hentBedriftKontonummer_skal_kaste_en_feil_når_innlogget_part_ikke_har_tilgang_til_Avtale() throws TilgangskontrollException {
         NavIdent veilederNavIdent = new NavIdent("Z222222");
         Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), veilederNavIdent);
         NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
@@ -439,11 +436,11 @@ public class AvtaleControllerTest {
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(identTilInnloggetVeileder), any(Fnr.class))).thenReturn(false);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        avtaleController.oppdaterBedriftKontonummer(avtale.getId(), Avtalerolle.VEILEDER);
+        avtaleController.hentBedriftKontonummer(avtale.getId(), Avtalerolle.VEILEDER);
     }
 
     @Test(expected = KontoregisterFeilException.class)
-    public void oppdatterBedriftKontonummer_skal_kaste_en_feil_når_kontonummer_rest_service_svarer_med_feil_response_status_og_kaster_en_exception()  {
+    public void hentBedriftKontonummer_skal_kaste_en_feil_når_kontonummer_rest_service_svarer_med_feil_response_status_og_kaster_en_exception()  {
         NavIdent veilederNavIdent = new NavIdent("Z222222");
         Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), veilederNavIdent);
         NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
@@ -452,6 +449,6 @@ public class AvtaleControllerTest {
         when(kontoregisterService.hentKontonummer(anyString())).thenThrow(KontoregisterFeilException.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(identTilInnloggetVeileder), any(Fnr.class))).thenReturn(true);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        ResponseEntity responseEntity = avtaleController.oppdaterBedriftKontonummer(avtale.getId(), Avtalerolle.VEILEDER);
+        String kontonummer = avtaleController.hentBedriftKontonummer(avtale.getId(), Avtalerolle.VEILEDER);
     }
 }
