@@ -39,10 +39,11 @@ no.nav.security.jwt:
 
 tiltaksgjennomforing:
   kontoregister:
-    uri: https://sokos-kontoregister.nais.adeo.no/kontoregister/api/v1/hent-kontonummer-for-organisasjon/
-    consumerId: ${tiltaksgjennomforing.serviceuser.username}
-    azureConfig: true
-    realClient: true
+    #uri: https://sokos-kontoregister.nais.adeo.no/kontoregister/api/v1/hent-kontonummer-for-organisasjon/
+    #consumerId: ${tiltaksgjennomforing.serviceuser.username}
+    #azureConfig: true
+    #realClient: true
+    fake: true
   database:
     database-navn: tiltaksgjennomforing-prod
     database-url: ${spring.datasource.url}
