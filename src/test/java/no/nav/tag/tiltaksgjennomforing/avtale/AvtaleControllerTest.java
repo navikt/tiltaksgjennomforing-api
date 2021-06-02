@@ -81,7 +81,7 @@ public class AvtaleControllerTest {
     @Test
     public void hentSkalReturnereRiktigAvtale() {
         Avtale avtale = enArbeidstreningAvtale();
-        Veileder veileder = new Veileder(TestData.enNavIdent(), tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties());
+        Veileder veileder = new Veileder(TestData.enNavIdent(), tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false);
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder.getIdentifikator()), any(Fnr.class))).thenReturn(true);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
@@ -101,7 +101,7 @@ public class AvtaleControllerTest {
     @Test(expected = TilgangskontrollException.class)
     public void hentSkalKastTilgangskontrollExceptionHvisInnloggetNavAnsattIkkeHarTilgang() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        værInnloggetSom(new Veileder(new NavIdent("Z333333"), tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties()));
+        værInnloggetSom(new Veileder(new NavIdent("Z333333"), tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER);
     }
@@ -112,7 +112,7 @@ public class AvtaleControllerTest {
         Avtale avtaleForVeilederSomSøkesEtter = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), veilederNavIdent);
         Avtale avtaleForAnnenVeilder = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), new NavIdent("Z111111"));
         NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
-        Veileder veileder = new Veileder(identTilInnloggetVeileder, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties());
+        Veileder veileder = new Veileder(identTilInnloggetVeileder, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false);
         værInnloggetSom(veileder);
         when(avtaleRepository.findAllByVeilederNavIdent(veilederNavIdent)).thenReturn(asList(avtaleForVeilederSomSøkesEtter, avtaleForAnnenVeilder));
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(identTilInnloggetVeileder), any(Fnr.class))).thenReturn(true);
@@ -129,7 +129,7 @@ public class AvtaleControllerTest {
         NavIdent veilederNavIdent = new NavIdent("Z222222");
         Avtale avtaleForVeilederSomSøkesEtter = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), veilederNavIdent);
         NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
-        Veileder veileder = new Veileder(identTilInnloggetVeileder, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties());
+        Veileder veileder = new Veileder(identTilInnloggetVeileder, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false);
         værInnloggetSom(veileder);
         when(avtaleRepository.findAllByVeilederNavIdent(veilederNavIdent)).thenReturn(List.of(avtaleForVeilederSomSøkesEtter));
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(identTilInnloggetVeileder), any(Fnr.class))).thenReturn(false);
@@ -142,7 +142,7 @@ public class AvtaleControllerTest {
         NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
         Avtale avtaleForInnloggetVeileder = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), identTilInnloggetVeileder);
         Avtale avtaleForAnnenVeilder = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), new NavIdent("Z111111"));
-        Veileder veileder = new Veileder(identTilInnloggetVeileder, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties());
+        Veileder veileder = new Veileder(identTilInnloggetVeileder, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false);
         værInnloggetSom(veileder);
         when(avtaleRepository.findAllByVeilederNavIdent(identTilInnloggetVeileder)).thenReturn(asList(avtaleForInnloggetVeileder, avtaleForAnnenVeilder));
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(identTilInnloggetVeileder), any(Fnr.class))).thenReturn(true);
@@ -182,7 +182,7 @@ public class AvtaleControllerTest {
     @Test
     public void endreAvtaleSkalReturnereOkHvisInnloggetPersonErVeileder() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        Veileder veileder = new Veileder(enNavIdent(), tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties());
+        Veileder veileder = new Veileder(enNavIdent(), tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false);
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(any(NavIdent.class), any(Fnr.class))).thenReturn(true);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
@@ -220,7 +220,7 @@ public class AvtaleControllerTest {
     public void opprettAvtaleSomVeileder__skal_feile_hvis_veileder_ikke_har_tilgang_til_bruker() {
         PersondataService persondataServiceIMetode = mock(PersondataService.class);
         Veileder enNavAnsatt = new Veileder(new NavIdent("T000000"), tilgangskontrollService, persondataServiceIMetode, norg2Client,
-            Collections.emptySet(), new SlettemerkeProperties());
+            Collections.emptySet(), new SlettemerkeProperties(), false);
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = new Fnr("11111100000");
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(enNavAnsatt.getIdentifikator(), deltakerFnr)).thenReturn(false);
@@ -231,7 +231,7 @@ public class AvtaleControllerTest {
     public void opprettAvtaleSomVeileder__skal_feile_hvis_kode6() {
         PersondataService persondataServiceIMetode = mock(PersondataService.class);
         Veileder enNavAnsatt = new Veileder(new NavIdent("T000000"), tilgangskontrollService, persondataServiceIMetode, norg2Client,
-            Collections.emptySet(), new SlettemerkeProperties());
+            Collections.emptySet(), new SlettemerkeProperties(), false);
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = new Fnr("11111100000");
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(enNavAnsatt.getIdentifikator(), deltakerFnr)).thenReturn(true);
@@ -405,7 +405,7 @@ public class AvtaleControllerTest {
         NavIdent veilederNavIdent = new NavIdent("Z222222");
         Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), veilederNavIdent);
         NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
-        Veileder veileder = new Veileder(identTilInnloggetVeileder, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties());
+        Veileder veileder = new Veileder(identTilInnloggetVeileder, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false);
         værInnloggetSom(veileder);
         when(kontoregisterService.hentKontonummer(anyString())).thenReturn("990983666");
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(identTilInnloggetVeileder), any(Fnr.class))).thenReturn(true);
@@ -422,7 +422,7 @@ public class AvtaleControllerTest {
         NavIdent veilederNavIdent = new NavIdent("Z222222");
         Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), veilederNavIdent);
         NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
-        Veileder veileder = new Veileder(identTilInnloggetVeileder, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties());
+        Veileder veileder = new Veileder(identTilInnloggetVeileder, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false);
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(identTilInnloggetVeileder), any(Fnr.class))).thenReturn(false);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
@@ -434,7 +434,7 @@ public class AvtaleControllerTest {
         NavIdent veilederNavIdent = new NavIdent("Z222222");
         Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), veilederNavIdent);
         NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
-        Veileder veileder = new Veileder(identTilInnloggetVeileder, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties());
+        Veileder veileder = new Veileder(identTilInnloggetVeileder, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false);
         værInnloggetSom(veileder);
         when(kontoregisterService.hentKontonummer(anyString())).thenThrow(KontoregisterFeilException.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(identTilInnloggetVeileder), any(Fnr.class))).thenReturn(true);

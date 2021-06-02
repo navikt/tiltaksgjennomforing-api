@@ -312,7 +312,7 @@ public class TestData {
     }
 
     public static InnloggetVeileder enInnloggetVeileder() {
-        return new InnloggetVeileder(new NavIdent("F888888"), Set.of(ENHET_OPPFØLGING));
+        return new InnloggetVeileder(new NavIdent("F888888"), Set.of(ENHET_OPPFØLGING), false);
     }
 
     public static InnloggetBeslutter enInnloggetBeslutter() {
@@ -341,7 +341,7 @@ public class TestData {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(avtale.getVeilederNavIdent()), eq(avtale.getDeltakerFnr()))).thenReturn(true);
         return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
-            Set.of("4802"), new SlettemerkeProperties());
+                Set.of("4802"), new SlettemerkeProperties(), false);
     }
 
     public static Beslutter enBeslutter(Avtale avtale) {
@@ -429,23 +429,23 @@ public class TestData {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any())).thenReturn(true);
         return new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
-            Set.of(ENHET_OPPFØLGING), new SlettemerkeProperties());
+                Set.of(ENHET_OPPFØLGING), new SlettemerkeProperties(), false);
     }
 
     public static Veileder enVeileder(Avtale avtale, PersondataService persondataService) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(avtale.getVeilederNavIdent(), avtale.getDeltakerFnr())).thenReturn(true);
         return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, persondataService, mock(Norg2Client.class),
-            Set.of(ENHET_OPPFØLGING), new SlettemerkeProperties());
+                Set.of(ENHET_OPPFØLGING), new SlettemerkeProperties(), false);
     }
 
     public static PdlRespons enPdlrespons(boolean harKode6eller7) {
-        Adressebeskyttelse adressebeskyttelser[] = new Adressebeskyttelse[1];
+        Adressebeskyttelse[] adressebeskyttelser = new Adressebeskyttelse[1];
         if (harKode6eller7) {
             adressebeskyttelser[0] = new Adressebeskyttelse("FORTROLIG");
         }
 
-        HentPerson hentPerson = new HentPerson(adressebeskyttelser, new Navn[]{new Navn("Donald", null, "Duck")});
+        HentPerson hentPerson = new HentPerson(adressebeskyttelser, new Navn[]{ new Navn("Donald", null, "Duck") });
         return new PdlRespons(new Data(hentPerson, null, new HentGeografiskTilknytning(null, "030101", null, null)));
     }
 

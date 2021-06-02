@@ -7,9 +7,9 @@ import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 
 @Value
 public class InnloggetVeileder implements InnloggetBruker {
-
     NavIdent identifikator;
     Set<String> navEnheter;
     Avtalerolle rolle = Avtalerolle.VEILEDER;
     boolean erNavAnsatt = true;
+    boolean kanVæreBeslutter;
 }
