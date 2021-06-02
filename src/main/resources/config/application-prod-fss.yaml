@@ -44,6 +44,7 @@ tiltaksgjennomforing:
     #azureConfig: true
     #realClient: true
     fake: true
+
   database:
     database-navn: tiltaksgjennomforing-prod
     database-url: ${spring.datasource.url}
