@@ -21,9 +21,11 @@ public class MidlertidigLonnstilskuddStrategy extends LonnstilskuddStrategy {
 
     @Override
     void regnUtTotalLonnstilskudd() {
-
         super.regnUtTotalLonnstilskudd();
+        regnUtDatoOgSumRedusert();
+    }
 
+    private void regnUtDatoOgSumRedusert() {
         LocalDate datoForRedusertProsent = getDatoForRedusertProsent(avtaleInnhold.getStartDato(), avtaleInnhold.getSluttDato(), avtaleInnhold.getLonnstilskuddProsent());
         avtaleInnhold.setDatoForRedusertProsent(datoForRedusertProsent);
         Integer sumLønnstilskuddRedusert = regnUtRedusertLønnstilskudd();
@@ -56,4 +58,9 @@ public class MidlertidigLonnstilskuddStrategy extends LonnstilskuddStrategy {
         return null;
     }
 
+    @Override
+    public void endreSluttDato(LocalDate nySluttDato) {
+        super.endreSluttDato(nySluttDato);
+        regnUtDatoOgSumRedusert();
+    }
 }

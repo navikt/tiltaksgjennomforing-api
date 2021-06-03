@@ -600,12 +600,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (StringUtils.isBlank(grunn) || (grunn.equals("Annet") && StringUtils.isBlank(annetGrunn))) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_GRUNN_MANGLER);
         }
-        sendTilbakeTilBeslutter();
-        forkortTilskuddsperioder(nySluttDato);
         AvtaleInnhold nyAvtaleInnholdVersjon = gjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORKORTE);
         versjoner.add(nyAvtaleInnholdVersjon);
-        gjeldendeInnhold().setSluttDato(nySluttDato);
-        gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
+        gjeldendeInnhold().endreSluttDato(nySluttDato);
+        sendTilbakeTilBeslutter();
+        forkortTilskuddsperioder(nySluttDato);
         registerEvent(new AvtaleForkortet(this, nyAvtaleInnholdVersjon, nySluttDato, grunn, annetGrunn, utførtAv));
     }
 
@@ -617,12 +616,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORLENGE_FEIL_SLUTTDATO);
         }
         sjekkStartOgSluttDato(getStartDato(), nySluttDato);
-        sendTilbakeTilBeslutter();
-        forlengTilskuddsperioder(this.getSluttDato(), nySluttDato);
+        var gammelSluttDato = getSluttDato();
         AvtaleInnhold nyVersjon = gjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORLENGE);
         versjoner.add(nyVersjon);
-        gjeldendeInnhold().setSluttDato(nySluttDato);
-        gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
+        gjeldendeInnhold().endreSluttDato(nySluttDato);
+        sendTilbakeTilBeslutter();
+        forlengTilskuddsperioder(gammelSluttDato, nySluttDato);
         sistEndretNå();
         registerEvent(new AvtaleForlenget(this, utførtAv));
     }

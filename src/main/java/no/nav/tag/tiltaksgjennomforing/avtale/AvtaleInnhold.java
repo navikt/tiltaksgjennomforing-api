@@ -1,39 +1,19 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 import lombok.experimental.FieldNameConstants;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erTom;
-
-
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
-import javax.persistence.CascadeType;
-import javax.persistence.Convert;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erTom;
 
 // Lombok
 @Data
@@ -231,6 +211,10 @@ public class AvtaleInnhold {
     public void endreOppfølgingOgTilretteleggingInfo(EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging) {
         setOppfolging(endreOppfølgingOgTilrettelegging.getOppfolging());
         setTilrettelegging(endreOppfølgingOgTilrettelegging.getTilrettelegging());
+    }
+
+    public void endreSluttDato(LocalDate nySluttDato) {
+        innholdStrategi().endreSluttDato(nySluttDato);
     }
 }
 

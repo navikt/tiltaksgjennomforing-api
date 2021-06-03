@@ -4,6 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -122,5 +123,11 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
             alleFelter.put(AvtaleInnhold.Fields.familietilknytningForklaring, avtaleInnhold.getFamilietilknytningForklaring());
         }
         return alleFelter;
+    }
+
+    @Override
+    public void endreSluttDato(LocalDate nySluttDato) {
+        super.endreSluttDato(nySluttDato);
+        regnUtTotalLonnstilskudd();
     }
 }

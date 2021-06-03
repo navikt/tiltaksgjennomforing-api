@@ -872,4 +872,25 @@ public class AvtaleTest {
         avtale.overtaAvtale(new NavIdent("P887766"));
         assertFeilkode(Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE, () -> avtale.godkjennTilskuddsperiode(avtale.getGodkjentAvNavIdent(), "4444"));
     }
+
+    @Test
+    public void forleng_og_forkort_skal_redusere_prosent() {
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
+        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        endreAvtale.setLonnstilskuddProsent(60);
+        endreAvtale.setStartDato(LocalDate.now());
+        endreAvtale.setSluttDato(LocalDate.now().plusMonths(12).minusDays(1));
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.noneOf(Tiltakstype.class));
+        avtale.godkjennForDeltaker(TestData.etFodselsnummer());
+        avtale.godkjennForArbeidsgiver(TestData.etFodselsnummer());
+        avtale.godkjennForVeileder(TestData.enNavIdent());
+
+        avtale.forlengAvtale(LocalDate.now().plusMonths(12), TestData.enNavIdent());
+        assertThat(avtale.getDatoForRedusertProsent()).isEqualTo(LocalDate.now().plusMonths(12));
+        assertThat(avtale.getSumLønnstilskuddRedusert()).isNotNull();
+
+        avtale.forkortAvtale(LocalDate.now().plusMonths(12).minusDays(1), "grunn", "", TestData.enNavIdent());
+        assertThat(avtale.getDatoForRedusertProsent()).isNull();
+        assertThat(avtale.getSumLønnstilskuddRedusert()).isNull();
+    }
 }

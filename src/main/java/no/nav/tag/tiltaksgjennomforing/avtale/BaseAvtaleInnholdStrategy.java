@@ -1,5 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,5 +54,11 @@ public abstract class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy
         alleFelter.put(AvtaleInnhold.Fields.oppfolging, avtaleInnhold.getOppfolging());
         alleFelter.put(AvtaleInnhold.Fields.tilrettelegging, avtaleInnhold.getTilrettelegging());
         return alleFelter;
+    }
+
+    @Override
+    public void endreSluttDato(LocalDate nySluttDato) {
+        avtaleInnhold.setSluttDato(nySluttDato);
+        avtaleInnhold.setIkrafttredelsestidspunkt(LocalDateTime.now());
     }
 }
