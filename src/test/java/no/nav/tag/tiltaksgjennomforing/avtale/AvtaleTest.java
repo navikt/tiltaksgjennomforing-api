@@ -753,10 +753,8 @@ public class AvtaleTest {
         BigDecimal feriepengesats = new BigDecimal("0.166");
         BigDecimal arbeidsgiveravgift = BigDecimal.ZERO;
         int manedslonn = 44444;
-        int stillingprosent = 50;
-        int antallDagerPerUke = 5;
 
-        avtale.endreTilskuddsberegning(EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).stillingprosent(stillingprosent).antallDagerPerUke(antallDagerPerUke).build(), TestData.enNavIdent());
+        avtale.endreTilskuddsberegning(EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).build(), TestData.enNavIdent());
 
         assertThat(avtale.getVersjoner()).hasSize(2);
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
@@ -765,6 +763,24 @@ public class AvtaleTest {
         assertThat(avtale.getFeriepengesats()).isEqualTo(feriepengesats);
         assertThat(avtale.getArbeidsgiveravgift()).isEqualTo(arbeidsgiveravgift);
         assertThat(avtale.getManedslonn()).isEqualTo(manedslonn);
+    }
+
+    @Test
+    public void endre_stillingsbeskrivelse_setter_riktige_felter() {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
+        String stillingstittel = "Kokk";
+        String arbeidsoppgaver = "Lage mat";
+        Integer stillingStyrk08 = 1234;
+        Integer stillingKonseptId = 9999;
+        Integer stillingprosent = 90;
+        Integer antallDagerPerUke = 4;
+        var endreStillingsbeskrivelse = new EndreStillingsbeskrivelse(stillingstittel, arbeidsoppgaver, stillingStyrk08, stillingKonseptId, stillingprosent, antallDagerPerUke).toBuilder().build();
+        avtale.endreStillingsbeskrivelse(endreStillingsbeskrivelse, new NavIdent("Z123456"));
+
+        assertThat(avtale.getStillingstittel()).isEqualTo(stillingstittel);
+        assertThat(avtale.getArbeidsoppgaver()).isEqualTo(arbeidsoppgaver);
+        assertThat(avtale.getStillingStyrk08()).isEqualTo(stillingStyrk08);
+        assertThat(avtale.getStillingKonseptId()).isEqualTo(stillingKonseptId);
         assertThat(avtale.getStillingprosent()).isEqualTo(stillingprosent);
         assertThat(avtale.getAntallDagerPerUke()).isEqualTo(antallDagerPerUke);
     }
