@@ -458,9 +458,7 @@ public class TestData {
         BigDecimal feriepengesats = new BigDecimal("0.166");
         BigDecimal arbeidsgiveravgift = BigDecimal.ZERO;
         int manedslonn = 44444;
-        int stillingprosent = 50;
-        int antallDagerPerUke = 5;
-        return EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).stillingprosent(stillingprosent).antallDagerPerUke(antallDagerPerUke).build();
+        return EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).build();
     }
 
     public static Avtale enArbeidstreningAvtaleGodkjentAvVeileder() {

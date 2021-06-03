@@ -205,8 +205,6 @@ public class AvtaleInnhold {
 
     public void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning) {
         innholdStrategi().endreTilskuddsberegning(tilskuddsberegning);
-        setStillingprosent(tilskuddsberegning.getStillingprosent());
-        setAntallDagerPerUke(tilskuddsberegning.getAntallDagerPerUke());
     }
 
     public void endreKontaktInfo(EndreKontaktInformasjon endreKontaktInformasjon) {
@@ -226,6 +224,8 @@ public class AvtaleInnhold {
         setArbeidsoppgaver(endreStillingsbeskrivelse.getArbeidsoppgaver());
         setStillingStyrk08(endreStillingsbeskrivelse.getStillingStyrk08());
         setStillingKonseptId(endreStillingsbeskrivelse.getStillingKonseptId());
+        setStillingprosent(endreStillingsbeskrivelse.getStillingprosent());
+        setAntallDagerPerUke(endreStillingsbeskrivelse.getAntallDagerPerUke());
     }
 
     public void endreOppfølgingOgTilretteleggingInfo(EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging) {

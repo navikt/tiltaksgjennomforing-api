@@ -639,9 +639,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (Utils.erNoenTomme(tilskuddsberegning.getArbeidsgiveravgift(),
                 tilskuddsberegning.getFeriepengesats(),
                 tilskuddsberegning.getManedslonn(),
-                tilskuddsberegning.getOtpSats(),
-                tilskuddsberegning.getStillingprosent(),
-                tilskuddsberegning.getAntallDagerPerUke())) {
+                tilskuddsberegning.getOtpSats())) {
 
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
         }
@@ -689,7 +687,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (Utils.erNoenTomme(endreStillingsbeskrivelse.getStillingstittel(),
                 endreStillingsbeskrivelse.getArbeidsoppgaver(),
                 endreStillingsbeskrivelse.getStillingStyrk08(),
-                endreStillingsbeskrivelse.getStillingKonseptId())
+                endreStillingsbeskrivelse.getStillingKonseptId(),
+                endreStillingsbeskrivelse.getStillingprosent(),
+                endreStillingsbeskrivelse.getAntallDagerPerUke())
         ) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_STILLINGSBESKRIVELSE_GRUNN_MANGLER);
         }
