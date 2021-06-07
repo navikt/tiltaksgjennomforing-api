@@ -26,7 +26,6 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
-import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.stereotype.Component;
 
@@ -43,7 +42,6 @@ public class InnloggingService {
     private final Norg2Client norg2Client;
     private final AxsysService axsysService;
     private final SlettemerkeProperties slettemerkeProperties;
-    private final KontoregisterService kontoregisterService;
 
     public Avtalepart hentAvtalepart(Avtalerolle avtalerolle) {
         BrukerOgIssuer brukerOgIssuer = tokenUtils.hentBrukerOgIssuer().orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget."));
