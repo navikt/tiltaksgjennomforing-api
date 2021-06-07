@@ -63,7 +63,8 @@ public class InnloggingService {
         else if (issuer == Issuer.ISSUER_ISSO && avtalerolle == Avtalerolle.VEILEDER) {
             NavIdent navIdent = new NavIdent(brukerOgIssuer.getBrukerIdent());
             Set<String> navEnheter = hentNavEnheter(navIdent);
-            return new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, navEnheter, slettemerkeProperties);
+            boolean harAdGruppeForBeslutter = tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId());
+            return new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, navEnheter, slettemerkeProperties, harAdGruppeForBeslutter);
         } else if (issuer == Issuer.ISSUER_ISSO && avtalerolle == Avtalerolle.BESLUTTER) {
             boolean harAdGruppeForBeslutter = tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId());
             if (harAdGruppeForBeslutter) {

@@ -1,8 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
-
 import java.time.LocalDate;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
 
 public class MidlertidigLonnstilskuddStrategy extends LonnstilskuddStrategy {
 
@@ -21,9 +20,11 @@ public class MidlertidigLonnstilskuddStrategy extends LonnstilskuddStrategy {
 
     @Override
     void regnUtTotalLonnstilskudd() {
-
         super.regnUtTotalLonnstilskudd();
+        regnUtDatoOgSumRedusert();
+    }
 
+    private void regnUtDatoOgSumRedusert() {
         LocalDate datoForRedusertProsent = getDatoForRedusertProsent(avtaleInnhold.getStartDato(), avtaleInnhold.getSluttDato(), avtaleInnhold.getLonnstilskuddProsent());
         avtaleInnhold.setDatoForRedusertProsent(datoForRedusertProsent);
         Integer sumLønnstilskuddRedusert = regnUtRedusertLønnstilskudd();
@@ -56,4 +57,9 @@ public class MidlertidigLonnstilskuddStrategy extends LonnstilskuddStrategy {
         return null;
     }
 
+    @Override
+    public void endreSluttDato(LocalDate nySluttDato) {
+        super.endreSluttDato(nySluttDato);
+        regnUtDatoOgSumRedusert();
+    }
 }

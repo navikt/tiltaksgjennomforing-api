@@ -67,7 +67,7 @@ public class VeilarbabacClientTest {
     }
 
     private static InnloggetVeileder enVeileder() {
-        return new InnloggetVeileder(new NavIdent("X123456"), Collections.emptySet());
+        return new InnloggetVeileder(new NavIdent("X123456"), Collections.emptySet(), false);
     }
 
     @Test

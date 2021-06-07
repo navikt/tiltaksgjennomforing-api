@@ -1,9 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import java.math.BigDecimal;
 import lombok.Builder;
 import lombok.Value;
-
-import java.math.BigDecimal;
 
 @Value
 @Builder(toBuilder = true)
@@ -12,6 +11,4 @@ public class EndreTilskuddsberegning {
     BigDecimal feriepengesats;
     BigDecimal arbeidsgiveravgift;
     Double otpSats;
-    Integer stillingprosent;
-    Integer antallDagerPerUke;
 }

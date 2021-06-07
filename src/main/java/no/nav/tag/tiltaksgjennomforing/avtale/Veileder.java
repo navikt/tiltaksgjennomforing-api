@@ -28,17 +28,19 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     private final PersondataService persondataService;
     private final SlettemerkeProperties slettemerkeProperties;
+    private final boolean harAdGruppeForBeslutter;
     private final Norg2Client norg2Client;
     private Set<String> navEnheter;
 
     public Veileder(NavIdent identifikator, TilgangskontrollService tilgangskontrollService, PersondataService persondataService,
-                    Norg2Client norg2Client, Set<String> navEnheter, SlettemerkeProperties slettemerkeProperties) {
+                    Norg2Client norg2Client, Set<String> navEnheter, SlettemerkeProperties slettemerkeProperties, boolean harAdGruppeForBeslutter) {
         super(identifikator);
         this.tilgangskontrollService = tilgangskontrollService;
         this.persondataService = persondataService;
         this.norg2Client = norg2Client;
         this.navEnheter = navEnheter;
         this.slettemerkeProperties = slettemerkeProperties;
+        this.harAdGruppeForBeslutter = harAdGruppeForBeslutter;
     }
 
     @Override
@@ -167,7 +169,7 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     @Override
     public InnloggetBruker innloggetBruker() {
-        return new InnloggetVeileder(getIdentifikator(), navEnheter);
+        return new InnloggetVeileder(getIdentifikator(), navEnheter, harAdGruppeForBeslutter);
     }
 
     public void delAvtaleMedAvtalepart(Avtalerolle avtalerolle, Avtale avtale) {

@@ -1,8 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import lombok.experimental.UtilityClass;
-import no.nav.tag.tiltaksgjennomforing.utils.Periode;
-
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -11,6 +8,8 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.experimental.UtilityClass;
+import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 
 @UtilityClass
 public class RegnUtTilskuddsperioderForAvtale {
@@ -54,7 +53,7 @@ public class RegnUtTilskuddsperioderForAvtale {
     public static Integer beløpForPeriode(LocalDate fra, LocalDate til, Integer sumLønnstilskuddPerMåned) {
         Period period = Period.between(fra, til.plusDays(1));
         Integer sumHeleMåneder = period.getMonths() * sumLønnstilskuddPerMåned;
-        BigDecimal dagsats = new BigDecimal(sumLønnstilskuddPerMåned).divide(DAGER_I_MÅNED, RoundingMode.HALF_UP);
+        BigDecimal dagsats = new BigDecimal(sumLønnstilskuddPerMåned).divide(DAGER_I_MÅNED, 10, RoundingMode.HALF_UP);
         Integer sumEnkeltdager = dagsats.multiply(BigDecimal.valueOf(period.getDays()), MathContext.UNLIMITED).setScale(0, RoundingMode.HALF_UP).intValue();
         return sumHeleMåneder + sumEnkeltdager;
     }

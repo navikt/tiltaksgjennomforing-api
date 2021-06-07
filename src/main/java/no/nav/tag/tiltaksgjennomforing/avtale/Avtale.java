@@ -1,34 +1,87 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Delegate;
 import lombok.experimental.FieldNameConstants;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvbruttAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortet;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlenget;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleGjenopprettet;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleLåstOpp;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiverErFordelt;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleSlettemerket;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GamleVerdier;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvDeltaker;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAv;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.KontaktinformasjonEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.MålEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.OppfølgingOgTilretteleggingEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.StillingsbeskrivelseEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsberegningEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAnnullert;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAvslått;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeForkortet;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeGodkjent;
 import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttDatoStrategyFactory;
-import no.nav.tag.tiltaksgjennomforing.exceptions.*;
+import no.nav.tag.tiltaksgjennomforing.exceptions.AltMåVæreFyltUtException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørVeilederException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.AvtaleErIkkeFordeltException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.DeltakerHarGodkjentException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
 import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
+import org.hibernate.annotations.SortNatural;
 import org.springframework.data.domain.AbstractAggregateRoot;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OrderBy;
-import javax.persistence.*;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -600,12 +653,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (StringUtils.isBlank(grunn) || (grunn.equals("Annet") && StringUtils.isBlank(annetGrunn))) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_GRUNN_MANGLER);
         }
-        sendTilbakeTilBeslutter();
-        forkortTilskuddsperioder(nySluttDato);
         AvtaleInnhold nyAvtaleInnholdVersjon = gjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORKORTE);
         versjoner.add(nyAvtaleInnholdVersjon);
-        gjeldendeInnhold().setSluttDato(nySluttDato);
-        gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
+        gjeldendeInnhold().endreSluttDato(nySluttDato);
+        sendTilbakeTilBeslutter();
+        forkortTilskuddsperioder(nySluttDato);
         registerEvent(new AvtaleForkortet(this, nyAvtaleInnholdVersjon, nySluttDato, grunn, annetGrunn, utførtAv));
     }
 
@@ -617,12 +669,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORLENGE_FEIL_SLUTTDATO);
         }
         sjekkStartOgSluttDato(getStartDato(), nySluttDato);
-        sendTilbakeTilBeslutter();
-        forlengTilskuddsperioder(this.getSluttDato(), nySluttDato);
+        var gammelSluttDato = getSluttDato();
         AvtaleInnhold nyVersjon = gjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORLENGE);
         versjoner.add(nyVersjon);
-        gjeldendeInnhold().setSluttDato(nySluttDato);
-        gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
+        gjeldendeInnhold().endreSluttDato(nySluttDato);
+        sendTilbakeTilBeslutter();
+        forlengTilskuddsperioder(gammelSluttDato, nySluttDato);
         sistEndretNå();
         registerEvent(new AvtaleForlenget(this, utførtAv));
     }
@@ -639,9 +691,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (Utils.erNoenTomme(tilskuddsberegning.getArbeidsgiveravgift(),
                 tilskuddsberegning.getFeriepengesats(),
                 tilskuddsberegning.getManedslonn(),
-                tilskuddsberegning.getOtpSats(),
-                tilskuddsberegning.getStillingprosent(),
-                tilskuddsberegning.getAntallDagerPerUke())) {
+                tilskuddsberegning.getOtpSats())) {
 
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
         }
@@ -689,7 +739,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (Utils.erNoenTomme(endreStillingsbeskrivelse.getStillingstittel(),
                 endreStillingsbeskrivelse.getArbeidsoppgaver(),
                 endreStillingsbeskrivelse.getStillingStyrk08(),
-                endreStillingsbeskrivelse.getStillingKonseptId())
+                endreStillingsbeskrivelse.getStillingKonseptId(),
+                endreStillingsbeskrivelse.getStillingprosent(),
+                endreStillingsbeskrivelse.getAntallDagerPerUke())
         ) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_STILLINGSBESKRIVELSE_GRUNN_MANGLER);
         }

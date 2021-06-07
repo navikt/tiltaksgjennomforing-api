@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 public interface AvtaleInnholdStrategy {
@@ -8,4 +9,6 @@ public interface AvtaleInnholdStrategy {
         throw new RuntimeException("Ikke implementert");
     }
     Map<String, Object> alleFelterSomMåFyllesUt();
+
+    void endreSluttDato(LocalDate nySluttDato);
 }

@@ -1,13 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.experimental.FieldNameConstants;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erTom;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,6 +29,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.FieldNameConstants;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 // Lombok
 @Data
@@ -205,8 +203,6 @@ public class AvtaleInnhold {
 
     public void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning) {
         innholdStrategi().endreTilskuddsberegning(tilskuddsberegning);
-        setStillingprosent(tilskuddsberegning.getStillingprosent());
-        setAntallDagerPerUke(tilskuddsberegning.getAntallDagerPerUke());
     }
 
     public void endreKontaktInfo(EndreKontaktInformasjon endreKontaktInformasjon) {
@@ -226,11 +222,17 @@ public class AvtaleInnhold {
         setArbeidsoppgaver(endreStillingsbeskrivelse.getArbeidsoppgaver());
         setStillingStyrk08(endreStillingsbeskrivelse.getStillingStyrk08());
         setStillingKonseptId(endreStillingsbeskrivelse.getStillingKonseptId());
+        setStillingprosent(endreStillingsbeskrivelse.getStillingprosent());
+        setAntallDagerPerUke(endreStillingsbeskrivelse.getAntallDagerPerUke());
     }
 
     public void endreOppfølgingOgTilretteleggingInfo(EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging) {
         setOppfolging(endreOppfølgingOgTilrettelegging.getOppfolging());
         setTilrettelegging(endreOppfølgingOgTilrettelegging.getTilrettelegging());
+    }
+
+    public void endreSluttDato(LocalDate nySluttDato) {
+        innholdStrategi().endreSluttDato(nySluttDato);
     }
 }
 
