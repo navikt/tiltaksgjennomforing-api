@@ -1,8 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
-
 import java.time.LocalDate;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
 
 public class MidlertidigLonnstilskuddStrategy extends LonnstilskuddStrategy {
 

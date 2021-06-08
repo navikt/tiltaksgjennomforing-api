@@ -42,7 +42,6 @@ public class KontoregisterServiceImpl implements KontoregisterService{
             if(exception instanceof HttpClientErrorException){
                 HttpClientErrorException hcee = (HttpClientErrorException)exception;
                 if(hcee.getStatusCode() == NOT_FOUND) {
-                    log.error(String.format("Kontoregister svarte med fant ikke kontonummer for bedrift : %s",bedriftNr));
                     throw new KontoregisterFantIkkeBedriftFeilException();
                 }
 

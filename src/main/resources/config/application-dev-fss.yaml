@@ -31,7 +31,7 @@ no.nav.security.jwt:
       kontoregister:
         token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
         grant-type: client_credentials
-        scope: api://dev-fss.okonomi.sokos-kontoregister/.default
+        scope: api://dev-fss.okonomi.sokos-kontoregister-q2/.default
         authentication:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
@@ -39,7 +39,7 @@ no.nav.security.jwt:
 
 tiltaksgjennomforing:
   kontoregister:
-    uri: https://sokos-kontoregister-q1.dev.adeo.no/kontoregister/api/v1/hent-kontonr-org
+    uri: https://sokos-kontoregister-q2.dev.adeo.no/kontoregister/api/v1/hent-kontonummer-for-organisasjon/
     consumerId: ${tiltaksgjennomforing.serviceuser.username}
     azureConfig: true
     realClient: true
