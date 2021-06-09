@@ -47,21 +47,14 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
-        if (queryParametre.getVeilederNavIdent() != null && queryParametre.getNavEnhet() != null) {
-            return avtaleRepository.findAllfordelteByEnhet(queryParametre.getVeilederNavIdent(), queryParametre.getNavEnhet());
-
-        } else if (queryParametre.getVeilederNavIdent() != null) {
+        if (queryParametre.getVeilederNavIdent() != null) {
             return avtaleRepository.findAllByVeilederNavIdent(queryParametre.getVeilederNavIdent());
-
         } else if (queryParametre.getDeltakerFnr() != null) {
             return avtaleRepository.findAllByDeltakerFnr(queryParametre.getDeltakerFnr());
-
         } else if (queryParametre.getBedriftNr() != null) {
             return avtaleRepository.findAllByBedriftNrIn(Set.of(queryParametre.getBedriftNr()));
-
         } else if (queryParametre.getNavEnhet() != null) {
             return avtaleRepository.findAllUfordelteByEnhet(queryParametre.getNavEnhet());
-
         } else {
             return emptyList();
         }
