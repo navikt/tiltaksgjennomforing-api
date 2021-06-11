@@ -152,6 +152,25 @@ public class AvtaleControllerTest {
                 .doesNotContain(avtaleForAnnenVeilder);
     }
 
+    @Test
+    public void hentAvtaleOpprettetAvInnloggetVeileder_fordelt_oppfolgingsEnhet_og_geoEnhet() {
+        NavIdent navIdent = new NavIdent("Z123456");
+        String navEnhet = "0904";
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false);
+        værInnloggetSom(veileder);
+        Avtale nyAvtaleMedGeografiskEnhet = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhetOgGeografiskEnhet();
+        Avtale nyAvtaleMedOppfølgningsEnhet = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet();
+
+        when(avtaleRepository.findAllfordelteByEnhet(navIdent, navEnhet)).thenReturn(asList(nyAvtaleMedGeografiskEnhet, nyAvtaleMedOppfølgningsEnhet));
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any(Fnr.class))).thenReturn(true);
+
+        List<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(new AvtalePredicate().setVeilederNavIdent(navIdent).setNavEnhet(navEnhet), Avtale.Fields.sistEndret, Avtalerolle.VEILEDER);
+        assertThat(avtaler).isNotNull();
+        assertThat(avtaler)
+                .contains(nyAvtaleMedGeografiskEnhet);
+
+    }
+
     @Test(expected = TilgangskontrollException.class)
     public void hentSkalKastTilgangskontrollExceptionHvisInnloggetSelvbetjeningBrukerIkkeHarTilgang() {
         Avtale avtale = TestData.enArbeidstreningAvtale();

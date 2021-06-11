@@ -38,11 +38,14 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             + "and (enhetOppfolging in (?1) or enhetGeografisk in (?1))")
     List<Avtale> findAllUfordelteByEnhet(String navEnhet);
 
+    
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Query("FROM Avtale "
-            + "where veilederNavIdent in (?1) "
-            + "and (enhetOppfolging in (?2) or enhetGeografisk in (?2))")
-    List<Avtale> findAllfordelteByEnhet(NavIdent ident, String navEnhet);
+            + "where (veilederNavIdent in (?1) "
+            + "and (enhetOppfolging in (?2) or enhetGeografisk in (?2))) "
+            + " or (veilederNavIdent is null "
+            + "and (enhetOppfolging in (?2) or enhetGeografisk in (?2)))")
+    List<Avtale> findAllfordelteByEnhet(NavIdent navIdent, String navEnhet);
 
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})

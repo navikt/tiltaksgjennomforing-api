@@ -13,6 +13,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
@@ -52,16 +53,20 @@ public class Veileder extends Avtalepart<NavIdent> {
             return avtaleRepository.findAllfordelteByEnhet(queryParametre.getVeilederNavIdent(), queryParametre.getNavEnhet());
 
         } else if (queryParametre.getVeilederNavIdent() != null) {
-            return avtaleRepository.findAllByVeilederNavIdent(queryParametre.getVeilederNavIdent());
+            return avtaleRepository.findAllByVeilederNavIdent(queryParametre.getVeilederNavIdent())
+                    .stream().filter(queryParametre).collect(Collectors.toList());
 
         } else if (queryParametre.getDeltakerFnr() != null) {
-            return avtaleRepository.findAllByDeltakerFnr(queryParametre.getDeltakerFnr());
+            return avtaleRepository.findAllByDeltakerFnr(queryParametre.getDeltakerFnr())
+                    .stream().filter(queryParametre).collect(Collectors.toList());
 
         } else if (queryParametre.getBedriftNr() != null) {
-            return avtaleRepository.findAllByBedriftNrIn(Set.of(queryParametre.getBedriftNr()));
+            return avtaleRepository.findAllByBedriftNrIn(Set.of(queryParametre.getBedriftNr()))
+                    .stream().filter(queryParametre).collect(Collectors.toList());
 
         } else if (queryParametre.getNavEnhet() != null) {
-            return avtaleRepository.findAllUfordelteByEnhet(queryParametre.getNavEnhet());
+            return avtaleRepository.findAllUfordelteByEnhet(queryParametre.getNavEnhet())
+                    .stream().filter(queryParametre).collect(Collectors.toList());
 
         } else {
             return emptyList();
