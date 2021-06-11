@@ -26,10 +26,23 @@ no.nav.security.jwt:
     system:
       discoveryurl: http://security-token-service.default.svc.nais.local/rest/v1/sts/.well-known/openid-configuration
       accepted_audience: ${tiltaksgjennomforing.audience.system}
+  client:
+    registration:
+      kontoregister:
+        token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
+        grant-type: client_credentials
+        scope: api://prod-fss.okonomi.sokos-kontoregister/.default
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_basic
 
 tiltaksgjennomforing:
   kontoregister:
-    fake: true
+    uri: https://sokos-kontoregister.nais.adeo.no/kontoregister/api/v1/hent-kontonummer-for-organisasjon/
+    consumerId: ${tiltaksgjennomforing.serviceuser.username}
+    azureConfig: true
+    realClient: true
   database:
     database-navn: tiltaksgjennomforing-prod
     database-url: ${spring.datasource.url}

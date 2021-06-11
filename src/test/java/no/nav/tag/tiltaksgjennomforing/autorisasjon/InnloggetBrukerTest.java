@@ -24,6 +24,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +36,7 @@ public class InnloggetBrukerTest {
     private Avtale avtale;
     private BedriftNr bedriftNr;
     private TilgangskontrollService tilgangskontrollService;
+    private KontoregisterService kontoregisterService;
     private PersondataService persondataService;
     private Norg2Client norg2Client;
 
@@ -46,6 +48,7 @@ public class InnloggetBrukerTest {
         avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(deltaker, bedriftNr, Tiltakstype.ARBEIDSTRENING), navIdent);
         tilgangskontrollService = mock(TilgangskontrollService.class);
         persondataService = mock(PersondataService.class);
+        kontoregisterService = mock(KontoregisterService.class);
     }
 
     @Test

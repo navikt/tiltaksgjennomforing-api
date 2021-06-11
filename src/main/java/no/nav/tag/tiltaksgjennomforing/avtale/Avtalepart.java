@@ -1,7 +1,18 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentGeoLokasjonFraPdlRespons;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
@@ -12,18 +23,8 @@ import no.nav.tag.tiltaksgjennomforing.hendelselogg.Hendelselogg;
 import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentGeoLokasjonFraPdlRespons;
-
 @AllArgsConstructor
+@Slf4j
 @Data
 public abstract class Avtalepart<T extends Identifikator> {
     private final T identifikator;
