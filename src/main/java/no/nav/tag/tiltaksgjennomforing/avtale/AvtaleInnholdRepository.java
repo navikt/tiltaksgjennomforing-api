@@ -14,7 +14,7 @@ public interface AvtaleInnholdRepository extends JpaRepository<AvtaleInnhold, UU
     List<AvtaleInnhold> findAllById(Iterable<UUID> ids);
 
     @Timed(percentiles = { 0.5d, 0.75d, 0.9d, 0.99d, 0.999d })
-    @Query(value = "select ai from AvtaleInnhold ai where ai.journalpostId is null and ai.godkjentAvVeileder is not null")
+    @Query(value = "select ai from AvtaleInnhold ai where ai.journalpostId is null and ai.avtaleInngått is not null")
     List<AvtaleInnhold> finnAvtaleVersjonerTilJournalfoering();
 }
 

@@ -1,8 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import lombok.experimental.UtilityClass;
-import no.nav.tag.tiltaksgjennomforing.utils.Periode;
-
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -11,6 +8,8 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.experimental.UtilityClass;
+import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 
 @UtilityClass
 public class RegnUtTilskuddsperioderForAvtale {

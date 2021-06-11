@@ -1,22 +1,27 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.exceptions.*;
-import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
-import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import static java.util.Collections.emptyList;
+import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import static java.util.Collections.emptyList;
-import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeAdminTilgangException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
+import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6Eller7Exception;
+import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+
+import java.util.stream.Collectors;
 
 public class Veileder extends Avtalepart<NavIdent> {
     static String tekstAvtaleVenterPaaDinGodkjenning = "Før du godkjenner avtalen må du sjekke at alt er i orden og innholdet er riktig.";
@@ -28,7 +33,7 @@ public class Veileder extends Avtalepart<NavIdent> {
     private final SlettemerkeProperties slettemerkeProperties;
     private final boolean harAdGruppeForBeslutter;
     private final Norg2Client norg2Client;
-    private Set<String> navEnheter;
+    private final Set<String> navEnheter;
 
     public Veileder(NavIdent identifikator, TilgangskontrollService tilgangskontrollService, PersondataService persondataService,
                     Norg2Client norg2Client, Set<String> navEnheter, SlettemerkeProperties slettemerkeProperties, boolean harAdGruppeForBeslutter) {
