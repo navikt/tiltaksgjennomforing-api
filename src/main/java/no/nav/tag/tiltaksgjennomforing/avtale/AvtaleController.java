@@ -295,7 +295,7 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
-    @PostMapping("/{avtaleId}/godkjenn-paa-vegne-av")
+    @PostMapping({"/{avtaleId}/godkjenn-paa-vegne-av", "/{avtaleId}/godkjenn-paa-vegne-av-deltaker"})
     @Transactional
     public void godkjennPaVegneAv(@PathVariable("avtaleId") UUID avtaleId,
                                   @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn,
