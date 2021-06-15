@@ -152,6 +152,14 @@ public class Veileder extends Avtalepart<NavIdent> {
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
     }
 
+    public void godkjennForVeilederOgArbeidsgiver(GodkjentPaVegneAvArbeidsgiverGrunn paVegneAvArbeidsgiverGrunn, Avtale avtale) {
+        sjekkTilgang(avtale);
+        if (persondataService.erKode6(avtale.getDeltakerFnr())) {
+            throw new KanIkkeGodkjenneAvtalePåKode6Exception();
+        }
+        avtale.godkjennForVeilederOgArbeidsgiver(getIdentifikator(), paVegneAvArbeidsgiverGrunn);
+    }
+
     @Override
     void opphevGodkjenningerSomAvtalepart(Avtale avtale) {
         avtale.opphevGodkjenningerSomVeileder();

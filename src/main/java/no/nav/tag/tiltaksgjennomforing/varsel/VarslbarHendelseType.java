@@ -11,6 +11,7 @@ public enum VarslbarHendelseType {
     GODKJENT_AV_VEILEDER("Avtale er godkjent av veileder"),
     GODKJENT_AV_DELTAKER("Avtale er godkjent av deltaker"),
     GODKJENT_PAA_VEGNE_AV("Veileder godkjente avtalen på vegne av seg selv og deltaker"),
+    GODKJENT_PAA_VEGNE_AV_ARBEIDSGIVER("Veileder godkjente avtalen på vegne av seg selv og arbeidsgiver"),
     GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER("Avtalens godkjenninger er opphevet av arbeidsgiver"),
     GODKJENNINGER_OPPHEVET_AV_VEILEDER("Avtalens godkjenninger er opphevet av veileder"),
     DELT_MED_DELTAKER("Avtale delt med deltaker"),

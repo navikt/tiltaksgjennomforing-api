@@ -298,11 +298,20 @@ public class AvtaleController {
     @PostMapping({"/{avtaleId}/godkjenn-paa-vegne-av", "/{avtaleId}/godkjenn-paa-vegne-av-deltaker"})
     @Transactional
     public void godkjennPaVegneAv(@PathVariable("avtaleId") UUID avtaleId,
-                                  @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn,
-                                  @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+                                  @RequestBody GodkjentPaVegneGrunn paVegneAvGrunn) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         veileder.godkjennForVeilederOgDeltaker(paVegneAvGrunn, avtale);
+        avtaleRepository.save(avtale);
+    }
+
+    @PostMapping("/{avtaleId}/godkjenn-paa-vegne-av-arbeidsgiver")
+    @Transactional
+    public void godkjennPaVegneAvArbeidsgiver(@PathVariable("avtaleId") UUID avtaleId,
+                                  @RequestBody GodkjentPaVegneAvArbeidsgiverGrunn paVegneAvGrunn) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        veileder.godkjennForVeilederOgArbeidsgiver(paVegneAvGrunn, avtale);
         avtaleRepository.save(avtale);
     }
 

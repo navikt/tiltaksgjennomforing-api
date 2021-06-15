@@ -91,6 +91,12 @@ public class LagVarselFraAvtaleHendelser {
     }
 
     @EventListener
+    public void godkjentPaVegneAvArbeidsgiver(GodkjentPaVegneAvArbeidsgiver event) {
+        VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.GODKJENT_PAA_VEGNE_AV_ARBEIDSGIVER);
+        varselRepository.save(factory.veileder());
+    }
+
+    @EventListener
     public void avtaleInngått(AvtaleInngått event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), event.getUtførtAvRolle(), VarslbarHendelseType.AVTALE_INNGÅTT);
         varselRepository.saveAll(factory.alleParter());

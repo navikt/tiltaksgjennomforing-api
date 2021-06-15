@@ -31,36 +31,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Delegate;
 import lombok.experimental.FieldNameConstants;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvbruttAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortet;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlenget;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleGjenopprettet;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleLåstOpp;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiverErFordelt;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleSlettemerket;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GamleVerdier;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvDeltaker;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAv;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.KontaktinformasjonEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.MålEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.OppfølgingOgTilretteleggingEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.StillingsbeskrivelseEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsberegningEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAnnullert;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAvslått;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeForkortet;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeGodkjent;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttDatoStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.exceptions.AltMåVæreFyltUtException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørVeilederException;
@@ -319,6 +290,29 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         sistEndretNå();
         registerEvent(new GodkjentPaVegneAv(this, utfortAv));
+    }
+
+    void godkjennForVeilederOgArbeidsgiver(NavIdent utfortAv, GodkjentPaVegneAvArbeidsgiverGrunn godkjentPaVegneAvArbeidsgiverGrunn) {
+        sjekkOmAltErUtfylt();
+        if (erGodkjentAvArbeidsgiver()) {
+            throw new FeilkodeException(Feilkode.ARBEIDSGIVER_HAR_GODKJENT);
+        }
+        if (!erGodkjentAvDeltaker()) {
+            throw new FeilkodeException(Feilkode.DELTAKER_SKAL_GODKJENNE_FOER_VEILEDER);
+        }
+        godkjentPaVegneAvArbeidsgiverGrunn.valgtMinstEnGrunn();
+        LocalDateTime tidspunkt = LocalDateTime.now();
+        this.setGodkjentAvVeileder(tidspunkt);
+        this.setGodkjentAvArbeidsgiver(tidspunkt);
+        this.setGodkjentPaVegneAvArbeidsgiver(true);
+        this.setGodkjentPaVegneAvArbeidsgiverGrunn(godkjentPaVegneAvArbeidsgiverGrunn);
+        this.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
+        this.setIkrafttredelsestidspunkt(tidspunkt);
+        if (tiltakstype != Tiltakstype.SOMMERJOBB) {
+            avtaleInngått(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
+        }
+        sistEndretNå();
+        registerEvent(new GodkjentPaVegneAvArbeidsgiver(this, utfortAv));
     }
 
     void godkjennForDeltaker(Identifikator utfortAv) {
