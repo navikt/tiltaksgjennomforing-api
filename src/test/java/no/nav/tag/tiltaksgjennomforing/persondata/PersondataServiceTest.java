@@ -92,13 +92,13 @@ public class PersondataServiceTest {
     }
 
     @Test
-    public void erKode6Eller7__strengt_fortrolig() {
-        assertThat(persondataService.erKode6Eller7(STRENGT_FORTROLIG_PERSON)).isTrue();
+    public void erKode6__strengt_fortrolig() {
+        assertThat(persondataService.erKode6(STRENGT_FORTROLIG_PERSON)).isTrue();
     }
 
     @Test
-    public void erKode6Eller7__strengt_fortrolig_utland() {
-        assertThat(persondataService.erKode6Eller7(STRENGT_FORTROLIG_UTLAND_PERSON)).isTrue();
+    public void erKode6__strengt_fortrolig_utland() {
+        assertThat(persondataService.erKode6(STRENGT_FORTROLIG_UTLAND_PERSON)).isTrue();
     }
 
     @Test

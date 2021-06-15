@@ -108,10 +108,10 @@ public class PersondataService {
         return "FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG_UTLAND".equals(gradering);
     }
 
-    public boolean erKode6Eller7(PdlRespons pdlRespons) {
+    public boolean erKode6(PdlRespons pdlRespons) {
         try {
             String gradering = hentAdressebeskyttelseFraPdlRespons(pdlRespons).getGradering();
-            return "FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG_UTLAND".equals(gradering);
+            return "STRENGT_FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG_UTLAND".equals(gradering);
         } catch (NullPointerException e) {
             return false;
         }

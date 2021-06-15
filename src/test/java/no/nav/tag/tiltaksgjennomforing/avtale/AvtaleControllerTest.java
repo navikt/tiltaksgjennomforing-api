@@ -269,7 +269,7 @@ public class AvtaleControllerTest {
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(enNavAnsatt.getIdentifikator(), deltakerFnr)).thenReturn(true);
         PdlRespons pdlRespons = TestData.enPdlrespons(true);
         when(persondataServiceIMetode.hentPersondata(deltakerFnr)).thenReturn(pdlRespons);
-        when(persondataServiceIMetode.erKode6Eller7(pdlRespons)).thenCallRealMethod();
+        when(persondataServiceIMetode.erKode6(pdlRespons)).thenCallRealMethod();
         avtaleController.opprettAvtaleSomVeileder(new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING));
     }
 

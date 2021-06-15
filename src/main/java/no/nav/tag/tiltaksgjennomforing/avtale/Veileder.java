@@ -214,9 +214,9 @@ public class Veileder extends Avtalepart<NavIdent> {
         }
 
         final PdlRespons persondata = persondataService.hentPersondata(opprettAvtale.getDeltakerFnr());
-        boolean erKode6Eller7 = persondataService.erKode6Eller7(persondata);
+        boolean erKode6 = persondataService.erKode6(persondata);
 
-        if (erKode6Eller7) {
+        if (erKode6) {
             throw new KanIkkeOppretteAvtalePåKode6Eller7Exception();
         }
 
