@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
+
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
@@ -20,6 +21,8 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6E
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 
+import java.util.stream.Collectors;
+
 public class Veileder extends Avtalepart<NavIdent> {
     static String tekstAvtaleVenterPaaDinGodkjenning = "Før du godkjenner avtalen må du sjekke at alt er i orden og innholdet er riktig.";
     static String ekstraTekstAvtleErGodkjentAvAllePartner = "Du må fullføre registreringen i Arena. Avtalen journalføres automatisk i Gosys.";
@@ -30,7 +33,7 @@ public class Veileder extends Avtalepart<NavIdent> {
     private final SlettemerkeProperties slettemerkeProperties;
     private final boolean harAdGruppeForBeslutter;
     private final Norg2Client norg2Client;
-    private Set<String> navEnheter;
+    private final Set<String> navEnheter;
 
     public Veileder(NavIdent identifikator, TilgangskontrollService tilgangskontrollService, PersondataService persondataService,
                     Norg2Client norg2Client, Set<String> navEnheter, SlettemerkeProperties slettemerkeProperties, boolean harAdGruppeForBeslutter) {
@@ -50,14 +53,26 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
-        if (queryParametre.getVeilederNavIdent() != null) {
-            return avtaleRepository.findAllByVeilederNavIdent(queryParametre.getVeilederNavIdent());
+
+        if (queryParametre.getVeilederNavIdent() != null && queryParametre.getNavEnhet() != null) {
+            return avtaleRepository.findAllFordelteOrUfordeltByEnhet(queryParametre.getVeilederNavIdent(), queryParametre.getNavEnhet());
+
+        } else if (queryParametre.getVeilederNavIdent() != null) {
+            return avtaleRepository.findAllByVeilederNavIdent(queryParametre.getVeilederNavIdent())
+                    .stream().filter(queryParametre).collect(Collectors.toList());
+
         } else if (queryParametre.getDeltakerFnr() != null) {
-            return avtaleRepository.findAllByDeltakerFnr(queryParametre.getDeltakerFnr());
+            return avtaleRepository.findAllByDeltakerFnr(queryParametre.getDeltakerFnr())
+                    .stream().filter(queryParametre).collect(Collectors.toList());
+
         } else if (queryParametre.getBedriftNr() != null) {
-            return avtaleRepository.findAllByBedriftNrIn(Set.of(queryParametre.getBedriftNr()));
+            return avtaleRepository.findAllByBedriftNrIn(Set.of(queryParametre.getBedriftNr()))
+                    .stream().filter(queryParametre).collect(Collectors.toList());
+
         } else if (queryParametre.getNavEnhet() != null) {
-            return avtaleRepository.findAllUfordelteByEnhet(queryParametre.getNavEnhet());
+            return avtaleRepository.findAllUfordelteByEnhet(queryParametre.getNavEnhet())
+                    .stream().filter(queryParametre).collect(Collectors.toList());
+
         } else {
             return emptyList();
         }
@@ -150,6 +165,14 @@ public class Veileder extends Avtalepart<NavIdent> {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
+    }
+
+    public void godkjennForVeilederOgArbeidsgiver(GodkjentPaVegneAvArbeidsgiverGrunn paVegneAvArbeidsgiverGrunn, Avtale avtale) {
+        sjekkTilgang(avtale);
+        if (persondataService.erKode6(avtale.getDeltakerFnr())) {
+            throw new KanIkkeGodkjenneAvtalePåKode6Exception();
+        }
+        avtale.godkjennForVeilederOgArbeidsgiver(getIdentifikator(), paVegneAvArbeidsgiverGrunn);
     }
 
     @Override

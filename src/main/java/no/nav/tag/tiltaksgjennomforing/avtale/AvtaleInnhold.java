@@ -127,6 +127,10 @@ public class AvtaleInnhold {
     private GodkjentPaVegneGrunn godkjentPaVegneGrunn;
     private boolean godkjentPaVegneAv;
 
+    @Embedded
+    private GodkjentPaVegneAvArbeidsgiverGrunn godkjentPaVegneAvArbeidsgiverGrunn;
+    private boolean godkjentPaVegneAvArbeidsgiver;
+
     @Enumerated(EnumType.STRING)
     private AvtaleInnholdType innholdType;
 

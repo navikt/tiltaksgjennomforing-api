@@ -28,6 +28,8 @@ public class LagBjelleVarselFraVarslbarHendelse {
                 return List.of(factory.veileder());
             case GODKJENT_PAA_VEGNE_AV:
                 return List.of(factory.arbeidsgiver());
+            case GODKJENT_PAA_VEGNE_AV_ARBEIDSGIVER:
+                return List.of(factory.deltaker());
             case GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER: {
                 var varslinger = new ArrayList<BjelleVarsel>();
                 if (gamleVerdier.isGodkjentAvDeltaker()) {

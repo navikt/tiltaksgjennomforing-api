@@ -142,6 +142,14 @@ public class MetrikkRegistrering {
     }
 
     @EventListener
+    public void godkjentPaVegneAvArbeidsgiver(GodkjentPaVegneAvArbeidsgiver event) {
+        Avtalerolle rolle = Avtalerolle.VEILEDER;
+        Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
+        log.info("Avtale godkjent på vegne av arbeidsgiver, avtaleId={}, avtalepart={}, tiltakstype={}", event.getAvtale().getId(), rolle, tiltakstype);
+        counter("avtale.godkjenning.godkjentPaVegneAvArbeidsgiver", rolle, tiltakstype).increment();
+    }
+
+    @EventListener
     public void avtaleLåstOpp(AvtaleLåstOpp event) {
         Avtalerolle rolle = Avtalerolle.VEILEDER;
         Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
