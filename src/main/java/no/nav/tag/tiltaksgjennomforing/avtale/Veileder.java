@@ -55,7 +55,7 @@ public class Veileder extends Avtalepart<NavIdent> {
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
 
         if (queryParametre.getVeilederNavIdent() != null && queryParametre.getNavEnhet() != null) {
-            return avtaleRepository.findAllfordelteByEnhet(queryParametre.getVeilederNavIdent(), queryParametre.getNavEnhet());
+            return avtaleRepository.findAllFordelteOrUfordeltByEnhet(queryParametre.getVeilederNavIdent(), queryParametre.getNavEnhet());
 
         } else if (queryParametre.getVeilederNavIdent() != null) {
             return avtaleRepository.findAllByVeilederNavIdent(queryParametre.getVeilederNavIdent())
