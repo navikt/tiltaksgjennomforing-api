@@ -1,31 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -33,26 +8,27 @@ import lombok.experimental.Delegate;
 import lombok.experimental.FieldNameConstants;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttDatoStrategyFactory;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AltMåVæreFyltUtException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørVeilederException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AvtaleErIkkeFordeltException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.DeltakerHarGodkjentException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
-import org.hibernate.annotations.SortNatural;
+import org.hibernate.annotations.*;
 import org.springframework.data.domain.AbstractAggregateRoot;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OrderBy;
+import javax.persistence.*;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -294,6 +270,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     void godkjennForVeilederOgArbeidsgiver(NavIdent utfortAv, GodkjentPaVegneAvArbeidsgiverGrunn godkjentPaVegneAvArbeidsgiverGrunn) {
         sjekkOmAltErUtfylt();
+        if (tiltakstype != Tiltakstype.SOMMERJOBB) {
+            throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_TILTAKSTYPE);
+        }
         if (erGodkjentAvArbeidsgiver()) {
             throw new FeilkodeException(Feilkode.ARBEIDSGIVER_HAR_GODKJENT);
         }
@@ -313,6 +292,35 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         sistEndretNå();
         registerEvent(new GodkjentPaVegneAvArbeidsgiver(this, utfortAv));
+    }
+
+    public void godkjennForVeilederOgDeltakerOgArbeidsgiver(NavIdent utfortAv, GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn paVegneAvDeltakerOgArbeidsgiverGrunn) {
+        sjekkOmAltErUtfylt();
+        if (tiltakstype != Tiltakstype.SOMMERJOBB) {
+            throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_TILTAKSTYPE);
+        }
+        if (erGodkjentAvDeltaker()) {
+            throw new DeltakerHarGodkjentException();
+        }
+        if (erGodkjentAvArbeidsgiver()) {
+            throw new FeilkodeException(Feilkode.ARBEIDSGIVER_HAR_GODKJENT);
+        }
+        paVegneAvDeltakerOgArbeidsgiverGrunn.valgtMinstEnGrunn();
+        LocalDateTime tidspunkt = LocalDateTime.now();
+        this.setGodkjentAvVeileder(tidspunkt);
+        this.setGodkjentAvDeltaker(tidspunkt);
+        this.setGodkjentAvArbeidsgiver(tidspunkt);
+        this.setGodkjentPaVegneAv(true);
+        this.setGodkjentPaVegneAvArbeidsgiver(true);
+        this.setGodkjentPaVegneGrunn(paVegneAvDeltakerOgArbeidsgiverGrunn.getGodkjentPaVegneAvDeltakerGrunn());
+        this.setGodkjentPaVegneAvArbeidsgiverGrunn(paVegneAvDeltakerOgArbeidsgiverGrunn.getGodkjentPaVegneAvArbeidsgiverGrunn());
+        this.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
+        this.setIkrafttredelsestidspunkt(tidspunkt);
+        if (tiltakstype != Tiltakstype.SOMMERJOBB) {
+            avtaleInngått(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
+        }
+        sistEndretNå();
+        registerEvent(new GodkjentPaVegneAvDeltakerOgArbeidsgiver(this, utfortAv));
     }
 
     void godkjennForDeltaker(Identifikator utfortAv) {

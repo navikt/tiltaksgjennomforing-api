@@ -86,6 +86,11 @@ public class VarslbarHendelseLytter {
     }
 
     @EventListener
+    public void godkjentPaVegneAvDeltakerOgArbeidsgiver(GodkjentPaVegneAvDeltakerOgArbeidsgiver event) {
+        varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.GODKJENT_PAA_VEGNE_AV_DELTAKER_OG_ARBEIDSGIVER));
+    }
+
+    @EventListener
     public void nyVeileder(AvtaleNyVeileder event) {
         varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.NY_VEILEDER));
     }
