@@ -103,8 +103,7 @@ public class PersondataServiceTest {
 
     @Test
     public void erKode6Eller7__fortrolig() {
-        // TODO: Endres til isFalse når det åpnes for kode 7
-        assertThat(persondataService.erKode6Eller7(FORTROLIG_PERSON)).isTrue();
+        assertThat(persondataService.erKode6(FORTROLIG_PERSON)).isFalse();
     }
 
     @Test
