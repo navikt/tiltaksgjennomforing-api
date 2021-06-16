@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 import static java.util.Collections.emptyList;
 import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
+@Slf4j
 public class Veileder extends Avtalepart<NavIdent> {
     static String tekstAvtaleVenterPaaDinGodkjenning = "Før du godkjenner avtalen må du sjekke at alt er i orden og innholdet er riktig.";
     static String ekstraTekstAvtleErGodkjentAvAllePartner = "Du må fullføre registreringen i Arena. Avtalen journalføres automatisk i Gosys.";
@@ -48,27 +50,29 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
+        log.info("query parameter {}", queryParametre);
 
-        if (queryParametre.getVeilederNavIdent() != null && queryParametre.getNavEnhet() != null) {
-            return avtaleRepository.findAllFordelteOrUfordeltByEnhet(queryParametre.getVeilederNavIdent(), queryParametre.getNavEnhet());
-
-        } else if (queryParametre.getVeilederNavIdent() != null) {
-            return avtaleRepository.findAllByVeilederNavIdent(queryParametre.getVeilederNavIdent())
-                    .stream().filter(queryParametre).collect(Collectors.toList());
+         if (queryParametre.getVeilederNavIdent() != null) {
+            return avtaleRepository.findAllByVeilederNavIdent(queryParametre.getVeilederNavIdent());
 
         } else if (queryParametre.getDeltakerFnr() != null) {
-            return avtaleRepository.findAllByDeltakerFnr(queryParametre.getDeltakerFnr())
-                    .stream().filter(queryParametre).collect(Collectors.toList());
+            return avtaleRepository.findAllByDeltakerFnr(queryParametre.getDeltakerFnr());
 
         } else if (queryParametre.getBedriftNr() != null) {
-            return avtaleRepository.findAllByBedriftNrIn(Set.of(queryParametre.getBedriftNr()))
-                    .stream().filter(queryParametre).collect(Collectors.toList());
+            return avtaleRepository.findAllByBedriftNrIn(Set.of(queryParametre.getBedriftNr()));
 
-        } else if (queryParametre.getNavEnhet() != null) {
-            return avtaleRepository.findAllUfordelteByEnhet(queryParametre.getNavEnhet())
-                    .stream().filter(queryParametre).collect(Collectors.toList());
+        } else if (queryParametre.getNavEnhet() != null && queryParametre.getErUfordelt() != null) {
+             log.info("SKAL IKKE TREFFE HER!");
+            return avtaleRepository.findAllUfordelteByEnhet(queryParametre.getNavEnhet());
 
-        } else {
+        }else if (queryParametre.getNavEnhet() != null) {
+             log.info("traff på spørring {}", queryParametre);
+             List<Avtale> allFordelteOrUfordeltByEnhet = avtaleRepository.findAllFordelteOrUfordeltByEnhet(queryParametre.getNavEnhet());
+             log.info("avtale paa query {}", allFordelteOrUfordeltByEnhet);
+             log.info("lengde på avtale liste {}", allFordelteOrUfordeltByEnhet.size());
+             return allFordelteOrUfordeltByEnhet;
+
+         } else {
             return emptyList();
         }
     }
