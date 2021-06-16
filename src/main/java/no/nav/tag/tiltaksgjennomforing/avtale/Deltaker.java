@@ -27,7 +27,7 @@ public class Deltaker extends Avtalepart<Fnr> {
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
         return avtaleRepository.findAllByDeltakerFnr(getIdentifikator()).stream()
-                .filter(avtale -> !avtale.isFeilregistrert())
+                .filter(avtale -> !avtale.isFeilregistrert()).filter(queryParametre)
                 .collect(Collectors.toList());
     }
 

@@ -51,7 +51,8 @@ public class Beslutter extends Avtalepart<NavIdent> {
         if (status == null) {
             status = TilskuddPeriodeStatus.UBEHANDLET;
         }
-        return avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(status.name(), navEnheter);
+        return avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(status.name(), navEnheter)
+                .stream().filter(queryParametre).collect(Collectors.toList());
     }
 
     private Set<String> hentNavEnheter() {

@@ -186,6 +186,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
                 .filter(avtale -> !avtale.isFeilregistrert())
                 .map(Arbeidsgiver::fjernAvbruttGrunn)
                 .map(Arbeidsgiver::fjernAnnullertGrunn)
+                .filter(queryParametre)
                 .collect(Collectors.toList());
     }
 
