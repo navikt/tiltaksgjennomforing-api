@@ -54,6 +54,7 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     public List<Avtale> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
         return hentAlleAvtalerMedMuligTilgang(avtaleRepository, queryParametre).stream()
+                .filter(queryParametre)
                 .filter(this::harTilgang)
                 .collect(Collectors.toList());
     }
