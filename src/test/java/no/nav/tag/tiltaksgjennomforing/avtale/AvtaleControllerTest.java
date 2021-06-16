@@ -177,7 +177,7 @@ public class AvtaleControllerTest {
         when(avtaleRepository.findAllFordelteOrUfordeltByEnhet(navEnhet)).thenReturn(asList(nyAvtaleMedGeografiskEnhet, nyAvtaleMedOppfølgningsEnhet));
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any(Fnr.class))).thenReturn(true);
 
-        List<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(new AvtalePredicate().setVeilederNavIdent(navIdent).setNavEnhet(navEnhet), Avtale.Fields.sistEndret, Avtalerolle.VEILEDER);
+        List<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(new AvtalePredicate().setNavEnhet(navEnhet), Avtale.Fields.sistEndret, Avtalerolle.VEILEDER);
         assertThat(avtaler).isNotNull();
         assertThat(avtaler)
                 .contains(nyAvtaleMedGeografiskEnhet);

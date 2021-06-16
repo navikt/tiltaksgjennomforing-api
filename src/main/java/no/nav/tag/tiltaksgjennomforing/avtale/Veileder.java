@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
@@ -14,12 +13,11 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
-@Slf4j
+
 public class Veileder extends Avtalepart<NavIdent> {
     static String tekstAvtaleVenterPaaDinGodkjenning = "Før du godkjenner avtalen må du sjekke at alt er i orden og innholdet er riktig.";
     static String ekstraTekstAvtleErGodkjentAvAllePartner = "Du må fullføre registreringen i Arena. Avtalen journalføres automatisk i Gosys.";
@@ -50,9 +48,8 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
-        log.info("query parameter {}", queryParametre);
 
-         if (queryParametre.getVeilederNavIdent() != null) {
+        if (queryParametre.getVeilederNavIdent() != null) {
             return avtaleRepository.findAllByVeilederNavIdent(queryParametre.getVeilederNavIdent());
 
         } else if (queryParametre.getDeltakerFnr() != null) {
@@ -61,18 +58,13 @@ public class Veileder extends Avtalepart<NavIdent> {
         } else if (queryParametre.getBedriftNr() != null) {
             return avtaleRepository.findAllByBedriftNrIn(Set.of(queryParametre.getBedriftNr()));
 
-        } else if (queryParametre.getNavEnhet() != null && queryParametre.getErUfordelt() != null) {
-             log.info("SKAL IKKE TREFFE HER!");
+        } else if (queryParametre.getNavEnhet() != null && queryParametre.getErUfordelt() != null && queryParametre.getErUfordelt()) {
+
             return avtaleRepository.findAllUfordelteByEnhet(queryParametre.getNavEnhet());
 
-        }else if (queryParametre.getNavEnhet() != null) {
-             log.info("traff på spørring {}", queryParametre);
-             List<Avtale> allFordelteOrUfordeltByEnhet = avtaleRepository.findAllFordelteOrUfordeltByEnhet(queryParametre.getNavEnhet());
-             log.info("avtale paa query {}", allFordelteOrUfordeltByEnhet);
-             log.info("lengde på avtale liste {}", allFordelteOrUfordeltByEnhet.size());
-             return allFordelteOrUfordeltByEnhet;
-
-         } else {
+        } else if (queryParametre.getNavEnhet() != null) {
+            return avtaleRepository.findAllFordelteOrUfordeltByEnhet(queryParametre.getNavEnhet());
+        } else {
             return emptyList();
         }
     }
