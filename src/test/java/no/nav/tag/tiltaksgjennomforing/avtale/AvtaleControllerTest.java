@@ -184,6 +184,25 @@ public class AvtaleControllerTest {
 
     }
 
+    @Test
+    public void hentAvtaleOpprettetAvInnloggetVeileder_pa_avtaleNr() {
+        NavIdent navIdent = new NavIdent("Z123456");
+        Integer avtaleNr = 10;
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false);
+        værInnloggetSom(veileder);
+
+        Avtale enArbeidstreningsAvtale = TestData.enArbeidstreningAvtale();
+        enArbeidstreningsAvtale.setAvtaleNr(avtaleNr);
+
+        when(avtaleRepository.findAllByAvtaleNr(avtaleNr)).thenReturn(asList(enArbeidstreningsAvtale));
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any(Fnr.class))).thenReturn(true);
+
+        List<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(new AvtalePredicate().setAvtaleNr(avtaleNr), Avtale.Fields.sistEndret, Avtalerolle.VEILEDER);
+        assertThat(avtaler).isNotNull();
+        assertThat(avtaler).contains(enArbeidstreningsAvtale);
+
+    }
+
     @Test(expected = TilgangskontrollException.class)
     public void hentSkalKastTilgangskontrollExceptionHvisInnloggetSelvbetjeningBrukerIkkeHarTilgang() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
