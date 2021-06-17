@@ -23,7 +23,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.Tilgangskontroll
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6Eller7Exception;
+import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6Exception;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KontoregisterFeilException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
@@ -259,7 +259,7 @@ public class AvtaleControllerTest {
         avtaleController.opprettAvtaleSomVeileder(new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING));
     }
 
-    @Test(expected = KanIkkeOppretteAvtalePåKode6Eller7Exception.class)
+    @Test(expected = KanIkkeOppretteAvtalePåKode6Exception.class)
     public void opprettAvtaleSomVeileder__skal_feile_hvis_kode6() {
         PersondataService persondataServiceIMetode = mock(PersondataService.class);
         Veileder enNavAnsatt = new Veileder(new NavIdent("T000000"), tilgangskontrollService, persondataServiceIMetode, norg2Client,
@@ -269,7 +269,7 @@ public class AvtaleControllerTest {
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(enNavAnsatt.getIdentifikator(), deltakerFnr)).thenReturn(true);
         PdlRespons pdlRespons = TestData.enPdlrespons(true);
         when(persondataServiceIMetode.hentPersondata(deltakerFnr)).thenReturn(pdlRespons);
-        when(persondataServiceIMetode.erKode6Eller7(pdlRespons)).thenCallRealMethod();
+        when(persondataServiceIMetode.erKode6(pdlRespons)).thenCallRealMethod();
         avtaleController.opprettAvtaleSomVeileder(new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING));
     }
 
