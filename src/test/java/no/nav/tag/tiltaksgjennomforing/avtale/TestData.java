@@ -39,6 +39,7 @@ public class TestData {
 
     public static String ENHET_OPPFØLGING = "0906";
     public static String ENHET_GEOGRAFISK = "0904";
+    public static Integer ET_AVTALENR = 10;
 
     public static Avtale enArbeidstreningAvtale() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
@@ -59,6 +60,12 @@ public class TestData {
         Avtale avtale = enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
         avtale.setEnhetOppfolging(ENHET_OPPFØLGING);
         avtale.setEnhetGeografisk(ENHET_GEOGRAFISK);
+        return avtale;
+    }
+
+    public static Avtale enArbeidstreningsAvtaleMedGittAvtaleNr() {
+        Avtale avtale = enArbeidstreningAvtale();
+        avtale.setAvtaleNr(ET_AVTALENR);
         return avtale;
     }
 
