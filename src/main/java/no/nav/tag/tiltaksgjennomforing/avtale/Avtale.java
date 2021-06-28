@@ -131,6 +131,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new AvtaleDeltMedAvtalepart(this, avtalerolle));
     }
 
+    public void refusjonKlar() {
+        registerEvent(new RefusjonKlar(this));
+    }
+
     private String telefonnummerTilAvtalepart(Avtalerolle avtalerolle) {
         switch (avtalerolle) {
             case DELTAKER:

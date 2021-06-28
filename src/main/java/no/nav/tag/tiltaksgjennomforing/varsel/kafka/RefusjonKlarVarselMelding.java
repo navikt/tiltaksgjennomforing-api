@@ -11,6 +11,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RefusjonKlarVarselMelding {
-    private UUID refusjonVarselId;
-    private UUID avtaleId;
+    private String refusjonVarselId;
+    private String avtaleId;
 }

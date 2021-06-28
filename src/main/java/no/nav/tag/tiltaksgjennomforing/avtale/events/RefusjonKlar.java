@@ -7,5 +7,4 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 @Value
 public class RefusjonKlar {
     Avtale avtale;
-    Identifikator utfortAv;
 }

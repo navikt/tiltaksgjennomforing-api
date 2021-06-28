@@ -5,6 +5,10 @@ management.endpoints.web:
   base-path: /internal/actuator
 
 spring:
+  json:
+    use:
+      type:
+        headers: false
   application:
     name: tiltaksgjennomforing-api
   main:
@@ -18,6 +22,9 @@ spring:
       properties:
         spring:
           json:
+            use:
+              type:
+                headers: false
             trusted:
               packages: "*"
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
