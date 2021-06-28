@@ -34,7 +34,8 @@ public enum VarslbarHendelseType {
     KONTAKTINFORMASJON_ENDRET("Kontaktinformasjon endret av veileder"),
     STILLINGSBESKRIVELSE_ENDRET("Stillingsbeskrivelse endret av veileder" ),
     OPPFØLGING_OG_TILRETTELEGGING_ENDRET("Oppfølging og tilrettelegging endret av veileder"),
-    AVTALE_INNGÅTT("Avtale godkjent av NAV");
+    AVTALE_INNGÅTT("Avtale godkjent av NAV"),
+    REFUSJON_KLAR("Refusjon klar");
 
     private final String tekst;
 }
