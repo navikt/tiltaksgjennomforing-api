@@ -44,6 +44,8 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             + "where enhetOppfolging in (?1) or enhetGeografisk in (?1)")
     List<Avtale> findAllFordelteOrUfordeltByEnhet(String navEnhet);
 
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    List<Avtale>findAllByAvtaleNr(Integer avtaleNr);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Override

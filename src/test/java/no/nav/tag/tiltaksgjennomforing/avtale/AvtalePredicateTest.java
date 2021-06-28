@@ -111,4 +111,12 @@ public class AvtalePredicateTest {
         AvtalePredicate query = new AvtalePredicate();
         assertThat(query.test(TestData.enArbeidstreningAvtale())).isTrue();
     }
+
+    @Test
+    void  avtaleNr_oppgitt() {
+        Avtale avtale = TestData.enArbeidstreningsAvtaleMedGittAvtaleNr();
+        AvtalePredicate query = new AvtalePredicate();
+        query.setAvtaleNr(TestData.ET_AVTALENR);
+        assertThat(query.test(avtale)).isTrue();
+    }
 }
