@@ -6,8 +6,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -23,7 +21,7 @@ public class RefusjonKlarConsumer {
         log.warn("Finner ikke tilhørende avtale med tli refusjon med avtaleId={}, kan ikke sende varsel", resultatMelding.getRefusjonVarselId());
     }
 
-    @KafkaListener(topics = VarselTopics.TILTAK_VARSEL)
+    @KafkaListener(topics = VarselTopics.TILTAK_VARSEL, properties = {"spring.json.value.default.type=no.nav.tag.tiltaksgjennomforing.varsel.kafka.RefusjonKlarVarselMelding"})
     public void consume(RefusjonKlarVarselMelding refusjonKlarVarselMelding) {
         UUID avtaleId = UUID.fromString(refusjonKlarVarselMelding.getAvtaleId());
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RuntimeException::new);

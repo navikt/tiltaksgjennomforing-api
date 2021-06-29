@@ -1,16 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import lombok.Value;
 
-import java.util.UUID;
-
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Value
 public class RefusjonKlarVarselMelding {
-    private String refusjonVarselId;
-    private String avtaleId;
+    String refusjonVarselId;
+    String avtaleId;
 }
