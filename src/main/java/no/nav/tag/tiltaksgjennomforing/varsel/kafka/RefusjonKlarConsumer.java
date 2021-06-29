@@ -17,10 +17,6 @@ import java.util.UUID;
 public class RefusjonKlarConsumer {
     private final AvtaleRepository avtaleRepository;
 
-    private static void loggFeil(RefusjonKlarVarselMelding resultatMelding) {
-        log.warn("Finner ikke tilhørende avtale med tli refusjon med avtaleId={}, kan ikke sende varsel", resultatMelding.getRefusjonVarselId());
-    }
-
     @KafkaListener(topics = VarselTopics.TILTAK_VARSEL, properties = {"spring.json.value.default.type=no.nav.tag.tiltaksgjennomforing.varsel.kafka.RefusjonKlarVarselMelding"})
     public void consume(RefusjonKlarVarselMelding refusjonKlarVarselMelding) {
         UUID avtaleId = UUID.fromString(refusjonKlarVarselMelding.getAvtaleId());

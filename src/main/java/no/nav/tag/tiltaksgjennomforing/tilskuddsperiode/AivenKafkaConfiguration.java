@@ -64,45 +64,4 @@ public class AivenKafkaConfiguration {
     public KafkaTemplate<String, String> aivenKafkaTemplate() {
         return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs()));
     }
-
-    @Bean
-    public DefaultKafkaConsumerFactory<String, Object> kafkaConsumerTemplate() {
-        KafkaProperties kafkaProperties = new KafkaProperties();
-        Map<String, Object> props = kafkaProperties.buildConsumerProperties();
-        props.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, false);
-
-        return new DefaultKafkaConsumerFactory<String, Object>(props);
-    }
-
-
-
-    @Bean
-    public <T> ConcurrentKafkaListenerContainerFactory<String, T> kafkaListenerContainerFactory(
-            Class<T> containerType, KafkaProperties kafkaProperties, String groupId) {
-
-        Map<String, Object> props = kafkaProperties.buildConsumerProperties();
-        props.putAll(consumerConfig(groupId));
-        DefaultKafkaConsumerFactory<String, T> defaultKafkaConsumerFactory = new DefaultKafkaConsumerFactory<>(
-                props, new StringDeserializer(), valueDeserializer(containerType));
-        ConcurrentKafkaListenerContainerFactory<String, T> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(defaultKafkaConsumerFactory);
-
-        return factory;
-    }
-    private <T> ErrorHandlingDeserializer<T> valueDeserializer(Class<T> targetType) {
-        return new ErrorHandlingDeserializer<>(new JsonDeserializer<>(targetType, false));
-    }
-    private Map<String, Object> consumerConfig(String groupId) {
-        Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
-        props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
-        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 15000);
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 1);
-
-        return props;
-    }
-
 }
