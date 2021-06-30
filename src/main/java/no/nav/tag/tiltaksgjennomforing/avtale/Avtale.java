@@ -744,8 +744,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         if (Utils.erNoenTomme(endreStillingsbeskrivelse.getStillingstittel(),
                 endreStillingsbeskrivelse.getArbeidsoppgaver(),
-                endreStillingsbeskrivelse.getStillingStyrk08(),
-                endreStillingsbeskrivelse.getStillingKonseptId(),
+//                endreStillingsbeskrivelse.getStillingStyrk08(),
+//                endreStillingsbeskrivelse.getStillingKonseptId(),
                 endreStillingsbeskrivelse.getStillingprosent(),
                 endreStillingsbeskrivelse.getAntallDagerPerUke())
         ) {

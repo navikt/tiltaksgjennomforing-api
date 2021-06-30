@@ -1,8 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
+import org.assertj.core.api.SoftAssertions;
+import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -12,15 +13,10 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AvtaleErIkkeFordeltException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangArbeidstreningException;
-import org.assertj.core.api.SoftAssertions;
-import org.junit.Test;
-import org.springframework.test.util.ReflectionTestUtils;
+
+import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class AvtaleTest {
 
@@ -849,7 +845,7 @@ public class AvtaleTest {
         assertThat(avtale.statusSomEnum()).isEqualTo(Status.MANGLER_GODKJENNING);
         assertThat(avtale.getAvtaleInngått()).isNull();
         avtale.godkjennTilskuddsperiode(new NavIdent("B999999"), TestData.ENHET_OPPFØLGING);
-        assertThat(avtale.statusSomEnum()).isEqualTo(Status.GJENNOMFØRES);
+        assertThat(avtale.statusSomEnum()).isEqualTo(Status.AVSLUTTET);
         assertThat(avtale.getAvtaleInngått()).isNotNull();
     }
 
