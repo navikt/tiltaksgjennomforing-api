@@ -2,12 +2,12 @@ package no.nav.tag.tiltaksgjennomforing.varsel;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 
 public class SmsVarselFactory {
     public static final BedriftNr NAV_ORGNR = new BedriftNr("889640782");
     private static final String SELVBETJENINGSONE_VARSELTEKST = "Du har mottatt et nytt varsel på https://arbeidsgiver.nav.no/tiltaksgjennomforing";
     private static final String FAGSYSTEMSONE_VARSELTEKST = "Du har mottatt et nytt varsel på https://arbeidsgiver.nais.adeo.no/tiltaksgjennomforing";
-    private static final String ARBEIDSGIVER_REFUSJON_KLAR_VARSELTEKST = "Du har mottatt et nytt varsel på https://arbeidsgiver.nav.no/tiltaksrefusjon";
 
     private final Avtale avtale;
     private final VarslbarHendelse hendelse;
@@ -26,10 +26,23 @@ public class SmsVarselFactory {
     }
 
     public SmsVarsel arbeidsgiverRefusjonKlar() {
-        return SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(), ARBEIDSGIVER_REFUSJON_KLAR_VARSELTEKST, hendelse.getId());
+        return SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(), refusjonTekst(avtale.getTiltakstype()), hendelse.getId());
     }
 
     public SmsVarsel veileder() {
         return SmsVarsel.nyttVarsel(avtale.getVeilederTlf(), NAV_ORGNR, FAGSYSTEMSONE_VARSELTEKST, hendelse.getId());
+    }
+
+    private String refusjonTekst(Tiltakstype tiltakstype) {
+        switch (tiltakstype) {
+            case SOMMERJOBB:
+                return "Dere kan nå søke om refusjon for sommerjobb på https://tiltak-refusjon.nav.no";
+            case MIDLERTIDIG_LONNSTILSKUDD:
+            case VARIG_LONNSTILSKUDD:
+                return "Dere kan nå søke om refusjon for lønnstilskudd på https://tiltak-refusjon.nav.no";
+            default:
+                throw new RuntimeException();
+        }
+
     }
 }
