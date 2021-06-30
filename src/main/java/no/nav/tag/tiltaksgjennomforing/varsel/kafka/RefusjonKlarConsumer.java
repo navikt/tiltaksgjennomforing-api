@@ -18,11 +18,14 @@ public class RefusjonKlarConsumer {
     private final AvtaleRepository avtaleRepository;
 
     @KafkaListener(topics = VarselTopics.TILTAK_VARSEL, properties = {"spring.json.value.default.type=no.nav.tag.tiltaksgjennomforing.varsel.kafka.RefusjonKlarVarselMelding"})
-    public void consume(RefusjonKlarVarselMelding refusjonKlarVarselMelding) {
-        UUID avtaleId = UUID.fromString(refusjonKlarVarselMelding.getAvtaleId());
+    public void consume(RefusjonVarselMelding refusjonVarselMelding) {
+        UUID avtaleId = UUID.fromString(refusjonVarselMelding.getAvtaleId());
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RuntimeException::new);
-        avtale.refusjonKlar();
-        avtaleRepository.save(avtale);
+
+        if (refusjonVarselMelding.getVarselType() == VarselType.KLAR) {
+            avtale.refusjonKlar();
+            avtaleRepository.save(avtale);
+        }
     }
 
 }
