@@ -17,7 +17,7 @@ import java.util.UUID;
 public class RefusjonKlarConsumer {
     private final AvtaleRepository avtaleRepository;
 
-    @KafkaListener(topics = VarselTopics.TILTAK_VARSEL, properties = {"spring.json.value.default.type=no.nav.tag.tiltaksgjennomforing.varsel.kafka.RefusjonKlarVarselMelding"})
+    @KafkaListener(topics = VarselTopics.TILTAK_VARSEL, properties = {"spring.json.value.default.type=no.nav.tag.tiltaksgjennomforing.varsel.kafka.RefusjonVarselMelding"})
     public void consume(RefusjonVarselMelding refusjonVarselMelding) {
         UUID avtaleId = UUID.fromString(refusjonVarselMelding.getAvtaleId());
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RuntimeException::new);
