@@ -62,9 +62,41 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         endreAvtale.setLonnstilskuddProsent(40);
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
-        assertThat(avtale.tilskuddsperiode(2).getLonnstilskuddProsent()).isEqualTo(30);
+        TilskuddPeriode tilskuddpeirode6mndEtterStart = finnTilskuddsperiodeForDato(avtale.getStartDato().plusMonths(6), avtale);
+        TilskuddPeriode tilskuddperiodeDagenFør6Mnd = finnTilskuddsperiodeForDato(avtale.getStartDato().plusMonths(6).minusDays(1), avtale);
+
+        assertThat(tilskuddpeirode6mndEtterStart.getLonnstilskuddProsent()).isEqualTo(30);
+        assertThat(tilskuddperiodeDagenFør6Mnd.getLonnstilskuddProsent()).isEqualTo(40);
+
         harRiktigeEgenskaper(avtale);
     }
+
+    private TilskuddPeriode finnTilskuddsperiodeForDato(LocalDate dato, Avtale avtale) {
+        for (TilskuddPeriode tilskuddsperiode : avtale.getTilskuddPeriode()) {
+            if (tilskuddsperiode.getStartDato().isBefore(dato.plusDays(1)) && tilskuddsperiode.getSluttDato().isAfter(dato.minusDays(1))) {
+                return tilskuddsperiode;
+            }
+        }
+        return null;
+    }
+
+    @Test
+    public void finnTilskuddsperiodeForDato() {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        endreAvtale.setStartDato(LocalDate.of(2021, 1, 1));
+        endreAvtale.setSluttDato(LocalDate.of(2021, 10, 1));
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+
+        TilskuddPeriode tilskuddPeriode1 = finnTilskuddsperiodeForDato(LocalDate.of(2021, 1, 1), avtale);
+        TilskuddPeriode tilskuddPeriode2 = finnTilskuddsperiodeForDato(LocalDate.of(2021, 4, 1), avtale);
+
+        assertThat(tilskuddPeriode1).isEqualTo(avtale.tilskuddsperiode(0));
+        assertThat(tilskuddPeriode2).isEqualTo(avtale.tilskuddsperiode(1));
+
+    }
+
+
 
     @Test
     public void reduksjon_etter_12_mnd_60_prosent_lonnstilskudd() {
