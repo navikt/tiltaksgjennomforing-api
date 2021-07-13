@@ -7,7 +7,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.config.SslConfigs;
-import org.apache.kafka.common.security.auth.SecurityProtocol;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -40,11 +39,13 @@ public class RefusjonKlarConsumer {
     private String sslKeystoreLocationEnvKey;
     @Value("${no.nav.gcp.kafka.aiven.keystore-password}")
     private String sslKeystorePasswordEnvKey;
+    @Value("${no.nav.gcp.kafka.aiven.security-protocol}")
+    private String securityProtocol;
 
-    public ConsumerFactory<String, RefusjonVarselMelding> userConsumerFactory() {
+    public ConsumerFactory<String, RefusjonVarselMelding> varselConsumerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, gcpBootstrapServers);
-        props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, SecurityProtocol.SSL.name);
+        props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, securityProtocol);
         props.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "");
         props.put(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG, "jks");
         props.put(SslConfigs.SSL_KEYSTORE_TYPE_CONFIG, "PKCS12");
@@ -62,7 +63,7 @@ public class RefusjonKlarConsumer {
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, RefusjonVarselMelding> varselContainerFactory() {
         var factory = new ConcurrentKafkaListenerContainerFactory<String, RefusjonVarselMelding>();
-        factory.setConsumerFactory(userConsumerFactory());
+        factory.setConsumerFactory(varselConsumerFactory());
         return factory;
     }
 
