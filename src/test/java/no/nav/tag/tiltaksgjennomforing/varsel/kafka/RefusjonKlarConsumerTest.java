@@ -8,6 +8,9 @@ import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.header.Header;
+import org.apache.kafka.common.header.internals.RecordHeader;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,6 +25,8 @@ import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,7 +56,8 @@ class RefusjonKlarConsumerTest {
 
         var varselMelding = new RefusjonVarselMelding(avtale.getId().toString(), VarselType.KLAR);
         String meldingSomString = objectMapper.writeValueAsString(varselMelding);
-        kafkaTemplate.send(VarselTopics.TILTAK_VARSEL,"123", meldingSomString);
+        Header header = new RecordHeader("__TypeId__", "no.nav.arbeidsgiver.tiltakrefusjon.refusjon.RefusjonVarselMelding".getBytes(StandardCharsets.UTF_8));
+        kafkaTemplate.send(new ProducerRecord<String, String>(VarselTopics.TILTAK_VARSEL, null, "123", meldingSomString, List.of(header)));
 
         Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "false", embeddedKafka);
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);

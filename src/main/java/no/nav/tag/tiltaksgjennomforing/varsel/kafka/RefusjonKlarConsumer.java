@@ -57,7 +57,7 @@ public class RefusjonKlarConsumer {
         props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
         return new DefaultKafkaConsumerFactory<>(props,
                 new StringDeserializer(),
-                new JsonDeserializer<>(RefusjonVarselMelding.class));
+                new JsonDeserializer<>(RefusjonVarselMelding.class, false));
     }
 
     @Bean
@@ -67,7 +67,7 @@ public class RefusjonKlarConsumer {
         return factory;
     }
 
-    @KafkaListener(topics = VarselTopics.TILTAK_VARSEL, containerFactory = "varselContainerFactory", properties = {"spring.json.value.default.type=no.nav.tag.tiltaksgjennomforing.varsel.kafka.RefusjonVarselMelding"})
+    @KafkaListener(topics = VarselTopics.TILTAK_VARSEL, containerFactory = "varselContainerFactory")
     public void consume(RefusjonVarselMelding refusjonVarselMelding) {
         UUID avtaleId = UUID.fromString(refusjonVarselMelding.getAvtaleId());
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RuntimeException::new);
