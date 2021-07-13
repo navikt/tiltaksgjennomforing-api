@@ -64,7 +64,7 @@ class RefusjonKlarConsumerTest {
         ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.SMS_VARSEL);
         JSONObject jsonRefusjonRecord = new JSONObject(record.value());
 
-        String meldingstekst = "Dere kan nå søke om refusjon for sommerjobb på https://tiltak-refusjon.nav.no";
+        String meldingstekst = "Dere kan nå søke om refusjon for tilskudd til sommerjobb. Frist for å søke er to måneder etter tiltaket er avsluttet. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.";
         assertThat(jsonRefusjonRecord.get("meldingstekst")).isEqualTo(meldingstekst);
         assertThat(jsonRefusjonRecord.get("telefonnummer")).isEqualTo(avtale.getArbeidsgiverTlf());
         assertThat(jsonRefusjonRecord.get("identifikator")).isEqualTo(avtale.getBedriftNr().asString());
