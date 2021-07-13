@@ -36,7 +36,7 @@ public class SmsVarselFactory {
     private String refusjonTekst(Tiltakstype tiltakstype) {
         switch (tiltakstype) {
             case SOMMERJOBB:
-                return "Dere kan nå søke om refusjon for tilskudd til sommerjobb. Frist for å søke er to måneder etter tiltaket er avsluttet. Lenke til løsningen er https://tiltak-refusjon.nav.no. Hilsen NAV.";
+                return "Dere kan nå søke om refusjon for tilskudd til sommerjobb. Frist for å søke er to måneder etter tiltaket er avsluttet. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.";
             case MIDLERTIDIG_LONNSTILSKUDD:
             case VARIG_LONNSTILSKUDD:
                 return "Dere kan nå søke om refusjon for lønnstilskudd på https://tiltak-refusjon.nav.no";
