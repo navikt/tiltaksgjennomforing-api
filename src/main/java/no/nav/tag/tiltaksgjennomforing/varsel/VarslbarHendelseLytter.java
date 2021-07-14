@@ -17,6 +17,15 @@ public class VarslbarHendelseLytter {
     }
 
     @EventListener
+    public void avtaleKlarForRefusjon(RefusjonKlar event) {
+        varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.REFUSJON_KLAR));
+    }
+    @EventListener
+    public void avtaleKlarForRefusjonRevarsel(RefusjonKlarRevarsel event) {
+        varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.REFUSJON_KLAR_REVARSEL));
+    }
+
+    @EventListener
     public void avtaleOpprettetAvArbeidsgiver(AvtaleOpprettetAvArbeidsgiver event) {
         varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.OPPRETTET_AV_ARBEIDSGIVER));
     }
