@@ -28,6 +28,7 @@ public class SmsVarselFactory {
     public SmsVarsel arbeidsgiverRefusjonKlar() {
         return SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(), refusjonTekst(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId());
     }
+
     public SmsVarsel arbeidsgiverRefusjonKlarRevarsel() {
         return SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(), refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId());
     }
@@ -36,24 +37,18 @@ public class SmsVarselFactory {
         return SmsVarsel.nyttVarsel(avtale.getVeilederTlf(), NAV_ORGNR, FAGSYSTEMSONE_VARSELTEKST, hendelse.getId());
     }
 
-    private String refusjonTekst(Tiltakstype tiltakstype, Integer avtaleNr) {
+    private static String refusjonTekst(Tiltakstype tiltakstype, Integer avtaleNr) {
         switch (tiltakstype) {
             case SOMMERJOBB:
                 return String.format("Dere kan nå søke om refusjon for tilskudd til sommerjobb for avtale med nr: %s. Frist for å søke er to måneder etter tiltaket er avsluttet. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtaleNr);
-            case MIDLERTIDIG_LONNSTILSKUDD:
-            case VARIG_LONNSTILSKUDD:
-                return "Dere kan nå søke om refusjon for lønnstilskudd på https://tiltak-refusjon.nav.no";
             default:
                 throw new RuntimeException();
         }
     }
-    private String refusjonTekstRevarsel(Tiltakstype tiltakstype, Integer avtaleNr) {
+    private static String refusjonTekstRevarsel(Tiltakstype tiltakstype, Integer avtaleNr) {
         switch (tiltakstype) {
             case SOMMERJOBB:
                 return String.format("Fristen nærmer seg for å søke om refusjon for tilskudd til sommerjobb for avtale med nr: %d. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtaleNr);
-            case MIDLERTIDIG_LONNSTILSKUDD:
-            case VARIG_LONNSTILSKUDD:
-                return "Fristen nærmer seg for å søke om refusjon for lønnstilskudd på https://tiltak-refusjon.nav.no";
             default:
                 throw new RuntimeException();
         }

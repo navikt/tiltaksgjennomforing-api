@@ -12,7 +12,6 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.checkerframework.checker.units.qual.A;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -33,7 +32,7 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(properties = { "tiltaksgjennomforing.kafka.enabled=true" })
-@EmbeddedKafka(partitions = 1, topics = { Topics.SMS_VARSEL, VarselTopics.TILTAK_VARSEL })
+@EmbeddedKafka(partitions = 1, topics = { Topics.SMS_VARSEL, Topics.TILTAK_VARSEL })
 @DirtiesContext
 @ActiveProfiles({ Miljø.LOCAL })
 class RefusjonKlarConsumerTest {
@@ -58,7 +57,7 @@ class RefusjonKlarConsumerTest {
         var varselMelding = new RefusjonVarselMelding(avtale.getId().toString(), VarselType.KLAR);
         String meldingSomString = objectMapper.writeValueAsString(varselMelding);
         Header header = new RecordHeader("__TypeId__", "no.nav.arbeidsgiver.tiltakrefusjon.refusjon.RefusjonVarselMelding".getBytes(StandardCharsets.UTF_8));
-        kafkaTemplate.send(new ProducerRecord<String, String>(VarselTopics.TILTAK_VARSEL, null, "123", meldingSomString, List.of(header)));
+        kafkaTemplate.send(new ProducerRecord<>(Topics.TILTAK_VARSEL, null, "123", meldingSomString, List.of(header)));
 
         Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "false", embeddedKafka);
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);

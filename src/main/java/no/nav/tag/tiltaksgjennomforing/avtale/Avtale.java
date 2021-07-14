@@ -133,8 +133,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void refusjonKlar(VarselType varselType) {
+        if (!erAvtaleInngått() || annullertTidspunkt != null) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_VARSLE_OM_KLAR_REFUSJON);
+        }
         if (varselType == VarselType.KLAR) {
-        registerEvent(new RefusjonKlar(this));
+            registerEvent(new RefusjonKlar(this));
         } else if (varselType == VarselType.REVARSEL) {
             registerEvent(new RefusjonKlarRevarsel(this));
         }
@@ -726,7 +729,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         if (Utils.erNoenTomme(endreKontaktInformasjon.getDeltakerFornavn(),
                 endreKontaktInformasjon.getDeltakerEtternavn(),
-                endreKontaktInformasjon.getDeltakerTlf(),endreKontaktInformasjon.getVeilederFornavn(),
+                endreKontaktInformasjon.getDeltakerTlf(), endreKontaktInformasjon.getVeilederFornavn(),
                 endreKontaktInformasjon.getVeilederEtternavn(),
                 endreKontaktInformasjon.getVeilederTlf(),
                 endreKontaktInformasjon.getArbeidsgiverFornavn(),

@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.config.SslConfigs;
@@ -67,13 +69,21 @@ public class RefusjonKlarConsumer {
         return factory;
     }
 
-    @KafkaListener(topics = VarselTopics.TILTAK_VARSEL, containerFactory = "varselContainerFactory")
+    @KafkaListener(topics = Topics.TILTAK_VARSEL, containerFactory = "varselContainerFactory")
     public void consume(RefusjonVarselMelding refusjonVarselMelding) {
         UUID avtaleId = UUID.fromString(refusjonVarselMelding.getAvtaleId());
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RuntimeException::new);
 
-        avtale.refusjonKlar(refusjonVarselMelding.getVarselType());
-        avtaleRepository.save(avtale);
+        try {
+            avtale.refusjonKlar(refusjonVarselMelding.getVarselType());
+            avtaleRepository.save(avtale);
+        } catch (FeilkodeException e) {
+            if (e.getFeilkode() == Feilkode.KAN_IKKE_VARSLE_OM_KLAR_REFUSJON) {
+                log.warn("Avtale med id {} har ugyldig status, varsler derfor ikke om klar refusjon", avtaleId);
+            } else {
+                throw e;
+            }
+        }
     }
 
 }
