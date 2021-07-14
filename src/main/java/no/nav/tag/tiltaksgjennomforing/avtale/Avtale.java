@@ -13,6 +13,7 @@ import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
+import no.nav.tag.tiltaksgjennomforing.varsel.kafka.VarselType;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.*;
 import org.springframework.data.domain.AbstractAggregateRoot;
@@ -131,8 +132,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new AvtaleDeltMedAvtalepart(this, avtalerolle));
     }
 
-    public void refusjonKlar() {
+    public void refusjonKlar(VarselType varselType) {
+        if (varselType == VarselType.KLAR) {
         registerEvent(new RefusjonKlar(this));
+        } else if (varselType == VarselType.REVARSEL) {
+            registerEvent(new RefusjonKlarRevarsel(this));
+        }
     }
 
     private String telefonnummerTilAvtalepart(Avtalerolle avtalerolle) {

@@ -72,10 +72,8 @@ public class RefusjonKlarConsumer {
         UUID avtaleId = UUID.fromString(refusjonVarselMelding.getAvtaleId());
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RuntimeException::new);
 
-        if (refusjonVarselMelding.getVarselType() == VarselType.KLAR) {
-            avtale.refusjonKlar();
-            avtaleRepository.save(avtale);
-        }
+        avtale.refusjonKlar(refusjonVarselMelding.getVarselType());
+        avtaleRepository.save(avtale);
     }
 
 }

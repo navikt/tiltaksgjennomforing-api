@@ -195,6 +195,7 @@ public class TestData {
     public static Avtale enSommerjobbAvtaleGodkjentAvBeslutter() {
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), new NavIdent("Z123456"));
         avtale.setEnhetOppfolging(ENHET_OPPFØLGING);
+        avtale.setAvtaleNr(1);
         EndreAvtale endreAvtale = endringPåAlleFelter();
         endreAvtale.setDeltakerFornavn("Solbe");
         endreAvtale.setDeltakerEtternavn("Sommerfeldt");

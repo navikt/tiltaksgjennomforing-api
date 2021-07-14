@@ -12,6 +12,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.checkerframework.checker.units.qual.A;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -52,7 +53,7 @@ class RefusjonKlarConsumerTest {
     @Test
     public void skal_sende_sms_når_det_leses_varsel_kafkamelding() throws JSONException, JsonProcessingException {
         Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvBeslutter();
-        avtaleRepository.save(avtale);
+        avtale = avtaleRepository.save(avtale);
 
         var varselMelding = new RefusjonVarselMelding(avtale.getId().toString(), VarselType.KLAR);
         String meldingSomString = objectMapper.writeValueAsString(varselMelding);
@@ -70,7 +71,7 @@ class RefusjonKlarConsumerTest {
         ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.SMS_VARSEL);
         JSONObject jsonRefusjonRecord = new JSONObject(record.value());
 
-        String meldingstekst = "Dere kan nå søke om refusjon for tilskudd til sommerjobb. Frist for å søke er to måneder etter tiltaket er avsluttet. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.";
+        String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til sommerjobb for avtale med nr: %d. Frist for å søke er to måneder etter tiltaket er avsluttet. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
         assertThat(jsonRefusjonRecord.get("meldingstekst")).isEqualTo(meldingstekst);
         assertThat(jsonRefusjonRecord.get("telefonnummer")).isEqualTo(avtale.getArbeidsgiverTlf());
         assertThat(jsonRefusjonRecord.get("identifikator")).isEqualTo(avtale.getBedriftNr().asString());
