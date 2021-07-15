@@ -40,7 +40,7 @@ public class SmsVarselFactory {
     private static String refusjonTekst(Tiltakstype tiltakstype, Integer avtaleNr) {
         switch (tiltakstype) {
             case SOMMERJOBB:
-                return String.format("Dere kan nå søke om refusjon for tilskudd til sommerjobb for avtale med nr: %s. Frist for å søke er to måneder etter tiltaket er avsluttet. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtaleNr);
+                return String.format("Dere kan nå søke om refusjon for tilskudd til sommerjobb for avtale med nr: %s. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtaleNr);
             default:
                 throw new RuntimeException();
         }
