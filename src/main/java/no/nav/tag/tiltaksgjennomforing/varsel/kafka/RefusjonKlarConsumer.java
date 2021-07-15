@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
 @Component
@@ -71,15 +70,14 @@ public class RefusjonKlarConsumer {
 
     @KafkaListener(topics = Topics.TILTAK_VARSEL, containerFactory = "varselContainerFactory")
     public void consume(RefusjonVarselMelding refusjonVarselMelding) {
-        UUID avtaleId = UUID.fromString(refusjonVarselMelding.getAvtaleId());
-        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RuntimeException::new);
+        Avtale avtale = avtaleRepository.findById(refusjonVarselMelding.getAvtaleId()).orElseThrow(RuntimeException::new);
 
         try {
             avtale.refusjonKlar(refusjonVarselMelding.getVarselType());
             avtaleRepository.save(avtale);
         } catch (FeilkodeException e) {
             if (e.getFeilkode() == Feilkode.KAN_IKKE_VARSLE_OM_KLAR_REFUSJON) {
-                log.warn("Avtale med id {} har ugyldig status, varsler derfor ikke om klar refusjon", avtaleId);
+                log.warn("Avtale med id {} har ugyldig status, varsler derfor ikke om klar refusjon", refusjonVarselMelding.getAvtaleId());
             } else {
                 throw e;
             }

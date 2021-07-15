@@ -41,7 +41,7 @@ class RefusjonKlarConsumerTest {
     private EmbeddedKafkaBroker embeddedKafka;
 
     @Autowired
-     private KafkaTemplate<String, String> kafkaTemplate;
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     @Autowired
     private AvtaleRepository avtaleRepository;
@@ -54,7 +54,7 @@ class RefusjonKlarConsumerTest {
         Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvBeslutter();
         avtale = avtaleRepository.save(avtale);
 
-        var varselMelding = new RefusjonVarselMelding(avtale.getId().toString(), VarselType.KLAR);
+        var varselMelding = new RefusjonVarselMelding(avtale.getId(), avtale.tilskuddsperiode(0).getId(), VarselType.KLAR);
         String meldingSomString = objectMapper.writeValueAsString(varselMelding);
         Header header = new RecordHeader("__TypeId__", "no.nav.arbeidsgiver.tiltakrefusjon.refusjon.RefusjonVarselMelding".getBytes(StandardCharsets.UTF_8));
         kafkaTemplate.send(new ProducerRecord<>(Topics.TILTAK_VARSEL, null, "123", meldingSomString, List.of(header)));
