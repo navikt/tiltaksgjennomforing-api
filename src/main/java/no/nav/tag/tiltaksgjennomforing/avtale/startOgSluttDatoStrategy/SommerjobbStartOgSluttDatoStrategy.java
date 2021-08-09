@@ -15,12 +15,12 @@ public class SommerjobbStartOgSluttDatoStrategy implements StartOgSluttDatoStrat
             }
         }
         if (sluttDato != null) {
-            if (sluttDato.isAfter(LocalDate.of(2021, 8, 31))) {
+            if (sluttDato.isAfter(LocalDate.of(2021, 9, 28))) {
                 throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_SENT);
             }
         }
         if (startDato != null && sluttDato != null) {
-            if (startDato.plusWeeks(4).minusDays(1).isBefore(sluttDato)) {
+            if (startDato.plusWeeks(4).isBefore(sluttDato)) {
                 throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_LANG_VARIGHET);
             }
         }

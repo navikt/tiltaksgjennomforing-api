@@ -824,7 +824,7 @@ public class AvtaleTest {
     @Test
     public void forleng_over_4_uker_sommerjobb() {
         Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();
-        assertFeilkode(Feilkode.SOMMERJOBB_FOR_LANG_VARIGHET, () -> avtale.forlengAvtale(avtale.getStartDato().plusWeeks(4), TestData.enNavIdent()));
+        assertFeilkode(Feilkode.SOMMERJOBB_FOR_LANG_VARIGHET, () -> avtale.forlengAvtale(avtale.getStartDato().plusWeeks(4).plusDays(1), TestData.enNavIdent()));
     }
 
     @Test
