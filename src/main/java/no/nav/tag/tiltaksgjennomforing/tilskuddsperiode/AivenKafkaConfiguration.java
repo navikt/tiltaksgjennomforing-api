@@ -56,5 +56,4 @@ public class AivenKafkaConfiguration {
     public KafkaTemplate<String, String> aivenKafkaTemplate() {
         return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs()));
     }
-
 }

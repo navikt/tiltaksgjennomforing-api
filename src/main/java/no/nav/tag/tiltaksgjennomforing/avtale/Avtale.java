@@ -13,6 +13,7 @@ import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
+import no.nav.tag.tiltaksgjennomforing.varsel.kafka.VarselType;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.*;
 import org.springframework.data.domain.AbstractAggregateRoot;
@@ -129,6 +130,17 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             throw new FeilkodeException(Feilkode.UGYLDIG_TLF);
         }
         registerEvent(new AvtaleDeltMedAvtalepart(this, avtalerolle));
+    }
+
+    public void refusjonKlar(VarselType varselType) {
+        if (!erAvtaleInngått() || annullertTidspunkt != null) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_VARSLE_OM_KLAR_REFUSJON);
+        }
+        if (varselType == VarselType.KLAR) {
+            registerEvent(new RefusjonKlar(this));
+        } else if (varselType == VarselType.REVARSEL) {
+            registerEvent(new RefusjonKlarRevarsel(this));
+        }
     }
 
     private String telefonnummerTilAvtalepart(Avtalerolle avtalerolle) {
@@ -717,7 +729,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         if (Utils.erNoenTomme(endreKontaktInformasjon.getDeltakerFornavn(),
                 endreKontaktInformasjon.getDeltakerEtternavn(),
-                endreKontaktInformasjon.getDeltakerTlf(),endreKontaktInformasjon.getVeilederFornavn(),
+                endreKontaktInformasjon.getDeltakerTlf(), endreKontaktInformasjon.getVeilederFornavn(),
                 endreKontaktInformasjon.getVeilederEtternavn(),
                 endreKontaktInformasjon.getVeilederTlf(),
                 endreKontaktInformasjon.getArbeidsgiverFornavn(),
@@ -740,8 +752,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         if (Utils.erNoenTomme(endreStillingsbeskrivelse.getStillingstittel(),
                 endreStillingsbeskrivelse.getArbeidsoppgaver(),
-                endreStillingsbeskrivelse.getStillingStyrk08(),
-                endreStillingsbeskrivelse.getStillingKonseptId(),
+//                endreStillingsbeskrivelse.getStillingStyrk08(),
+//                endreStillingsbeskrivelse.getStillingKonseptId(),
                 endreStillingsbeskrivelse.getStillingprosent(),
                 endreStillingsbeskrivelse.getAntallDagerPerUke())
         ) {

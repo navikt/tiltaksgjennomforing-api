@@ -30,8 +30,8 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setAntallDagerPerUke(avtale.getAntallDagerPerUke());
         hendelse.setStillingstittel(avtale.getStillingstittel());
         hendelse.setStillingstype(avtale.getStillingstype() != null ? StillingType.valueOf(avtale.getStillingstype().name()) : null);
-        hendelse.setStillingStyrk08(avtale.getStillingStyrk08());
-        hendelse.setStillingKonseptId(avtale.getStillingKonseptId());
+        hendelse.setStillingStyrk08(avtale.getStillingStyrk08() != null ? avtale.getStillingStyrk08() : 0);
+        hendelse.setStillingKonseptId(avtale.getStillingKonseptId() != null ? avtale.getStillingKonseptId() : 0);
         hendelse.setLonnstilskuddProsent(avtale.getLonnstilskuddProsent());
         hendelse.setManedslonn(avtale.getManedslonn());
         hendelse.setFeriepengesats(avtale.getFeriepengesats() != null ? avtale.getFeriepengesats().floatValue() : null);

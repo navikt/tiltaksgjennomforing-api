@@ -26,6 +26,10 @@ public class LagSmsVarselFraVarslbarHendelse {
                 return List.of(factory.deltaker(), factory.arbeidsgiver());
             case DELT_MED_ARBEIDSGIVER:
                 return List.of(factory.arbeidsgiver());
+            case REFUSJON_KLAR:
+                return List.of(factory.arbeidsgiverRefusjonKlar());
+            case REFUSJON_KLAR_REVARSEL:
+                return List.of(factory.arbeidsgiverRefusjonKlarRevarsel());
             case GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER: {
                 var varslinger = new ArrayList<SmsVarsel>();
                 if (gamleVerdier.isGodkjentAvDeltaker()) {

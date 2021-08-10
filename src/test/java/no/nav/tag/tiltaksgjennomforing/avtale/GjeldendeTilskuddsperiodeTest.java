@@ -19,8 +19,6 @@ public class GjeldendeTilskuddsperiodeTest {
         LocalDate avtaleSlutt = LocalDate.now().plusMonths(6);
         Avtale avtale = enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
 
-        boolean bådeGammeltOgNyttår = avtale.getTilskuddPeriode().size() == 4;
-
         // 4
         assertThat(avtale.tilskuddsperiode(0)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
 
@@ -30,7 +28,14 @@ public class GjeldendeTilskuddsperiodeTest {
 
         // 3
         avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), avtale.getEnhetGeografisk());
-        assertThat(bådeGammeltOgNyttår ? avtale.tilskuddsperiode(2) : avtale.tilskuddsperiode(1)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
+
+        if (avtale.tilskuddsperiode(2).kanBehandles()) {
+            // Periode index 2 kan være så langt frem i tid at den ikke kan behandles isåfall er fortsatt index 1 gjeldene.
+            assertThat(avtale.tilskuddsperiode(2)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
+        } else {
+            assertThat(avtale.tilskuddsperiode(1)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
+        }
+
     }
 
     // 2
