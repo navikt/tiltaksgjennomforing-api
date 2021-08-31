@@ -10,12 +10,10 @@ public class SommerjobbStartOgSluttDatoStrategy implements StartOgSluttDatoStrat
     public void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
         StartOgSluttDatoStrategy.super.sjekkStartOgSluttDato(startDato, sluttDato);
         if (startDato != null) {
-            if (startDato.isBefore(LocalDate.of(2021, 6, 1))) {
+            if (startDato.isBefore(LocalDate.of(2021, 6, 1)) ) {
                 throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_TIDLIG);
             }
-        }
-        if (sluttDato != null) {
-            if (sluttDato.isAfter(LocalDate.of(2021, 9, 28))) {
+            if (startDato.isAfter(LocalDate.of(2021, 8, 31))) {
                 throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_SENT);
             }
         }
