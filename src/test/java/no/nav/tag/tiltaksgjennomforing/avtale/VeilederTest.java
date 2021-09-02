@@ -170,7 +170,7 @@ public class VeilederTest {
         assertThat(avtale.getVeilederNavIdent()).isEqualTo(TestData.enNavIdent());
         assertThat(avtale.getDeltakerFornavn()).isEqualTo("Donald");
         assertThat(avtale.getDeltakerEtternavn()).isEqualTo("Duck");
-        assertThat(avtale.getEnhetGeografisk()).isEqualTo(TestData.ENHET_GEOGRAFISK);
+        assertThat(avtale.getEnhetGeografisk()).isEqualTo(TestData.ENHET_GEOGRAFISK.getVerdi());
     }
 
     @Test
