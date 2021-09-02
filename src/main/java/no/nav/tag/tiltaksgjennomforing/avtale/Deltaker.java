@@ -4,6 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,9 +27,7 @@ public class Deltaker extends Avtalepart<Fnr> {
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
-        return avtaleRepository.findAllByDeltakerFnr(getIdentifikator()).stream()
-                .filter(avtale -> !avtale.isFeilregistrert())
-                .collect(Collectors.toList());
+        return new ArrayList<Avtale>(avtaleRepository.findAllByDeltakerFnr(getIdentifikator()));
     }
 
     @Override
