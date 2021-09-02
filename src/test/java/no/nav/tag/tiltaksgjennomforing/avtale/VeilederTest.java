@@ -16,6 +16,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeAdminTilgangException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.junit.Test;
@@ -160,7 +161,7 @@ public class VeilederTest {
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(TestData.enNavIdent()), eq(TestData.etFodselsnummer()))).thenReturn(true);
         when(persondataService.hentPersondata(TestData.etFodselsnummer())).thenReturn(pdlRespons);
         when(persondataService.erKode6(pdlRespons)).thenCallRealMethod();
-        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel())).thenReturn(TestData.ENHET_GEOGRAFISK);
+        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel())).thenReturn(TestData.ENHET_GEOGRAFISK.getVerdi());
 
         Veileder veileder = new Veileder(TestData.enNavIdent(), tilgangskontrollService, persondataService, norg2Client,
             Set.of(TestData.ENHET_GEOGRAFISK), new SlettemerkeProperties(), false);
@@ -189,7 +190,7 @@ public class VeilederTest {
 
         SlettemerkeProperties slettemerkeProperties = new SlettemerkeProperties();
         slettemerkeProperties.setIdent(List.of(navIdent));
-        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class), Set.of("4802"), slettemerkeProperties, false);
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class), Set.of(new NavEnhet("4802","Trysil")), slettemerkeProperties, false);
         veileder.slettemerk(avtale);
         assertThat(avtale.isSlettemerket()).isTrue();
     }
@@ -204,7 +205,7 @@ public class VeilederTest {
 
         SlettemerkeProperties slettemerkeProperties = new SlettemerkeProperties();
         slettemerkeProperties.setIdent(List.of(new NavIdent("Z123456")));
-        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class), Set.of("4802"), slettemerkeProperties, false);
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class), Set.of(new NavEnhet("4802","Trysil")), slettemerkeProperties, false);
         veileder.slettemerk(avtale);
     }
     @Test

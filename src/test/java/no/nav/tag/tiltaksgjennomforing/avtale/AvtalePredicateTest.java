@@ -44,7 +44,7 @@ public class AvtalePredicateTest {
     void enhet_oppfølgning_oppgitt() {
         Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet();
         AvtalePredicate query = new AvtalePredicate();
-        query.setNavEnhet(TestData.ENHET_OPPFØLGING);
+        query.setNavEnhet(TestData.ENHET_OPPFØLGING.getVerdi());
         assertThat(query.test(avtale)).isTrue();
     }
 
@@ -52,7 +52,7 @@ public class AvtalePredicateTest {
     void enhet_geografisk_oppgitt() {
         Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedGeografiskEnhet();
         AvtalePredicate query = new AvtalePredicate();
-        query.setNavEnhet(TestData.ENHET_GEOGRAFISK);
+        query.setNavEnhet(TestData.ENHET_GEOGRAFISK.getVerdi());
         assertThat(query.test(avtale)).isTrue();
     }
 

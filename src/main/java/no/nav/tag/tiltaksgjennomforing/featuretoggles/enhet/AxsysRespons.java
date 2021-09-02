@@ -10,6 +10,6 @@ public class AxsysRespons {
     private List<AxsysEnhet> enheter;
 
     List<NavEnhet> tilEnheter() {
-        return enheter.stream().map(enhet -> new NavEnhet(enhet.getEnhetId())).collect(Collectors.toList());
+        return enheter.stream().map(enhet -> new NavEnhet(enhet.getEnhetId(), enhet.getNavn())).collect(Collectors.toList());
     }
 }

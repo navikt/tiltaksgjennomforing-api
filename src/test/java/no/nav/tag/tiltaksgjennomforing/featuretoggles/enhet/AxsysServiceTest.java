@@ -26,7 +26,7 @@ public class AxsysServiceTest {
     @Test
     public void hentEnheter__returnerer_riktige_enheter() {
         List<NavEnhet> enheter = axsysService.hentEnheterNavAnsattHarTilgangTil(new NavIdent("X123456"));
-        assertThat(enheter).containsOnly(new NavEnhet("0906"), new NavEnhet("0904"));
+        assertThat(enheter).containsOnly(new NavEnhet("0906", "Oslo gamlebyen"), new NavEnhet("0904", "Ullensaker"));
     }
 
     @Test
@@ -38,7 +38,7 @@ public class AxsysServiceTest {
     @Test
     public void pilotEnheter__inneholder_hentetEnheter() {
         List<NavEnhet> enheter = axsysService.hentEnheterNavAnsattHarTilgangTil(new NavIdent("X123456"));
-        List<NavEnhet> pilotEnheter = asList(new NavEnhet("0906"));
+        List<NavEnhet> pilotEnheter = asList(new NavEnhet("0906", "Oslo gamlebyen"));
         assertThat(pilotEnheter).containsAnyElementsOf(enheter);
     }
 
