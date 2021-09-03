@@ -70,7 +70,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private String avbruttGrunn;
     private boolean opprettetAvArbeidsgiver;
     private String enhetGeografisk;
+    private String enhetsnavnGeografisk;
     private String enhetOppfolging;
+    private String enhetsnavnOppfolging;
 
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)

@@ -12,6 +12,7 @@ import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeAdminTilgangException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
@@ -161,7 +162,7 @@ public class VeilederTest {
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(TestData.enNavIdent()), eq(TestData.etFodselsnummer()))).thenReturn(true);
         when(persondataService.hentPersondata(TestData.etFodselsnummer())).thenReturn(pdlRespons);
         when(persondataService.erKode6(pdlRespons)).thenCallRealMethod();
-        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel())).thenReturn(TestData.ENHET_GEOGRAFISK.getVerdi());
+        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel())).thenReturn(new Norg2GeoResponse(TestData.ENHET_GEOGRAFISK.getNavn(), TestData.ENHET_GEOGRAFISK.getVerdi()));
 
         Veileder veileder = new Veileder(TestData.enNavIdent(), tilgangskontrollService, persondataService, norg2Client,
             Set.of(TestData.ENHET_GEOGRAFISK), new SlettemerkeProperties(), false);
