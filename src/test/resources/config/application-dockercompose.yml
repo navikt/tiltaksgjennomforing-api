@@ -54,7 +54,10 @@ tiltaksgjennomforing:
   veilarbarena:
     url: http://localhost:8090/veilarbarena/oppfolgingsstatus
   norg2:
-    url: http://localhost:8090/norg2/api/v1/enhet/navkontor/
+    geografisk:
+      url: http://localhost:8090/norg2/api/v1/enhet/navkontor/
+    enhet:
+      url: http://localhost:8090/norg2/api/v1/enhet/
   dokgen:
     uri: http://localhost:9000/template/tiltak-avtale/create-pdf
   dvh-melding:

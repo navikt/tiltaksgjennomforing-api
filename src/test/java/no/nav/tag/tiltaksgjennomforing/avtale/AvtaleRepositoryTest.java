@@ -213,7 +213,7 @@ public class AvtaleRepositoryTest {
         Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.now(), LocalDate.now().plusMonths(2));
         lagretAvtale.setTiltakstype(Tiltakstype.ARBEIDSTRENING);
         avtaleRepository.save(lagretAvtale);
-        Set<String> navEnheter = Set.of(ENHET_OPPFØLGING);
+        Set<String> navEnheter = Set.of(ENHET_OPPFØLGING.getVerdi());
 
         List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
             .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter);
@@ -225,7 +225,7 @@ public class AvtaleRepositoryTest {
     public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_kunne_hente_avtale_med_ubehandlet_tilskuddsperioder_for_riktig_enhet() {
 
         Avtale lagretAvtale = avtaleRepository.save(TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.now(), LocalDate.now().plusDays(15)));
-        Set<String> navEnheter = Set.of(ENHET_OPPFØLGING);
+        Set<String> navEnheter = Set.of(ENHET_OPPFØLGING.getVerdi());
 
         List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
             .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter);
@@ -237,7 +237,7 @@ public class AvtaleRepositoryTest {
     public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_ikke_kunne_hente_avtale_med_godkjent_tilskuddsperioder() {
 
         Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.now(), LocalDate.now().plusMonths(2));
-        Set<String> navEnheter = Set.of(ENHET_OPPFØLGING);
+        Set<String> navEnheter = Set.of(ENHET_OPPFØLGING.getVerdi());
 
         lagretAvtale.godkjennTilskuddsperiode(TestData.enInnloggetBeslutter().getIdentifikator(), lagretAvtale.getEnhetGeografisk());
         avtaleRepository.save(lagretAvtale);
@@ -270,7 +270,7 @@ public class AvtaleRepositoryTest {
         avtaleRepository.save(lagretAvtale);
 
         List<Avtale> avtaleMedRiktigEnhet = avtaleRepository
-            .findAllUfordelteByEnhet(ENHET_OPPFØLGING);
+            .findAllUfordelteByEnhet(ENHET_OPPFØLGING.getVerdi());
 
         assertThat(avtaleMedRiktigEnhet).isNotEmpty();
     }
@@ -282,7 +282,7 @@ public class AvtaleRepositoryTest {
         avtaleRepository.save(lagretAvtale);
 
         List<Avtale> avtaleMedRiktigEnhet = avtaleRepository
-            .findAllUfordelteByEnhet(ENHET_GEOGRAFISK);
+            .findAllUfordelteByEnhet(ENHET_GEOGRAFISK.getVerdi());
 
         assertThat(avtaleMedRiktigEnhet).isEmpty();
     }
@@ -294,7 +294,7 @@ public class AvtaleRepositoryTest {
         avtaleRepository.save(lagretAvtale);
 
         List<Avtale> avtaleMedRiktigEnhet = avtaleRepository
-            .findAllUfordelteByEnhet(ENHET_OPPFØLGING);
+            .findAllUfordelteByEnhet(ENHET_OPPFØLGING.getVerdi());
 
         assertThat(avtaleMedRiktigEnhet).isNotEmpty();
     }
@@ -306,7 +306,7 @@ public class AvtaleRepositoryTest {
         avtaleRepository.save(lagretAvtale);
 
         List<Avtale> avtaleMedRiktigEnhet = avtaleRepository
-            .findAllUfordelteByEnhet(ENHET_GEOGRAFISK);
+            .findAllUfordelteByEnhet(ENHET_GEOGRAFISK.getVerdi());
 
         assertThat(avtaleMedRiktigEnhet).isNotEmpty();
     }
