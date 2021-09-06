@@ -47,19 +47,19 @@ public class ByEnhetStrategyTest {
 
     @Test
     public void skal_være_disablet_hvis_bruker_har_definerte_enheter_men_ingen_er_i_listen() {
-        when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(newArrayList(new NavEnhet("1111"), new NavEnhet("2222")));
+        when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(newArrayList(new NavEnhet("1111", "Bergen"), new NavEnhet("2222", "Stavanger")));
         assertThat(new ByEnhetStrategy(axsysService).isEnabled(Map.of(PARAM, "1234"), unleashContext)).isFalse();
     }
     
     @Test
     public void skal_være_enablet_hvis_bruker_har_definert_enhet() {
-        when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(newArrayList(new NavEnhet("1234")));
+        when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(newArrayList(new NavEnhet("1234", "Lillehammer")));
         assertThat(new ByEnhetStrategy(axsysService).isEnabled(Map.of(PARAM, "1234"), unleashContext)).isTrue();
     }
 
     @Test
     public void skal_være_enablet_hvis_en_av_brukers_enheter_er_i_listen() {
-        when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(newArrayList(new NavEnhet("1111"), new NavEnhet("1234")));
+        when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(newArrayList(new NavEnhet("1111", "Bergen"), new NavEnhet("1234", "Lillehammer")));
         assertThat(new ByEnhetStrategy(axsysService).isEnabled(Map.of(PARAM, "1234,5678"), unleashContext)).isTrue();
     }
     

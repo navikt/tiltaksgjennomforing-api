@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -60,7 +61,7 @@ public class InnloggingService {
 
         else if (issuer == Issuer.ISSUER_ISSO && avtalerolle == Avtalerolle.VEILEDER) {
             NavIdent navIdent = new NavIdent(brukerOgIssuer.getBrukerIdent());
-            Set<String> navEnheter = hentNavEnheter(navIdent);
+            Set<NavEnhet> navEnheter = hentNavEnheter(navIdent);
             boolean harAdGruppeForBeslutter = tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId());
             return new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, navEnheter, slettemerkeProperties, harAdGruppeForBeslutter);
         } else if (issuer == Issuer.ISSUER_ISSO && avtalerolle == Avtalerolle.BESLUTTER) {
@@ -75,11 +76,8 @@ public class InnloggingService {
         }
     }
 
-    private Set<String> hentNavEnheter(NavIdent navIdent) {
-        return axsysService.hentEnheterNavAnsattHarTilgangTil(navIdent)
-            .stream()
-            .map(NavEnhet::getVerdi)
-            .collect(Collectors.toSet());
+    private Set<NavEnhet> hentNavEnheter(NavIdent navIdent) {
+        return new HashSet<NavEnhet>(axsysService.hentEnheterNavAnsattHarTilgangTil(navIdent));
     }
 
     public Veileder hentVeileder() {
