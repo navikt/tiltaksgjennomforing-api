@@ -146,7 +146,9 @@ public abstract class Avtalepart<T extends Identifikator> {
                 avtale.setEnhetsnavnOppfolging(avtale.getEnhetsnavnGeografisk());
             } else {
                 final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetsnavn(avtale.getEnhetOppfolging());
-                avtale.setEnhetsnavnOppfolging(response.getNavn());
+                if (response != null && response.getNavn() != null) {
+                    avtale.setEnhetsnavnOppfolging(response.getNavn());
+                }
             }
         }
     }

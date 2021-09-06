@@ -32,7 +32,7 @@ public class Norg2Client {
     }
 
     public Norg2OppfølgingResponse hentOppfølgingsEnhetsnavn(String enhet) {
-        Norg2OppfølgingResponse norg2OppfølgingResponse;
+        Norg2OppfølgingResponse norg2OppfølgingResponse = null;
         try {
             norg2OppfølgingResponse = restTemplate.getForObject(norg2OppfølgingProperties.getUrl() + enhet, Norg2OppfølgingResponse.class);
             if (Objects.requireNonNull(norg2OppfølgingResponse).getNavn() == null) {
@@ -40,7 +40,6 @@ public class Norg2Client {
             }
         }catch (Exception e) {
             log.error("Feil v/oppslag på enhet {}", enhet);
-            throw e;
         }
         return norg2OppfølgingResponse;
     }
