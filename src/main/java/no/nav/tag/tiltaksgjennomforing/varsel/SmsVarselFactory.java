@@ -44,7 +44,7 @@ public class SmsVarselFactory {
     private static String refusjonForlengetTekst(Tiltakstype tiltakstype, Integer avtaleNr) {
         switch (tiltakstype) {
             case SOMMERJOBB:
-                return String.format("Fristen for å godkjenne refusjon for avtale med nr: %s. har blitt forlenget. Du kan sjekke fristen og søke om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtaleNr);
+                return String.format("Fristen for å godkjenne refusjon for avtale med nr: %s har blitt forlenget. Du kan sjekke fristen og søke om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtaleNr);
             default:
                 throw new RuntimeException();
         }
