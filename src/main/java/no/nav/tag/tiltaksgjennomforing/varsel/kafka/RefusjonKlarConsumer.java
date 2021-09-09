@@ -72,16 +72,32 @@ public class RefusjonKlarConsumer {
     public void consume(RefusjonVarselMelding refusjonVarselMelding) {
         Avtale avtale = avtaleRepository.findById(refusjonVarselMelding.getAvtaleId()).orElseThrow(RuntimeException::new);
 
-        try {
-            avtale.refusjonKlar(refusjonVarselMelding.getVarselType());
-            avtaleRepository.save(avtale);
-        } catch (FeilkodeException e) {
-            if (e.getFeilkode() == Feilkode.KAN_IKKE_VARSLE_OM_KLAR_REFUSJON) {
-                log.warn("Avtale med id {} har ugyldig status, varsler derfor ikke om klar refusjon", refusjonVarselMelding.getAvtaleId());
-            } else {
-                throw e;
+        VarselType varselType = refusjonVarselMelding.getVarselType();
+        if (varselType == VarselType.KLAR || varselType == VarselType.REVARSEL) {
+            try {
+                avtale.refusjonKlar(refusjonVarselMelding.getVarselType());
+                avtaleRepository.save(avtale);
+            } catch (FeilkodeException e) {
+                if (e.getFeilkode() == Feilkode.KAN_IKKE_VARSLE_OM_KLAR_REFUSJON) {
+                    log.warn("Avtale med id {} har ugyldig status, varsler derfor ikke om klar refusjon", refusjonVarselMelding.getAvtaleId());
+                } else {
+                    throw e;
+                }
+            }
+        } else if (varselType == VarselType.FRIST_FORLENGET) {
+            try {
+                avtale.refusjonFristForlenget();
+                avtaleRepository.save(avtale);
+            } catch (FeilkodeException e) {
+                if (e.getFeilkode() == Feilkode.KAN_IKKE_VARSLE_OM_REFUSJON_FRIST_FORLENGET) {
+                    log.warn("Avtale med id {} har ugyldig status, varsler derfor ikke om frist forlenget", refusjonVarselMelding.getAvtaleId());
+                } else {
+                    throw e;
+                }
             }
         }
+
     }
+
 
 }
