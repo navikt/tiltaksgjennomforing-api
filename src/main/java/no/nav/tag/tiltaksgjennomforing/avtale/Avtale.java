@@ -145,6 +145,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
     }
 
+    public void refusjonFristForlenget() {
+        if (!erAvtaleInngått() || annullertTidspunkt != null) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_VARSLE_OM_REFUSJON_FRIST_FORLENGET);
+        }
+        registerEvent(new RefusjonFristForlenget(this));
+    }
+
     private String telefonnummerTilAvtalepart(Avtalerolle avtalerolle) {
         switch (avtalerolle) {
             case DELTAKER:
