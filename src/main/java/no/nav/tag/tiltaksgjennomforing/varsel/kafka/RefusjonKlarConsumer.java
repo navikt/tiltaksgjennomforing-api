@@ -78,7 +78,7 @@ public class RefusjonKlarConsumer {
                 avtale.refusjonKlar(refusjonVarselMelding.getVarselType());
                 avtaleRepository.save(avtale);
             } catch (FeilkodeException e) {
-                if (e.getFeilkode() == Feilkode.KAN_IKKE_VARSLE_OM_KLAR_REFUSJON) {
+                if (e.getFeilkode() == Feilkode.KAN_IKKE_ENDRE_ANNULLERT_AVTALE) {
                     log.warn("Avtale med id {} har ugyldig status, varsler derfor ikke om klar refusjon", refusjonVarselMelding.getAvtaleId());
                 } else {
                     throw e;
@@ -89,7 +89,7 @@ public class RefusjonKlarConsumer {
                 avtale.refusjonFristForlenget();
                 avtaleRepository.save(avtale);
             } catch (FeilkodeException e) {
-                if (e.getFeilkode() == Feilkode.KAN_IKKE_VARSLE_OM_REFUSJON_FRIST_FORLENGET) {
+                if (e.getFeilkode() == Feilkode.KAN_IKKE_ENDRE_ANNULLERT_AVTALE) {
                     log.warn("Avtale med id {} har ugyldig status, varsler derfor ikke om frist forlenget", refusjonVarselMelding.getAvtaleId());
                 } else {
                     throw e;
