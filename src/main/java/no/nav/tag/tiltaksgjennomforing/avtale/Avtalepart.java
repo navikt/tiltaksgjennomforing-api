@@ -18,10 +18,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.hendelselogg.Hendelselogg;
 import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
@@ -150,6 +147,20 @@ public abstract class Avtalepart<T extends Identifikator> {
                     avtale.setEnhetsnavnOppfolging(response.getNavn());
                 }
             }
+        }
+    }
+    protected NyttKostnadssted oppdatereKostnadssted(Avtale avtale, Norg2Client norg2Client, String enhet) {
+        final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetsnavn(enhet);
+        if(response != null) {
+            TilskuddPeriode tilskuddPeriode = avtale.gjeldendeTilskuddsperiode();
+            if(tilskuddPeriode == null) {
+                throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_IKKE_SATT);
+            }
+            tilskuddPeriode.setEnhet(enhet);
+            tilskuddPeriode.setEnhetsnavn(response.getNavn());
+            return new NyttKostnadssted(tilskuddPeriode.getEnhet(), tilskuddPeriode.getEnhetsnavn());
+        }else {
+            throw new FeilkodeException(Feilkode.ENHET_FINNES_IKKE);
         }
     }
 }

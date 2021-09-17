@@ -393,6 +393,16 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
+    @PostMapping("/{avtaleId}/endre-kostnadssted")
+    @Transactional
+    public NyttKostnadssted endreKostnadssted(@PathVariable("avtaleId") UUID avtaleId, @RequestBody EndreKostnadsstedRequest endreKostnadsstedRequest) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        NyttKostnadssted nyttKostnadssted = veileder.oppdatereKostnadssted(avtale, norg2Client, endreKostnadsstedRequest.getEnhet());
+        avtaleRepository.save(avtale);
+        return nyttKostnadssted;
+    }
+
     @PostMapping("/{avtaleId}/avslag-tilskuddsperiode")
     @Transactional
     public void avslåTilskuddsperiode(@PathVariable("avtaleId") UUID avtaleId, @RequestBody AvslagRequest avslagRequest) {

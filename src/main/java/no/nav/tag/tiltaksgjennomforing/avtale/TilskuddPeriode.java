@@ -62,6 +62,7 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     private LocalDateTime godkjentTidspunkt;
 
     private String enhet;
+    private String enhetsnavn;
 
     @NonNull
     private Integer lonnstilskuddProsent;
