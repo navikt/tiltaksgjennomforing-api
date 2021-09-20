@@ -149,18 +149,4 @@ public abstract class Avtalepart<T extends Identifikator> {
             }
         }
     }
-    protected NyttKostnadssted oppdatereKostnadssted(Avtale avtale, Norg2Client norg2Client, String enhet) {
-        final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetsnavn(enhet);
-        if(response != null) {
-            TilskuddPeriode tilskuddPeriode = avtale.gjeldendeTilskuddsperiode();
-            if(tilskuddPeriode == null) {
-                throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_IKKE_SATT);
-            }
-            tilskuddPeriode.setEnhet(enhet);
-            tilskuddPeriode.setEnhetsnavn(response.getNavn());
-            return new NyttKostnadssted(tilskuddPeriode.getEnhet(), tilskuddPeriode.getEnhetsnavn());
-        }else {
-            throw new FeilkodeException(Feilkode.ENHET_FINNES_IKKE);
-        }
-    }
 }
