@@ -1,9 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import lombok.Data;
+import lombok.Value;
 
-@Data
+@Value
 public class NyttKostnadssted {
-    private final String enhet;
-    private final String enhetsnavn;
+    String enhet;
+    String enhetsnavn;
 }
