@@ -1,0 +1,71 @@
+scalar Date
+scalar DateTime
+
+type Mutation {
+
+    # Bestilling
+    opprettNyBeskjed(request: OpprettNyBeskjedRequest!) : NyBeskjedResponse!
+    opprettNyOppgave(request: OpprettNyOppgaveRequest!) : NyOppgaveResponse!
+}
+
+# Requests
+
+input AltinnMottakerInput {
+    serviceCode: String!
+    serviceEdition: String!
+    virksomhetsnummer: String!
+}
+
+input NaermesteLederMottakerInput {
+    naermesteLederFnr:	String!
+    ansattFnr:	String!
+    virksomhetsnummer: String!
+}
+
+input NotifikasjonInput {
+    merkelapp: String!
+    tekst: String!
+    lenke: String!
+}
+
+input MetadataInput {
+    # Request set/Endringspakke, valgfri, bruk for å legge til eksisterende pakke
+    eksternID: String!
+    opprettetTidspunkt: DateTime
+    #opprettetTidspunkt: ISO8601DateTime
+    grupperingsid: String
+}
+
+input MottakrInput {
+    altinn: AltinnMottakerInput!
+    naermesteLeder: NaermesteLederMottakerInput
+}
+
+input OpprettNyBeskjedRequest  {
+    mottaker: MottakrInput!
+    notifikasjon: NotifikasjonInput!
+    metadata: MetadataInput!
+}
+
+input OpprettNyOppgaveRequest {
+    mottaker: MottakrInput!
+    notifikasjon: NotifikasjonInput!
+    metadata: MetadataInput
+}
+
+interface BestillingRespons {
+    requestId: ID!
+    requestSetId: ID!
+}
+
+type NyBeskjedResponse implements BestillingRespons {
+    requestId: ID!
+    requestSetId: ID!
+    nomId: ID
+}
+
+type NyOppgaveResponse implements BestillingRespons {
+    requestId: ID!
+    requestSetId: ID!
+    nomId: ID
+}

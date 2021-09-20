@@ -1,0 +1,30 @@
+mutation opprettOppgave{
+    nyOppgave(
+        nyOppgave: {
+            mottaker: {
+                altinn: {
+                    serviceCode:"442",
+                    serviceEdition:"42",
+                    virksomhetsnummer: "123"
+                }
+            }
+            notifikasjon: {
+                lenke: "https://foo.bar"
+                tekst: "hello world"
+                merkelapp: "tag"
+            }
+            metadata: {
+                eksternId: "heuer"
+                opprettetTidspunkt: "2019-10-12T07:20:50.52Z"
+            }
+        }
+    ) {
+        __typename
+        ... on NyOppgaveVellykket {
+            id
+        }
+        ... on Error {
+            feilmelding
+        }
+    }
+}

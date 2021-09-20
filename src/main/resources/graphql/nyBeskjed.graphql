@@ -1,0 +1,32 @@
+mutation opprettBeskjed(
+    $eksternId: String!
+    $virksomhetsnummer: String!
+    $lenke: String!
+) {
+    nyBeskjed(nyBeskjed: {
+            mottaker: {
+                altinn: {
+                    serviceCode: "5516"
+                    serviceEdition:"1",
+                    virksomhetsnummer: $virksomhetsnummer
+                }
+            }
+            notifikasjon: {
+                merkelapp: "Tiltak"
+                tekst: "DU har fått en beskjed"
+                lenke: $lenke
+            }
+            metadata: {
+                eksternId: $eksternId
+            }
+        }
+    ) {
+        __typename
+        ... on NyBeskjedVellykket {
+            id
+        }
+        ... on Error {
+            feilmelding
+        }
+    }
+}
