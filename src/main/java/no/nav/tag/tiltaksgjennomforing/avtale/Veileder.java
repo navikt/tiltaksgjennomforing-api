@@ -15,6 +15,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import static java.util.Collections.emptyList;
 import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
@@ -280,16 +281,15 @@ public class Veileder extends Avtalepart<NavIdent> {
         avtale.sendTilbakeTilBeslutter();
     }
 
-    protected NyttKostnadssted oppdatereKostnadssted(Avtale avtale, Norg2Client norg2Client, String enhet) {
+    protected void oppdatereKostnadssted(Avtale avtale, Norg2Client norg2Client, String enhet) {
         final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetsnavn(enhet);
         if(response != null) {
-            TilskuddPeriode tilskuddPeriode = avtale.gjeldendeTilskuddsperiode();
-            if(tilskuddPeriode == null) {
+            NyttKostnadssted nyttKostnadssted = new NyttKostnadssted(enhet, response.getNavn());
+            TreeSet<TilskuddPeriode> tilskuddPerioder = avtale.finnTilskuddsperioderIkkeLukketForEndring();
+            if(tilskuddPerioder == null) {
                 throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_IKKE_SATT);
             }
-            tilskuddPeriode.setEnhet(enhet);
-            tilskuddPeriode.setEnhetsnavn(response.getNavn());
-            return new NyttKostnadssted(tilskuddPeriode.getEnhet(), tilskuddPeriode.getEnhetsnavn());
+            avtale.oppdatereKostnadsstedForTilskuddsperioder(tilskuddPerioder, nyttKostnadssted);
         }else {
             throw new FeilkodeException(Feilkode.ENHET_FINNES_IKKE);
         }

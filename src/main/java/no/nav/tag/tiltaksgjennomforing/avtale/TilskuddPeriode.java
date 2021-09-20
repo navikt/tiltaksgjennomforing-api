@@ -82,6 +82,11 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
 
     private boolean aktiv = true;
 
+    public TilskuddPeriode(UUID id){
+        super();
+        this.id = id;
+    }
+
     public TilskuddPeriode deaktiverOgLagNyUbehandlet() {
         this.aktiv = false;
         TilskuddPeriode kopi = new TilskuddPeriode();
