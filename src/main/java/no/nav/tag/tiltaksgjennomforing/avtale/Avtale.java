@@ -11,9 +11,12 @@ import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSl
 import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import no.nav.tag.tiltaksgjennomforing.varsel.kafka.VarselType;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.Notifikasjon;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.NotifikasjonerProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.*;
 import org.springframework.data.domain.AbstractAggregateRoot;
@@ -72,11 +75,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private String enhetGeografisk;
     private String enhetOppfolging;
 
+
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
     @SortNatural
     private SortedSet<TilskuddPeriode> tilskuddPeriode = new TreeSet<>();
     private boolean feilregistrert;
+
+
 
     private Avtale(OpprettAvtale opprettAvtale) {
         sjekkAtIkkeNull(opprettAvtale.getDeltakerFnr(), "Deltakers fnr må være satt.");

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.Notifikasjon;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class LyttPåHendelseTilHendelselogg {
     private final HendelseloggRepository repository;
+    private final Notifikasjon notifikasjon;
 
     @EventListener
     public void avtaleOpprettetAvVeileder(AvtaleOpprettetAvVeileder event) {
@@ -45,6 +47,7 @@ public class LyttPåHendelseTilHendelselogg {
     @EventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
         Hendelselogg hendelselogg = Hendelselogg.nyHendelse(event.getAvtale().getId(), Avtalerolle.VEILEDER, VarslbarHendelseType.GODKJENT_AV_VEILEDER);
+        notifikasjon.whoAmI();
         repository.save(hendelselogg);
     }
 

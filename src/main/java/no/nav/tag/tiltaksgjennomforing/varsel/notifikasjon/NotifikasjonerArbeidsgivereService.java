@@ -1,12 +1,8 @@
-package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjoner;
+package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
-import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
-import no.nav.tag.tiltaksgjennomforing.persondata.PdlRequest;
-import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
-import no.nav.tag.tiltaksgjennomforing.persondata.PersondataProperties;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -42,12 +38,4 @@ public class NotifikasjonerArbeidsgivereService {
             throw exception;
         }
     }
-
-    public static WhoAmI hentWhoAmI(NotifikasjonerRespons notifikasjonerRespons){
-        try {
-            return NotifikasjonerRespons.getData().
-        }
-
-    }
-
 }

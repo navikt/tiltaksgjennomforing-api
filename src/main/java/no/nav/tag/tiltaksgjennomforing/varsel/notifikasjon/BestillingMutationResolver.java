@@ -1,8 +1,10 @@
-package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjoner;
-
+package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
+/*
 import graphql.kickstart.tools.GraphQLMutationResolver;
 
 public class BestillingMutationResolver implements GraphQLMutationResolver {
+
+ */
 /*
 
     public DataFetcherResult<EnhetBestillingResponse> opprettEnhet(OpprettEnhetRequest request, DataFetchingEnvironment env) {
@@ -17,4 +19,4 @@ public class BestillingMutationResolver implements GraphQLMutationResolver {
         });
     }
 */
-}
+

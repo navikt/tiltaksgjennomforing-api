@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjoner;
+package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
 import lombok.Value;
 
