@@ -29,7 +29,7 @@ public class AbacAdapterTest {
     NavIdent veilederIdent = new NavIdent("F142226");
     Fnr deltakerFnr = new Fnr("07098142678");
 
-    Boolean verdic = abacAdapter.harLeseTilgang(veilederIdent,deltakerFnr);
+    boolean verdic = abacAdapter.harLeseTilgang(veilederIdent,deltakerFnr);
 
     assertFalse(verdic);
   }
@@ -39,7 +39,7 @@ public class AbacAdapterTest {
     NavIdent veilederIdent = new NavIdent("F142226");
     Fnr deltakerFnr = new Fnr("01118023456");
 
-    Boolean verdic = abacAdapter.harLeseTilgang(veilederIdent,deltakerFnr);
+    boolean verdic = abacAdapter.harLeseTilgang(veilederIdent,deltakerFnr);
 
     assertTrue(verdic);
   }

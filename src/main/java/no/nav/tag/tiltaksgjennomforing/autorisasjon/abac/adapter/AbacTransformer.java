@@ -1,11 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class AbacTransformer {
 
-  public String tilAbacRequestGittNavIdentOgDeltakerFnr(String navIdent, String deltakerFnr){
+  public static String tilAbacRequestGittNavIdentOgDeltakerFnr(String navIdent, String deltakerFnr){
     return "{\n"
         + "              \"Request\": {\n"
         + "                \"AccessSubject\": {\n"

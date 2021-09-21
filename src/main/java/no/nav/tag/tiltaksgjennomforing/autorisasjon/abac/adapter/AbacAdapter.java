@@ -15,21 +15,20 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class AbacAdapter {
 
-  //TODO: Azure Annonymt client
   private final RestTemplate restTemplate;
 
   private final AbacConfig abacConfig;
 
-  private final AbacTransformer abacTransformer;
-
-  public Boolean harLeseTilgang(NavIdent navIdent, Fnr deltakerFnr){
+  public boolean harLeseTilgang(NavIdent navIdent, Fnr deltakerFnr){
     AbacResponse response = restTemplate.postForObject(abacConfig.getUri(), getHttpEntity(
-        abacTransformer.tilAbacRequestGittNavIdentOgDeltakerFnr(navIdent.asString(),deltakerFnr.asString())),AbacResponse.class);
+        AbacTransformer.tilAbacRequestGittNavIdentOgDeltakerFnr(navIdent.asString(),deltakerFnr.asString())),AbacResponse.class);
     return Objects.equals(response.response.decision, "Permit");
   }
 
 
   private HttpEntity getHttpEntity(String body){
+
+    //TODO: STS
     HttpHeaders headers = new HttpHeaders();
     headers.set("Nav-Consumer-Id","tiltak-refusjon-api");
     headers.set("Nav-Call-Id", UUID.randomUUID().toString());
