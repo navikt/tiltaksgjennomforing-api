@@ -76,7 +76,7 @@ tiltaksgjennomforing:
     nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}
   abac:
     veilarbabac-uri: https://veilarbabac-q1.nais.preprod.local
-    veilarb-uri: https://abac-veilarb-q1.dev.intern.nav.no
+    uri: https://abac-veilarb-q1.dev.intern.nav.no
   oppgave:
     oppgave-uri: https://oppgave.nais.preprod.local/api/v1/oppgaver
   unleash:

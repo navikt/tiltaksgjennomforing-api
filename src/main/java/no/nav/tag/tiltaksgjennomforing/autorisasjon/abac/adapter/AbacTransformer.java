@@ -1,0 +1,62 @@
+package no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter;
+
+import org.springframework.stereotype.Component;
+
+@Component
+public class AbacTransformer {
+
+  public String tilAbacRequestGittNavIdentOgDeltakerFnr(String navIdent, String deltakerFnr){
+    return "{\n"
+        + "              \"Request\": {\n"
+        + "                \"AccessSubject\": {\n"
+        + "                  \"Attribute\": [\n"
+        + "                    {\n"
+        + "                      \"AttributeId\": \"urn:oasis:names:tc:xacml:1.0:subject:subject-id\",\n"
+        + "                      \"Value\": \"" + navIdent + "\"\n"
+        + "                    },\n"
+        + "                    {\n"
+        + "                      \"AttributeId\": \"no.nav.abac.attributter.subject.felles.subjectType\",\n"
+        + "                      \"Value\": \"InternBruker\"\n"
+        + "                    }\n"
+        + "                  ]\n"
+        + "                },\n"
+        + "                \"Environment\": {\n"
+        + "                  \"Attribute\": [\n"
+        + "                    {\n"
+        + "                      \"AttributeId\": \"no.nav.abac.attributter.environment.felles.pep_id\",\n"
+        + "                      \"Value\": \"\"\n"
+        + "                    }\n"
+        + "                  ]\n"
+        + "                },\n"
+        + "                \"Action\": {\n"
+        + "                  \"Attribute\": [\n"
+        + "                    {\n"
+        + "                      \"AttributeId\": \"urn:oasis:names:tc:xacml:1.0:action:action-id\",\n"
+        + "                      \"Value\": \"read\"\n"
+        + "                    }\n"
+        + "                  ]\n"
+        + "                },\n"
+        + "                \"Resource\": [\n"
+        + "                  {\n"
+        + "                    \"Attribute\": [\n"
+        + "                      {\n"
+        + "                        \"AttributeId\": \"no.nav.abac.attributter.resource.felles.resource_type\",\n"
+        + "                        \"Value\": \"no.nav.abac.attributter.resource.felles.person\"\n"
+        + "                      },\n"
+        + "                      {\n"
+        + "                        \"AttributeId\": \"no.nav.abac.attributter.resource.felles.domene\",\n"
+        + "                        \"Value\": \"veilarb\"\n"
+        + "                      },\n"
+        + "                      {\n"
+        + "                        \"AttributeId\": \"no.nav.abac.attributter.resource.felles.person.fnr\",\n"
+        + "                        \"Value\": \"" + deltakerFnr+ "\"\n"
+        + "                      }\n"
+        + "                    ]\n"
+        + "                  }\n"
+        + "                ]\n"
+        + "              }\n"
+        + "            }";
+  }
+
+
+}
