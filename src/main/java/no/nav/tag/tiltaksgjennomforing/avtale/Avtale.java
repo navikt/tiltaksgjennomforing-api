@@ -115,6 +115,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void endreAvtale(Instant sistEndret, EndreAvtale nyAvtale, Avtalerolle utfortAv, EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder) {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAvtalenKanEndres();
         sjekkSistEndret(sistEndret);
         sjekkStartOgSluttDato(nyAvtale.getStartDato(), nyAvtale.getSluttDato());
@@ -127,6 +128,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void delMedAvtalepart(Avtalerolle avtalerolle) {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+
         String tlf = telefonnummerTilAvtalepart(avtalerolle);
         if (!TelefonnummerValidator.erGyldigMobilnummer(tlf)) {
             throw new FeilkodeException(Feilkode.UGYLDIG_TLF);
@@ -135,9 +138,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void refusjonKlar(VarselType varselType) {
-        if (!erAvtaleInngått() || annullertTidspunkt != null) {
-            throw new FeilkodeException(Feilkode.KAN_IKKE_VARSLE_OM_KLAR_REFUSJON);
-        }
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+
         if (varselType == VarselType.KLAR) {
             registerEvent(new RefusjonKlar(this));
         } else if (varselType == VarselType.REVARSEL) {
@@ -146,9 +148,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void refusjonFristForlenget() {
-        if (!erAvtaleInngått() || annullertTidspunkt != null) {
-            throw new FeilkodeException(Feilkode.KAN_IKKE_VARSLE_OM_REFUSJON_FRIST_FORLENGET);
-        }
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         registerEvent(new RefusjonFristForlenget(this));
     }
 
@@ -267,6 +267,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     void godkjennForVeilederOgDeltaker(NavIdent utfortAv, GodkjentPaVegneGrunn paVegneAvGrunn) {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErUtfylt();
         if (erGodkjentAvDeltaker()) {
             throw new DeltakerHarGodkjentException();
@@ -290,6 +291,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     void godkjennForVeilederOgArbeidsgiver(NavIdent utfortAv, GodkjentPaVegneAvArbeidsgiverGrunn godkjentPaVegneAvArbeidsgiverGrunn) {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErUtfylt();
         if (tiltakstype != Tiltakstype.SOMMERJOBB) {
             throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_TILTAKSTYPE);
@@ -316,6 +318,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void godkjennForVeilederOgDeltakerOgArbeidsgiver(NavIdent utfortAv, GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn paVegneAvDeltakerOgArbeidsgiverGrunn) {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErUtfylt();
         if (tiltakstype != Tiltakstype.SOMMERJOBB) {
             throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_TILTAKSTYPE);
@@ -345,6 +348,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     void godkjennForDeltaker(Identifikator utfortAv) {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErUtfylt();
         this.setGodkjentAvDeltaker(LocalDateTime.now());
         sistEndretNå();
@@ -392,9 +396,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void annuller(Veileder veileder, String annullerGrunn) {
-        if (isAvbrutt() || annullertTidspunkt != null) {
-            throw new FeilkodeException(Feilkode.KAN_IKKE_ANNULLERES_ALLEREDE_ANNULLERT);
-        }
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
 
         annullerTilskuddsperioder();
         setAnnullertTidspunkt(Instant.now());
@@ -409,6 +411,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new AnnullertAvVeileder(this, veileder.getIdentifikator()));
     }
 
+    // TODO: Skal slettes, ikke i bruk
     public void avbryt(Veileder veileder, AvbruttInfo avbruttInfo) {
         if (this.kanAvbrytes()) {
             this.setAvbrutt(true);
@@ -423,6 +426,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void overtaAvtale(NavIdent nyNavIdent) {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         NavIdent gammelNavIdent = this.getVeilederNavIdent();
         this.setVeilederNavIdent(nyNavIdent);
         sistEndretNå();
@@ -433,6 +437,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
     }
 
+    // TODO: Skal slettes, ikke i bruk
     public void gjenopprett(Veileder veileder) {
         if (this.kanGjenopprettes()) {
             this.setAvbrutt(false);
@@ -492,6 +497,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void godkjennTilskuddsperiode(NavIdent beslutter, String enhet) {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_KAN_KUN_BEHANDLES_VED_INNGAATT_AVTALE);
         }
@@ -518,6 +525,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void avslåTilskuddsperiode(NavIdent beslutter, EnumSet<Avslagsårsak> avslagsårsaker, String avslagsforklaring) {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_KAN_KUN_BEHANDLES_VED_INNGAATT_AVTALE);
         }
@@ -628,7 +637,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
     }
 
-    public void forkortTilskuddsperioder(LocalDate nySluttDato) {
+    private void forkortTilskuddsperioder(LocalDate nySluttDato) {
         for (TilskuddPeriode tilskuddsperiode : Set.copyOf(tilskuddPeriode)) {
             TilskuddPeriodeStatus status = tilskuddsperiode.getStatus();
             if (tilskuddsperiode.getStartDato().isAfter(nySluttDato)) {
@@ -655,12 +664,24 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void sendTilbakeTilBeslutter() {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         var rettede = tilskuddPeriode.stream()
                 .filter(t -> t.isAktiv())
                 .filter(t -> t.getStatus() == TilskuddPeriodeStatus.AVSLÅTT)
                 .map(TilskuddPeriode::deaktiverOgLagNyUbehandlet)
                 .collect(Collectors.toList());
         tilskuddPeriode.addAll(rettede);
+    }
+
+    private void sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt() {
+        if (erAnnullertEllerAvbrutt()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_ANNULLERT_AVTALE);
+        }
+    }
+
+    @JsonProperty
+    public boolean erAnnullertEllerAvbrutt() {
+        return isAvbrutt() || annullertTidspunkt != null;
     }
 
     private Integer beregnTilskuddsbeløp(LocalDate startDato, LocalDate sluttDato) {
@@ -686,6 +707,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void forkortAvtale(LocalDate nySluttDato, String grunn, String annetGrunn, NavIdent utførtAv) {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_IKKE_GODKJENT_AVTALE);
         }
@@ -705,6 +728,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void forlengAvtale(LocalDate nySluttDato, NavIdent utførtAv) {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORLENGE_IKKE_GODKJENT_AVTALE);
         }
@@ -727,6 +752,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning, NavIdent utførtAv) {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+
         krevEnAvTiltakstyper(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_IKKE_GODKJENT_AVTALE);
@@ -753,6 +780,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void endreKontaktInformasjon(EndreKontaktInformasjon endreKontaktInformasjon, NavIdent utførtAv) {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_KONTAKTINFO_GRUNN_IKKE_GODKJENT_AVTALE);
         }
@@ -776,13 +805,15 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void endreStillingsbeskrivelse(EndreStillingsbeskrivelse endreStillingsbeskrivelse, NavIdent utførtAv) {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_STILLINGSBESKRIVELSE_GRUNN_IKKE_GODKJENT_AVTALE);
         }
         if (Utils.erNoenTomme(endreStillingsbeskrivelse.getStillingstittel(),
                 endreStillingsbeskrivelse.getArbeidsoppgaver(),
-//                endreStillingsbeskrivelse.getStillingStyrk08(),
-//                endreStillingsbeskrivelse.getStillingKonseptId(),
+                endreStillingsbeskrivelse.getStillingStyrk08(),
+                endreStillingsbeskrivelse.getStillingKonseptId(),
                 endreStillingsbeskrivelse.getStillingprosent(),
                 endreStillingsbeskrivelse.getAntallDagerPerUke())
         ) {
@@ -797,6 +828,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void endreOppfølgingOgTilrettelegging(EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging, NavIdent utførtAv) {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OPPFØLGING_OG_TILRETTELEGGING_GRUNN_IKKE_GODKJENT_AVTALE);
         }
@@ -814,6 +847,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void endreMål(EndreMål endreMål, NavIdent utførtAv) {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+
         krevEnAvTiltakstyper(Tiltakstype.ARBEIDSTRENING);
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_MAAL_IKKE_INNGAATT_AVTALE);
