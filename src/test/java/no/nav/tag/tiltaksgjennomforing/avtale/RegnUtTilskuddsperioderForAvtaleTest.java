@@ -96,7 +96,27 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
     }
 
+    @Test
+    public void sjekkAtEnhetsnrOgEnhetsnavnBlirSattPaEndreAvtale() {
+        final String ENHETS_NR = "1001";
+        final String ENHETS_NAVN = "NAV Ullensaker";
 
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        endreAvtale.setStartDato(avtale.getStartDato());
+        endreAvtale.setSluttDato(avtale.getSluttDato());
+        TreeSet<TilskuddPeriode> tilskuddPerioder = avtale.getTilskuddPeriode().stream().peek(p -> {
+            p.setEnhet(ENHETS_NR);
+            p.setEnhetsnavn(ENHETS_NAVN);
+        }).distinct().collect(Collectors.toCollection(TreeSet::new));
+        endreAvtale.setTilskuddPeriode(tilskuddPerioder);
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+
+        assertThat(avtale.tilskuddsperiode(0).getEnhet()).isEqualTo(ENHETS_NR);
+        assertThat(avtale.tilskuddsperiode(0).getEnhetsnavn()).isEqualTo(ENHETS_NAVN);
+        assertThat(avtale.tilskuddsperiode(1).getEnhet()).isEqualTo(ENHETS_NR);
+        assertThat(avtale.tilskuddsperiode(2).getEnhetsnavn()).isEqualTo(ENHETS_NAVN);
+    }
 
     @Test
     public void reduksjon_etter_12_mnd_60_prosent_lonnstilskudd() {
