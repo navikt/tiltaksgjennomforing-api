@@ -70,6 +70,7 @@ tiltaksgjennomforing:
     uri: http://localhost:8090/axsys
   abac:
     veilarbabac-uri: http://localhost:8090/veilarbabac
+    veilarb-uri: http://localhost:8090/veilarbabac
   consumer:
     system:
       id: testsystem
