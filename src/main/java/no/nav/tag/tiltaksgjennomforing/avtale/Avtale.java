@@ -591,6 +591,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     public void oppdatereKostnadsstedForTilskuddsperioder(NyttKostnadssted nyttKostnadssted) {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        if (erAvtaleInngått()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_OPPDATERE_KOSTNADSSTED_INGAATT_AVTALE);
+        }
         setEnhetKostnadssted(nyttKostnadssted.getEnhet());
         setEnhetsnavnKostnadssted(nyttKostnadssted.getEnhetsnavn());
         nyeTilskuddsperioder();

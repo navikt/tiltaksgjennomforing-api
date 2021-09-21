@@ -8,8 +8,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 @Data
 @NoArgsConstructor
@@ -52,7 +50,6 @@ public class EndreAvtale {
     private Boolean harFamilietilknytning;
     private String familietilknytningForklaring;
     private Stillingstype stillingstype;
-    private TreeSet<TilskuddPeriode> tilskuddPeriode = new TreeSet<>();
 
     // Mentorfelter
     private String mentorFornavn;
