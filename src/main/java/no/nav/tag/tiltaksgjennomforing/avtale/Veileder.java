@@ -289,7 +289,7 @@ public class Veileder extends Avtalepart<NavIdent> {
             if(tilskuddPerioder == null) {
                 throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_IKKE_SATT);
             }
-            avtale.oppdatereKostnadsstedForTilskuddsperioder(tilskuddPerioder, nyttKostnadssted);
+            avtale.oppdatereKostnadsstedForTilskuddsperioder(nyttKostnadssted);
         }else {
             throw new FeilkodeException(Feilkode.ENHET_FINNES_IKKE);
         }

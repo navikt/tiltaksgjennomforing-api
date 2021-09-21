@@ -120,7 +120,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         sjekkStartOgSluttDato(nyAvtale.getStartDato(), nyAvtale.getSluttDato());
         gjeldendeInnhold().endreAvtale(nyAvtale);
         if (tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
-            nyeTilskuddsperioder(nyAvtale);
+            nyeTilskuddsperioder();
         }
         sistEndretNå();
         registerEvent(new AvtaleEndret(this, utfortAv));
@@ -581,18 +581,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         return tilskuddsperioder;
     }
 
-    public void oppdatereKostnadsstedForTilskuddsperioder(TreeSet<TilskuddPeriode> tilskuddPerioder, NyttKostnadssted nyttKostnadssted) {
-        tilskuddPeriode.stream().map(t -> {
-            Optional<TilskuddPeriode> periode = tilskuddPerioder.stream().filter(p -> p.getId() == t.getId()).findFirst();
-            if (periode.isPresent()) {
-                TilskuddPeriode tilskuddPeriode = periode.get();
-                tilskuddPeriode.setEnhet(nyttKostnadssted.getEnhet());
-                tilskuddPeriode.setEnhetsnavn(nyttKostnadssted.getEnhetsnavn());
-                return tilskuddPeriode;
-            }
-            return t;
-        }).collect(Collectors.toSet());
-
+    public void oppdatereKostnadsstedForTilskuddsperioder(NyttKostnadssted nyttKostnadssted) {
+        setEnhetKostnadssted(nyttKostnadssted.getEnhet());
+        setEnhetsnavnKostnadssted(nyttKostnadssted.getEnhetsnavn());
+        nyeTilskuddsperioder();
     }
 
     public void slettemerk(NavIdent utførtAv) {
@@ -678,28 +670,18 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private List<TilskuddPeriode> beregnTilskuddsperioder(LocalDate startDato, LocalDate sluttDato) {
         List<TilskuddPeriode> tilskuddsperioder = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForAvtale(getSumLonnstilskudd(), startDato, sluttDato, getLonnstilskuddProsent(), getDatoForRedusertProsent(), getSumLønnstilskuddRedusert());
         tilskuddsperioder.forEach(t -> t.setAvtale(this));
+        tilskuddsperioder.forEach(t -> t.setEnhet(getEnhetKostnadssted()));
+        tilskuddsperioder.forEach(t -> t.setEnhetsnavn(getEnhetsnavnKostnadssted()));
         return tilskuddsperioder;
     }
 
-    private void nyeTilskuddsperioder(EndreAvtale nyAvtale) {
+    private void nyeTilskuddsperioder() {
         tilskuddPeriode.removeIf(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET);
         if (Utils.erIkkeTomme(getStartDato(), getSluttDato(), getSumLonnstilskudd())) {
             List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioder(getStartDato(), getSluttDato());
 
-            List<TilskuddPeriode> tilskuddPeriodeMedKostnadssted = tilskuddsperioder.stream().peek(p -> {
-                Optional<TilskuddPeriode> periode = nyAvtale.getTilskuddPeriode().stream().filter(t ->
-                        t.getStartDato().equals(p.getStartDato()) &&
-                                t.getSluttDato().equals(p.getSluttDato())).findFirst();
-                if (periode.isPresent() && periode.get().getEnhet() != null) {
-                    TilskuddPeriode tilskuddPeriode = periode.get();
-                    p.setEnhet(tilskuddPeriode.getEnhet());
-                    if (tilskuddPeriode.getEnhetsnavn() != null) {
-                        p.setEnhetsnavn(tilskuddPeriode.getEnhetsnavn());
-                    }
-                }
-            }).collect(Collectors.toList());
-            fikseLøpenumre(tilskuddPeriodeMedKostnadssted, 1);
-            tilskuddPeriode.addAll(tilskuddPeriodeMedKostnadssted);
+            fikseLøpenumre(tilskuddsperioder, 1);
+            tilskuddPeriode.addAll(tilskuddsperioder);
         }
     }
 

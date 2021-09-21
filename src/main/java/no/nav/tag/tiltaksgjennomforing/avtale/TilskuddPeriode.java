@@ -2,33 +2,18 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.jetbrains.annotations.NotNull;
+
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.UUID;
-import javax.persistence.Convert;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import org.apache.commons.lang3.builder.CompareToBuilder;
-import org.jetbrains.annotations.NotNull;
 
 @Entity
 @Data
@@ -81,11 +66,6 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     private TilskuddPeriodeStatus status = TilskuddPeriodeStatus.UBEHANDLET;
 
     private boolean aktiv = true;
-
-    public TilskuddPeriode(UUID id){
-        super();
-        this.id = id;
-    }
 
     public TilskuddPeriode deaktiverOgLagNyUbehandlet() {
         this.aktiv = false;
