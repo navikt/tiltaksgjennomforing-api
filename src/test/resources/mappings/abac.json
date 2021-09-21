@@ -1,0 +1,47 @@
+{
+  "mappings": [
+    {
+      "priority": 1,
+      "request": {
+        "method": "POST",
+        "urlPattern": "/abac-tilgangstyring",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$[?(@.Request.Resource[0].Attribute[2].Value == \"07098142678\")]",
+            "ignoreArrayOrder": true,
+            "ignoreExtraElements": true
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "Response": {
+            "Decision": "Deny"
+          }
+        }
+      }
+    },
+    {
+      "priority": 2,
+      "request": {
+        "method": "POST",
+        "urlPattern": "/abac-tilgangstyring"
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "Response": {
+            "Decision": "Permit"
+          }
+        }
+      }
+    }
+  ]
+}
