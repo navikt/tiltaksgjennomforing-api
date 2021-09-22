@@ -8,6 +8,8 @@ import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.restservicecache.CacheConfiguration;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -18,7 +20,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @RequiredArgsConstructor
 public class AbacAdapter {
-
+  final Logger log = LoggerFactory.getLogger(this.getClass());
   private final RestTemplate restTemplate;
 
   private final STSClient stsClient;
@@ -41,7 +43,9 @@ public class AbacAdapter {
     headers.set("Nav-Consumer-Id","tiltak-refusjon-api");
     headers.set("Nav-Call-Id", UUID.randomUUID().toString());
     headers.set("Content-Type","application/json");
+    log.info("############ bruker STS Client...");
     headers.setBearerAuth(stsClient.hentSTSToken().getAccessToken());
+    log.info("############ FERDIG med å bruke STS...");
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
     return new HttpEntity<>(body,headers);
   }
