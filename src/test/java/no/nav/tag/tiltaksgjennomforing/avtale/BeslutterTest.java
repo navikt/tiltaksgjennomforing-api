@@ -1,21 +1,19 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.exceptions.NavEnhetIkkeFunnetException;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.exceptions.NavEnhetIkkeFunnetException;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
+import org.junit.jupiter.api.Test;
 
 
 class BeslutterTest {

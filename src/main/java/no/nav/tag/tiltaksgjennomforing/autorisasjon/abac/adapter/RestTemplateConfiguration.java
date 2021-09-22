@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac;
+package no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

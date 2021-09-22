@@ -1,11 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
+import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 @DirtiesContext
 public class AbacAdapterTest {
 
-
   @Autowired
   private AbacAdapter abacAdapter;
 
@@ -29,9 +30,19 @@ public class AbacAdapterTest {
     NavIdent veilederIdent = new NavIdent("F142226");
     Fnr deltakerFnr = new Fnr("07098142678");
 
-    boolean verdic = abacAdapter.harLeseTilgang(veilederIdent,deltakerFnr);
+    boolean verdic = abacAdapter.harLeseTilgang(veilederIdent,deltakerFnr, AbacAction.read);
 
     assertFalse(verdic);
+  }
+
+  @Test
+  public void skal_teste_abac_feiler_med_en_exception(){
+    assertThrows(TilgangskontrollException.class,() -> {
+      NavIdent veilederIdent = new NavIdent("F142226");
+      Fnr deltakerFnr = new Fnr("00000000000");
+
+      boolean verdic = abacAdapter.harLeseTilgang(veilederIdent,deltakerFnr, AbacAction.read);
+    });
   }
 
   @Test
@@ -39,7 +50,7 @@ public class AbacAdapterTest {
     NavIdent veilederIdent = new NavIdent("F142226");
     Fnr deltakerFnr = new Fnr("01118023456");
 
-    boolean verdic = abacAdapter.harLeseTilgang(veilederIdent,deltakerFnr);
+    boolean verdic = abacAdapter.harLeseTilgang(veilederIdent,deltakerFnr,AbacAction.update);
 
     assertTrue(verdic);
   }

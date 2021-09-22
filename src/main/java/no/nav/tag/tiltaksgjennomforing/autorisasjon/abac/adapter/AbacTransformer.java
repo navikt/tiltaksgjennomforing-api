@@ -2,7 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter;
 
 public class AbacTransformer {
 
-  public static String tilAbacRequestGittNavIdentOgDeltakerFnr(String navIdent, String deltakerFnr){
+  public static String tilAbacRequestGittNavIdentOgDeltakerFnr(String navIdent, String deltakerFnr, String action){
     return "{\n"
         + "              \"Request\": {\n"
         + "                \"AccessSubject\": {\n"
@@ -29,7 +29,7 @@ public class AbacTransformer {
         + "                  \"Attribute\": [\n"
         + "                    {\n"
         + "                      \"AttributeId\": \"urn:oasis:names:tc:xacml:1.0:action:action-id\",\n"
-        + "                      \"Value\": \"read\"\n"
+        + "                      \"Value\":\"" + action+ "\"\n"
         + "                    }\n"
         + "                  ]\n"
         + "                },\n"

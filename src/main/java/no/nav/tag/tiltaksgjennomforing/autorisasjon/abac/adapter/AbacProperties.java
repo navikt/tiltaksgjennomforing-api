@@ -8,6 +8,6 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 @ConfigurationProperties(prefix = "tiltaksgjennomforing.abac")
-public class AbacConfig {
+public class AbacProperties {
   private String uri;
 }

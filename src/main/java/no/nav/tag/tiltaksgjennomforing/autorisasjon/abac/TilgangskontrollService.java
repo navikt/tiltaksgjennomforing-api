@@ -1,8 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.abac;
 
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter.AbacAction;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 
-public interface AbacService {
+public interface TilgangskontrollService {
   boolean harSkrivetilgangTilKandidat(NavIdent navIdent, Fnr fnr);
+  boolean sjekkTilgang(NavIdent navIdent, Fnr fnr, AbacAction action);
 }

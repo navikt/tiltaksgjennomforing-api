@@ -75,7 +75,6 @@ tiltaksgjennomforing:
     uri: https://axsys.nais.preprod.local/api/v1/tilgang
     nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}
   abac:
-    veilarbabac-uri: https://veilarbabac-q1.nais.preprod.local
     uri: https://abac-veilarb-q1.dev.intern.nav.no
   oppgave:
     oppgave-uri: https://oppgave.nais.preprod.local/api/v1/oppgaver
