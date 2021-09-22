@@ -75,7 +75,7 @@ tiltaksgjennomforing:
     uri: https://axsys.nais.adeo.no/api/v1/tilgang
     nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}
   abac:
-    uri: https://abac-veilarb.intern.nav.no
+    uri: https://abac-veilarb.intern.nav.no/application/asm-pdp/authorize
   oppgave:
     oppgave-uri: https://oppgave.nais.adeo.no/api/v1/oppgaver
   unleash:
