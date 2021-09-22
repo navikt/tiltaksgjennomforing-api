@@ -579,6 +579,27 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         return aktiveTilskuddsperioder.first();
     }
 
+    public TreeSet<TilskuddPeriode> finnTilskuddsperioderIkkeLukketForEndring() {
+        TreeSet<TilskuddPeriode> tilskuddsperioder = tilskuddPeriode.stream()
+                .filter(t -> t.isAktiv() && (t.getStatus().equals(TilskuddPeriodeStatus.UBEHANDLET) ||
+                        t.getStatus().equals(TilskuddPeriodeStatus.AVSLÅTT))).distinct()
+                .collect(Collectors.toCollection(TreeSet::new));
+        if (tilskuddsperioder.isEmpty()) {
+            return null;
+        }
+        return tilskuddsperioder;
+    }
+
+    public void oppdatereKostnadsstedForTilskuddsperioder(NyttKostnadssted nyttKostnadssted) {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        if (erAvtaleInngått()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_OPPDATERE_KOSTNADSSTED_INGAATT_AVTALE);
+        }
+        setEnhetKostnadssted(nyttKostnadssted.getEnhet());
+        setEnhetsnavnKostnadssted(nyttKostnadssted.getEnhetsnavn());
+        nyeTilskuddsperioder();
+    }
+
     public void slettemerk(NavIdent utførtAv) {
         this.setSlettemerket(true);
         registerEvent(new AvtaleSlettemerket(this, utførtAv));
@@ -674,6 +695,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private List<TilskuddPeriode> beregnTilskuddsperioder(LocalDate startDato, LocalDate sluttDato) {
         List<TilskuddPeriode> tilskuddsperioder = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForAvtale(getSumLonnstilskudd(), startDato, sluttDato, getLonnstilskuddProsent(), getDatoForRedusertProsent(), getSumLønnstilskuddRedusert());
         tilskuddsperioder.forEach(t -> t.setAvtale(this));
+        tilskuddsperioder.forEach(t -> t.setEnhet(getEnhetKostnadssted()));
+        tilskuddsperioder.forEach(t -> t.setEnhetsnavn(getEnhetsnavnKostnadssted()));
         return tilskuddsperioder;
     }
 
@@ -681,6 +704,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         tilskuddPeriode.removeIf(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET);
         if (Utils.erIkkeTomme(getStartDato(), getSluttDato(), getSumLonnstilskudd())) {
             List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioder(getStartDato(), getSluttDato());
+
             fikseLøpenumre(tilskuddsperioder, 1);
             tilskuddPeriode.addAll(tilskuddsperioder);
         }

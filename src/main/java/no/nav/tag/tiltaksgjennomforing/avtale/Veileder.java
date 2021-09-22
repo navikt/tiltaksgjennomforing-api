@@ -1,17 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static java.util.Collections.emptyList;
-import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
-
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeAdminTilgangException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
@@ -20,6 +15,15 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6E
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import static java.util.Collections.emptyList;
+import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
 
 public class Veileder extends Avtalepart<NavIdent> {
@@ -280,5 +284,19 @@ public class Veileder extends Avtalepart<NavIdent> {
     public void sendTilbakeTilBeslutter(Avtale avtale) {
         sjekkTilgang(avtale);
         avtale.sendTilbakeTilBeslutter();
+    }
+
+    protected void oppdatereKostnadssted(Avtale avtale, Norg2Client norg2Client, String enhet) {
+        final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetsnavn(enhet);
+        if(response != null) {
+            NyttKostnadssted nyttKostnadssted = new NyttKostnadssted(enhet, response.getNavn());
+            TreeSet<TilskuddPeriode> tilskuddPerioder = avtale.finnTilskuddsperioderIkkeLukketForEndring();
+            if(tilskuddPerioder == null) {
+                throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_IKKE_SATT);
+            }
+            avtale.oppdatereKostnadsstedForTilskuddsperioder(nyttKostnadssted);
+        }else {
+            throw new FeilkodeException(Feilkode.ENHET_FINNES_IKKE);
+        }
     }
 }
