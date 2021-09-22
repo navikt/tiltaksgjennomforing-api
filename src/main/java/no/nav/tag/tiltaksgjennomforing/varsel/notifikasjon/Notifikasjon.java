@@ -2,8 +2,10 @@ package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.Miljø;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @Component
+@Profile({Miljø.PROD_FSS, Miljø.DEV_FSS})
 public class Notifikasjon {
     private final RestTemplate restTemplate;
     private final NotifikasjonerProperties notifikasjonerProperties;
@@ -24,7 +27,7 @@ public class Notifikasjon {
     public Notifikasjon(
             @Qualifier("påVegneAvSaksbehandlerGraphRestTemplate") RestTemplate restTemplate,
             NotifikasjonerProperties properties,
-            @Value("classpath:graphql/whoAmI.graphql") Resource notifikajonerQueryResource) {
+            @Value("classpath:varsler/whoAmI.graphql") Resource notifikajonerQueryResource) {
         this.restTemplate = restTemplate;
         this.notifikasjonerProperties = properties;
         this.notifikajonerQueryResource = notifikajonerQueryResource;
