@@ -31,6 +31,7 @@ public class AbacAdapter {
     try{
       AbacResponse response = restTemplate.postForObject(abacProperties.getUri(), getHttpEntity(
           AbacTransformer.tilAbacRequestGittNavIdentOgDeltakerFnr(navIdent.asString(),deltakerFnr.asString(),action.toString())),AbacResponse.class);
+      log.info("############ harLeseTilgang... {}", response.response.decision);
       return Objects.equals(response.response.decision, "Permit");
     }catch (RuntimeException ex){
       throw new TilgangskontrollException("Feil fra abac: " + ex);
@@ -43,9 +44,7 @@ public class AbacAdapter {
     headers.set("Nav-Consumer-Id","tiltak-refusjon-api");
     headers.set("Nav-Call-Id", UUID.randomUUID().toString());
     headers.set("Content-Type","application/json");
-    log.info("############ bruker STS Client...");
     headers.setBearerAuth(stsClient.hentSTSToken().getAccessToken());
-    log.info("############ FERDIG med å bruke STS...");
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
     return new HttpEntity<>(body,headers);
   }

@@ -29,7 +29,6 @@ public class TilgangskontrollServiceImpl implements TilgangskontrollService {
   }
 
   public boolean sjekkTilgang(NavIdent navIdent, Fnr fnr, AbacAction action) {
-    log.info("############# ADAPTER {}",abacAdapter);
     return abacAdapter.harLeseTilgang(navIdent, fnr, action);
   }
 
