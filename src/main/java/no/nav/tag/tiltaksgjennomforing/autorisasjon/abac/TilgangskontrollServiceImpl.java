@@ -5,15 +5,11 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter.AbacAdapter;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class TilgangskontrollServiceImpl implements TilgangskontrollService {
-
-  final Logger log = LoggerFactory.getLogger(this.getClass());
 
   private final AbacAdapter abacAdapter;
 

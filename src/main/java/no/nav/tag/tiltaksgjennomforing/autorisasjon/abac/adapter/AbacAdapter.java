@@ -21,7 +21,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @RequiredArgsConstructor
 public class AbacAdapter {
-  final Logger log = LoggerFactory.getLogger(this.getClass());
+  final Logger log = LoggerFactory.getLogger(getClass());
   private final RestTemplate restTemplate;
 
   private final STSClient stsClient;
