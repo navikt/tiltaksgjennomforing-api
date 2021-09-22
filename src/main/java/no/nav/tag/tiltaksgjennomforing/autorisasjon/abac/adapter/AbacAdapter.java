@@ -26,15 +26,12 @@ public class AbacAdapter {
 
   private final AbacProperties abacProperties;
 
-  public boolean harLeseTilgang(NavIdent navIdent, Fnr deltakerFnr, AbacAction action){
+  public boolean harLeseTilgang(NavIdent navIdent, Fnr deltakerFnr){
     try{
-
       AbacResponse response = restTemplate.postForObject(abacProperties.getUri(), getHttpEntity(
-          AbacTransformer.tilAbacRequestGittNavIdentOgDeltakerFnr(navIdent.asString(),deltakerFnr.asString(),action.toString())),AbacResponse.class);
-      log.info("############ harLeseTilgang svar: {}", response.response.decision);
+          AbacTransformer.tilAbacRequestGittNavIdentOgDeltakerFnr(navIdent.asString(),deltakerFnr.asString())),AbacResponse.class);
       return Objects.equals(response.response.decision, "Permit");
     }catch (RuntimeException ex){
-      log.error("############ harLeseTilgang exception: {}", ex);
       throw new TilgangskontrollException("Feil fra abac: " + ex);
     }
   }

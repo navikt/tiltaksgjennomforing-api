@@ -28,9 +28,9 @@ public class AbacAdapterTest {
   @Test
   public void skal_teste_at_Abac_ikke_gi_lese_tilgang_på_På_Gitt_Bruker_Og_Veileder() {
     NavIdent veilederIdent = new NavIdent("F142226");
-    Fnr deltakerFnr = new Fnr("07098142678");
+    Fnr deltakerFnr = new Fnr("01118023456");
 
-    boolean verdic = abacAdapter.harLeseTilgang(veilederIdent,deltakerFnr, AbacAction.read);
+    boolean verdic = abacAdapter.harLeseTilgang(veilederIdent,deltakerFnr);
 
     assertFalse(verdic);
   }
@@ -41,16 +41,16 @@ public class AbacAdapterTest {
       NavIdent veilederIdent = new NavIdent("F142226");
       Fnr deltakerFnr = new Fnr("00000000000");
 
-      boolean verdic = abacAdapter.harLeseTilgang(veilederIdent,deltakerFnr, AbacAction.read);
+      boolean verdic = abacAdapter.harLeseTilgang(veilederIdent,deltakerFnr);
     });
   }
 
   @Test
   public void skal_teste_at_Abac_gi_lese_tilgang_på_Gitt_Bruker_Og_Veileder() {
     NavIdent veilederIdent = new NavIdent("F142226");
-    Fnr deltakerFnr = new Fnr("01118023456");
+    Fnr deltakerFnr = new Fnr("07098142678");
 
-    boolean verdic = abacAdapter.harLeseTilgang(veilederIdent,deltakerFnr,AbacAction.update);
+    boolean verdic = abacAdapter.harLeseTilgang(veilederIdent,deltakerFnr);
 
     assertTrue(verdic);
   }

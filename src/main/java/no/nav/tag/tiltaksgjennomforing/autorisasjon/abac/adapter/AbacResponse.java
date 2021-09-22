@@ -5,7 +5,5 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 @JsonNaming(UpperCamelCaseStrategy.class)
 public class AbacResponse {
-
   public AbacResponseResponse response;
-
 }

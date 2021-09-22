@@ -7,7 +7,7 @@
         "urlPattern": "/abac",
         "bodyPatterns": [
           {
-            "matchesJsonPath": "$[?(@.Request.Resource[0].Attribute[2].Value == \"07098142678\")]",
+            "matchesJsonPath": "$[?(@.Request.Resource[0].Attribute[2].Value == \"01118023456\")]",
             "ignoreArrayOrder": true,
             "ignoreExtraElements": true
           }
