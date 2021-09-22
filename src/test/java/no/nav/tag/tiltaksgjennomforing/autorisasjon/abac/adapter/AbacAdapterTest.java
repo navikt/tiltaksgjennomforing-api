@@ -39,7 +39,7 @@ public class AbacAdapterTest {
   public void skal_teste_abac_feiler_med_en_exception(){
     assertThrows(TilgangskontrollException.class,() -> {
       NavIdent veilederIdent = new NavIdent("F142226");
-      Fnr deltakerFnr = new Fnr("00000000000");
+      Fnr deltakerFnr = new Fnr("11111111111");
 
       boolean verdic = abacAdapter.harLeseTilgang(veilederIdent,deltakerFnr);
     });

@@ -31,7 +31,7 @@
         "urlPattern": "/abac",
         "bodyPatterns": [
           {
-            "matchesJsonPath": "$[?(@.Request.Resource[0].Attribute[2].Value == \"00000000000\")]",
+            "matchesJsonPath": "$[?(@.Request.Resource[0].Attribute[2].Value == \"11111111111\")]",
             "ignoreArrayOrder": true,
             "ignoreExtraElements": true
           }
