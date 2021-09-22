@@ -1,5 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter;
 
+import static no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter.AbacTransformer.tilAbacRequestBody;
+
 import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +30,7 @@ public class AbacAdapter {
 
   public boolean harLeseTilgang(NavIdent navIdent, Fnr deltakerFnr){
     try{
-      AbacResponse response = restTemplate.postForObject(abacProperties.getUri(), getHttpEntity(
-          AbacTransformer.tilAbacRequestGittNavIdentOgDeltakerFnr(navIdent.asString(),deltakerFnr.asString())),AbacResponse.class);
+      AbacResponse response = restTemplate.postForObject(abacProperties.getUri(), getHttpEntity(tilAbacRequestBody(navIdent.asString(),deltakerFnr.asString())),AbacResponse.class);
       return Objects.equals(response.response.decision, "Permit");
     }catch (RuntimeException ex){
       throw new TilgangskontrollException("Feil fra abac: " + ex);

@@ -2,7 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter;
 
 public class AbacTransformer {
 
-  public static String tilAbacRequestGittNavIdentOgDeltakerFnr(String navIdent, String deltakerFnr){
+  public static String tilAbacRequestBody(String navIdent, String deltakerFnr){
     return "{\n"
         + "              \"Request\": {\n"
         + "                \"AccessSubject\": {\n"
