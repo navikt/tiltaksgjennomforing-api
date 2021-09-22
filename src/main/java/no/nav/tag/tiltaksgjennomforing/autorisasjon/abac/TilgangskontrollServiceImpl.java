@@ -6,13 +6,17 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter.AbacAdapter;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class TilgangskontrollServiceImpl implements TilgangskontrollService {
 
-  private AbacAdapter abacAdapter;
+  final Logger log = LoggerFactory.getLogger(this.getClass());
+
+  private final AbacAdapter abacAdapter;
 
   public boolean harSkrivetilgangTilKandidat(NavIdent navIdent, Fnr fnr) {
     return sjekkTilgang(navIdent, fnr, AbacAction.update);
@@ -25,6 +29,7 @@ public class TilgangskontrollServiceImpl implements TilgangskontrollService {
   }
 
   public boolean sjekkTilgang(NavIdent navIdent, Fnr fnr, AbacAction action) {
+    log.info("############# ADAPTER {}",abacAdapter);
     return abacAdapter.harLeseTilgang(navIdent, fnr, action);
   }
 
