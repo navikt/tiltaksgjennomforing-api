@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
@@ -42,7 +43,7 @@ public class ArbeidsgiverTest {
         PersondataService persondataService = mock(PersondataService.class);
         Norg2Client norg2Client = mock(Norg2Client.class);
         final PdlRespons pdlRespons = TestData.enPdlrespons(false);
-        final String navEnhet = "0411";
+        final Norg2GeoResponse navEnhet = new Norg2GeoResponse("Nav Grorud", "0411");
 
         when(persondataService.hentPersondata(TestData.etFodselsnummer())).thenReturn(pdlRespons);
         when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel())).thenReturn(navEnhet);
@@ -58,7 +59,7 @@ public class ArbeidsgiverTest {
         assertThat(avtale.isOpprettetAvArbeidsgiver()).isTrue();
         assertThat(avtale.getDeltakerFornavn()).isNull();
         assertThat(avtale.getDeltakerEtternavn()).isNull();
-        assertThat(avtale.getEnhetGeografisk()).isEqualTo(navEnhet);
+        assertThat(avtale.getEnhetGeografisk()).isEqualTo(navEnhet.getEnhetNr());
     }
 
     @Test(expected = VarighetDatoErTilbakeITidException.class)

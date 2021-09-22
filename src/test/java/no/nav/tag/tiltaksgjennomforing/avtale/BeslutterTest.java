@@ -41,9 +41,9 @@ class BeslutterTest {
         avtalePredicate.setTilskuddPeriodeStatus(TilskuddPeriodeStatus.UBEHANDLET);
 
         // NÅR
-        when(axsysService.hentEnheterNavAnsattHarTilgangTil(beslutter.getIdentifikator())).thenReturn(List.of(new NavEnhet(TestData.ENHET_OPPFØLGING)));
+        when(axsysService.hentEnheterNavAnsattHarTilgangTil(beslutter.getIdentifikator())).thenReturn(List.of(TestData.ENHET_OPPFØLGING));
         when(avtaleRepository
-                .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(TilskuddPeriodeStatus.GODKJENT.name(), Set.of(TestData.ENHET_OPPFØLGING)))
+                .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(TilskuddPeriodeStatus.GODKJENT.name(), Set.of(TestData.ENHET_OPPFØLGING.getVerdi())))
                 .thenReturn(List.of(avtale));
         List<Avtale> avtaler = beslutter.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
 
@@ -67,9 +67,9 @@ class BeslutterTest {
         avtalePredicate.setTilskuddPeriodeStatus(TilskuddPeriodeStatus.GODKJENT);
 
         // NÅR
-        when(axsysService.hentEnheterNavAnsattHarTilgangTil(beslutter.getIdentifikator())).thenReturn(List.of(new NavEnhet(TestData.ENHET_OPPFØLGING)));
+        when(axsysService.hentEnheterNavAnsattHarTilgangTil(beslutter.getIdentifikator())).thenReturn(List.of(TestData.ENHET_OPPFØLGING));
         when(avtaleRepository
-                .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(TilskuddPeriodeStatus.GODKJENT.name(), Set.of(TestData.ENHET_OPPFØLGING)))
+                .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(TilskuddPeriodeStatus.GODKJENT.name(), Set.of(TestData.ENHET_OPPFØLGING.getVerdi())))
                 .thenReturn(List.of(avtale));
         List<Avtale> avtaler = beslutter.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
 
@@ -99,9 +99,9 @@ class BeslutterTest {
         avtalePredicate.setTilskuddPeriodeStatus(null);
 
         // NÅR
-        when(axsysService.hentEnheterNavAnsattHarTilgangTil(beslutter.getIdentifikator())).thenReturn(List.of(new NavEnhet(TestData.ENHET_OPPFØLGING)));
+        when(axsysService.hentEnheterNavAnsattHarTilgangTil(beslutter.getIdentifikator())).thenReturn(List.of(TestData.ENHET_OPPFØLGING));
         when(avtaleRepository
-                .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(TilskuddPeriodeStatus.UBEHANDLET.name(), Set.of(TestData.ENHET_OPPFØLGING)))
+                .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(TilskuddPeriodeStatus.UBEHANDLET.name(), Set.of(TestData.ENHET_OPPFØLGING.getVerdi())))
                 .thenReturn(List.of(avtale));
         List<Avtale> avtales = beslutter.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
 

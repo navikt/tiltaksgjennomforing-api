@@ -183,7 +183,6 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
             return Collections.emptyList();
         }
         return avtaleRepository.findAllByBedriftNrIn(tilganger.keySet()).stream()
-                .filter(avtale -> !avtale.isFeilregistrert())
                 .map(Arbeidsgiver::fjernAvbruttGrunn)
                 .map(Arbeidsgiver::fjernAnnullertGrunn)
                 .collect(Collectors.toList());

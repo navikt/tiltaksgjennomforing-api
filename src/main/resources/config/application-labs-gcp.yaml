@@ -61,7 +61,10 @@ tiltaksgjennomforing:
   veilarbarena:
     url: http://tiltaksgjennomforing-wiremock/veilarbarena/oppfolgingsstatus
   norg2:
-    url: http://tiltaksgjennomforing-wiremock/norg2/api/v1/enhet/navkontor/
+    geografisk:
+      url: http://tiltaksgjennomforing-wiremock/norg2/api/v1/enhet/navkontor/
+    enhet:
+      url: http://tiltaksgjennomforing-wiremock/norg2/api/v1/enhet/
   consumer:
     system:
       id: testsystem

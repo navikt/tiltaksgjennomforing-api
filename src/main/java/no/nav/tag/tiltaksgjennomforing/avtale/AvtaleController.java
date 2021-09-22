@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.dokgen.DokgenService;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
@@ -38,6 +39,7 @@ public class AvtaleController {
     private final InnloggingService innloggingService;
     private final EregService eregService;
     private final VeilarbArenaClient veilarbArenaClient;
+    private final Norg2Client norg2Client;
     private final KontoregisterService kontoregisterService;
     private final DokgenService dokgenService;
     private final TilskuddsperiodeConfig tilskuddsperiodeConfig;
@@ -86,9 +88,12 @@ public class AvtaleController {
 
     @PutMapping("/{avtaleId}")
     @Transactional
-    public ResponseEntity<?> endreAvtale(@PathVariable("avtaleId") UUID avtaleId,
-                                         @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
-                                         @RequestBody EndreAvtale endreAvtale, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+    public ResponseEntity<?> endreAvtale(
+            @PathVariable("avtaleId") UUID avtaleId,
+            @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
+            @RequestBody EndreAvtale endreAvtale,
+            @CookieValue("innlogget-part") Avtalerolle innloggetPart)
+    {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
@@ -149,6 +154,7 @@ public class AvtaleController {
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
         avtale.setEnhetOppfolging(veilarbArenaClient.hentOppfølgingsEnhet(avtale.getDeltakerFnr().asString()));
+        arbeidsgiver.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
@@ -164,6 +170,7 @@ public class AvtaleController {
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
         avtale.setEnhetOppfolging(veilarbArenaClient.hentOppfølgingsEnhet(avtale.getDeltakerFnr().asString()));
+        veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
@@ -300,7 +307,7 @@ public class AvtaleController {
     @PostMapping("/{avtaleId}/godkjenn-paa-vegne-av-arbeidsgiver")
     @Transactional
     public void godkjennPaVegneAvArbeidsgiver(@PathVariable("avtaleId") UUID avtaleId,
-                                  @RequestBody GodkjentPaVegneAvArbeidsgiverGrunn paVegneAvGrunn) {
+                                              @RequestBody GodkjentPaVegneAvArbeidsgiverGrunn paVegneAvGrunn) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         veileder.godkjennForVeilederOgArbeidsgiver(paVegneAvGrunn, avtale);
@@ -310,7 +317,7 @@ public class AvtaleController {
     @PostMapping("/{avtaleId}/godkjenn-paa-vegne-av-deltaker-og-arbeidsgiver")
     @Transactional
     public void godkjennPaVegneAvDeltakerOgArbeidsgiver(@PathVariable("avtaleId") UUID avtaleId,
-                                  @RequestBody GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn paVegneAvGrunn) {
+                                                        @RequestBody GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn paVegneAvGrunn) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         veileder.godkjennForVeilederOgDeltakerOgArbeidsgiver(paVegneAvGrunn, avtale);
@@ -387,6 +394,16 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         beslutter.godkjennTilskuddsperiode(avtale, godkjennTilskuddsperiodeRequest.getEnhet());
         avtaleRepository.save(avtale);
+    }
+
+    @PostMapping("/{avtaleId}/endre-kostnadssted")
+    @Transactional
+    public Avtale endreKostnadssted(@PathVariable("avtaleId") UUID avtaleId, @RequestBody EndreKostnadsstedRequest endreKostnadsstedRequest) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        veileder.oppdatereKostnadssted(avtale, norg2Client, endreKostnadsstedRequest.getEnhet());
+        avtaleRepository.save(avtale);
+        return avtale;
     }
 
     @PostMapping("/{avtaleId}/avslag-tilskuddsperiode")

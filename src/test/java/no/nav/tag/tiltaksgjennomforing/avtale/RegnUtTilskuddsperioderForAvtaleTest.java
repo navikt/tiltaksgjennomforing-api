@@ -1,22 +1,15 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import org.junit.Test;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
-import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public class RegnUtTilskuddsperioderForAvtaleTest {
 
@@ -96,7 +89,28 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
     }
 
+    @Test
+    public void sjekkAtEnhetsnrOgEnhetsnavnBlirSattPaEndreAvtale() {
+        final String ENHETS_NR = "1001";
+        final String ENHETS_NAVN = "NAV Ullensaker";
 
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        endreAvtale.setStartDato(avtale.getStartDato());
+        endreAvtale.setSluttDato(avtale.getSluttDato());
+
+        avtale.oppdatereKostnadsstedForTilskuddsperioder(new NyttKostnadssted(ENHETS_NR, ENHETS_NAVN));
+        assertThat(avtale.tilskuddsperiode(0).getEnhet()).isEqualTo(ENHETS_NR);
+        assertThat(avtale.tilskuddsperiode(0).getEnhetsnavn()).isEqualTo(ENHETS_NAVN);
+        assertThat(avtale.tilskuddsperiode(1).getEnhet()).isEqualTo(ENHETS_NR);
+        assertThat(avtale.tilskuddsperiode(2).getEnhetsnavn()).isEqualTo(ENHETS_NAVN);
+
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+        assertThat(avtale.tilskuddsperiode(0).getEnhet()).isEqualTo(ENHETS_NR);
+        assertThat(avtale.tilskuddsperiode(0).getEnhetsnavn()).isEqualTo(ENHETS_NAVN);
+        assertThat(avtale.tilskuddsperiode(1).getEnhet()).isEqualTo(ENHETS_NR);
+        assertThat(avtale.tilskuddsperiode(2).getEnhetsnavn()).isEqualTo(ENHETS_NAVN);
+    }
 
     @Test
     public void reduksjon_etter_12_mnd_60_prosent_lonnstilskudd() {

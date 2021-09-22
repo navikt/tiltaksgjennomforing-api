@@ -10,15 +10,15 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.hendelselogg.Hendelselogg;
 import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
@@ -54,7 +54,7 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     public List<Avtale> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
         return hentAlleAvtalerMedMuligTilgang(avtaleRepository, queryParametre).stream()
-                .filter(queryParametre)
+                .filter(queryParametre).filter(avtale -> !avtale.isFeilregistrert())
                 .filter(this::harTilgang)
                 .collect(Collectors.toList());
     }
@@ -128,9 +128,25 @@ public abstract class Avtalepart<T extends Identifikator> {
     }
 
     protected void leggTilGeografiskEnhet(Avtale avtale, PdlRespons pdlRespons, Norg2Client norg2Client) {
-        String enhet = hentGeoLokasjonFraPdlRespons(pdlRespons)
-                .map(geoLokasjon -> norg2Client.hentGeografiskEnhet(geoLokasjon))
+        Norg2GeoResponse enhet = hentGeoLokasjonFraPdlRespons(pdlRespons)
+                .map(norg2Client::hentGeografiskEnhet)
                 .orElse(null);
-        avtale.setEnhetGeografisk(enhet);
+        if (enhet != null) {
+            avtale.setEnhetGeografisk(enhet.getEnhetNr());
+            avtale.setEnhetsnavnGeografisk(enhet.getNavn());
+        }
+    }
+
+    protected void leggTilOppfølingEnhetsnavn(Avtale avtale, Norg2Client norg2Client) {
+        if (avtale.getEnhetOppfolging() != null) {
+            if (avtale.getEnhetOppfolging().equals(avtale.getEnhetGeografisk())) {
+                avtale.setEnhetsnavnOppfolging(avtale.getEnhetsnavnGeografisk());
+            } else {
+                final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetsnavn(avtale.getEnhetOppfolging());
+                if (response != null && response.getNavn() != null) {
+                    avtale.setEnhetsnavnOppfolging(response.getNavn());
+                }
+            }
+        }
     }
 }

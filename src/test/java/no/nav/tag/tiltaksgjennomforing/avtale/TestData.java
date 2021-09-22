@@ -24,6 +24,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.persondata.Adressebeskyttelse;
 import no.nav.tag.tiltaksgjennomforing.persondata.Data;
@@ -37,8 +38,8 @@ import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 
 public class TestData {
 
-    public static String ENHET_OPPFØLGING = "0906";
-    public static String ENHET_GEOGRAFISK = "0904";
+    public static NavEnhet ENHET_OPPFØLGING = new NavEnhet("0906", "Oslo gamlebyen");
+    public static NavEnhet ENHET_GEOGRAFISK = new NavEnhet("0904", "Vinstra");
     public static Integer ET_AVTALENR = 10;
 
     public static Avtale enArbeidstreningAvtale() {
@@ -52,14 +53,17 @@ public class TestData {
 
     public static Avtale enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet() {
         Avtale avtale = enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
-        avtale.setEnhetOppfolging(ENHET_OPPFØLGING);
+        avtale.setEnhetOppfolging(ENHET_OPPFØLGING.getVerdi());
+        avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
         return avtale;
     }
 
     public static Avtale enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhetOgGeografiskEnhet() {
         Avtale avtale = enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
-        avtale.setEnhetOppfolging(ENHET_OPPFØLGING);
-        avtale.setEnhetGeografisk(ENHET_GEOGRAFISK);
+        avtale.setEnhetOppfolging(ENHET_OPPFØLGING.getVerdi());
+        avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
+        avtale.setEnhetGeografisk(ENHET_GEOGRAFISK.getVerdi());
+        avtale.setEnhetsnavnGeografisk(ENHET_GEOGRAFISK.getNavn());
         return avtale;
     }
 
@@ -71,7 +75,8 @@ public class TestData {
 
     public static Avtale enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedGeografiskEnhet() {
         Avtale avtale = enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
-        avtale.setEnhetGeografisk(ENHET_GEOGRAFISK);
+        avtale.setEnhetGeografisk(ENHET_GEOGRAFISK.getVerdi());
+        avtale.setEnhetsnavnGeografisk(ENHET_GEOGRAFISK.getNavn());
         return avtale;
     }
 
@@ -97,8 +102,10 @@ public class TestData {
 
     public static Avtale enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate startDato, LocalDate sluttDato) {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
-        avtale.setEnhetGeografisk(ENHET_OPPFØLGING);
-        avtale.setEnhetOppfolging(ENHET_GEOGRAFISK);
+        avtale.setEnhetGeografisk(ENHET_GEOGRAFISK.getVerdi());
+        avtale.setEnhetsnavnGeografisk(ENHET_GEOGRAFISK.getNavn());
+        avtale.setEnhetOppfolging(ENHET_OPPFØLGING.getVerdi());
+        avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
         EndreAvtale endring = TestData.endringPåAlleFelter();
         endring.setStartDato(startDato);
         endring.setSluttDato(sluttDato);
@@ -108,8 +115,10 @@ public class TestData {
 
     public static Avtale enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate startDato, LocalDate sluttDato) {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
-        avtale.setEnhetGeografisk(ENHET_OPPFØLGING);
-        avtale.setEnhetOppfolging(ENHET_GEOGRAFISK);
+        avtale.setEnhetGeografisk(ENHET_OPPFØLGING.getVerdi());
+        avtale.setEnhetsnavnGeografisk(ENHET_GEOGRAFISK.getNavn());
+        avtale.setEnhetOppfolging(ENHET_GEOGRAFISK.getVerdi());
+        avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
         EndreAvtale endring = TestData.endringPåAlleFelter();
         endring.setStartDato(startDato);
         endring.setSluttDato(sluttDato);
@@ -127,7 +136,8 @@ public class TestData {
     public static Avtale enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype tiltakstype) {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(tiltakstype), veilderNavIdent);
-        avtale.setEnhetOppfolging(ENHET_OPPFØLGING);
+        avtale.setEnhetOppfolging(ENHET_OPPFØLGING.getVerdi());
+        avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
         avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
         avtale.setDeltakerFornavn("Lilly");
         avtale.setDeltakerEtternavn("Lønning");
@@ -173,7 +183,8 @@ public class TestData {
 
     public static Avtale enSommerjobbAvtaleGodkjentAvVeileder() {
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), new NavIdent("Z123456"));
-        avtale.setEnhetOppfolging(ENHET_OPPFØLGING);
+        avtale.setEnhetOppfolging(ENHET_OPPFØLGING.getVerdi());
+        avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
         EndreAvtale endreAvtale = endringPåAlleFelter();
         endreAvtale.setDeltakerFornavn("Solveig");
         endreAvtale.setDeltakerEtternavn("Sommerfeldt");
@@ -194,7 +205,8 @@ public class TestData {
 
     public static Avtale enSommerjobbAvtaleGodkjentAvBeslutter() {
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), new NavIdent("Z123456"));
-        avtale.setEnhetOppfolging(ENHET_OPPFØLGING);
+        avtale.setEnhetOppfolging(ENHET_OPPFØLGING.getVerdi());
+        avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
         avtale.setAvtaleNr(1);
         EndreAvtale endreAvtale = endringPåAlleFelter();
         endreAvtale.setDeltakerFornavn("Solbe");
@@ -217,7 +229,8 @@ public class TestData {
 
     public static Avtale enSommerjobbAvtaleGodkjentAvArbeidsgiver() {
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), new NavIdent("Z123456"));
-        avtale.setEnhetOppfolging(ENHET_OPPFØLGING);
+        avtale.setEnhetOppfolging(ENHET_OPPFØLGING.getVerdi());
+        avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
         EndreAvtale endreAvtale = endringPåAlleFelter();
         endreAvtale.setDeltakerFornavn("Solfrid");
         endreAvtale.setDeltakerEtternavn("Sommerfeldt");
@@ -365,7 +378,7 @@ public class TestData {
         KontoregisterService kontoregisterService = mock(KontoregisterService.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(avtale.getVeilederNavIdent()), eq(avtale.getDeltakerFnr()))).thenReturn(true);
         return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
-                Set.of("4802"), new SlettemerkeProperties(), false);
+                Set.of(new NavEnhet("4802", "Oslo gamlebyen")), new SlettemerkeProperties(), false);
     }
 
     public static Beslutter enBeslutter(Avtale avtale) {

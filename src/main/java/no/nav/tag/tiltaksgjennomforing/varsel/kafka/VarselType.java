@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 
 public enum VarselType {
     KLAR,
-    REVARSEL
+    REVARSEL,
+    FRIST_FORLENGET
 
 }

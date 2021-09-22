@@ -4,5 +4,6 @@ import lombok.Value;
 
 @Value
 public class NavEnhet {
-    private final String verdi;
+    String verdi;
+    String navn;
 }

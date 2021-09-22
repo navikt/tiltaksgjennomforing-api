@@ -10,6 +10,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -26,7 +27,7 @@ public class AxsysServiceTest {
     @Test
     public void hentEnheter__returnerer_riktige_enheter() {
         List<NavEnhet> enheter = axsysService.hentEnheterNavAnsattHarTilgangTil(new NavIdent("X123456"));
-        assertThat(enheter).containsOnly(new NavEnhet("0906"), new NavEnhet("0904"));
+        assertThat(enheter).containsOnly(new NavEnhet("0906", "NAV Storebyen"), new NavEnhet("0904", "NAV Lillebyen"));
     }
 
     @Test
@@ -38,7 +39,7 @@ public class AxsysServiceTest {
     @Test
     public void pilotEnheter__inneholder_hentetEnheter() {
         List<NavEnhet> enheter = axsysService.hentEnheterNavAnsattHarTilgangTil(new NavIdent("X123456"));
-        List<NavEnhet> pilotEnheter = asList(new NavEnhet("0906"));
+        List<NavEnhet> pilotEnheter = Collections.singletonList(new NavEnhet("0906", "NAV Storebyen"));
         assertThat(pilotEnheter).containsAnyElementsOf(enheter);
     }
 

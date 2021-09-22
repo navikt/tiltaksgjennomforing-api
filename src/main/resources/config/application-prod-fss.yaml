@@ -87,7 +87,10 @@ tiltaksgjennomforing:
   veilarbarena:
     url: https://veilarbarena.nais.adeo.no/veilarbarena/api/oppfolgingsstatus
   norg2:
-    url: https://norg2.nais.adeo.no/norg2/api/v1/enhet/navkontor/
+    geografisk:
+      url: https://norg2.nais.adeo.no/norg2/api/v1/enhet/navkontor/
+    enhet:
+      url: https://norg2.nais.adeo.no/norg2/api/v1/enhet/
   dvh-melding:
     feature-enabled: true
 http:
