@@ -1,5 +1,9 @@
-package no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac;
+package no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter;
 
+import static java.util.Optional.ofNullable;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
@@ -9,11 +13,6 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import static java.util.Optional.ofNullable;
-
 ;
 
 @Component
@@ -21,14 +20,14 @@ import static java.util.Optional.ofNullable;
 @Profile(value = { Miljø.LOCAL, Miljø.DEV_FSS })
 public class ClearCacheInterceptor implements HandlerInterceptor, WebMvcConfigurer {
 
-    static final String CLEAR_CACHE_HEADER = "x-clear-cache";
-    private final VeilarbabacClient veilarbabacClient;
+    public static final String CLEAR_CACHE_HEADER = "x-clear-cache";
+    private final AbacAdapter abacAdapter;
     private final AxsysService axsysService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if (ofNullable(request.getHeader(CLEAR_CACHE_HEADER)).map(Boolean::valueOf).orElse(false)) {
-            veilarbabacClient.cacheEvict();
+            abacAdapter.cacheEvict();
             axsysService.cacheEvict();
         }
         return HandlerInterceptor.super.preHandle(request, response, handler);
