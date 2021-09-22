@@ -4,5 +4,5 @@ import lombok.Value;
 
 @Value
 public class NotifikasjonerRespons {
-    private final Data data;
+    Data data;
 }
