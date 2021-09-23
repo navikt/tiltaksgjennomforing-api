@@ -14,17 +14,12 @@ public class TilgangskontrollServiceImpl implements TilgangskontrollService {
   private final AbacAdapter abacAdapter;
 
   public boolean harSkrivetilgangTilKandidat(NavIdent navIdent, Fnr fnr) {
-    return sjekkTilgang(navIdent, fnr);
-  }
-
-  private void harTilgang(NavIdent navIdent, Fnr fnr) {
-    if (!sjekkTilgang(navIdent, fnr)) {
-      throw new IkkeTilgangTilDeltakerException();
-    }
-  }
-
-  public boolean sjekkTilgang(NavIdent navIdent, Fnr fnr) {
     return abacAdapter.harLeseTilgang(navIdent, fnr);
   }
 
+  private void harTilgang(NavIdent navIdent, Fnr fnr) {
+    if (!harSkrivetilgangTilKandidat(navIdent, fnr)) {
+      throw new IkkeTilgangTilDeltakerException();
+    }
+  }
 }
