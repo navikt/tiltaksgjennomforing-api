@@ -76,6 +76,7 @@ tiltaksgjennomforing:
     nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}
   abac:
     uri: https://abac-veilarb-q1.dev.intern.nav.no/application/asm-pdp/authorize
+    nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}
   oppgave:
     oppgave-uri: https://oppgave.nais.preprod.local/api/v1/oppgaver
   unleash:

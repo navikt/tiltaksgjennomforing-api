@@ -10,4 +10,5 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "tiltaksgjennomforing.abac")
 public class AbacProperties {
   private String uri;
+  private String navConsumerId;
 }
