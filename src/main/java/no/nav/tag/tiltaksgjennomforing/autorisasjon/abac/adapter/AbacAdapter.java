@@ -41,7 +41,7 @@ public class AbacAdapter {
 
   private HttpEntity getHttpEntity(String body){
     HttpHeaders headers = new HttpHeaders();
-    headers.set("Nav-Consumer-Id","tiltak-refusjon-api");
+    headers.set("Nav-Consumer-Id","tiltaksgjennomforing-api");
     headers.set("Nav-Call-Id", UUID.randomUUID().toString());
     headers.set("Content-Type","application/json");
     headers.setBearerAuth(stsClient.hentSTSToken().getAccessToken());
