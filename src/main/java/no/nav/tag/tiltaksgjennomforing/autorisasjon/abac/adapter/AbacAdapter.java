@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -43,7 +44,7 @@ public class AbacAdapter {
     HttpHeaders headers = new HttpHeaders();
     headers.set("Nav-Consumer-Id",abacProperties.getNavConsumerId());
     headers.set("Nav-Call-Id", UUID.randomUUID().toString());
-    headers.set("Content-Type","application/json");
+    headers.set("Content-Type",MediaType.APPLICATION_JSON_VALUE);
     headers.setBearerAuth(stsClient.hentSTSToken().getAccessToken());
     return new HttpEntity<>(body,headers);
   }
