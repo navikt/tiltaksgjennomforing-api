@@ -44,7 +44,7 @@ public class AbacAdapter {
     HttpHeaders headers = new HttpHeaders();
     headers.set("Nav-Consumer-Id",abacProperties.getNavConsumerId());
     headers.set("Nav-Call-Id", UUID.randomUUID().toString());
-    headers.set("Content-Type",MediaType.APPLICATION_JSON_VALUE);
+    headers.setContentType(MediaType.APPLICATION_JSON);
     headers.setBearerAuth(stsClient.hentSTSToken().getAccessToken());
     return new HttpEntity<>(body,headers);
   }
