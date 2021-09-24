@@ -16,7 +16,6 @@ jobs:
       - name: Lukk deployment-issues
         uses: actions/github-script@0.5.0
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           script: |
             github.issues.listForRepo({
               owner: context.repo.owner,
@@ -54,6 +53,8 @@ jobs:
         run: mvn package -B -Dsurefire.useFile=false
 
       - name: Bygg, tag og push Docker-image
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo ${GITHUB_TOKEN} | docker login ghcr.io --username ${GITHUB_REPOSITORY} --password-stdin
           docker build --tag ${IMAGE} .
