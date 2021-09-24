@@ -16,7 +16,7 @@ jobs:
       - name: Lukk deployment-issues
         uses: actions/github-script@0.5.0
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           script: |
             github.issues.listForRepo({
               owner: context.repo.owner,
@@ -55,7 +55,7 @@ jobs:
 
       - name: Bygg, tag og push Docker-image
         run: |
-          echo ${GITHUB_TOKEN} | docker login ghcr.io --username ${GITHUB_REPOSITORY} --password-stdin
+          echo ${GITHUB_TOKEN} | docker login ghcr.io --username ${github.repository} --password-stdin
           docker build --tag ${IMAGE} .
           docker push ${IMAGE}
 
