@@ -6,7 +6,7 @@ on:
       - 'master'
 
 env:
-  IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
+  IMAGE: ghcr.io/${{ github.repository }}/tiltaksgjennomforing-api
 
 jobs:
   bygg:
