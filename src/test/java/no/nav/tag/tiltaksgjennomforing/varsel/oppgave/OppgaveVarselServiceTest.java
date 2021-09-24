@@ -65,7 +65,7 @@ public class OppgaveVarselServiceTest {
         assertThat(request.getAktivDato()).isToday();
         assertThat(request.getAktoerId()).isEqualTo("aktørId");
         assertThat(request.getBehandlingstema()).isEqualTo(tiltakstype.getBehandlingstema());
-        assertThat(request.getBeskrivelse()).contains(tiltakstype.getNavn());
+        assertThat(request.getBeskrivelse()).contains(tiltakstype.getBeskrivelse());
         assertThat(request.getBeskrivelse()).contains("Avtale er opprettet av arbeidsgiver på tiltak ");
         assertThat(request.getBehandlingstype()).isEqualTo("ae0034");
         assertThat(request.getOppgavetype()).isEqualTo("VURD_HENV");
