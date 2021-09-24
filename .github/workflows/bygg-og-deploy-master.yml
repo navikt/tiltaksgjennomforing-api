@@ -55,9 +55,9 @@ jobs:
 
       - name: Bygg, tag og push Docker-image
         run: |
-          docker build --tag $IMAGE .
-          echo ${{ secrets.GHCR_PUSH_TOKEN }} | docker login ghcr.io -u ${{ secrets.GHCR_PUSH_USERNAME }} --password-stdin
-          docker push $IMAGE
+          echo ${GITHUB_TOKEN} | docker login ghcr.io --username ${GITHUB_REPOSITORY} --password-stdin
+          docker build --tag ${IMAGE} .
+          docker push ${IMAGE}
 
   deploy-dev:
     name: Deploy til dev
