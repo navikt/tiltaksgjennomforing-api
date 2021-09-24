@@ -1,0 +1,32 @@
+mutation OpprettNyOppgave(
+  $eksternId: String! = "id"
+  $virksomhetsnummer: String! = "bedriftnr"
+  $lenke: String! = "url"
+  $tekst: String! = "lenketekst"
+) {
+  nyOppgave(nyOppgave: {
+    metadata: {
+      eksternId: $eksternId
+    }
+    mottaker: {
+      altinn: {
+        serviceCode: "1234"
+        serviceEdition: "1"
+        virksomhetsnummer: $virksomhetsnummer
+      }
+    }
+    notifikasjon: {
+      merkelapp: "EtSakssystem"
+      tekst: $tekst
+      lenke: $lenke
+    }
+  }) {
+    __typename
+    ... on NyOppgaveVellykket {
+      id
+    }
+    ... on Error {
+      feilmelding
+    }
+  }
+}

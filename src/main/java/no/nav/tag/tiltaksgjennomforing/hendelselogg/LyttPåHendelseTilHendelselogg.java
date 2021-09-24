@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
-import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.Notifikasjon;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.NotifikasjonMSAService;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class LyttPåHendelseTilHendelselogg {
     private final HendelseloggRepository repository;
-    private final Notifikasjon notifikasjon;
+    private final NotifikasjonMSAService notifikasjon;
 
     @EventListener
     public void avtaleOpprettetAvVeileder(AvtaleOpprettetAvVeileder event) {

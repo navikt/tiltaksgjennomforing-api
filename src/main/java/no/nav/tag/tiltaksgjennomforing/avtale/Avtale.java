@@ -11,12 +11,9 @@ import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSl
 import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
-import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import no.nav.tag.tiltaksgjennomforing.varsel.kafka.VarselType;
-import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.Notifikasjon;
-import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.NotifikasjonerProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.*;
 import org.springframework.data.domain.AbstractAggregateRoot;

@@ -19,12 +19,12 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 @Component
 @Profile({Miljø.PROD_FSS, Miljø.DEV_FSS})
-public class Notifikasjon {
+public class NotifikasjonMSAService {
     private final RestTemplate restTemplate;
     private final NotifikasjonerProperties notifikasjonerProperties;
     private final Resource notifikajonerQueryResource;
 
-    public Notifikasjon(
+    public NotifikasjonMSAService(
             @Qualifier("påVegneAvSaksbehandlerGraphRestTemplate") RestTemplate restTemplate,
             NotifikasjonerProperties properties,
             @Value("classpath:varsler/whoAmI.graphql") Resource notifikajonerQueryResource) {

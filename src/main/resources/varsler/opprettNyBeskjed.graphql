@@ -1,0 +1,40 @@
+schema {
+  mutation: Mutation
+  query: Query
+}
+
+type Query {
+  myName: String
+}
+
+type Mutation {
+    OpprettNyBeskjed(eksternId: String!, virksomhetsnummer: String!, lenke: String!, tekst: String!) : NyBeskjedInput
+}
+
+type NyBeskjedInput {
+    mottaker: MottakrInput!
+    notifikasjon: NotifikasjonInput!
+    metadata: MetadataInput!
+}
+
+input MottakrInput {
+    altinn: AltinnMottakerInput!
+}
+
+input NotifikasjonInput {
+    merkelapp: String!
+    tekst: String!
+    lenke: String!
+}
+
+input MetadataInput {
+    eksternId: String!
+    opprettetTidspunkt: String
+    grupperingsid: String
+}
+
+input AltinnMottakerInput {
+    serviceCode: String!
+    serviceEdition: String!
+    virksomhetsnummer: String!
+}
