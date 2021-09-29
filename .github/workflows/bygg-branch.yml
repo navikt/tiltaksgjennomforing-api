@@ -51,7 +51,7 @@ jobs:
         if: steps.sjekk-mot-master.outputs.oppdatert == 'ja'
         run: |
           docker build --tag $IMAGE .
-          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.repository }} --password-stdin
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
           docker push $IMAGE
 
       - name: Lukk gamle deployment-issues
