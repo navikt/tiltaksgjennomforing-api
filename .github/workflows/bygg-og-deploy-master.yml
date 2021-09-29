@@ -6,9 +6,7 @@ on:
       - 'master'
 
 env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  GITHUB_REPOSITORY: ${{ github.repository }}
-  IMAGE: ghcr.io/${{ github.repository }}/tiltaksgjennomforing-api:${{ github.sha }}
+  IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
 
 jobs:
   bygg:
@@ -53,14 +51,17 @@ jobs:
 
       - name: Bygg og test med Maven
         run: mvn package -B -Dsurefire.useFile=false
+        
+      - uses: docker/login-action@v1.10.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.REPOSITORY_OWNER }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Bygg, tag og push Docker-image
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Bygg og push Docker-image
         run: |
-          echo ${GITHUB_TOKEN} | docker login ghcr.io -u ${GITHUB_REPOSITORY} --password-stdin
-          docker build --tag ${IMAGE} .
-          docker push ${IMAGE}
+          docker build --pull --tag ${IMAGE} .
+          docker push ${IMAGE} --all-tags
 
   deploy-dev:
     name: Deploy til dev
