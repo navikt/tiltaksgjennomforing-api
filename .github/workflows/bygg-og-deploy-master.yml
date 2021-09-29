@@ -52,8 +52,6 @@ jobs:
 
       - name: Bygg og test med Maven
         run: mvn package -B -Dsurefire.useFile=false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Bygg, tag og push Docker-image
         env:
