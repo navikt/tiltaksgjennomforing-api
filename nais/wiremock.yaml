@@ -6,7 +6,7 @@ metadata:
   labels:
     team: arbeidsgiver
 spec:
-  image: ghcr.io/${{ github.repository }}/tiltaksgjennomforing-api/wiremock:2.27.2
+  image: ghcr.io/${{ github.repository }}/tiltaksgjennomforing-api:latest/wiremock:2.27.2
   replicas:
     min: 1
     max: 1
