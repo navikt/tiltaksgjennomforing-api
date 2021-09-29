@@ -6,7 +6,8 @@ on:
       - 'master'
 
 env:
-  GITHUB_REPOSITORY: ${{ github.repository_owner }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_REPOSITORY: ${{ github.repository }}
   IMAGE: ghcr.io/${{ github.repository }}/tiltaksgjennomforing-api:${{ github.sha }}
 
 jobs:

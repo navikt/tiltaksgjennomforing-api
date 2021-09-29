@@ -3,7 +3,7 @@ on:
   repository_dispatch:
     types: [deploy-command]
 env:
-  IMAGE_BASE: ghcr.io/${{ github.repository }}
+  IMAGE_BASE: ghcr.io/${{ github.repository }}/tiltaksgjennomforing-api
       
 jobs:
   deploy-branch:
