@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyBeskjed.NyBeskjedResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyOppgave.NyOppgaveResponse;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +27,21 @@ public class NotifikasjonMSAServiceTest {
     @Autowired
     NotifikasjonMSAService notifikasjonMSAService;
 
-    Avtale avtale = TestData.enArbeidstreningAvtale();
+    Avtale avtale;
+    Notifikasjon notifikasjon;
+
+    @Before
+    public void init() {
+        avtale = TestData.enArbeidstreningAvtale();
+        notifikasjon =
+                Notifikasjon.nyHendelse(avtale, VarslbarHendelseType.OPPRETTET, notifikasjonMSAService);
+    }
 
     @Test
     public void opprettNyBeskjedTest() throws JsonProcessingException {
         final NyBeskjedResponse response =
                 notifikasjonMSAService.opprettNyBeskjed(
-                        avtale,
+                        notifikasjon,
                         NotifikasjonMerkelapp.TILTAK_AVTALE_OPPRETTET,
                         NotifikasjonTekst.AVTALE_OPPRETTET);
         assertThat(response.getData().getNyBeskjed().get__typename()).isNotEmpty();
@@ -41,7 +51,7 @@ public class NotifikasjonMSAServiceTest {
     public void opprettNyOppgaveTest() throws JsonProcessingException {
         final NyOppgaveResponse response =
                 notifikasjonMSAService.opprettOppgave(
-                        avtale,
+                        notifikasjon,
                         NotifikasjonMerkelapp.TILTAK_AVTALE_OPPRETTET,
                         NotifikasjonTekst.AVTALE_OPPRETTET);
         assertThat(response.getData().getNyOppgave().get__typename()).isNotEmpty();

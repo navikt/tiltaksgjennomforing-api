@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
 import java.nio.charset.StandardCharsets;
 
 @Slf4j
@@ -61,24 +62,23 @@ public class NotifikasjonMSAService {
         return new HttpEntity(arbeidsgiverMutationRequest, headers);
     }
 
-    public String opprettNotifikasjon (ArbeidsgiverMutationRequest arbeidsgiverMutationRequest) {
+    public String opprettNotifikasjon(ArbeidsgiverMutationRequest arbeidsgiverMutationRequest) {
         try {
             return restTemplate.postForObject(
                     notifikasjonerProperties.getUri(),
                     createRequestEntity(arbeidsgiverMutationRequest),
                     String.class);
-        }
-        catch (RestClientException exception) {
+        } catch (RestClientException exception) {
             log.error("Feil med sending av notifikasjon: ", exception);
             throw exception;
         }
     }
 
-    private String getAvtaleLenke(Avtale avtale) {
+    public String getAvtaleLenke(Avtale avtale) {
         return notifikasjonerProperties.getLenke().concat("?").concat(avtale.getBedriftNr().asString());
     }
 
-    private AltinnNotifikasjonsProperties getNotifikasjonerProperties(Avtale avtale) {
+    public AltinnNotifikasjonsProperties getNotifikasjonerProperties(Avtale avtale) {
         switch (avtale.getTiltakstype()) {
             case MIDLERTIDIG_LONNSTILSKUDD:
                 return new AltinnNotifikasjonsProperties(
@@ -92,52 +92,47 @@ public class NotifikasjonMSAService {
                 return new AltinnNotifikasjonsProperties(
                         altinnTilgangsstyringProperties.getSommerjobbServiceCode(),
                         altinnTilgangsstyringProperties.getSommerjobbServiceEdition());
-            default: return new AltinnNotifikasjonsProperties(
-                    altinnTilgangsstyringProperties.getLtsVarigServiceCode(),
-                    altinnTilgangsstyringProperties.getLtsVarigServiceEdition());
+            default:
+                return new AltinnNotifikasjonsProperties(
+                        altinnTilgangsstyringProperties.getLtsVarigServiceCode(),
+                        altinnTilgangsstyringProperties.getLtsVarigServiceEdition());
         }
     }
 
-    private String opprettNyMutasjon(
-            Avtale avtale,
-            String mutation,
-            String serviceCode,
-            String serviceEdition,
-            String merkelapp,
-            String tekst) {
+    private String opprettNyMutasjon(Notifikasjon notifikasjon, String mutation, String merkelapp, String tekst) {
         ArbeidsgiverMutationRequest request = new ArbeidsgiverMutationRequest(
                 mutation,
                 new Variables(
-                        avtale.getId().toString(),
-                        avtale.getBedriftNr().asString(),
-                        getAvtaleLenke(avtale),
-                        serviceCode,
-                        serviceEdition,
+                        notifikasjon.getId().toString(),
+                        notifikasjon.getVirksomhetsnummer().asString(),
+                        notifikasjon.getLenke(),
+                        notifikasjon.getServiceCode().toString(),
+                        notifikasjon.getServiceEdition().toString(),
                         merkelapp,
                         tekst));
 
         return opprettNotifikasjon(request);
     }
 
-    public NyBeskjedResponse opprettNyBeskjed(Avtale avtale, NotifikasjonMerkelapp merkelapp, NotifikasjonTekst tekst) throws JsonProcessingException {
-        AltinnNotifikasjonsProperties properties = getNotifikasjonerProperties(avtale);
+    public NyBeskjedResponse opprettNyBeskjed(
+            Notifikasjon notifikasjon,
+            NotifikasjonMerkelapp merkelapp,
+            NotifikasjonTekst tekst) throws JsonProcessingException {
         final String response = opprettNyMutasjon(
-                avtale,
+                notifikasjon,
                 nyBeskjed,
-                properties.getServiceCode().toString(),
-                properties.getServiceEdition().toString(),
                 merkelapp.getValue(),
                 tekst.getTekst());
         return objectMapper.readValue(response, NyBeskjedResponse.class);
     }
 
-    public NyOppgaveResponse opprettOppgave(Avtale avtale, NotifikasjonMerkelapp merkelapp, NotifikasjonTekst tekst) throws JsonProcessingException {
-        AltinnNotifikasjonsProperties properties = getNotifikasjonerProperties(avtale);
+    public NyOppgaveResponse opprettOppgave(
+            Notifikasjon notifikasjon,
+            NotifikasjonMerkelapp merkelapp,
+            NotifikasjonTekst tekst) throws JsonProcessingException {
         final String response = opprettNyMutasjon(
-                avtale,
+                notifikasjon,
                 nyOppgave,
-                properties.getServiceCode().toString(),
-                properties.getServiceEdition().toString(),
                 merkelapp.getValue(),
                 tekst.getTekst());
         return objectMapper.readValue(response, NyOppgaveResponse.class);
