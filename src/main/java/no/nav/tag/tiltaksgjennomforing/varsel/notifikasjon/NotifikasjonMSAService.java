@@ -1,16 +1,18 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringProperties;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.request.ArbeidsgiverMutationRequest;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.request.Variables;
-import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.opprettNotifikasjonResponse;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyBeskjed.NyBeskjedResponse;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyOppgave.NyOppgaveResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,26 +25,28 @@ import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @Component
-@Profile({Miljø.PROD_FSS, Miljø.DEV_FSS})
 public class NotifikasjonMSAService {
     private final RestTemplate restTemplate;
     private final AltinnTilgangsstyringProperties altinnTilgangsstyringProperties;
     private final NotifikasjonerProperties notifikasjonerProperties;
     private final String nyOppgave;
     private final String nyBeskjed;
+    private final ObjectMapper objectMapper;
 
     public NotifikasjonMSAService(
             @Qualifier("påVegneAvSaksbehandlerGraphRestTemplate") RestTemplate restTemplate,
             AltinnTilgangsstyringProperties altinnTilgangsstyringProperties,
             NotifikasjonerProperties properties,
             @Value("classpath:varsler/opprettNyOppgave.graphql") Resource nyOppgave,
-            @Value("classpath:varsler/opprettNyBeskjed.graphql") Resource nyBeskjed
+            @Value("classpath:varsler/opprettNyBeskjed.graphql") Resource nyBeskjed,
+            @Autowired ObjectMapper objectMapper
     ) {
         this.restTemplate = restTemplate;
         this.altinnTilgangsstyringProperties = altinnTilgangsstyringProperties;
         this.notifikasjonerProperties = properties;
         this.nyOppgave = resourceAsString(nyOppgave);
         this.nyBeskjed = resourceAsString(nyBeskjed);
+        this.objectMapper = objectMapper;
     }
 
     @SneakyThrows
@@ -57,15 +61,15 @@ public class NotifikasjonMSAService {
         return new HttpEntity(arbeidsgiverMutationRequest, headers);
     }
 
-    public opprettNotifikasjonResponse opprettNotifikasjon (ArbeidsgiverMutationRequest arbeidsgiverMutationRequest) {
+    public String opprettNotifikasjon (ArbeidsgiverMutationRequest arbeidsgiverMutationRequest) {
         try {
             return restTemplate.postForObject(
                     notifikasjonerProperties.getUri(),
                     createRequestEntity(arbeidsgiverMutationRequest),
-                    opprettNotifikasjonResponse.class);
+                    String.class);
         }
         catch (RestClientException exception) {
-            log.error("Feil fra Notifikasjoner med request-url: ", exception);
+            log.error("Feil med sending av notifikasjon: ", exception);
             throw exception;
         }
     }
@@ -94,7 +98,7 @@ public class NotifikasjonMSAService {
         }
     }
 
-    private opprettNotifikasjonResponse opprettNyMutasjon(
+    private String opprettNyMutasjon(
             Avtale avtale,
             String mutation,
             String serviceCode,
@@ -115,25 +119,27 @@ public class NotifikasjonMSAService {
         return opprettNotifikasjon(request);
     }
 
-    public opprettNotifikasjonResponse opprettNyBeskjed(Avtale avtale, NotifikasjonMerkelapp merkelapp, NotifikasjonTekst tekst) {
+    public NyBeskjedResponse opprettNyBeskjed(Avtale avtale, NotifikasjonMerkelapp merkelapp, NotifikasjonTekst tekst) throws JsonProcessingException {
         AltinnNotifikasjonsProperties properties = getNotifikasjonerProperties(avtale);
-        return opprettNyMutasjon(
+        final String response = opprettNyMutasjon(
                 avtale,
                 nyBeskjed,
                 properties.getServiceCode().toString(),
                 properties.getServiceEdition().toString(),
                 merkelapp.getValue(),
                 tekst.getTekst());
+        return objectMapper.readValue(response, NyBeskjedResponse.class);
     }
 
-    public opprettNotifikasjonResponse opprettOppgave(Avtale avtale, NotifikasjonMerkelapp merkelapp, NotifikasjonTekst tekst) {
+    public NyOppgaveResponse opprettOppgave(Avtale avtale, NotifikasjonMerkelapp merkelapp, NotifikasjonTekst tekst) throws JsonProcessingException {
         AltinnNotifikasjonsProperties properties = getNotifikasjonerProperties(avtale);
-        return opprettNyMutasjon(
+        final String response = opprettNyMutasjon(
                 avtale,
-                nyBeskjed,
+                nyOppgave,
                 properties.getServiceCode().toString(),
                 properties.getServiceEdition().toString(),
                 merkelapp.getValue(),
                 tekst.getTekst());
+        return objectMapper.readValue(response, NyOppgaveResponse.class);
     }
 }

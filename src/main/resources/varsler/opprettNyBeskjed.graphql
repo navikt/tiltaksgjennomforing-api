@@ -1,13 +1,13 @@
 mutation OpprettNyBeskjed(
   $eksternId: String!
   $virksomhetsnummer: String!
+  $lenke: String!
   $serviceCode: String!
   $serviceEdition: String!
   $merkelapp: String!
-  $lenke: String!
   $tekst: String!
 ) {
-  nyBeskjed(nyOppgave: {
+  nyBeskjed(nyBeskjed: {
     metadata: {
       eksternId: $eksternId
     }
@@ -25,7 +25,7 @@ mutation OpprettNyBeskjed(
     }
   }) {
     __typename
-    ... on NyOppgaveVellykket {
+    ... on NyBeskjedVellykket {
       id
     }
     ... on Error {
