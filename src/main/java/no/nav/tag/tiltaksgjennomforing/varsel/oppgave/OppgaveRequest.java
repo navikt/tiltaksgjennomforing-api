@@ -31,6 +31,6 @@ public class OppgaveRequest {
     public OppgaveRequest(String aktørId, Tiltakstype tiltakstype) {
         this.aktoerId = aktørId;
         this.behandlingstema = tiltakstype.getBehandlingstema();
-        this.beskrivelse = String.format(BESKRIVELSE, tiltakstype.getNavn());
+        this.beskrivelse = String.format(BESKRIVELSE, tiltakstype.getBeskrivelse());
     }
 }

@@ -80,7 +80,7 @@ public class AvtaleController {
         HttpHeaders header = new HttpHeaders();
         header.setContentType(MediaType.APPLICATION_PDF);
         header.set(HttpHeaders.CONTENT_DISPOSITION,
-                "inline; filename=Avtale om " + avtale.getTiltakstype().getNavn() + ".pdf");
+                "inline; filename=Avtale om " + avtale.getTiltakstype().getBeskrivelse() + ".pdf");
         header.setContentLength(avtalePdf.length);
 
         return new HttpEntity<>(avtalePdf, header);
