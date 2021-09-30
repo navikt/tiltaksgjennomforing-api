@@ -47,7 +47,6 @@ public class LyttPåHendelseTilHendelselogg {
     @EventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
         Hendelselogg hendelselogg = Hendelselogg.nyHendelse(event.getAvtale().getId(), Avtalerolle.VEILEDER, VarslbarHendelseType.GODKJENT_AV_VEILEDER);
-        notifikasjon.whoAmI();
         repository.save(hendelselogg);
     }
 

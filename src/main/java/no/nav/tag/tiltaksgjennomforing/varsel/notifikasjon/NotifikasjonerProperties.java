@@ -11,4 +11,5 @@ import java.net.URI;
 @ConfigurationProperties(prefix = "tiltaksgjennomforing.notifikasjoner")
 public class NotifikasjonerProperties {
     private URI uri;
+    private String lenke;
 }

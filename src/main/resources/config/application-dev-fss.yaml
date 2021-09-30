@@ -91,6 +91,9 @@ tiltaksgjennomforing:
       url: https://app-q1.adeo.no/norg2/api/v1/enhet/navkontor/
     enhet:
       url: https://app-q1.adeo.no/norg2/api/v1/enhet/
+  notifikasjoner:
+    uri: https://ag-notifikasjon-produsent-api.dev.intern.nav.no/api/graphql
+    lenke: https://arbeidsgiver-q.nav.no/tiltaksgjennomforing/avtale/
   dvh-melding:
     feature-enabled: true
   tilskuddsperioder:

@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
+import graphql.GraphQLError;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,6 +14,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -29,15 +33,28 @@ public class GraphQLProviderTest {
     @Test
     public void schemaParserTest() throws IOException {
         graphQLProvider.init();
-        GraphQL build = graphQLProvider.graphQL(); // bookById
-        ExecutionInput executionInput = ExecutionInput.newExecutionInput().query("query { bookById(id: book-1) { id name pageCount } }")
+        GraphQL graphQL = graphQLProvider.graphQL(); // bookById
+        graphQLProvider.schemaResource.toString();
+
+/*        Map<String, String> root = new HashMap<>();
+        root.put("bookById", "book-1");
+        String query = "query { bookById(id: ID) { id name pageCount author { id firstName lastName } } }";
+
+        ExecutionInput executionInput = ExecutionInput.newExecutionInput()
+                .root(root)
+                .query(query)
                 .build();
-        ExecutionResult executionResult = build.execute(executionInput);
+        ExecutionResult executionResult = graphQL.execute(executionInput);
+
+
+        Object data = executionResult.getData();
+        List<GraphQLError> errors = executionResult.getErrors();*/
+    /*    ExecutionResult executionResult = build.execute(executionInput);
         Object data = executionResult.getData();
 
         if(data != null) {
             System.out.println(data.toString());
-        }
+        }*/
 
     }
 }

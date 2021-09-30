@@ -1,8 +1,11 @@
 mutation OpprettNyOppgave(
-  $eksternId: String! = "id"
-  $virksomhetsnummer: String! = "bedriftnr"
-  $lenke: String! = "url"
-  $tekst: String! = "lenketekst"
+  $eksternId: String!
+  $virksomhetsnummer: String!
+  $serviceCode: String!
+  $serviceEdition: String!
+  $merkelapp: String!
+  $lenke: String!
+  $tekst: String!
 ) {
   nyOppgave(nyOppgave: {
     metadata: {
@@ -10,13 +13,13 @@ mutation OpprettNyOppgave(
     }
     mottaker: {
       altinn: {
-        serviceCode: "1234"
-        serviceEdition: "1"
+        serviceCode: $serviceCode
+        serviceEdition: $serviceEdition
         virksomhetsnummer: $virksomhetsnummer
       }
     }
     notifikasjon: {
-      merkelapp: "EtSakssystem"
+      merkelapp: $merkelapp
       tekst: $tekst
       lenke: $lenke
     }
