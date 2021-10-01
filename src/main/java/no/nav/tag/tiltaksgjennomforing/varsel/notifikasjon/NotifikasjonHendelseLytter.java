@@ -63,22 +63,46 @@ public class NotifikasjonHendelseLytter {
     }
 
     @EventListener
-    public void avtaleInngått(AvtaleInngått event) {
-
+    public void avtaleInngått(AvtaleInngått event) throws JsonProcessingException {
+        final ArbeidsgiverNotifikasjon notifikasjon = ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.AVTALE_INNGÅTT, notifikasjonMSAService);
+        arbeidsgiverNotifikasjonRepository.save(notifikasjon);
+        notifikasjonMSAService.opprettOppgave(
+                notifikasjon,
+                NotifikasjonMerkelapp.TILTAK_AVTALE_INNGATT,
+                NotifikasjonTekst.TILTAK_AVTALE_INNGATT
+        );
     }
 
     @EventListener
-    public void avbrutt(AvbruttAvVeileder event) {
-
+    public void avbrutt(AvbruttAvVeileder event) throws JsonProcessingException {
+        final ArbeidsgiverNotifikasjon notifikasjon = ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.AVBRUTT, notifikasjonMSAService);
+        arbeidsgiverNotifikasjonRepository.save(notifikasjon);
+        notifikasjonMSAService.opprettOppgave(
+                notifikasjon,
+                NotifikasjonMerkelapp.TILTAK_AVTALE_AVBRUTT,
+                NotifikasjonTekst.TILTAK_AVTALE_AVBRUTT
+        );
     }
 
     @EventListener
-    public void låstOpp(AvtaleLåstOpp event) {
-
+    public void låstOpp(AvtaleLåstOpp event) throws JsonProcessingException {
+        final ArbeidsgiverNotifikasjon notifikasjon = ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.LÅST_OPP, notifikasjonMSAService);
+        arbeidsgiverNotifikasjonRepository.save(notifikasjon);
+        notifikasjonMSAService.opprettOppgave(
+                notifikasjon,
+                NotifikasjonMerkelapp.TILTAK_AVTALE_LASTOPP,
+                NotifikasjonTekst.TILTAK_AVTALE_LASTOPP
+        );
     }
 
     @EventListener
-    public void gjenopprettet(AvtaleGjenopprettet event) {
-
+    public void gjenopprettet(AvtaleGjenopprettet event) throws JsonProcessingException {
+            final ArbeidsgiverNotifikasjon notifikasjon = ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.GJENOPPRETTET, notifikasjonMSAService);
+            arbeidsgiverNotifikasjonRepository.save(notifikasjon);
+            notifikasjonMSAService.opprettOppgave(
+                    notifikasjon,
+                    NotifikasjonMerkelapp.TILTAK_AVTALE_GJENOPPRETTET,
+                    NotifikasjonTekst.TILTAK_AVTALE_GJENOPPRETTET
+            );
     }
 }
