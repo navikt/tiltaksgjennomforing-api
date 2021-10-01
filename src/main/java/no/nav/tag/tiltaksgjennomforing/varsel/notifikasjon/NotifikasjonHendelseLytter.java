@@ -21,7 +21,6 @@ public class NotifikasjonHendelseLytter {
         final Notifikasjon notifikasjon =
                 Notifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.OPPRETTET, notifikasjonMSAService);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
-
         notifikasjonMSAService.opprettNyBeskjed(
                 notifikasjon,
                 NotifikasjonMerkelapp.TILTAK_AVTALE_OPPRETTET,
@@ -29,14 +28,38 @@ public class NotifikasjonHendelseLytter {
     }
 
     @EventListener
-    public void godkjentAvVeileder(GodkjentAvVeileder event) {
-
-
+    public void avtaleKlarForRefusjon(RefusjonKlar event) throws JsonProcessingException {
+        final Notifikasjon notifikasjon =
+                Notifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.REFUSJON_KLAR, notifikasjonMSAService);
+        arbeidsgiverNotifikasjonRepository.save(notifikasjon);
+        notifikasjonMSAService.opprettOppgave(
+                notifikasjon,
+                NotifikasjonMerkelapp.TILTAK_AVTALE_KLAR_REFUSJON,
+                NotifikasjonTekst.TILTAK_AVTALE_KLAR_REFUSJON
+        );
     }
 
     @EventListener
-    public void avtaleEndret(AvtaleEndret event) {
+    public void godkjentAvVeileder(GodkjentAvVeileder event) throws JsonProcessingException {
+        final Notifikasjon notifikasjon =
+                Notifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.GODKJENT_AV_VEILEDER, notifikasjonMSAService);
+        arbeidsgiverNotifikasjonRepository.save(notifikasjon);
+        notifikasjonMSAService.opprettNyBeskjed(
+                notifikasjon,
+                NotifikasjonMerkelapp.TILTAK_AVTALE_GODKJENT_VEILEDER,
+                NotifikasjonTekst.TILTAK_AVTALE_GODKJENT_VEILEDER);
+    }
 
+    @EventListener
+    public void avtaleEndret(AvtaleEndret event) throws JsonProcessingException {
+        final Notifikasjon notifikasjon =
+                Notifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.ENDRET, notifikasjonMSAService);
+        arbeidsgiverNotifikasjonRepository.save(notifikasjon);
+        notifikasjonMSAService.opprettOppgave(
+                notifikasjon,
+                NotifikasjonMerkelapp.TILTAK_AVTALE_ENDRET,
+                NotifikasjonTekst.TILTAK_AVTALE_ENDRET
+        );
     }
 
     @EventListener

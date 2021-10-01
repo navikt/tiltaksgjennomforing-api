@@ -33,6 +33,7 @@ public class NotifikasjonMSAService {
     private final String nyOppgave;
     private final String nyBeskjed;
     private final ObjectMapper objectMapper;
+    private final ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
 
     public NotifikasjonMSAService(
             @Qualifier("påVegneAvSaksbehandlerGraphRestTemplate") RestTemplate restTemplate,
@@ -40,7 +41,8 @@ public class NotifikasjonMSAService {
             NotifikasjonerProperties properties,
             @Value("classpath:varsler/opprettNyOppgave.graphql") Resource nyOppgave,
             @Value("classpath:varsler/opprettNyBeskjed.graphql") Resource nyBeskjed,
-            @Autowired ObjectMapper objectMapper
+            @Autowired ObjectMapper objectMapper,
+            ArbeidsgiverNotifikasjonRepository repository
     ) {
         this.restTemplate = restTemplate;
         this.altinnTilgangsstyringProperties = altinnTilgangsstyringProperties;
@@ -48,6 +50,7 @@ public class NotifikasjonMSAService {
         this.nyOppgave = resourceAsString(nyOppgave);
         this.nyBeskjed = resourceAsString(nyBeskjed);
         this.objectMapper = objectMapper;
+        this.arbeidsgiverNotifikasjonRepository = repository;
     }
 
     @SneakyThrows
@@ -62,16 +65,20 @@ public class NotifikasjonMSAService {
         return new HttpEntity(arbeidsgiverMutationRequest, headers);
     }
 
-    public String opprettNotifikasjon(ArbeidsgiverMutationRequest arbeidsgiverMutationRequest) {
+    public String opprettNotifikasjon(ArbeidsgiverMutationRequest arbeidsgiverMutationRequest, Notifikasjon notifikasjon) {
         try {
-            return restTemplate.postForObject(
+            String response = restTemplate.postForObject(
                     notifikasjonerProperties.getUri(),
                     createRequestEntity(arbeidsgiverMutationRequest),
                     String.class);
+            notifikasjon.setHendelseUtfort(true);
+            arbeidsgiverNotifikasjonRepository.save(notifikasjon);
+            return response;
         } catch (RestClientException exception) {
             log.error("Feil med sending av notifikasjon: ", exception);
             throw exception;
         }
+
     }
 
     public String getAvtaleLenke(Avtale avtale) {
@@ -111,7 +118,7 @@ public class NotifikasjonMSAService {
                         merkelapp,
                         tekst));
 
-        return opprettNotifikasjon(request);
+        return opprettNotifikasjon(request, notifikasjon);
     }
 
     public NyBeskjedResponse opprettNyBeskjed(

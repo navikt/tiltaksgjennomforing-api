@@ -1,11 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
-import io.micrometer.core.annotation.Timed;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.UUID;
 
-public interface ArbeidsgiverNotifikasjonRepository extends JpaRepository<Notifikasjon, UUID> {
-   /* @Timed(percentiles = { 0.5d, 0.75d, 0.9d, 0.99d, 0.999d })
-    Notifikasjon findAllByAvtaleId();*/
-}
+public interface ArbeidsgiverNotifikasjonRepository extends JpaRepository<Notifikasjon, UUID> {}
