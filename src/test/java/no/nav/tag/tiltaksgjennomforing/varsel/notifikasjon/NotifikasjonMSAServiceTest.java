@@ -28,13 +28,13 @@ public class NotifikasjonMSAServiceTest {
     NotifikasjonMSAService notifikasjonMSAService;
 
     Avtale avtale;
-    Notifikasjon notifikasjon;
+    ArbeidsgiverNotifikasjon notifikasjon;
 
     @Before
     public void init() {
         avtale = TestData.enArbeidstreningAvtale();
         notifikasjon =
-                Notifikasjon.nyHendelse(avtale, VarslbarHendelseType.OPPRETTET, notifikasjonMSAService);
+                ArbeidsgiverNotifikasjon.nyHendelse(avtale, VarslbarHendelseType.OPPRETTET, notifikasjonMSAService);
     }
 
     @Test

@@ -1,4 +1,4 @@
-create table arbeidsgiver_notifikasjoner
+create table arbeidsgiver_notifikasjon
 (
     id                     uuid primary key,
     tidspunkt              timestamp without time zone not null default now(),
@@ -6,7 +6,7 @@ create table arbeidsgiver_notifikasjoner
     hendelse_type          varchar,
     virksomhetsnummer      varchar,
     lenke                  varchar,
-    serviceCode            integer,
-    serviceEdition         integer,
+    service_code           integer,
+    service_edition        integer,
     hendelse_utfort        boolean
 );

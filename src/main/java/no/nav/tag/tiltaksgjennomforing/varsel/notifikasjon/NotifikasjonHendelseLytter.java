@@ -18,8 +18,8 @@ public class NotifikasjonHendelseLytter {
 
     @EventListener
     public void avtaleOpprettet(AvtaleOpprettetAvVeileder event) throws JsonProcessingException {
-        final Notifikasjon notifikasjon =
-                Notifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.OPPRETTET, notifikasjonMSAService);
+        final ArbeidsgiverNotifikasjon notifikasjon =
+                ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.OPPRETTET, notifikasjonMSAService);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
         notifikasjonMSAService.opprettNyBeskjed(
                 notifikasjon,
@@ -29,8 +29,8 @@ public class NotifikasjonHendelseLytter {
 
     @EventListener
     public void avtaleKlarForRefusjon(RefusjonKlar event) throws JsonProcessingException {
-        final Notifikasjon notifikasjon =
-                Notifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.REFUSJON_KLAR, notifikasjonMSAService);
+        final ArbeidsgiverNotifikasjon notifikasjon =
+                ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.REFUSJON_KLAR, notifikasjonMSAService);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
         notifikasjonMSAService.opprettOppgave(
                 notifikasjon,
@@ -41,8 +41,8 @@ public class NotifikasjonHendelseLytter {
 
     @EventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) throws JsonProcessingException {
-        final Notifikasjon notifikasjon =
-                Notifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.GODKJENT_AV_VEILEDER, notifikasjonMSAService);
+        final ArbeidsgiverNotifikasjon notifikasjon =
+                ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.GODKJENT_AV_VEILEDER, notifikasjonMSAService);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
         notifikasjonMSAService.opprettNyBeskjed(
                 notifikasjon,
@@ -52,8 +52,8 @@ public class NotifikasjonHendelseLytter {
 
     @EventListener
     public void avtaleEndret(AvtaleEndret event) throws JsonProcessingException {
-        final Notifikasjon notifikasjon =
-                Notifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.ENDRET, notifikasjonMSAService);
+        final ArbeidsgiverNotifikasjon notifikasjon =
+                ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.ENDRET, notifikasjonMSAService);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
         notifikasjonMSAService.opprettOppgave(
                 notifikasjon,

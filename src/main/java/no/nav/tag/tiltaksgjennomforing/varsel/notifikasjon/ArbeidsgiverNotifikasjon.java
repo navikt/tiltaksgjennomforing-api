@@ -18,7 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-public class Notifikasjon extends AbstractAggregateRoot<Notifikasjon> {
+public class ArbeidsgiverNotifikasjon extends AbstractAggregateRoot<ArbeidsgiverNotifikasjon> {
 
     @Id
     private UUID id;
@@ -33,7 +33,7 @@ public class Notifikasjon extends AbstractAggregateRoot<Notifikasjon> {
     private Integer serviceEdition;
     private boolean hendelseUtfort;
 
-    public static Notifikasjon nyHendelse(
+    public static ArbeidsgiverNotifikasjon nyHendelse(
             Avtale avtale,
             VarslbarHendelseType varslbarHendelseType,
             NotifikasjonMSAService notifikasjonMSAService) {
@@ -44,7 +44,7 @@ public class Notifikasjon extends AbstractAggregateRoot<Notifikasjon> {
         final String lenke =
                 notifikasjonMSAService.getAvtaleLenke(avtale);
 
-        Notifikasjon notifikasjon = new Notifikasjon();
+        ArbeidsgiverNotifikasjon notifikasjon = new ArbeidsgiverNotifikasjon();
         notifikasjon.id = UUID.randomUUID();
         notifikasjon.tidspunkt = LocalDateTime.now();
         notifikasjon.hendelseType = varslbarHendelseType;

@@ -65,7 +65,7 @@ public class NotifikasjonMSAService {
         return new HttpEntity(arbeidsgiverMutationRequest, headers);
     }
 
-    public String opprettNotifikasjon(ArbeidsgiverMutationRequest arbeidsgiverMutationRequest, Notifikasjon notifikasjon) {
+    public String opprettNotifikasjon(ArbeidsgiverMutationRequest arbeidsgiverMutationRequest, ArbeidsgiverNotifikasjon notifikasjon) {
         try {
             String response = restTemplate.postForObject(
                     notifikasjonerProperties.getUri(),
@@ -106,7 +106,7 @@ public class NotifikasjonMSAService {
         }
     }
 
-    private String opprettNyMutasjon(Notifikasjon notifikasjon, String mutation, String merkelapp, String tekst) {
+    private String opprettNyMutasjon(ArbeidsgiverNotifikasjon notifikasjon, String mutation, String merkelapp, String tekst) {
         ArbeidsgiverMutationRequest request = new ArbeidsgiverMutationRequest(
                 mutation,
                 new Variables(
@@ -122,7 +122,7 @@ public class NotifikasjonMSAService {
     }
 
     public NyBeskjedResponse opprettNyBeskjed(
-            Notifikasjon notifikasjon,
+            ArbeidsgiverNotifikasjon notifikasjon,
             NotifikasjonMerkelapp merkelapp,
             NotifikasjonTekst tekst) throws JsonProcessingException {
         final String response = opprettNyMutasjon(
@@ -134,7 +134,7 @@ public class NotifikasjonMSAService {
     }
 
     public NyOppgaveResponse opprettOppgave(
-            Notifikasjon notifikasjon,
+            ArbeidsgiverNotifikasjon notifikasjon,
             NotifikasjonMerkelapp merkelapp,
             NotifikasjonTekst tekst) throws JsonProcessingException {
         final String response = opprettNyMutasjon(
