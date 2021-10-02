@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
@@ -16,55 +15,82 @@ public class NotifikasjonHendelseLytter {
     @Autowired
     NotifikasjonMSAService notifikasjonMSAService;
 
+    @Autowired
+    NotifikasjonParser notifikasjonParser;
+
     @EventListener
-    public void avtaleOpprettet(AvtaleOpprettetAvVeileder event) throws JsonProcessingException {
+    public void avtaleOpprettet(AvtaleOpprettetAvVeileder event) {
         final ArbeidsgiverNotifikasjon notifikasjon =
-                ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.OPPRETTET, notifikasjonMSAService);
+                ArbeidsgiverNotifikasjon.nyHendelse(
+                        event.getAvtale(),
+                        VarslbarHendelseType.OPPRETTET,
+                        notifikasjonMSAService,
+                        notifikasjonParser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
         notifikasjonMSAService.opprettNyBeskjed(
                 notifikasjon,
-                NotifikasjonMerkelapp.TILTAK_AVTALE_OPPRETTET,
+                NotifikasjonMerkelapp.TILTAK,
                 NotifikasjonTekst.AVTALE_OPPRETTET);
     }
 
     @EventListener
-    public void avtaleKlarForRefusjon(RefusjonKlar event) throws JsonProcessingException {
+    public void avtaleKlarForRefusjon(RefusjonKlar event) {
         final ArbeidsgiverNotifikasjon notifikasjon =
-                ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.REFUSJON_KLAR, notifikasjonMSAService);
+                ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(),
+                        VarslbarHendelseType.REFUSJON_KLAR,
+                        notifikasjonMSAService,
+                        notifikasjonParser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
         notifikasjonMSAService.opprettOppgave(
                 notifikasjon,
-                NotifikasjonMerkelapp.TILTAK_AVTALE_KLAR_REFUSJON,
+                NotifikasjonMerkelapp.REFUSJON,
                 NotifikasjonTekst.TILTAK_AVTALE_KLAR_REFUSJON
         );
     }
 
     @EventListener
-    public void godkjentAvVeileder(GodkjentAvVeileder event) throws JsonProcessingException {
+    public void godkjentAvVeileder(GodkjentAvVeileder event) {
         final ArbeidsgiverNotifikasjon notifikasjon =
-                ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.GODKJENT_AV_VEILEDER, notifikasjonMSAService);
+                ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(),
+                        VarslbarHendelseType.GODKJENT_AV_VEILEDER,
+                        notifikasjonMSAService,
+                        notifikasjonParser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
         notifikasjonMSAService.opprettNyBeskjed(
                 notifikasjon,
-                NotifikasjonMerkelapp.TILTAK_AVTALE_GODKJENT_VEILEDER,
+                NotifikasjonMerkelapp.TILTAK,
                 NotifikasjonTekst.TILTAK_AVTALE_GODKJENT_VEILEDER);
     }
 
     @EventListener
-    public void avtaleEndret(AvtaleEndret event) throws JsonProcessingException {
+    public void avtaleEndret(AvtaleEndret event) {
         final ArbeidsgiverNotifikasjon notifikasjon =
-                ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.ENDRET, notifikasjonMSAService);
+                ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(),
+                        VarslbarHendelseType.ENDRET,
+                        notifikasjonMSAService,
+                        notifikasjonParser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
         notifikasjonMSAService.opprettOppgave(
                 notifikasjon,
-                NotifikasjonMerkelapp.TILTAK_AVTALE_ENDRET,
+                NotifikasjonMerkelapp.TILTAK,
                 NotifikasjonTekst.TILTAK_AVTALE_ENDRET
         );
     }
 
     @EventListener
     public void avtaleInngått(AvtaleInngått event) {
-
+        final  ArbeidsgiverNotifikasjon notifikasjon =
+                ArbeidsgiverNotifikasjon.nyHendelse(
+                        event.getAvtale(),
+                        VarslbarHendelseType.AVTALE_INNGÅTT,
+                        notifikasjonMSAService,
+                        notifikasjonParser);
+        arbeidsgiverNotifikasjonRepository.save(notifikasjon);
+        notifikasjonMSAService.opprettNyBeskjed(
+                notifikasjon,
+                NotifikasjonMerkelapp.TILTAK,
+                NotifikasjonTekst.TILTAK_AVTALE_INNGATT
+        );
     }
 
     @EventListener

@@ -27,32 +27,40 @@ public class NotifikasjonMSAServiceTest {
     @Autowired
     NotifikasjonMSAService notifikasjonMSAService;
 
+    @Autowired
+    NotifikasjonParser notifikasjonParser;
+
     Avtale avtale;
     ArbeidsgiverNotifikasjon notifikasjon;
+
 
     @Before
     public void init() {
         avtale = TestData.enArbeidstreningAvtale();
         notifikasjon =
-                ArbeidsgiverNotifikasjon.nyHendelse(avtale, VarslbarHendelseType.OPPRETTET, notifikasjonMSAService);
+                ArbeidsgiverNotifikasjon.nyHendelse(
+                        avtale,
+                        VarslbarHendelseType.OPPRETTET,
+                        notifikasjonMSAService,
+                        notifikasjonParser);
     }
 
     @Test
-    public void opprettNyBeskjedTest() throws JsonProcessingException {
+    public void opprettNyBeskjedTest() {
         final NyBeskjedResponse response =
                 notifikasjonMSAService.opprettNyBeskjed(
                         notifikasjon,
-                        NotifikasjonMerkelapp.TILTAK_AVTALE_OPPRETTET,
+                        NotifikasjonMerkelapp.TILTAK,
                         NotifikasjonTekst.AVTALE_OPPRETTET);
         assertThat(response.getData().getNyBeskjed().get__typename()).isNotEmpty();
     }
 
     @Test
-    public void opprettNyOppgaveTest() throws JsonProcessingException {
+    public void opprettNyOppgaveTest() {
         final NyOppgaveResponse response =
                 notifikasjonMSAService.opprettOppgave(
                         notifikasjon,
-                        NotifikasjonMerkelapp.TILTAK_AVTALE_OPPRETTET,
+                        NotifikasjonMerkelapp.TILTAK,
                         NotifikasjonTekst.AVTALE_OPPRETTET);
         assertThat(response.getData().getNyOppgave().get__typename()).isNotEmpty();
     }

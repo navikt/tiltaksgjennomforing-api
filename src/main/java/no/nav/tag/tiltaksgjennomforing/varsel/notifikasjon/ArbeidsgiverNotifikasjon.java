@@ -36,10 +36,11 @@ public class ArbeidsgiverNotifikasjon extends AbstractAggregateRoot<Arbeidsgiver
     public static ArbeidsgiverNotifikasjon nyHendelse(
             Avtale avtale,
             VarslbarHendelseType varslbarHendelseType,
-            NotifikasjonMSAService notifikasjonMSAService) {
+            NotifikasjonMSAService notifikasjonMSAService,
+            NotifikasjonParser notifikasjonParser) {
 
         final AltinnNotifikasjonsProperties notifikasjonerProperties =
-                notifikasjonMSAService.getNotifikasjonerProperties(avtale);
+                notifikasjonParser.getNotifikasjonerProperties(avtale);
 
         final String lenke =
                 notifikasjonMSAService.getAvtaleLenke(avtale);
