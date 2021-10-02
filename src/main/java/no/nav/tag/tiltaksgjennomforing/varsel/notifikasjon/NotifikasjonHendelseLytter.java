@@ -79,14 +79,13 @@ public class NotifikasjonHendelseLytter {
 
     @EventListener
     public void avtaleInngått(AvtaleInngått event) {
-        final  ArbeidsgiverNotifikasjon notifikasjon =
+        final ArbeidsgiverNotifikasjon notifikasjon =
                 ArbeidsgiverNotifikasjon.nyHendelse(
                         event.getAvtale(),
                         VarslbarHendelseType.AVTALE_INNGÅTT,
-                        notifikasjonMSAService,
-                        notifikasjonParser);
+                        notifikasjonMSAService, notifikasjonParser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
-        notifikasjonMSAService.opprettNyBeskjed(
+        notifikasjonMSAService.opprettOppgave(
                 notifikasjon,
                 NotifikasjonMerkelapp.TILTAK,
                 NotifikasjonTekst.TILTAK_AVTALE_INNGATT
@@ -95,16 +94,49 @@ public class NotifikasjonHendelseLytter {
 
     @EventListener
     public void avbrutt(AvbruttAvVeileder event) {
-
+        final ArbeidsgiverNotifikasjon notifikasjon =
+                ArbeidsgiverNotifikasjon.nyHendelse(
+                        event.getAvtale(),
+                        VarslbarHendelseType.AVBRUTT,
+                        notifikasjonMSAService,
+                        notifikasjonParser);
+        arbeidsgiverNotifikasjonRepository.save(notifikasjon);
+        notifikasjonMSAService.opprettOppgave(
+                notifikasjon,
+                NotifikasjonMerkelapp.TILTAK,
+                NotifikasjonTekst.TILTAK_AVTALE_AVBRUTT
+        );
     }
 
     @EventListener
     public void låstOpp(AvtaleLåstOpp event) {
-
+        final ArbeidsgiverNotifikasjon notifikasjon =
+                ArbeidsgiverNotifikasjon.nyHendelse(
+                        event.getAvtale(),
+                        VarslbarHendelseType.LÅST_OPP,
+                        notifikasjonMSAService,
+                        notifikasjonParser);
+        arbeidsgiverNotifikasjonRepository.save(notifikasjon);
+        notifikasjonMSAService.opprettOppgave(
+                notifikasjon,
+                NotifikasjonMerkelapp.TILTAK,
+                NotifikasjonTekst.TILTAK_AVTALE_LASTOPP
+        );
     }
 
     @EventListener
     public void gjenopprettet(AvtaleGjenopprettet event) {
-
+            final ArbeidsgiverNotifikasjon notifikasjon =
+                    ArbeidsgiverNotifikasjon.nyHendelse(
+                            event.getAvtale(),
+                            VarslbarHendelseType.GJENOPPRETTET,
+                            notifikasjonMSAService,
+                            notifikasjonParser);
+            arbeidsgiverNotifikasjonRepository.save(notifikasjon);
+            notifikasjonMSAService.opprettOppgave(
+                    notifikasjon,
+                    NotifikasjonMerkelapp.TILTAK,
+                    NotifikasjonTekst.TILTAK_AVTALE_GJENOPPRETTET
+            );
     }
 }
