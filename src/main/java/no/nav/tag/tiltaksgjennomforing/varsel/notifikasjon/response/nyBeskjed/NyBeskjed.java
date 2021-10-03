@@ -6,4 +6,5 @@ import lombok.Value;
 public class NyBeskjed {
     String __typename;
     String id;
+    String feilmelding;
 }

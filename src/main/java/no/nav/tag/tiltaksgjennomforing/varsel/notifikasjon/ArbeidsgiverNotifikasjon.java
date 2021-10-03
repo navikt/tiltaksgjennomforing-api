@@ -32,11 +32,12 @@ public class ArbeidsgiverNotifikasjon extends AbstractAggregateRoot<Arbeidsgiver
     private Integer serviceCode;
     private Integer serviceEdition;
     private boolean hendelseUtfort;
+    private String Status;
 
     public static ArbeidsgiverNotifikasjon nyHendelse(
             Avtale avtale,
             VarslbarHendelseType varslbarHendelseType,
-            NotifikasjonMSAService notifikasjonMSAService,
+            NotifikasjonService notifikasjonMSAService,
             NotifikasjonParser notifikasjonParser) {
 
         final AltinnNotifikasjonsProperties notifikasjonerProperties =

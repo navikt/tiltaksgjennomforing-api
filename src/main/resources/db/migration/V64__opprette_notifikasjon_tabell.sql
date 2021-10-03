@@ -8,5 +8,6 @@ create table arbeidsgiver_notifikasjon
     lenke                  varchar,
     service_code           integer,
     service_edition        integer,
-    hendelse_utfort        boolean
+    hendelse_utfort        boolean,
+    type_name              varchar
 );

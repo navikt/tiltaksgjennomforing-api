@@ -1,13 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.request.ArbeidsgiverMutationRequest;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.request.Variables;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyBeskjed.NyBeskjedResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyOppgave.NyOppgaveResponse;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.oppgaveUtfoert.OppgaveUtfoertResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
@@ -20,26 +20,22 @@ import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Component
-public class NotifikasjonMSAService {
+public class NotifikasjonService {
     private final RestTemplate restTemplate;
-
+    private final NotifikasjonHandler handler;
     private final NotifikasjonerProperties notifikasjonerProperties;
     private final NotifikasjonParser notifikasjonParser;
-    private final ObjectMapper objectMapper;
-    private final ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
 
-    public NotifikasjonMSAService(
+    public NotifikasjonService(
             @Qualifier("påVegneAvSaksbehandlerGraphRestTemplate") RestTemplate restTemplate,
             @Autowired NotifikasjonParser notifikasjonParser,
-            @Autowired ObjectMapper objectMapper,
             NotifikasjonerProperties properties,
-            ArbeidsgiverNotifikasjonRepository repository
+            NotifikasjonHandler handler
     ) {
         this.restTemplate = restTemplate;
         this.notifikasjonerProperties = properties;
         this.notifikasjonParser = notifikasjonParser;
-        this.objectMapper = objectMapper;
-        this.arbeidsgiverNotifikasjonRepository = repository;
+        this.handler = handler;
     }
 
     private HttpEntity<String> createRequestEntity(ArbeidsgiverMutationRequest arbeidsgiverMutationRequest) {
@@ -48,15 +44,12 @@ public class NotifikasjonMSAService {
         return new HttpEntity(arbeidsgiverMutationRequest, headers);
     }
 
-    public String opprettNotifikasjon(ArbeidsgiverMutationRequest arbeidsgiverMutationRequest, ArbeidsgiverNotifikasjon notifikasjon) {
+    public String opprettNotifikasjon(ArbeidsgiverMutationRequest arbeidsgiverMutationRequest) {
         try {
-            String response = restTemplate.postForObject(
+            return restTemplate.postForObject(
                     notifikasjonerProperties.getUri(),
                     createRequestEntity(arbeidsgiverMutationRequest),
                     String.class);
-            notifikasjon.setHendelseUtfort(true);
-            arbeidsgiverNotifikasjonRepository.save(notifikasjon);
-            return response;
         } catch (RestClientException exception) {
             log.error("Feil med sending av notifikasjon: ", exception);
             throw exception;
@@ -78,8 +71,7 @@ public class NotifikasjonMSAService {
                         notifikasjon.getServiceEdition().toString(),
                         merkelapp,
                         tekst));
-
-        return opprettNotifikasjon(request, notifikasjon);
+        return opprettNotifikasjon(request);
     }
 
     public NyBeskjedResponse opprettNyBeskjed(
@@ -91,12 +83,9 @@ public class NotifikasjonMSAService {
                 notifikasjonParser.getNyBeskjed(),
                 merkelapp.getValue(),
                 tekst.getTekst());
-        try {
-            objectMapper.readValue(response, NyBeskjedResponse.class);
-        }catch (JsonProcessingException exception) {
-            log.error("opprett nybeskjed err: {}", exception.getMessage());
-        }
-        return null;
+        final NyBeskjedResponse beskjed = handler.readResponse(response, NyBeskjedResponse.class);
+        handler.sjekkOgSettStatusResponse(notifikasjon, handler.convertResponse(beskjed), MutationStatus.NY_BESKJED_VELLYKKET);
+        return beskjed;
     }
 
     public NyOppgaveResponse opprettOppgave(
@@ -108,11 +97,23 @@ public class NotifikasjonMSAService {
                 notifikasjonParser.getNyOppgave(),
                 merkelapp.getValue(),
                 tekst.getTekst());
-        try {
-            return objectMapper.readValue(response, NyOppgaveResponse.class);
-        }catch (JsonProcessingException exception) {
-            log.error("opprettoppgave obj mapper err: {}", exception.getMessage());
-        }
-        return null;
+        final NyOppgaveResponse oppgave = handler.readResponse(response, NyOppgaveResponse.class);
+        handler.sjekkOgSettStatusResponse(notifikasjon, handler.convertResponse(oppgave), MutationStatus.NY_OPPGAVE_VELLYKKET);
+        return oppgave;
+    }
+
+    public OppgaveUtfoertResponse oppgaveUtfoert(
+            Avtale avtale,
+            ArbeidsgiverNotifikasjon notifikasjon,
+            NotifikasjonMerkelapp merkelapp,
+            NotifikasjonTekst tekst) {
+
+        final String response = opprettNyMutasjon(
+                notifikasjon,
+                notifikasjonParser.getOppgaveUtfoert(),
+                merkelapp.getValue(),
+                tekst.getTekst()
+        );
+        return handler.readResponse(response, OppgaveUtfoertResponse.class);
     }
 }

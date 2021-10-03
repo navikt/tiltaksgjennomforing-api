@@ -209,7 +209,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
         veileder.forlengAvtale(forlengAvtale.getSluttDato(), avtale);
-        Avtale lagretAvtale = avtaleRepository.save(avtale);
+        avtaleRepository.save(avtale);
     }
 
     @PostMapping("/{avtaleId}/forleng-dry-run")

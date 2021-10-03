@@ -7,27 +7,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+
 @Component
 @RequiredArgsConstructor
 public class NotifikasjonHendelseLytter {
     private final ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
 
     @Autowired
-    NotifikasjonMSAService notifikasjonMSAService;
+    NotifikasjonService service;
 
     @Autowired
-    NotifikasjonParser notifikasjonParser;
+    NotifikasjonParser parser;
 
     @EventListener
     public void avtaleOpprettet(AvtaleOpprettetAvVeileder event) {
         final ArbeidsgiverNotifikasjon notifikasjon =
-                ArbeidsgiverNotifikasjon.nyHendelse(
-                        event.getAvtale(),
-                        VarslbarHendelseType.OPPRETTET,
-                        notifikasjonMSAService,
-                        notifikasjonParser);
+                ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.OPPRETTET, service, parser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
-        notifikasjonMSAService.opprettNyBeskjed(
+        service.opprettOppgave(
                 notifikasjon,
                 NotifikasjonMerkelapp.TILTAK,
                 NotifikasjonTekst.AVTALE_OPPRETTET);
@@ -36,12 +33,9 @@ public class NotifikasjonHendelseLytter {
     @EventListener
     public void avtaleKlarForRefusjon(RefusjonKlar event) {
         final ArbeidsgiverNotifikasjon notifikasjon =
-                ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(),
-                        VarslbarHendelseType.REFUSJON_KLAR,
-                        notifikasjonMSAService,
-                        notifikasjonParser);
+                ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.REFUSJON_KLAR, service, parser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
-        notifikasjonMSAService.opprettOppgave(
+        service.opprettOppgave(
                 notifikasjon,
                 NotifikasjonMerkelapp.REFUSJON,
                 NotifikasjonTekst.TILTAK_AVTALE_KLAR_REFUSJON
@@ -51,12 +45,13 @@ public class NotifikasjonHendelseLytter {
     @EventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
         final ArbeidsgiverNotifikasjon notifikasjon =
-                ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(),
+                ArbeidsgiverNotifikasjon.nyHendelse(
+                        event.getAvtale(),
                         VarslbarHendelseType.GODKJENT_AV_VEILEDER,
-                        notifikasjonMSAService,
-                        notifikasjonParser);
+                        service,
+                        parser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
-        notifikasjonMSAService.opprettNyBeskjed(
+        service.opprettNyBeskjed(
                 notifikasjon,
                 NotifikasjonMerkelapp.TILTAK,
                 NotifikasjonTekst.TILTAK_AVTALE_GODKJENT_VEILEDER);
@@ -65,12 +60,9 @@ public class NotifikasjonHendelseLytter {
     @EventListener
     public void avtaleEndret(AvtaleEndret event) {
         final ArbeidsgiverNotifikasjon notifikasjon =
-                ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(),
-                        VarslbarHendelseType.ENDRET,
-                        notifikasjonMSAService,
-                        notifikasjonParser);
+                ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.ENDRET, service, parser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
-        notifikasjonMSAService.opprettOppgave(
+        service.opprettNyBeskjed(
                 notifikasjon,
                 NotifikasjonMerkelapp.TILTAK,
                 NotifikasjonTekst.TILTAK_AVTALE_ENDRET
@@ -83,9 +75,10 @@ public class NotifikasjonHendelseLytter {
                 ArbeidsgiverNotifikasjon.nyHendelse(
                         event.getAvtale(),
                         VarslbarHendelseType.AVTALE_INNGÅTT,
-                        notifikasjonMSAService, notifikasjonParser);
+                        service,
+                        parser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
-        notifikasjonMSAService.opprettOppgave(
+        service.opprettOppgave(
                 notifikasjon,
                 NotifikasjonMerkelapp.TILTAK,
                 NotifikasjonTekst.TILTAK_AVTALE_INNGATT
@@ -95,13 +88,9 @@ public class NotifikasjonHendelseLytter {
     @EventListener
     public void avbrutt(AvbruttAvVeileder event) {
         final ArbeidsgiverNotifikasjon notifikasjon =
-                ArbeidsgiverNotifikasjon.nyHendelse(
-                        event.getAvtale(),
-                        VarslbarHendelseType.AVBRUTT,
-                        notifikasjonMSAService,
-                        notifikasjonParser);
+                ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.AVBRUTT, service, parser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
-        notifikasjonMSAService.opprettOppgave(
+        service.opprettNyBeskjed(
                 notifikasjon,
                 NotifikasjonMerkelapp.TILTAK,
                 NotifikasjonTekst.TILTAK_AVTALE_AVBRUTT
@@ -111,13 +100,9 @@ public class NotifikasjonHendelseLytter {
     @EventListener
     public void låstOpp(AvtaleLåstOpp event) {
         final ArbeidsgiverNotifikasjon notifikasjon =
-                ArbeidsgiverNotifikasjon.nyHendelse(
-                        event.getAvtale(),
-                        VarslbarHendelseType.LÅST_OPP,
-                        notifikasjonMSAService,
-                        notifikasjonParser);
+                ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.LÅST_OPP, service, parser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
-        notifikasjonMSAService.opprettOppgave(
+        service.opprettOppgave(
                 notifikasjon,
                 NotifikasjonMerkelapp.TILTAK,
                 NotifikasjonTekst.TILTAK_AVTALE_LASTOPP
@@ -130,10 +115,10 @@ public class NotifikasjonHendelseLytter {
                     ArbeidsgiverNotifikasjon.nyHendelse(
                             event.getAvtale(),
                             VarslbarHendelseType.GJENOPPRETTET,
-                            notifikasjonMSAService,
-                            notifikasjonParser);
+                            service,
+                            parser);
             arbeidsgiverNotifikasjonRepository.save(notifikasjon);
-            notifikasjonMSAService.opprettOppgave(
+            service.opprettOppgave(
                     notifikasjon,
                     NotifikasjonMerkelapp.TILTAK,
                     NotifikasjonTekst.TILTAK_AVTALE_GJENOPPRETTET

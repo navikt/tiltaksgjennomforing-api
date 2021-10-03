@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing;
 
-import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.NotifikasjonMSAService;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.NotifikasjonService;
 import org.mockito.Mockito;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +15,6 @@ public class LokalConfiguration {
   }
 
   @Bean
-  NotifikasjonMSAService notifikasjon() { return Mockito.mock(NotifikasjonMSAService.class);}
+  NotifikasjonService notifikasjon() { return Mockito.mock(NotifikasjonService.class);}
 
 }

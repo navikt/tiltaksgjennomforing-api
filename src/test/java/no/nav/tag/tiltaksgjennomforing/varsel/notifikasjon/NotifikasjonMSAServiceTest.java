@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
@@ -25,14 +24,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class NotifikasjonMSAServiceTest {
 
     @Autowired
-    NotifikasjonMSAService notifikasjonMSAService;
+    NotifikasjonService notifikasjonService;
 
     @Autowired
-    NotifikasjonParser notifikasjonParser;
+    NotifikasjonParser parser;
 
     Avtale avtale;
     ArbeidsgiverNotifikasjon notifikasjon;
-
 
     @Before
     public void init() {
@@ -41,14 +39,14 @@ public class NotifikasjonMSAServiceTest {
                 ArbeidsgiverNotifikasjon.nyHendelse(
                         avtale,
                         VarslbarHendelseType.OPPRETTET,
-                        notifikasjonMSAService,
-                        notifikasjonParser);
+                        notifikasjonService,
+                        parser);
     }
 
     @Test
     public void opprettNyBeskjedTest() {
         final NyBeskjedResponse response =
-                notifikasjonMSAService.opprettNyBeskjed(
+                notifikasjonService.opprettNyBeskjed(
                         notifikasjon,
                         NotifikasjonMerkelapp.TILTAK,
                         NotifikasjonTekst.AVTALE_OPPRETTET);
@@ -58,7 +56,7 @@ public class NotifikasjonMSAServiceTest {
     @Test
     public void opprettNyOppgaveTest() {
         final NyOppgaveResponse response =
-                notifikasjonMSAService.opprettOppgave(
+                notifikasjonService.opprettOppgave(
                         notifikasjon,
                         NotifikasjonMerkelapp.TILTAK,
                         NotifikasjonTekst.AVTALE_OPPRETTET);
