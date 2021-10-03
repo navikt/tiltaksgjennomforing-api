@@ -84,7 +84,10 @@ public class NotifikasjonService {
                 merkelapp.getValue(),
                 tekst.getTekst());
         final NyBeskjedResponse beskjed = handler.readResponse(response, NyBeskjedResponse.class);
-        handler.sjekkOgSettStatusResponse(notifikasjon, handler.convertResponse(beskjed), MutationStatus.NY_BESKJED_VELLYKKET);
+        handler.sjekkOgSettStatusResponse(
+                notifikasjon,
+                handler.convertResponse(beskjed.getData().getNyBeskjed()),
+                MutationStatus.NY_BESKJED_VELLYKKET);
         return beskjed;
     }
 
@@ -98,7 +101,10 @@ public class NotifikasjonService {
                 merkelapp.getValue(),
                 tekst.getTekst());
         final NyOppgaveResponse oppgave = handler.readResponse(response, NyOppgaveResponse.class);
-        handler.sjekkOgSettStatusResponse(notifikasjon, handler.convertResponse(oppgave), MutationStatus.NY_OPPGAVE_VELLYKKET);
+        handler.sjekkOgSettStatusResponse(
+                notifikasjon,
+                handler.convertResponse(oppgave.getData().getNyOppgave()),
+                MutationStatus.NY_OPPGAVE_VELLYKKET);
         return oppgave;
     }
 

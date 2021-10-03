@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @ActiveProfiles({Miljø.LOCAL})
 @DirtiesContext
-public class NotifikasjonMSAServiceTest {
+public class NotifikasjonServiceTest {
 
     @Autowired
     NotifikasjonService notifikasjonService;

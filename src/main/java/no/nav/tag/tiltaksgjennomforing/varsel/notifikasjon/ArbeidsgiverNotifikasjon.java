@@ -32,7 +32,7 @@ public class ArbeidsgiverNotifikasjon extends AbstractAggregateRoot<Arbeidsgiver
     private Integer serviceCode;
     private Integer serviceEdition;
     private boolean hendelseUtfort;
-    private String Status;
+    private String status;
 
     public static ArbeidsgiverNotifikasjon nyHendelse(
             Avtale avtale,
