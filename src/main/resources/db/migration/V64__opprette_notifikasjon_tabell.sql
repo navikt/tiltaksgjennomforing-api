@@ -9,5 +9,6 @@ create table arbeidsgiver_notifikasjon
     service_code           integer,
     service_edition        integer,
     hendelse_utfort        boolean,
-    status                 varchar
+    status                 varchar,
+    oppgave_avsluttet      boolean
 );
