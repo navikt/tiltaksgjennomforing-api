@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 public class NotifikasjonHendelseLytter {
     private final ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
 
+    //TODO legg til @EventListener på SoftDelete av oppgaver/beskjeder når avtale har blitt slettet av veileder.
+
     @Autowired
     NotifikasjonService notifikasjonService;
 
@@ -90,6 +92,7 @@ public class NotifikasjonHendelseLytter {
         final ArbeidsgiverNotifikasjon notifikasjon =
                 ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.AVBRUTT, notifikasjonService, parser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
+        // TODO: bruk metode som sjekker tabell og sjekker om det finnes aktive notifikasjons-oppgaver i tabell. For så å sende bekjed at oppgaveUtfoert()
         notifikasjonService.opprettNyBeskjed(
                 notifikasjon,
                 NotifikasjonMerkelapp.TILTAK,

@@ -32,6 +32,11 @@ public class NotifikasjonServiceTest {
     Avtale avtale;
     ArbeidsgiverNotifikasjon notifikasjon;
 
+    // TODO: Fjerne response-type fra opprettNyOppgave og opprettNyBeskjed. bruk heller sporring mot tabell at notifikasjon har blitt gjennomfort vellykket.
+
+    // TODO: skriv tester to oppgaveUtfoert
+    // TODO: skriv metode og tester for softDeleteOppgave
+
     @Before
     public void init() {
         avtale = TestData.enArbeidstreningAvtale();

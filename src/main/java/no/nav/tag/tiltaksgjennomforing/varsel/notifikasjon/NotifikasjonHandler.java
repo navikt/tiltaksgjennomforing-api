@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+// TODO: skriv test-klasse for NotifikasjonHandler.
+
 @Slf4j
 @Component
 public class NotifikasjonHandler {

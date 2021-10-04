@@ -108,6 +108,8 @@ public class NotifikasjonService {
         return oppgave;
     }
 
+    // TODO: lag metode som henter ut liste av alle oppgaver/beskjeder som er aktiv. iterer over dem og send beskjed til notifikasjon API at oppgaveUtfoert ved bruk av metode under.
+    // TODO: skriv ferdig metode
     public OppgaveUtfoertResponse oppgaveUtfoert(
             Avtale avtale,
             ArbeidsgiverNotifikasjon notifikasjon,
