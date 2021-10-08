@@ -7,11 +7,6 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.exceptions.*;
-import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeAdminTilgangException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6Exception;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
@@ -56,7 +51,6 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
-
         if (queryParametre.getVeilederNavIdent() != null) {
             return avtaleRepository.findAllByVeilederNavIdent(queryParametre.getVeilederNavIdent());
 
@@ -73,10 +67,10 @@ public class Veileder extends Avtalepart<NavIdent> {
         } else if (queryParametre.getNavEnhet() != null) {
             return avtaleRepository.findAllFordelteOrUfordeltByEnhet(queryParametre.getNavEnhet());
 
-        }else if (queryParametre.getAvtaleNr() != null) {
+        } else if (queryParametre.getAvtaleNr() != null) {
             return avtaleRepository.findAllByAvtaleNr(queryParametre.getAvtaleNr());
-        }else {
-            return emptyList();
+        } else {
+            return avtaleRepository.findAllByVeilederNavIdent(getIdentifikator());
         }
     }
 
@@ -288,14 +282,14 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     protected void oppdatereKostnadssted(Avtale avtale, Norg2Client norg2Client, String enhet) {
         final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetsnavn(enhet);
-        if(response != null) {
+        if (response != null) {
             NyttKostnadssted nyttKostnadssted = new NyttKostnadssted(enhet, response.getNavn());
             TreeSet<TilskuddPeriode> tilskuddPerioder = avtale.finnTilskuddsperioderIkkeLukketForEndring();
-            if(tilskuddPerioder == null) {
+            if (tilskuddPerioder == null) {
                 throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_IKKE_SATT);
             }
             avtale.oppdatereKostnadsstedForTilskuddsperioder(nyttKostnadssted);
-        }else {
+        } else {
             throw new FeilkodeException(Feilkode.ENHET_FINNES_IKKE);
         }
     }
