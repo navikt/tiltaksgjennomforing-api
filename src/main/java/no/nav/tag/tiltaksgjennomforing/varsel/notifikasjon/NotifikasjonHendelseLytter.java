@@ -93,6 +93,7 @@ public class NotifikasjonHendelseLytter {
                 ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.AVBRUTT, notifikasjonService, parser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
         // TODO: bruk metode som sjekker tabell og sjekker om det finnes aktive notifikasjons-oppgaver i tabell. For så å sende bekjed at oppgaveUtfoert()
+        notifikasjonService.sendBeskjedAtOppgaveUtfort(notifikasjon,NotifikasjonMerkelapp.TILTAK, NotifikasjonTekst.TILTAK_NOTIFIKASJON_OPPGAVE_UTFØRT);
         notifikasjonService.opprettNyBeskjed(
                 notifikasjon,
                 NotifikasjonMerkelapp.TILTAK,
@@ -125,6 +126,18 @@ public class NotifikasjonHendelseLytter {
                     notifikasjon,
                     NotifikasjonMerkelapp.TILTAK,
                     NotifikasjonTekst.TILTAK_AVTALE_GJENOPPRETTET
+            );
+    }
+
+    @EventListener
+    public void sletteNotifikasjon(AvtaleSlettemerket event) {
+            final ArbeidsgiverNotifikasjon notifikasjon = ArbeidsgiverNotifikasjon.nyHendelse(
+                    event.getAvtale(), VarslbarHendelseType.AVTALE_SLETTET, notifikasjonService, parser);
+            arbeidsgiverNotifikasjonRepository.save(notifikasjon);
+            notifikasjonService.softDeleteNotifikasjon(
+                    notifikasjon,
+                    NotifikasjonMerkelapp.TILTAK,
+                    NotifikasjonTekst.TILTAK_AVTALE_SLETTET_VEILEDER
             );
     }
 }

@@ -41,6 +41,8 @@ public class NotifikasjonParser {
         this.altinnTilgangsstyringProperties = altinnTilgangsstyringProperties;
     }
 
+    @Value("classpath:varsler/oppgaveUtfoert.graphql") Resource oppgaveUtfoertt;
+
     @SneakyThrows
     private static String resourceAsString(Resource adressebeskyttelseQuery) {
         String filinnhold = StreamUtils.copyToString(adressebeskyttelseQuery.getInputStream(), StandardCharsets.UTF_8);

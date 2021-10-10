@@ -37,7 +37,8 @@ public enum VarslbarHendelseType {
     AVTALE_INNGÅTT("Avtale godkjent av NAV"),
     REFUSJON_KLAR("Refusjon klar"),
     REFUSJON_KLAR_REVARSEL("Refusjon klar, revarsel"),
-    REFUSJON_FRIST_FORLENGET("Frist for refusjon forlenget");
+    REFUSJON_FRIST_FORLENGET("Frist for refusjon forlenget"),
+    AVTALE_SLETTET("Avtale slettet av  veileder");
 
     private final String tekst;
 }

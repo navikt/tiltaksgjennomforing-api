@@ -6,6 +6,8 @@ import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyBeskjed.NyBeskjedResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyOppgave.NyOppgaveResponse;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.oppgaveUtfoert.OppgaveUtfoertResponse;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.softDeleteNotifikasjon.SoftDeleteNotifikasjonResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,11 +33,6 @@ public class NotifikasjonServiceTest {
 
     Avtale avtale;
     ArbeidsgiverNotifikasjon notifikasjon;
-
-    // TODO: Fjerne response-type fra opprettNyOppgave og opprettNyBeskjed. bruk heller sporring mot tabell at notifikasjon har blitt gjennomfort vellykket.
-
-    // TODO: skriv tester to oppgaveUtfoert
-    // TODO: skriv metode og tester for softDeleteOppgave
 
     @Before
     public void init() {
@@ -66,5 +63,25 @@ public class NotifikasjonServiceTest {
                         NotifikasjonMerkelapp.TILTAK,
                         NotifikasjonTekst.AVTALE_OPPRETTET);
         assertThat(response.getData().getNyOppgave().get__typename()).isNotEmpty();
+    }
+
+    @Test
+    public void settOppgaveUtfoertTest() {
+        final OppgaveUtfoertResponse response =
+                notifikasjonService.oppgaveUtfoert(
+                        notifikasjon,
+                        NotifikasjonMerkelapp.TILTAK,
+                        NotifikasjonTekst.TILTAK_NOTIFIKASJON_OPPGAVE_UTFØRT);
+        assertThat(response.getData().getOppgaveUtfoert().get__typename()).isNotEmpty();
+    }
+
+    @Test
+    public void softDeleteAvOppgaveTest() {
+        final SoftDeleteNotifikasjonResponse response =
+                notifikasjonService.softDeleteNotifikasjon(
+                        notifikasjon,
+                        NotifikasjonMerkelapp.TILTAK,
+                        NotifikasjonTekst.TILTAK_AVTALE_SLETTET_VEILEDER);
+        assertThat(response.getData().getSoftDeleteNotifikasjon().get__typename()).isNotEmpty();
     }
 }

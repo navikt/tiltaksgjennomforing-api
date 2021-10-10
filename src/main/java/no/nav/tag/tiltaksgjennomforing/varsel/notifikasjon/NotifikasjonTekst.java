@@ -9,7 +9,10 @@ public enum NotifikasjonTekst {
     TILTAK_AVTALE_LASTOPP("Avtale har blitt låst opp. Trenger ny godkjenning"),
     TILTAK_AVTALE_GJENOPPRETTET("Arbeidstiltak avtale gjenopprettet."),
     TILTAK_AVTALE_KLAR_REFUSJON("Refusjon for tiltaksavtale er klar."),
-    TILTAK_AVTALE_GODKJENT_VEILEDER("Arbeidstiltak avtale godkjent av veileder.");
+    TILTAK_AVTALE_GODKJENT_VEILEDER("Arbeidstiltak avtale godkjent av veileder."),
+    TILTAK_AVTALE_SLETTET_VEILEDER("Avtale er slettet av veileder"),
+    TILTAK_NOTIFIKASJON_OPPGAVE_UTFØRT("Notifikasjons oppgaven er utført.");
+
 
     private final String tekst;
 
