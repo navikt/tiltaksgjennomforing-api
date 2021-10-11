@@ -2,6 +2,8 @@ package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.exceptions.KallTiArbeidsgiverNotifikasjonFeiletException;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.CommonResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.FellesMutationResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +12,6 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
-
-// TODO: skriv test-klasse for NotifikasjonHandler.
 
 @Slf4j
 @Component
@@ -44,7 +44,6 @@ public class NotifikasjonHandler {
         }catch (Exception e) {
             log.error("feilet med convertering av data til FellesMutationResponse klasse");
         }
-
         return null;
     }
 

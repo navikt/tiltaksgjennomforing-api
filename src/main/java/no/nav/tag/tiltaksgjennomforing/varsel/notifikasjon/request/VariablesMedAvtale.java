@@ -1,12 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.request;
 
-import lombok.Data;
+import lombok.Value;
 
-import java.util.UUID;
-
-
-@Data
-public class Variables {
+@Value
+public class VariablesMedAvtale {
     String id;
     String eksternId;
     String virksomhetsnummer;
@@ -15,5 +12,4 @@ public class Variables {
     String serviceEdition;
     String merkelapp;
     String tekst;
-    UUID id;
 }
