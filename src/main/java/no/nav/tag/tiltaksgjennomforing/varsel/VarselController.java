@@ -53,7 +53,7 @@ public class VarselController {
     public ResponseEntity<?> settTilLest(@PathVariable("varselId") UUID varselId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Varsel varsel = varselRepository.findByIdAndIdentifikatorIn(varselId, avtalepart.identifikatorer());
-        varsel.settTilLest();
+        varsel.settTilLest(varsel.getAvtaleId());
         varselRepository.save(varsel);
         return ResponseEntity.ok().build();
     }

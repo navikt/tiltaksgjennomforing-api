@@ -7,7 +7,6 @@ import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.request.Variables;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyBeskjed.NyBeskjedResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyOppgave.NyOppgaveResponse;
-import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.oppgaveUtfoert.OppgaveUtfoertResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
@@ -16,6 +15,9 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+import java.util.UUID;
 
 
 @Slf4j
@@ -61,16 +63,17 @@ public class NotifikasjonService {
     }
 
     private String opprettNyMutasjon(ArbeidsgiverNotifikasjon notifikasjon, String mutation, String merkelapp, String tekst) {
+        Variables variables = new Variables();
+        variables.setEksternId(notifikasjon.getId().toString());
+        variables.setVirksomhetsnummer(notifikasjon.getVirksomhetsnummer().asString());
+        variables.setLenke(notifikasjon.getLenke());
+        variables.setServiceCode(notifikasjon.getServiceCode().toString());
+        variables.setMerkelapp(merkelapp);
+        variables.setTekst(tekst);
+        variables.setServiceEdition(notifikasjon.getServiceEdition().toString());
         ArbeidsgiverMutationRequest request = new ArbeidsgiverMutationRequest(
                 mutation,
-                new Variables(
-                        notifikasjon.getId().toString(),
-                        notifikasjon.getVirksomhetsnummer().asString(),
-                        notifikasjon.getLenke(),
-                        notifikasjon.getServiceCode().toString(),
-                        notifikasjon.getServiceEdition().toString(),
-                        merkelapp,
-                        tekst));
+                variables);
         return opprettNotifikasjon(request);
     }
 
@@ -108,20 +111,36 @@ public class NotifikasjonService {
         return oppgave;
     }
 
-    // TODO: lag metode som henter ut liste av alle oppgaver/beskjeder som er aktiv. iterer over dem og send beskjed til notifikasjon API at oppgaveUtfoert ved bruk av metode under.
-    // TODO: skriv ferdig metode
-    public OppgaveUtfoertResponse oppgaveUtfoert(
-            Avtale avtale,
-            ArbeidsgiverNotifikasjon notifikasjon,
-            NotifikasjonMerkelapp merkelapp,
-            NotifikasjonTekst tekst) {
+    public void oppgaveUtfoert(UUID avtaleId) {
+        final List<ArbeidsgiverNotifikasjon> notifikasjonList =
+                handler.finnAktiveNotifikasjonerUtfoert(avtaleId);
+        if (!notifikasjonList.isEmpty()) {
+            notifikasjonList.forEach(n -> {
+                Variables variables = new Variables();
+                variables.setId(n.getId());
+                opprettNotifikasjon(new ArbeidsgiverMutationRequest(
+                        notifikasjonParser.getOppgaveUtfoert(),
+                        variables
+                ));
+                n.setOppgaveAvsluttet(true);
+                handler.saveNotifikasjon(n);
+            });
+        }
+    }
 
-        final String response = opprettNyMutasjon(
-                notifikasjon,
-                notifikasjonParser.getOppgaveUtfoert(),
-                merkelapp.getValue(),
-                tekst.getTekst()
-        );
-        return handler.readResponse(response, OppgaveUtfoertResponse.class);
+    public void softDeleteNotifikasjoner(Avtale avtale) {
+        final List<ArbeidsgiverNotifikasjon> notifikasjonlist =
+                handler.finnAktiveNotifikasjonerUtfoert(avtale.getId());
+        if (!notifikasjonlist.isEmpty()) {
+            notifikasjonlist.forEach(n -> {
+                Variables variables = new Variables();
+                variables.setId(n.getId());
+                opprettNotifikasjon(new ArbeidsgiverMutationRequest(
+                        notifikasjonParser.getSoftDeleteNotifikasjon(),
+                        variables));
+                n.setOppgaveAvsluttet(true);
+                handler.saveNotifikasjon(n);
+            });
+        }
     }
 }

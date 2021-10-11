@@ -2,12 +2,14 @@ package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.CommonResponse;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.FellesMutationResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
 
 // TODO: skriv test-klasse for NotifikasjonHandler.
 
@@ -34,16 +36,21 @@ public class NotifikasjonHandler {
         return null;
     }
 
-    public CommonResponse convertResponse(Object data) {
-        if (data != null) {
-            return objectMapper.convertValue(data, CommonResponse.class);
+    public FellesMutationResponse convertResponse(Object data) {
+        try {
+            if (data != null) {
+                return objectMapper.convertValue(data, FellesMutationResponse.class);
+            }
+        }catch (Exception e) {
+            log.error("feilet med convertering av data til FellesMutationResponse klasse");
         }
+
         return null;
     }
 
     public void sjekkOgSettStatusResponse(
             ArbeidsgiverNotifikasjon notifikasjon,
-            CommonResponse response,
+            FellesMutationResponse response,
             MutationStatus vellykketStatus) {
         if (response != null) {
             if (response.get__typename().equals(vellykketStatus.getStatus())) {
@@ -52,5 +59,13 @@ public class NotifikasjonHandler {
             notifikasjon.setStatus(vellykketStatus.getStatus());
             notifikasjonRepository.save(notifikasjon);
         }
+    }
+
+    public void saveNotifikasjon(ArbeidsgiverNotifikasjon notifikasjon) {
+        notifikasjonRepository.save(notifikasjon);
+    }
+
+    public List<ArbeidsgiverNotifikasjon> finnAktiveNotifikasjonerUtfoert(UUID id) {
+        return notifikasjonRepository.findArbeidsgiverNotifikasjonByAvtaleId(id);
     }
 }

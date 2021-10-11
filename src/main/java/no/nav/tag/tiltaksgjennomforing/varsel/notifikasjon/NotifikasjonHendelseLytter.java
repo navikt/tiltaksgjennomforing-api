@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
+import no.nav.tag.tiltaksgjennomforing.varsel.VarslerLest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -12,8 +13,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class NotifikasjonHendelseLytter {
     private final ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
-
-    //TODO legg til @EventListener på SoftDelete av oppgaver/beskjeder når avtale har blitt slettet av veileder.
 
     @Autowired
     NotifikasjonService notifikasjonService;
@@ -92,12 +91,17 @@ public class NotifikasjonHendelseLytter {
         final ArbeidsgiverNotifikasjon notifikasjon =
                 ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.AVBRUTT, notifikasjonService, parser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
-        // TODO: bruk metode som sjekker tabell og sjekker om det finnes aktive notifikasjons-oppgaver i tabell. For så å sende bekjed at oppgaveUtfoert()
+        notifikasjonService.oppgaveUtfoert(event.getAvtale().getId());
         notifikasjonService.opprettNyBeskjed(
                 notifikasjon,
                 NotifikasjonMerkelapp.TILTAK,
                 NotifikasjonTekst.TILTAK_AVTALE_AVBRUTT
         );
+    }
+
+    @EventListener
+    public void VisningAvVarsler(VarslerLest event){
+        notifikasjonService.oppgaveUtfoert(event.getAvtaleId());
     }
 
     @EventListener
@@ -126,5 +130,10 @@ public class NotifikasjonHendelseLytter {
                     NotifikasjonMerkelapp.TILTAK,
                     NotifikasjonTekst.TILTAK_AVTALE_GJENOPPRETTET
             );
+    }
+
+    @EventListener
+    public void avtaleAnnullert(AnnullertAvVeileder event) {
+        notifikasjonService.softDeleteNotifikasjoner(event.getAvtale());
     }
 }
