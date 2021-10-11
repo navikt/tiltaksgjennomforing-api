@@ -7,7 +7,6 @@ import java.util.UUID;
 
 @Data
 public class Variables {
-    String id;
     String eksternId;
     String virksomhetsnummer;
     String lenke;

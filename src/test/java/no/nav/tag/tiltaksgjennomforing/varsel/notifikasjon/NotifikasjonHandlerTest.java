@@ -1,7 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KallTiArbeidsgiverNotifikasjonFeiletException;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.FellesMutationResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
 import org.junit.jupiter.api.Test;
@@ -11,8 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest
@@ -37,18 +34,5 @@ public class NotifikasjonHandlerTest {
         notifikasjonHandler.sjekkOgSettStatusResponse(arbeidsgiverNotifikasjon, response, mutationStatus);
 
         Mockito.verify(arbeidsgiverNotifikasjonRepository).save(any());
-    }
-
-    @Test
-    public void sjekkOgSettStatusResponseErNullTest(){
-
-        ArbeidsgiverNotifikasjon arbeidsgiverNotifikasjon = new ArbeidsgiverNotifikasjon();
-        FellesMutationResponse response = null;
-        MutationStatus mutationStatus = MutationStatus.NY_OPPGAVE_VELLYKKET;
-
-
-        assertThrows(KallTiArbeidsgiverNotifikasjonFeiletException.class, () -> {
-            notifikasjonHandler.sjekkOgSettStatusResponse(arbeidsgiverNotifikasjon, response, mutationStatus);
-        });
     }
 }
