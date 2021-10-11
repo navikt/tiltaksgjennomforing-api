@@ -1,8 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
 public enum NotifikasjonMerkelapp {
-    TILTAK("Tiltak"),
-    REFUSJON("Refusjon");
+    LONNTILSKUDD("Lønnstilskudd"),
+    MENTOR("Mentor"),
+    SOMMERJOBB("Sommerjobb"),
+    ARBEIDSTRENING("Arbeidstrening");
 
     private final String merkelapp;
 
@@ -12,5 +14,20 @@ public enum NotifikasjonMerkelapp {
 
     public String getValue() {
         return merkelapp;
+    }
+
+    public static NotifikasjonMerkelapp getMerkelapp(String merkelapp) {
+        switch (merkelapp) {
+            case "Midlertidig lønnstilskudd":
+            case "Varig lønnstilskudd":
+                return NotifikasjonMerkelapp.LONNTILSKUDD;
+            case "Mentor":
+                return NotifikasjonMerkelapp.MENTOR;
+            case "Sommerjobb":
+                return NotifikasjonMerkelapp.SOMMERJOBB;
+            case "Arbeidstrening":
+            default:
+                return NotifikasjonMerkelapp.ARBEIDSTRENING;
+        }
     }
 }

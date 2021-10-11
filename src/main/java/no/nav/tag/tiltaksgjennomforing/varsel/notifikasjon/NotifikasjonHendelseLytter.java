@@ -27,7 +27,7 @@ public class NotifikasjonHendelseLytter {
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
         notifikasjonService.opprettOppgave(
                 notifikasjon,
-                NotifikasjonMerkelapp.TILTAK,
+                NotifikasjonMerkelapp.getMerkelapp(event.getAvtale().getTiltakstype().getNavn()),
                 NotifikasjonTekst.AVTALE_OPPRETTET);
     }
 
@@ -38,7 +38,7 @@ public class NotifikasjonHendelseLytter {
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
         notifikasjonService.opprettOppgave(
                 notifikasjon,
-                NotifikasjonMerkelapp.REFUSJON,
+                NotifikasjonMerkelapp.getMerkelapp(event.getAvtale().getTiltakstype().getNavn()),
                 NotifikasjonTekst.TILTAK_AVTALE_KLAR_REFUSJON
         );
     }
@@ -54,7 +54,7 @@ public class NotifikasjonHendelseLytter {
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
         notifikasjonService.opprettNyBeskjed(
                 notifikasjon,
-                NotifikasjonMerkelapp.TILTAK,
+                NotifikasjonMerkelapp.getMerkelapp(event.getAvtale().getTiltakstype().getNavn()),
                 NotifikasjonTekst.TILTAK_AVTALE_GODKJENT_VEILEDER);
     }
 
@@ -65,7 +65,7 @@ public class NotifikasjonHendelseLytter {
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
         notifikasjonService.opprettNyBeskjed(
                 notifikasjon,
-                NotifikasjonMerkelapp.TILTAK,
+                NotifikasjonMerkelapp.getMerkelapp(event.getAvtale().getTiltakstype().getNavn()),
                 NotifikasjonTekst.TILTAK_AVTALE_ENDRET
         );
     }
@@ -81,7 +81,7 @@ public class NotifikasjonHendelseLytter {
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
         notifikasjonService.opprettOppgave(
                 notifikasjon,
-                NotifikasjonMerkelapp.TILTAK,
+                NotifikasjonMerkelapp.getMerkelapp(event.getAvtale().getTiltakstype().getNavn()),
                 NotifikasjonTekst.TILTAK_AVTALE_INNGATT
         );
     }
@@ -102,7 +102,7 @@ public class NotifikasjonHendelseLytter {
             arbeidsgiverNotifikasjonRepository.save(notifikasjon);
             notifikasjonService.opprettOppgave(
                     notifikasjon,
-                    NotifikasjonMerkelapp.TILTAK,
+                    NotifikasjonMerkelapp.getMerkelapp(event.getAvtale().getTiltakstype().getNavn()),
                     NotifikasjonTekst.TILTAK_AVTALE_GJENOPPRETTET
             );
     }

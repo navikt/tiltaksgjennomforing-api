@@ -48,7 +48,7 @@ public class NotifikasjonServiceTest {
         final NyBeskjedResponse response =
                 notifikasjonService.opprettNyBeskjed(
                         notifikasjon,
-                        NotifikasjonMerkelapp.TILTAK,
+                        NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getNavn()),
                         NotifikasjonTekst.AVTALE_OPPRETTET);
         assertThat(response.getData().getNyBeskjed().get__typename()).isNotEmpty();
     }
@@ -58,7 +58,7 @@ public class NotifikasjonServiceTest {
         final NyOppgaveResponse response =
                 notifikasjonService.opprettOppgave(
                         notifikasjon,
-                        NotifikasjonMerkelapp.TILTAK,
+                        NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getNavn()),
                         NotifikasjonTekst.AVTALE_OPPRETTET);
         assertThat(response.getData().getNyOppgave().get__typename()).isNotEmpty();
     }
