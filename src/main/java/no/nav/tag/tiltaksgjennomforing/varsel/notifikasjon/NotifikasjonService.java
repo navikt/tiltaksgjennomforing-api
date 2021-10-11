@@ -7,8 +7,6 @@ import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.request.Variables;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyBeskjed.NyBeskjedResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyOppgave.NyOppgaveResponse;
-import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.oppgaveUtfoert.OppgaveUtfoertResponse;
-import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.softDeleteNotifikasjon.SoftDeleteNotifikasjonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
@@ -30,20 +28,16 @@ public class NotifikasjonService {
     private final NotifikasjonerProperties notifikasjonerProperties;
     private final NotifikasjonParser notifikasjonParser;
 
-    private final ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
-
     public NotifikasjonService(
-            @Qualifier("påVegneAvSaksbehandlerGraphRestTemplate") RestTemplate restTemplate,
+            @Qualifier("anonymProxyRestTemplate") RestTemplate restTemplate,
             @Autowired NotifikasjonParser notifikasjonParser,
             NotifikasjonerProperties properties,
-            NotifikasjonHandler handler,
-            @Autowired ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository
+            NotifikasjonHandler handler
     ) {
         this.restTemplate = restTemplate;
         this.notifikasjonerProperties = properties;
         this.notifikasjonParser = notifikasjonParser;
         this.handler = handler;
-        this.arbeidsgiverNotifikasjonRepository = arbeidsgiverNotifikasjonRepository;
     }
 
     private HttpEntity<String> createRequestEntity(ArbeidsgiverMutationRequest arbeidsgiverMutationRequest) {
@@ -117,46 +111,7 @@ public class NotifikasjonService {
         return oppgave;
     }
 
-    // TODO: lag metode som henter ut liste av alle oppgaver/beskjeder som er aktiv. iterer over dem og send beskjed til notifikasjon API at oppgaveUtfoert ved bruk av metode under.
-    // TODO: skriv ferdig metode
 
-    public OppgaveUtfoertResponse oppgaveUtfoert(ArbeidsgiverNotifikasjon notifikasjon, NotifikasjonMerkelapp merkelapp, NotifikasjonTekst tekst){
-        final String response = opprettNyMutasjon(
-                notifikasjon,
-                notifikasjonParser.getOppgaveUtfoert(),
-                merkelapp.getValue(),
-                tekst.getTekst());
-        final OppgaveUtfoertResponse utfortOppgave = handler.readResponse(response, OppgaveUtfoertResponse.class);
-        handler.sjekkOgSettStatusResponse(
-                notifikasjon,
-                handler.convertResponse(utfortOppgave.getData().getOppgaveUtfoert()),
-                MutationStatus.OPPGAVE_UTFOERT_VELLYKKET
-        );
-        return utfortOppgave;
-    }
-
-    public SoftDeleteNotifikasjonResponse softDeleteNotifikasjon(
-            ArbeidsgiverNotifikasjon notifikasjon,
-            NotifikasjonMerkelapp merkelapp,
-            NotifikasjonTekst tekst) {
-        final String response = opprettNyMutasjon(
-                notifikasjon,
-                notifikasjonParser.getSoftDeleteNotifikasjon(),
-                merkelapp.getValue(),
-                tekst.getTekst());
-        final SoftDeleteNotifikasjonResponse softDelete = handler.readResponse(response, SoftDeleteNotifikasjonResponse.class);
-        handler.sjekkOgSettStatusResponse(
-                notifikasjon,
-                handler.convertResponse(softDelete.getData().getSoftDeleteNotifikasjon()),
-                MutationStatus.SOFT_DELETE_NOTIFIKASJON_VELLYKKET
-        );
-        return softDelete;
-    }
-
-    public void sendBeskjedAtOppgaveUtfort(ArbeidsgiverNotifikasjon notifikasjon, NotifikasjonMerkelapp merkelapp, NotifikasjonTekst tekst){
-        for(ArbeidsgiverNotifikasjon notifikasjoner : arbeidsgiverNotifikasjonRepository.aktiveNotifikasjoner(notifikasjon.getAvtaleId())) {
-            oppgaveUtfoert(notifikasjon, merkelapp, tekst);
-        }
     public void oppgaveUtfoert(UUID avtaleId) {
         final List<ArbeidsgiverNotifikasjon> notifikasjonList =
                 handler.finnAktiveNotifikasjonerUtfoert(avtaleId);
@@ -168,7 +123,7 @@ public class NotifikasjonService {
                         notifikasjonParser.getOppgaveUtfoert(),
                         variables
                 ));
-                n.setOppgaveAvsluttet(true);
+                n.setNotifikasjonLest(true);
                 handler.saveNotifikasjon(n);
             });
         }
@@ -184,7 +139,7 @@ public class NotifikasjonService {
                 opprettNotifikasjon(new ArbeidsgiverMutationRequest(
                         notifikasjonParser.getSoftDeleteNotifikasjon(),
                         variables));
-                n.setOppgaveAvsluttet(true);
+                n.setNotifikasjonLest(true);
                 handler.saveNotifikasjon(n);
             });
         }

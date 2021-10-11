@@ -31,9 +31,9 @@ public class ArbeidsgiverNotifikasjon extends AbstractAggregateRoot<Arbeidsgiver
     private String lenke;
     private Integer serviceCode;
     private Integer serviceEdition;
-    private boolean hendelseUtfort;
-    private String status;
-    private boolean oppgaveAvsluttet;
+    private boolean varselSendtVellykket;
+    private String statusResponse;
+    private boolean notifikasjonLest;
 
     public static ArbeidsgiverNotifikasjon nyHendelse(
             Avtale avtale,
@@ -55,7 +55,7 @@ public class ArbeidsgiverNotifikasjon extends AbstractAggregateRoot<Arbeidsgiver
         notifikasjon.lenke = lenke;
         notifikasjon.serviceCode = notifikasjonerProperties.getServiceCode();
         notifikasjon.serviceEdition = notifikasjonerProperties.getServiceEdition();
-        notifikasjon.hendelseUtfort = false;
+        notifikasjon.varselSendtVellykket = false;
 
         return notifikasjon;
     }

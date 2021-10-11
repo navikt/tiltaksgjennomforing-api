@@ -11,9 +11,9 @@ public interface ArbeidsgiverNotifikasjonRepository extends JpaRepository<Arbeid
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Query("FROM ArbeidsgiverNotifikasjon "
-            + "where hendelseUtfort = true and oppgaveAvsluttet = false")
+            + "where varselSendtVellykket = true and NotifikasjonIkkeLest = false")
     List<ArbeidsgiverNotifikasjon> findArbeidsgiverNotifikasjonByAvtaleId(UUID id);
 
-    @Query(value = "FROM ArbeidsgiverNotifikasjon n WHERE n.avtaleId = (?1) AND n.hendelseUtfort = false")
+    @Query(value = "FROM ArbeidsgiverNotifikasjon n WHERE n.avtaleId = (?1) AND n.varselSendtVellykket = false")
     List<ArbeidsgiverNotifikasjon> aktiveNotifikasjoner(UUID id);
 }

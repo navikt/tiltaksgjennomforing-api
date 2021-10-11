@@ -2,8 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KallTiArbeidsgiverNotifikasjonFeiletException;
-import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.CommonResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.FellesMutationResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,9 +51,9 @@ public class NotifikasjonHandler {
             MutationStatus vellykketStatus) {
         if (response != null) {
             if (response.get__typename().equals(vellykketStatus.getStatus())) {
-                notifikasjon.setHendelseUtfort(true);
+                notifikasjon.setVarselSendtVellykket(true);
             }
-            notifikasjon.setStatus(vellykketStatus.getStatus());
+            notifikasjon.setStatusResponse(vellykketStatus.getStatus());
             notifikasjonRepository.save(notifikasjon);
         }
     }

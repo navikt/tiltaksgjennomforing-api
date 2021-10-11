@@ -87,35 +87,8 @@ public class NotifikasjonHendelseLytter {
     }
 
     @EventListener
-    public void avbrutt(AvbruttAvVeileder event) {
-        final ArbeidsgiverNotifikasjon notifikasjon =
-                ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.AVBRUTT, notifikasjonService, parser);
-        arbeidsgiverNotifikasjonRepository.save(notifikasjon);
-        notifikasjonService.oppgaveUtfoert(event.getAvtale().getId());
-        // TODO: bruk metode som sjekker tabell og sjekker om det finnes aktive notifikasjons-oppgaver i tabell. For så å sende bekjed at oppgaveUtfoert()
-        notifikasjonService.sendBeskjedAtOppgaveUtfort(notifikasjon,NotifikasjonMerkelapp.TILTAK, NotifikasjonTekst.TILTAK_NOTIFIKASJON_OPPGAVE_UTFØRT);
-        notifikasjonService.opprettNyBeskjed(
-                notifikasjon,
-                NotifikasjonMerkelapp.TILTAK,
-                NotifikasjonTekst.TILTAK_AVTALE_AVBRUTT
-        );
-    }
-
-    @EventListener
     public void VisningAvVarsler(VarslerLest event){
         notifikasjonService.oppgaveUtfoert(event.getAvtaleId());
-    }
-
-    @EventListener
-    public void låstOpp(AvtaleLåstOpp event) {
-        final ArbeidsgiverNotifikasjon notifikasjon =
-                ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.LÅST_OPP, notifikasjonService, parser);
-        arbeidsgiverNotifikasjonRepository.save(notifikasjon);
-        notifikasjonService.opprettOppgave(
-                notifikasjon,
-                NotifikasjonMerkelapp.TILTAK,
-                NotifikasjonTekst.TILTAK_AVTALE_LASTOPP
-        );
     }
 
     @EventListener
@@ -136,14 +109,7 @@ public class NotifikasjonHendelseLytter {
 
     @EventListener
     public void sletteNotifikasjon(AvtaleSlettemerket event) {
-            final ArbeidsgiverNotifikasjon notifikasjon = ArbeidsgiverNotifikasjon.nyHendelse(
-                    event.getAvtale(), VarslbarHendelseType.AVTALE_SLETTET, notifikasjonService, parser);
-            arbeidsgiverNotifikasjonRepository.save(notifikasjon);
-            notifikasjonService.softDeleteNotifikasjon(
-                    notifikasjon,
-                    NotifikasjonMerkelapp.TILTAK,
-                    NotifikasjonTekst.TILTAK_AVTALE_SLETTET_VEILEDER
-            );
+        notifikasjonService.softDeleteNotifikasjoner(event.getAvtale());
     }
 
     @EventListener

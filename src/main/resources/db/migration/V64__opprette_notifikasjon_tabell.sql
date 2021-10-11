@@ -8,7 +8,7 @@ create table arbeidsgiver_notifikasjon
     lenke                  varchar,
     service_code           integer,
     service_edition        integer,
-    hendelse_utfort        boolean,
-    status                 varchar,
-    oppgave_avsluttet      boolean
+    varsel_sendt_vellykket boolean,
+    status_response        varchar,
+    notifikasjon_lest      boolean
 );

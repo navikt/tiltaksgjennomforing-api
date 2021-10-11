@@ -65,7 +65,7 @@ public class NotifikasjonServiceTest {
         assertThat(response.getData().getNyOppgave().get__typename()).isNotEmpty();
     }
 
-    @Test
+/*    @Test
     public void settOppgaveUtfoertTest() {
         final OppgaveUtfoertResponse response =
                 notifikasjonService.oppgaveUtfoert(
@@ -73,9 +73,9 @@ public class NotifikasjonServiceTest {
                         NotifikasjonMerkelapp.TILTAK,
                         NotifikasjonTekst.TILTAK_NOTIFIKASJON_OPPGAVE_UTFØRT);
         assertThat(response.getData().getOppgaveUtfoert().get__typename()).isNotEmpty();
-    }
+    }*/
 
-    @Test
+/*    @Test
     public void softDeleteAvOppgaveTest() {
         final SoftDeleteNotifikasjonResponse response =
                 notifikasjonService.softDeleteNotifikasjon(
@@ -83,5 +83,5 @@ public class NotifikasjonServiceTest {
                         NotifikasjonMerkelapp.TILTAK,
                         NotifikasjonTekst.TILTAK_AVTALE_SLETTET_VEILEDER);
         assertThat(response.getData().getSoftDeleteNotifikasjon().get__typename()).isNotEmpty();
-    }
+    }*/
 }
