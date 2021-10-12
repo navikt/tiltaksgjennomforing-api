@@ -13,4 +13,5 @@ public class Variables {
     String merkelapp;
     String tekst;
     UUID id;
+    UUID grupperingsId;
 }

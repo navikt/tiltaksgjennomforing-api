@@ -74,8 +74,7 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
         return varsel;
     }
 
-    public void settTilLest(UUID avtaleId) {
+    public void settTilLest() {
         lest = true;
-        registerEvent(new VarslerLest(avtaleId));
     }
 }

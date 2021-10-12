@@ -6,10 +6,12 @@ mutation OpprettNyOppgave(
   $merkelapp: String!
   $lenke: String!
   $tekst: String!
+  $grupperingsId: String!
 ) {
   nyOppgave(nyOppgave: {
     metadata: {
       eksternId: $eksternId
+      grupperingsid: $grupperingsId
     }
     mottaker: {
       altinn: {

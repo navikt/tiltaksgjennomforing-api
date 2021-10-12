@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.request.ArbeidsgiverMutationRequest;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.request.Variables;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
@@ -71,13 +72,14 @@ public class NotifikasjonService {
         variables.setMerkelapp(merkelapp);
         variables.setTekst(tekst);
         variables.setServiceEdition(notifikasjon.getServiceEdition().toString());
+        variables.setGrupperingsId(notifikasjon.getAvtaleId());
         ArbeidsgiverMutationRequest request = new ArbeidsgiverMutationRequest(
                 mutation,
                 variables);
         return opprettNotifikasjon(request);
     }
 
-    public NyBeskjedResponse opprettNyBeskjed(
+    public void opprettNyBeskjed(
             ArbeidsgiverNotifikasjon notifikasjon,
             NotifikasjonMerkelapp merkelapp,
             NotifikasjonTekst tekst) {
@@ -91,7 +93,6 @@ public class NotifikasjonService {
                 notifikasjon,
                 handler.convertResponse(beskjed.getData().getNyBeskjed()),
                 MutationStatus.NY_BESKJED_VELLYKKET);
-        return beskjed;
     }
 
     public NyOppgaveResponse opprettOppgave(
@@ -112,9 +113,9 @@ public class NotifikasjonService {
     }
 
 
-    public void oppgaveUtfoert(UUID avtaleId, MutationStatus status) {
+    public void oppgaveUtfoert(UUID avtaleId, VarslbarHendelseType hendelseType, MutationStatus status) {
         final List<ArbeidsgiverNotifikasjon> notifikasjonList =
-                handler.finnUtfoertNotifikasjon(avtaleId, status.getStatus());
+                handler.finnUtfoertNotifikasjon(avtaleId, hendelseType.getTekst(), status.getStatus());
         if (!notifikasjonList.isEmpty()) {
             notifikasjonList.forEach(n -> {
                 Variables variables = new Variables();

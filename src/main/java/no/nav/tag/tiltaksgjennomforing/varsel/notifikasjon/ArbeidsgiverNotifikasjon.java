@@ -50,6 +50,7 @@ public class ArbeidsgiverNotifikasjon extends AbstractAggregateRoot<Arbeidsgiver
         ArbeidsgiverNotifikasjon notifikasjon = new ArbeidsgiverNotifikasjon();
         notifikasjon.id = UUID.randomUUID();
         notifikasjon.tidspunkt = LocalDateTime.now();
+        notifikasjon.avtaleId = avtale.getId();
         notifikasjon.hendelseType = varslbarHendelseType;
         notifikasjon.virksomhetsnummer = avtale.getBedriftNr();
         notifikasjon.lenke = lenke;

@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
-import no.nav.tag.tiltaksgjennomforing.varsel.VarslerLest;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -45,6 +44,14 @@ public class NotifikasjonHendelseLytter {
     }
 
     @EventListener
+    public void godkjentAvArbeidsgiver(GodkjentAvArbeidsgiver event) {
+        notifikasjonService.oppgaveUtfoert(
+                event.getAvtale().getId(),
+                VarslbarHendelseType.OPPRETTET,
+                MutationStatus.NY_OPPGAVE_VELLYKKET);
+    }
+
+    @EventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
         final ArbeidsgiverNotifikasjon notifikasjon =
                 ArbeidsgiverNotifikasjon.nyHendelse(
@@ -53,7 +60,10 @@ public class NotifikasjonHendelseLytter {
                         notifikasjonService,
                         parser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
-        notifikasjonService.oppgaveUtfoert(event.getAvtale().getId(), MutationStatus.NY_OPPGAVE_VELLYKKET);
+        notifikasjonService.oppgaveUtfoert(
+                event.getAvtale().getId(),
+                VarslbarHendelseType.OPPRETTET,
+                MutationStatus.NY_OPPGAVE_VELLYKKET);
         notifikasjonService.opprettNyBeskjed(
                 notifikasjon,
                 NotifikasjonMerkelapp.getMerkelapp(event.getAvtale().getTiltakstype().getNavn()),
@@ -86,12 +96,6 @@ public class NotifikasjonHendelseLytter {
                 NotifikasjonMerkelapp.getMerkelapp(event.getAvtale().getTiltakstype().getNavn()),
                 NotifikasjonTekst.TILTAK_AVTALE_INNGATT
         );
-    }
-
-    // TODO: Fjerne eventListener og registrering av event.
-    @EventListener
-    public void VisningAvVarsler(VarslerLest event){
-        /*notifikasjonService.oppgaveUtfoert(event.getAvtaleId());*/
     }
 
     @EventListener

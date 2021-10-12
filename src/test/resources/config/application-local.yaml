@@ -94,7 +94,7 @@ tiltaksgjennomforing:
   dokgen:
     uri: http://localhost:9000/template/tiltak-avtale/create-pdf
   notifikasjoner:
-    uri: https://notifikasjon-fake-produsent-api.labs.nais.io/api/graphql
+    uri: http://localhost:8090/api/graphql
     lenke: http://localhost:3000/tiltaksgjennomforing/avtale/
   dvh-melding:
     feature-enabled: true

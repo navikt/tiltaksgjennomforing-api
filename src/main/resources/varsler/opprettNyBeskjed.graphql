@@ -6,10 +6,12 @@ mutation OpprettNyBeskjed(
   $serviceEdition: String!
   $merkelapp: String!
   $tekst: String!
+  $grupperingsId: String!
 ) {
   nyBeskjed(nyBeskjed: {
     metadata: {
       eksternId: $eksternId
+      grupperingsid: $grupperingsId
     }
     mottaker: {
       altinn: {

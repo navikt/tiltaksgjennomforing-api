@@ -15,6 +15,6 @@ public interface ArbeidsgiverNotifikasjonRepository extends JpaRepository<Arbeid
     List<ArbeidsgiverNotifikasjon> findArbeidsgiverNotifikasjonByAvtaleId(UUID id);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    List<ArbeidsgiverNotifikasjon> findArbeidsgiverNotifikasjonByIdAndStatusResponseEquals(UUID id, String statusResponse);
+    List<ArbeidsgiverNotifikasjon> findArbeidsgiverNotifikasjonByIdAndHendelseTypeAndStatusResponse(UUID id, String hendelsetype, String statusResponse);
 
 }

@@ -69,7 +69,7 @@ public class NotifikasjonHandler {
         return notifikasjonRepository.findArbeidsgiverNotifikasjonByAvtaleId(id);
     }
 
-    public List<ArbeidsgiverNotifikasjon> finnUtfoertNotifikasjon(UUID id, String statusResponse) {
-        return notifikasjonRepository.findArbeidsgiverNotifikasjonByIdAndStatusResponseEquals(id, statusResponse);
+    public List<ArbeidsgiverNotifikasjon> finnUtfoertNotifikasjon(UUID id, String hendelsetype, String statusResponse) {
+        return notifikasjonRepository.findArbeidsgiverNotifikasjonByIdAndHendelseTypeAndStatusResponse(id, hendelsetype, statusResponse);
     }
 }
