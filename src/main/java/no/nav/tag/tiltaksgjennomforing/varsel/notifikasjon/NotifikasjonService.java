@@ -112,9 +112,9 @@ public class NotifikasjonService {
     }
 
 
-    public void oppgaveUtfoert(UUID avtaleId) {
+    public void oppgaveUtfoert(UUID avtaleId, MutationStatus status) {
         final List<ArbeidsgiverNotifikasjon> notifikasjonList =
-                handler.finnAktiveNotifikasjonerUtfoert(avtaleId);
+                handler.finnUtfoertNotifikasjon(avtaleId, status.getStatus());
         if (!notifikasjonList.isEmpty()) {
             notifikasjonList.forEach(n -> {
                 Variables variables = new Variables();
@@ -123,7 +123,7 @@ public class NotifikasjonService {
                         notifikasjonParser.getOppgaveUtfoert(),
                         variables
                 ));
-                n.setNotifikasjonLest(true);
+                n.setNotifikasjonAktiv(true);
                 handler.saveNotifikasjon(n);
             });
         }
@@ -139,7 +139,7 @@ public class NotifikasjonService {
                 opprettNotifikasjon(new ArbeidsgiverMutationRequest(
                         notifikasjonParser.getSoftDeleteNotifikasjon(),
                         variables));
-                n.setNotifikasjonLest(true);
+                n.setNotifikasjonAktiv(true);
                 handler.saveNotifikasjon(n);
             });
         }

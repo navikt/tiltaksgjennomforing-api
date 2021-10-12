@@ -33,7 +33,7 @@ public class ArbeidsgiverNotifikasjon extends AbstractAggregateRoot<Arbeidsgiver
     private Integer serviceEdition;
     private boolean varselSendtVellykket;
     private String statusResponse;
-    private boolean notifikasjonLest;
+    private boolean notifikasjonAktiv;
 
     public static ArbeidsgiverNotifikasjon nyHendelse(
             Avtale avtale,

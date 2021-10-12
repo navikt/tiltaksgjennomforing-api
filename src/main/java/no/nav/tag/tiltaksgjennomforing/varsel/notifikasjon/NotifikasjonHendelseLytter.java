@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslerLest;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -36,7 +37,7 @@ public class NotifikasjonHendelseLytter {
         final ArbeidsgiverNotifikasjon notifikasjon =
                 ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.REFUSJON_KLAR, notifikasjonService, parser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
-        notifikasjonService.opprettOppgave(
+        notifikasjonService.opprettNyBeskjed(
                 notifikasjon,
                 NotifikasjonMerkelapp.getMerkelapp(event.getAvtale().getTiltakstype().getNavn()),
                 NotifikasjonTekst.TILTAK_AVTALE_KLAR_REFUSJON
@@ -52,6 +53,7 @@ public class NotifikasjonHendelseLytter {
                         notifikasjonService,
                         parser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
+        notifikasjonService.oppgaveUtfoert(event.getAvtale().getId(), MutationStatus.NY_OPPGAVE_VELLYKKET);
         notifikasjonService.opprettNyBeskjed(
                 notifikasjon,
                 NotifikasjonMerkelapp.getMerkelapp(event.getAvtale().getTiltakstype().getNavn()),
@@ -86,9 +88,10 @@ public class NotifikasjonHendelseLytter {
         );
     }
 
+    // TODO: Fjerne eventListener og registrering av event.
     @EventListener
     public void VisningAvVarsler(VarslerLest event){
-        notifikasjonService.oppgaveUtfoert(event.getAvtaleId());
+        /*notifikasjonService.oppgaveUtfoert(event.getAvtaleId());*/
     }
 
     @EventListener

@@ -52,6 +52,9 @@ public class NotifikasjonHandler {
         if (response != null) {
             if (response.get__typename().equals(vellykketStatus.getStatus())) {
                 notifikasjon.setVarselSendtVellykket(true);
+                if(response.get__typename().equals(MutationStatus.NY_OPPGAVE_VELLYKKET.getStatus())){
+                    notifikasjon.setNotifikasjonAktiv(true);
+                }
             }
             notifikasjon.setStatusResponse(vellykketStatus.getStatus());
             notifikasjonRepository.save(notifikasjon);
@@ -64,5 +67,9 @@ public class NotifikasjonHandler {
 
     public List<ArbeidsgiverNotifikasjon> finnAktiveNotifikasjonerUtfoert(UUID id) {
         return notifikasjonRepository.findArbeidsgiverNotifikasjonByAvtaleId(id);
+    }
+
+    public List<ArbeidsgiverNotifikasjon> finnUtfoertNotifikasjon(UUID id, String statusResponse) {
+        return notifikasjonRepository.findArbeidsgiverNotifikasjonByIdAndStatusResponseEquals(id, statusResponse);
     }
 }
