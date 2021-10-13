@@ -10,5 +10,5 @@ create table arbeidsgiver_notifikasjon
     service_edition        integer,
     varsel_sendt_vellykket boolean,
     status_response        varchar,
-    notifikasjon_aktiv      boolean
+    notifikasjon_aktiv     boolean
 );

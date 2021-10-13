@@ -43,13 +43,13 @@ public class NotifikasjonHendelseLytter {
         );
     }
 
-    @EventListener
+/*    @EventListener
     public void godkjentAvArbeidsgiver(GodkjentAvArbeidsgiver event) {
         notifikasjonService.oppgaveUtfoert(
                 event.getAvtale().getId(),
                 VarslbarHendelseType.OPPRETTET,
                 MutationStatus.NY_OPPGAVE_VELLYKKET);
-    }
+    }*/
 
     @EventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
@@ -60,10 +60,10 @@ public class NotifikasjonHendelseLytter {
                         notifikasjonService,
                         parser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
-        notifikasjonService.oppgaveUtfoert(
+/*        notifikasjonService.oppgaveUtfoert(
                 event.getAvtale().getId(),
                 VarslbarHendelseType.OPPRETTET,
-                MutationStatus.NY_OPPGAVE_VELLYKKET);
+                MutationStatus.NY_OPPGAVE_VELLYKKET);*/
         notifikasjonService.opprettNyBeskjed(
                 notifikasjon,
                 NotifikasjonMerkelapp.getMerkelapp(event.getAvtale().getTiltakstype().getNavn()),

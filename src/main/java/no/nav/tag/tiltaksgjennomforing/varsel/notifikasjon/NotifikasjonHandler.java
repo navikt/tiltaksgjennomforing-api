@@ -56,7 +56,7 @@ public class NotifikasjonHandler {
                     notifikasjon.setNotifikasjonAktiv(true);
                 }
             }
-            notifikasjon.setStatusResponse(vellykketStatus.getStatus());
+            notifikasjon.setStatusResponse(response.get__typename());
             notifikasjonRepository.save(notifikasjon);
         }
     }

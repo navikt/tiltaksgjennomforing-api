@@ -33,7 +33,7 @@ public class NotifikasjonService {
             @Qualifier("anonymProxyRestTemplate") RestTemplate restTemplate,
             @Autowired NotifikasjonParser notifikasjonParser,
             NotifikasjonerProperties properties,
-            NotifikasjonHandler handler
+            @Autowired NotifikasjonHandler handler
     ) {
         this.restTemplate = restTemplate;
         this.notifikasjonerProperties = properties;

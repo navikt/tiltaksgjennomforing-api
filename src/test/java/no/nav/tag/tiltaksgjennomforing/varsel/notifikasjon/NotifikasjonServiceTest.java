@@ -29,9 +29,6 @@ public class NotifikasjonServiceTest {
     @Autowired
     NotifikasjonParser parser;
 
-    @Autowired
-    ArbeidsgiverNotifikasjonRepository repository;
-
     Avtale avtale;
     ArbeidsgiverNotifikasjon notifikasjon;
 
