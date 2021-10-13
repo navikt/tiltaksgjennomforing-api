@@ -19,7 +19,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(properties = {""})
+@SpringBootTest
 @ActiveProfiles({Miljø.LOCAL, "wiremock"})
 @DirtiesContext
 public class NotifikasjonServiceTest {
