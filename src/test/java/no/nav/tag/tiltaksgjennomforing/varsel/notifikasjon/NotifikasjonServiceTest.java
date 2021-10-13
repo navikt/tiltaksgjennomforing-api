@@ -120,7 +120,6 @@ public class NotifikasjonServiceTest {
 
         List<ArbeidsgiverNotifikasjon> oppdatertNotifikasjonList =
                 arbeidsgiverNotifikasjonRepository.findAllByAvtaleId(avtale.getId());
-
         ArbeidsgiverNotifikasjon oppdatertNotifikasjon = oppdatertNotifikasjonList.get(0);
 
         assertThat(oppdatertNotifikasjon).isNotNull();
@@ -128,6 +127,35 @@ public class NotifikasjonServiceTest {
         assertThat(oppdatertNotifikasjon.getStatusResponse())
                 .isEqualTo(MutationStatus.OPPGAVE_UTFOERT_VELLYKKET.getStatus());
         assertThat(oppdatertNotifikasjon.isNotifikasjonAktiv()).isFalse();
+    }
+
+    @Test
+    public void softDeleteNotifikasjonTest() {
+        notifikasjonService.opprettOppgave(
+                notifikasjon,
+                NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getNavn()),
+                NotifikasjonTekst.AVTALE_OPPRETTET);
+        List<ArbeidsgiverNotifikasjon> notifikasjonList =
+                arbeidsgiverNotifikasjonRepository.findAllByAvtaleId(avtale.getId());
+        ArbeidsgiverNotifikasjon notifikasjon = notifikasjonList.get(0);
+
+        assertThat(notifikasjonList.get(0)).isNotNull();
+        assertThat(notifikasjon.getStatusResponse()).isEqualTo(MutationStatus.NY_OPPGAVE_VELLYKKET.getStatus());
+        assertThat(notifikasjon.isNotifikasjonAktiv()).isTrue();
+
+        notifikasjonService.softDeleteNotifikasjoner(avtale);
+
+        List<ArbeidsgiverNotifikasjon> oppdatertNotifikasjonList =
+                arbeidsgiverNotifikasjonRepository.findAllByAvtaleId(avtale.getId());
+        ArbeidsgiverNotifikasjon oppdatertNotifikasjon = oppdatertNotifikasjonList.get(0);
+
+        assertThat(oppdatertNotifikasjon).isNotNull();
+        assertThat(oppdatertNotifikasjon.getAvtaleId()).isEqualTo(avtale.getId());
+        assertThat(oppdatertNotifikasjon.getStatusResponse())
+                .isEqualTo(MutationStatus.SOFT_DELETE_NOTIFIKASJON_VELLYKKET.getStatus());
+        assertThat(oppdatertNotifikasjon.isNotifikasjonAktiv()).isFalse();
+
+
     }
 
 }

@@ -9,6 +9,7 @@ import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStat
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyBeskjed.NyBeskjedResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyOppgave.NyOppgaveResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.oppgaveUtfoert.OppgaveUtfoertResponse;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.softDeleteNotifikasjon.SoftDeleteNotifikasjonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
@@ -126,8 +127,10 @@ public class NotifikasjonService {
                 ));
                 final OppgaveUtfoertResponse oppgaveUtfoert = handler.readResponse(response, OppgaveUtfoertResponse.class);
                 String oppdatertStatus = oppgaveUtfoert.getData().getOppgaveUtfoert().get__typename();
-                n.setStatusResponse(oppdatertStatus);
-                n.setNotifikasjonAktiv(false);
+                if(oppdatertStatus.equals(MutationStatus.OPPGAVE_UTFOERT_VELLYKKET.getStatus())) {
+                    n.setStatusResponse(oppdatertStatus);
+                    n.setNotifikasjonAktiv(false);
+                }
                 handler.saveNotifikasjon(n);
             });
         }
@@ -140,10 +143,16 @@ public class NotifikasjonService {
             notifikasjonlist.forEach(n -> {
                 Variables variables = new Variables();
                 variables.setId(n.getId());
-                opprettNotifikasjon(new ArbeidsgiverMutationRequest(
+                final String response = opprettNotifikasjon(new ArbeidsgiverMutationRequest(
                         notifikasjonParser.getSoftDeleteNotifikasjon(),
                         variables));
-                n.setNotifikasjonAktiv(false);
+                final SoftDeleteNotifikasjonResponse res =
+                        handler.readResponse(response, SoftDeleteNotifikasjonResponse.class);
+                String softDeleteStatus = res.getData().getSoftDeleteNotifikasjon().get__typename();
+                if(softDeleteStatus.equals(MutationStatus.SOFT_DELETE_NOTIFIKASJON_VELLYKKET.getStatus())){
+                    n.setStatusResponse(softDeleteStatus);
+                    n.setNotifikasjonAktiv(false);
+                }
                 handler.saveNotifikasjon(n);
             });
         }

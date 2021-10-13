@@ -77,6 +77,32 @@
           "Content-Type": "application/json"
         }
       }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/api/graphql",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$..query",
+              "contains": "mutation SlettingAvNotifikasjoner"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "body": "{ \"data\": { \"softDeleteNotifikasjon\": {  \"__typename\": \"SoftDeleteNotifikasjonVellykket\",  \"id\": \"21108b38-8c09-4b00-b7d4-24c3402916f7\" } } }",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
     }
   ]
 }
