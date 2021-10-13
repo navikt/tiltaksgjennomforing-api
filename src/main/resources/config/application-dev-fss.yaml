@@ -94,6 +94,8 @@ tiltaksgjennomforing:
   notifikasjoner:
     uri: https://ag-notifikasjon-produsent-api.dev.intern.nav.no/api/graphql
     lenke: https://arbeidsgiver-q.nav.no/tiltaksgjennomforing/avtale/
+  notifikasjonHendelseLytter:
+    enable: true
   dvh-melding:
     feature-enabled: true
   tilskuddsperioder:

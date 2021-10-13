@@ -19,7 +19,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(properties = {""})
 @ActiveProfiles({Miljø.LOCAL, "wiremock"})
 @DirtiesContext
 public class NotifikasjonServiceTest {
@@ -122,14 +122,4 @@ public class NotifikasjonServiceTest {
         assertThat(oppdatertNotifikasjon.isNotifikasjonAktiv()).isFalse();
 
     }
-
-/*    @Test
-    public void softDeleteAvOppgaveTest() {
-        final SoftDeleteNotifikasjonResponse response =
-                notifikasjonService.softDeleteNotifikasjon(
-                        notifikasjon,
-                        NotifikasjonMerkelapp.TILTAK,
-                        NotifikasjonTekst.TILTAK_AVTALE_SLETTET_VEILEDER);
-        assertThat(response.getData().getSoftDeleteNotifikasjon().get__typename()).isNotEmpty();
-    }*/
 }

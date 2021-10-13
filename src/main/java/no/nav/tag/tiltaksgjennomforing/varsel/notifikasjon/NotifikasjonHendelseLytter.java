@@ -5,12 +5,14 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 
 @Component
 @RequiredArgsConstructor
+@ConditionalOnProperty("tiltaksgjennomforing.notifikasjonHendelseLytter.enabled")
 public class NotifikasjonHendelseLytter {
     private final ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
 
@@ -20,7 +22,7 @@ public class NotifikasjonHendelseLytter {
     @Autowired
     NotifikasjonParser parser;
 
-    @EventListener
+   @EventListener
     public void avtaleOpprettet(AvtaleOpprettetAvVeileder event) {
         final ArbeidsgiverNotifikasjon notifikasjon =
                 ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.OPPRETTET, notifikasjonService, parser);
@@ -43,13 +45,13 @@ public class NotifikasjonHendelseLytter {
         );
     }
 
-/*    @EventListener
+@EventListener
     public void godkjentAvArbeidsgiver(GodkjentAvArbeidsgiver event) {
         notifikasjonService.oppgaveUtfoert(
                 event.getAvtale().getId(),
                 VarslbarHendelseType.OPPRETTET,
                 MutationStatus.NY_OPPGAVE_VELLYKKET);
-    }*/
+    }
 
     @EventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
@@ -60,10 +62,10 @@ public class NotifikasjonHendelseLytter {
                         notifikasjonService,
                         parser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
-/*        notifikasjonService.oppgaveUtfoert(
+        notifikasjonService.oppgaveUtfoert(
                 event.getAvtale().getId(),
                 VarslbarHendelseType.OPPRETTET,
-                MutationStatus.NY_OPPGAVE_VELLYKKET);*/
+                MutationStatus.NY_OPPGAVE_VELLYKKET);
         notifikasjonService.opprettNyBeskjed(
                 notifikasjon,
                 NotifikasjonMerkelapp.getMerkelapp(event.getAvtale().getTiltakstype().getNavn()),

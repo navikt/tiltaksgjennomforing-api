@@ -20,4 +20,3 @@ public interface ArbeidsgiverNotifikasjonRepository extends JpaRepository<Arbeid
     List<ArbeidsgiverNotifikasjon> findArbeidsgiverNotifikasjonByAvtaleIdAndHendelseTypeAndStatusResponse(UUID id, VarslbarHendelseType hendelsetype, String statusResponse);
 
 }
-// findArbeidsgiverNotifikasjonByAvtaleIdAAndVarselSendtVellykketAndNotifikasjonAktiv
