@@ -104,13 +104,11 @@ public class NotifikasjonServiceTest {
         assertThat(notifikasjon.getStatusResponse()).isEqualTo(MutationStatus.NY_OPPGAVE_VELLYKKET.getStatus());
         assertThat(notifikasjon.isNotifikasjonAktiv()).isTrue();
 
-
         notifikasjonService.oppgaveUtfoert(
                 avtale.getId(),
                 VarslbarHendelseType.OPPRETTET,
                 MutationStatus.NY_OPPGAVE_VELLYKKET);
 
-        List<ArbeidsgiverNotifikasjon> test = arbeidsgiverNotifikasjonRepository.findAll();
         List<ArbeidsgiverNotifikasjon> oppdatertNotifikasjonList =
                 arbeidsgiverNotifikasjonRepository.findAllByAvtaleId(avtale.getId());
 
