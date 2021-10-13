@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.FellesMutationResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,14 +16,14 @@ import java.util.UUID;
 @Component
 public class NotifikasjonHandler {
     private final ObjectMapper objectMapper;
-    private final ArbeidsgiverNotifikasjonRepository notifikasjonRepository;
+    private final ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
 
     NotifikasjonHandler(
             @Autowired ObjectMapper objectMapper,
-            ArbeidsgiverNotifikasjonRepository repository
+            ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository
     ) {
         this.objectMapper = objectMapper;
-        this.notifikasjonRepository = repository;
+        this.arbeidsgiverNotifikasjonRepository = arbeidsgiverNotifikasjonRepository;
     }
 
     public <T> T readResponse(String json, Class<T> contentClass) {
@@ -57,19 +58,20 @@ public class NotifikasjonHandler {
                 }
             }
             notifikasjon.setStatusResponse(response.get__typename());
-            notifikasjonRepository.save(notifikasjon);
+            arbeidsgiverNotifikasjonRepository.save(notifikasjon);
         }
     }
 
     public void saveNotifikasjon(ArbeidsgiverNotifikasjon notifikasjon) {
-        notifikasjonRepository.save(notifikasjon);
+        arbeidsgiverNotifikasjonRepository.save(notifikasjon);
     }
 
     public List<ArbeidsgiverNotifikasjon> finnAktiveNotifikasjonerUtfoert(UUID id) {
-        return notifikasjonRepository.findArbeidsgiverNotifikasjonByAvtaleId(id);
+        return arbeidsgiverNotifikasjonRepository.
+                findArbeidsgiverNotifikasjonByAvtaleIdAndVarselSendtVellykketAndNotifikasjonAktiv(id,true,true);
     }
 
-    public List<ArbeidsgiverNotifikasjon> finnUtfoertNotifikasjon(UUID id, String hendelsetype, String statusResponse) {
-        return notifikasjonRepository.findArbeidsgiverNotifikasjonByIdAndHendelseTypeAndStatusResponse(id, hendelsetype, statusResponse);
+    public List<ArbeidsgiverNotifikasjon> finnUtfoertNotifikasjon(UUID id, VarslbarHendelseType hendelsetype, String statusResponse) {
+        return arbeidsgiverNotifikasjonRepository.findArbeidsgiverNotifikasjonByAvtaleIdAndHendelseTypeAndStatusResponse(id, hendelsetype,statusResponse);
     }
 }

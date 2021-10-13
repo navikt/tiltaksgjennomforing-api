@@ -13,7 +13,7 @@
           {
             "matchesJsonPath": {
               "expression": "$..query",
-              "contains": "mutation OpprettNyBeskjed( $eksternId: String! $virksomhetsnummer: String! $lenke: String! $serviceCode: String! $serviceEdition: String! $merkelapp: String! $tekst: String! $grupperingsId: String! ) { nyBeskjed(nyBeskjed: { metadata: { eksternId: $eksternId grupperingsid: $grupperingsId } mottaker: { altinn: { serviceCode: $serviceCode serviceEdition: $serviceEdition virksomhetsnummer: $virksomhetsnummer } } notifikasjon: { merkelapp: $merkelapp tekst: $tekst lenke: $lenke } }) { __typename ... on NyBeskjedVellykket { id } ... on Error { feilmelding } } }"
+              "contains": "mutation OpprettNyBeskjed"
             }
           }
         ]
@@ -39,7 +39,7 @@
           {
             "matchesJsonPath": {
               "expression": "$..query",
-              "contains": "mutation OpprettNyOppgave( $eksternId: String! $virksomhetsnummer: String! $serviceCode: String! $serviceEdition: String! $merkelapp: String! $lenke: String! $tekst: String! $grupperingsId: String! ) { nyOppgave(nyOppgave: { metadata: { eksternId: $eksternId grupperingsid: $grupperingsId } mottaker: { altinn: { serviceCode: $serviceCode serviceEdition: $serviceEdition virksomhetsnummer: $virksomhetsnummer } } notifikasjon: { merkelapp: $merkelapp tekst: $tekst lenke: $lenke } }) { __typename ... on NyOppgaveVellykket { id } ... on Error { feilmelding } } }"
+              "contains": "mutation OpprettNyOppgave"
             }
           }
         ]
@@ -47,6 +47,32 @@
       "response": {
         "status": 200,
         "body": "{  \"data\": {    \"nyOppgave\": {      \"__typename\": \"NyOppgaveVellykket\",      \"id\": \"9d3efc70-a86f-44e1-a038-9f2a3b478697\"    }  }}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/api/graphql",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$..query",
+              "contains": "mutation OppgaveUtfoert"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "body": "{ \"data\": {   \"oppgaveUtfoert\": {     \"__typename\": \"OppgaveUtfoertVellykket\",     \"id\": \"231a0f8c-237c-4357-8101-6a356a9ace86\" } } }",
         "headers": {
           "Content-Type": "application/json"
         }

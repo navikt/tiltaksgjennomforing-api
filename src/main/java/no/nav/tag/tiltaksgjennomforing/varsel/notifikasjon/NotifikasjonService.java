@@ -8,6 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.request.Variables;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyBeskjed.NyBeskjedResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyOppgave.NyOppgaveResponse;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.oppgaveUtfoert.OppgaveUtfoertResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
@@ -95,7 +96,7 @@ public class NotifikasjonService {
                 MutationStatus.NY_BESKJED_VELLYKKET);
     }
 
-    public NyOppgaveResponse opprettOppgave(
+    public void opprettOppgave(
             ArbeidsgiverNotifikasjon notifikasjon,
             NotifikasjonMerkelapp merkelapp,
             NotifikasjonTekst tekst) {
@@ -109,22 +110,24 @@ public class NotifikasjonService {
                 notifikasjon,
                 handler.convertResponse(oppgave.getData().getNyOppgave()),
                 MutationStatus.NY_OPPGAVE_VELLYKKET);
-        return oppgave;
     }
 
 
     public void oppgaveUtfoert(UUID avtaleId, VarslbarHendelseType hendelseType, MutationStatus status) {
         final List<ArbeidsgiverNotifikasjon> notifikasjonList =
-                handler.finnUtfoertNotifikasjon(avtaleId, hendelseType.getTekst(), status.getStatus());
+                handler.finnUtfoertNotifikasjon(avtaleId, hendelseType, status.getStatus());
         if (!notifikasjonList.isEmpty()) {
             notifikasjonList.forEach(n -> {
                 Variables variables = new Variables();
                 variables.setId(n.getId());
-                opprettNotifikasjon(new ArbeidsgiverMutationRequest(
+                final String response = opprettNotifikasjon(new ArbeidsgiverMutationRequest(
                         notifikasjonParser.getOppgaveUtfoert(),
                         variables
                 ));
-                n.setNotifikasjonAktiv(true);
+                final OppgaveUtfoertResponse oppgaveUtfoert = handler.readResponse(response, OppgaveUtfoertResponse.class);
+                String oppdatertStatus = oppgaveUtfoert.getData().getOppgaveUtfoert().get__typename();
+                n.setStatusResponse(oppdatertStatus);
+                n.setNotifikasjonAktiv(false);
                 handler.saveNotifikasjon(n);
             });
         }
@@ -140,7 +143,7 @@ public class NotifikasjonService {
                 opprettNotifikasjon(new ArbeidsgiverMutationRequest(
                         notifikasjonParser.getSoftDeleteNotifikasjon(),
                         variables));
-                n.setNotifikasjonAktiv(true);
+                n.setNotifikasjonAktiv(false);
                 handler.saveNotifikasjon(n);
             });
         }

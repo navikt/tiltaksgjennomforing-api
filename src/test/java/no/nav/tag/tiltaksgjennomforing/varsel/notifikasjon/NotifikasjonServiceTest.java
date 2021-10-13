@@ -4,8 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
-import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyBeskjed.NyBeskjedResponse;
-import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyOppgave.NyOppgaveResponse;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,11 +14,13 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@ActiveProfiles({Miljø.LOCAL})
+@ActiveProfiles({Miljø.LOCAL, "wiremock"})
 @DirtiesContext
 public class NotifikasjonServiceTest {
 
@@ -28,6 +29,9 @@ public class NotifikasjonServiceTest {
 
     @Autowired
     NotifikasjonParser parser;
+
+    @Autowired
+    ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
 
     Avtale avtale;
     ArbeidsgiverNotifikasjon notifikasjon;
@@ -45,33 +49,79 @@ public class NotifikasjonServiceTest {
 
     @Test
     public void opprettNyBeskjedTest() {
+        notifikasjonService.opprettNyBeskjed(
+                notifikasjon,
+                NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getNavn()),
+                NotifikasjonTekst.AVTALE_OPPRETTET);
 
-                notifikasjonService.opprettNyBeskjed(
-                        notifikasjon,
-                        NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getNavn()),
-                        NotifikasjonTekst.AVTALE_OPPRETTET);
-       // assertThat(response.getData().getNyBeskjed().get__typename()).isNotEmpty();
+        assertThat(arbeidsgiverNotifikasjonRepository.findAllByAvtaleId(avtale.getId())).isNotEmpty();
     }
 
     @Test
     public void opprettNyOppgaveTest() {
-        final NyOppgaveResponse response =
-                notifikasjonService.opprettOppgave(
-                        notifikasjon,
-                        NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getNavn()),
-                        NotifikasjonTekst.AVTALE_OPPRETTET);
-        assertThat(response.getData().getNyOppgave().get__typename()).isNotEmpty();
+        notifikasjonService.opprettOppgave(
+                notifikasjon,
+                NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getNavn()),
+                NotifikasjonTekst.AVTALE_OPPRETTET);
+
+        assertThat(arbeidsgiverNotifikasjonRepository.findArbeidsgiverNotifikasjonByAvtaleIdAndVarselSendtVellykketAndNotifikasjonAktiv(avtale.getId(), true, true)).isNotEmpty();
     }
 
-/*    @Test
+    @Test
+    public void findArbeidsgiverNotifikasjonByIdAndHendelseTypeAndStatusResponse() {
+        notifikasjonService.opprettOppgave(
+                notifikasjon,
+                NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getNavn()),
+                NotifikasjonTekst.AVTALE_OPPRETTET);
+
+        List<ArbeidsgiverNotifikasjon> notifikasjonList =
+                arbeidsgiverNotifikasjonRepository.findArbeidsgiverNotifikasjonByAvtaleIdAndHendelseTypeAndStatusResponse(
+                        avtale.getId(),
+                        this.notifikasjon.getHendelseType(),
+                        MutationStatus.NY_OPPGAVE_VELLYKKET.getStatus());
+        ArbeidsgiverNotifikasjon notifikasjon = notifikasjonList.get(0);
+
+        assertThat(notifikasjon).isNotNull();
+        assertThat(notifikasjon.getAvtaleId()).isEqualTo(avtale.getId());
+        assertThat(notifikasjon.getHendelseType()).isEqualTo(VarslbarHendelseType.OPPRETTET);
+        assertThat(notifikasjon.getStatusResponse()).isEqualTo(MutationStatus.NY_OPPGAVE_VELLYKKET.getStatus());
+    }
+
+    @Test
     public void settOppgaveUtfoertTest() {
-        final OppgaveUtfoertResponse response =
-                notifikasjonService.oppgaveUtfoert(
-                        notifikasjon,
-                        NotifikasjonMerkelapp.TILTAK,
-                        NotifikasjonTekst.TILTAK_NOTIFIKASJON_OPPGAVE_UTFØRT);
-        assertThat(response.getData().getOppgaveUtfoert().get__typename()).isNotEmpty();
-    }*/
+        notifikasjonService.opprettOppgave(
+                notifikasjon,
+                NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getNavn()),
+                NotifikasjonTekst.AVTALE_OPPRETTET);
+
+        List<ArbeidsgiverNotifikasjon> notifikasjonList =
+                arbeidsgiverNotifikasjonRepository.findArbeidsgiverNotifikasjonByAvtaleIdAndVarselSendtVellykketAndNotifikasjonAktiv(
+                        avtale.getId(), true, true);
+        ArbeidsgiverNotifikasjon notifikasjon = notifikasjonList.get(0);
+
+        assertThat(notifikasjonList.get(0)).isNotNull();
+        assertThat(notifikasjon.getAvtaleId()).isEqualTo(avtale.getId());
+        assertThat(notifikasjon.getStatusResponse()).isEqualTo(MutationStatus.NY_OPPGAVE_VELLYKKET.getStatus());
+        assertThat(notifikasjon.isNotifikasjonAktiv()).isTrue();
+
+
+        notifikasjonService.oppgaveUtfoert(
+                avtale.getId(),
+                VarslbarHendelseType.OPPRETTET,
+                MutationStatus.NY_OPPGAVE_VELLYKKET);
+
+        List<ArbeidsgiverNotifikasjon> test = arbeidsgiverNotifikasjonRepository.findAll();
+        List<ArbeidsgiverNotifikasjon> oppdatertNotifikasjonList =
+                arbeidsgiverNotifikasjonRepository.findAllByAvtaleId(avtale.getId());
+
+        ArbeidsgiverNotifikasjon oppdatertNotifikasjon = oppdatertNotifikasjonList.get(0);
+
+        assertThat(oppdatertNotifikasjon).isNotNull();
+        assertThat(oppdatertNotifikasjon.getAvtaleId()).isEqualTo(avtale.getId());
+        assertThat(oppdatertNotifikasjon.getStatusResponse()).isEqualTo(MutationStatus.OPPGAVE_UTFOERT_VELLYKKET.getStatus());
+        assertThat(oppdatertNotifikasjon.isNotifikasjonAktiv()).isFalse();
+
+    }
 
 /*    @Test
     public void softDeleteAvOppgaveTest() {
