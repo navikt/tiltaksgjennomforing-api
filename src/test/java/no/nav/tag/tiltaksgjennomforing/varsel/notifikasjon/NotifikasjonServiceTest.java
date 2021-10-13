@@ -64,18 +64,24 @@ public class NotifikasjonServiceTest {
                 NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getNavn()),
                 NotifikasjonTekst.AVTALE_OPPRETTET);
 
-        assertThat(arbeidsgiverNotifikasjonRepository.findArbeidsgiverNotifikasjonByAvtaleIdAndVarselSendtVellykketAndNotifikasjonAktiv(avtale.getId(), true, true)).isNotEmpty();
+        assertThat(arbeidsgiverNotifikasjonRepository.
+                findArbeidsgiverNotifikasjonByAvtaleIdAndVarselSendtVellykketAndNotifikasjonAktiv(
+                        avtale.getId(),
+                        true,
+                        true))
+                .isNotEmpty();
     }
 
     @Test
-    public void findArbeidsgiverNotifikasjonByIdAndHendelseTypeAndStatusResponse() {
+    public void findArbeidsgiverNotifikasjonByIdAndHendelseTypeAndStatusResponseTest() {
         notifikasjonService.opprettOppgave(
                 notifikasjon,
                 NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getNavn()),
                 NotifikasjonTekst.AVTALE_OPPRETTET);
 
         List<ArbeidsgiverNotifikasjon> notifikasjonList =
-                arbeidsgiverNotifikasjonRepository.findArbeidsgiverNotifikasjonByAvtaleIdAndHendelseTypeAndStatusResponse(
+                arbeidsgiverNotifikasjonRepository.
+                        findArbeidsgiverNotifikasjonByAvtaleIdAndHendelseTypeAndStatusResponse(
                         avtale.getId(),
                         this.notifikasjon.getHendelseType(),
                         MutationStatus.NY_OPPGAVE_VELLYKKET.getStatus());
@@ -95,8 +101,11 @@ public class NotifikasjonServiceTest {
                 NotifikasjonTekst.AVTALE_OPPRETTET);
 
         List<ArbeidsgiverNotifikasjon> notifikasjonList =
-                arbeidsgiverNotifikasjonRepository.findArbeidsgiverNotifikasjonByAvtaleIdAndVarselSendtVellykketAndNotifikasjonAktiv(
-                        avtale.getId(), true, true);
+                arbeidsgiverNotifikasjonRepository.
+                        findArbeidsgiverNotifikasjonByAvtaleIdAndVarselSendtVellykketAndNotifikasjonAktiv(
+                        avtale.getId(),
+                                true,
+                                true);
         ArbeidsgiverNotifikasjon notifikasjon = notifikasjonList.get(0);
 
         assertThat(notifikasjonList.get(0)).isNotNull();
@@ -116,8 +125,9 @@ public class NotifikasjonServiceTest {
 
         assertThat(oppdatertNotifikasjon).isNotNull();
         assertThat(oppdatertNotifikasjon.getAvtaleId()).isEqualTo(avtale.getId());
-        assertThat(oppdatertNotifikasjon.getStatusResponse()).isEqualTo(MutationStatus.OPPGAVE_UTFOERT_VELLYKKET.getStatus());
+        assertThat(oppdatertNotifikasjon.getStatusResponse())
+                .isEqualTo(MutationStatus.OPPGAVE_UTFOERT_VELLYKKET.getStatus());
         assertThat(oppdatertNotifikasjon.isNotifikasjonAktiv()).isFalse();
-
     }
+
 }

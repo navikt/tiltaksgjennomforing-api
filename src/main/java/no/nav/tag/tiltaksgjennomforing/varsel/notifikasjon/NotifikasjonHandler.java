@@ -68,10 +68,17 @@ public class NotifikasjonHandler {
 
     public List<ArbeidsgiverNotifikasjon> finnAktiveNotifikasjonerUtfoert(UUID id) {
         return arbeidsgiverNotifikasjonRepository.
-                findArbeidsgiverNotifikasjonByAvtaleIdAndVarselSendtVellykketAndNotifikasjonAktiv(id,true,true);
+                findArbeidsgiverNotifikasjonByAvtaleIdAndVarselSendtVellykketAndNotifikasjonAktiv(
+                        id,
+                        true,
+                        true);
     }
 
-    public List<ArbeidsgiverNotifikasjon> finnUtfoertNotifikasjon(UUID id, VarslbarHendelseType hendelsetype, String statusResponse) {
-        return arbeidsgiverNotifikasjonRepository.findArbeidsgiverNotifikasjonByAvtaleIdAndHendelseTypeAndStatusResponse(id, hendelsetype,statusResponse);
+    public List<ArbeidsgiverNotifikasjon> finnUtfoertNotifikasjon(
+            UUID id,
+            VarslbarHendelseType hendelsetype,
+            String statusResponse) {
+        return arbeidsgiverNotifikasjonRepository
+                .findArbeidsgiverNotifikasjonByAvtaleIdAndHendelseTypeAndStatusResponse(id, hendelsetype,statusResponse);
     }
 }

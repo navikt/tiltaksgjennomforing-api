@@ -28,7 +28,10 @@ public class NotifikasjonHandlerTest {
     public void sjekkOgSettStatusResponseTest(){
 
         ArbeidsgiverNotifikasjon arbeidsgiverNotifikasjon = new ArbeidsgiverNotifikasjon();
-        FellesMutationResponse response = new FellesMutationResponse("ertert","345345", "dgdgdfgsd");
+        FellesMutationResponse response = new FellesMutationResponse("" +
+                "OppgaveUtfoertVellykket",
+                "231a0f8c-237c-4357-8101-6a356a9ace86",
+                "nihil ut eum alias saepe nesciunt minima");
         MutationStatus mutationStatus = MutationStatus.NY_OPPGAVE_VELLYKKET;
 
         notifikasjonHandler.sjekkOgSettStatusResponse(arbeidsgiverNotifikasjon, response, mutationStatus);

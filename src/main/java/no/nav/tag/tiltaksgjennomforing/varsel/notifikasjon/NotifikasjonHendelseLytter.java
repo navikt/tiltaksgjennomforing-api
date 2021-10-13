@@ -75,7 +75,11 @@ public class NotifikasjonHendelseLytter {
     @EventListener
     public void avtaleEndret(AvtaleEndret event) {
         final ArbeidsgiverNotifikasjon notifikasjon =
-                ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(), VarslbarHendelseType.ENDRET, notifikasjonService, parser);
+                ArbeidsgiverNotifikasjon.nyHendelse(
+                        event.getAvtale(),
+                        VarslbarHendelseType.ENDRET,
+                        notifikasjonService,
+                        parser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
         notifikasjonService.opprettNyBeskjed(
                 notifikasjon,

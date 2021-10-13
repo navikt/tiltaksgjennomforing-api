@@ -11,12 +11,18 @@ import java.util.UUID;
 public interface ArbeidsgiverNotifikasjonRepository extends JpaRepository<ArbeidsgiverNotifikasjon, UUID> {
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    List<ArbeidsgiverNotifikasjon> findArbeidsgiverNotifikasjonByAvtaleIdAndVarselSendtVellykketAndNotifikasjonAktiv(UUID id, boolean varselSendtVellykket, boolean notifikasjonAktiv);
+    List<ArbeidsgiverNotifikasjon> findArbeidsgiverNotifikasjonByAvtaleIdAndVarselSendtVellykketAndNotifikasjonAktiv(
+            UUID id,
+            boolean varselSendtVellykket,
+            boolean notifikasjonAktiv);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     List<ArbeidsgiverNotifikasjon> findAllByAvtaleId(UUID id);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    List<ArbeidsgiverNotifikasjon> findArbeidsgiverNotifikasjonByAvtaleIdAndHendelseTypeAndStatusResponse(UUID id, VarslbarHendelseType hendelsetype, String statusResponse);
+    List<ArbeidsgiverNotifikasjon> findArbeidsgiverNotifikasjonByAvtaleIdAndHendelseTypeAndStatusResponse(
+            UUID id,
+            VarslbarHendelseType hendelsetype,
+            String statusResponse);
 
 }
