@@ -1,36 +1,29 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.FellesMutationResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class NotifikasjonHandler {
     private final ObjectMapper objectMapper;
     private final ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
 
-    NotifikasjonHandler(
-            @Autowired ObjectMapper objectMapper,
-            ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository
-    ) {
-        this.objectMapper = objectMapper;
-        this.arbeidsgiverNotifikasjonRepository = arbeidsgiverNotifikasjonRepository;
-    }
 
     public <T> T readResponse(String json, Class<T> contentClass) {
         try {
             return objectMapper.readValue(json, contentClass);
         } catch (IOException exception) {
-            log.error("objectmapper feilet med lesing av data: {}", exception.getMessage());
+            log.error("objectmapper feilet med lesing av data: ", exception);
         }
         return null;
     }
@@ -41,7 +34,7 @@ public class NotifikasjonHandler {
                 return objectMapper.convertValue(data, FellesMutationResponse.class);
             }
         }catch (Exception e) {
-            log.error("feilet med convertering av data til FellesMutationResponse klasse");
+            log.error("feilet med convertering av data til FellesMutationResponse klasse: ", e);
         }
         return null;
     }
