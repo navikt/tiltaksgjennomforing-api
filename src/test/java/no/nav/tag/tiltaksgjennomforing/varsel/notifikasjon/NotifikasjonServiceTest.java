@@ -48,7 +48,7 @@ public class NotifikasjonServiceTest {
     public void opprettNyBeskjedTest() {
         notifikasjonService.opprettNyBeskjed(
                 notifikasjon,
-                NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getNavn()),
+                NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()),
                 NotifikasjonTekst.AVTALE_OPPRETTET);
 
         assertThat(arbeidsgiverNotifikasjonRepository.findAllByAvtaleId(avtale.getId())).isNotEmpty();
@@ -58,7 +58,7 @@ public class NotifikasjonServiceTest {
     public void opprettNyOppgaveTest() {
         notifikasjonService.opprettOppgave(
                 notifikasjon,
-                NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getNavn()),
+                NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()),
                 NotifikasjonTekst.AVTALE_OPPRETTET);
 
         assertThat(arbeidsgiverNotifikasjonRepository.
@@ -73,7 +73,7 @@ public class NotifikasjonServiceTest {
     public void findArbeidsgiverNotifikasjonByIdAndHendelseTypeAndStatusResponseTest() {
         notifikasjonService.opprettOppgave(
                 notifikasjon,
-                NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getNavn()),
+                NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()),
                 NotifikasjonTekst.AVTALE_OPPRETTET);
 
         List<ArbeidsgiverNotifikasjon> notifikasjonList =
@@ -94,7 +94,7 @@ public class NotifikasjonServiceTest {
     public void settOppgaveUtfoertTest() {
         notifikasjonService.opprettOppgave(
                 notifikasjon,
-                NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getNavn()),
+                NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()),
                 NotifikasjonTekst.AVTALE_OPPRETTET);
 
         List<ArbeidsgiverNotifikasjon> notifikasjonList =
@@ -130,7 +130,7 @@ public class NotifikasjonServiceTest {
     public void softDeleteNotifikasjonTest() {
         notifikasjonService.opprettOppgave(
                 notifikasjon,
-                NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getNavn()),
+                NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()),
                 NotifikasjonTekst.AVTALE_OPPRETTET);
         List<ArbeidsgiverNotifikasjon> notifikasjonList =
                 arbeidsgiverNotifikasjonRepository.findAllByAvtaleId(avtale.getId());
