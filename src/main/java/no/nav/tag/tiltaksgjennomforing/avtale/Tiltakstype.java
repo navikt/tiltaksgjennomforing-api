@@ -7,18 +7,18 @@ public enum Tiltakstype {
     MENTOR("Mentor", "ab0416", "MENTOR"),
     SOMMERJOBB("Sommerjobb", "ab0450", null);
 
-    final String navn;
+    final String beskrivelse;
     final String behandlingstema;
     final String tiltakskodeArena;
 
-    Tiltakstype(String navn, String behandlingstema, String tiltakskodeArena) {
-        this.navn = navn;
+    Tiltakstype(String beskrivelse, String behandlingstema, String tiltakskodeArena) {
+        this.beskrivelse = beskrivelse;
         this.behandlingstema = behandlingstema;
         this.tiltakskodeArena = tiltakskodeArena;
     }
 
-    public String getNavn() {
-        return this.navn;
+    public String getBeskrivelse() {
+        return this.beskrivelse;
     }
 
     public String getBehandlingstema() {

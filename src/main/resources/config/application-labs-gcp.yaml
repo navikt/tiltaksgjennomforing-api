@@ -55,7 +55,8 @@ tiltaksgjennomforing:
   axsys:
     uri: http://tiltaksgjennomforing-wiremock/axsys
   abac:
-    veilarbabac-uri: http://tiltaksgjennomforing-wiremock/veilarbabac
+    uri: http://tiltaksgjennomforing-wiremock/abac
+    nav-consumer-id: tiltaksgjennomforing-api
   oppgave:
     oppgave-uri: http://tiltaksgjennomforing-wiremock/api/v1/oppgaver
   veilarbarena:

@@ -6,7 +6,7 @@ metadata:
   labels:
     team: arbeidsgiver
 spec:
-  image: docker.pkg.github.com/navikt/tiltaksgjennomforing-api/wiremock:2.27.2
+  image:  ghcr.io/navikt/tiltaksgjennomforing-api/wiremock:2.27.2
   replicas:
     min: 1
     max: 1

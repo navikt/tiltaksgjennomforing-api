@@ -80,7 +80,7 @@ public class AvtaleController {
         HttpHeaders header = new HttpHeaders();
         header.setContentType(MediaType.APPLICATION_PDF);
         header.set(HttpHeaders.CONTENT_DISPOSITION,
-                "inline; filename=Avtale om " + avtale.getTiltakstype().getNavn() + ".pdf");
+                "inline; filename=Avtale om " + avtale.getTiltakstype().getBeskrivelse() + ".pdf");
         header.setContentLength(avtalePdf.length);
 
         return new HttpEntity<>(avtalePdf, header);
@@ -88,9 +88,12 @@ public class AvtaleController {
 
     @PutMapping("/{avtaleId}")
     @Transactional
-    public ResponseEntity<?> endreAvtale(@PathVariable("avtaleId") UUID avtaleId,
-                                         @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
-                                         @RequestBody EndreAvtale endreAvtale, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+    public ResponseEntity<?> endreAvtale(
+            @PathVariable("avtaleId") UUID avtaleId,
+            @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
+            @RequestBody EndreAvtale endreAvtale,
+            @CookieValue("innlogget-part") Avtalerolle innloggetPart)
+    {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
@@ -304,7 +307,7 @@ public class AvtaleController {
     @PostMapping("/{avtaleId}/godkjenn-paa-vegne-av-arbeidsgiver")
     @Transactional
     public void godkjennPaVegneAvArbeidsgiver(@PathVariable("avtaleId") UUID avtaleId,
-                                  @RequestBody GodkjentPaVegneAvArbeidsgiverGrunn paVegneAvGrunn) {
+                                              @RequestBody GodkjentPaVegneAvArbeidsgiverGrunn paVegneAvGrunn) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         veileder.godkjennForVeilederOgArbeidsgiver(paVegneAvGrunn, avtale);
@@ -314,7 +317,7 @@ public class AvtaleController {
     @PostMapping("/{avtaleId}/godkjenn-paa-vegne-av-deltaker-og-arbeidsgiver")
     @Transactional
     public void godkjennPaVegneAvDeltakerOgArbeidsgiver(@PathVariable("avtaleId") UUID avtaleId,
-                                  @RequestBody GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn paVegneAvGrunn) {
+                                                        @RequestBody GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn paVegneAvGrunn) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         veileder.godkjennForVeilederOgDeltakerOgArbeidsgiver(paVegneAvGrunn, avtale);
@@ -391,6 +394,16 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         beslutter.godkjennTilskuddsperiode(avtale, godkjennTilskuddsperiodeRequest.getEnhet());
         avtaleRepository.save(avtale);
+    }
+
+    @PostMapping("/{avtaleId}/endre-kostnadssted")
+    @Transactional
+    public Avtale endreKostnadssted(@PathVariable("avtaleId") UUID avtaleId, @RequestBody EndreKostnadsstedRequest endreKostnadsstedRequest) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        veileder.oppdatereKostnadssted(avtale, norg2Client, endreKostnadsstedRequest.getEnhet());
+        avtaleRepository.save(avtale);
+        return avtale;
     }
 
     @PostMapping("/{avtaleId}/avslag-tilskuddsperiode")
