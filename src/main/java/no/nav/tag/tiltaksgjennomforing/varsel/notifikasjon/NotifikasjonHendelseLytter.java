@@ -73,22 +73,6 @@ public class NotifikasjonHendelseLytter {
     }
 
     @EventListener
-    public void avtaleEndret(AvtaleEndret event) {
-        final ArbeidsgiverNotifikasjon notifikasjon =
-                ArbeidsgiverNotifikasjon.nyHendelse(
-                        event.getAvtale(),
-                        VarslbarHendelseType.ENDRET,
-                        notifikasjonService,
-                        parser);
-        arbeidsgiverNotifikasjonRepository.save(notifikasjon);
-        notifikasjonService.opprettNyBeskjed(
-                notifikasjon,
-                NotifikasjonMerkelapp.getMerkelapp(event.getAvtale().getTiltakstype().getBeskrivelse()),
-                NotifikasjonTekst.TILTAK_AVTALE_ENDRET
-        );
-    }
-
-    @EventListener
     public void avtaleInngått(AvtaleInngått event) {
         final ArbeidsgiverNotifikasjon notifikasjon =
                 ArbeidsgiverNotifikasjon.nyHendelse(
@@ -102,22 +86,6 @@ public class NotifikasjonHendelseLytter {
                 NotifikasjonMerkelapp.getMerkelapp(event.getAvtale().getTiltakstype().getBeskrivelse()),
                 NotifikasjonTekst.TILTAK_AVTALE_INNGATT
         );
-    }
-
-    @EventListener
-    public void gjenopprettet(AvtaleGjenopprettet event) {
-            final ArbeidsgiverNotifikasjon notifikasjon =
-                    ArbeidsgiverNotifikasjon.nyHendelse(
-                            event.getAvtale(),
-                            VarslbarHendelseType.GJENOPPRETTET,
-                            notifikasjonService,
-                            parser);
-            arbeidsgiverNotifikasjonRepository.save(notifikasjon);
-            notifikasjonService.opprettOppgave(
-                    notifikasjon,
-                    NotifikasjonMerkelapp.getMerkelapp(event.getAvtale().getTiltakstype().getBeskrivelse()),
-                    NotifikasjonTekst.TILTAK_AVTALE_GJENOPPRETTET
-            );
     }
 
     @EventListener
