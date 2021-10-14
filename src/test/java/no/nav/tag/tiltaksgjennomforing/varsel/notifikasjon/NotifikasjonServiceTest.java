@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
@@ -31,12 +32,16 @@ public class NotifikasjonServiceTest {
     @Autowired
     ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
 
+    @Autowired
+    AvtaleRepository avtaleRepository;
+
     Avtale avtale;
     ArbeidsgiverNotifikasjon notifikasjon;
 
     @Before
     public void init() {
         avtale = TestData.enArbeidstreningAvtale();
+        avtaleRepository.save(avtale);
         notifikasjon = ArbeidsgiverNotifikasjon.nyHendelse(
                         avtale,
                         VarslbarHendelseType.OPPRETTET,
