@@ -13,9 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-
 import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -39,8 +37,7 @@ public class NotifikasjonServiceTest {
     @Before
     public void init() {
         avtale = TestData.enArbeidstreningAvtale();
-        notifikasjon =
-                ArbeidsgiverNotifikasjon.nyHendelse(
+        notifikasjon = ArbeidsgiverNotifikasjon.nyHendelse(
                         avtale,
                         VarslbarHendelseType.OPPRETTET,
                         notifikasjonService,
