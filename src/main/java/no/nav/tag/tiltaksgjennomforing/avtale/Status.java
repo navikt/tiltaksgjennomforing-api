@@ -9,13 +9,13 @@ public enum Status {
     GJENNOMFØRES("Gjennomføres"),
     AVSLUTTET("Avsluttet");
 
-    private final String statusVerdi;
+    private final String beskrivelse;
 
-    Status(String statusVerdi) {
-        this.statusVerdi = statusVerdi;
+    Status(String beskrivelse) {
+        this.beskrivelse = beskrivelse;
     }
 
-    public String getStatusVerdi() {
-        return statusVerdi;
+    public String getBeskrivelse() {
+        return beskrivelse;
     }
 }

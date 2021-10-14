@@ -366,7 +366,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     @JsonProperty
     public String status() {
-        return statusSomEnum().getStatusVerdi();
+        return statusSomEnum().getBeskrivelse();
     }
 
     @JsonProperty

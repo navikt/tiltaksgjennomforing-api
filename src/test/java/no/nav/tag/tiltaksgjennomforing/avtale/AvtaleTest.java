@@ -344,7 +344,7 @@ public class AvtaleTest {
     @Test
     public void status__ny_avtale() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        assertThat(avtale.status()).isEqualTo(Status.PÅBEGYNT.getStatusVerdi());
+        assertThat(avtale.status()).isEqualTo(Status.PÅBEGYNT.getBeskrivelse());
     }
 
     @Test
@@ -352,7 +352,7 @@ public class AvtaleTest {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         avtale.setStartDato(null);
         avtale.setSluttDato(null);
-        assertThat(avtale.status()).isEqualTo(Status.PÅBEGYNT.getStatusVerdi());
+        assertThat(avtale.status()).isEqualTo(Status.PÅBEGYNT.getBeskrivelse());
     }
 
     @Test
@@ -361,7 +361,7 @@ public class AvtaleTest {
         avtale.setStartDato(LocalDate.now().plusDays(5));
         avtale.setSluttDato(avtale.getStartDato().plusMonths(3));
         avtale.setBedriftNavn("testbedriftsnavn");
-        assertThat(avtale.status()).isEqualTo(Status.PÅBEGYNT.getStatusVerdi());
+        assertThat(avtale.status()).isEqualTo(Status.PÅBEGYNT.getBeskrivelse());
     }
 
     @Test
@@ -373,7 +373,7 @@ public class AvtaleTest {
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
         avtale.setAvtaleInngått(LocalDateTime.now());
-        assertThat(avtale.status()).isEqualTo(Status.AVSLUTTET.getStatusVerdi());
+        assertThat(avtale.status()).isEqualTo(Status.AVSLUTTET.getBeskrivelse());
     }
 
     @Test
@@ -385,7 +385,7 @@ public class AvtaleTest {
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
         avtale.setAvtaleInngått(LocalDateTime.now());
-        assertThat(avtale.status()).isEqualTo(Status.GJENNOMFØRES.getStatusVerdi());
+        assertThat(avtale.status()).isEqualTo(Status.GJENNOMFØRES.getBeskrivelse());
     }
 
     @Test
@@ -397,7 +397,7 @@ public class AvtaleTest {
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
         avtale.setAvtaleInngått(LocalDateTime.now());
-        assertThat(avtale.status()).isEqualTo(Status.GJENNOMFØRES.getStatusVerdi());
+        assertThat(avtale.status()).isEqualTo(Status.GJENNOMFØRES.getBeskrivelse());
     }
 
     @Test
@@ -409,13 +409,13 @@ public class AvtaleTest {
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
         avtale.setAvtaleInngått(LocalDateTime.now());
-        assertThat(avtale.status()).isEqualTo(Status.KLAR_FOR_OPPSTART.getStatusVerdi());
+        assertThat(avtale.status()).isEqualTo(Status.KLAR_FOR_OPPSTART.getBeskrivelse());
     }
 
     @Test
     public void status__klar_for_godkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        assertThat(avtale.status()).isEqualTo(Status.MANGLER_GODKJENNING.getStatusVerdi());
+        assertThat(avtale.status()).isEqualTo(Status.MANGLER_GODKJENNING.getBeskrivelse());
     }
 
     @Test
@@ -427,7 +427,7 @@ public class AvtaleTest {
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
         avtale.setAvtaleInngått(LocalDateTime.now());
-        assertThat(avtale.status()).isEqualTo(Status.KLAR_FOR_OPPSTART.getStatusVerdi());
+        assertThat(avtale.status()).isEqualTo(Status.KLAR_FOR_OPPSTART.getBeskrivelse());
     }
 
     @Test
@@ -442,14 +442,14 @@ public class AvtaleTest {
         avtale.setGodkjentAvVeileder(LocalDateTime.now());
         avtale.setAvtaleInngått(LocalDateTime.now());
         avtale.setDeltakerTlf(null);
-        assertThat(avtale.status()).isEqualTo(Status.GJENNOMFØRES.getStatusVerdi());
+        assertThat(avtale.status()).isEqualTo(Status.GJENNOMFØRES.getBeskrivelse());
     }
 
     @Test
     public void status__avbrutt() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         avtale.avbryt(TestData.enVeileder(avtale), new AvbruttInfo(LocalDate.now(), "grunnen"));
-        assertThat(avtale.status()).isEqualTo(Status.AVBRUTT.getStatusVerdi());
+        assertThat(avtale.status()).isEqualTo(Status.AVBRUTT.getBeskrivelse());
         assertThat(avtale.getAvbruttDato()).isNotNull();
         assertThat(avtale.getAvbruttGrunn()).isEqualTo("grunnen");
     }
@@ -460,7 +460,7 @@ public class AvtaleTest {
         Veileder veileder = TestData.enVeileder(new NavIdent("Z123456"));
         avtale.avbryt(veileder, new AvbruttInfo(LocalDate.now(), "grunnen"));
 
-        assertThat(avtale.status()).isEqualTo(Status.AVBRUTT.getStatusVerdi());
+        assertThat(avtale.status()).isEqualTo(Status.AVBRUTT.getBeskrivelse());
         assertThat(avtale.erUfordelt()).isFalse();
         assertThat(avtale.getVeilederNavIdent()).isEqualTo(veileder.getIdentifikator());
     }
@@ -498,7 +498,7 @@ public class AvtaleTest {
         avtale.setAvbruttGrunn("enGrunn");
 
         avtale.gjenopprett(TestData.enVeileder(avtale));
-        assertThat(avtale.status()).isNotEqualTo(Status.AVBRUTT.getStatusVerdi());
+        assertThat(avtale.status()).isNotEqualTo(Status.AVBRUTT.getBeskrivelse());
         assertThat(avtale.getAvbruttDato()).isNull();
         assertThat(avtale.getAvbruttGrunn()).isNull();
     }
@@ -663,7 +663,7 @@ public class AvtaleTest {
     @Test
     public void avtaleklarForOppstart() {
         Avtale avtale = TestData.enAvtaleKlarForOppstart();
-        assertThat(avtale.status()).isEqualTo(Status.KLAR_FOR_OPPSTART.getStatusVerdi());
+        assertThat(avtale.status()).isEqualTo(Status.KLAR_FOR_OPPSTART.getBeskrivelse());
     }
 
     @Test

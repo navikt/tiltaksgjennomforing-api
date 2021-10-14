@@ -74,7 +74,8 @@ tiltaksgjennomforing:
   axsys:
     uri: http://localhost:8090/axsys
   abac:
-    veilarbabac-uri: http://localhost:8090/veilarbabac
+    uri: http://localhost:8090/abac
+    nav-consumer-id: tiltaksgjennomforing-api
   consumer:
     system:
       id: testsystem
