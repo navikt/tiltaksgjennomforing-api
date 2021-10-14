@@ -75,7 +75,7 @@ jobs:
           CLUSTER: dev-fss
           RESOURCE: nais/naiserator.yaml
           PRINT_PAYLOAD: true
-          VAR: ingress=https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api/,namespace=arbeidsgiver,kafka-pool=nav-dev
+          VAR: ingress=https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api/,kafka-pool=nav-dev,tenant=trygdeetaten.no
 
   deploy-prod:
     name: Deploy til prod
@@ -92,7 +92,7 @@ jobs:
           CLUSTER: prod-fss
           RESOURCE: nais/naiserator.yaml,nais/alerterator.yaml
           PRINT_PAYLOAD: true
-          VAR: ingress=https://arbeidsgiver.nais.adeo.no/tiltaksgjennomforing-api/,namespace=arbeidsgiver,kafka-pool=nav-prod
+          VAR: ingress=https://arbeidsgiver.nais.adeo.no/tiltaksgjennomforing-api/,kafka-pool=nav-prod,tenant=nav.no
 
   deploy-labs:
     name: Deploy til labs

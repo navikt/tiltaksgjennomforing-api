@@ -48,7 +48,7 @@ jobs:
           CLUSTER: dev-fss
           RESOURCE: nais/naiserator.yaml
           PRINT_PAYLOAD: true
-          VAR: ingress=https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api/,namespace=arbeidsgiver,kafka-pool=nav-dev
+          VAR: ingress=https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api/,kafka-pool=nav-dev,tenant=trygdeetaten.no
           REF: ${{ env.COMMIT }}
           IMAGE: ${{ env.IMAGE }}
           
