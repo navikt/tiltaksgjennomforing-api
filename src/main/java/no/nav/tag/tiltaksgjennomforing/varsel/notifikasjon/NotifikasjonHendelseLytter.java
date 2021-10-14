@@ -17,10 +17,10 @@ public class NotifikasjonHendelseLytter {
     private final ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
 
     @Autowired
-    NotifikasjonService notifikasjonService;
+    private final NotifikasjonService notifikasjonService;
 
     @Autowired
-    NotifikasjonParser parser;
+    private final NotifikasjonParser parser;
 
    @EventListener
     public void avtaleOpprettet(AvtaleOpprettetAvVeileder event) {

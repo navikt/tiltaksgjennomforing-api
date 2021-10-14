@@ -18,7 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-public class ArbeidsgiverNotifikasjon extends AbstractAggregateRoot<ArbeidsgiverNotifikasjon> {
+public class ArbeidsgiverNotifikasjon {
 
     @Id
     private UUID id;
