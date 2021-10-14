@@ -2,7 +2,7 @@ create table arbeidsgiver_notifikasjon
 (
     id                     uuid primary key,
     tidspunkt              timestamp without time zone not null default now(),
-    avtale_id              uuid,
+    avtale_id              uuid references avtale(id),
     hendelse_type          varchar,
     virksomhetsnummer      varchar,
     lenke                  varchar,
