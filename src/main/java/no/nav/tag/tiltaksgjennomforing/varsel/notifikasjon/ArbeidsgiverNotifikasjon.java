@@ -8,7 +8,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNrConverter;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
-import org.springframework.data.domain.AbstractAggregateRoot;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
