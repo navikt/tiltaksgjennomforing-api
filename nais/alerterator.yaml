@@ -2,7 +2,7 @@ apiVersion: nais.io/v1
 kind: Alert
 metadata:
   name: tiltaksgjennomforing-api-alert
-  namespace: {{namespace}}
+  namespace: arbeidsgiver
   labels:
     team: arbeidsgiver
 spec:
