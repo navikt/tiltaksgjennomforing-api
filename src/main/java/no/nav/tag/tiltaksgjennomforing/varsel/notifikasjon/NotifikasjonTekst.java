@@ -1,18 +1,16 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
 public enum NotifikasjonTekst {
-    AVTALE_OPPRETTET("Ny avtale opprettet. Åpne avtale og fyll ut innholdet."),
-    TILTAK_AVTALE_MANGLER_GODKJENNING("Tiltaksavtale mangler godkjenning."),
-    TILTAK_AVTALE_ENDRET("Tiltak avtale endret"),
+    AVTALE_OPPRETTET("Ny arbeidstiltak avtale opprettet. Åpne avtale og fyll ut innholdet."),
     TILTAK_AVTALE_INNGATT("Arbeidstiltak avtale inngått."),
-    TILTAK_AVTALE_AVBRUTT("Arbeidstiltak avtale avbrutt."),
-    TILTAK_AVTALE_LASTOPP("Avtale har blitt låst opp. Trenger ny godkjenning"),
-    TILTAK_AVTALE_GJENOPPRETTET("Arbeidstiltak avtale gjenopprettet."),
-    TILTAK_AVTALE_KLAR_REFUSJON("Refusjon for tiltaksavtale er klar."),
-    TILTAK_AVTALE_GODKJENT_VEILEDER("Arbeidstiltak avtale godkjent av veileder."),
-    TILTAK_AVTALE_SLETTET_VEILEDER("Avtale er slettet av veileder"),
-    TILTAK_NOTIFIKASJON_OPPGAVE_UTFØRT("Notifikasjons oppgaven er utført.");
-
+    TILTAK_AVTALE_KLAR_REFUSJON("Refusjon for arbeidstiltaksavtale er klar."),
+    TILTAK_AVTALE_GODKJENT_VEILEDER("Arbeidstiltaksavtale godkjent av veileder."),
+    TILTAK_STILLINGSBESKRIVELSE_ENDRET("Stillingsbeskrivelse i arbeidstiltak endret av veileder" ),
+    TILTAK_OPPFØLGING_OG_TILRETTELEGGING_ENDRET("Oppfølging og tilrettelegging rundt arbeidstiltak endret av veileder"),
+    TILTAK_AVTALE_FORKORTET("Arbeidstiltak avtale forkortet"),
+    TILTAK_AVTALE_FORLENGET("Arbeidstiltak avtale forlenget av veileder"),
+    TILTAK_TILSKUDDSBEREGNING_ENDRET("Tilskuddsberegning i arbeidstiltak endret av veileder"),
+    TILTAK_KONTAKTINFORMASJON_ENDRET("Kontaktinformasjon i arbeidstiltak endret av veileder");
 
     private final String tekst;
 
