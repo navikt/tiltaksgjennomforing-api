@@ -44,6 +44,7 @@ public class SecurityAzureClientConfiguration {
 
     private RestTemplate restTemplateForAzureDirective(String registrationKey) {
         final ClientProperties clientProperties = clientConfigurationProperties.getRegistration().get(registrationKey);
+        log.info(" !!!!!!!!!!!! : {} {}", clientProperties, oAuth2AccessTokenService);
         return restTemplateBuilder.additionalInterceptors(bearerTokenInterceptor(clientProperties, oAuth2AccessTokenService)).build();
     }
 
