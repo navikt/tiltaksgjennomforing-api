@@ -12,22 +12,7 @@ public class LokalSecurityAzureConfig {
 
     private final RestTemplateBuilder restTemplateBuilder;
 
-    @Bean
-    public RestTemplate påVegneAvSaksbehandlerGraphRestTemplate() {
-        return restTemplateBuilder.build();
-    }
-
-    @Bean
-    public RestTemplate påVegneAvSaksbehandlerProxyRestTemplate(){
-        return restTemplateBuilder.build();
-    }
-
-    @Bean
-    public RestTemplate påVegneAvArbeidsgiverAltinnRestTemplate(){
-        return restTemplateBuilder.build();
-    }
-
-    @Bean
+    @Bean("notifikasjonerRestTemplate")
     public RestTemplate anonymProxyRestTemplate(){
         return restTemplateBuilder.build();
     }
