@@ -20,30 +20,17 @@ import org.springframework.web.client.RestTemplate;
 
 @EnableOAuth2Client(cacheEnabled = true)
 @Configuration
-@Profile(value = { Miljø.PROD_FSS, Miljø.DEV_FSS })
+@Profile(value = {Miljø.PROD_FSS, Miljø.DEV_FSS})
 @Slf4j
 public class SecurityAzureClientConfiguration {
-    RestTemplateBuilder restTemplateBuilder;
-    ClientConfigurationProperties clientConfigurationProperties;
-    OAuth2AccessTokenService oAuth2AccessTokenService;
+
 
     @Bean
-    public RestTemplate påVegneAvSaksbehandlerGraphRestTemplate() {
-        return this.restTemplateForAzureDirective("aad-graph");
-    }
+    public RestTemplate anonymProxyRestTemplate(RestTemplateBuilder restTemplateBuilder,
+                                                ClientConfigurationProperties clientConfigurationProperties,
+                                                OAuth2AccessTokenService oAuth2AccessTokenService) {
 
-    @Bean
-    public RestTemplate påVegneAvSaksbehandlerProxyRestTemplate() {
-        return this.restTemplateForAzureDirective("aad");
-    }
-
-    @Bean
-    public RestTemplate anonymProxyRestTemplate() {
-        return this.restTemplateForAzureDirective("aad-anonym");
-    }
-
-    private RestTemplate restTemplateForAzureDirective(String registrationKey) {
-        final ClientProperties clientProperties = clientConfigurationProperties.getRegistration().get(registrationKey);
+        final ClientProperties clientProperties = clientConfigurationProperties.getRegistration().get("aad-anonym");
         log.info(" !!!!!!!!!!!! : {} {}", clientProperties, oAuth2AccessTokenService);
         return restTemplateBuilder.additionalInterceptors(bearerTokenInterceptor(clientProperties, oAuth2AccessTokenService)).build();
     }
@@ -55,7 +42,7 @@ public class SecurityAzureClientConfiguration {
             log.info("excution {}", execution);
             OAuth2AccessTokenResponse response = oAuth2AccessTokenService.getAccessToken(clientProperties);
             HttpHeaders headers = request.getHeaders();
-            if(response == null || body == null) {
+            if (response == null || body == null) {
                 throw new TilgangskontrollException("Azure klient feilet med lesing av response data");
             }
 
