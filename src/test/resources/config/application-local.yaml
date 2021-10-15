@@ -97,6 +97,7 @@ tiltaksgjennomforing:
   notifikasjoner:
     uri: http://localhost:8090/api/graphql
     lenke: http://localhost:3000/tiltaksgjennomforing/avtale/
+    enabled: false
   notifikasjonHendelseLytter:
     enable: false
   dvh-melding:

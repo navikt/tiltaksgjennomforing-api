@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@ConditionalOnProperty("tiltaksgjennomforing.notifikasjonHendelseLytter.enabled")
+@ConditionalOnProperty("tiltaksgjennomforing.notifikasjoner.enabled")
 public class NotifikasjonHendelseLytter {
 
     private final ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;

@@ -78,6 +78,7 @@ tiltaksgjennomforing:
   notifikasjoner:
     uri: https://notifikasjon-fake-produsent-api.labs.nais.io/api/graphql
     lenke: https://arbeidsgiver.labs.nais.io/tiltaksgjennomforing/avtale/
+    enabled: true
   tilskuddsperioder:
     tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD
 
