@@ -31,21 +31,16 @@ public class SecurityAzureClientConfiguration {
                                                 OAuth2AccessTokenService oAuth2AccessTokenService) {
 
         final ClientProperties clientProperties = clientConfigurationProperties.getRegistration().get("aad-anonym");
-        log.info(" !!!!!!!!!!!! : {} {}", clientProperties, oAuth2AccessTokenService);
         return restTemplateBuilder.additionalInterceptors(bearerTokenInterceptor(clientProperties, oAuth2AccessTokenService)).build();
     }
 
     private ClientHttpRequestInterceptor bearerTokenInterceptor(final ClientProperties clientProperties, final OAuth2AccessTokenService oAuth2AccessTokenService) {
         return (request, body, execution) -> {
-            log.info("request {}", request.getHeaders());
-            log.info("body", body);
-            log.info("excution {}", execution);
             OAuth2AccessTokenResponse response = oAuth2AccessTokenService.getAccessToken(clientProperties);
             HttpHeaders headers = request.getHeaders();
             if (response == null || body == null) {
                 throw new TilgangskontrollException("Azure klient feilet med lesing av response data");
             }
-
             headers.setBearerAuth(response.getAccessToken());
             return execution.execute(request, body);
         };
