@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.client.core.ClientProperties;
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenResponse;
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService;
@@ -20,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 @EnableOAuth2Client(cacheEnabled = true)
 @Configuration
 @Profile(value = { Miljø.PROD_FSS, Miljø.DEV_FSS })
+@Slf4j
 public class SecurityAzureClientConfiguration {
     RestTemplateBuilder restTemplateBuilder;
     ClientConfigurationProperties clientConfigurationProperties;
@@ -47,11 +49,15 @@ public class SecurityAzureClientConfiguration {
 
     private ClientHttpRequestInterceptor bearerTokenInterceptor(final ClientProperties clientProperties, final OAuth2AccessTokenService oAuth2AccessTokenService) {
         return (request, body, execution) -> {
+            log.info("request {}", request.getHeaders());
+            log.info("body", body);
+            log.info("excution {}", execution);
             OAuth2AccessTokenResponse response = oAuth2AccessTokenService.getAccessToken(clientProperties);
             HttpHeaders headers = request.getHeaders();
             if(response == null || body == null) {
                 throw new TilgangskontrollException("Azure klient feilet med lesing av response data");
             }
+
             headers.setBearerAuth(response.getAccessToken());
             return execution.execute(request, body);
         };
