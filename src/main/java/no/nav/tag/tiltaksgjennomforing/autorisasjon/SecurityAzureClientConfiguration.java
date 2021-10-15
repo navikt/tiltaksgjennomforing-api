@@ -30,7 +30,7 @@ public class SecurityAzureClientConfiguration {
                                                 ClientConfigurationProperties clientConfigurationProperties,
                                                 OAuth2AccessTokenService oAuth2AccessTokenService) {
 
-        final ClientProperties clientProperties = clientConfigurationProperties.getRegistration().get("aad-anonym");
+        final ClientProperties clientProperties = clientConfigurationProperties.getRegistration().get("notifikasjoner");
         return restTemplateBuilder.additionalInterceptors(bearerTokenInterceptor(clientProperties, oAuth2AccessTokenService)).build();
     }
 
