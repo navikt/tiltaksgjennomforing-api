@@ -9,6 +9,7 @@ import no.nav.security.token.support.client.spring.ClientConfigurationProperties
 import no.nav.security.token.support.client.spring.oauth2.EnableOAuth2Client;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.utils.ConditionalOnPropertyNotEmpty;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +26,7 @@ import org.springframework.web.client.RestTemplate;
 public class SecurityAzureClientConfiguration {
 
 
-    @Bean
+    @Bean("notifikasjonerRestTemplate")
     public RestTemplate anonymProxyRestTemplate(RestTemplateBuilder restTemplateBuilder,
                                                 ClientConfigurationProperties clientConfigurationProperties,
                                                 OAuth2AccessTokenService oAuth2AccessTokenService) {

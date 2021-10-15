@@ -32,7 +32,7 @@ public class NotifikasjonService {
     private final NotifikasjonParser notifikasjonParser;
 
     public NotifikasjonService(
-            @Qualifier("anonymProxyRestTemplate") RestTemplate restTemplate,
+            @Qualifier("notifikasjonerRestTemplate") RestTemplate restTemplate,
             @Autowired NotifikasjonParser notifikasjonParser,
             NotifikasjonerProperties properties,
             @Autowired NotifikasjonHandler handler
