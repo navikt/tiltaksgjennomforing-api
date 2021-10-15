@@ -134,7 +134,7 @@ public class MetrikkRegistrering {
     }
 
     @EventListener
-    public void godkjentPaVegneAv(GodkjentPaVegneAv event) {
+    public void godkjentPaVegneAv(GodkjentPaVegneAvDeltaker event) {
         Avtalerolle rolle = Avtalerolle.VEILEDER;
         Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
         log.info("Avtale godkjent på vegne av deltaker, avtaleId={}, avtalepart={}, tiltakstype={}", event.getAvtale().getId(), rolle, tiltakstype);

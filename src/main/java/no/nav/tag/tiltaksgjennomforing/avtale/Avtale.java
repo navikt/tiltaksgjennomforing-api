@@ -290,7 +290,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             avtaleInngått(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
         }
         sistEndretNå();
-        registerEvent(new GodkjentPaVegneAv(this, utfortAv));
+        registerEvent(new GodkjentPaVegneAvDeltaker(this, utfortAv));
     }
 
     void godkjennForVeilederOgArbeidsgiver(NavIdent utfortAv, GodkjentPaVegneAvArbeidsgiverGrunn godkjentPaVegneAvArbeidsgiverGrunn) {

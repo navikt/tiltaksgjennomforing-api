@@ -49,7 +49,7 @@ public class LyttPåHendelseTilHendelselogg {
     }
 
     @EventListener
-    public void godkjentPaVegneAv(GodkjentPaVegneAv event) {
+    public void godkjentPaVegneAv(GodkjentPaVegneAvDeltaker event) {
         Hendelselogg hendelselogg = Hendelselogg.nyHendelse(event.getAvtale().getId(), Avtalerolle.VEILEDER, VarslbarHendelseType.GODKJENT_PAA_VEGNE_AV);
         repository.save(hendelselogg);
     }

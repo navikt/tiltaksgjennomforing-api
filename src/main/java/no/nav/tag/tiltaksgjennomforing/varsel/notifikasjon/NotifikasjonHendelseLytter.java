@@ -54,21 +54,33 @@ public class NotifikasjonHendelseLytter {
 
     @EventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
-        opprettOgSendNyBeskjed(event.getAvtale(), VarslbarHendelseType.GODKJENT_AV_VEILEDER,
-                NotifikasjonTekst.TILTAK_AVTALE_GODKJENT_VEILEDER);
+        notifikasjonService.oppgaveUtfoert(event.getAvtale().getId(),
+                VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET);
+    }
+
+    @EventListener
+    public void godkjentPaVegneAv(GodkjentPaVegneAvDeltaker event) {
+        notifikasjonService.oppgaveUtfoert(event.getAvtale().getId(),
+                VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET);
+    }
+
+    @EventListener
+    public void godkjentPaVegneAvArbeidsgiver(GodkjentPaVegneAvArbeidsgiver event) {
+        notifikasjonService.oppgaveUtfoert(event.getAvtale().getId(),
+                VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET);
+    }
+
+    @EventListener
+    public void godkjentPaVegneAvDeltakerOgArbeidsgiver(GodkjentPaVegneAvDeltakerOgArbeidsgiver event) {
         notifikasjonService.oppgaveUtfoert(event.getAvtale().getId(),
                 VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET);
     }
 
     @EventListener
     public void avtaleInngått(AvtaleInngått event) {
-        final ArbeidsgiverNotifikasjon notifikasjon = ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(),
-                VarslbarHendelseType.AVTALE_INNGÅTT, notifikasjonService, parser);
-        arbeidsgiverNotifikasjonRepository.save(notifikasjon);
-        notifikasjonService.opprettOppgave(notifikasjon,
-                NotifikasjonMerkelapp.getMerkelapp(event.getAvtale().getTiltakstype().getBeskrivelse()),
-                NotifikasjonTekst.TILTAK_AVTALE_INNGATT
-        );
+        opprettOgSendNyBeskjed(event.getAvtale(), VarslbarHendelseType.AVTALE_INNGÅTT, NotifikasjonTekst.TILTAK_AVTALE_INNGATT);
+        notifikasjonService.oppgaveUtfoert(event.getAvtale().getId(),
+                VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET);
     }
 
     @EventListener
