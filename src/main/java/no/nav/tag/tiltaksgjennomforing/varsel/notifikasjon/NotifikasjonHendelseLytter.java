@@ -94,6 +94,12 @@ public class NotifikasjonHendelseLytter {
     }
 
     @EventListener
+    public void målEndret(MålEndret event) {
+        opprettOgSendNyBeskjed(event.getAvtale(), VarslbarHendelseType.MÅL_ENDRET,
+                NotifikasjonTekst.TILTAK_MÅL_ENDRET);
+    }
+
+    @EventListener
     public void endreStillingbeskrivelse(StillingsbeskrivelseEndret event) {
         opprettOgSendNyBeskjed(event.getAvtale(), VarslbarHendelseType.STILLINGSBESKRIVELSE_ENDRET,
                 NotifikasjonTekst.TILTAK_STILLINGSBESKRIVELSE_ENDRET);
