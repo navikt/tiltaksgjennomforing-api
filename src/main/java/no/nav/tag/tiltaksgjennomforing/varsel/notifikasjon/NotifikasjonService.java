@@ -114,9 +114,9 @@ public class NotifikasjonService {
     }
 
 
-    public void oppgaveUtfoert(UUID avtaleId, VarslbarHendelseType hendelseType, MutationStatus status) {
+    public void oppgaveUtfoert(Avtale avtale, VarslbarHendelseType hendelseType, MutationStatus status) {
         final List<ArbeidsgiverNotifikasjon> notifikasjonList =
-                handler.finnUtfoertNotifikasjon(avtaleId, hendelseType, status.getStatus());
+                handler.finnUtfoertNotifikasjon(avtale.getId(), hendelseType, status.getStatus());
         if (!notifikasjonList.isEmpty()) {
             notifikasjonList.forEach(n -> {
                 Variables variables = new Variables();
@@ -126,11 +126,15 @@ public class NotifikasjonService {
                         variables
                 ));
                 final OppgaveUtfoertResponse oppgaveUtfoert = handler.readResponse(response, OppgaveUtfoertResponse.class);
-                String oppdatertStatus = oppgaveUtfoert.getData().getOppgaveUtfoert().get__typename();
-                if(oppdatertStatus.equals(MutationStatus.OPPGAVE_UTFOERT_VELLYKKET.getStatus())) {
-                    n.setStatusResponse(oppdatertStatus);
+                String statusOppgaveUtfoert = oppgaveUtfoert.getData().getOppgaveUtfoert().get__typename();
+                ArbeidsgiverNotifikasjon notifikasjon =
+                        ArbeidsgiverNotifikasjon.nyHendelse(avtale,
+                                VarslbarHendelseType.AVTALE_INNGÅTT, this, notifikasjonParser);
+                if(statusOppgaveUtfoert.equals(MutationStatus.OPPGAVE_UTFOERT_VELLYKKET.getStatus())) {
                     n.setNotifikasjonAktiv(false);
                 }
+                notifikasjon.setStatusResponse(statusOppgaveUtfoert);
+                handler.saveNotifikasjon(notifikasjon);
                 handler.saveNotifikasjon(n);
             });
         }

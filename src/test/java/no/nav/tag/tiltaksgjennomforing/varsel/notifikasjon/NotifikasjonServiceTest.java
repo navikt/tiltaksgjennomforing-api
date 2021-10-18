@@ -116,19 +116,20 @@ public class NotifikasjonServiceTest {
         assertThat(notifikasjon.isNotifikasjonAktiv()).isTrue();
 
         notifikasjonService.oppgaveUtfoert(
-                avtale.getId(),
+                avtale,
                 VarslbarHendelseType.OPPRETTET,
                 MutationStatus.NY_OPPGAVE_VELLYKKET);
 
         List<ArbeidsgiverNotifikasjon> oppdatertNotifikasjonList =
                 arbeidsgiverNotifikasjonRepository.findAllByAvtaleId(avtale.getId());
-        ArbeidsgiverNotifikasjon oppdatertNotifikasjon = oppdatertNotifikasjonList.get(0);
 
-        assertThat(oppdatertNotifikasjon).isNotNull();
-        assertThat(oppdatertNotifikasjon.getAvtaleId()).isEqualTo(avtale.getId());
-        assertThat(oppdatertNotifikasjon.getStatusResponse())
+        assertThat(oppdatertNotifikasjonList.get(0)).isNotNull();
+        assertThat(oppdatertNotifikasjonList.get(0).getAvtaleId()).isEqualTo(avtale.getId());
+        assertThat(oppdatertNotifikasjonList.get(0).isNotifikasjonAktiv()).isFalse();
+        assertThat(oppdatertNotifikasjonList.get(1)).isNotNull();
+        assertThat(oppdatertNotifikasjonList.get(1).getAvtaleId()).isEqualTo(avtale.getId());
+        assertThat(oppdatertNotifikasjonList.get(1).getStatusResponse())
                 .isEqualTo(MutationStatus.OPPGAVE_UTFOERT_VELLYKKET.getStatus());
-        assertThat(oppdatertNotifikasjon.isNotifikasjonAktiv()).isFalse();
     }
 
     @Test
