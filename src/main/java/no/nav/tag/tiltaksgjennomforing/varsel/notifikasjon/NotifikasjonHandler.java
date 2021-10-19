@@ -61,12 +61,8 @@ public class NotifikasjonHandler {
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
     }
 
-    public List<ArbeidsgiverNotifikasjon> finnAktiveNotifikasjonerUtfoert(UUID id) {
-        return arbeidsgiverNotifikasjonRepository.
-                findArbeidsgiverNotifikasjonByAvtaleIdAndVarselSendtVellykketAndNotifikasjonAktiv(
-                        id,
-                        true,
-                        true);
+    public List<ArbeidsgiverNotifikasjon> finnNotifikasjonerForAvtale(UUID id) {
+        return arbeidsgiverNotifikasjonRepository.findAllByAvtaleId(id);
     }
 
     public ArbeidsgiverNotifikasjon finnEllerOpprettNotifikasjonForOppgaveUtfoert(

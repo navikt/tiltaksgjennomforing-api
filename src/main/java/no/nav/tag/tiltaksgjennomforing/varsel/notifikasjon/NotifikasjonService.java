@@ -10,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyBeskjed.Ny
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyOppgave.NyOppgaveResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.oppgaveUtfoertByEksternId.OppgaveUtfoertByEksternIdResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.softDeleteNotifikasjon.SoftDeleteNotifikasjonResponse;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.softDeleteNotifikasjonByEksternId.SoftDeleteNotifikasjonByEksternIdResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
@@ -155,17 +156,20 @@ public class NotifikasjonService {
 
     public void softDeleteNotifikasjoner(Avtale avtale) {
         final List<ArbeidsgiverNotifikasjon> notifikasjonlist =
-                handler.finnAktiveNotifikasjonerUtfoert(avtale.getId());
+                handler.finnNotifikasjonerForAvtale(avtale.getId());
         if (!notifikasjonlist.isEmpty()) {
             notifikasjonlist.forEach(n -> {
                 Variables variables = new Variables();
-                variables.setId(n.getId());
+                variables.setEksternId(n.getId());
+                variables.setMerkelapp(NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()).getValue());
+
                 final String response = opprettNotifikasjon(new ArbeidsgiverMutationRequest(
-                        notifikasjonParser.getSoftDeleteNotifikasjon(),
+                        notifikasjonParser.getSoftDeleteNotifikasjonByEksternId(),
                         variables));
-                final SoftDeleteNotifikasjonResponse res =
-                        handler.readResponse(response, SoftDeleteNotifikasjonResponse.class);
-                String softDeleteStatus = res.getData().getSoftDeleteNotifikasjon().get__typename();
+                final SoftDeleteNotifikasjonByEksternIdResponse res =
+                        handler.readResponse(response, SoftDeleteNotifikasjonByEksternIdResponse.class);
+
+                String softDeleteStatus = res.getData().getSoftDeleteNotifikasjonByEksternId().get__typename();
                 if(softDeleteStatus.equals(MutationStatus.SOFT_DELETE_NOTIFIKASJON_VELLYKKET.getStatus())){
                     n.setStatusResponse(softDeleteStatus);
                     n.setNotifikasjonAktiv(false);

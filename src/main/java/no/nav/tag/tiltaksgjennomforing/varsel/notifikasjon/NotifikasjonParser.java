@@ -18,7 +18,7 @@ public class NotifikasjonParser {
     private final String nyBeskjed;
     private final String oppgaveUtfoertByEksternId;
     private final String mineNotifikasjoner;
-    private final String softDeleteNotifikasjon;
+    private final String softDeleteNotifikasjonByEksternId;
     private final String hardDeleteNotifikasjon;
 
     private final AltinnTilgangsstyringProperties altinnTilgangsstyringProperties;
@@ -28,7 +28,7 @@ public class NotifikasjonParser {
             @Value("classpath:varsler/opprettNyBeskjed.graphql") Resource nyBeskjed,
             @Value("classpath:varsler/oppgaveUtfoertByEksternId.graphql") Resource oppgaveUtfoertByEksternId,
             @Value("classpath:varsler/mineNotifikasjoner.graphql") Resource mineNotifikasjoner,
-            @Value("classpath:varsler/softDeleteNotifikasjon.graphql") Resource softDeleteNotifikasjon,
+            @Value("classpath:varsler/softDeleteNotifikasjonByEksternId.graphql") Resource softDeleteNotifikasjonByEksternId,
             @Value("classpath:varsler/hardDeleteNotifikasjon.graphql") Resource hardDeleteNotifikasjon,
             AltinnTilgangsstyringProperties altinnTilgangsstyringProperties
     ) {
@@ -36,7 +36,7 @@ public class NotifikasjonParser {
         this.nyBeskjed = resourceAsString(nyBeskjed);
         this.oppgaveUtfoertByEksternId = resourceAsString(oppgaveUtfoertByEksternId);
         this.mineNotifikasjoner = resourceAsString(mineNotifikasjoner);
-        this.softDeleteNotifikasjon = resourceAsString(softDeleteNotifikasjon);
+        this.softDeleteNotifikasjonByEksternId = resourceAsString(softDeleteNotifikasjonByEksternId);
         this.hardDeleteNotifikasjon = resourceAsString(hardDeleteNotifikasjon);
         this.altinnTilgangsstyringProperties = altinnTilgangsstyringProperties;
     }

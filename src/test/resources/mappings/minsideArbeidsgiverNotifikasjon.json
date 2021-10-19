@@ -91,14 +91,14 @@
           {
             "matchesJsonPath": {
               "expression": "$..query",
-              "contains": "mutation SlettingAvNotifikasjoner"
+              "contains": "mutation SlettingAvNotifikasjonerByEksternId"
             }
           }
         ]
       },
       "response": {
         "status": 200,
-        "body": "{ \"data\": { \"softDeleteNotifikasjon\": {  \"__typename\": \"SoftDeleteNotifikasjonVellykket\",  \"id\": \"21108b38-8c09-4b00-b7d4-24c3402916f7\" } } }",
+        "body": "{  \"data\": {  \"softDeleteNotifikasjonByEksternId\": {  \"__typename\": \"SoftDeleteNotifikasjonVellykket\",  \"id\": \"8d5cb4b6-b1ef-4dbd-97df-8c5550c2dc83\" } } }",
         "headers": {
           "Content-Type": "application/json"
         }
