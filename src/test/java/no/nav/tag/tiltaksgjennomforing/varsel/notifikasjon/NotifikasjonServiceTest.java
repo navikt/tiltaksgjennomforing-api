@@ -54,7 +54,7 @@ public class NotifikasjonServiceTest {
         notifikasjonService.opprettNyBeskjed(
                 notifikasjon,
                 NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()),
-                NotifikasjonTekst.AVTALE_OPPRETTET);
+                NotifikasjonTekst.TILTAK_AVTALE_OPPRETTET);
 
         assertThat(arbeidsgiverNotifikasjonRepository.findAllByAvtaleId(avtale.getId())).isNotEmpty();
     }
@@ -64,7 +64,7 @@ public class NotifikasjonServiceTest {
         notifikasjonService.opprettOppgave(
                 notifikasjon,
                 NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()),
-                NotifikasjonTekst.AVTALE_OPPRETTET);
+                NotifikasjonTekst.TILTAK_AVTALE_OPPRETTET);
 
         assertThat(arbeidsgiverNotifikasjonRepository.
                 findArbeidsgiverNotifikasjonByAvtaleIdAndVarselSendtVellykketAndNotifikasjonAktiv(
@@ -79,7 +79,7 @@ public class NotifikasjonServiceTest {
         notifikasjonService.opprettOppgave(
                 notifikasjon,
                 NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()),
-                NotifikasjonTekst.AVTALE_OPPRETTET);
+                NotifikasjonTekst.TILTAK_AVTALE_OPPRETTET);
 
         List<ArbeidsgiverNotifikasjon> notifikasjonList =
                 arbeidsgiverNotifikasjonRepository.
@@ -100,7 +100,7 @@ public class NotifikasjonServiceTest {
         notifikasjonService.opprettOppgave(
                 notifikasjon,
                 NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()),
-                NotifikasjonTekst.AVTALE_OPPRETTET);
+                NotifikasjonTekst.TILTAK_AVTALE_OPPRETTET);
 
         List<ArbeidsgiverNotifikasjon> notifikasjonList =
                 arbeidsgiverNotifikasjonRepository.
@@ -118,7 +118,7 @@ public class NotifikasjonServiceTest {
         notifikasjonService.oppgaveUtfoert(
                 avtale,
                 VarslbarHendelseType.OPPRETTET,
-                MutationStatus.NY_OPPGAVE_VELLYKKET);
+                MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
 
         List<ArbeidsgiverNotifikasjon> oppdatertNotifikasjonList =
                 arbeidsgiverNotifikasjonRepository.findAllByAvtaleId(avtale.getId());
@@ -133,11 +133,34 @@ public class NotifikasjonServiceTest {
     }
 
     @Test
+    public void oppGaveUtfoertSkalKunlagresEnGangPrHendelse() {
+        notifikasjonService.opprettOppgave(
+                notifikasjon,
+                NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()),
+                NotifikasjonTekst.TILTAK_AVTALE_OPPRETTET);
+
+        notifikasjonService.oppgaveUtfoert(
+                avtale,
+                VarslbarHendelseType.OPPRETTET,
+                MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
+
+        notifikasjonService.oppgaveUtfoert(
+                avtale,
+                VarslbarHendelseType.OPPRETTET,
+                MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
+
+        List<ArbeidsgiverNotifikasjon> oppdatertNotifikasjonList =
+                arbeidsgiverNotifikasjonRepository.findAllByAvtaleId(avtale.getId());
+
+        assertThat(oppdatertNotifikasjonList.size()).isEqualTo(2);
+    }
+
+    @Test
     public void softDeleteNotifikasjonTest() {
         notifikasjonService.opprettOppgave(
                 notifikasjon,
                 NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()),
-                NotifikasjonTekst.AVTALE_OPPRETTET);
+                NotifikasjonTekst.TILTAK_AVTALE_OPPRETTET);
         List<ArbeidsgiverNotifikasjon> notifikasjonList =
                 arbeidsgiverNotifikasjonRepository.findAllByAvtaleId(avtale.getId());
         ArbeidsgiverNotifikasjon notifikasjon = notifikasjonList.get(0);
@@ -157,8 +180,6 @@ public class NotifikasjonServiceTest {
         assertThat(oppdatertNotifikasjon.getStatusResponse())
                 .isEqualTo(MutationStatus.SOFT_DELETE_NOTIFIKASJON_VELLYKKET.getStatus());
         assertThat(oppdatertNotifikasjon.isNotifikasjonAktiv()).isFalse();
-
-
     }
 
 }

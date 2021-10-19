@@ -103,6 +103,32 @@
           "Content-Type": "application/json"
         }
       }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/api/graphql",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": {
+              "expression": "$..query",
+              "contains": "mutation OppgaveUtfoertByEksternId"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "body": "{  \"data\": {  \"oppgaveUtfoertByEksternId\": {  \"__typename\": \"OppgaveUtfoertVellykket\",  \"id\": \"d92b548e-1dc4-47cd-85ab-b71c69b29de5\" } } }",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
     }
   ]
 }

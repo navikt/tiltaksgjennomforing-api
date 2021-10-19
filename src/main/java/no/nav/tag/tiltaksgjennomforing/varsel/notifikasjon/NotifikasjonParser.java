@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets;
 public class NotifikasjonParser {
     private final String nyOppgave;
     private final String nyBeskjed;
-    private final String oppgaveUtfoert;
+    private final String oppgaveUtfoertByEksternId;
     private final String mineNotifikasjoner;
     private final String softDeleteNotifikasjon;
     private final String hardDeleteNotifikasjon;
@@ -26,7 +26,7 @@ public class NotifikasjonParser {
     public NotifikasjonParser(
             @Value("classpath:varsler/opprettNyOppgave.graphql") Resource nyOppgave,
             @Value("classpath:varsler/opprettNyBeskjed.graphql") Resource nyBeskjed,
-            @Value("classpath:varsler/oppgaveUtfoert.graphql") Resource oppgaveUtfoert,
+            @Value("classpath:varsler/oppgaveUtfoertByEksternId.graphql") Resource oppgaveUtfoertByEksternId,
             @Value("classpath:varsler/mineNotifikasjoner.graphql") Resource mineNotifikasjoner,
             @Value("classpath:varsler/softDeleteNotifikasjon.graphql") Resource softDeleteNotifikasjon,
             @Value("classpath:varsler/hardDeleteNotifikasjon.graphql") Resource hardDeleteNotifikasjon,
@@ -34,7 +34,7 @@ public class NotifikasjonParser {
     ) {
         this.nyOppgave = resourceAsString(nyOppgave);
         this.nyBeskjed = resourceAsString(nyBeskjed);
-        this.oppgaveUtfoert = resourceAsString(oppgaveUtfoert);
+        this.oppgaveUtfoertByEksternId = resourceAsString(oppgaveUtfoertByEksternId);
         this.mineNotifikasjoner = resourceAsString(mineNotifikasjoner);
         this.softDeleteNotifikasjon = resourceAsString(softDeleteNotifikasjon);
         this.hardDeleteNotifikasjon = resourceAsString(hardDeleteNotifikasjon);

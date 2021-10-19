@@ -5,7 +5,7 @@ import java.util.UUID;
 
 @Data
 public class Variables {
-    String eksternId;
+    UUID eksternId;
     String virksomhetsnummer;
     String lenke;
     String serviceCode;

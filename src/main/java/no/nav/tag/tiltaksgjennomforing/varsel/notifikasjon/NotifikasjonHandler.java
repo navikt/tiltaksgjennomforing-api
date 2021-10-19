@@ -3,10 +3,12 @@ package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.FellesMutationResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
 import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -33,7 +35,7 @@ public class NotifikasjonHandler {
             if (data != null) {
                 return objectMapper.convertValue(data, FellesMutationResponse.class);
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error("feilet med convertering av data til FellesMutationResponse klasse: ", e);
         }
         return null;
@@ -46,7 +48,7 @@ public class NotifikasjonHandler {
         if (response != null) {
             if (response.get__typename().equals(vellykketStatus.getStatus())) {
                 notifikasjon.setVarselSendtVellykket(true);
-                if(response.get__typename().equals(MutationStatus.NY_OPPGAVE_VELLYKKET.getStatus())){
+                if (response.get__typename().equals(MutationStatus.NY_OPPGAVE_VELLYKKET.getStatus())) {
                     notifikasjon.setNotifikasjonAktiv(true);
                 }
             }
@@ -67,11 +69,29 @@ public class NotifikasjonHandler {
                         true);
     }
 
+    public ArbeidsgiverNotifikasjon finnEllerOpprettNotifikasjonForOppgaveUtfoert(
+            Avtale avtale,
+            UUID notifikasjonReferanseId,
+            VarslbarHendelseType hendelseTypeForNyNotifikasjon,
+            NotifikasjonService service,
+            NotifikasjonParser parser) {
+
+        ArbeidsgiverNotifikasjon notifikasjon = arbeidsgiverNotifikasjonRepository.
+                findArbeidsgiverNotifikasjonsByAvtaleIdAndNotifikasjonReferanseId(avtale.getId(), notifikasjonReferanseId);
+        if (notifikasjon != null) {
+            return notifikasjon;
+        }
+        ArbeidsgiverNotifikasjon utfoertNotifikasjon = ArbeidsgiverNotifikasjon.nyHendelse(avtale,
+                hendelseTypeForNyNotifikasjon, service, parser);
+        utfoertNotifikasjon.setNotifikasjonReferanseId(notifikasjonReferanseId);
+        return utfoertNotifikasjon;
+    }
+
     public List<ArbeidsgiverNotifikasjon> finnUtfoertNotifikasjon(
             UUID id,
             VarslbarHendelseType hendelsetype,
             String statusResponse) {
         return arbeidsgiverNotifikasjonRepository
-                .findArbeidsgiverNotifikasjonByAvtaleIdAndHendelseTypeAndStatusResponse(id, hendelsetype,statusResponse);
+                .findArbeidsgiverNotifikasjonByAvtaleIdAndHendelseTypeAndStatusResponse(id, hendelsetype, statusResponse);
     }
 }

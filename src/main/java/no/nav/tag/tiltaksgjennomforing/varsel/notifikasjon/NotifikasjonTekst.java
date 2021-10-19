@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
 public enum NotifikasjonTekst {
-    AVTALE_OPPRETTET("Ny avtale om arbeidstiltak opprettet. Åpne avtale og fyll ut innholdet."),
+    TILTAK_AVTALE_OPPRETTET("Ny avtale om arbeidstiltak opprettet. Åpne avtale og fyll ut innholdet."),
     TILTAK_AVTALE_INNGATT("Avtale om arbeidstiltak godkjent."),
     TILTAK_AVTALE_KLAR_REFUSJON("Du kan nå søke om refusjon."),
     TILTAK_STILLINGSBESKRIVELSE_ENDRET("Stillingsbeskrivelse i avtale endret av veileder" ),

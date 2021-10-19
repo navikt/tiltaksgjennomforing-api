@@ -8,7 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.request.Variables;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyBeskjed.NyBeskjedResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyOppgave.NyOppgaveResponse;
-import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.oppgaveUtfoert.OppgaveUtfoertResponse;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.oppgaveUtfoertByEksternId.OppgaveUtfoertByEksternIdResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.softDeleteNotifikasjon.SoftDeleteNotifikasjonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,7 +20,6 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-import java.util.UUID;
 
 
 @Slf4j
@@ -67,7 +66,7 @@ public class NotifikasjonService {
 
     private String opprettNyMutasjon(ArbeidsgiverNotifikasjon notifikasjon, String mutation, String merkelapp, String tekst) {
         Variables variables = new Variables();
-        variables.setEksternId(notifikasjon.getId().toString());
+        variables.setEksternId(notifikasjon.getId());
         variables.setVirksomhetsnummer(notifikasjon.getVirksomhetsnummer().asString());
         variables.setLenke(notifikasjon.getLenke());
         variables.setServiceCode(notifikasjon.getServiceCode().toString());
@@ -114,28 +113,42 @@ public class NotifikasjonService {
     }
 
 
-    public void oppgaveUtfoert(Avtale avtale, VarslbarHendelseType hendelseType, MutationStatus status) {
+    public void oppgaveUtfoert(
+            Avtale avtale,
+            VarslbarHendelseType hendelseTypeSomSkalMerkesUtfoert,
+            MutationStatus status,
+            VarslbarHendelseType hendelseTypeForNyNotifikasjon) {
+
         final List<ArbeidsgiverNotifikasjon> notifikasjonList =
-                handler.finnUtfoertNotifikasjon(avtale.getId(), hendelseType, status.getStatus());
+                handler.finnUtfoertNotifikasjon(avtale.getId(), hendelseTypeSomSkalMerkesUtfoert, status.getStatus());
         if (!notifikasjonList.isEmpty()) {
             notifikasjonList.forEach(n -> {
-                Variables variables = new Variables();
-                variables.setId(n.getId());
-                final String response = opprettNotifikasjon(new ArbeidsgiverMutationRequest(
-                        notifikasjonParser.getOppgaveUtfoert(),
-                        variables
-                ));
-                final OppgaveUtfoertResponse oppgaveUtfoert = handler.readResponse(response, OppgaveUtfoertResponse.class);
-                String statusOppgaveUtfoert = oppgaveUtfoert.getData().getOppgaveUtfoert().get__typename();
-                ArbeidsgiverNotifikasjon notifikasjon =
-                        ArbeidsgiverNotifikasjon.nyHendelse(avtale,
-                                VarslbarHendelseType.AVTALE_INNGÅTT, this, notifikasjonParser);
-                if(statusOppgaveUtfoert.equals(MutationStatus.OPPGAVE_UTFOERT_VELLYKKET.getStatus())) {
-                    n.setNotifikasjonAktiv(false);
+                ArbeidsgiverNotifikasjon utfoertOppgaveNotifikasjon =
+                        handler.finnEllerOpprettNotifikasjonForOppgaveUtfoert(avtale,
+                                n.getId(), hendelseTypeForNyNotifikasjon, this, notifikasjonParser);
+
+                if(utfoertOppgaveNotifikasjon.getStatusResponse() == null || (utfoertOppgaveNotifikasjon.getStatusResponse() != null &&
+                        !utfoertOppgaveNotifikasjon.getStatusResponse().equals(MutationStatus.OPPGAVE_UTFOERT_VELLYKKET.getStatus()))) {
+
+                    Variables variables = new Variables();
+                    variables.setId(n.getId());
+                    variables.setMerkelapp(NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()).getValue());
+
+                    final String response = opprettNotifikasjon(new ArbeidsgiverMutationRequest(
+                            notifikasjonParser.getOppgaveUtfoertByEksternId(),
+                            variables
+                    ));
+                    final OppgaveUtfoertByEksternIdResponse oppgaveUtfoert =
+                            handler.readResponse(response, OppgaveUtfoertByEksternIdResponse.class);
+                    String statusOppgaveUtfoert = oppgaveUtfoert.getData().getOppgaveUtfoertByEksternId().get__typename();
+
+                    if(statusOppgaveUtfoert.equals(MutationStatus.OPPGAVE_UTFOERT_VELLYKKET.getStatus())) {
+                        n.setNotifikasjonAktiv(false);
+                    }
+                    utfoertOppgaveNotifikasjon.setStatusResponse(statusOppgaveUtfoert);
+                    handler.saveNotifikasjon(n);
                 }
-                notifikasjon.setStatusResponse(statusOppgaveUtfoert);
-                handler.saveNotifikasjon(notifikasjon);
-                handler.saveNotifikasjon(n);
+                handler.saveNotifikasjon(utfoertOppgaveNotifikasjon);
             });
         }
     }

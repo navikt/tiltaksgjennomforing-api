@@ -35,7 +35,7 @@ public class NotifikasjonHendelseLytter {
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
         notifikasjonService.opprettOppgave(notifikasjon,
                 NotifikasjonMerkelapp.getMerkelapp(event.getAvtale().getTiltakstype().getBeskrivelse()),
-                NotifikasjonTekst.AVTALE_OPPRETTET);
+                NotifikasjonTekst.TILTAK_AVTALE_OPPRETTET);
     }
 
     @EventListener
@@ -47,40 +47,39 @@ public class NotifikasjonHendelseLytter {
     @EventListener
     public void godkjentAvArbeidsgiver(GodkjentAvArbeidsgiver event) {
         notifikasjonService.oppgaveUtfoert(
-                event.getAvtale(),
-                VarslbarHendelseType.OPPRETTET,
-                MutationStatus.NY_OPPGAVE_VELLYKKET);
+                event.getAvtale(),VarslbarHendelseType.OPPRETTET,
+                MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
     }
 
     @EventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
         notifikasjonService.oppgaveUtfoert(event.getAvtale(),
-                VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET);
+                VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
     }
 
     @EventListener
     public void godkjentPaVegneAv(GodkjentPaVegneAvDeltaker event) {
         notifikasjonService.oppgaveUtfoert(event.getAvtale(),
-                VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET);
+                VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
     }
 
     @EventListener
     public void godkjentPaVegneAvArbeidsgiver(GodkjentPaVegneAvArbeidsgiver event) {
         notifikasjonService.oppgaveUtfoert(event.getAvtale(),
-                VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET);
+                VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
     }
 
     @EventListener
     public void godkjentPaVegneAvDeltakerOgArbeidsgiver(GodkjentPaVegneAvDeltakerOgArbeidsgiver event) {
         notifikasjonService.oppgaveUtfoert(event.getAvtale(),
-                VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET);
+                VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
     }
 
     @EventListener
     public void avtaleInngått(AvtaleInngått event) {
-        opprettOgSendNyBeskjed(event.getAvtale(), VarslbarHendelseType.AVTALE_INNGÅTT, NotifikasjonTekst.TILTAK_AVTALE_INNGATT);
         notifikasjonService.oppgaveUtfoert(event.getAvtale(),
-                VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET);
+                VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
+        opprettOgSendNyBeskjed(event.getAvtale(), VarslbarHendelseType.AVTALE_INNGÅTT, NotifikasjonTekst.TILTAK_AVTALE_INNGATT);
     }
 
     @EventListener
