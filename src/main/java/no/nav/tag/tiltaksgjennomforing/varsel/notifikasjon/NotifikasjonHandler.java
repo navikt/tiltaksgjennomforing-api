@@ -73,7 +73,7 @@ public class NotifikasjonHandler {
             NotifikasjonParser parser) {
 
         ArbeidsgiverNotifikasjon notifikasjon = arbeidsgiverNotifikasjonRepository.
-                findArbeidsgiverNotifikasjonsByAvtaleIdAndNotifikasjonReferanseId(avtale.getId(), notifikasjonReferanseId);
+                findArbeidsgiverNotifikasjonsByAvtaleIdAndNotifikasjonReferanseId(avtale.getId(), notifikasjonReferanseId.toString());
         if (notifikasjon != null) {
             return notifikasjon;
         }

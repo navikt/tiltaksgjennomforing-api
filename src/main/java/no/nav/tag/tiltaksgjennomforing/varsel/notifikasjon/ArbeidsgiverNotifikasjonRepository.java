@@ -28,6 +28,6 @@ public interface ArbeidsgiverNotifikasjonRepository extends JpaRepository<Arbeid
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     ArbeidsgiverNotifikasjon findArbeidsgiverNotifikasjonsByAvtaleIdAndNotifikasjonReferanseId(
-            UUID avtaleId, UUID notifikasjonReferanseId);
+            UUID avtaleId, String notifikasjonReferanseId);
 
 }
