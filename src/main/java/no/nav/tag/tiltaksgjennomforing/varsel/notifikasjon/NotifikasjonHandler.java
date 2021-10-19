@@ -79,7 +79,7 @@ public class NotifikasjonHandler {
         }
         ArbeidsgiverNotifikasjon utfoertNotifikasjon = ArbeidsgiverNotifikasjon.nyHendelse(avtale,
                 hendelseTypeForNyNotifikasjon, service, parser);
-        utfoertNotifikasjon.setNotifikasjonReferanseId(notifikasjonReferanseId);
+        utfoertNotifikasjon.setNotifikasjonReferanseId(notifikasjonReferanseId.toString());
         return utfoertNotifikasjon;
     }
 

@@ -33,7 +33,7 @@ public class ArbeidsgiverNotifikasjon {
     private boolean varselSendtVellykket;
     private String statusResponse;
     private boolean notifikasjonAktiv;
-    private UUID notifikasjonReferanseId;
+    private String notifikasjonReferanseId;
 
     public static ArbeidsgiverNotifikasjon nyHendelse(
             Avtale avtale,
