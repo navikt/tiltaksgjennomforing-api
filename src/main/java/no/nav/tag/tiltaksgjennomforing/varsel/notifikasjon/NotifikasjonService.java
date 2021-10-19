@@ -131,7 +131,7 @@ public class NotifikasjonService {
                         !utfoertOppgaveNotifikasjon.getStatusResponse().equals(MutationStatus.OPPGAVE_UTFOERT_VELLYKKET.getStatus()))) {
 
                     Variables variables = new Variables();
-                    variables.setId(n.getId());
+                    variables.setEksternId(n.getId());
                     variables.setMerkelapp(NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()).getValue());
 
                     final String response = opprettNotifikasjon(new ArbeidsgiverMutationRequest(

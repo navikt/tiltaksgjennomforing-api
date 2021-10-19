@@ -65,32 +65,6 @@
           {
             "matchesJsonPath": {
               "expression": "$..query",
-              "contains": "mutation OppgaveUtfoert"
-            }
-          }
-        ]
-      },
-      "response": {
-        "status": 200,
-        "body": "{ \"data\": {   \"oppgaveUtfoert\": {     \"__typename\": \"OppgaveUtfoertVellykket\",     \"id\": \"231a0f8c-237c-4357-8101-6a356a9ace86\" } } }",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      }
-    },
-    {
-      "request": {
-        "method": "POST",
-        "urlPath": "/api/graphql",
-        "headers": {
-          "Content-Type": {
-            "equalTo": "application/json"
-          }
-        },
-        "bodyPatterns": [
-          {
-            "matchesJsonPath": {
-              "expression": "$..query",
               "contains": "mutation SlettingAvNotifikasjonerByEksternId"
             }
           }
