@@ -144,9 +144,11 @@ public class NotifikasjonService {
                             handler.readResponse(response, OppgaveUtfoertByEksternIdResponse.class);
                     log.info("mappet reponse fra handler.readReponse: {}", oppgaveUtfoert);
                     String statusOppgaveUtfoert = oppgaveUtfoert.getData().getOppgaveUtfoertByEksternId().get__typename();
+                    log.info("statusOppgaveUtfoert er lik: {} ", statusOppgaveUtfoert);
 
                     if(statusOppgaveUtfoert.equals(MutationStatus.OPPGAVE_UTFOERT_VELLYKKET.getStatus())) {
                         n.setNotifikasjonAktiv(false);
+                        utfoertOppgaveNotifikasjon.setVarselSendtVellykket(true);
                     }
                     utfoertOppgaveNotifikasjon.setStatusResponse(statusOppgaveUtfoert);
                     handler.saveNotifikasjon(n);

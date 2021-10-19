@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
@@ -9,7 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-
+@Slf4j
 @Component
 @RequiredArgsConstructor
 @ConditionalOnProperty("tiltaksgjennomforing.notifikasjoner.enabled")
@@ -46,6 +47,7 @@ public class NotifikasjonHendelseLytter {
 
     @EventListener
     public void godkjentAvArbeidsgiver(GodkjentAvArbeidsgiver event) {
+        log.info("godkjentAvArbeidsgiver");
         notifikasjonService.oppgaveUtfoert(
                 event.getAvtale(),VarslbarHendelseType.OPPRETTET,
                 MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
@@ -53,30 +55,35 @@ public class NotifikasjonHendelseLytter {
 
     @EventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
+        log.info("godkjentAvVeileder");
         notifikasjonService.oppgaveUtfoert(event.getAvtale(),
                 VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
     }
 
     @EventListener
     public void godkjentPaVegneAv(GodkjentPaVegneAvDeltaker event) {
+        log.info("godkjentPaVegneAv");
         notifikasjonService.oppgaveUtfoert(event.getAvtale(),
                 VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
     }
 
     @EventListener
     public void godkjentPaVegneAvArbeidsgiver(GodkjentPaVegneAvArbeidsgiver event) {
+        log.info("godkjentPaVegneAvArbeidsgiver");
         notifikasjonService.oppgaveUtfoert(event.getAvtale(),
                 VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
     }
 
     @EventListener
     public void godkjentPaVegneAvDeltakerOgArbeidsgiver(GodkjentPaVegneAvDeltakerOgArbeidsgiver event) {
+        log.info("godkjentPaVegneAvDeltakerOgArbeidsgiver");
         notifikasjonService.oppgaveUtfoert(event.getAvtale(),
                 VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
     }
 
     @EventListener
     public void avtaleInngått(AvtaleInngått event) {
+        log.info("avtaleInngått");
         notifikasjonService.oppgaveUtfoert(event.getAvtale(),
                 VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
         opprettOgSendNyBeskjed(event.getAvtale(), VarslbarHendelseType.AVTALE_INNGÅTT, NotifikasjonTekst.TILTAK_AVTALE_INNGATT);
