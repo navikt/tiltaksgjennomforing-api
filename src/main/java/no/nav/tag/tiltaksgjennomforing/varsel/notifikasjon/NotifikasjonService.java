@@ -9,7 +9,6 @@ import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStat
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyBeskjed.NyBeskjedResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyOppgave.NyOppgaveResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.oppgaveUtfoertByEksternId.OppgaveUtfoertByEksternIdResponse;
-import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.softDeleteNotifikasjon.SoftDeleteNotifikasjonResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.softDeleteNotifikasjonByEksternId.SoftDeleteNotifikasjonByEksternIdResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -139,8 +138,11 @@ public class NotifikasjonService {
                             notifikasjonParser.getOppgaveUtfoertByEksternId(),
                             variables
                     ));
+
+                    log.info("response fra oppgaveUtført {} ", response);
                     final OppgaveUtfoertByEksternIdResponse oppgaveUtfoert =
                             handler.readResponse(response, OppgaveUtfoertByEksternIdResponse.class);
+                    log.info("mappet reponse fra handler.readReponse: {}", oppgaveUtfoert);
                     String statusOppgaveUtfoert = oppgaveUtfoert.getData().getOppgaveUtfoertByEksternId().get__typename();
 
                     if(statusOppgaveUtfoert.equals(MutationStatus.OPPGAVE_UTFOERT_VELLYKKET.getStatus())) {

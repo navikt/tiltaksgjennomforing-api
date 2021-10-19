@@ -124,7 +124,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{  \"data\": {  \"oppgaveUtfoertByEksternId\": {  \"__typename\": \"OppgaveUtfoertVellykket\",  \"id\": \"d92b548e-1dc4-47cd-85ab-b71c69b29de5\" } } }",
+        "body": "{ \"data\": {  \"oppgaveUtfoertByEksternId\": {  \"__typename\": \"OppgaveUtfoertVellykket\",  \"id\": \"7c9761ab-0672-4ac8-b624-edbbee435483\" } } }",
         "headers": {
           "Content-Type": "application/json"
         }
