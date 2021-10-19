@@ -3,6 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.softDeleteN
 import lombok.Value;
 
 @Value
-public class SoftDeleteNotifikasjonByEksternIdResponse {
+public class SoftDeleteNotifikasjonResponse {
     Data data;
 }

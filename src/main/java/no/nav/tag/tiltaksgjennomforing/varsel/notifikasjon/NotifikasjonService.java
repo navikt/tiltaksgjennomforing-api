@@ -8,8 +8,9 @@ import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.request.Variables;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyBeskjed.NyBeskjedResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyOppgave.NyOppgaveResponse;
-import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.oppgaveUtfoertByEksternId.OppgaveUtfoertByEksternIdResponse;
-import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.softDeleteNotifikasjonByEksternId.SoftDeleteNotifikasjonByEksternIdResponse;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.oppgaveUtfoertByEksternId.OppgaveUtfoertResponse;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.softDeleteNotifikasjonByEksternId.Data;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.softDeleteNotifikasjonByEksternId.SoftDeleteNotifikasjonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
@@ -90,10 +91,14 @@ public class NotifikasjonService {
                 merkelapp.getValue(),
                 tekst.getTekst());
         final NyBeskjedResponse beskjed = handler.readResponse(response, NyBeskjedResponse.class);
-        handler.sjekkOgSettStatusResponse(
-                notifikasjon,
-                handler.convertResponse(beskjed.getData().getNyBeskjed()),
-                MutationStatus.NY_BESKJED_VELLYKKET);
+        if (beskjed.getData() != null) {
+            handler.sjekkOgSettStatusResponse(
+                    notifikasjon,
+                    handler.konverterResponse(beskjed.getData().getNyBeskjed()),
+                    MutationStatus.NY_BESKJED_VELLYKKET);
+        } else {
+            handler.logErrorOgSettFeilmelding(response, notifikasjon);
+        }
     }
 
     public void opprettOppgave(
@@ -106,12 +111,15 @@ public class NotifikasjonService {
                 merkelapp.getValue(),
                 tekst.getTekst());
         final NyOppgaveResponse oppgave = handler.readResponse(response, NyOppgaveResponse.class);
-        handler.sjekkOgSettStatusResponse(
-                notifikasjon,
-                handler.convertResponse(oppgave.getData().getNyOppgave()),
-                MutationStatus.NY_OPPGAVE_VELLYKKET);
+        if (oppgave.getData() != null) {
+            handler.sjekkOgSettStatusResponse(
+                    notifikasjon,
+                    handler.konverterResponse(oppgave.getData().getNyOppgave()),
+                    MutationStatus.NY_OPPGAVE_VELLYKKET);
+        } else {
+            handler.logErrorOgSettFeilmelding(response, notifikasjon);
+        }
     }
-
 
     public void oppgaveUtfoert(
             Avtale avtale,
@@ -121,14 +129,14 @@ public class NotifikasjonService {
 
         final List<ArbeidsgiverNotifikasjon> notifikasjonList =
                 handler.finnUtfoertNotifikasjon(avtale.getId(), hendelseTypeSomSkalMerkesUtfoert, status.getStatus());
+
         if (!notifikasjonList.isEmpty()) {
             notifikasjonList.forEach(n -> {
-                ArbeidsgiverNotifikasjon utfoertOppgaveNotifikasjon =
-                        handler.finnEllerOpprettNotifikasjonForOppgaveUtfoert(avtale,
-                                n.getId(), hendelseTypeForNyNotifikasjon, this, notifikasjonParser);
+                final NotifikasjonEvent event = handler.finnEllerOpprettNotifikasjonForHendelse(
+                        avtale, n.getId(), hendelseTypeForNyNotifikasjon, this, notifikasjonParser,
+                        MutationStatus.OPPGAVE_UTFOERT_VELLYKKET);
 
-                if(utfoertOppgaveNotifikasjon.getStatusResponse() == null || (utfoertOppgaveNotifikasjon.getStatusResponse() != null &&
-                        !utfoertOppgaveNotifikasjon.getStatusResponse().equals(MutationStatus.OPPGAVE_UTFOERT_VELLYKKET.getStatus()))) {
+                if (!event.notifikasjonFerdigBehandlet) {
 
                     Variables variables = new Variables();
                     variables.setEksternId(n.getId());
@@ -139,21 +147,16 @@ public class NotifikasjonService {
                             variables
                     ));
 
-                    log.info("response fra oppgaveUtført {} ", response);
-                    final OppgaveUtfoertByEksternIdResponse oppgaveUtfoert =
-                            handler.readResponse(response, OppgaveUtfoertByEksternIdResponse.class);
-                    log.info("mappet reponse fra handler.readReponse: {}", oppgaveUtfoert);
-                    String statusOppgaveUtfoert = oppgaveUtfoert.getData().getOppgaveUtfoertByEksternId().get__typename();
-                    log.info("statusOppgaveUtfoert er lik: {} ", statusOppgaveUtfoert);
-
-                    if(statusOppgaveUtfoert.equals(MutationStatus.OPPGAVE_UTFOERT_VELLYKKET.getStatus())) {
-                        n.setNotifikasjonAktiv(false);
-                        utfoertOppgaveNotifikasjon.setVarselSendtVellykket(true);
+                    final OppgaveUtfoertResponse oppgaveUtfoert = handler.readResponse(response, OppgaveUtfoertResponse.class);
+                    if (oppgaveUtfoert.getData() != null) {
+                        handler.oppdaterNotifikasjon(event.getNotifikasjon(),
+                                n,
+                                handler.konverterResponse(oppgaveUtfoert.getData().getOppgaveUtfoertByEksternId()),
+                                MutationStatus.OPPGAVE_UTFOERT_VELLYKKET);
+                    } else {
+                        handler.logErrorOgSettFeilmelding(response, event.getNotifikasjon());
                     }
-                    utfoertOppgaveNotifikasjon.setStatusResponse(statusOppgaveUtfoert);
-                    handler.saveNotifikasjon(n);
                 }
-                handler.saveNotifikasjon(utfoertOppgaveNotifikasjon);
             });
         }
     }
@@ -161,24 +164,33 @@ public class NotifikasjonService {
     public void softDeleteNotifikasjoner(Avtale avtale) {
         final List<ArbeidsgiverNotifikasjon> notifikasjonlist =
                 handler.finnNotifikasjonerForAvtale(avtale.getId());
+
         if (!notifikasjonlist.isEmpty()) {
             notifikasjonlist.forEach(n -> {
-                Variables variables = new Variables();
-                variables.setEksternId(n.getId());
-                variables.setMerkelapp(NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()).getValue());
+                final NotifikasjonEvent event = handler.finnEllerOpprettNotifikasjonForHendelse(
+                        avtale, n.getId(), VarslbarHendelseType.ANNULLERT, this, notifikasjonParser,
+                        MutationStatus.SOFT_DELETE_NOTIFIKASJON_VELLYKKET);
 
-                final String response = opprettNotifikasjon(new ArbeidsgiverMutationRequest(
-                        notifikasjonParser.getSoftDeleteNotifikasjonByEksternId(),
-                        variables));
-                final SoftDeleteNotifikasjonByEksternIdResponse res =
-                        handler.readResponse(response, SoftDeleteNotifikasjonByEksternIdResponse.class);
+                if (!event.notifikasjonFerdigBehandlet) {
 
-                String softDeleteStatus = res.getData().getSoftDeleteNotifikasjonByEksternId().get__typename();
-                if(softDeleteStatus.equals(MutationStatus.SOFT_DELETE_NOTIFIKASJON_VELLYKKET.getStatus())){
-                    n.setStatusResponse(softDeleteStatus);
-                    n.setNotifikasjonAktiv(false);
+                    Variables variables = new Variables();
+                    variables.setEksternId(n.getId());
+                    variables.setMerkelapp(NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()).getValue());
+
+                    final String response = opprettNotifikasjon(new ArbeidsgiverMutationRequest(
+                            notifikasjonParser.getSoftDeleteNotifikasjonByEksternId(),
+                            variables));
+                    final Data data = handler.readResponse(response, SoftDeleteNotifikasjonResponse.class).getData();
+
+                    if (data != null) {
+                        handler.oppdaterNotifikasjon(event.getNotifikasjon(),
+                                n,
+                                handler.konverterResponse(data.getSoftDeleteNotifikasjonByEksternId()),
+                                MutationStatus.SOFT_DELETE_NOTIFIKASJON_VELLYKKET);
+                    } else {
+                        handler.logErrorOgSettFeilmelding(response, event.getNotifikasjon());
+                    }
                 }
-                handler.saveNotifikasjon(n);
             });
         }
     }

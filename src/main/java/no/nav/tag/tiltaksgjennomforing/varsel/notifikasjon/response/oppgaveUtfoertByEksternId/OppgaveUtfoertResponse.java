@@ -3,6 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.oppgaveUtfo
 import lombok.Value;
 
 @Value
-public class OppgaveUtfoertByEksternIdResponse {
+public class OppgaveUtfoertResponse {
     Data data;
 }

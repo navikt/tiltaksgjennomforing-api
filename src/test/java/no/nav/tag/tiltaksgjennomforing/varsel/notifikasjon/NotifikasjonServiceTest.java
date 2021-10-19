@@ -161,6 +161,7 @@ public class NotifikasjonServiceTest {
                 notifikasjon,
                 NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()),
                 NotifikasjonTekst.TILTAK_AVTALE_OPPRETTET);
+
         List<ArbeidsgiverNotifikasjon> notifikasjonList =
                 arbeidsgiverNotifikasjonRepository.findAllByAvtaleId(avtale.getId());
         ArbeidsgiverNotifikasjon notifikasjon = notifikasjonList.get(0);
@@ -173,13 +174,12 @@ public class NotifikasjonServiceTest {
 
         List<ArbeidsgiverNotifikasjon> oppdatertNotifikasjonList =
                 arbeidsgiverNotifikasjonRepository.findAllByAvtaleId(avtale.getId());
-        ArbeidsgiverNotifikasjon oppdatertNotifikasjon = oppdatertNotifikasjonList.get(0);
 
-        assertThat(oppdatertNotifikasjon).isNotNull();
-        assertThat(oppdatertNotifikasjon.getAvtaleId()).isEqualTo(avtale.getId());
-        assertThat(oppdatertNotifikasjon.getStatusResponse())
+        assertThat(oppdatertNotifikasjonList.get(0)).isNotNull();
+        assertThat(oppdatertNotifikasjonList.get(0).getAvtaleId()).isEqualTo(avtale.getId());
+        assertThat(oppdatertNotifikasjonList.get(0).isNotifikasjonAktiv()).isFalse();
+        assertThat(oppdatertNotifikasjonList.get(1).getStatusResponse())
                 .isEqualTo(MutationStatus.SOFT_DELETE_NOTIFIKASJON_VELLYKKET.getStatus());
-        assertThat(oppdatertNotifikasjon.isNotifikasjonAktiv()).isFalse();
     }
 
 }

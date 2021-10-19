@@ -1,10 +1,11 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.FellesMutationResponse;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.FellesResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyBeskjed.NyBeskjedResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyOppgave.NyOppgaveResponse;
+import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -45,7 +46,7 @@ public class NotifikasjonHandlerTest {
     @Test
     public void sjekkOgSettStatusResponseTest() {
         ArbeidsgiverNotifikasjon arbeidsgiverNotifikasjon = new ArbeidsgiverNotifikasjon();
-        FellesMutationResponse response = new FellesMutationResponse("" +
+        FellesResponse response = new FellesResponse("" +
                 MutationStatus.NY_OPPGAVE_VELLYKKET.getStatus(),
                 "231a0f8c-237c-4357-8101-6a356a9ace86",
                 "nihil ut eum alias saepe nesciunt minima");
@@ -67,12 +68,19 @@ public class NotifikasjonHandlerTest {
     }
 
     @Test
+    @Ignore
+    public void readResponseNarAPIsenderError(){
+        final String error ="{ \"errors\" :[ { \"message\": \"Field 'eksternId' of variable 'eksternId' has coerced Null value for NonNull type 'ID!'\"," +
+                                            " \"locations\":[ { \"line\":1, \"column\":36 } ], \"extensions\":{ \"classification\": \"ValidationError\" } } ] }";
+    }
+
+    @Test
     public void convertResponseTest() {
         final NyBeskjedResponse nyBeskjedResponse = notifikasjonHandler.readResponse(response, NyBeskjedResponse.class);
-        FellesMutationResponse fellesResponse =
-                notifikasjonHandler.convertResponse(nyBeskjedResponse.getData().getNyBeskjed());
-        FellesMutationResponse fellesResponseFeilet =
-                notifikasjonHandler.convertResponse(nyBeskjedResponse.getData());
+        FellesResponse fellesResponse =
+                notifikasjonHandler.konverterResponse(nyBeskjedResponse.getData().getNyBeskjed());
+        FellesResponse fellesResponseFeilet =
+                notifikasjonHandler.konverterResponse(nyBeskjedResponse.getData());
 
         assertThat(fellesResponse.getId()).isNotNull();
         assertThat(fellesResponseFeilet.getId()).isNull();
