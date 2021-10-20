@@ -1,6 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.FellesResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyBeskjed.NyBeskjedResponse;
@@ -25,6 +27,12 @@ public class NotifikasjonHandlerTest {
 
     @Autowired
     private NotifikasjonHandler notifikasjonHandler;
+
+    @Autowired
+    private NotifikasjonService notifikasjonService;
+
+    @Autowired
+    NotifikasjonParser parser;
 
     @MockBean
     private ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
@@ -68,10 +76,26 @@ public class NotifikasjonHandlerTest {
     }
 
     @Test
-    @Ignore
-    public void readResponseNarAPIsenderError(){
-        final String error ="{ \"errors\" :[ { \"message\": \"Field 'eksternId' of variable 'eksternId' has coerced Null value for NonNull type 'ID!'\"," +
-                                            " \"locations\":[ { \"line\":1, \"column\":36 } ], \"extensions\":{ \"classification\": \"ValidationError\" } } ] }";
+    public void readResponseNarAPIsenderError() {
+        final String response = "{ \"errors\" :[ " +
+                "{ \"message\": \"Field 'eksternId' of variable 'eksternId' has coerced Null value for NonNull type 'ID!'\"," +
+                " \"locations\":[ { \"line\":1, \"column\":36 } ], \"extensions\":{ \"classification\": \"ValidationError\" } } ] }";
+
+        ArbeidsgiverNotifikasjon notifikasjon =
+                ArbeidsgiverNotifikasjon.nyHendelse(TestData.enArbeidstreningAvtale(),
+                        VarslbarHendelseType.GODKJENT_AV_VEILEDER,
+                        notifikasjonService, parser);
+
+        final NyBeskjedResponse parsetBeskjedResponse = notifikasjonHandler.readResponse(response, NyBeskjedResponse.class);
+
+        assertThat(parsetBeskjedResponse.getData()).isNull();
+
+        notifikasjonHandler.logErrorOgSettFeilmelding(response, notifikasjon);
+
+        assertThat(notifikasjon.getStatusResponse())
+                .isEqualTo("Field 'eksternId' of variable 'eksternId' has coerced Null value for NonNull type 'ID!'");
+
+
     }
 
     @Test
