@@ -85,6 +85,7 @@ public class NotifikasjonService {
             ArbeidsgiverNotifikasjon notifikasjon,
             NotifikasjonMerkelapp merkelapp,
             NotifikasjonTekst tekst) {
+        notifikasjon.setOperasjonType(NotifikasjonOperasjonType.SEND_BESKJED);
         final String response = opprettNyMutasjon(
                 notifikasjon,
                 notifikasjonParser.getNyBeskjed(),
@@ -105,6 +106,7 @@ public class NotifikasjonService {
             ArbeidsgiverNotifikasjon notifikasjon,
             NotifikasjonMerkelapp merkelapp,
             NotifikasjonTekst tekst) {
+        notifikasjon.setOperasjonType(NotifikasjonOperasjonType.SEND_OPPGAVE);
         final String response = opprettNyMutasjon(
                 notifikasjon,
                 notifikasjonParser.getNyOppgave(),
@@ -134,7 +136,7 @@ public class NotifikasjonService {
             notifikasjonList.forEach(n -> {
                 final NotifikasjonEvent event = handler.finnEllerOpprettNotifikasjonForHendelse(
                         avtale, n.getId(), hendelseTypeForNyNotifikasjon, this, notifikasjonParser,
-                        MutationStatus.OPPGAVE_UTFOERT_VELLYKKET);
+                        MutationStatus.OPPGAVE_UTFOERT_VELLYKKET, NotifikasjonOperasjonType.SETT_OPPGAVE_UTFOERT);
 
                 if (!event.notifikasjonFerdigBehandlet) {
 
@@ -163,13 +165,13 @@ public class NotifikasjonService {
 
     public void softDeleteNotifikasjoner(Avtale avtale) {
         final List<ArbeidsgiverNotifikasjon> notifikasjonlist =
-                handler.finnNotifikasjonerForAvtale(avtale.getId());
+                handler.finnNotifikasjonerTilSletting(avtale.getId());
 
         if (!notifikasjonlist.isEmpty()) {
             notifikasjonlist.forEach(n -> {
                 final NotifikasjonEvent event = handler.finnEllerOpprettNotifikasjonForHendelse(
                         avtale, n.getId(), VarslbarHendelseType.ANNULLERT, this, notifikasjonParser,
-                        MutationStatus.SOFT_DELETE_NOTIFIKASJON_VELLYKKET);
+                        MutationStatus.SOFT_DELETE_NOTIFIKASJON_VELLYKKET, NotifikasjonOperasjonType.SOFTDELETE_NOTIFIKASJON);
 
                 if (!event.notifikasjonFerdigBehandlet) {
 

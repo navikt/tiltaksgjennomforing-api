@@ -62,8 +62,8 @@ public class NotifikasjonHandler {
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
     }
 
-    public List<ArbeidsgiverNotifikasjon> finnNotifikasjonerForAvtale(UUID id) {
-        return arbeidsgiverNotifikasjonRepository.findAllByAvtaleId(id);
+    public List<ArbeidsgiverNotifikasjon> finnNotifikasjonerTilSletting(UUID id) {
+        return arbeidsgiverNotifikasjonRepository.findAllByAvtaleIdForDeleting(id);
     }
 
     protected void oppdaterNotifikasjon(
@@ -100,11 +100,12 @@ public class NotifikasjonHandler {
             VarslbarHendelseType hendelseTypeForNyNotifikasjon,
             NotifikasjonService service,
             NotifikasjonParser parser,
-            MutationStatus onsketStatus) {
+            MutationStatus onsketStatus,
+            NotifikasjonOperasjonType operasjonType) {
 
         NotifikasjonEvent event = new NotifikasjonEvent();
         ArbeidsgiverNotifikasjon notifikasjon = arbeidsgiverNotifikasjonRepository.
-                findArbeidsgiverNotifikasjonsByAvtaleIdAndNotifikasjonReferanseId(avtale.getId(), notifikasjonReferanseId.toString());
+                findArbeidsgiverNotifikasjonsByAvtaleIdAndNotifikasjonReferanseIdAndOperasjonType(avtale.getId(), notifikasjonReferanseId.toString(), operasjonType);
         if (notifikasjon != null) {
             event.setNotifikasjon(notifikasjon);
             event.setNotifikasjonFerdigBehandlet(notifikasjon.getStatusResponse() != null && notifikasjon.getStatusResponse().equals(onsketStatus.getStatus()));
@@ -113,6 +114,7 @@ public class NotifikasjonHandler {
         ArbeidsgiverNotifikasjon utfoertNotifikasjon = ArbeidsgiverNotifikasjon.nyHendelse(avtale,
                 hendelseTypeForNyNotifikasjon, service, parser);
         utfoertNotifikasjon.setNotifikasjonReferanseId(notifikasjonReferanseId.toString());
+        utfoertNotifikasjon.setOperasjonType(operasjonType);
 
         event.setNotifikasjon(utfoertNotifikasjon);
         event.setNotifikasjonFerdigBehandlet(false);

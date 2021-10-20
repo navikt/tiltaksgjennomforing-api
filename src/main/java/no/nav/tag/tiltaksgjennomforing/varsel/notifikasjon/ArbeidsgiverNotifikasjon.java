@@ -31,6 +31,8 @@ public class ArbeidsgiverNotifikasjon {
     private Integer serviceCode;
     private Integer serviceEdition;
     private boolean varselSendtVellykket;
+    @Enumerated(EnumType.STRING)
+    private NotifikasjonOperasjonType operasjonType;
     private String statusResponse;
     private boolean notifikasjonAktiv;
     private String notifikasjonReferanseId;

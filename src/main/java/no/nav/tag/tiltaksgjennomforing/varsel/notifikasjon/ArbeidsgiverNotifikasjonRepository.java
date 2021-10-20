@@ -21,13 +21,18 @@ public interface ArbeidsgiverNotifikasjonRepository extends JpaRepository<Arbeid
     List<ArbeidsgiverNotifikasjon> findAllByAvtaleId(UUID avtaleId);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    @Query("FROM ArbeidsgiverNotifikasjon " +
+            "where avtaleId in (?1) and (statusResponse = 'NyBeskjedVellykket' or statusResponse = 'NyOppgaveVellykket')")
+    List<ArbeidsgiverNotifikasjon> findAllByAvtaleIdForDeleting(UUID avtaleId);
+
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     List<ArbeidsgiverNotifikasjon> findArbeidsgiverNotifikasjonByAvtaleIdAndHendelseTypeAndStatusResponse(
             UUID avtaleId,
             VarslbarHendelseType hendelsetype,
             String statusResponse);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    ArbeidsgiverNotifikasjon findArbeidsgiverNotifikasjonsByAvtaleIdAndNotifikasjonReferanseId(
-            UUID avtaleId, String notifikasjonReferanseId);
+    ArbeidsgiverNotifikasjon findArbeidsgiverNotifikasjonsByAvtaleIdAndNotifikasjonReferanseIdAndOperasjonType(
+            UUID avtaleId, String notifikasjonReferanseId, NotifikasjonOperasjonType operasjonType);
 
 }

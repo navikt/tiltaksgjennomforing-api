@@ -14,7 +14,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -43,10 +47,16 @@ public class NotifikasjonServiceTest {
         avtale = TestData.enArbeidstreningAvtale();
         avtaleRepository.save(avtale);
         notifikasjon = ArbeidsgiverNotifikasjon.nyHendelse(
-                        avtale,
-                        VarslbarHendelseType.OPPRETTET,
-                        notifikasjonService,
-                        parser);
+                avtale,
+                VarslbarHendelseType.OPPRETTET,
+                notifikasjonService,
+                parser);
+    }
+
+    private List<ArbeidsgiverNotifikasjon> finnAntallNotifikasjonerMedGittMutasjonStatus(
+            List<ArbeidsgiverNotifikasjon> notifikasjonList, MutationStatus onsketStatus) {
+        return notifikasjonList.stream().
+                filter(n -> n.getStatusResponse().equals(onsketStatus.getStatus())).collect(Collectors.toList());
     }
 
     @Test
@@ -84,9 +94,9 @@ public class NotifikasjonServiceTest {
         List<ArbeidsgiverNotifikasjon> notifikasjonList =
                 arbeidsgiverNotifikasjonRepository.
                         findArbeidsgiverNotifikasjonByAvtaleIdAndHendelseTypeAndStatusResponse(
-                        avtale.getId(),
-                        this.notifikasjon.getHendelseType(),
-                        MutationStatus.NY_OPPGAVE_VELLYKKET.getStatus());
+                                avtale.getId(),
+                                this.notifikasjon.getHendelseType(),
+                                MutationStatus.NY_OPPGAVE_VELLYKKET.getStatus());
         ArbeidsgiverNotifikasjon notifikasjon = notifikasjonList.get(0);
 
         assertThat(notifikasjon).isNotNull();
@@ -105,7 +115,7 @@ public class NotifikasjonServiceTest {
         List<ArbeidsgiverNotifikasjon> notifikasjonList =
                 arbeidsgiverNotifikasjonRepository.
                         findArbeidsgiverNotifikasjonByAvtaleIdAndVarselSendtVellykketAndNotifikasjonAktiv(
-                        avtale.getId(),
+                                avtale.getId(),
                                 true,
                                 true);
         ArbeidsgiverNotifikasjon notifikasjon = notifikasjonList.get(0);
@@ -180,6 +190,47 @@ public class NotifikasjonServiceTest {
         assertThat(oppdatertNotifikasjonList.get(0).isNotifikasjonAktiv()).isFalse();
         assertThat(oppdatertNotifikasjonList.get(1).getStatusResponse())
                 .isEqualTo(MutationStatus.SOFT_DELETE_NOTIFIKASJON_VELLYKKET.getStatus());
+    }
+
+    @Test
+    public void softDeleteSkalIkkeOverskriveOppgaveUtfoertReferanseId() {
+        arbeidsgiverNotifikasjonRepository.deleteAll();
+
+        final ArbeidsgiverNotifikasjon not_avtaleOpprettet =
+                ArbeidsgiverNotifikasjon.nyHendelse(avtale, VarslbarHendelseType.OPPRETTET, notifikasjonService, parser);
+
+        final ArbeidsgiverNotifikasjon not_avtaleInngattBeskjed =
+                ArbeidsgiverNotifikasjon.nyHendelse(avtale, VarslbarHendelseType.AVTALE_INNGÅTT, notifikasjonService, parser);
+
+        notifikasjonService.opprettOppgave(not_avtaleOpprettet,
+                NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()),
+                NotifikasjonTekst.TILTAK_AVTALE_OPPRETTET);
+
+        notifikasjonService.oppgaveUtfoert(avtale,
+                VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
+
+        notifikasjonService.opprettNyBeskjed(not_avtaleInngattBeskjed,
+                NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()),
+                NotifikasjonTekst.TILTAK_AVTALE_INNGATT);
+
+        final List<ArbeidsgiverNotifikasjon> allByAvtaleId =
+                arbeidsgiverNotifikasjonRepository.findAllByAvtaleId(avtale.getId());
+
+        assertThat(allByAvtaleId.size()).isEqualTo(3);
+
+        notifikasjonService.softDeleteNotifikasjoner(avtale);
+
+        final List<ArbeidsgiverNotifikasjon> allByAvtaleIdAfterSoftDelete =
+                arbeidsgiverNotifikasjonRepository.findAll();
+
+        assertThat(finnAntallNotifikasjonerMedGittMutasjonStatus(allByAvtaleIdAfterSoftDelete, MutationStatus.NY_OPPGAVE_VELLYKKET).size()).
+                isEqualTo(1);
+        assertThat(finnAntallNotifikasjonerMedGittMutasjonStatus(allByAvtaleIdAfterSoftDelete, MutationStatus.OPPGAVE_UTFOERT_VELLYKKET).size()).
+                isEqualTo(1);
+        assertThat(finnAntallNotifikasjonerMedGittMutasjonStatus(allByAvtaleIdAfterSoftDelete, MutationStatus.NY_BESKJED_VELLYKKET).size()).
+                isEqualTo(1);
+        assertThat(finnAntallNotifikasjonerMedGittMutasjonStatus(allByAvtaleIdAfterSoftDelete, MutationStatus.SOFT_DELETE_NOTIFIKASJON_VELLYKKET).size()).
+                isEqualTo(2);
     }
 
 }
