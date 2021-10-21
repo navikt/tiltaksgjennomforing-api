@@ -103,7 +103,7 @@ tiltaksgjennomforing:
     enhet:
       url: https://norg2.nais.adeo.no/norg2/api/v1/enhet/
   notifikasjoner:
-    uri: https://ag-notifikasjon-produsent-api.dev.intern.nav.no/api/graphql
+    uri: https://ag-notifikasjon-produsent-api.intern.nav.no/api/graphql
     lenke: https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/
     enabled: false
   dvh-melding:
