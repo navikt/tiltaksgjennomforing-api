@@ -85,7 +85,7 @@ public class LagVarselFraAvtaleHendelser {
     }
 
     @EventListener
-    public void godkjentPaVegneAv(GodkjentPaVegneAv event) {
+    public void godkjentPaVegneAv(GodkjentPaVegneAvDeltaker event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, VarslbarHendelseType.GODKJENT_PAA_VEGNE_AV);
         varselRepository.save(factory.veileder());
     }

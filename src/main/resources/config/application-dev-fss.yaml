@@ -28,6 +28,14 @@ no.nav.security.jwt:
       accepted_audience: ${tiltaksgjennomforing.audience.system}
   client:
     registration:
+      notifikasjoner:
+        token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
+        grant-type: client_credentials
+        scope: api://dev-gcp.fager.notifikasjon-produsent-api/.default
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_basic
       kontoregister:
         token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
         grant-type: client_credentials
@@ -92,6 +100,10 @@ tiltaksgjennomforing:
       url: https://app-q1.adeo.no/norg2/api/v1/enhet/navkontor/
     enhet:
       url: https://app-q1.adeo.no/norg2/api/v1/enhet/
+  notifikasjoner:
+    uri: https://ag-notifikasjon-produsent-api.dev.intern.nav.no/api/graphql
+    lenke: https://arbeidsgiver-q.nav.no/tiltaksgjennomforing/avtale/
+    enabled: true
   dvh-melding:
     feature-enabled: true
   tilskuddsperioder:

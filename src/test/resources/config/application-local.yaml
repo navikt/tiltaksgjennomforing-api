@@ -34,6 +34,11 @@ no.nav.security.jwt:
       discoveryurl: https://tiltak-fakelogin.labs.nais.io/metadata?issuer=isso
       accepted_audience: aud-isso
       cookie_name: isso-idtoken
+    aad:
+      discoveryurl: https://tiltak-fakelogin.labs.nais.io/metadata?issuer=aad
+      accepted_audience: aud-aad
+      cookie_name: aad-token
+  client: null
 
 tiltaksgjennomforing:
   kontoregister:
@@ -89,6 +94,10 @@ tiltaksgjennomforing:
       url: http://localhost:8090/norg2/api/v1/enhet/
   dokgen:
     uri: http://localhost:9000/template/tiltak-avtale/create-pdf
+  notifikasjoner:
+    uri: http://localhost:8090/api/graphql
+    lenke: http://localhost:3000/tiltaksgjennomforing/avtale/
+    enabled: false
   dvh-melding:
     feature-enabled: true
     gruppe-tilgang: 1a1d2745-952f-4a0f-839f-9530145b1d4a

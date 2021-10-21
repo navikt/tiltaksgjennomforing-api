@@ -9,6 +9,7 @@ spec:
   azure:
     application:
       enabled: true
+      tenant: {{tenant}}
   kafka:
     pool: {{kafka-pool}}
   image: {{image}}

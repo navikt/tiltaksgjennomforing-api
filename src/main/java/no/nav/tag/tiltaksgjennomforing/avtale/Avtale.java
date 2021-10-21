@@ -74,11 +74,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private String enhetOppfolging;
     private String enhetsnavnOppfolging;
 
+
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
     @SortNatural
     private SortedSet<TilskuddPeriode> tilskuddPeriode = new TreeSet<>();
     private boolean feilregistrert;
+
+
 
     private Avtale(OpprettAvtale opprettAvtale) {
         sjekkAtIkkeNull(opprettAvtale.getDeltakerFnr(), "Deltakers fnr må være satt.");
@@ -287,7 +290,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             avtaleInngått(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
         }
         sistEndretNå();
-        registerEvent(new GodkjentPaVegneAv(this, utfortAv));
+        registerEvent(new GodkjentPaVegneAvDeltaker(this, utfortAv));
     }
 
     void godkjennForVeilederOgArbeidsgiver(NavIdent utfortAv, GodkjentPaVegneAvArbeidsgiverGrunn godkjentPaVegneAvArbeidsgiverGrunn) {

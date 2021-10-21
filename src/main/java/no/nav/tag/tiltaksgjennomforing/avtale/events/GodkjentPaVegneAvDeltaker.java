@@ -5,7 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 
 @Value
-public class GodkjentPaVegneAv {
+public class GodkjentPaVegneAvDeltaker {
     Avtale avtale;
     Identifikator utfortAv;
 }

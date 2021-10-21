@@ -1,0 +1,37 @@
+mutation OpprettNyBeskjed(
+  $eksternId: String!
+  $virksomhetsnummer: String!
+  $lenke: String!
+  $serviceCode: String!
+  $serviceEdition: String!
+  $merkelapp: String!
+  $tekst: String!
+  $grupperingsId: String!
+) {
+  nyBeskjed(nyBeskjed: {
+    metadata: {
+      eksternId: $eksternId
+      grupperingsid: $grupperingsId
+    }
+    mottaker: {
+      altinn: {
+        serviceCode: $serviceCode
+        serviceEdition: $serviceEdition
+        virksomhetsnummer: $virksomhetsnummer
+      }
+    }
+    notifikasjon: {
+      merkelapp: $merkelapp
+      tekst: $tekst
+      lenke: $lenke
+    }
+  }) {
+    __typename
+    ... on NyBeskjedVellykket {
+      id
+    }
+    ... on Error {
+      feilmelding
+    }
+  }
+}
