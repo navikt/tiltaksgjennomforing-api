@@ -10,6 +10,7 @@ public enum NotifikasjonTekst {
     TILTAK_AVTALE_FORKORTET("Avtale forkortet"),
     TILTAK_AVTALE_FORLENGET("Avtale forlenget av veileder"),
     TILTAK_TILSKUDDSBEREGNING_ENDRET("Tilskuddsberegning i avtale endret av veileder"),
+    TILTAK_GODKJENNINGER_OPPHEVET_AV_VEILEDER("Avtalens godkjenninger er opphevet av veileder"),
     TILTAK_KONTAKTINFORMASJON_ENDRET("Kontaktinformasjon i avtale endret av veileder");
 
     private final String tekst;

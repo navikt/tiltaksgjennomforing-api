@@ -62,7 +62,8 @@ public class NotifikasjonService {
     }
 
     public String getAvtaleLenke(Avtale avtale) {
-        return notifikasjonerProperties.getLenke().concat("?bedrift=").concat(avtale.getBedriftNr().asString());
+        return notifikasjonerProperties.getLenke().concat(avtale.getId().toString())
+                .concat("/?bedrift=").concat(avtale.getBedriftNr().asString());
     }
 
     private String opprettNyMutasjon(ArbeidsgiverNotifikasjon notifikasjon, String mutation, String merkelapp, String tekst) {

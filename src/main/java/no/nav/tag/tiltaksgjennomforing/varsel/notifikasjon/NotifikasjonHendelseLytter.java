@@ -38,6 +38,16 @@ public class NotifikasjonHendelseLytter {
     }
 
     @EventListener
+    public void godkjenningerOpphevetAvVeileder(GodkjenningerOpphevetAvVeileder event) {
+        final ArbeidsgiverNotifikasjon notifikasjon = ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(),
+                VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, notifikasjonService, parser);
+        arbeidsgiverNotifikasjonRepository.save(notifikasjon);
+        notifikasjonService.opprettOppgave(notifikasjon,
+                NotifikasjonMerkelapp.getMerkelapp(event.getAvtale().getTiltakstype().getBeskrivelse()),
+                NotifikasjonTekst.TILTAK_GODKJENNINGER_OPPHEVET_AV_VEILEDER);
+    }
+
+    @EventListener
     public void avtaleKlarForRefusjon(RefusjonKlar event) {
         opprettOgSendNyBeskjed(event.getAvtale(), VarslbarHendelseType.REFUSJON_KLAR,
                 NotifikasjonTekst.TILTAK_AVTALE_KLAR_REFUSJON);
