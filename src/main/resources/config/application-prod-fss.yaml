@@ -105,7 +105,7 @@ tiltaksgjennomforing:
   notifikasjoner:
     uri: https://ag-notifikasjon-produsent-api.intern.nav.no/api/graphql
     lenke: https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/
-    enabled: false
+    enabled: true
   dvh-melding:
     feature-enabled: true
 http:
