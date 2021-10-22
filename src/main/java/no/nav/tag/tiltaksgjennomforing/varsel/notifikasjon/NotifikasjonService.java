@@ -13,6 +13,7 @@ import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.softDeleteNo
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.softDeleteNotifikasjonByEksternId.SoftDeleteNotifikasjonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -25,6 +26,7 @@ import java.util.List;
 
 @Slf4j
 @Component
+@ConditionalOnProperty("tiltaksgjennomforing.notifikasjoner.enabled")
 public class NotifikasjonService {
     private final RestTemplate restTemplate;
     private final NotifikasjonHandler handler;

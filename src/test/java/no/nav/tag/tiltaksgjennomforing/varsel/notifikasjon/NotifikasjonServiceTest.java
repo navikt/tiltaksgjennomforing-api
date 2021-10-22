@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -22,7 +23,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(properties = {"tiltaksgjennomforing.notifikasjoner.enabled=true"})
 @ActiveProfiles({Miljø.LOCAL, "wiremock"})
 @DirtiesContext
 public class NotifikasjonServiceTest {
@@ -61,6 +62,7 @@ public class NotifikasjonServiceTest {
 
     @Test
     public void opprettNyBeskjedTest() {
+        arbeidsgiverNotifikasjonRepository.deleteAll();
         notifikasjonService.opprettNyBeskjed(
                 notifikasjon,
                 NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()),
@@ -71,6 +73,7 @@ public class NotifikasjonServiceTest {
 
     @Test
     public void opprettNyOppgaveTest() {
+        arbeidsgiverNotifikasjonRepository.deleteAll();
         notifikasjonService.opprettOppgave(
                 notifikasjon,
                 NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()),
@@ -86,6 +89,7 @@ public class NotifikasjonServiceTest {
 
     @Test
     public void findArbeidsgiverNotifikasjonByIdAndHendelseTypeAndStatusResponseTest() {
+        arbeidsgiverNotifikasjonRepository.deleteAll();
         notifikasjonService.opprettOppgave(
                 notifikasjon,
                 NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()),
@@ -107,6 +111,7 @@ public class NotifikasjonServiceTest {
 
     @Test
     public void settOppgaveUtfoertTest() {
+        arbeidsgiverNotifikasjonRepository.deleteAll();
         notifikasjonService.opprettOppgave(
                 notifikasjon,
                 NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()),
@@ -144,6 +149,7 @@ public class NotifikasjonServiceTest {
 
     @Test
     public void oppGaveUtfoertSkalKunlagresEnGangPrHendelse() {
+        arbeidsgiverNotifikasjonRepository.deleteAll();
         notifikasjonService.opprettOppgave(
                 notifikasjon,
                 NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()),
@@ -167,6 +173,7 @@ public class NotifikasjonServiceTest {
 
     @Test
     public void softDeleteNotifikasjonTest() {
+        arbeidsgiverNotifikasjonRepository.deleteAll();
         notifikasjonService.opprettOppgave(
                 notifikasjon,
                 NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()),
