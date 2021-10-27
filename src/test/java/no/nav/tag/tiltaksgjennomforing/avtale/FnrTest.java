@@ -2,7 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import org.junit.Test;
-
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,7 +43,6 @@ public class FnrTest {
     public void testFnr1() {
         Fnr fnrOver16 = new Fnr("29110976648");
         assertThat(fnrOver16.erUnder16år()).isTrue();
-        int year = LocalDate.now().getYear();
         assertThat(fnrOver16.erOver30år()).isFalse();
     }
 
