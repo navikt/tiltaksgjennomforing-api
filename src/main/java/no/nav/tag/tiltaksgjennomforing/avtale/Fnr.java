@@ -38,13 +38,33 @@ public class Fnr extends Identifikator {
         return this.fødselsdato().isBefore(LocalDate.now().minusYears(30));
     }
 
+    private LocalDate FørsteJanuarIÅr() {
+        return LocalDate.now()
+                .minusMonths(LocalDate.now().getMonthValue() - 1).minusDays(LocalDate.now().getDayOfMonth() - 1);
+    }
+
+    public boolean erOVer30årFørsteJanuar() {
+        if (this.asString().equals("00000000000")) {
+            return false;
+        }
+        return this.fødselsdato().isBefore(FørsteJanuarIÅr().minusYears(30));
+    }
+
+    public boolean erOver30årFraOppstartDato(LocalDate opprettetTidspunkt) {
+        return this.fødselsdato().isBefore(opprettetTidspunkt.minusYears(30));
+    }
+
     private String getDayInMonth() {
         return parseSynthenticNumber(parseDNumber(this.asString())).substring(0, 2);
     }
+
     private String getMonth() {
         return parseSynthenticNumber(parseDNumber(this.asString())).substring(2, 4);
     }
-    private String getBirthYear() { return getCentury() + get2DigitBirthYear(); }
+
+    private String getBirthYear() {
+        return getCentury() + get2DigitBirthYear();
+    }
 
     private static String parseSynthenticNumber(String fodselsnummer) {
         if (!isSynthetic(fodselsnummer)) {
@@ -53,6 +73,7 @@ public class Fnr extends Identifikator {
             return fodselsnummer.substring(0, 2) + (getThirdDigit(fodselsnummer) - 8) + fodselsnummer.substring(3);
         }
     }
+
     private static boolean isSynthetic(String fodselsnummer) {
         try {
             int thirdDigit = getThirdDigit(fodselsnummer);
@@ -64,12 +85,15 @@ public class Fnr extends Identifikator {
         }
         return false;
     }
+
     private static int getThirdDigit(String fodselsnummer) {
         return Integer.parseInt(fodselsnummer.substring(2, 3));
     }
+
     private static int getFirstDigit(String fodselsnummer) {
         return Integer.parseInt(fodselsnummer.substring(0, 1));
     }
+
     private static String parseDNumber(String fodselsnummer) {
         if (!isDNumber(fodselsnummer)) {
             return fodselsnummer;
@@ -77,6 +101,7 @@ public class Fnr extends Identifikator {
             return (getFirstDigit(fodselsnummer) - 4) + fodselsnummer.substring(1);
         }
     }
+
     private static boolean isDNumber(String fodselsnummer) {
         try {
             int firstDigit = getFirstDigit(fodselsnummer);
@@ -88,6 +113,7 @@ public class Fnr extends Identifikator {
         }
         return false;
     }
+
     private String getCentury() {
         String result = null;
         int individnummerInt = Integer.parseInt(getIndividnummer());
@@ -103,9 +129,11 @@ public class Fnr extends Identifikator {
         }
         return result;
     }
+
     private String getIndividnummer() {
         return this.asString().substring(6, 9);
     }
+
     private String get2DigitBirthYear() {
         return this.asString().substring(4, 6);
     }

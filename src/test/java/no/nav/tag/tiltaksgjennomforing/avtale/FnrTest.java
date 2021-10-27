@@ -3,6 +3,8 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import org.junit.Test;
 
+import java.time.LocalDate;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class FnrTest {
@@ -42,6 +44,7 @@ public class FnrTest {
     public void testFnr1() {
         Fnr fnrOver16 = new Fnr("29110976648");
         assertThat(fnrOver16.erUnder16år()).isTrue();
+        int year = LocalDate.now().getYear();
         assertThat(fnrOver16.erOver30år()).isFalse();
     }
 
@@ -59,6 +62,23 @@ public class FnrTest {
         assertThat(fnr.erUnder16år()).isFalse();
     }
 
+    @Test
+    public void testFnr4() {
+        Fnr fnr = new Fnr("23029149054");
+        assertThat(fnr.erOVer30årFørsteJanuar()).isFalse();
+        assertThat(fnr.erUnder16år()).isFalse();
+    }
+
+    @Test
+    public void testFnr5() {
+        final Fnr fnr = new Fnr("23029149054");
+        final Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvArbeidsgiver();
+        AvtaleInnhold avtaleInnhold = avtale.gjeldendeInnhold();
+        avtaleInnhold.setStartDato(LocalDate.parse("2021-06-01"));
+        assertThat(fnr.erOVer30årFørsteJanuar()).isFalse();
+        assertThat(fnr.erOver30årFraOppstartDato(avtaleInnhold.getStartDato())).isTrue();
+    }
+
 
     @Test
     public void testDnr1() {
@@ -72,4 +92,6 @@ public class FnrTest {
         assertThat(fnr.erUnder16år()).isFalse();
         assertThat(fnr.erOver30år()).isFalse();
     }
+
+
 }

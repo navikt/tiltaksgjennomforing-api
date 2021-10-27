@@ -82,14 +82,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private boolean feilregistrert;
 
 
-
     private Avtale(OpprettAvtale opprettAvtale) {
         sjekkAtIkkeNull(opprettAvtale.getDeltakerFnr(), "Deltakers fnr må være satt.");
         sjekkAtIkkeNull(opprettAvtale.getBedriftNr(), "Arbeidsgivers bedriftnr må være satt.");
         if (opprettAvtale.getDeltakerFnr().erUnder16år()) {
             throw new FeilkodeException(Feilkode.IKKE_GAMMEL_NOK);
         }
-        if (opprettAvtale.getTiltakstype() == Tiltakstype.SOMMERJOBB && opprettAvtale.getDeltakerFnr().erOver30år()) {
+        if (opprettAvtale.getTiltakstype() == Tiltakstype.SOMMERJOBB && opprettAvtale.getDeltakerFnr().erOVer30årFørsteJanuar()) {
             throw new FeilkodeException(Feilkode.FOR_GAMMEL);
         }
         this.id = UUID.randomUUID();
@@ -251,6 +250,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         if (!erGodkjentAvArbeidsgiver() || !erGodkjentAvDeltaker()) {
             throw new VeilederSkalGodkjenneSistException();
+        }
+        if (this.getTiltakstype() == Tiltakstype.SOMMERJOBB &&
+                this.getDeltakerFnr().erOver30årFraOppstartDato(this.gjeldendeInnhold().getStartDato())) {
+            throw new FeilkodeException(Feilkode.FOR_GAMMEL);
         }
 
         LocalDateTime tidspunkt = LocalDateTime.now();
