@@ -77,7 +77,6 @@ public class FnrTest {
         assertThat(fnr.erOver30årFraOppstartDato(avtaleInnhold.getStartDato())).isTrue();
     }
 
-
     @Test
     public void testDnr1() {
         Fnr fnr = new Fnr("49120799125");
@@ -90,6 +89,4 @@ public class FnrTest {
         assertThat(fnr.erUnder16år()).isFalse();
         assertThat(fnr.erOver30år()).isFalse();
     }
-
-
 }
