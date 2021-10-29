@@ -253,7 +253,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         if (this.getTiltakstype() == Tiltakstype.SOMMERJOBB &&
                 this.getDeltakerFnr().erOver30årFraOppstartDato(this.gjeldendeInnhold().getStartDato())) {
-            throw new FeilkodeException(Feilkode.FOR_GAMMEL);
+            throw new FeilkodeException(Feilkode.FOR_GAMMEL_FRA_OPPSTARTDATO);
         }
 
         LocalDateTime tidspunkt = LocalDateTime.now();
@@ -283,7 +283,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         if (this.getTiltakstype() == Tiltakstype.SOMMERJOBB &&
                 this.getDeltakerFnr().erOver30årFraOppstartDato(this.gjeldendeInnhold().getStartDato())) {
-            throw new FeilkodeException(Feilkode.FOR_GAMMEL);
+            throw new FeilkodeException(Feilkode.FOR_GAMMEL_FRA_OPPSTARTDATO);
         }
 
         paVegneAvGrunn.valgtMinstEnGrunn();
@@ -315,7 +315,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
 
         if (this.getDeltakerFnr().erOver30årFraOppstartDato(this.gjeldendeInnhold().getStartDato())) {
-            throw new FeilkodeException(Feilkode.FOR_GAMMEL);
+            throw new FeilkodeException(Feilkode.FOR_GAMMEL_FRA_OPPSTARTDATO);
         }
         godkjentPaVegneAvArbeidsgiverGrunn.valgtMinstEnGrunn();
         LocalDateTime tidspunkt = LocalDateTime.now();
@@ -346,7 +346,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
 
         if (this.getDeltakerFnr().erOver30årFraOppstartDato(this.gjeldendeInnhold().getStartDato())) {
-            throw new FeilkodeException(Feilkode.FOR_GAMMEL);
+            throw new FeilkodeException(Feilkode.FOR_GAMMEL_FRA_OPPSTARTDATO);
         }
 
         paVegneAvDeltakerOgArbeidsgiverGrunn.valgtMinstEnGrunn();
