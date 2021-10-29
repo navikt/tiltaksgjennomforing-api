@@ -7,10 +7,6 @@
     <artifactId>tiltaksgjennomforing-api</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-
-    <name>tiltaksgjennomforing</name>
-    <description>TAG - Digitale tjenester til arbeidsgivere</description>
-
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -21,7 +17,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <mapstruct.version>1.3.0.Final</mapstruct.version>
         <swagger.version>2.9.2</swagger.version>
     </properties>
