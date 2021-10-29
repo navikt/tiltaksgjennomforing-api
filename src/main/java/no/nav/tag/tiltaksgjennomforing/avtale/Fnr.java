@@ -38,19 +38,22 @@ public class Fnr extends Identifikator {
         return this.fødselsdato().isBefore(LocalDate.now().minusYears(30));
     }
 
-    private LocalDate FørsteJanuarIÅr() {
+    private static LocalDate førsteJanuarIÅr() {
         return LocalDate.now()
                 .minusMonths(LocalDate.now().getMonthValue() - 1).minusDays(LocalDate.now().getDayOfMonth() - 1);
     }
 
-    public boolean erOVer30årFørsteJanuar() {
+    public boolean erOver30årFørsteJanuar() {
         if (this.asString().equals("00000000000")) {
             return false;
         }
-        return this.fødselsdato().isBefore(FørsteJanuarIÅr().minusYears(30));
+        return this.fødselsdato().isBefore(førsteJanuarIÅr().minusYears(30));
     }
 
     public boolean erOver30årFraOppstartDato(LocalDate opprettetTidspunkt) {
+        if (this.asString().equals("00000000000")) {
+            return false;
+        }
         return this.fødselsdato().isBefore(opprettetTidspunkt.minusYears(30));
     }
 

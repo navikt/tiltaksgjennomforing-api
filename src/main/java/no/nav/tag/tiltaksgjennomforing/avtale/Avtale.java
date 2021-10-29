@@ -88,7 +88,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (opprettAvtale.getDeltakerFnr().erUnder16år()) {
             throw new FeilkodeException(Feilkode.IKKE_GAMMEL_NOK);
         }
-        if (opprettAvtale.getTiltakstype() == Tiltakstype.SOMMERJOBB && opprettAvtale.getDeltakerFnr().erOVer30årFørsteJanuar()) {
+        if (opprettAvtale.getTiltakstype() == Tiltakstype.SOMMERJOBB && opprettAvtale.getDeltakerFnr().erOver30årFørsteJanuar()) {
             throw new FeilkodeException(Feilkode.FOR_GAMMEL);
         }
         this.id = UUID.randomUUID();

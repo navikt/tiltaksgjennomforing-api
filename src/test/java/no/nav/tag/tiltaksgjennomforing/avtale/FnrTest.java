@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import org.junit.Test;
+
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,7 +64,7 @@ public class FnrTest {
     @Test
     public void testFnr4() {
         Fnr fnr = new Fnr("23029149054");
-        assertThat(fnr.erOVer30årFørsteJanuar()).isFalse();
+        assertThat(fnr.erOver30årFørsteJanuar()).isFalse();
         assertThat(fnr.erUnder16år()).isFalse();
     }
 
@@ -73,7 +74,7 @@ public class FnrTest {
         final Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvArbeidsgiver();
         AvtaleInnhold avtaleInnhold = avtale.gjeldendeInnhold();
         avtaleInnhold.setStartDato(LocalDate.parse("2021-06-01"));
-        assertThat(fnr.erOVer30årFørsteJanuar()).isFalse();
+        assertThat(fnr.erOver30årFørsteJanuar()).isFalse();
         assertThat(fnr.erOver30årFraOppstartDato(avtaleInnhold.getStartDato())).isTrue();
     }
 
