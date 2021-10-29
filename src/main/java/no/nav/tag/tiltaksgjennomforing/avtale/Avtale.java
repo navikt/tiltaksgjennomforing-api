@@ -82,14 +82,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private boolean feilregistrert;
 
 
-
     private Avtale(OpprettAvtale opprettAvtale) {
         sjekkAtIkkeNull(opprettAvtale.getDeltakerFnr(), "Deltakers fnr må være satt.");
         sjekkAtIkkeNull(opprettAvtale.getBedriftNr(), "Arbeidsgivers bedriftnr må være satt.");
         if (opprettAvtale.getDeltakerFnr().erUnder16år()) {
             throw new FeilkodeException(Feilkode.IKKE_GAMMEL_NOK);
         }
-        if (opprettAvtale.getTiltakstype() == Tiltakstype.SOMMERJOBB && opprettAvtale.getDeltakerFnr().erOver30år()) {
+        if (opprettAvtale.getTiltakstype() == Tiltakstype.SOMMERJOBB && opprettAvtale.getDeltakerFnr().erOVer30årFørsteJanuar()) {
             throw new FeilkodeException(Feilkode.FOR_GAMMEL);
         }
         this.id = UUID.randomUUID();
@@ -252,6 +251,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (!erGodkjentAvArbeidsgiver() || !erGodkjentAvDeltaker()) {
             throw new VeilederSkalGodkjenneSistException();
         }
+        if (this.getTiltakstype() == Tiltakstype.SOMMERJOBB &&
+                this.getDeltakerFnr().erOver30årFraOppstartDato(this.gjeldendeInnhold().getStartDato())) {
+            throw new FeilkodeException(Feilkode.FOR_GAMMEL_FRA_OPPSTARTDATO);
+        }
 
         LocalDateTime tidspunkt = LocalDateTime.now();
         this.setGodkjentAvVeileder(tidspunkt);
@@ -278,6 +281,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (!erGodkjentAvArbeidsgiver()) {
             throw new ArbeidsgiverSkalGodkjenneFørVeilederException();
         }
+        if (this.getTiltakstype() == Tiltakstype.SOMMERJOBB &&
+                this.getDeltakerFnr().erOver30årFraOppstartDato(this.gjeldendeInnhold().getStartDato())) {
+            throw new FeilkodeException(Feilkode.FOR_GAMMEL_FRA_OPPSTARTDATO);
+        }
+
         paVegneAvGrunn.valgtMinstEnGrunn();
         LocalDateTime tidspunkt = LocalDateTime.now();
         this.setGodkjentAvVeileder(tidspunkt);
@@ -304,6 +312,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         if (!erGodkjentAvDeltaker()) {
             throw new FeilkodeException(Feilkode.DELTAKER_SKAL_GODKJENNE_FOER_VEILEDER);
+        }
+
+        if (this.getDeltakerFnr().erOver30årFraOppstartDato(this.gjeldendeInnhold().getStartDato())) {
+            throw new FeilkodeException(Feilkode.FOR_GAMMEL_FRA_OPPSTARTDATO);
         }
         godkjentPaVegneAvArbeidsgiverGrunn.valgtMinstEnGrunn();
         LocalDateTime tidspunkt = LocalDateTime.now();
@@ -332,6 +344,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (erGodkjentAvArbeidsgiver()) {
             throw new FeilkodeException(Feilkode.ARBEIDSGIVER_HAR_GODKJENT);
         }
+
+        if (this.getDeltakerFnr().erOver30årFraOppstartDato(this.gjeldendeInnhold().getStartDato())) {
+            throw new FeilkodeException(Feilkode.FOR_GAMMEL_FRA_OPPSTARTDATO);
+        }
+
         paVegneAvDeltakerOgArbeidsgiverGrunn.valgtMinstEnGrunn();
         LocalDateTime tidspunkt = LocalDateTime.now();
         this.setGodkjentAvVeileder(tidspunkt);
