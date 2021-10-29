@@ -11,7 +11,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public class OpprettSmsVarselKafkaMelding {
     private final SmsVarselProducer producer;
-    private final SmsVarselMeldingMapper mapper;
+    private final SmsVarselMeldingMapper mapper = new SmsVarselMeldingMapper();
 
     @TransactionalEventListener
     public void opprettMelding(SmsVarselOpprettet event) {
