@@ -9,9 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter.AbacAdapter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter.ClearCacheInterceptor;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
-import org.junit.Test;
-
-;
+import org.junit.jupiter.api.Test;
 
 public class ClearCacheInterceptorTest {
     

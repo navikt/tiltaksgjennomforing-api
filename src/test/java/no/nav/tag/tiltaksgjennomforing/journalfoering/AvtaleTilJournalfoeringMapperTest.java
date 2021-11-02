@@ -1,16 +1,16 @@
 package no.nav.tag.tiltaksgjennomforing.journalfoering;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.UUID;
 
 import static no.nav.tag.tiltaksgjennomforing.journalfoering.AvtaleTilJournalfoeringMapper.tilJournalfoering;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AvtaleTilJournalfoeringMapperTest {
 
@@ -19,14 +19,14 @@ public class AvtaleTilJournalfoeringMapperTest {
     private AvtaleTilJournalfoering tilJournalfoering;
     private GodkjentPaVegneGrunn grunn;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         avtaleInnhold = avtale.getVersjoner().get(0);
         grunn = new GodkjentPaVegneGrunn();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         avtale = null;
         tilJournalfoering = null;

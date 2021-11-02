@@ -1,7 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.journalfoering;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.anyIterable;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doNothing;
@@ -24,13 +25,13 @@ import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnholdRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class InternalAvtaleControllerTest {
 
     private static final UUID AVTALE_ID_1 = UUID.randomUUID();
@@ -59,11 +60,11 @@ public class InternalAvtaleControllerTest {
         avtalerTilJournalfoering.forEach(avtaleTilJournalfoering -> assertNotNull(avtaleTilJournalfoering.getAvtaleId()));
     }
 
-    @Test(expected = TilgangskontrollException.class)
+    @Test
     public void henterIkkeAvtalerTilJournalfoering() {
         doThrow(TilgangskontrollException.class).when(innloggingService).validerSystembruker();
 
-        internalAvtaleController.hentIkkeJournalfoerteAvtaler();
+        assertThatThrownBy(internalAvtaleController::hentIkkeJournalfoerteAvtaler).isInstanceOf(TilgangskontrollException.class);
         verify(avtaleRepository, never()).findAll();
     }
 
@@ -79,10 +80,10 @@ public class InternalAvtaleControllerTest {
         verify(avtaleInnholdRepository, atLeastOnce()).saveAll(anyIterable());
     }
 
-    @Test(expected = TilgangskontrollException.class)
+    @Test
     public void journalfoererIkkeAvtaler() {
         doThrow(TilgangskontrollException.class).when(innloggingService).validerSystembruker();
-        internalAvtaleController.hentIkkeJournalfoerteAvtaler();
+        assertThatThrownBy(() -> internalAvtaleController.hentIkkeJournalfoerteAvtaler()).isInstanceOf(TilgangskontrollException.class);
         verify(avtaleRepository, never()).findAllById(anyIterable());
         verify(avtaleRepository, never()).saveAll(anyIterable());
     }

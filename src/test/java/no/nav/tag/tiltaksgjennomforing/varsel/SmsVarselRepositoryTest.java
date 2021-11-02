@@ -4,9 +4,8 @@ import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -15,7 +14,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles(Miljø.LOCAL)
 @DirtiesContext
@@ -29,7 +27,7 @@ public class SmsVarselRepositoryTest {
     private Avtale avtale;
     private VarslbarHendelse varslbarHendelse;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         avtale = TestData.enArbeidstreningAvtale();
         avtaleRepository.save(avtale);

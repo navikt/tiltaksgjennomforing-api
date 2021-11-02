@@ -6,9 +6,8 @@ import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,7 +21,6 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(properties = {"tiltaksgjennomforing.notifikasjoner.enabled=true"})
 @ActiveProfiles({Miljø.LOCAL, "wiremock"})
 @DirtiesContext
@@ -43,7 +41,7 @@ public class NotifikasjonServiceTest {
     Avtale avtale;
     ArbeidsgiverNotifikasjon notifikasjon;
 
-    @Before
+    @BeforeEach
     public void init() {
         avtale = TestData.enArbeidstreningAvtale();
         avtaleRepository.save(avtale);

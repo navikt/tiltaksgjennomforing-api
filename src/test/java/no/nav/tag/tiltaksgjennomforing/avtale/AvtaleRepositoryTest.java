@@ -235,8 +235,7 @@ public class AvtaleRepositoryTest {
 
     @Test
     public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_ikke_kunne_hente_avtale_med_godkjent_tilskuddsperioder() {
-
-        Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.now(), LocalDate.now().plusMonths(2));
+        Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.of(2021, 10, 1), LocalDate.of(2021, 12, 1));
         Set<String> navEnheter = Set.of(ENHET_OPPFØLGING.getVerdi());
 
         lagretAvtale.godkjennTilskuddsperiode(TestData.enInnloggetBeslutter().getIdentifikator(), lagretAvtale.getEnhetGeografisk());

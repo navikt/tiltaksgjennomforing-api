@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet;
 
 import no.finn.unleash.UnleashContext;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestClientException;
 
 import java.util.Map;
@@ -11,6 +11,7 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.ByEnhetStrategy.PARAM;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 public class ByEnhetStrategyTest {
@@ -63,9 +64,9 @@ public class ByEnhetStrategyTest {
         assertThat(new ByEnhetStrategy(axsysService).isEnabled(Map.of(PARAM, "1234,5678"), unleashContext)).isTrue();
     }
     
-    @Test(expected=RestClientException.class)
+    @Test
     public void skal_kaste_exception_hvis_axsys_kaster_exception() {
         when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenThrow(new RestClientException("mock exception"));
-        new ByEnhetStrategy(axsysService).isEnabled(Map.of(PARAM, "1234"), unleashContext);
+        assertThatThrownBy(() -> new ByEnhetStrategy(axsysService).isEnabled(Map.of(PARAM, "1234"), unleashContext)).isInstanceOf(RestClientException.class);
     }
 }

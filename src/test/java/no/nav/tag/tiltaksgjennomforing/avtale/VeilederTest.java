@@ -1,14 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
@@ -20,14 +11,23 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistExcep
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
 public class VeilederTest {
-    @Test(expected = VeilederSkalGodkjenneSistException.class)
+    @Test
     public void godkjennAvtale__kan_ikke_godkjenne_foerst() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.godkjennAvtale(avtale.getSistEndret(), avtale);
+        assertThatThrownBy(() -> veileder.godkjennAvtale(avtale.getSistEndret(), avtale)).isExactlyInstanceOf(VeilederSkalGodkjenneSistException.class);
     }
 
     @Test
@@ -40,7 +40,7 @@ public class VeilederTest {
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
     }
 
-    @Test(expected = KanIkkeGodkjenneAvtalePåKode6Exception.class)
+    @Test
     public void godkjennAvtale__kan_ikke_godkjenne_kode6() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
@@ -48,10 +48,10 @@ public class VeilederTest {
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.erKode6(avtale.getDeltakerFnr())).thenReturn(true);
         Veileder veileder = TestData.enVeileder(avtale, persondataService);
-        veileder.godkjennAvtale(avtale.getSistEndret(), avtale);
+        assertThatThrownBy(() -> veileder.godkjennAvtale(avtale.getSistEndret(), avtale)).isExactlyInstanceOf(KanIkkeGodkjenneAvtalePåKode6Exception.class);
     }
 
-    @Test(expected = KanIkkeGodkjenneAvtalePåKode6Exception.class)
+    @Test
     public void godkjennForVeilederOgDeltaker__kan_ikke_godkjenne_kode6() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setGodkjentAvDeltaker(LocalDateTime.now());
@@ -59,7 +59,7 @@ public class VeilederTest {
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.erKode6(avtale.getDeltakerFnr())).thenReturn(true);
         Veileder veileder = TestData.enVeileder(avtale, persondataService);
-        veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
+        assertThatThrownBy(() -> veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale)).isExactlyInstanceOf(KanIkkeGodkjenneAvtalePåKode6Exception.class);
     }
 
     @Test
@@ -144,11 +144,11 @@ public class VeilederTest {
         assertThat(avtale.getVeilederNavIdent()).isEqualTo(nyVeileder.getIdentifikator());
     }
 
-    @Test(expected = ErAlleredeVeilederException.class)
+    @Test
     public void overtarAvtale__feil_hvis_samme_ident() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.overtaAvtale(avtale);
+        assertThatThrownBy(() -> veileder.overtaAvtale(avtale)).isExactlyInstanceOf(ErAlleredeVeilederException.class);
     }
 
     @Test
@@ -165,7 +165,7 @@ public class VeilederTest {
         when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel())).thenReturn(new Norg2GeoResponse(TestData.ENHET_GEOGRAFISK.getNavn(), TestData.ENHET_GEOGRAFISK.getVerdi()));
 
         Veileder veileder = new Veileder(TestData.enNavIdent(), tilgangskontrollService, persondataService, norg2Client,
-            Set.of(TestData.ENHET_GEOGRAFISK), new SlettemerkeProperties(), false);
+                Set.of(TestData.ENHET_GEOGRAFISK), new SlettemerkeProperties(), false);
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
 
         assertThat(avtale.getVeilederNavIdent()).isEqualTo(TestData.enNavIdent());
@@ -181,6 +181,7 @@ public class VeilederTest {
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
         assertThat(avtale.isSlettemerket()).isFalse();
     }
+
     @Test
     public void slettemerke__avtale_med_tilgang() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
@@ -191,11 +192,12 @@ public class VeilederTest {
 
         SlettemerkeProperties slettemerkeProperties = new SlettemerkeProperties();
         slettemerkeProperties.setIdent(List.of(navIdent));
-        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class), Set.of(new NavEnhet("4802","Trysil")), slettemerkeProperties, false);
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class), Set.of(new NavEnhet("4802", "Trysil")), slettemerkeProperties, false);
         veileder.slettemerk(avtale);
         assertThat(avtale.isSlettemerket()).isTrue();
     }
-    @Test (expected = IkkeAdminTilgangException.class)
+
+    @Test
     public void slettemerke__avtale_uten_tilgang() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
 
@@ -206,9 +208,10 @@ public class VeilederTest {
 
         SlettemerkeProperties slettemerkeProperties = new SlettemerkeProperties();
         slettemerkeProperties.setIdent(List.of(new NavIdent("Z123456")));
-        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class), Set.of(new NavEnhet("4802","Trysil")), slettemerkeProperties, false);
-        veileder.slettemerk(avtale);
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class), Set.of(new NavEnhet("4802", "Trysil")), slettemerkeProperties, false);
+        assertThatThrownBy(() -> veileder.slettemerk(avtale)).isExactlyInstanceOf(IkkeAdminTilgangException.class);
     }
+
     @Test
     public void slettemerket_ikke_tilgang_til_avtale() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();

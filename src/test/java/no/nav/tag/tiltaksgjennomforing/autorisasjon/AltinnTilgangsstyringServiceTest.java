@@ -10,9 +10,9 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.AltinnFeilException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,10 +25,10 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @ActiveProfiles({ Miljø.LOCAL, "wiremock" })
 @DirtiesContext
@@ -42,7 +42,7 @@ public class AltinnTilgangsstyringServiceTest {
     @MockBean
     private FeatureToggleService featureToggleService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         when(tokenUtils.hentSelvbetjeningToken()).thenReturn("token");
         when(featureToggleService.isEnabled(anyString())).thenReturn(false);
@@ -100,14 +100,14 @@ public class AltinnTilgangsstyringServiceTest {
         assertThat(tilganger).isEmpty();
     }
 
-    @Test(expected = AltinnFeilException.class)
+    @Test
     public void hentTilganger__midlertidig_feil_gir_feilkode() {
-        altinnTilgangsstyringService.hentTilganger(new Fnr("31000000000"));
+        assertThatThrownBy(() -> altinnTilgangsstyringService.hentTilganger(new Fnr("31000000000"))).isExactlyInstanceOf(AltinnFeilException.class);
     }
 
-    @Test(expected = TiltaksgjennomforingException.class)
+    @Test
     public void manglende_serviceCode_skal_kaste_feil() {
         AltinnTilgangsstyringProperties altinnTilgangsstyringProperties = new AltinnTilgangsstyringProperties();
-        new AltinnTilgangsstyringService(altinnTilgangsstyringProperties, tokenUtils, "tiltaksgjennomforing-api");
+        assertThatThrownBy(() -> new AltinnTilgangsstyringService(altinnTilgangsstyringProperties, tokenUtils, "tiltaksgjennomforing-api")).isExactlyInstanceOf(TiltaksgjennomforingException.class);
     }
 }
