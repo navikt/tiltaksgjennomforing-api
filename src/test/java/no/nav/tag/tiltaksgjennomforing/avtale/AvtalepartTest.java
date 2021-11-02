@@ -4,7 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørV
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -12,21 +12,22 @@ import java.util.EnumSet;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class AvtalepartTest {
-    @Test(expected = KanIkkeEndreException.class)
+    @Test
     public void endreAvtale__skal_feile_for_deltaker() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Deltaker deltaker = TestData.enDeltaker(avtale);
-        deltaker.endreAvtale(avtale.getSistEndret(), TestData.ingenEndring(), avtale, EnumSet.of(avtale.getTiltakstype()));
+        assertThatThrownBy(() -> deltaker.endreAvtale(avtale.getSistEndret(), TestData.ingenEndring(), avtale, EnumSet.of(avtale.getTiltakstype()))).isInstanceOf(KanIkkeEndreException.class);
     }
 
-    @Test(expected = ArbeidsgiverSkalGodkjenneFørVeilederException.class)
+    @Test
     public void godkjennForVeilederOgDeltaker__skal_feile_hvis_ag_ikke_har_godkjent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Veileder veileder = TestData.enVeileder(avtale);
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
-        veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
+        assertThatThrownBy(() -> veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale)).isInstanceOf(ArbeidsgiverSkalGodkjenneFørVeilederException.class);
     }
 
     @Test
@@ -56,11 +57,11 @@ public class AvtalepartTest {
         veileder.endreAvtale(Instant.now(), TestData.ingenEndring(), avtale, EnumSet.of(avtale.getTiltakstype()));
     }
 
-    @Test(expected = SamtidigeEndringerException.class)
+    @Test
     public void godkjennForAvtalepart__skal_ikke_fungere_hvis_versjon_er_feil() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Deltaker deltaker = TestData.enDeltaker(avtale);
-        deltaker.godkjennAvtale(avtale.getSistEndret().minusMillis(1), avtale);
+        assertThatThrownBy(() -> deltaker.godkjennAvtale(avtale.getSistEndret().minusMillis(1), avtale)).isInstanceOf(SamtidigeEndringerException.class);
     }
 
     @Test

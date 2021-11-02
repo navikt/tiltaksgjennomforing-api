@@ -2,24 +2,18 @@ package no.nav.tag.tiltaksgjennomforing.persondata;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
-@ActiveProfiles({ Miljø.LOCAL, "wiremock"})
+@ActiveProfiles({ Miljø.LOCAL, "wiremock" })
 @DirtiesContext
 public class PersondataServiceTest {
-    @Autowired
-    private PersondataService persondataService;
-
     private static final Fnr STRENGT_FORTROLIG_PERSON = new Fnr("16053900422");
     private static final Fnr STRENGT_FORTROLIG_UTLAND_PERSON = new Fnr("28033114267");
     private static final Fnr FORTROLIG_PERSON = new Fnr("26067114433");
@@ -29,6 +23,8 @@ public class PersondataServiceTest {
     private static final Fnr PERSON_FINNES_IKKE = new Fnr("24080687881");
     private static final Fnr PERSON_FOR_RESPONS_UTEN_DATA = new Fnr("23097010706");
     private static final Fnr DONALD_DUCK = new Fnr("00000000000");
+    @Autowired
+    private PersondataService persondataService;
 
     @Test
     public void hentGradering__returnerer_strengt_fortrolig_person() {
@@ -127,7 +123,7 @@ public class PersondataServiceTest {
     }
 
     @Test
-    public void henterGeoTilhørighet(){
+    public void henterGeoTilhørighet() {
         PdlRespons pdlRespons = persondataService.hentPersondata(DONALD_DUCK);
         assertThat(PersondataService.hentGeoLokasjonFraPdlRespons(pdlRespons).get()).isEqualTo("030104");
     }

@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.EnumSet;

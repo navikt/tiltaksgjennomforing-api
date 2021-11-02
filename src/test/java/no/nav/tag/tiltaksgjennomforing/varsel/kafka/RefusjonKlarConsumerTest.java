@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
@@ -12,7 +12,6 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,15 +49,17 @@ class RefusjonKlarConsumerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    public void skal_sende_sms_når_det_leses_varsel_kafkamelding() throws JSONException, JsonProcessingException {
+    @SneakyThrows
+    public void skal_sende_sms_når_det_leses_varsel_kafkamelding() {
         Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvBeslutter();
         avtale = avtaleRepository.save(avtale);
 
         var varselMelding = new RefusjonVarselMelding(avtale.getId(), avtale.tilskuddsperiode(0).getId(), VarselType.KLAR);
         String meldingSomString = objectMapper.writeValueAsString(varselMelding);
         Header header = new RecordHeader("__TypeId__", "no.nav.arbeidsgiver.tiltakrefusjon.refusjon.RefusjonVarselMelding".getBytes(StandardCharsets.UTF_8));
+        Thread.sleep(100L);
         kafkaTemplate.send(new ProducerRecord<>(Topics.TILTAK_VARSEL, null, "123", meldingSomString, List.of(header)));
-
+        Thread.sleep(100L);
         Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "false", embeddedKafka);
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);

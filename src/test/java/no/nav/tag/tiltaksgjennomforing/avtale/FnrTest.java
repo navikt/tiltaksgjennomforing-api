@@ -1,37 +1,38 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class FnrTest {
 
-    @Test(expected = TiltaksgjennomforingException.class)
+    @Test
     public void fnrSkalIkkeVaereTomt() {
-        Fnr fnr = new Fnr("");
+        assertThatThrownBy(() -> new Fnr("")).isExactlyInstanceOf(TiltaksgjennomforingException.class);
     }
 
-    @Test(expected = TiltaksgjennomforingException.class)
+    @Test
     public void fnrSkalIkkeHaMindreEnn11Siffer() {
-        Fnr fnr = new Fnr("123");
+        assertThatThrownBy(() -> new Fnr("123")).isExactlyInstanceOf(TiltaksgjennomforingException.class);
     }
 
-    @Test(expected = TiltaksgjennomforingException.class)
+    @Test
     public void fnrSkalIkkeHaMerEnn11Siffer() {
-        Fnr fnr = new Fnr("1234567890123");
+        assertThatThrownBy(() -> new Fnr("1234567890123")).isExactlyInstanceOf(TiltaksgjennomforingException.class);
     }
 
-    @Test(expected = TiltaksgjennomforingException.class)
+    @Test
     public void fnrSkalIkkeInneholdeBokstaver() {
-        Fnr fnr = new Fnr("1234567890a");
+        assertThatThrownBy(() -> new Fnr("1234567890a")).isExactlyInstanceOf(TiltaksgjennomforingException.class);
     }
 
-    @Test(expected = TiltaksgjennomforingException.class)
+    @Test
     public void fnrSkalIkkeInneholdeAndreTingEnnTall() {
-        Fnr fnr = new Fnr("12345678900 ");
+        assertThatThrownBy(() -> new Fnr("12345678900 ")).isExactlyInstanceOf(TiltaksgjennomforingException.class);
     }
 
     @Test
@@ -84,6 +85,7 @@ public class FnrTest {
         assertThat(fnr.erUnder16år()).isTrue();
         assertThat(fnr.erOver30år()).isFalse();
     }
+
     @Test
     public void testDnr2() {
         Fnr fnr = new Fnr("64090099076");

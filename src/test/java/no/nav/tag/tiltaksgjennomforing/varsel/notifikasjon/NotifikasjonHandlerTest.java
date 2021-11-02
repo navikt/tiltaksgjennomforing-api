@@ -7,7 +7,6 @@ import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.FellesRespon
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyBeskjed.NyBeskjedResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyOppgave.NyOppgaveResponse;
-import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -17,8 +16,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest
 @ActiveProfiles({Miljø.LOCAL})
@@ -41,14 +40,15 @@ public class NotifikasjonHandlerTest {
 
     @BeforeEach
     public void init() {
-        response = "{\n" +
-                "  \"data\": {\n" +
-                "    \"nyBeskjed\": {\n" +
-                "      \"__typename\": \"NyBeskjedVellykket\",\n" +
-                "      \"id\": \"d69f8c4f-8d34-47b0-9539-d3c2e54115da\"\n" +
-                "    }\n" +
-                "  }\n" +
-                "}";
+        response = """
+                {
+                  "data": {
+                    "nyBeskjed": {
+                      "__typename": "NyBeskjedVellykket",
+                      "id": "d69f8c4f-8d34-47b0-9539-d3c2e54115da"
+                    }
+                  }
+                }""";
     }
 
     @Test

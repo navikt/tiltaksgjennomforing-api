@@ -1,8 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.Map;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.varsel.SmsVarsel;
@@ -13,9 +10,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.ConsumerFactory;
@@ -25,14 +21,16 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.support.TransactionTemplate;
 
-@RunWith(SpringRunner.class)
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 @DirtiesContext
-@SpringBootTest(properties = {"tiltaksgjennomforing.kafka.enabled=true"})
-@ActiveProfiles({Miljø.LOCAL})
-@EmbeddedKafka(partitions = 1, controlledShutdown = false, topics = {Topics.SMS_VARSEL, Topics.SMS_VARSEL_RESULTAT})
+@SpringBootTest(properties = { "tiltaksgjennomforing.kafka.enabled=true" })
+@ActiveProfiles({ Miljø.LOCAL })
+@EmbeddedKafka(partitions = 1, controlledShutdown = false, topics = { Topics.SMS_VARSEL, Topics.SMS_VARSEL_RESULTAT })
 public class SmsVarselProducerTest {
 
     @Autowired
@@ -44,7 +42,7 @@ public class SmsVarselProducerTest {
 
     private Consumer<String, String> consumer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "false", embeddedKafka);
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);

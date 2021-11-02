@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -8,8 +8,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.*;
 
 public class RegnUtTilskuddsperioderForAvtaleTest {
 
@@ -384,11 +383,11 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         harOverlappendeDatoer(new TreeSet<>(Set.of(tilskuddPeriode1, tilskuddPeriode2)));
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void sjekk_at_har_overlappende_datoer() {
         TilskuddPeriode tilskuddPeriode1 = new TilskuddPeriode(1000, LocalDate.of(2021, 1, 1), LocalDate.of(2021, 3, 31), 60);
         TilskuddPeriode tilskuddPeriode2 = new TilskuddPeriode(1000, LocalDate.of(2021, 3, 31), LocalDate.of(2021, 6, 1), 60);
-        harOverlappendeDatoer(List.of(tilskuddPeriode1, tilskuddPeriode2));
+        assertThatThrownBy(() -> harOverlappendeDatoer(List.of(tilskuddPeriode1, tilskuddPeriode2))).isInstanceOf(AssertionError.class);
     }
 
     @Test
@@ -398,10 +397,10 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         harAlleDageneIAvtalenperioden(List.of(tilskuddPeriode1, tilskuddPeriode2), LocalDate.of(2021, 1, 1), LocalDate.of(2021, 6, 1));
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void sjekk_at_det_feiler_nar_ikke_alle_dagene_i_avtalen_er_i_tilskuddsperiodene() {
         TilskuddPeriode tilskuddPeriode1 = new TilskuddPeriode(1000, LocalDate.of(2021, 1, 1), LocalDate.of(2021, 3, 31), 60);
         TilskuddPeriode tilskuddPeriode2 = new TilskuddPeriode(1000, LocalDate.of(2021, 4, 1), LocalDate.of(2021, 5, 25), 60);
-        harAlleDageneIAvtalenperioden(List.of(tilskuddPeriode1, tilskuddPeriode2), LocalDate.of(2021, 1, 1), LocalDate.of(2021, 5, 26));
+        assertThatThrownBy(() -> harAlleDageneIAvtalenperioden(List.of(tilskuddPeriode1, tilskuddPeriode2), LocalDate.of(2021, 1, 1), LocalDate.of(2021, 5, 26))).isInstanceOf(AssertionError.class);
     }
 }

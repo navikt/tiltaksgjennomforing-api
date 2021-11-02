@@ -2,7 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import org.assertj.core.api.SoftAssertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
@@ -54,19 +54,19 @@ public class AvtaleTest {
         });
     }
 
-    @Test(expected = TiltaksgjennomforingException.class)
+    @Test
     public void nyAvtaleSkalFeileHvisManglerDeltaker() {
-        Avtale.veilederOppretterAvtale(new OpprettAvtale(null, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), new NavIdent("X123456"));
+        assertThatThrownBy(() -> Avtale.veilederOppretterAvtale(new OpprettAvtale(null, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), new NavIdent("X123456"))).isInstanceOf(TiltaksgjennomforingException.class);
     }
 
-    @Test(expected = TiltaksgjennomforingException.class)
+    @Test
     public void nyAvtaleSkalFeileHvisManglerArbeidsgiver() {
-        Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("23078637692"), null, Tiltakstype.ARBEIDSTRENING), new NavIdent("X123456"));
+        assertThatThrownBy(() -> Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("23078637692"), null, Tiltakstype.ARBEIDSTRENING), new NavIdent("X123456"))).isInstanceOf(TiltaksgjennomforingException.class);
     }
 
-    @Test(expected = TiltaksgjennomforingException.class)
+    @Test
     public void nyAvtaleSkalFeileHvisManglerVeileder() {
-        Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("23078637692"), new BedriftNr("000111222"), Tiltakstype.ARBEIDSTRENING), null);
+        assertThatThrownBy(() -> Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("23078637692"), new BedriftNr("000111222"), Tiltakstype.ARBEIDSTRENING), null)).isInstanceOf(TiltaksgjennomforingException.class);
     }
 
     @Test
@@ -78,16 +78,16 @@ public class AvtaleTest {
         assertFeilkode(Feilkode.FOR_GAMMEL, () -> Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("08098114468"), new BedriftNr("000111222"), Tiltakstype.SOMMERJOBB), null));
     }
 
-    @Test(expected = SamtidigeEndringerException.class)
+    @Test
     public void sjekkVersjon__ugyldig_versjon() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        avtale.sjekkSistEndret(Instant.MIN);
+        assertThatThrownBy(() -> avtale.sjekkSistEndret(Instant.MIN)).isInstanceOf(SamtidigeEndringerException.class);
     }
 
-    @Test(expected = SamtidigeEndringerException.class)
+    @Test
     public void sjekkVersjon__null() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        avtale.sjekkSistEndret(null);
+        assertThatThrownBy(() -> avtale.sjekkSistEndret(null)).isInstanceOf(SamtidigeEndringerException.class);
     }
 
     @Test
@@ -123,14 +123,14 @@ public class AvtaleTest {
         });
     }
 
-    @Test(expected = TiltaksgjennomforingException.class)
+    @Test
     public void endreAvtale__for_langt_maal_skal_feile() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         Maal etMaal = TestData.etMaal();
         etMaal.setBeskrivelse("Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.Dette er en string pa 1024 tegn.");
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setMaal(List.of(etMaal));
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+        assertThatThrownBy(() -> avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()))).isInstanceOf(TiltaksgjennomforingException.class);
     }
 
     @Test
@@ -166,7 +166,7 @@ public class AvtaleTest {
         assertThat(avtale.getSluttDato()).isEqualTo(sluttDato);
     }
 
-    @Test(expected = VarighetForLangArbeidstreningException.class)
+    @Test
     public void endreAvtale__startdato_og_sluttdato_satt_over_18mnd() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         EndreAvtale endreAvtale = new EndreAvtale();
@@ -174,7 +174,7 @@ public class AvtaleTest {
         LocalDate sluttDato = startDato.plusMonths(18).plusDays(1);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+        assertThatThrownBy(() -> avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()))).isInstanceOf(VarighetForLangArbeidstreningException.class);
     }
 
     @Test

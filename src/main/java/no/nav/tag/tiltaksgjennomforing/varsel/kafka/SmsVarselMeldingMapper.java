@@ -1,11 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 
 import no.nav.tag.tiltaksgjennomforing.varsel.SmsVarsel;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
-public interface SmsVarselMeldingMapper {
-    @Mapping(target = "smsVarselId", source = "id")
-    SmsVarselMelding tilMelding(SmsVarsel smsVarsel);
+public class SmsVarselMeldingMapper {
+    public SmsVarselMelding tilMelding(SmsVarsel smsVarsel) {
+        return new SmsVarselMelding(smsVarsel.getId(), smsVarsel.getIdentifikator(), smsVarsel.getTelefonnummer(), smsVarsel.getMeldingstekst());
+    }
 }
