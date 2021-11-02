@@ -81,7 +81,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private SortedSet<TilskuddPeriode> tilskuddPeriode = new TreeSet<>();
     private boolean feilregistrert;
 
-
+    //CONSOLE LOGGING ... TODO fjernet kommentar.
     private Avtale(OpprettAvtale opprettAvtale) {
         sjekkAtIkkeNull(opprettAvtale.getDeltakerFnr(), "Deltakers fnr må være satt.");
         sjekkAtIkkeNull(opprettAvtale.getBedriftNr(), "Arbeidsgivers bedriftnr må være satt.");
