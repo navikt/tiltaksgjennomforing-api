@@ -1,20 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
-import static no.nav.security.jwt.test.support.JwtTokenGenerator.ACR_LEVEL_4;
-import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISSUER_ISSO;
-import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISSUER_SELVBETJENING;
-import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISSUER_SYSTEM;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTClaimsSet.Builder;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import no.nav.security.jwt.test.support.JwkGenerator;
 import no.nav.security.jwt.test.support.JwtTokenGenerator;
 import no.nav.security.token.support.core.context.TokenValidationContext;
@@ -27,8 +14,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.*;
+
+import static no.nav.security.jwt.test.support.JwtTokenGenerator.ACR_LEVEL_4;
+import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class TokenUtilsTest {

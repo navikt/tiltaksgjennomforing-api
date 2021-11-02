@@ -1,15 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbabac;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-
-import javax.servlet.http.HttpServletRequest;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter.AbacAdapter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter.ClearCacheInterceptor;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import org.junit.jupiter.api.Test;
+
+import javax.servlet.http.HttpServletRequest;
+
+import static org.mockito.Mockito.*;
 
 public class ClearCacheInterceptorTest {
     

@@ -1,8 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy;
 
-import no.nav.tag.tiltaksgjennomforing.AssertFeilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
