@@ -13,6 +13,8 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Objects;
+
 @Slf4j
 @Component
 @AllArgsConstructor
@@ -22,27 +24,31 @@ public class VeilarbArenaClient {
     private final STSClient stsClient;
     private VeilarbArenaProperties veilarbArenaProperties;
 
-    private Boolean sjekServiceGruppeErRiktig(Oppfølgingsstatus oppfølgingsstatus){
-        try{
-            return  !oppfølgingsstatus.getServicegruppe().contains("BFORM") ||
+    private Boolean sjekServiceGruppeErRiktig(Oppfølgingsstatus oppfølgingsstatus) {
+        try {
+            return !oppfølgingsstatus.getServicegruppe().contains("BFORM") ||
                     !oppfølgingsstatus.getServicegruppe().contains("BATT");
-        }
-        catch(Exception exception) {
+        } catch (Exception exception) {
             log.error("Oppfølgingsstatus servicegruppe er tom", exception);
             return false;
         }
     }
 
-    public Oppfølgingsstatus sjekkOgHentOppfølgingStatus(OpprettAvtale opprettAvtale){
+    private Boolean erGjeldendeTiltak(Tiltakstype tiltakstype) {
+        return tiltakstype == Tiltakstype.SOMMERJOBB ||
+                tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD ||
+                tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD;
+    }
+
+    public Oppfølgingsstatus sjekkOgHentOppfølgingStatus(OpprettAvtale opprettAvtale) {
         Oppfølgingsstatus oppfølgingStatus = hentOppfølgingStatus(opprettAvtale.getDeltakerFnr().asString());
-        if(oppfølgingStatus.getFormidlingsgruppe() != "IARBS" || oppfølgingStatus.getFormidlingsgruppe() != "IJOBS" ){
+
+        if (!Objects.equals(oppfølgingStatus.getFormidlingsgruppe(), "IARBS") ||
+                !Objects.equals(oppfølgingStatus.getFormidlingsgruppe(), "IJOBS")) {
             throw new FeilkodeException(Feilkode.FORMIDLINGSGRUPPE_IKKE_RETTIGHET);
         }
-        if((opprettAvtale.getTiltakstype() == Tiltakstype.SOMMERJOBB ||
-                opprettAvtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD ||
-                opprettAvtale.getTiltakstype() == Tiltakstype.VARIG_LONNSTILSKUDD) &&
-                sjekServiceGruppeErRiktig(oppfølgingStatus)) {
-                throw new FeilkodeException(Feilkode.SERVICEKODE_MANGLER);
+        if (erGjeldendeTiltak(opprettAvtale.getTiltakstype()) && sjekServiceGruppeErRiktig(oppfølgingStatus)) {
+            throw new FeilkodeException(Feilkode.SERVICEKODE_MANGLER);
         }
         return oppfølgingStatus;
     }
@@ -57,7 +63,7 @@ public class VeilarbArenaClient {
 
     public String hentOppfølgingsEnhet(String fnr) {
         Oppfølgingsstatus oppfølgingsstatus = hentOppfølgingStatus(fnr);
-        if(oppfølgingsstatus != null){
+        if (oppfølgingsstatus != null) {
             return oppfølgingsstatus.getOppfolgingsenhet();
         }
         return null;
@@ -86,7 +92,7 @@ public class VeilarbArenaClient {
         }
     }
 
-    private HttpEntity httpHeadere() {
+    private HttpEntity<String> httpHeadere() {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(stsClient.hentSTSToken().getAccessToken());
         return new HttpEntity<>(headers);
