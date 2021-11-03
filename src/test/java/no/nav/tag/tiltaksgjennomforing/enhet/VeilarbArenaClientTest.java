@@ -19,6 +19,18 @@ class VeilarbArenaClientTest {
   private VeilarbArenaClient veilarbArenaClient;
 
   @Test
+  public void hent_formidlingsgruppe() {
+    String formidlingsgruppe = veilarbArenaClient.hentFormidlingsgruppe("12345678901");
+    assertThat(formidlingsgruppe).isEqualTo("ARBS");
+  }
+
+  @Test
+  public void hent_servicegruppe() {
+    String servicegruppe = veilarbArenaClient.hentServicegruppe("12345678901");
+    assertThat(servicegruppe).isEqualTo("BFORM");
+  }
+
+  @Test
   public void hent_oppfølingsEnhet_fra_arena() {
     String oppfølgingsEnhet = veilarbArenaClient.hentOppfølgingsEnhet("12345678901");
     assertThat(oppfølgingsEnhet).isEqualTo("0906");
@@ -29,19 +41,4 @@ class VeilarbArenaClientTest {
     String oppfølgingsEnhet = veilarbArenaClient.hentOppfølgingsEnhet("33333333333");
     assertThat(oppfølgingsEnhet).isNull();
   }
-
-//  @Test
-//  public void hent_oppfølingsEnhet_fra_arena__kaster_exception_ved_500() {
-//    assertThatThrownBy(() -> {
-//      veilarbArenaClient.hentOppfølgingsEnhet("11111111111");
-//    }).isInstanceOf(VeilarbArenaException.class);
-//  }
-//
-//  @Test
-//  public void hent_oppfølingsEnhet_fra_arena__kaster_exception_feil_url() {
-//    assertThatThrownBy(() -> {
-//      veilarbArenaClient.hentOppfølgingsEnhet("22222222222");
-//    }).isInstanceOf(VeilarbArenaException.class);
-//  }
-
 }

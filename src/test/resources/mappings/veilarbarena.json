@@ -11,7 +11,7 @@
         "jsonBody": {
           "rettighetsgruppe": "IYT",
           "formidlingsgruppe": "ARBS",
-          "servicegruppe": "IVURD",
+          "servicegruppe": "BFORM",
           "oppfolgingsenhet": "0906",
           "inaktiveringsdato": null,
           "kanEnkeltReaktiveres": null

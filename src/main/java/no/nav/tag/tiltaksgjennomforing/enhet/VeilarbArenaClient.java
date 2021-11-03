@@ -18,8 +18,23 @@ public class VeilarbArenaClient {
     private final STSClient stsClient;
     private VeilarbArenaProperties veilarbArenaProperties;
 
-    public String hentOppfølgingsEnhet(String fnr) {
+    public String hentFormidlingsgruppe(String fnr) {
+        return hentOppfølgingStatus(fnr).getFormidlingsgruppe();
+    }
 
+    public String hentServicegruppe(String fnr) {
+        return hentOppfølgingStatus(fnr).getServicegruppe();
+    }
+
+    public String hentOppfølgingsEnhet(String fnr) {
+        Oppfølgingsstatus oppfølgingsstatus = hentOppfølgingStatus(fnr);
+        if(oppfølgingsstatus != null){
+            return oppfølgingsstatus.getOppfolgingsenhet();
+        }
+        return null;
+    }
+
+    public Oppfølgingsstatus hentOppfølgingStatus(String fnr) {
         String uri = UriComponentsBuilder.fromHttpUrl(veilarbArenaProperties.getUrl().toString())
                 .pathSegment(fnr)
                 .toUriString();
@@ -31,7 +46,7 @@ public class VeilarbArenaClient {
                     httpHeadere(),
                     Oppfølgingsstatus.class
             );
-            return respons.getBody().getOppfolgingsenhet();
+            return respons.getBody();
         } catch (RestClientResponseException exception) {
             if (exception.getRawStatusCode() == HttpStatus.NOT_FOUND.value() && !exception.getResponseBodyAsString().isEmpty()) {
                 log.warn("Kandidat ikke registrert i veilarbarena");
@@ -39,7 +54,6 @@ public class VeilarbArenaClient {
             }
             log.error("Kunne ikke hente Oppfølgingsstatus fra veilarbarena: status=" + exception.getRawStatusCode(), exception);
             return null;
-//            throw new VeilarbArenaException("Kunne ikke hente Oppfølgingsstatus fra veilarbarena");
         }
     }
 
