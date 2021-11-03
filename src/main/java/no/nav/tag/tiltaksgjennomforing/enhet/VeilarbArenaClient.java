@@ -26,8 +26,7 @@ public class VeilarbArenaClient {
 
     private Boolean sjekServiceGruppeErRiktig(Oppfølgingsstatus oppfølgingsstatus) {
         try {
-            return !oppfølgingsstatus.getServicegruppe().contains("BFORM") ||
-                    !oppfølgingsstatus.getServicegruppe().contains("BATT");
+            return !ServiceGruppe.servicegruppeErRiktig(oppfølgingsstatus.getServicegruppe());
         } catch (Exception exception) {
             log.error("Oppfølgingsstatus servicegruppe er tom", exception);
             return false;
@@ -43,8 +42,8 @@ public class VeilarbArenaClient {
     public Oppfølgingsstatus sjekkOgHentOppfølgingStatus(OpprettAvtale opprettAvtale) {
         Oppfølgingsstatus oppfølgingStatus = hentOppfølgingStatus(opprettAvtale.getDeltakerFnr().asString());
 
-        if (!Objects.equals(oppfølgingStatus.getFormidlingsgruppe(), "IARBS") ||
-                !Objects.equals(oppfølgingStatus.getFormidlingsgruppe(), "IJOBS")) {
+        if (!Objects.equals(oppfølgingStatus.getFormidlingsgruppe(), Formidlingsgruppe.IKKE_ARBEIDSSOKER.getKode()) ||
+                !Objects.equals(oppfølgingStatus.getFormidlingsgruppe(), Formidlingsgruppe.INAKTIVERT_JOBBSKIFTER.getKode())) {
             throw new FeilkodeException(Feilkode.FORMIDLINGSGRUPPE_IKKE_RETTIGHET);
         }
         if (erGjeldendeTiltak(opprettAvtale.getTiltakstype()) && sjekServiceGruppeErRiktig(oppfølgingStatus)) {
@@ -58,7 +57,7 @@ public class VeilarbArenaClient {
     }
 
     public String hentServicegruppe(String fnr) {
-        return hentOppfølgingStatus(fnr).getServicegruppe();
+        return hentOppfølgingStatus(fnr).getServicegruppe().getServicekode();
     }
 
     public String hentOppfølgingsEnhet(String fnr) {
@@ -73,7 +72,6 @@ public class VeilarbArenaClient {
         String uri = UriComponentsBuilder.fromHttpUrl(veilarbArenaProperties.getUrl().toString())
                 .pathSegment(fnr)
                 .toUriString();
-
         try {
             ResponseEntity<Oppfølgingsstatus> respons = restTemplate.exchange(
                     uri,
