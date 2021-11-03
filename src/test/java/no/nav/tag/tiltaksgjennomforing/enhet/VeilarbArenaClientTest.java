@@ -41,4 +41,13 @@ class VeilarbArenaClientTest {
     String oppfølgingsEnhet = veilarbArenaClient.hentOppfølgingsEnhet("33333333333");
     assertThat(oppfølgingsEnhet).isNull();
   }
+
+  @Test
+  public void hent_oppfølging_status(){
+    Oppfølgingsstatus oppfølgingStatus = veilarbArenaClient.hentOppfølgingStatus("12345678901");
+
+    assertThat(oppfølgingStatus.getFormidlingsgruppe()).isEqualTo(("ARBS"));
+    assertThat(oppfølgingStatus.getServicegruppe()).isEqualTo(("BFORM"));
+    assertThat(oppfølgingStatus.getOppfolgingsenhet()).isEqualTo(("0906"));
+  }
 }
