@@ -4,6 +4,8 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
+import no.nav.tag.tiltaksgjennomforing.enhet.ServiceGruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
@@ -191,10 +193,12 @@ public class AvtaleControllerTest {
     @Test
     public void opprettAvtaleSkalReturnereCreatedOgOpprettetLokasjon() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
+        final OpprettAvtale opprettAvtale = new OpprettAvtale(avtale.getDeltakerFnr(), avtale.getBedriftNr(), Tiltakstype.ARBEIDSTRENING);
         værInnloggetSom(TestData.enVeileder(avtale));
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
         when(eregService.hentVirksomhet(avtale.getBedriftNr())).thenReturn(new Organisasjon(avtale.getBedriftNr(), avtale.getBedriftNavn()));
-        ResponseEntity svar = avtaleController.opprettAvtaleSomVeileder(new OpprettAvtale(avtale.getDeltakerFnr(), avtale.getBedriftNr(), Tiltakstype.ARBEIDSTRENING));
+        when(veilarbArenaClient.sjekkOgHentOppfølgingStatus(opprettAvtale)).thenReturn(new Oppfølgingsstatus("ARBS", ServiceGruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
+        ResponseEntity svar = avtaleController.opprettAvtaleSomVeileder(opprettAvtale);
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(svar.getHeaders().getLocation().getPath()).isEqualTo("/avtaler/" + avtale.getId());
     }

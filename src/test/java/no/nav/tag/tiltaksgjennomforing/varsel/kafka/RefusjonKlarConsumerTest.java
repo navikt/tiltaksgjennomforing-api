@@ -59,7 +59,7 @@ class RefusjonKlarConsumerTest {
         Header header = new RecordHeader("__TypeId__", "no.nav.arbeidsgiver.tiltakrefusjon.refusjon.RefusjonVarselMelding".getBytes(StandardCharsets.UTF_8));
         Thread.sleep(100L);
         kafkaTemplate.send(new ProducerRecord<>(Topics.TILTAK_VARSEL, null, "123", meldingSomString, List.of(header)));
-        Thread.sleep(100L);
+        Thread.sleep(1000L);
         Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "false", embeddedKafka);
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
