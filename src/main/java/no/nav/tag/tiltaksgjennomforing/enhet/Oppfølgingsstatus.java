@@ -11,9 +11,8 @@ import javax.persistence.Enumerated;
 @NoArgsConstructor
 @Data
 public class Oppfølgingsstatus {
-
     public String formidlingsgruppe;
     @Enumerated(EnumType.STRING)
-    public ServiceGruppe servicegruppe;
+    public Kvalifiseringsgruppe kvalifiseringsgruppe;
     public String oppfolgingsenhet;
 }

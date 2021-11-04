@@ -26,7 +26,7 @@ public class VeilarbArenaClient {
 
     private Boolean sjekServiceGruppeErRiktig(Oppfølgingsstatus oppfølgingsstatus) {
         try {
-            return !ServiceGruppe.servicegruppeErRiktig(oppfølgingsstatus.getServicegruppe());
+            return !Kvalifiseringsgruppe.servicegruppeErRiktig(oppfølgingsstatus.getKvalifiseringsgruppe());
         } catch (Exception exception) {
             log.error("Oppfølgingsstatus servicegruppe er tom", exception);
             return false;
@@ -34,16 +34,16 @@ public class VeilarbArenaClient {
     }
 
     private Boolean erGjeldendeTiltak(Tiltakstype tiltakstype) {
-        return tiltakstype == Tiltakstype.SOMMERJOBB ||
+        return (tiltakstype == Tiltakstype.SOMMERJOBB ||
                 tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD ||
-                tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD;
+                tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD);
     }
 
     public Oppfølgingsstatus sjekkOgHentOppfølgingStatus(OpprettAvtale opprettAvtale) {
         Oppfølgingsstatus oppfølgingStatus = hentOppfølgingStatus(opprettAvtale.getDeltakerFnr().asString());
 
-        if (!Objects.equals(oppfølgingStatus.getFormidlingsgruppe(), Formidlingsgruppe.IKKE_ARBEIDSSOKER.getKode()) ||
-                !Objects.equals(oppfølgingStatus.getFormidlingsgruppe(), Formidlingsgruppe.INAKTIVERT_JOBBSKIFTER.getKode())) {
+        if (Objects.equals(oppfølgingStatus.getFormidlingsgruppe(), Formidlingsgruppe.IKKE_ARBEIDSSOKER.getKode()) ||
+                Objects.equals(oppfølgingStatus.getFormidlingsgruppe(), Formidlingsgruppe.INAKTIVERT_JOBBSKIFTER.getKode())) {
             throw new FeilkodeException(Feilkode.FORMIDLINGSGRUPPE_IKKE_RETTIGHET);
         }
         if (erGjeldendeTiltak(opprettAvtale.getTiltakstype()) && sjekServiceGruppeErRiktig(oppfølgingStatus)) {
@@ -57,7 +57,7 @@ public class VeilarbArenaClient {
     }
 
     public String hentServicegruppe(String fnr) {
-        return hentOppfølgingStatus(fnr).getServicegruppe().getServicekode();
+        return hentOppfølgingStatus(fnr).getKvalifiseringsgruppe().getKvalifiseringskode();
     }
 
     public String hentOppfølgingsEnhet(String fnr) {
@@ -70,8 +70,7 @@ public class VeilarbArenaClient {
 
     public Oppfølgingsstatus hentOppfølgingStatus(String fnr) {
         String uri = UriComponentsBuilder.fromHttpUrl(veilarbArenaProperties.getUrl().toString())
-                .pathSegment(fnr)
-                .toUriString();
+                .queryParam("fnr", fnr).toUriString();
         try {
             ResponseEntity<Oppfølgingsstatus> respons = restTemplate.exchange(
                     uri,

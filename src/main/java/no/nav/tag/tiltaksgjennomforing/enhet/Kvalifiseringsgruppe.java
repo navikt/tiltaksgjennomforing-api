@@ -2,7 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.enhet;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum ServiceGruppe {
+public enum Kvalifiseringsgruppe {
     SPESIELT_TILPASSET_INNSATS("BATT"),      // Personen har nedsatt arbeidsevne og har et identifisert behov for kvalifisering og/eller tilrettelegging. Aktivitetsplan skal utformes.
     SITUASJONSBESTEMT_INNSATS("BFORM"),      // Personen har moderat bistandsbehov
     VARIG_TILPASSET_INNSATS("VARIG"),        // Personen har varig nedsatt arbeidsevne
@@ -15,18 +15,18 @@ public enum ServiceGruppe {
     SYKMELDT_UTEN_ARBEIDSGIVER("VURDU");                   // Sykmeldt uten arbeidsgiver
 
 
-    private final String servicekode;
+    private final String kvalifiseringskode;
 
-    ServiceGruppe(String servicekode) {
-        this.servicekode = servicekode;
+    Kvalifiseringsgruppe(String kvalifiseringskode) {
+        this.kvalifiseringskode = kvalifiseringskode;
     }
 
     @JsonValue
-    public String getServicekode() {
-        return servicekode;
+    public String getKvalifiseringskode() {
+        return kvalifiseringskode;
     }
 
-    public static Boolean servicegruppeErRiktig(ServiceGruppe serviceGruppe) {
+    public static Boolean servicegruppeErRiktig(Kvalifiseringsgruppe serviceGruppe) {
         return switch (serviceGruppe) {
             case SITUASJONSBESTEMT_INNSATS, SPESIELT_TILPASSET_INNSATS, VARIG_TILPASSET_INNSATS -> true;
             case BEHOV_FOR_ARBEIDSEVNEVURDERING, STANDARD_INNSATS, IKKE_VURDERT, RETTIGHETER_ETTER_FTRL_KAP11,
