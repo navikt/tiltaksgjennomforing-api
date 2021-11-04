@@ -48,13 +48,6 @@ class VeilarbArenaClientTest {
     String oppfølgingsEnhet2 = veilarbArenaClient.hentOppfølgingsEnhet("11111111111");
     assertThat(oppfølgingsEnhet2).isNotEmpty();
   }
-/*
-    "formidlingsgruppe": "IARBS",
-    "kvalifiseringsgruppe": "VURDI",
-    "rettighetsgruppe": "IYT",
-    "iservFraDato": null,
-    "oppfolgingsenhet": "0393"
-* */
 
   @Test
   public void sjekkAt_formidlingsgruppe_som_faller_utenfor_kaster_exception() {
