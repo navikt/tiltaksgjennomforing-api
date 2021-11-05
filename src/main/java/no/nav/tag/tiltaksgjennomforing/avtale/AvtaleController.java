@@ -168,10 +168,9 @@ public class AvtaleController {
     @Transactional
     public ResponseEntity<?> opprettAvtaleSomVeileder(@RequestBody OpprettAvtale opprettAvtale) {
         Veileder veileder = innloggingService.hentVeileder();
-        Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(opprettAvtale);
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
-        avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
+        veileder.sjekkOgHentOppfølgingStatus(avtale, veilarbArenaClient);
         veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());

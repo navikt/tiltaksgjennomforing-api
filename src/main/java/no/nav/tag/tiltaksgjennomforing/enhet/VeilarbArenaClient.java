@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.enhet;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
@@ -31,8 +32,8 @@ public class VeilarbArenaClient {
         return tiltakstype.equals(Tiltakstype.VARIG_LONNSTILSKUDD);
     }
 
-    public Oppfølgingsstatus sjekkOgHentOppfølgingStatus(OpprettAvtale opprettAvtale) {
-        Oppfølgingsstatus oppfølgingStatus = hentOppfølgingStatus(opprettAvtale.getDeltakerFnr().asString());
+    public Oppfølgingsstatus sjekkOgHentOppfølgingStatus(Avtale avtale) {
+        Oppfølgingsstatus oppfølgingStatus = hentOppfølgingStatus(avtale.getDeltakerFnr().asString());
 
         if (Formidlingsgruppe.ugyldigFormidlingsgruppe(oppfølgingStatus.getFormidlingsgruppe())) {
             throw new FeilkodeException(Feilkode.FORMIDLINGSGRUPPE_IKKE_RETTIGHET);
@@ -42,12 +43,12 @@ public class VeilarbArenaClient {
             throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET);
         }
 
-        if (erMidlerTidiglonnstilskuddEllerSommerjobb(opprettAvtale.getTiltakstype()) &&
+        if (erMidlerTidiglonnstilskuddEllerSommerjobb(avtale.getTiltakstype()) &&
                 !Kvalifiseringsgruppe.kvalifisererTilMidlertidiglonnstilskuddOgSommerjobb(oppfølgingStatus.getKvalifiseringsgruppe())) {
             throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_MIDLERTIDIG_LONNTILSKUDD_OG_SOMMERJOBB_FEIL);
         }
 
-        if (erVariglonnstilskudd(opprettAvtale.getTiltakstype()) &&
+        if (erVariglonnstilskudd(avtale.getTiltakstype()) &&
                 Kvalifiseringsgruppe.kvalifisererTilVariglonnstilskudd(oppfølgingStatus.getKvalifiseringsgruppe())) {
             throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_VARIG_LONNTILSKUDD_FEIL);
         }

@@ -104,7 +104,7 @@
         "jsonBody": {
           "rettighetsgruppe": "IYT",
           "formidlingsgruppe": "ARBS",
-          "kvalifiseringsgruppe": "BFORM",
+          "kvalifiseringsgruppe": "VARIG",
           "oppfolgingsenhet": "0906",
           "iservFraDato": null
         },

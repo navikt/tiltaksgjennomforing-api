@@ -194,7 +194,7 @@ public class AvtaleControllerTest {
         værInnloggetSom(TestData.enVeileder(avtale));
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
         when(eregService.hentVirksomhet(avtale.getBedriftNr())).thenReturn(new Organisasjon(avtale.getBedriftNr(), avtale.getBedriftNavn()));
-        when(veilarbArenaClient.sjekkOgHentOppfølgingStatus(opprettAvtale)).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
+        when(veilarbArenaClient.sjekkOgHentOppfølgingStatus(any())).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
         ResponseEntity svar = avtaleController.opprettAvtaleSomVeileder(opprettAvtale);
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(svar.getHeaders().getLocation().getPath()).isEqualTo("/avtaler/" + avtale.getId());
