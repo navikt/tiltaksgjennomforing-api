@@ -13,8 +13,6 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Objects;
-
 @Slf4j
 @Component
 @AllArgsConstructor
@@ -24,36 +22,41 @@ public class VeilarbArenaClient {
     private final STSClient stsClient;
     private VeilarbArenaProperties veilarbArenaProperties;
 
-    private Boolean sjekServiceGruppeErRiktig(Oppfølgingsstatus oppfølgingsstatus) {
-        try {
-            return !Kvalifiseringsgruppe.servicegruppeErRiktig(oppfølgingsstatus.getKvalifiseringsgruppe());
-        } catch (Exception exception) {
-            log.error("Oppfølgingsstatus servicegruppe er tom", exception);
-            return false;
-        }
+    private boolean erMidlerTidiglonnstilskuddEllerSommerjobb(Tiltakstype tiltakstype) {
+        return (tiltakstype == Tiltakstype.SOMMERJOBB ||
+                tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
     }
 
-    private Boolean erGjeldendeTiltak(Tiltakstype tiltakstype) {
-        return (tiltakstype == Tiltakstype.SOMMERJOBB ||
-                tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD ||
-                tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD);
+    private boolean erVariglonnstilskudd(Tiltakstype tiltakstype) {
+        return tiltakstype.equals(Tiltakstype.VARIG_LONNSTILSKUDD);
     }
 
     public Oppfølgingsstatus sjekkOgHentOppfølgingStatus(OpprettAvtale opprettAvtale) {
         Oppfølgingsstatus oppfølgingStatus = hentOppfølgingStatus(opprettAvtale.getDeltakerFnr().asString());
 
-        if (Objects.equals(oppfølgingStatus.getFormidlingsgruppe(), Formidlingsgruppe.IKKE_ARBEIDSSOKER.getKode()) ||
-                Objects.equals(oppfølgingStatus.getFormidlingsgruppe(), Formidlingsgruppe.INAKTIVERT_JOBBSKIFTER.getKode())) {
+        if (Formidlingsgruppe.ugyldigFormidlingsgruppe(oppfølgingStatus.getFormidlingsgruppe())) {
             throw new FeilkodeException(Feilkode.FORMIDLINGSGRUPPE_IKKE_RETTIGHET);
         }
-        if (erGjeldendeTiltak(opprettAvtale.getTiltakstype()) && sjekServiceGruppeErRiktig(oppfølgingStatus)) {
-            throw new FeilkodeException(Feilkode.SERVICEKODE_MANGLER);
+
+        if (Kvalifiseringsgruppe.ugyldigKvalifiseringsgruppe(oppfølgingStatus.getKvalifiseringsgruppe())) {
+            throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET);
         }
+
+        if (erMidlerTidiglonnstilskuddEllerSommerjobb(opprettAvtale.getTiltakstype()) &&
+                !Kvalifiseringsgruppe.kvalifisererTilMidlertidiglonnstilskuddOgSommerjobb(oppfølgingStatus.getKvalifiseringsgruppe())) {
+            throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_MIDLERTIDIG_LONNTILSKUDD_OG_SOMMERJOBB_FEIL);
+        }
+
+        if (erVariglonnstilskudd(opprettAvtale.getTiltakstype()) &&
+                Kvalifiseringsgruppe.kvalifisererTilVariglonnstilskudd(oppfølgingStatus.getKvalifiseringsgruppe())) {
+            throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_VARIG_LONNTILSKUDD_FEIL);
+        }
+
         return oppfølgingStatus;
     }
 
     public String hentFormidlingsgruppe(String fnr) {
-        return hentOppfølgingStatus(fnr).getFormidlingsgruppe();
+        return hentOppfølgingStatus(fnr).getFormidlingsgruppe().getKode();
     }
 
     public String hentServicegruppe(String fnr) {

@@ -68,14 +68,14 @@ class VeilarbArenaClientTest {
                     new Fnr(fnr_har_kvalifiseringsgruppe_med_kode_IVURD),
                     new BedriftNr("999999999"),
                     Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD))).isExactlyInstanceOf(FeilkodeException.class)
-            .hasMessage(Feilkode.SERVICEKODE_MANGLER.name());
+            .hasMessage(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET.name());
   }
 
   @Test
   public void hent_oppfølging_status(){
     Oppfølgingsstatus oppfølgingStatus = veilarbArenaClient.hentOppfølgingStatus("01056210306");
 
-    assertThat(oppfølgingStatus.getFormidlingsgruppe()).isEqualTo(("ARBS"));
+    assertThat(oppfølgingStatus.getFormidlingsgruppe().getKode()).isEqualTo(("ARBS"));
     assertThat(oppfølgingStatus.getKvalifiseringsgruppe().getKvalifiseringskode()).isEqualTo(("BFORM"));
     assertThat(oppfølgingStatus.getOppfolgingsenhet()).isEqualTo(("0906"));
   }

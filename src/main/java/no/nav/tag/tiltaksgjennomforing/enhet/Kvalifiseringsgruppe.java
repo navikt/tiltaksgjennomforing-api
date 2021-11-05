@@ -26,12 +26,23 @@ public enum Kvalifiseringsgruppe {
         return kvalifiseringskode;
     }
 
-    public static Boolean servicegruppeErRiktig(Kvalifiseringsgruppe serviceGruppe) {
-        return switch (serviceGruppe) {
-            case SITUASJONSBESTEMT_INNSATS, SPESIELT_TILPASSET_INNSATS, VARIG_TILPASSET_INNSATS -> true;
-            case BEHOV_FOR_ARBEIDSEVNEVURDERING, STANDARD_INNSATS, IKKE_VURDERT, RETTIGHETER_ETTER_FTRL_KAP11,
-                    HELSERELATERT_ARBEIDSRETTET_OPPFOLGING_I_NAV, SYKMELDT_OPPFOLGING_PA_ARBEIDSPLASSEN,
-                    SYKMELDT_UTEN_ARBEIDSGIVER -> false;
+    public static boolean ugyldigKvalifiseringsgruppe(Kvalifiseringsgruppe kvalifiseringsgruppe) {
+        return switch (kvalifiseringsgruppe) {
+            case STANDARD_INNSATS, BEHOV_FOR_ARBEIDSEVNEVURDERING, IKKE_VURDERT -> true;
+            case RETTIGHETER_ETTER_FTRL_KAP11, HELSERELATERT_ARBEIDSRETTET_OPPFOLGING_I_NAV,
+                    SYKMELDT_OPPFOLGING_PA_ARBEIDSPLASSEN, SYKMELDT_UTEN_ARBEIDSGIVER,
+                    SPESIELT_TILPASSET_INNSATS, SITUASJONSBESTEMT_INNSATS, VARIG_TILPASSET_INNSATS -> false;
         };
+    }
+
+    public static boolean kvalifisererTilMidlertidiglonnstilskuddOgSommerjobb(Kvalifiseringsgruppe kvalifiseringsgruppe) {
+        return switch (kvalifiseringsgruppe) {
+            case SPESIELT_TILPASSET_INNSATS, SITUASJONSBESTEMT_INNSATS, VARIG_TILPASSET_INNSATS -> true;
+            default -> false;
+        };
+    }
+
+    public static boolean kvalifisererTilVariglonnstilskudd(Kvalifiseringsgruppe kvalifiseringsgruppe) {
+        return kvalifiseringsgruppe.equals(VARIG_TILPASSET_INNSATS);
     }
 }
