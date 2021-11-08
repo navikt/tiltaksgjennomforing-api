@@ -4,6 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.ArbeidsgiverNotifikasjonRepository;
 import no.nav.tag.tiltaksgjennomforing.varsel.oppgave.LagGosysVarselLytter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,11 +36,14 @@ class LagVarselFraAvtaleHendelserTest {
     LagGosysVarselLytter lagGosysVarselLytter;
     @Autowired
     VeilarbArenaClient veilarbArenaClient;
+    @Autowired
+    ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
 
     @BeforeEach
     void setUp() {
         varselRepository.deleteAll();
         hendelseloggRepository.deleteAll();
+        arbeidsgiverNotifikasjonRepository.deleteAll();
         avtaleRepository.deleteAll();
     }
 
