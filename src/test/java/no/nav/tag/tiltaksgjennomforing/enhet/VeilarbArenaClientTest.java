@@ -21,18 +21,6 @@ class VeilarbArenaClientTest {
     private VeilarbArenaClient veilarbArenaClient;
 
     @Test
-    public void hent_formidlingsgruppe() {
-        String formidlingsgruppe = veilarbArenaClient.hentFormidlingsgruppe("12068702214");
-        assertThat(formidlingsgruppe).isEqualTo("ARBS");
-    }
-
-    @Test
-    public void hent_servicegruppe() {
-        String servicegruppe = veilarbArenaClient.hentServicegruppe("30083516360");
-        assertThat(servicegruppe).isEqualTo("VARIG");
-    }
-
-    @Test
     public void hent_oppfølingsEnhet_fra_arena() {
         String oppfølgingsEnhet = veilarbArenaClient.hentOppfølgingsEnhet("22095923112");
         assertThat(oppfølgingsEnhet).isEqualTo("0906");

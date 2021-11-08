@@ -716,7 +716,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     private List<TilskuddPeriode> beregnTilskuddsperioder(LocalDate startDato, LocalDate sluttDato) {
-        List<TilskuddPeriode> tilskuddsperioder = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForAvtale(getSumLonnstilskudd(), startDato, sluttDato, getLonnstilskuddProsent(), getDatoForRedusertProsent(), getSumLønnstilskuddRedusert());
+        List<TilskuddPeriode> tilskuddsperioder = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForAvtale(getSumLonnstilskudd(), startDato, sluttDato, beregnLonnstilskuddProsentsats(), getDatoForRedusertProsent(), getSumLønnstilskuddRedusert());
         tilskuddsperioder.forEach(t -> t.setAvtale(this));
         tilskuddsperioder.forEach(t -> t.setEnhet(getEnhetKostnadssted()));
         tilskuddsperioder.forEach(t -> t.setEnhetsnavn(getEnhetsnavnKostnadssted()));
@@ -731,6 +731,25 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             fikseLøpenumre(tilskuddsperioder, 1);
             tilskuddPeriode.addAll(tilskuddsperioder);
         }
+    }
+
+    private Integer beregnLonnstilskuddProsentsats() {
+        if (this.getKvalifiseringsgruppe() != null) {
+            if (this.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD) {
+                return finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(40, 60);
+            } else if (this.getTiltakstype() == Tiltakstype.SOMMERJOBB) {
+                return finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(50, 75);
+            }
+        }
+        return this.getLonnstilskuddProsent();
+    }
+
+    private Integer finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(Integer prosentsatsLiten, Integer prosentsatsStor) {
+        return switch (this.getKvalifiseringsgruppe()) {
+            case SPESIELT_TILPASSET_INNSATS, VARIG_TILPASSET_INNSATS -> prosentsatsStor;
+            case SITUASJONSBESTEMT_INNSATS -> prosentsatsLiten;
+            default -> null;
+        };
     }
 
     public void forkortAvtale(LocalDate nySluttDato, String grunn, String annetGrunn, NavIdent utførtAv) {

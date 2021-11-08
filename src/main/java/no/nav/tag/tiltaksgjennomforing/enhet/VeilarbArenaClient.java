@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.enhet;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
@@ -35,6 +34,10 @@ public class VeilarbArenaClient {
     public Oppfølgingsstatus sjekkOgHentOppfølgingStatus(Avtale avtale) {
         Oppfølgingsstatus oppfølgingStatus = hentOppfølgingStatus(avtale.getDeltakerFnr().asString());
 
+        if (oppfølgingStatus.getFormidlingsgruppe() == null || oppfølgingStatus.getKvalifiseringsgruppe() == null) {
+            throw new FeilkodeException(Feilkode.HENTING_AV_INNSATS_BEHOV_FEILET);
+        }
+
         if (Formidlingsgruppe.ugyldigFormidlingsgruppe(oppfølgingStatus.getFormidlingsgruppe())) {
             throw new FeilkodeException(Feilkode.FORMIDLINGSGRUPPE_IKKE_RETTIGHET);
         }
@@ -54,14 +57,6 @@ public class VeilarbArenaClient {
         }
 
         return oppfølgingStatus;
-    }
-
-    public String hentFormidlingsgruppe(String fnr) {
-        return hentOppfølgingStatus(fnr).getFormidlingsgruppe().getKode();
-    }
-
-    public String hentServicegruppe(String fnr) {
-        return hentOppfølgingStatus(fnr).getKvalifiseringsgruppe().getKvalifiseringskode();
     }
 
     public String hentOppfølgingsEnhet(String fnr) {
@@ -84,11 +79,13 @@ public class VeilarbArenaClient {
             );
             return respons.getBody();
         } catch (RestClientResponseException exception) {
-            if (exception.getRawStatusCode() == HttpStatus.NOT_FOUND.value() && !exception.getResponseBodyAsString().isEmpty()) {
+            if (exception.getRawStatusCode() == HttpStatus.NOT_FOUND.value() &&
+                    !exception.getResponseBodyAsString().isEmpty()) {
                 log.warn("Kandidat ikke registrert i veilarbarena");
                 return null;
             }
-            log.error("Kunne ikke hente Oppfølgingsstatus fra veilarbarena: status=" + exception.getRawStatusCode(), exception);
+            log.error("Kunne ikke hente Oppfølgingsstatus fra veilarbarena: status=" +
+                    exception.getRawStatusCode(), exception);
             return null;
         }
     }

@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.varsel;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
 import no.nav.tag.tiltaksgjennomforing.varsel.oppgave.LagGosysVarselLytter;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +33,8 @@ class LagVarselFraAvtaleHendelserTest {
     HendelseloggRepository hendelseloggRepository;
     @MockBean
     LagGosysVarselLytter lagGosysVarselLytter;
+    @Autowired
+    VeilarbArenaClient veilarbArenaClient;
 
     @BeforeEach
     void setUp() {

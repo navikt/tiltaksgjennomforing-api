@@ -12,6 +12,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -33,9 +34,17 @@ public class Veileder extends Avtalepart<NavIdent> {
     private final boolean harAdGruppeForBeslutter;
     private final Norg2Client norg2Client;
     private final Set<NavEnhet> navEnheter;
+    private final VeilarbArenaClient veilarbArenaClient;
 
-    public Veileder(NavIdent identifikator, TilgangskontrollService tilgangskontrollService, PersondataService persondataService,
-                    Norg2Client norg2Client, Set<NavEnhet> navEnheter, SlettemerkeProperties slettemerkeProperties, boolean harAdGruppeForBeslutter) {
+    public Veileder(NavIdent identifikator,
+                    TilgangskontrollService tilgangskontrollService,
+                    PersondataService persondataService,
+                    Norg2Client norg2Client,
+                    Set<NavEnhet> navEnheter,
+                    SlettemerkeProperties slettemerkeProperties,
+                    boolean harAdGruppeForBeslutter,
+                    VeilarbArenaClient veilarbArenaClient) {
+
         super(identifikator);
         this.tilgangskontrollService = tilgangskontrollService;
         this.persondataService = persondataService;
@@ -43,6 +52,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         this.navEnheter = navEnheter;
         this.slettemerkeProperties = slettemerkeProperties;
         this.harAdGruppeForBeslutter = harAdGruppeForBeslutter;
+        this.veilarbArenaClient = veilarbArenaClient;
     }
 
     @Override
@@ -143,6 +153,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
+        this.sjekkOgHentOppfølgingStatus(avtale);
         avtale.godkjennForVeileder(getIdentifikator());
     }
 
@@ -281,7 +292,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         avtale.sendTilbakeTilBeslutter();
     }
 
-    public void sjekkOgHentOppfølgingStatus(Avtale avtale, VeilarbArenaClient veilarbArenaClient) {
+    public void sjekkOgHentOppfølgingStatus(Avtale avtale) {
         Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
         avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
         avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
