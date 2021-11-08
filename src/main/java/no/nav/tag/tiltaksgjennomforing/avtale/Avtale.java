@@ -124,6 +124,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         sjekkOmAvtalenKanEndres();
         sjekkSistEndret(sistEndret);
         sjekkStartOgSluttDato(nyAvtale.getStartDato(), nyAvtale.getSluttDato());
+        sjekkLonnstilskuddProsentsatsForEndreAvtaleStrategy(nyAvtale);
         gjeldendeInnhold().endreAvtale(nyAvtale);
         if (tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
             nyeTilskuddsperioder();
@@ -716,7 +717,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     private List<TilskuddPeriode> beregnTilskuddsperioder(LocalDate startDato, LocalDate sluttDato) {
-        List<TilskuddPeriode> tilskuddsperioder = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForAvtale(getSumLonnstilskudd(), startDato, sluttDato, beregnLonnstilskuddProsentsats(), getDatoForRedusertProsent(), getSumLønnstilskuddRedusert());
+        List<TilskuddPeriode> tilskuddsperioder = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForAvtale(getSumLonnstilskudd(),
+                startDato, sluttDato, sjekkLonnstilskuddProsentsatsForNyBeregntilskuddsbeløp(), getDatoForRedusertProsent(), getSumLønnstilskuddRedusert());
         tilskuddsperioder.forEach(t -> t.setAvtale(this));
         tilskuddsperioder.forEach(t -> t.setEnhet(getEnhetKostnadssted()));
         tilskuddsperioder.forEach(t -> t.setEnhetsnavn(getEnhetsnavnKostnadssted()));
@@ -733,6 +735,21 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
     }
 
+    private void sjekkLonnstilskuddProsentsatsForEndreAvtaleStrategy(EndreAvtale endreAvtale) {
+        final Integer prosentsats = beregnLonnstilskuddProsentsats();
+        if(prosentsats != null) {
+            endreAvtale.setLonnstilskuddProsent(prosentsats);
+        }
+    }
+
+    private Integer sjekkLonnstilskuddProsentsatsForNyBeregntilskuddsbeløp() {
+        final Integer prosentsats = beregnLonnstilskuddProsentsats();
+        if(prosentsats != null) {
+            return prosentsats;
+        }
+        return this.getLonnstilskuddProsent();
+    }
+
     private Integer beregnLonnstilskuddProsentsats() {
         if (this.getKvalifiseringsgruppe() != null) {
             if (this.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD) {
@@ -741,7 +758,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
                 return finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(50, 75);
             }
         }
-        return this.getLonnstilskuddProsent();
+        return null;
     }
 
     private Integer finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(Integer prosentsatsLiten, Integer prosentsatsStor) {
