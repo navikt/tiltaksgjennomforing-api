@@ -57,7 +57,7 @@ public class InnloggingService {
             Set<AltinnReportee> altinnOrganisasjoner = altinnTilgangsstyringService
                     .hentAltinnOrganisasjoner(new Fnr(brukerOgIssuer.getBrukerIdent()));
             Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(new Fnr(brukerOgIssuer.getBrukerIdent()));
-            return new Arbeidsgiver(new Fnr(brukerOgIssuer.getBrukerIdent()), altinnOrganisasjoner, tilganger, persondataService, norg2Client);
+            return new Arbeidsgiver(new Fnr(brukerOgIssuer.getBrukerIdent()), altinnOrganisasjoner, tilganger, persondataService, norg2Client, veilarbArenaClient);
         }
 
         else if (issuer == Issuer.ISSUER_ISSO && avtalerolle == Avtalerolle.VEILEDER) {

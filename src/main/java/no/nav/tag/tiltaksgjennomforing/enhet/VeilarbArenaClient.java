@@ -33,8 +33,21 @@ public class VeilarbArenaClient {
 
     public Oppfølgingsstatus sjekkOgHentOppfølgingStatus(Avtale avtale) {
         Oppfølgingsstatus oppfølgingStatus = hentOppfølgingStatus(avtale.getDeltakerFnr().asString());
+        sjekkStatus(avtale, oppfølgingStatus);
+        return oppfølgingStatus;
+    }
 
-        if (oppfølgingStatus.getFormidlingsgruppe() == null || oppfølgingStatus.getKvalifiseringsgruppe() == null) {
+    public void sjekkOppfølingStatus(Avtale avtale) {
+        Oppfølgingsstatus oppfølgingStatus = hentOppfølgingStatus(avtale.getDeltakerFnr().asString());
+        sjekkStatus(avtale, oppfølgingStatus);
+    }
+
+    private void sjekkStatus(Avtale avtale, Oppfølgingsstatus oppfølgingStatus) {
+        if (
+                oppfølgingStatus == null ||
+                oppfølgingStatus.getFormidlingsgruppe() == null ||
+                oppfølgingStatus.getKvalifiseringsgruppe() == null
+        ) {
             throw new FeilkodeException(Feilkode.HENTING_AV_INNSATS_BEHOV_FEILET);
         }
 
@@ -55,8 +68,6 @@ public class VeilarbArenaClient {
                 Kvalifiseringsgruppe.kvalifisererTilVariglonnstilskudd(oppfølgingStatus.getKvalifiseringsgruppe())) {
             throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_VARIG_LONNTILSKUDD_FEIL);
         }
-
-        return oppfølgingStatus;
     }
 
     public String hentOppfølgingsEnhet(String fnr) {

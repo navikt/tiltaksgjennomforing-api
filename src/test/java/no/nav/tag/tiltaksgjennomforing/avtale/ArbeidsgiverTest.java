@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
+import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
@@ -44,6 +45,7 @@ public class ArbeidsgiverTest {
 
         PersondataService persondataService = mock(PersondataService.class);
         Norg2Client norg2Client = mock(Norg2Client.class);
+        VeilarbArenaClient veilarbArenaClient = mock(VeilarbArenaClient.class);
         final PdlRespons pdlRespons = TestData.enPdlrespons(false);
         final Norg2GeoResponse navEnhet = new Norg2GeoResponse("Nav Grorud", "0411");
 
@@ -55,7 +57,8 @@ public class ArbeidsgiverTest {
                 Set.of(new AltinnReportee("", "", null, TestData.etBedriftNr().asString(), null, null)),
                 Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
                 persondataService,
-                norg2Client);
+                norg2Client,
+                veilarbArenaClient);
 
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
         assertThat(avtale.isOpprettetAvArbeidsgiver()).isTrue();
@@ -67,14 +70,14 @@ public class ArbeidsgiverTest {
     @Test
     public void endreAvtale_validererFraDato() {
         Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
-        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(null, null, null, null, null);
+        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(null, null, null, null, null, null);
         assertThatThrownBy(() -> arbeidsgiver.avvisDatoerTilbakeITid(avtale, LocalDate.now().minusDays(1), null)).isInstanceOf(VarighetDatoErTilbakeITidException.class);
     }
 
     @Test
     public void endreAvtale_validererTilDato() {
         Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
-        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(null, null, null, null, null);
+        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(null, null, null, null, null, null);
         assertThatThrownBy(() -> arbeidsgiver.avvisDatoerTilbakeITid(avtale, LocalDate.now(), LocalDate.now().minusDays(1))).isInstanceOf(VarighetDatoErTilbakeITidException.class);
     }
 }

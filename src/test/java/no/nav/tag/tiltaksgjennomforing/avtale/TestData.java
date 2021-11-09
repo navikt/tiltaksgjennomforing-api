@@ -341,7 +341,7 @@ public class TestData {
     }
 
     public static Arbeidsgiver enArbeidsgiver() {
-        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of(), null, null);
+        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of(), null, null,  null);
     }
 
     public static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
@@ -350,6 +350,7 @@ public class TestData {
                 Set.of(new AltinnReportee("Bedriftnavn", "", null, avtale.getBedriftNr().asString(), "", ""))
                 , Map.of(avtale.getBedriftNr(),
                 List.of(Tiltakstype.values())),
+                null,
                 null,
                 null);
     }

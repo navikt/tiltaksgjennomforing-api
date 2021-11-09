@@ -14,6 +14,8 @@ import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
+import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
@@ -28,14 +30,15 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     private final Set<AltinnReportee> altinnOrganisasjoner;
     private final PersondataService persondataService;
     private final Norg2Client norg2Client;
+    private final VeilarbArenaClient veilarbArenaClient;
 
-
-    public Arbeidsgiver(Fnr identifikator, Set<AltinnReportee> altinnOrganisasjoner, Map<BedriftNr, Collection<Tiltakstype>> tilganger, PersondataService persondataService, Norg2Client norg2Client) {
+    public Arbeidsgiver(Fnr identifikator, Set<AltinnReportee> altinnOrganisasjoner, Map<BedriftNr, Collection<Tiltakstype>> tilganger, PersondataService persondataService, Norg2Client norg2Client, VeilarbArenaClient veilarbArenaClient) {
         super(identifikator);
         this.altinnOrganisasjoner = altinnOrganisasjoner;
         this.tilganger = tilganger;
         this.persondataService = persondataService;
         this.norg2Client = norg2Client;
+        this.veilarbArenaClient = veilarbArenaClient;
     }
 
     private static boolean avbruttForMerEnn12UkerSiden(Avtale avtale) {
@@ -199,6 +202,14 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
                 .map(Arbeidsgiver::fjernAvbruttGrunn)
                 .map(Arbeidsgiver::fjernAnnullertGrunn)
                 .collect(Collectors.toList());
+    }
+
+    public void hentOgSettOppfølgingStatus(Avtale avtale) {
+        Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.hentOppfølgingStatus(avtale.getDeltakerFnr().asString());
+        if(oppfølgingsstatus != null) {
+            avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
+            avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
+        }
     }
 
     public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
