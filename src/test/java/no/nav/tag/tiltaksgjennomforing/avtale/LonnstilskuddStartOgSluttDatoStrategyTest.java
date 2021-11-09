@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import org.junit.jupiter.api.Test;
 
@@ -29,10 +30,12 @@ class LonnstilskuddStartOgSluttDatoStrategyTest {
     public void endreMidlertidigLønnstilskudd__startdato_og_sluttdato_satt_24mnd() {
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         LocalDate startDato = LocalDate.now();
-        LocalDate sluttDato = startDato.plusMonths(24);
+        LocalDate sluttDato = startDato.plusMonths(24).minusDays(1);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
-        endreAvtale(enMidlertidig(), endreAvtale);
+        Avtale avtale = enMidlertidig();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        endreAvtale(avtale, endreAvtale);
     }
 
     @Test

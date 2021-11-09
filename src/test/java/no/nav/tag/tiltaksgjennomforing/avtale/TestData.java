@@ -104,6 +104,7 @@ public class TestData {
         avtale.setEnhetsnavnGeografisk(ENHET_GEOGRAFISK.getNavn());
         avtale.setEnhetOppfolging(ENHET_GEOGRAFISK.getVerdi());
         avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
         EndreAvtale endring = TestData.endringPåAlleFelter();
         endring.setStartDato(startDato);
         endring.setSluttDato(sluttDato);
@@ -123,6 +124,7 @@ public class TestData {
         Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(tiltakstype), veilderNavIdent);
         avtale.setEnhetOppfolging(ENHET_OPPFØLGING.getVerdi());
         avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
         avtale.setDeltakerFornavn("Lilly");
         avtale.setDeltakerEtternavn("Lønning");
@@ -146,6 +148,7 @@ public class TestData {
         avtale.setAvtaleInngått(LocalDateTime.now());
         avtale.setGodkjentAvNavIdent(TestData.enNavIdent());
         avtale.setIkrafttredelsestidspunkt(LocalDateTime.now());
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
         avtale.setJournalpostId("1");
         return avtale;
     }

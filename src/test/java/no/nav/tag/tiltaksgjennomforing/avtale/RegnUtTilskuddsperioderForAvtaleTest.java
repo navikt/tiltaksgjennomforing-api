@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -51,6 +52,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
     @Test
     public void reduksjon_etter_6_mnd__30_prosent_lonnstilskudd() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         endreAvtale.setLonnstilskuddProsent(40);
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
@@ -114,6 +116,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
     @Test
     public void reduksjon_etter_12_mnd_60_prosent_lonnstilskudd() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS);
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         endreAvtale.setLonnstilskuddProsent(60);
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(13));
@@ -160,6 +163,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         LocalDate startDato = LocalDate.of(2021, 1, 1);
         LocalDate sluttDato = LocalDate.of(2022, 1, 1);
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS);
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
@@ -175,6 +179,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         LocalDate startDato = LocalDate.of(2021, 1, 1);
         LocalDate sluttDato = LocalDate.of(2021, 12, 31);
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);

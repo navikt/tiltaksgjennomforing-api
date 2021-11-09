@@ -58,6 +58,17 @@ class VeilarbArenaClientTest {
                 .hasMessage(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET.name());
     }
 
+    @Test void hent_og_sjekk_oppfølging_status() {
+        String fnr_har_riktig_kvalifisering_og_formidlingskode = "00000000000";
+        final Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setDeltakerFnr(new Fnr(fnr_har_riktig_kvalifisering_og_formidlingskode));
+
+        Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
+        assertThat(oppfølgingsstatus.getFormidlingsgruppe().getKode()).isEqualTo(("ARBS"));
+        assertThat(oppfølgingsstatus.getKvalifiseringsgruppe().getKvalifiseringskode()).isEqualTo(("VARIG"));
+        assertThat(oppfølgingsstatus.getOppfolgingsenhet()).isEqualTo(("0906"));
+    }
+
     @Test
     public void hent_oppfølging_status() {
         Oppfølgingsstatus oppfølgingStatus = veilarbArenaClient.hentOppfølgingStatus("01056210306");

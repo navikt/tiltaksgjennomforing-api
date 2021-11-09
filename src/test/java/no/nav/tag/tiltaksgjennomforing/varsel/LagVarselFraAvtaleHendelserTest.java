@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.varsel;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.ArbeidsgiverNotifikasjonRepository;
@@ -168,7 +169,9 @@ class LagVarselFraAvtaleHendelserTest {
 
     @Test
     void forleng_avtale() {
-        Avtale avtale = avtaleRepository.save(TestData.enLonnstilskuddAvtaleGodkjentAvVeileder());
+        Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        avtaleRepository.save(avtale);
         Veileder veileder = TestData.enVeileder(avtale);
 
         veileder.forlengAvtale(avtale.getSluttDato().plusMonths(1), avtale);
