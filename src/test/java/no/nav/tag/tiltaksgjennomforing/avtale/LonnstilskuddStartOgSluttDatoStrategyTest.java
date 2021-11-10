@@ -30,7 +30,7 @@ class LonnstilskuddStartOgSluttDatoStrategyTest {
     public void endreMidlertidigLønnstilskudd__startdato_og_sluttdato_satt_24mnd() {
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         LocalDate startDato = LocalDate.now();
-        LocalDate sluttDato = startDato.plusMonths(24).minusDays(1);
+        LocalDate sluttDato = startDato.plusMonths(24);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
         Avtale avtale = enMidlertidig();

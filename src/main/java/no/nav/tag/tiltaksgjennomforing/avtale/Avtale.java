@@ -718,7 +718,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     private List<TilskuddPeriode> beregnTilskuddsperioder(LocalDate startDato, LocalDate sluttDato) {
         List<TilskuddPeriode> tilskuddsperioder = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForAvtale(getSumLonnstilskudd(),
-                startDato, sluttDato, sjekkLonnstilskuddProsentsatsForNyBeregntilskuddsbeløp(), getDatoForRedusertProsent(), getSumLønnstilskuddRedusert());
+                startDato, sluttDato, getLonnstilskuddProsent(), getDatoForRedusertProsent(), getSumLønnstilskuddRedusert());
         tilskuddsperioder.forEach(t -> t.setAvtale(this));
         tilskuddsperioder.forEach(t -> t.setEnhet(getEnhetKostnadssted()));
         tilskuddsperioder.forEach(t -> t.setEnhetsnavn(getEnhetsnavnKostnadssted()));
@@ -740,14 +740,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if(prosentsats != null) {
             endreAvtale.setLonnstilskuddProsent(prosentsats);
         }
-    }
-
-    private Integer sjekkLonnstilskuddProsentsatsForNyBeregntilskuddsbeløp() {
-        final Integer prosentsats = beregnLonnstilskuddProsentsats();
-        if(prosentsats != null) {
-            return prosentsats;
-        }
-        return this.getLonnstilskuddProsent();
     }
 
     private Integer beregnLonnstilskuddProsentsats() {
