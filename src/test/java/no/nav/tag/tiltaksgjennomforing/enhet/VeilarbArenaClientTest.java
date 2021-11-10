@@ -48,7 +48,7 @@ class VeilarbArenaClientTest {
 
     @Test
     public void sjekkAt_kvalifiseringsgruppe_som_faller_utenfor_kaster_exception() {
-        String fnr_har_kvalifiseringsgruppe_med_kode_IVURD = "12345678902";
+        String fnr_har_kvalifiseringsgruppe_med_kode_IVURD = "02104317386";
         final Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setDeltakerFnr(new Fnr(fnr_har_kvalifiseringsgruppe_med_kode_IVURD));
         avtale.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
