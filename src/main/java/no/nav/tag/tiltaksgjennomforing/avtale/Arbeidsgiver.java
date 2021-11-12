@@ -209,6 +209,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         if(oppfølgingsstatus != null) {
             avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
             avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
+            avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
         }
     }
 

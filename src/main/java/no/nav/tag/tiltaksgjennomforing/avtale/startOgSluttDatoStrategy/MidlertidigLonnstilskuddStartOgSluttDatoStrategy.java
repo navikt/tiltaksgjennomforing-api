@@ -7,15 +7,15 @@ import java.time.LocalDate;
 
 public class MidlertidigLonnstilskuddStartOgSluttDatoStrategy implements StartOgSluttDatoStrategy {
     private final Kvalifiseringsgruppe kvalifiseringsgruppe;
-    int TOLV_MND_MAKS_LENGDE = 12;
-    int TJUEFIRE_MND_MAKS_LENGDE = 24;
 
     MidlertidigLonnstilskuddStartOgSluttDatoStrategy(Kvalifiseringsgruppe kvalifiseringsgruppe) {
         this.kvalifiseringsgruppe = kvalifiseringsgruppe;
     }
 
     private Integer settMakslengdeUtIfraKvalifiseringsgruppe() {
+        final int TOLV_MND_MAKS_LENGDE = 12;
         if (kvalifiseringsgruppe != null) {
+            final int TJUEFIRE_MND_MAKS_LENGDE = 24;
             return this.kvalifiseringsgruppe == Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS ?
                     TOLV_MND_MAKS_LENGDE : TJUEFIRE_MND_MAKS_LENGDE;
         }

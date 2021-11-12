@@ -12,7 +12,6 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -299,6 +298,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
         avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
         avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
+        avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
     }
 
     protected void oppdatereKostnadssted(Avtale avtale, Norg2Client norg2Client, String enhet) {
