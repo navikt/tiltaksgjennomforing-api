@@ -2,17 +2,13 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
-import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeAdminTilgangException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
-import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
+import no.nav.tag.tiltaksgjennomforing.enhet.*;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -220,5 +216,17 @@ public class VeilederTest {
         avtale.setSlettemerket(true);
         Veileder veileder = TestData.enVeileder(avtale);
         assertThat(veileder.harTilgang(avtale)).isFalse();
+    }
+
+    @Test
+    public void opprettelse_av_tiltak_med_forskjellige_kvalifiseringskoder(){
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        Oppfølgingsstatus oppfølgingsstatus = new Oppfølgingsstatus();
+        oppfølgingsstatus.setKvalifiseringsgruppe(Kvalifiseringsgruppe.IKKE_VURDERT);
+        oppfølgingsstatus.setFormidlingsgruppe(Formidlingsgruppe.ARBEIDSSOKER);
+        VeilarbArenaClient veilarbArenaClient = Mockito.spy(new VeilarbArenaClient(null, null, null));
+        Mockito.doReturn(oppfølgingsstatus).when(veilarbArenaClient).hentOppfølgingStatus(Mockito.anyString());
+
+        assertThatThrownBy(() -> veilarbArenaClient.sjekkOppfølingStatus(avtale)).isExactlyInstanceOf(FeilkodeException.class).hasMessage(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET.name());
     }
 }
