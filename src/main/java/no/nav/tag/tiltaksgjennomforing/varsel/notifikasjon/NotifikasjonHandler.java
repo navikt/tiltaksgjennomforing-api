@@ -104,11 +104,17 @@ public class NotifikasjonHandler {
             NotifikasjonOperasjonType operasjonType) {
 
         NotifikasjonEvent event = new NotifikasjonEvent();
-        ArbeidsgiverNotifikasjon notifikasjon = arbeidsgiverNotifikasjonRepository.
-                findArbeidsgiverNotifikasjonsByAvtaleIdAndNotifikasjonReferanseIdAndOperasjonType(avtale.getId(), notifikasjonReferanseId.toString(), operasjonType);
-        if (notifikasjon != null) {
-            event.setNotifikasjon(notifikasjon);
-            event.setNotifikasjonFerdigBehandlet(notifikasjon.getStatusResponse() != null && notifikasjon.getStatusResponse().equals(onsketStatus.getStatus()));
+        List<ArbeidsgiverNotifikasjon> notifikasjon = arbeidsgiverNotifikasjonRepository.
+                findArbeidsgiverNotifikasjonsByAvtaleIdAndNotifikasjonReferanseIdAndOperasjonType(
+                        avtale.getId(),
+                        notifikasjonReferanseId.toString(),
+                        operasjonType);
+        if (!notifikasjon.isEmpty()) {
+            final ArbeidsgiverNotifikasjon arbeidsgiverNotifikasjon = notifikasjon.get(0);
+            event.setNotifikasjon(arbeidsgiverNotifikasjon);
+            event.setNotifikasjonFerdigBehandlet(arbeidsgiverNotifikasjon.getStatusResponse() != null &&
+                    arbeidsgiverNotifikasjon.getStatusResponse().equals(onsketStatus.getStatus()));
+
             return event;
         }
         ArbeidsgiverNotifikasjon utfoertNotifikasjon = ArbeidsgiverNotifikasjon.nyHendelse(avtale,
