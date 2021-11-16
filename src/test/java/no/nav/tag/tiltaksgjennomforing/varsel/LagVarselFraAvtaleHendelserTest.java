@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.varsel;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.ArbeidsgiverNotifikasjonRepository;
 import no.nav.tag.tiltaksgjennomforing.varsel.oppgave.LagGosysVarselLytter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,8 @@ class LagVarselFraAvtaleHendelserTest {
     VarselRepository varselRepository;
     @Autowired
     HendelseloggRepository hendelseloggRepository;
+    @Autowired
+    ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
     @MockBean
     LagGosysVarselLytter lagGosysVarselLytter;
 
@@ -37,6 +40,7 @@ class LagVarselFraAvtaleHendelserTest {
     void setUp() {
         varselRepository.deleteAll();
         hendelseloggRepository.deleteAll();
+        arbeidsgiverNotifikasjonRepository.deleteAll();
         avtaleRepository.deleteAll();
     }
 
