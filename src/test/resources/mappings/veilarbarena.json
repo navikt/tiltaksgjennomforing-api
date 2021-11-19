@@ -4,13 +4,13 @@
       "priority": 1,
       "request": {
         "method": "GET",
-        "urlPattern": "^.*\\/veilarbarena\\/api\\/arena\\/status\\?fnr=12345678901"
+        "urlPattern": "^.*\\/veilarbarena\\/api\\/arena\\/status\\?fnr=31129118213"
       },
       "response": {
         "status": 200,
         "jsonBody": {
           "rettighetsgruppe": "IYT",
-          "formidlingsgruppe": "IJOBS",
+          "formidlingsgruppe": "ARBS",
           "kvalifiseringsgruppe": "BFORM",
           "oppfolgingsenhet": "0906",
           "iservFraDato": null
@@ -31,6 +31,26 @@
         "jsonBody": {
           "rettighetsgruppe": "IYT",
           "formidlingsgruppe": "ARBS",
+          "kvalifiseringsgruppe": "IVURD",
+          "oppfolgingsenhet": "0906",
+          "iservFraDato": null
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPattern": "^.*\\/veilarbarena\\/api\\/arena\\/status\\?fnr=12345678901"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "rettighetsgruppe": "IYT",
+          "formidlingsgruppe": "IJOBS",
           "kvalifiseringsgruppe": "IVURD",
           "oppfolgingsenhet": "0906",
           "iservFraDato": null
