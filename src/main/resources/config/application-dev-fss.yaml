@@ -103,6 +103,7 @@ tiltaksgjennomforing:
       id: ${tiltaksgjennomforing.consumer.system}
   veilarbarena:
     url: https://veilarbarena.dev.intern.nav.no/veilarbarena/api/arena/status
+    nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}
   norg2:
     geografisk:
       url: https://app-q1.adeo.no/norg2/api/v1/enhet/navkontor/

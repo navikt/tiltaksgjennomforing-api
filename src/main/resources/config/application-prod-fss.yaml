@@ -104,6 +104,7 @@ tiltaksgjennomforing:
       id: ${tiltaksgjennomforing.consumer.system}
   veilarbarena:
     url: https://veilarbarena.nais.adeo.no/veilarbarena/api/oppfolgingsstatus
+    nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}
   norg2:
     geografisk:
       url: https://norg2.nais.adeo.no/norg2/api/v1/enhet/navkontor/

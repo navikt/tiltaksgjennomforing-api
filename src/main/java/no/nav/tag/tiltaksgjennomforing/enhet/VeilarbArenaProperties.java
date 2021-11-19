@@ -11,4 +11,5 @@ import java.net.URI;
 @ConfigurationProperties(prefix = "tiltaksgjennomforing.veilarbarena")
 public class VeilarbArenaProperties {
     private URI url;
+    private String navConsumerId;
 }

@@ -106,6 +106,7 @@ public class VeilarbArenaClient {
 
     private HttpEntity<String> httpHeadere() {
         HttpHeaders headers = new HttpHeaders();
+        headers.set("Nav-Consumer-Id", veilarbArenaProperties.getNavConsumerId());
         return new HttpEntity<>(headers);
     }
 }
