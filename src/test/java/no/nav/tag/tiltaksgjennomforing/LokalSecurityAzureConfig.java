@@ -16,4 +16,9 @@ public class LokalSecurityAzureConfig {
     public RestTemplate anonymProxyRestTemplate(){
         return restTemplateBuilder.build();
     }
+
+    @Bean("veilarbarenaRestTemplate")
+    public RestTemplate anonymProxyRestTemplateVeilabArena(){
+        return restTemplateBuilder.build();
+    }
 }

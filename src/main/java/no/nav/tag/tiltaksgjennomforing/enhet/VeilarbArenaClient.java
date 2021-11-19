@@ -1,12 +1,11 @@
 package no.nav.tag.tiltaksgjennomforing.enhet;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientResponseException;
@@ -15,12 +14,16 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 @Component
-@AllArgsConstructor
 public class VeilarbArenaClient {
 
     private final RestTemplate restTemplate;
-    private final STSClient stsClient;
-    private VeilarbArenaProperties veilarbArenaProperties;
+    private final VeilarbArenaProperties veilarbArenaProperties;
+
+    public VeilarbArenaClient(@Qualifier("veilarbarenaRestTemplate") RestTemplate restTemplate,
+                              VeilarbArenaProperties veilarbArenaProperties) {
+        this.restTemplate = restTemplate;
+        this.veilarbArenaProperties = veilarbArenaProperties;
+    }
 
     private boolean erMidlerTidiglonnstilskuddEllerSommerjobb(Tiltakstype tiltakstype) {
         return (tiltakstype == Tiltakstype.SOMMERJOBB ||
@@ -45,8 +48,8 @@ public class VeilarbArenaClient {
     private void sjekkStatus(Avtale avtale, Oppfølgingsstatus oppfølgingStatus) {
         if (
                 oppfølgingStatus == null ||
-                oppfølgingStatus.getFormidlingsgruppe() == null ||
-                oppfølgingStatus.getKvalifiseringsgruppe() == null
+                        oppfølgingStatus.getFormidlingsgruppe() == null ||
+                        oppfølgingStatus.getKvalifiseringsgruppe() == null
         ) {
             throw new FeilkodeException(Feilkode.HENTING_AV_INNSATS_BEHOV_FEILET);
         }
@@ -103,7 +106,6 @@ public class VeilarbArenaClient {
 
     private HttpEntity<String> httpHeadere() {
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(stsClient.hentSTSToken().getAccessToken());
         return new HttpEntity<>(headers);
     }
 }

@@ -225,7 +225,7 @@ public class VeilederTest {
         Oppfølgingsstatus oppfølgingsstatus = new Oppfølgingsstatus();
         oppfølgingsstatus.setKvalifiseringsgruppe(Kvalifiseringsgruppe.IKKE_VURDERT);
         oppfølgingsstatus.setFormidlingsgruppe(Formidlingsgruppe.ARBEIDSSOKER);
-        VeilarbArenaClient veilarbArenaClient = Mockito.spy(new VeilarbArenaClient(null, null, null));
+        VeilarbArenaClient veilarbArenaClient = Mockito.spy(new VeilarbArenaClient(null, null));
         Mockito.doReturn(oppfølgingsstatus).when(veilarbArenaClient).hentOppfølgingStatus(Mockito.anyString());
 
         assertThatThrownBy(() -> veilarbArenaClient.sjekkOppfølingStatus(avtale)).isExactlyInstanceOf(FeilkodeException.class).hasMessage(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET.name());
