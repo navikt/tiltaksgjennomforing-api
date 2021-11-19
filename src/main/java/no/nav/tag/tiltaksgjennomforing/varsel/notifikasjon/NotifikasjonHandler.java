@@ -73,7 +73,7 @@ public class NotifikasjonHandler {
             MutationStatus onsketStatus
     ) {
         final String typename = response.get__typename();
-        if(typename.equals(onsketStatus.getStatus())) {
+        if (typename.equals(onsketStatus.getStatus())) {
             notifikasjonReferanse.setNotifikasjonAktiv(false);
             notifikasjon.setVarselSendtVellykket(true);
         }
@@ -104,19 +104,26 @@ public class NotifikasjonHandler {
             NotifikasjonOperasjonType operasjonType) {
 
         NotifikasjonEvent event = new NotifikasjonEvent();
-        List<ArbeidsgiverNotifikasjon> notifikasjon = arbeidsgiverNotifikasjonRepository.
-                findArbeidsgiverNotifikasjonsByAvtaleIdAndNotifikasjonReferanseIdAndOperasjonType(
-                        avtale.getId(),
-                        notifikasjonReferanseId.toString(),
-                        operasjonType);
-        if (!notifikasjon.isEmpty()) {
-            final ArbeidsgiverNotifikasjon arbeidsgiverNotifikasjon = notifikasjon.get(0);
-            event.setNotifikasjon(arbeidsgiverNotifikasjon);
-            event.setNotifikasjonFerdigBehandlet(arbeidsgiverNotifikasjon.getStatusResponse() != null &&
-                    arbeidsgiverNotifikasjon.getStatusResponse().equals(onsketStatus.getStatus()));
+        try {
+            ArbeidsgiverNotifikasjon notifikasjon = arbeidsgiverNotifikasjonRepository.
+                    findArbeidsgiverNotifikasjonsByAvtaleIdAndNotifikasjonReferanseIdAndOperasjonType(
+                            avtale.getId(),
+                            notifikasjonReferanseId.toString(),
+                            operasjonType);
 
+            if (notifikasjon != null) {
+                event.setNotifikasjon(notifikasjon);
+                event.setNotifikasjonFerdigBehandlet(notifikasjon.getStatusResponse() != null &&
+                        notifikasjon.getStatusResponse().equals(onsketStatus.getStatus()));
+                return event;
+            }
+        }catch (Exception e) {
+            log.warn("Feilet med henting av arbeidsgiverNotifikasjon med avtaleId {} og unik NotifikasjonReferanseId {} og OperasjonType {}", avtale.getId(), notifikasjonReferanseId.toString(), operasjonType);
+            event.setNotifikasjon(null);
+            event.setNotifikasjonFerdigBehandlet(true);
             return event;
         }
+
         ArbeidsgiverNotifikasjon utfoertNotifikasjon = ArbeidsgiverNotifikasjon.nyHendelse(avtale,
                 hendelseTypeForNyNotifikasjon, service, parser);
         utfoertNotifikasjon.setNotifikasjonReferanseId(notifikasjonReferanseId.toString());

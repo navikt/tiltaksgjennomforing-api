@@ -32,7 +32,7 @@ public interface ArbeidsgiverNotifikasjonRepository extends JpaRepository<Arbeid
             String statusResponse);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    List<ArbeidsgiverNotifikasjon> findArbeidsgiverNotifikasjonsByAvtaleIdAndNotifikasjonReferanseIdAndOperasjonType(
+    ArbeidsgiverNotifikasjon findArbeidsgiverNotifikasjonsByAvtaleIdAndNotifikasjonReferanseIdAndOperasjonType(
             UUID avtaleId, String notifikasjonReferanseId, NotifikasjonOperasjonType operasjonType);
 
 }
