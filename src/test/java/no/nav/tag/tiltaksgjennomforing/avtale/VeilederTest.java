@@ -222,9 +222,7 @@ public class VeilederTest {
     @Test
     public void opprettelse_av_tiltak_med_forskjellige_kvalifiseringskoder(){
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        Oppfølgingsstatus oppfølgingsstatus = new Oppfølgingsstatus();
-        oppfølgingsstatus.setKvalifiseringsgruppe(Kvalifiseringsgruppe.IKKE_VURDERT);
-        oppfølgingsstatus.setFormidlingsgruppe(Formidlingsgruppe.ARBEIDSSOKER);
+        Oppfølgingsstatus oppfølgingsstatus = new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.IKKE_VURDERT, "0906");
         VeilarbArenaClient veilarbArenaClient = Mockito.spy(new VeilarbArenaClient(null, null));
         Mockito.doReturn(oppfølgingsstatus).when(veilarbArenaClient).hentOppfølgingStatus(Mockito.anyString());
 

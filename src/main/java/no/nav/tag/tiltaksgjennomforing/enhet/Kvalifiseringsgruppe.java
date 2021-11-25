@@ -43,6 +43,6 @@ public enum Kvalifiseringsgruppe {
     }
 
     public static boolean kvalifisererTilVariglonnstilskudd(Kvalifiseringsgruppe kvalifiseringsgruppe) {
-        return kvalifiseringsgruppe.equals(VARIG_TILPASSET_INNSATS);
+        return kvalifiseringsgruppe == VARIG_TILPASSET_INNSATS;
     }
 }

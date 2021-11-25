@@ -127,7 +127,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         sjekkOmAvtalenKanEndres();
         sjekkSistEndret(sistEndret);
         sjekkStartOgSluttDato(nyAvtale.getStartDato(), nyAvtale.getSluttDato());
-        sjekkLonnstilskuddProsentsatsForEndreAvtaleStrategy(nyAvtale);
+        beregnLonnstilskuddProsentsatsForEndreAvtaleStrategy(nyAvtale);
         gjeldendeInnhold().endreAvtale(nyAvtale);
         if (tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
             nyeTilskuddsperioder();
@@ -738,7 +738,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
     }
 
-    private void sjekkLonnstilskuddProsentsatsForEndreAvtaleStrategy(EndreAvtale endreAvtale) {
+    private void beregnLonnstilskuddProsentsatsForEndreAvtaleStrategy(EndreAvtale endreAvtale) {
         final Integer prosentsats = beregnLonnstilskuddProsentsats();
         if(prosentsats != null) {
             endreAvtale.setLonnstilskuddProsent(prosentsats);
