@@ -59,6 +59,12 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         return avtale;
     }
 
+    private static Avtale fjernKvalifiseringsgruppe(Avtale avtale) {
+        avtale.setKvalifiseringsgruppe(null);
+        avtale.setFormidlingsgruppe(null);
+        return avtale;
+    }
+
     @Override
     protected void avvisDatoerTilbakeITid(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
         if (!avtale.erUfordelt()) {
@@ -228,6 +234,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         Avtale avtale = super.hentAvtale(avtaleRepository, avtaleId);
         fjernAvbruttGrunn(avtale);
         fjernAnnullertGrunn(avtale);
+        fjernKvalifiseringsgruppe(avtale);
         return avtale;
     }
 }

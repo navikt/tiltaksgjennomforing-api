@@ -184,7 +184,7 @@ public class AvtaleInnhold {
     }
 
     private AvtaleInnholdStrategy innholdStrategi() {
-        return AvtaleInnholdStrategyFactory.create(this, avtale.getTiltakstype());
+        return AvtaleInnholdStrategyFactory.create(this, avtale.getTiltakstype(), avtale.getKvalifiseringsgruppe());
     }
 
     public boolean skalJournalfores() {

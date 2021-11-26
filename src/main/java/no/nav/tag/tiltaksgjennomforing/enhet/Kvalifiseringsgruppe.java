@@ -45,4 +45,12 @@ public enum Kvalifiseringsgruppe {
     public static boolean kvalifisererTilVariglonnstilskudd(Kvalifiseringsgruppe kvalifiseringsgruppe) {
         return kvalifiseringsgruppe == VARIG_TILPASSET_INNSATS;
     }
+
+    public Integer finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(Integer prosentsatsLiten, Integer prosentsatsStor) {
+        return switch (this) {
+            case SPESIELT_TILPASSET_INNSATS, VARIG_TILPASSET_INNSATS -> prosentsatsStor;
+            case SITUASJONSBESTEMT_INNSATS -> prosentsatsLiten;
+            default -> null;
+        };
+    }
 }

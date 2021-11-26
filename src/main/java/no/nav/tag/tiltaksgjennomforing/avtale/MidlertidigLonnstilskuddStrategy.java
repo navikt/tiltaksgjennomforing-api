@@ -1,27 +1,47 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import java.time.LocalDate;
+
+import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
 
 public class MidlertidigLonnstilskuddStrategy extends LonnstilskuddStrategy {
+    Kvalifiseringsgruppe kvalifiseringsgruppe;
 
-    public MidlertidigLonnstilskuddStrategy(AvtaleInnhold avtaleInnhold) {
+    public MidlertidigLonnstilskuddStrategy(AvtaleInnhold avtaleInnhold, Kvalifiseringsgruppe kvalifiseringsgruppe) {
         super(avtaleInnhold);
+        this.kvalifiseringsgruppe = kvalifiseringsgruppe;
     }
 
     @Override
     public void endre(EndreAvtale endreAvtale) {
-        if (endreAvtale.getLonnstilskuddProsent() != null && (
-            endreAvtale.getLonnstilskuddProsent() != 40 && endreAvtale.getLonnstilskuddProsent() != 60)) {
-            throw new FeilLonnstilskuddsprosentException();
+        if(kvalifiseringsgruppe != null) {
+            final EndreAvtale endreAvtaleMedOppdatertProsentsats = settTilskuddsprosentSats(endreAvtale);
+            sjekktilskuddsprosentSats(endreAvtaleMedOppdatertProsentsats);
+            super.endre(endreAvtaleMedOppdatertProsentsats);
+        }else {
+            sjekktilskuddsprosentSats(endreAvtale);
+            super.endre(endreAvtale);
         }
-        super.endre(endreAvtale);
     }
 
     @Override
     void regnUtTotalLonnstilskudd() {
         super.regnUtTotalLonnstilskudd();
         regnUtDatoOgSumRedusert();
+    }
+
+    private void sjekktilskuddsprosentSats(EndreAvtale endreAvtale) {
+        if (endreAvtale.getLonnstilskuddProsent() != null && (
+                endreAvtale.getLonnstilskuddProsent() != 40 && endreAvtale.getLonnstilskuddProsent() != 60)) {
+            throw new FeilLonnstilskuddsprosentException();
+        }
+    }
+
+    private EndreAvtale settTilskuddsprosentSats(EndreAvtale endreAvtale) {
+        final Integer sats = kvalifiseringsgruppe.finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(40, 60);
+        endreAvtale.setLonnstilskuddProsent(sats);
+        return endreAvtale;
     }
 
     private void regnUtDatoOgSumRedusert() {
