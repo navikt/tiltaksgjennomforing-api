@@ -32,6 +32,8 @@ public class LagSmsVarselFraVarslbarHendelse {
                 return List.of(factory.arbeidsgiverRefusjonKlarRevarsel());
             case REFUSJON_FRIST_FORLENGET:
                 return List.of(factory.arbeidsgiverRefusjonForlengetVarsel());
+            case REFUSJON_KORRIGERT:
+                return List.of(factory.arbeidsgiverRefusjonKorrigertVarsel());
             case GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER: {
                 var varslinger = new ArrayList<SmsVarsel>();
                 if (gamleVerdier.isGodkjentAvDeltaker()) {

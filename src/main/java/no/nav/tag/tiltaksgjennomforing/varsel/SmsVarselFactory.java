@@ -37,6 +37,10 @@ public class SmsVarselFactory {
         return SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(), refusjonForlengetTekst(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId());
     }
 
+    public SmsVarsel arbeidsgiverRefusjonKorrigertVarsel() {
+        return SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(), refusjonTekstKorrigert(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId());
+    }
+
     public SmsVarsel veileder() {
         return SmsVarsel.nyttVarsel(avtale.getVeilederTlf(), NAV_ORGNR, FAGSYSTEMSONE_VARSELTEKST, hendelse.getId());
     }
@@ -63,6 +67,15 @@ public class SmsVarselFactory {
         switch (tiltakstype) {
             case SOMMERJOBB:
                 return String.format("Fristen nærmer seg for å søke om refusjon for tilskudd til sommerjobb for avtale med nr: %d. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtaleNr);
+            default:
+                throw new RuntimeException();
+        }
+    }
+
+    private static String refusjonTekstKorrigert(Tiltakstype tiltakstype, Integer avtaleNr) {
+        switch (tiltakstype) {
+            case SOMMERJOBB:
+                return String.format("Tidligere innsendt refusjon på avtale med nr %d er korrigert. Se detaljer her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtaleNr);
             default:
                 throw new RuntimeException();
         }

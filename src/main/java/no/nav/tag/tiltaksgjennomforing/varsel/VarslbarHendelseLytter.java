@@ -20,13 +20,20 @@ public class VarslbarHendelseLytter {
     public void avtaleKlarForRefusjon(RefusjonKlar event) {
         varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.REFUSJON_KLAR));
     }
+
     @EventListener
     public void avtaleKlarForRefusjonRevarsel(RefusjonKlarRevarsel event) {
         varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.REFUSJON_KLAR_REVARSEL));
     }
+
     @EventListener
     public void refusjonFristForlengetVarsel(RefusjonFristForlenget event) {
         varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.REFUSJON_FRIST_FORLENGET));
+    }
+
+    @EventListener
+    public void refusjonKorrigert(RefusjonKorrigert event) {
+        varslbarHendelseRepository.save(VarslbarHendelse.nyHendelse(event.getAvtale(), VarslbarHendelseType.REFUSJON_KORRIGERT));
     }
 
     @EventListener

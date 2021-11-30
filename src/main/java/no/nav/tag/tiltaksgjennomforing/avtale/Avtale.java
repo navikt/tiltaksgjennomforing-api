@@ -139,19 +139,24 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new AvtaleDeltMedAvtalepart(this, avtalerolle));
     }
 
-    public void refusjonKlar(VarselType varselType) {
+    public void refusjonKlar() {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        registerEvent(new RefusjonKlar(this));
+    }
 
-        if (varselType == VarselType.KLAR) {
-            registerEvent(new RefusjonKlar(this));
-        } else if (varselType == VarselType.REVARSEL) {
-            registerEvent(new RefusjonKlarRevarsel(this));
-        }
+    public void refusjonRevarsel() {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        registerEvent(new RefusjonKlarRevarsel(this));
     }
 
     public void refusjonFristForlenget() {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         registerEvent(new RefusjonFristForlenget(this));
+    }
+
+    public void refusjonKorrigert() {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        registerEvent(new RefusjonKorrigert(this));
     }
 
     private String telefonnummerTilAvtalepart(Avtalerolle avtalerolle) {
