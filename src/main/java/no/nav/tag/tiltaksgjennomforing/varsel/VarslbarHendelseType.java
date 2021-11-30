@@ -38,6 +38,7 @@ public enum VarslbarHendelseType {
     REFUSJON_KLAR("Refusjon klar"),
     REFUSJON_KLAR_REVARSEL("Refusjon klar, revarsel"),
     REFUSJON_FRIST_FORLENGET("Frist for refusjon forlenget"),
+    REFUSJON_KORRIGERT("Refusjon korrigert"),
     VARSLER_SETT("Varsler lest"),
     AVTALE_SLETTET("Avtale slettet av  veileder");
 

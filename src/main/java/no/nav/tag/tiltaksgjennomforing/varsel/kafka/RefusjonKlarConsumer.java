@@ -71,33 +71,22 @@ public class RefusjonKlarConsumer {
     @KafkaListener(topics = Topics.TILTAK_VARSEL, containerFactory = "varselContainerFactory")
     public void consume(RefusjonVarselMelding refusjonVarselMelding) {
         Avtale avtale = avtaleRepository.findById(refusjonVarselMelding.getAvtaleId()).orElseThrow(RuntimeException::new);
-
         VarselType varselType = refusjonVarselMelding.getVarselType();
-        if (varselType == VarselType.KLAR || varselType == VarselType.REVARSEL) {
-            try {
-                avtale.refusjonKlar(refusjonVarselMelding.getVarselType());
-                avtaleRepository.save(avtale);
-            } catch (FeilkodeException e) {
-                if (e.getFeilkode() == Feilkode.KAN_IKKE_ENDRE_ANNULLERT_AVTALE) {
-                    log.warn("Avtale med id {} har ugyldig status, varsler derfor ikke om klar refusjon", refusjonVarselMelding.getAvtaleId());
-                } else {
-                    throw e;
-                }
+
+        try {
+            switch (varselType) {
+                case KLAR -> avtale.refusjonKlar();
+                case REVARSEL -> avtale.refusjonRevarsel();
+                case FRIST_FORLENGET -> avtale.refusjonFristForlenget();
+                case KORRIGERT -> avtale.refusjonKorrigert();
             }
-        } else if (varselType == VarselType.FRIST_FORLENGET) {
-            try {
-                avtale.refusjonFristForlenget();
-                avtaleRepository.save(avtale);
-            } catch (FeilkodeException e) {
-                if (e.getFeilkode() == Feilkode.KAN_IKKE_ENDRE_ANNULLERT_AVTALE) {
-                    log.warn("Avtale med id {} har ugyldig status, varsler derfor ikke om frist forlenget", refusjonVarselMelding.getAvtaleId());
-                } else {
-                    throw e;
-                }
+            avtaleRepository.save(avtale);
+        } catch (FeilkodeException e) {
+            if (e.getFeilkode() == Feilkode.KAN_IKKE_ENDRE_ANNULLERT_AVTALE) {
+                log.warn("Avtale med id {} har ugyldig status, varsler derfor ikke om: {}", refusjonVarselMelding.getAvtaleId(), varselType);
+            } else {
+                throw e;
             }
         }
-
     }
-
-
 }
