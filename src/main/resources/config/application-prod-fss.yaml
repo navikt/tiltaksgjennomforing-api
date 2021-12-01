@@ -103,7 +103,7 @@ tiltaksgjennomforing:
     system:
       id: ${tiltaksgjennomforing.consumer.system}
   veilarbarena:
-    url: https://veilarbarena.intern.nav.no/veilarbarena/api/oppfolgingsstatus
+    url: https://veilarbarena.intern.nav.no/veilarbarena/api/arena/status
     nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}
   norg2:
     geografisk:
