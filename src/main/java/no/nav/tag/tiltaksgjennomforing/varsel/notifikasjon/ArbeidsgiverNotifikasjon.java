@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNrConverter;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -50,7 +52,7 @@ public class ArbeidsgiverNotifikasjon {
 
         ArbeidsgiverNotifikasjon notifikasjon = new ArbeidsgiverNotifikasjon();
         notifikasjon.id = UUID.randomUUID();
-        notifikasjon.tidspunkt = LocalDateTime.now();
+        notifikasjon.tidspunkt = Now.localDateTime();
         notifikasjon.avtaleId = avtale.getId();
         notifikasjon.hendelseType = varslbarHendelseType;
         notifikasjon.virksomhetsnummer = avtale.getBedriftNr();

@@ -1,7 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
+
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,6 +60,6 @@ public abstract class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy
     @Override
     public void endreSluttDato(LocalDate nySluttDato) {
         avtaleInnhold.setSluttDato(nySluttDato);
-        avtaleInnhold.setIkrafttredelsestidspunkt(LocalDateTime.now());
+        avtaleInnhold.setIkrafttredelsestidspunkt(Now.localDateTime());
     }
 }

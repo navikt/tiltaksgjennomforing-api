@@ -2,9 +2,9 @@ package no.nav.tag.tiltaksgjennomforing.varsel;
 
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalepart;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -46,7 +46,7 @@ public class BjelleVarselService {
     }
 
     private Stream<BjelleVarsel> bjelleVarslerForAvtalepart(Avtalepart avtalepart) {
-        return bjelleVarselRepository.findAllByTidspunktAfter(LocalDateTime.now().minusDays(1)).stream()
+        return bjelleVarselRepository.findAllByTidspunktAfter(Now.localDateTime().minusDays(1)).stream()
                 .filter(bjelleVarsel -> avtalepart.identifikatorer().contains(bjelleVarsel.getIdentifikator()))
                 .sorted(Comparator.comparing(BjelleVarsel::getTidspunkt).reversed());
     }

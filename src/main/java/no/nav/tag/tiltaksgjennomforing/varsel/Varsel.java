@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
 import javax.persistence.*;
@@ -63,7 +64,7 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
     public static Varsel nyttVarsel(Identifikator identifikator, boolean bjelle, Avtale avtale, Avtalerolle mottaker, Avtalerolle utførtAv, VarslbarHendelseType varslbarHendelseType, UUID avtaleId) {
         Varsel varsel = new Varsel();
         varsel.id = UUID.randomUUID();
-        varsel.tidspunkt = LocalDateTime.now();
+        varsel.tidspunkt = Now.localDateTime();
         varsel.identifikator = identifikator;
         varsel.tekst = getVarslbarHendelseTekst(avtale, varslbarHendelseType);
         varsel.hendelseType = varslbarHendelseType;

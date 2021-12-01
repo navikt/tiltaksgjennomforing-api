@@ -7,6 +7,7 @@ import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,8 +38,8 @@ public class InternalDvhMeldingProdusentController {
         avtaleRepository.findAllById(request.getAvtaleIder()).forEach(avtale -> {
             UUID meldingId = UUID.randomUUID();
             String utførtAv = tokenUtils.hentBrukerOgIssuer().map(TokenUtils.BrukerOgIssuer::getBrukerIdent).orElse("patch");
-            AvroTiltakHendelse avroTiltakHendelse = AvroTiltakHendelseFabrikk.konstruer(avtale, LocalDateTime.now(), meldingId, DvhHendelseType.PATCHING, utførtAv);
-            dvhMeldingRepository.save(new DvhMeldingEntitet(meldingId, avtale.getId(), LocalDateTime.now(), avtale.statusSomEnum(), avroTiltakHendelse));
+            AvroTiltakHendelse avroTiltakHendelse = AvroTiltakHendelseFabrikk.konstruer(avtale, Now.localDateTime(), meldingId, DvhHendelseType.PATCHING, utførtAv);
+            dvhMeldingRepository.save(new DvhMeldingEntitet(meldingId, avtale.getId(), Now.localDateTime(), avtale.statusSomEnum(), avroTiltakHendelse));
             log.info("Patchet avtale {}, sendt melding med id {} til datavarehus", avtale.getId(), meldingId);
         });
     }

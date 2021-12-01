@@ -4,6 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
 import no.nav.tag.tiltaksgjennomforing.metrikker.MetrikkRegistrering;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarselRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,9 +15,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -70,7 +69,7 @@ public class AvtaleRepositoryTest {
         EndreAvtale endreAvtale = new EndreAvtale();
         Maal maal = TestData.etMaal();
         endreAvtale.setMaal(List.of(maal));
-        lagretAvtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale.getTiltakstype()));
+        lagretAvtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale.getTiltakstype()));
         avtaleRepository.save(lagretAvtale);
 
         // Lage ny avtale
@@ -80,7 +79,7 @@ public class AvtaleRepositoryTest {
         EndreAvtale endreAvtale2 = new EndreAvtale();
         Maal maal2 = TestData.etMaal();
         endreAvtale2.setMaal(List.of(maal2));
-        lagretAvtale2.endreAvtale(Instant.now(), endreAvtale2, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale.getTiltakstype()));
+        lagretAvtale2.endreAvtale(Now.instant(), endreAvtale2, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale.getTiltakstype()));
         avtaleRepository.save(lagretAvtale2);
     }
 
@@ -91,7 +90,7 @@ public class AvtaleRepositoryTest {
 
         // Lagre maal skal fungere
         EndreAvtale endreAvtale = new EndreAvtale();
-        lagretAvtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale.getTiltakstype()));
+        lagretAvtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale.getTiltakstype()));
         avtaleRepository.save(lagretAvtale);
 
         // Lage ny avtale
@@ -99,7 +98,7 @@ public class AvtaleRepositoryTest {
 
         // Lagre maal skal enda fungere
         EndreAvtale endreAvtale2 = new EndreAvtale();
-        lagretAvtale2.endreAvtale(Instant.now(), endreAvtale2, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale2.getTiltakstype()));
+        lagretAvtale2.endreAvtale(Now.instant(), endreAvtale2, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale2.getTiltakstype()));
         avtaleRepository.save(lagretAvtale2);
     }
 
@@ -121,7 +120,7 @@ public class AvtaleRepositoryTest {
         endreAvtale.setArbeidsgiveravgift(BigDecimal.valueOf(0.141));
         endreAvtale.setLonnstilskuddProsent(40);
 
-        lagretAvtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale.getTiltakstype()));
+        lagretAvtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale.getTiltakstype()));
         Avtale nyLagretAvtale = avtaleRepository.save(lagretAvtale);
 
         var perioder = nyLagretAvtale.getTilskuddPeriode();
@@ -132,7 +131,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void avtale_godkjent_pa_vegne_av_skal_lagres_med_pa_vegne_av_grunn() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvArbeidsgiver(Now.localDateTime());
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
         godkjentPaVegneGrunn.setIkkeBankId(true);
         Veileder veileder = TestData.enVeileder(avtale);
@@ -146,7 +145,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void lagre_pa_vegne_skal_publisere_domainevent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvArbeidsgiver(Now.localDateTime());
         Veileder veileder = TestData.enVeileder(avtale);
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
         veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
@@ -167,7 +166,7 @@ public class AvtaleRepositoryTest {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering, never()).avtaleEndret(any());
-        avtale.endreAvtale(Instant.now(), TestData.ingenEndring(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+        avtale.endreAvtale(Now.instant(), TestData.ingenEndring(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).avtaleEndret(any());
     }
@@ -191,8 +190,8 @@ public class AvtaleRepositoryTest {
     @Test
     public void godkjennForVeileder__skal_publisere_domainevent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
-        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.setGodkjentAvArbeidsgiver(Now.localDateTime());
         TestData.enVeileder(avtale).godkjennAvtale(avtale.getSistEndret(), avtale);
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).godkjentAvVeileder(any());
@@ -210,7 +209,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_ikke_kunne_hente_avtale_med_tiltakstype_arbeidstrening() {
 
-        Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.now(), LocalDate.now().plusMonths(2));
+        Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate(), Now.localDate().plusMonths(2));
         lagretAvtale.setTiltakstype(Tiltakstype.ARBEIDSTRENING);
         avtaleRepository.save(lagretAvtale);
         Set<String> navEnheter = Set.of(ENHET_OPPFØLGING.getVerdi());
@@ -224,7 +223,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_kunne_hente_avtale_med_ubehandlet_tilskuddsperioder_for_riktig_enhet() {
 
-        Avtale lagretAvtale = avtaleRepository.save(TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.now(), LocalDate.now().plusDays(15)));
+        Avtale lagretAvtale = avtaleRepository.save(TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate(), Now.localDate().plusDays(15)));
         Set<String> navEnheter = Set.of(ENHET_OPPFØLGING.getVerdi());
 
         List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
@@ -250,7 +249,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_ikke_kunne_hente_avtale_med_feil_enhet() {
 
-        Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.now(), LocalDate.now().plusMonths(2));
+        Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate(), Now.localDate().plusMonths(2));
         Set<String> navEnheter = Set.of("0000");
 
         lagretAvtale.godkjennTilskuddsperiode(TestData.enInnloggetBeslutter().getIdentifikator(), lagretAvtale.getEnhetGeografisk());

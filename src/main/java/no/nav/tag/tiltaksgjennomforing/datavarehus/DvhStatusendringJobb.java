@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.leader.LeaderPodCheck;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -42,7 +43,7 @@ public class DvhStatusendringJobb {
                 continue;
             }
             if (avtale.statusSomEnum() != dvhMeldingEntitet.getTiltakStatus()) {
-                LocalDateTime tidspunkt = LocalDateTime.now();
+                LocalDateTime tidspunkt = Now.localDateTime();
                 AvroTiltakHendelse avroTiltakHendelse = AvroTiltakHendelseFabrikk.konstruer(avtale, tidspunkt, UUID.randomUUID(), DvhHendelseType.STATUSENDRING, "system");
                 dvhMeldingRepository.save(new DvhMeldingEntitet(UUID.randomUUID(), avtaleId, tidspunkt, avtale.statusSomEnum(), avroTiltakHendelse));
                 log.info("Avtale med id {} har byttet status til {}, siste melding har status {}, så sender melding med den nye statusen til datavarehus", avtale.getId(), avtale.statusSomEnum(), dvhMeldingEntitet.getTiltakStatus());

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.jetbrains.annotations.NotNull;
 
@@ -86,7 +87,7 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
         if (status != TilskuddPeriodeStatus.UBEHANDLET) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET);
         }
-        if (LocalDate.now().isBefore(kanBesluttesFom())) {
+        if (Now.localDate().isBefore(kanBesluttesFom())) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_BEHANDLE_FOR_TIDLIG);
         }
     }
@@ -102,7 +103,7 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     void godkjenn(NavIdent beslutter, String enhet) {
         sjekkOmKanBehandles();
 
-        setGodkjentTidspunkt(LocalDateTime.now());
+        setGodkjentTidspunkt(Now.localDateTime());
         setGodkjentAvNavIdent(beslutter);
         setEnhet(enhet);
         setStatus(TilskuddPeriodeStatus.GODKJENT);
@@ -117,7 +118,7 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_INGEN_AVSLAGSAARSAKER);
         }
 
-        setAvslåttTidspunkt(LocalDateTime.now());
+        setAvslåttTidspunkt(Now.localDateTime());
         setAvslåttAvNavIdent(beslutter);
         this.avslagsårsaker.addAll(avslagsårsaker);
         setAvslagsforklaring(avslagsforklaring);

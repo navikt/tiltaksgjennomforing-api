@@ -13,9 +13,9 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
-import no.nav.tag.tiltaksgjennomforing.varsel.kafka.VarselType;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.*;
 import org.springframework.data.domain.AbstractAggregateRoot;
@@ -98,11 +98,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             throw new FeilkodeException(Feilkode.FOR_GAMMEL);
         }
         this.id = UUID.randomUUID();
-        this.opprettetTidspunkt = LocalDateTime.now();
+        this.opprettetTidspunkt = Now.localDateTime();
         this.deltakerFnr = opprettAvtale.getDeltakerFnr();
         this.bedriftNr = opprettAvtale.getBedriftNr();
         this.tiltakstype = opprettAvtale.getTiltakstype();
-        this.sistEndret = Instant.now();
+        this.sistEndret = Now.instant();
         var innhold = AvtaleInnhold.nyttTomtInnhold(tiltakstype);
         innhold.setAvtale(this);
         this.versjoner.add(innhold);
@@ -145,19 +145,24 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new AvtaleDeltMedAvtalepart(this, avtalerolle));
     }
 
-    public void refusjonKlar(VarselType varselType) {
+    public void refusjonKlar() {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        registerEvent(new RefusjonKlar(this));
+    }
 
-        if (varselType == VarselType.KLAR) {
-            registerEvent(new RefusjonKlar(this));
-        } else if (varselType == VarselType.REVARSEL) {
-            registerEvent(new RefusjonKlarRevarsel(this));
-        }
+    public void refusjonRevarsel() {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        registerEvent(new RefusjonKlarRevarsel(this));
     }
 
     public void refusjonFristForlenget() {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         registerEvent(new RefusjonFristForlenget(this));
+    }
+
+    public void refusjonKorrigert() {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        registerEvent(new RefusjonKorrigert(this));
     }
 
     private String telefonnummerTilAvtalepart(Avtalerolle avtalerolle) {
@@ -233,7 +238,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     private void sistEndretNå() {
-        this.sistEndret = Instant.now();
+        this.sistEndret = Now.instant();
     }
 
     void sjekkSistEndret(Instant sistEndret) {
@@ -244,7 +249,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     void godkjennForArbeidsgiver(Identifikator utfortAv) {
         sjekkOmAltErUtfylt();
-        this.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        this.setGodkjentAvArbeidsgiver(Now.localDateTime());
         sistEndretNå();
         registerEvent(new GodkjentAvArbeidsgiver(this, utfortAv));
     }
@@ -262,7 +267,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             throw new FeilkodeException(Feilkode.FOR_GAMMEL_FRA_OPPSTARTDATO);
         }
 
-        LocalDateTime tidspunkt = LocalDateTime.now();
+        LocalDateTime tidspunkt = Now.localDateTime();
         this.setGodkjentAvVeileder(tidspunkt);
         this.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
         if (tiltakstype != Tiltakstype.SOMMERJOBB) {
@@ -293,7 +298,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
 
         paVegneAvGrunn.valgtMinstEnGrunn();
-        LocalDateTime tidspunkt = LocalDateTime.now();
+        LocalDateTime tidspunkt = Now.localDateTime();
         this.setGodkjentAvVeileder(tidspunkt);
         this.setGodkjentAvDeltaker(tidspunkt);
         this.setGodkjentPaVegneAv(true);
@@ -324,7 +329,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             throw new FeilkodeException(Feilkode.FOR_GAMMEL_FRA_OPPSTARTDATO);
         }
         godkjentPaVegneAvArbeidsgiverGrunn.valgtMinstEnGrunn();
-        LocalDateTime tidspunkt = LocalDateTime.now();
+        LocalDateTime tidspunkt = Now.localDateTime();
         this.setGodkjentAvVeileder(tidspunkt);
         this.setGodkjentAvArbeidsgiver(tidspunkt);
         this.setGodkjentPaVegneAvArbeidsgiver(true);
@@ -356,7 +361,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
 
         paVegneAvDeltakerOgArbeidsgiverGrunn.valgtMinstEnGrunn();
-        LocalDateTime tidspunkt = LocalDateTime.now();
+        LocalDateTime tidspunkt = Now.localDateTime();
         this.setGodkjentAvVeileder(tidspunkt);
         this.setGodkjentAvDeltaker(tidspunkt);
         this.setGodkjentAvArbeidsgiver(tidspunkt);
@@ -376,7 +381,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     void godkjennForDeltaker(Identifikator utfortAv) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErUtfylt();
-        this.setGodkjentAvDeltaker(LocalDateTime.now());
+        this.setGodkjentAvDeltaker(Now.localDateTime());
         sistEndretNå();
         registerEvent(new GodkjentAvDeltaker(this, utfortAv));
     }
@@ -398,9 +403,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             return Status.ANNULLERT;
         } else if (isAvbrutt()) {
             return Status.AVBRUTT;
-        } else if (erAvtaleInngått() && (this.getSluttDato().isBefore(LocalDate.now()))) {
+        } else if (erAvtaleInngått() && (this.getSluttDato().isBefore(Now.localDate()))) {
             return Status.AVSLUTTET;
-        } else if (erAvtaleInngått() && (this.getStartDato().isBefore(LocalDate.now().plusDays(1)))) {
+        } else if (erAvtaleInngått() && (this.getStartDato().isBefore(Now.localDate().plusDays(1)))) {
             return Status.GJENNOMFØRES;
         } else if (erAvtaleInngått()) {
             return Status.KLAR_FOR_OPPSTART;
@@ -425,7 +430,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
 
         annullerTilskuddsperioder();
-        setAnnullertTidspunkt(Instant.now());
+        setAnnullertTidspunkt(Now.instant());
         setAnnullertGrunn(annullerGrunn);
         if (erUfordelt()) {
             setVeilederNavIdent(veileder.getIdentifikator());
@@ -537,7 +542,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         TilskuddPeriode gjeldendePeriode = gjeldendeTilskuddsperiode();
         gjeldendePeriode.godkjenn(beslutter, enhet);
         if (!erAvtaleInngått()) {
-            LocalDateTime tidspunkt = LocalDateTime.now();
+            LocalDateTime tidspunkt = Now.localDateTime();
             godkjennForBeslutter(tidspunkt, beslutter);
             avtaleInngått(tidspunkt, Avtalerolle.BESLUTTER, beslutter);
         }
@@ -800,7 +805,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         gjeldendeInnhold().endreTilskuddsberegning(tilskuddsberegning);
         endreBeløpITilskuddsperioder();
         sistEndretNå();
-        gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
+        gjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         registerEvent(new TilskuddsberegningEndret(this, utførtAv));
     }
 
@@ -829,7 +834,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         versjoner.add(gjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_KONTAKTINFO));
         gjeldendeInnhold().endreKontaktInfo(endreKontaktInformasjon);
-        gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
+        gjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         sistEndretNå();
         sendTilbakeTilBeslutter();
         registerEvent(new KontaktinformasjonEndret(this, utførtAv));
@@ -852,7 +857,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         versjoner.add(gjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_STILLING));
         gjeldendeInnhold().endreStillingsInfo(endreStillingsbeskrivelse);
-        gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
+        gjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         sistEndretNå();
         sendTilbakeTilBeslutter();
         registerEvent(new StillingsbeskrivelseEndret(this, utførtAv));
@@ -871,7 +876,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         versjoner.add(gjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_OPPFØLGING_OG_TILRETTELEGGING));
         gjeldendeInnhold().endreOppfølgingOgTilretteleggingInfo(endreOppfølgingOgTilrettelegging);
-        gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
+        gjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         sistEndretNå();
         sendTilbakeTilBeslutter();
         registerEvent(new OppfølgingOgTilretteleggingEndret(this, utførtAv));
@@ -897,7 +902,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         List<Maal> nyeMål = endreMål.getMaal().stream().map(m -> new Maal().setId(UUID.randomUUID()).setBeskrivelse(m.getBeskrivelse()).setKategori(m.getKategori())).collect(Collectors.toList());
         gjeldendeInnhold().getMaal().addAll(nyeMål);
         gjeldendeInnhold().getMaal().forEach(m -> m.setAvtaleInnhold(gjeldendeInnhold()));
-        gjeldendeInnhold().setIkrafttredelsestidspunkt(LocalDateTime.now());
+        gjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         sistEndretNå();
         sendTilbakeTilBeslutter();
         registerEvent(new MålEndret(this, utførtAv));

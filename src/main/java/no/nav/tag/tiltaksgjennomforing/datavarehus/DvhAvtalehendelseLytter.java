@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -66,7 +67,7 @@ public class DvhAvtalehendelseLytter {
         if (!dvhMeldingFilter.skalTilDatavarehus(avtale)) {
             return;
         }
-        LocalDateTime tidspunkt = LocalDateTime.now();
+        LocalDateTime tidspunkt = Now.localDateTime();
         UUID meldingId = UUID.randomUUID();
         DvhHendelseType hendelseType = endret;
         var melding = AvroTiltakHendelseFabrikk.konstruer(avtale, tidspunkt, meldingId, hendelseType, utførtAv.asString());

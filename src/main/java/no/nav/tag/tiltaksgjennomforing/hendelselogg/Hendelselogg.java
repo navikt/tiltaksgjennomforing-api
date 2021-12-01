@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.hendelselogg;
 
 import lombok.Data;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 
 import javax.persistence.Entity;
@@ -27,7 +28,7 @@ public class Hendelselogg {
         Hendelselogg hendelselogg = new Hendelselogg();
         hendelselogg.setId(UUID.randomUUID());
         hendelselogg.setAvtaleId(avtaleId);
-        hendelselogg.setTidspunkt(LocalDateTime.now());
+        hendelselogg.setTidspunkt(Now.localDateTime());
         hendelselogg.setUtførtAv(utførtAv);
         hendelselogg.setHendelse(hendelse);
         return hendelselogg;

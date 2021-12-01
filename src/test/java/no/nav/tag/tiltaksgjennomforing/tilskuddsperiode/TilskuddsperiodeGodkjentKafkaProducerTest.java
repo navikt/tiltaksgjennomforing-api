@@ -1,19 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDate;
-import java.util.Map;
-import java.util.UUID;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
-import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
-import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
-import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -29,6 +19,14 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.time.LocalDate;
+import java.util.Map;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(properties = { "tiltaksgjennomforing.kafka.enabled=true" })
 @DirtiesContext
@@ -68,8 +66,8 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
         final String bedriftNavn = "Donald Delivery";
         final BedriftNr bedriftnummer = new BedriftNr("99999999");
         final Integer tilskuddBeløp = 12000;
-        final LocalDate tilskuddFraDato = LocalDate.now().minusDays(15);
-        final LocalDate tilskuddTilDato = LocalDate.now().plusMonths(2);
+        final LocalDate tilskuddFraDato = Now.localDate().minusDays(15);
+        final LocalDate tilskuddTilDato = Now.localDate().plusMonths(2);
         final Integer avtaleNr = 234234234;
         final Integer løpenummer = 3;
         final NavIdent beslutterNavIdent = new NavIdent("X234567");

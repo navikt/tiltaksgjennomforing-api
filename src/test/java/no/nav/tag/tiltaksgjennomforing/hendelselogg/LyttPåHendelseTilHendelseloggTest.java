@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.hendelselogg;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarselRepository;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,8 +13,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.Instant;
-import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -166,22 +165,22 @@ class LyttPåHendelseTilHendelseloggTest {
     }
 
     private void ogEndretAvtale(Avtale avtale) {
-        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()));
+        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()));
         avtaleRepository.save(avtale);
     }
 
     private void ogGodkjentAvDeltaker(Avtale avtale) {
-        new Deltaker(avtale.getDeltakerFnr()).godkjennAvtale(Instant.now(), avtale);
+        new Deltaker(avtale.getDeltakerFnr()).godkjennAvtale(Now.instant(), avtale);
         avtaleRepository.save(avtale);
     }
 
     private void ogGodkjentAvArbeidsgiver(Avtale avtale) {
-        TestData.enArbeidsgiver(avtale).godkjennAvtale(Instant.now(), avtale);
+        TestData.enArbeidsgiver(avtale).godkjennAvtale(Now.instant(), avtale);
         avtaleRepository.save(avtale);
     }
 
     private void ogGodkjentAvVeileder(Avtale avtale) {
-        TestData.enVeileder(avtale).godkjennAvtale(Instant.now(), avtale);
+        TestData.enVeileder(avtale).godkjennAvtale(Now.instant(), avtale);
         avtaleRepository.save(avtale);
     }
 
@@ -207,9 +206,9 @@ class LyttPåHendelseTilHendelseloggTest {
 
     private void ogAvbrutt(Avtale avtale) {
         AvbruttInfo avbruttInfo = new AvbruttInfo();
-        avbruttInfo.setAvbruttDato(LocalDate.now());
+        avbruttInfo.setAvbruttDato(Now.localDate());
         avbruttInfo.setAvbruttGrunn("En grunn");
-        TestData.enVeileder(avtale).avbrytAvtale(Instant.now(), avbruttInfo, avtale);
+        TestData.enVeileder(avtale).avbrytAvtale(Now.instant(), avbruttInfo, avtale);
         avtaleRepository.save(avtale);
     }
 

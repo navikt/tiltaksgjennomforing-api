@@ -10,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,7 +20,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDate;
 import java.util.*;
 
 import static java.util.Arrays.asList;
@@ -397,7 +397,7 @@ public class AvtaleControllerTest {
     @Test
     public void avtaleStatus__godkjent_av_alle_parter() {
         Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
-        avtale.setStartDato(LocalDate.now().plusWeeks(1));
+        avtale.setStartDato(Now.localDate().plusWeeks(1));
         værInnloggetSom(TestData.enVeileder(avtale));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId(), Avtalerolle.VEILEDER);

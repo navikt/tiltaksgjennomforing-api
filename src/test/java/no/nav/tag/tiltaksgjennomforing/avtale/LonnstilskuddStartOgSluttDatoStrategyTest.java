@@ -2,9 +2,9 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.EnumSet;
 
@@ -23,13 +23,13 @@ class LonnstilskuddStartOgSluttDatoStrategyTest {
     }
 
     private void endreAvtale(Avtale avtale, EndreAvtale endreAvtale) {
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.noneOf(Tiltakstype.class));
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.noneOf(Tiltakstype.class));
     }
 
     @Test
     public void endreMidlertidigLønnstilskudd__startdato_og_sluttdato_satt_24mnd() {
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
-        LocalDate startDato = LocalDate.now();
+        LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(24);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
@@ -41,7 +41,7 @@ class LonnstilskuddStartOgSluttDatoStrategyTest {
     @Test
     public void endreMidlertidigLønnstilskudd__startdato_og_sluttdato_satt_over_24mnd() {
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
-        LocalDate startDato = LocalDate.now();
+        LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(24).plusDays(1);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
@@ -51,7 +51,7 @@ class LonnstilskuddStartOgSluttDatoStrategyTest {
     @Test
     public void endreVarigLønnstilskudd__startdato_og_sluttdato_satt_over_24mnd() {
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
-        LocalDate startDato = LocalDate.now();
+        LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(24).plusDays(1);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);

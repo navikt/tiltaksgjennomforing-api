@@ -5,6 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.ArbeidsgiverNotifikasjonRepository;
 import no.nav.tag.tiltaksgjennomforing.varsel.oppgave.LagGosysVarselLytter;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,8 +16,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.Instant;
-import java.time.LocalDate;
 import java.util.EnumSet;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle.*;
@@ -33,12 +32,12 @@ class LagVarselFraAvtaleHendelserTest {
     VarselRepository varselRepository;
     @Autowired
     HendelseloggRepository hendelseloggRepository;
+    @Autowired
+    ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
     @MockBean
     LagGosysVarselLytter lagGosysVarselLytter;
     @Autowired
     VeilarbArenaClient veilarbArenaClient;
-    @Autowired
-    ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
 
     @BeforeEach
     void setUp() {
@@ -56,7 +55,7 @@ class LagVarselFraAvtaleHendelserTest {
         assertHendelse(OPPRETTET, VEILEDER, ARBEIDSGIVER, true);
         assertHendelse(OPPRETTET, VEILEDER, DELTAKER, true);
 
-        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()));
+        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleFelter(), ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()));
         avtale = avtaleRepository.save(avtale);
         assertHendelse(ENDRET, ARBEIDSGIVER, VEILEDER, true);
         assertHendelse(ENDRET, ARBEIDSGIVER, ARBEIDSGIVER, false);
@@ -75,7 +74,7 @@ class LagVarselFraAvtaleHendelserTest {
         assertIngenHendelse(DELT_MED_ARBEIDSGIVER, DELTAKER);
 
         Deltaker deltaker = TestData.enDeltaker(avtale);
-        deltaker.godkjennAvtale(Instant.now(), avtale);
+        deltaker.godkjennAvtale(Now.instant(), avtale);
         avtale = avtaleRepository.save(avtale);
         assertHendelse(GODKJENT_AV_DELTAKER, DELTAKER, VEILEDER, true);
         assertHendelse(GODKJENT_AV_DELTAKER, DELTAKER, ARBEIDSGIVER, true);
@@ -89,7 +88,7 @@ class LagVarselFraAvtaleHendelserTest {
         assertHendelse(GODKJENNINGER_OPPHEVET_AV_VEILEDER, VEILEDER, DELTAKER, true);
 
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
+        arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
         avtale = avtaleRepository.save(avtale);
         assertHendelse(GODKJENT_AV_ARBEIDSGIVER, ARBEIDSGIVER, VEILEDER, true);
         assertHendelse(GODKJENT_AV_ARBEIDSGIVER, ARBEIDSGIVER, ARBEIDSGIVER, false);
@@ -101,7 +100,7 @@ class LagVarselFraAvtaleHendelserTest {
         assertHendelse(GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER, ARBEIDSGIVER, ARBEIDSGIVER, false);
         assertHendelse(GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER, ARBEIDSGIVER, DELTAKER, true);
 
-        arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
+        arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
         avtale = avtaleRepository.save(avtale);
         assertHendelse(GODKJENT_PAA_VEGNE_AV, VEILEDER, VEILEDER, false);
@@ -121,7 +120,7 @@ class LagVarselFraAvtaleHendelserTest {
         assertHendelse(LÅST_OPP, VEILEDER, ARBEIDSGIVER, true);
         assertHendelse(LÅST_OPP, VEILEDER, DELTAKER, true);
 
-        veileder.avbrytAvtale(Instant.now(), new AvbruttInfo(LocalDate.now(), "Annet"), avtale);
+        veileder.avbrytAvtale(Now.instant(), new AvbruttInfo(Now.localDate(), "Annet"), avtale);
         avtale = avtaleRepository.save(avtale);
         assertHendelse(AVBRUTT, VEILEDER, VEILEDER, false);
         assertHendelse(AVBRUTT, VEILEDER, ARBEIDSGIVER, true);
@@ -140,10 +139,10 @@ class LagVarselFraAvtaleHendelserTest {
         assertHendelse(NY_VEILEDER, VEILEDER, ARBEIDSGIVER, true);
         assertHendelse(NY_VEILEDER, VEILEDER, DELTAKER, true);
 
-        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), VEILEDER, EnumSet.of(avtale.getTiltakstype()));
-        deltaker.godkjennAvtale(Instant.now(), avtale);
-        arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
-        veileder.godkjennAvtale(Instant.now(), avtale);
+        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleFelter(), VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+        deltaker.godkjennAvtale(Now.instant(), avtale);
+        arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
+        veileder.godkjennAvtale(Now.instant(), avtale);
         beslutter.avslåTilskuddsperiode(avtale, EnumSet.of(Avslagsårsak.FEIL_I_REGELFORSTÅELSE), "Forklaring");
         avtale = avtaleRepository.save(avtale);
         assertHendelse(TILSKUDDSPERIODE_AVSLATT, BESLUTTER, VEILEDER, true);

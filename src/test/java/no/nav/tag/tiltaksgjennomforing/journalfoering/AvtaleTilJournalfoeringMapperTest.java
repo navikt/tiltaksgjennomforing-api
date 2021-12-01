@@ -1,11 +1,11 @@
 package no.nav.tag.tiltaksgjennomforing.journalfoering;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -37,7 +37,7 @@ public class AvtaleTilJournalfoeringMapperTest {
         final UUID avtaleId = UUID.randomUUID();
         avtale.setId(avtaleId);
         avtale.setGodkjentPaVegneAv(true);
-        avtale.setOpprettetTidspunkt(LocalDateTime.now());
+        avtale.setOpprettetTidspunkt(Now.localDateTime());
         avtale.setStillingstype(Stillingstype.FAST);
 
         tilJournalfoering = tilJournalfoering(avtaleInnhold);
