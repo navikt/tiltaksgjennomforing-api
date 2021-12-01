@@ -8,6 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.IdentifikatorConverter;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
 import javax.persistence.*;
@@ -53,7 +54,7 @@ public class BjelleVarsel extends AbstractAggregateRoot<BjelleVarsel> {
     public static BjelleVarsel nyttVarsel(Identifikator identifikator, VarslbarHendelse varslbarHendelse, Avtale avtale) {
         BjelleVarsel varsel = new BjelleVarsel();
         varsel.id = UUID.randomUUID();
-        varsel.tidspunkt = LocalDateTime.now();
+        varsel.tidspunkt = Now.localDateTime();
         varsel.identifikator = identifikator;
         varsel.varslbarHendelse = varslbarHendelse.getId();
         varsel.varslingstekst = getVarslbarHendelseTekst(varslbarHendelse, avtale);

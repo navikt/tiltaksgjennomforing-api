@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
 import java.time.LocalDate;
 
@@ -25,7 +26,7 @@ public class OppgaveRequest {
     private final String behandlingstema;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private final LocalDate aktivDato = LocalDate.now();
+    private final LocalDate aktivDato = Now.localDate();
     private final String aktoerId;
 
     public OppgaveRequest(String aktørId, Tiltakstype tiltakstype) {

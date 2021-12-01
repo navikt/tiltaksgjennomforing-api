@@ -5,12 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
 
 @Component
 @RequiredArgsConstructor
@@ -28,7 +27,7 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         avtaleRepository.save(TestData.enAvtaleMedFlereVersjoner());
         avtaleRepository.save(TestData.enAvtaleKlarForOppstart());
         Avtale lilly = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
-        lilly.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        lilly.setGodkjentAvArbeidsgiver(Now.localDateTime());
         avtaleRepository.save(lilly);
         avtaleRepository.save(TestData.enLonnstilskuddAvtaleGodkjentAvVeileder());
         avtaleRepository.save(TestData.enLonnstilskuddAvtaleGodkjentAvVeilederTilbakeITid());

@@ -4,10 +4,9 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørV
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.EnumSet;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
@@ -47,14 +46,14 @@ public class AvtalepartTest {
     public void endreAvtale__skal_fungere_for_arbeidsgiver() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.endreAvtale(Instant.now(), TestData.ingenEndring(), avtale, EnumSet.of(avtale.getTiltakstype()));
+        arbeidsgiver.endreAvtale(Now.instant(), TestData.ingenEndring(), avtale, EnumSet.of(avtale.getTiltakstype()));
     }
 
     @Test
     public void endreAvtale__skal_fungere_for_veileder() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.endreAvtale(Instant.now(), TestData.ingenEndring(), avtale, EnumSet.of(avtale.getTiltakstype()));
+        veileder.endreAvtale(Now.instant(), TestData.ingenEndring(), avtale, EnumSet.of(avtale.getTiltakstype()));
     }
 
     @Test
@@ -87,8 +86,8 @@ public class AvtalepartTest {
     @Test
     public void godkjennForAvtalepart__skal_fungere_for_veileder() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
-        avtale.setGodkjentAvArbeidsgiver(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.setGodkjentAvArbeidsgiver(Now.localDateTime());
         Veileder veileder = TestData.enVeileder(avtale);
         veileder.godkjennAvtale(avtale.getSistEndret(), avtale);
         assertThat(avtale.erGodkjentAvArbeidsgiver()).isTrue();
@@ -97,7 +96,7 @@ public class AvtalepartTest {
     @Test
     public void opphevGodkjenninger__veileder_skal_kunne_trekke_tilbake_egen_godkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setGodkjentAvVeileder(Now.localDateTime());
         Veileder veileder = TestData.enVeileder(avtale);
         veileder.opphevGodkjenninger(avtale);
         assertThat(avtale.erGodkjentAvVeileder()).isFalse();

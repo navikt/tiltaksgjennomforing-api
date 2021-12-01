@@ -7,10 +7,9 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,7 +23,7 @@ public class ArbeidsgiverTest {
     @Test
     public void opphevGodkjenninger__kan_oppheve_ved_deltakergodkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvDeltaker(LocalDateTime.now());
+        avtale.setGodkjentAvDeltaker(Now.localDateTime());
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         arbeidsgiver.opphevGodkjenninger(avtale);
         assertThat(avtale.erGodkjentAvDeltaker()).isFalse();
@@ -33,7 +32,7 @@ public class ArbeidsgiverTest {
     @Test
     public void opphevGodkjenninger__kan_ikke_oppheve_veiledergodkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvVeileder(LocalDateTime.now());
+        avtale.setGodkjentAvVeileder(Now.localDateTime());
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         assertThatThrownBy(() -> arbeidsgiver.opphevGodkjenninger(avtale)).isInstanceOf(KanIkkeOppheveException.class);
     }
@@ -68,13 +67,13 @@ public class ArbeidsgiverTest {
     public void endreAvtale_validererFraDato() {
         Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(null, null, null, null, null);
-        assertThatThrownBy(() -> arbeidsgiver.avvisDatoerTilbakeITid(avtale, LocalDate.now().minusDays(1), null)).isInstanceOf(VarighetDatoErTilbakeITidException.class);
+        assertThatThrownBy(() -> arbeidsgiver.avvisDatoerTilbakeITid(avtale, Now.localDate().minusDays(1), null)).isInstanceOf(VarighetDatoErTilbakeITidException.class);
     }
 
     @Test
     public void endreAvtale_validererTilDato() {
         Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(null, null, null, null, null);
-        assertThatThrownBy(() -> arbeidsgiver.avvisDatoerTilbakeITid(avtale, LocalDate.now(), LocalDate.now().minusDays(1))).isInstanceOf(VarighetDatoErTilbakeITidException.class);
+        assertThatThrownBy(() -> arbeidsgiver.avvisDatoerTilbakeITid(avtale, Now.localDate(), Now.localDate().minusDays(1))).isInstanceOf(VarighetDatoErTilbakeITidException.class);
     }
 }

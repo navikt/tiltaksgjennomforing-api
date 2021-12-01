@@ -1,15 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
@@ -18,6 +8,12 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class Arbeidsgiver extends Avtalepart<Fnr> {
@@ -39,11 +35,11 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     private static boolean avbruttForMerEnn12UkerSiden(Avtale avtale) {
-        return avtale.isAvbrutt() && avtale.getSistEndret().plus(84, ChronoUnit.DAYS).isBefore(Instant.now());
+        return avtale.isAvbrutt() && avtale.getSistEndret().plus(84, ChronoUnit.DAYS).isBefore(Now.instant());
     }
 
     private static boolean sluttdatoPassertMedMerEnn12Uker(Avtale avtale) {
-        return avtale.erGodkjentAvVeileder() && avtale.getSluttDato().plusWeeks(12).isBefore(LocalDate.now());
+        return avtale.erGodkjentAvVeileder() && avtale.getSluttDato().plusWeeks(12).isBefore(Now.localDate());
     }
 
     private static Avtale fjernAvbruttGrunn(Avtale avtale) {
@@ -61,10 +57,10 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         if (!avtale.erUfordelt()) {
             return;
         }
-        if (startDato != null && startDato.isBefore(LocalDate.now())) {
+        if (startDato != null && startDato.isBefore(Now.localDate())) {
             throw new VarighetDatoErTilbakeITidException();
         }
-        if (sluttDato != null && sluttDato.isBefore(LocalDate.now())) {
+        if (sluttDato != null && sluttDato.isBefore(Now.localDate())) {
             throw new VarighetDatoErTilbakeITidException();
         }
     }
