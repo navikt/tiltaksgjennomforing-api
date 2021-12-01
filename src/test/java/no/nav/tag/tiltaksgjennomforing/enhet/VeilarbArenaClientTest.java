@@ -1,47 +1,80 @@
 package no.nav.tag.tiltaksgjennomforing.enhet;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
+import static org.assertj.core.api.Assertions.*;
+
 @SpringBootTest
 @ActiveProfiles({Miljø.LOCAL, "wiremock"})
 @DirtiesContext
 class VeilarbArenaClientTest {
 
-  @Autowired
-  private VeilarbArenaClient veilarbArenaClient;
+    @Autowired
+    private VeilarbArenaClient veilarbArenaClient;
 
-  @Test
-  public void hent_oppfølingsEnhet_fra_arena() {
-    String oppfølgingsEnhet = veilarbArenaClient.hentOppfølgingsEnhet("12345678901");
-    assertThat(oppfølgingsEnhet).isEqualTo("0906");
-  }
+    @Test
+    public void hent_oppfølingsEnhet_fra_arena() {
+        String oppfølgingsEnhet = veilarbArenaClient.hentOppfølgingsEnhet("22095923112");
+        assertThat(oppfølgingsEnhet).isEqualTo("0906");
+    }
 
-  @Test
-  public void finner_ikke_oppfølingsEnhet_for_fnr() {
-    String oppfølgingsEnhet = veilarbArenaClient.hentOppfølgingsEnhet("33333333333");
-    assertThat(oppfølgingsEnhet).isNull();
-  }
+    @Test
+    public void finner_ikke_oppfølingsEnhet_for_fnr() {
+        String oppfølgingsEnhet = veilarbArenaClient.hentOppfølgingsEnhet("33333333333");
+        assertThat(oppfølgingsEnhet).isNull();
+        String oppfølgingsEnhet2 = veilarbArenaClient.hentOppfølgingsEnhet("11111111111");
+        assertThat(oppfølgingsEnhet2).isNotEmpty();
+    }
 
-//  @Test
-//  public void hent_oppfølingsEnhet_fra_arena__kaster_exception_ved_500() {
-//    assertThatThrownBy(() -> {
-//      veilarbArenaClient.hentOppfølgingsEnhet("11111111111");
-//    }).isInstanceOf(VeilarbArenaException.class);
-//  }
-//
-//  @Test
-//  public void hent_oppfølingsEnhet_fra_arena__kaster_exception_feil_url() {
-//    assertThatThrownBy(() -> {
-//      veilarbArenaClient.hentOppfølgingsEnhet("22222222222");
-//    }).isInstanceOf(VeilarbArenaException.class);
-//  }
+    @Test
+    public void sjekkAt_formidlingsgruppe_som_faller_utenfor_kaster_exception() {
+        String fnr_har_formidlingsgruppe_med_kode_IJOBS = "12345678901";
+        final Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setDeltakerFnr(new Fnr(fnr_har_formidlingsgruppe_med_kode_IJOBS));
+        avtale.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
 
+        assertThatThrownBy(() -> veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale))
+                .isExactlyInstanceOf(FeilkodeException.class)
+                .hasMessage(Feilkode.FORMIDLINGSGRUPPE_IKKE_RETTIGHET.name());
+    }
+
+    @Test
+    public void sjekkAt_kvalifiseringsgruppe_som_faller_utenfor_kaster_exception() {
+        String fnr_har_kvalifiseringsgruppe_med_kode_IVURD = "02104317386";
+        final Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setDeltakerFnr(new Fnr(fnr_har_kvalifiseringsgruppe_med_kode_IVURD));
+        avtale.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+
+        assertThatThrownBy(() -> veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale))
+                .isExactlyInstanceOf(FeilkodeException.class)
+                .hasMessage(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET.name());
+    }
+
+    @Test void hent_og_sjekk_oppfølging_status() {
+        String fnr_har_riktig_kvalifisering_og_formidlingskode = "00000000000";
+        final Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setDeltakerFnr(new Fnr(fnr_har_riktig_kvalifisering_og_formidlingskode));
+
+        Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
+        assertThat(oppfølgingsstatus.getFormidlingsgruppe().getKode()).isEqualTo(("ARBS"));
+        assertThat(oppfølgingsstatus.getKvalifiseringsgruppe().getKvalifiseringskode()).isEqualTo(("VARIG"));
+        assertThat(oppfølgingsstatus.getOppfolgingsenhet()).isEqualTo(("0906"));
+    }
+
+    @Test
+    public void hent_oppfølging_status() {
+        Oppfølgingsstatus oppfølgingStatus = veilarbArenaClient.hentOppfølgingStatus("01056210306");
+
+        assertThat(oppfølgingStatus.getFormidlingsgruppe().getKode()).isEqualTo(("ARBS"));
+        assertThat(oppfølgingStatus.getKvalifiseringsgruppe().getKvalifiseringskode()).isEqualTo(("VARIG"));
+        assertThat(oppfølgingStatus.getOppfolgingsenhet()).isEqualTo(("0906"));
+    }
 }

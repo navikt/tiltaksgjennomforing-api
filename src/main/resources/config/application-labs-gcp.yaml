@@ -61,6 +61,7 @@ tiltaksgjennomforing:
     oppgave-uri: http://tiltaksgjennomforing-wiremock/api/v1/oppgaver
   veilarbarena:
     url: http://tiltaksgjennomforing-wiremock/veilarbarena/oppfolgingsstatus
+    nav-consumer-id: tiltaksgjennomforing-api
   norg2:
     geografisk:
       url: http://tiltaksgjennomforing-wiremock/norg2/api/v1/enhet/navkontor/

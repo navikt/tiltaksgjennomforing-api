@@ -3,7 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.*;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
@@ -103,6 +103,7 @@ public class TestData {
         avtale.setEnhetsnavnGeografisk(ENHET_GEOGRAFISK.getNavn());
         avtale.setEnhetOppfolging(ENHET_GEOGRAFISK.getVerdi());
         avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
         EndreAvtale endring = TestData.endringPåAlleFelter();
         endring.setStartDato(startDato);
         endring.setSluttDato(sluttDato);
@@ -122,6 +123,7 @@ public class TestData {
         Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(tiltakstype), veilderNavIdent);
         avtale.setEnhetOppfolging(ENHET_OPPFØLGING.getVerdi());
         avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
         avtale.setDeltakerFornavn("Lilly");
         avtale.setDeltakerEtternavn("Lønning");
@@ -145,6 +147,7 @@ public class TestData {
         avtale.setAvtaleInngått(Now.localDateTime());
         avtale.setGodkjentAvNavIdent(TestData.enNavIdent());
         avtale.setIkrafttredelsestidspunkt(Now.localDateTime());
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
         avtale.setJournalpostId("1");
         return avtale;
     }
@@ -340,7 +343,7 @@ public class TestData {
     }
 
     public static Arbeidsgiver enArbeidsgiver() {
-        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of(), null, null);
+        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of(), null, null,  null);
     }
 
     public static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
@@ -349,6 +352,7 @@ public class TestData {
                 Set.of(new AltinnReportee("Bedriftnavn", "", null, avtale.getBedriftNr().asString(), "", ""))
                 , Map.of(avtale.getBedriftNr(),
                 List.of(Tiltakstype.values())),
+                null,
                 null,
                 null);
     }
@@ -359,10 +363,14 @@ public class TestData {
 
     public static Veileder enVeileder(Avtale avtale) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        VeilarbArenaClient veilarbArenaClient = mock(VeilarbArenaClient.class);
         KontoregisterService kontoregisterService = mock(KontoregisterService.class);
+        AvtaleRepository avtaleRepository = mock(AvtaleRepository.class);
         lenient().when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(avtale.getVeilederNavIdent()), eq(avtale.getDeltakerFnr()))).thenReturn(true);
+        lenient().when(veilarbArenaClient.sjekkOgHentOppfølgingStatus(any()))
+                .thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
         return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
-                Set.of(new NavEnhet("4802", "Oslo gamlebyen")), new SlettemerkeProperties(), false);
+                Set.of(new NavEnhet("4802", "Oslo gamlebyen")), new SlettemerkeProperties(), false, veilarbArenaClient, avtaleRepository);
     }
 
     public static Beslutter enBeslutter(Avtale avtale) {
@@ -449,9 +457,10 @@ public class TestData {
     public static Veileder enVeileder(NavIdent navIdent) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         KontoregisterService kontoregisterService = mock(KontoregisterService.class);
+        AvtaleRepository avtaleRepository = mock(AvtaleRepository.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any())).thenReturn(true);
         return new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
-                Set.of(ENHET_OPPFØLGING), new SlettemerkeProperties(), false);
+                Set.of(ENHET_OPPFØLGING), new SlettemerkeProperties(), false, mock(VeilarbArenaClient.class), avtaleRepository);
     }
 
     public static Veileder enVeileder(Avtale avtale, PersondataService persondataService) {
@@ -459,7 +468,7 @@ public class TestData {
         KontoregisterService kontoregisterService = mock(KontoregisterService.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(avtale.getVeilederNavIdent(), avtale.getDeltakerFnr())).thenReturn(true);
         return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, persondataService, mock(Norg2Client.class),
-                Set.of(ENHET_OPPFØLGING), new SlettemerkeProperties(), false);
+                Set.of(ENHET_OPPFØLGING), new SlettemerkeProperties(), false, mock(VeilarbArenaClient.class), mock(AvtaleRepository.class));
     }
 
     public static PdlRespons enPdlrespons(boolean harKode6) {

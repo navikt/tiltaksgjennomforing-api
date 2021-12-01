@@ -8,6 +8,8 @@ import lombok.experimental.Delegate;
 import lombok.experimental.FieldNameConstants;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttDatoStrategyFactory;
+import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
@@ -73,6 +75,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private String enhetsnavnGeografisk;
     private String enhetOppfolging;
     private String enhetsnavnOppfolging;
+    @Enumerated(EnumType.STRING)
+    private Kvalifiseringsgruppe kvalifiseringsgruppe;
+    @Enumerated(EnumType.STRING)
+    private Formidlingsgruppe formidlingsgruppe;
 
 
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
@@ -718,7 +724,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     private List<TilskuddPeriode> beregnTilskuddsperioder(LocalDate startDato, LocalDate sluttDato) {
-        List<TilskuddPeriode> tilskuddsperioder = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForAvtale(getSumLonnstilskudd(), startDato, sluttDato, getLonnstilskuddProsent(), getDatoForRedusertProsent(), getSumLønnstilskuddRedusert());
+        List<TilskuddPeriode> tilskuddsperioder = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForAvtale(getSumLonnstilskudd(),
+                startDato, sluttDato, getLonnstilskuddProsent(), getDatoForRedusertProsent(), getSumLønnstilskuddRedusert());
         tilskuddsperioder.forEach(t -> t.setAvtale(this));
         tilskuddsperioder.forEach(t -> t.setEnhet(getEnhetKostnadssted()));
         tilskuddsperioder.forEach(t -> t.setEnhetsnavn(getEnhetsnavnKostnadssted()));
@@ -777,7 +784,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     private void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
-        StartOgSluttDatoStrategyFactory.create(getTiltakstype()).sjekkStartOgSluttDato(startDato, sluttDato);
+        StartOgSluttDatoStrategyFactory.create(getTiltakstype(), getKvalifiseringsgruppe()).sjekkStartOgSluttDato(startDato, sluttDato);
     }
 
     public void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning, NavIdent utførtAv) {

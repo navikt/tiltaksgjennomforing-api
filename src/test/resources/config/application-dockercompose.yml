@@ -54,6 +54,7 @@ tiltaksgjennomforing:
     mock: true
   veilarbarena:
     url: http://localhost:8090/veilarbarena/oppfolgingsstatus
+    nav-consumer-id: tiltaksgjennomforing-api
   norg2:
     geografisk:
       url: http://localhost:8090/norg2/api/v1/enhet/navkontor/

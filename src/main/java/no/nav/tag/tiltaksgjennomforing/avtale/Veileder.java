@@ -6,6 +6,8 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
+import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
+import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
@@ -16,8 +18,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 
-import static java.util.Collections.emptyList;
 import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
 
@@ -32,9 +34,19 @@ public class Veileder extends Avtalepart<NavIdent> {
     private final boolean harAdGruppeForBeslutter;
     private final Norg2Client norg2Client;
     private final Set<NavEnhet> navEnheter;
+    private final VeilarbArenaClient veilarbArenaClient;
+    private final AvtaleRepository avtaleRepository;
 
-    public Veileder(NavIdent identifikator, TilgangskontrollService tilgangskontrollService, PersondataService persondataService,
-                    Norg2Client norg2Client, Set<NavEnhet> navEnheter, SlettemerkeProperties slettemerkeProperties, boolean harAdGruppeForBeslutter) {
+    public Veileder(NavIdent identifikator,
+                    TilgangskontrollService tilgangskontrollService,
+                    PersondataService persondataService,
+                    Norg2Client norg2Client,
+                    Set<NavEnhet> navEnheter,
+                    SlettemerkeProperties slettemerkeProperties,
+                    boolean harAdGruppeForBeslutter,
+                    VeilarbArenaClient veilarbArenaClient,
+                    AvtaleRepository avtaleRepository) {
+
         super(identifikator);
         this.tilgangskontrollService = tilgangskontrollService;
         this.persondataService = persondataService;
@@ -42,6 +54,8 @@ public class Veileder extends Avtalepart<NavIdent> {
         this.navEnheter = navEnheter;
         this.slettemerkeProperties = slettemerkeProperties;
         this.harAdGruppeForBeslutter = harAdGruppeForBeslutter;
+        this.veilarbArenaClient = veilarbArenaClient;
+        this.avtaleRepository = avtaleRepository;
     }
 
     @Override
@@ -142,6 +156,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
+        veilarbArenaClient.sjekkOppfølingStatus(avtale);
         avtale.godkjennForVeileder(getIdentifikator());
     }
 
@@ -160,6 +175,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
+        veilarbArenaClient.sjekkOppfølingStatus(avtale);
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
     }
 
@@ -168,6 +184,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
+        veilarbArenaClient.sjekkOppfølingStatus(avtale);
         avtale.godkjennForVeilederOgArbeidsgiver(getIdentifikator(), paVegneAvArbeidsgiverGrunn);
     }
 
@@ -176,6 +193,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
+        veilarbArenaClient.sjekkOppfølingStatus(avtale);
         avtale.godkjennForVeilederOgDeltakerOgArbeidsgiver(getIdentifikator(), paVegneAvDeltakerOgArbeidsgiverGrunn);
     }
 
@@ -251,6 +269,7 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     public void forlengAvtale(LocalDate sluttDato, Avtale avtale) {
         sjekkTilgang(avtale);
+        sjekkOgHentOppfølgingStatus(avtale);
         avtale.forlengAvtale(sluttDato, getIdentifikator());
     }
 
@@ -280,6 +299,28 @@ public class Veileder extends Avtalepart<NavIdent> {
         avtale.sendTilbakeTilBeslutter();
     }
 
+    public void sjekkOgHentOppfølgingStatus(Avtale avtale) {
+        Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
+        this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
+    }
+
+    private void hentOppfølgingStatus(Avtale avtale) {
+        Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.hentOppfølgingStatus(avtale.getDeltakerFnr().asString());
+        if (oppfølgingsstatus != null &&
+                (oppfølgingsstatus.getKvalifiseringsgruppe() != avtale.getKvalifiseringsgruppe() ||
+                        oppfølgingsstatus.getFormidlingsgruppe() != avtale.getFormidlingsgruppe())
+        ) {
+            this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
+            avtaleRepository.save(avtale);
+        }
+    }
+
+    private void settOppfølgingsStatus(Avtale avtale, Oppfølgingsstatus oppfølgingsstatus) {
+        avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
+        avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
+        avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
+    }
+
     protected void oppdatereKostnadssted(Avtale avtale, Norg2Client norg2Client, String enhet) {
         final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetsnavn(enhet);
         if (response != null) {
@@ -292,5 +333,12 @@ public class Veileder extends Avtalepart<NavIdent> {
         } else {
             throw new FeilkodeException(Feilkode.ENHET_FINNES_IKKE);
         }
+    }
+
+    @Override
+    public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
+        Avtale avtale = super.hentAvtale(avtaleRepository, avtaleId);
+        this.hentOppfølgingStatus(avtale);
+        return avtale;
     }
 }

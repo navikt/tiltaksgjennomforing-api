@@ -38,7 +38,6 @@ public class AvtaleController {
     private final AvtaleRepository avtaleRepository;
     private final InnloggingService innloggingService;
     private final EregService eregService;
-    private final VeilarbArenaClient veilarbArenaClient;
     private final Norg2Client norg2Client;
     private final KontoregisterService kontoregisterService;
     private final DokgenService dokgenService;
@@ -154,7 +153,7 @@ public class AvtaleController {
         Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
-        avtale.setEnhetOppfolging(veilarbArenaClient.hentOppfølgingsEnhet(avtale.getDeltakerFnr().asString()));
+        arbeidsgiver.hentOgSettOppfølgingStatus(avtale);
         arbeidsgiver.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
@@ -170,7 +169,7 @@ public class AvtaleController {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
-        avtale.setEnhetOppfolging(veilarbArenaClient.hentOppfølgingsEnhet(avtale.getDeltakerFnr().asString()));
+        veileder.sjekkOgHentOppfølgingStatus(avtale);
         veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());

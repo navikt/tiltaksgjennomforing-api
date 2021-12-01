@@ -2,17 +2,14 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
-import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeAdminTilgangException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
-import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
+import no.nav.tag.tiltaksgjennomforing.enhet.*;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.List;
 import java.util.Set;
@@ -157,6 +154,8 @@ public class VeilederTest {
         PersondataService persondataService = mock(PersondataService.class);
         Norg2Client norg2Client = mock(Norg2Client.class);
         final PdlRespons pdlRespons = TestData.enPdlrespons(false);
+        VeilarbArenaClient veilarbArenaClient = mock(VeilarbArenaClient.class);
+        AvtaleRepository avtaleRepository = mock(AvtaleRepository.class);
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(TestData.enNavIdent()), eq(TestData.etFodselsnummer()))).thenReturn(true);
         when(persondataService.hentPersondata(TestData.etFodselsnummer())).thenReturn(pdlRespons);
@@ -164,7 +163,7 @@ public class VeilederTest {
         when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel())).thenReturn(new Norg2GeoResponse(TestData.ENHET_GEOGRAFISK.getNavn(), TestData.ENHET_GEOGRAFISK.getVerdi()));
 
         Veileder veileder = new Veileder(TestData.enNavIdent(), tilgangskontrollService, persondataService, norg2Client,
-                Set.of(TestData.ENHET_GEOGRAFISK), new SlettemerkeProperties(), false);
+                Set.of(TestData.ENHET_GEOGRAFISK), new SlettemerkeProperties(), false, veilarbArenaClient, avtaleRepository);
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
 
         assertThat(avtale.getVeilederNavIdent()).isEqualTo(TestData.enNavIdent());
@@ -191,7 +190,7 @@ public class VeilederTest {
 
         SlettemerkeProperties slettemerkeProperties = new SlettemerkeProperties();
         slettemerkeProperties.setIdent(List.of(navIdent));
-        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class), Set.of(new NavEnhet("4802", "Trysil")), slettemerkeProperties, false);
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class), Set.of(new NavEnhet("4802", "Trysil")), slettemerkeProperties, false, mock(VeilarbArenaClient.class), mock(AvtaleRepository.class));
         veileder.slettemerk(avtale);
         assertThat(avtale.isSlettemerket()).isTrue();
     }
@@ -207,7 +206,7 @@ public class VeilederTest {
 
         SlettemerkeProperties slettemerkeProperties = new SlettemerkeProperties();
         slettemerkeProperties.setIdent(List.of(new NavIdent("Z123456")));
-        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class), Set.of(new NavEnhet("4802", "Trysil")), slettemerkeProperties, false);
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class), Set.of(new NavEnhet("4802", "Trysil")), slettemerkeProperties, false, mock(VeilarbArenaClient.class), mock(AvtaleRepository.class));
         assertThatThrownBy(() -> veileder.slettemerk(avtale)).isExactlyInstanceOf(IkkeAdminTilgangException.class);
     }
 
@@ -217,5 +216,15 @@ public class VeilederTest {
         avtale.setSlettemerket(true);
         Veileder veileder = TestData.enVeileder(avtale);
         assertThat(veileder.harTilgang(avtale)).isFalse();
+    }
+
+    @Test
+    public void opprettelse_av_tiltak_med_forskjellige_kvalifiseringskoder(){
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        Oppfølgingsstatus oppfølgingsstatus = new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.IKKE_VURDERT, "0906");
+        VeilarbArenaClient veilarbArenaClient = Mockito.spy(new VeilarbArenaClient(null, null));
+        Mockito.doReturn(oppfølgingsstatus).when(veilarbArenaClient).hentOppfølgingStatus(Mockito.anyString());
+
+        assertThatThrownBy(() -> veilarbArenaClient.sjekkOppfølingStatus(avtale)).isExactlyInstanceOf(FeilkodeException.class).hasMessage(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET.name());
     }
 }

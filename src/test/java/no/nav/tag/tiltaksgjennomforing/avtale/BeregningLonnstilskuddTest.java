@@ -4,6 +4,8 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.MIDLERTIDIG_LON
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.math.BigDecimal;
+
+import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +17,7 @@ class BeregningLonnstilskuddTest {
     @BeforeEach
     public void setUp() {
         avtaleInnhold = new AvtaleInnhold();
-        strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, MIDLERTIDIG_LONNSTILSKUDD);
+        strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, MIDLERTIDIG_LONNSTILSKUDD, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
     }
 
     @Test

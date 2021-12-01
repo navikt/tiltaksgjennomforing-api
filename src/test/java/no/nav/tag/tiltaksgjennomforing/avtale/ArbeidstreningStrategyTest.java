@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +17,7 @@ class ArbeidstreningStrategyTest {
     @BeforeEach
     private void setUp() {
         avtaleInnhold = new AvtaleInnhold();
-        strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, Tiltakstype.ARBEIDSTRENING);
+        strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, Tiltakstype.ARBEIDSTRENING, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
     }
 
     @Test

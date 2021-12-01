@@ -1,20 +1,19 @@
 {
   "mappings": [
     {
-      "priority": 2,
+      "priority": 1,
       "request": {
         "method": "GET",
-        "urlPattern": "/veilarbarena/oppfolgingsstatus/([0-9]*)\\d{11}"
+        "urlPattern": "^.*\\/veilarbarena\\/api\\/arena\\/status\\?fnr=31129118213"
       },
       "response": {
         "status": 200,
         "jsonBody": {
           "rettighetsgruppe": "IYT",
           "formidlingsgruppe": "ARBS",
-          "servicegruppe": "IVURD",
+          "kvalifiseringsgruppe": "BFORM",
           "oppfolgingsenhet": "0906",
-          "inaktiveringsdato": null,
-          "kanEnkeltReaktiveres": null
+          "iservFraDato": null
         },
         "headers": {
           "Content-Type": "application/json"
@@ -25,11 +24,17 @@
       "priority": 1,
       "request": {
         "method": "GET",
-        "urlPattern": "/veilarbarena/oppfolgingsstatus/11111111111"
+        "urlPattern": "^.*\\/veilarbarena\\/api\\/arena\\/status\\?fnr=02104317386"
       },
       "response": {
-        "status": 500,
-        "jsonBody": {},
+        "status": 200,
+        "jsonBody": {
+          "rettighetsgruppe": "IYT",
+          "formidlingsgruppe": "ARBS",
+          "kvalifiseringsgruppe": "IVURD",
+          "oppfolgingsenhet": "0906",
+          "iservFraDato": null
+        },
         "headers": {
           "Content-Type": "application/json"
         }
@@ -39,7 +44,47 @@
       "priority": 1,
       "request": {
         "method": "GET",
-        "urlPattern": "/veilarbarena/oppfolgingsstatus/22222222222"
+        "urlPattern": "^.*\\/veilarbarena\\/api\\/arena\\/status\\?fnr=12345678901"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "rettighetsgruppe": "IYT",
+          "formidlingsgruppe": "IJOBS",
+          "kvalifiseringsgruppe": "IVURD",
+          "oppfolgingsenhet": "0906",
+          "iservFraDato": null
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPattern": "^.*\\/veilarbarena\\/api\\/arena\\/status\\?fnr=11111111111"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "rettighetsgruppe": "IYT",
+          "formidlingsgruppe": "IJOBS",
+          "kvalifiseringsgruppe": "BFORM",
+          "oppfolgingsenhet": "0906",
+          "iservFraDato": null
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPattern": "/veilarbarena/api/arena/status?fnr=22222222222"
       },
       "response": {
         "status": 404,
@@ -52,7 +97,7 @@
       "priority": 1,
       "request": {
         "method": "GET",
-        "urlPattern": "/veilarbarena/oppfolgingsstatus/33333333333"
+        "urlPattern": "/veilarbarena/api/arena/status?fnr=33333333333"
       },
       "response": {
         "status": 404,
@@ -61,7 +106,27 @@
           "status": 404,
           "error": "Not Found",
           "message": "",
-          "path": "/veilarbarena/api/oppfolgingsstatus/33333333333"
+          "path": "/veilarbarena/api/arena/status?fnr=33333333333"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 2,
+      "request": {
+        "method": "GET",
+        "urlPattern": "^.*\\/veilarbarena\\/api\\/arena\\/status\\?fnr=((0[1-9]|[1-2][0-9]|31(?!(?:0[2469]|11))|30(?!02))(0[1-9]|1[0-2])\\d{7}$|[0-0]{11})$"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "rettighetsgruppe": "IYT",
+          "formidlingsgruppe": "ARBS",
+          "kvalifiseringsgruppe": "VARIG",
+          "oppfolgingsenhet": "0906",
+          "iservFraDato": null
         },
         "headers": {
           "Content-Type": "application/json"
