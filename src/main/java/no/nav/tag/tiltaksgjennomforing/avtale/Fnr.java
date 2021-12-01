@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
 import java.time.LocalDate;
 
@@ -28,19 +29,19 @@ public class Fnr extends Identifikator {
         if (this.asString().equals("00000000000")) {
             return false;
         }
-        return this.fødselsdato().isAfter(LocalDate.now().minusYears(16));
+        return this.fødselsdato().isAfter(Now.localDate().minusYears(16));
     }
 
     public boolean erOver30år() {
         if (this.asString().equals("00000000000")) {
             return false;
         }
-        return this.fødselsdato().isBefore(LocalDate.now().minusYears(30));
+        return this.fødselsdato().isBefore(Now.localDate().minusYears(30));
     }
 
     private static LocalDate førsteJanuarIÅr() {
-        return LocalDate.now()
-                .minusMonths(LocalDate.now().getMonthValue() - 1).minusDays(LocalDate.now().getDayOfMonth() - 1);
+        return Now.localDate()
+                .minusMonths(Now.localDate().getMonthValue() - 1).minusDays(Now.localDate().getDayOfMonth() - 1);
     }
 
     public boolean erOver30årFørsteJanuar() {

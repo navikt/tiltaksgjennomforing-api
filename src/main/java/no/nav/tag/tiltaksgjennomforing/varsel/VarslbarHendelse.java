@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GamleVerdier;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.events.VarslbarHendelseOppstaatt;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
@@ -32,7 +33,7 @@ public class VarslbarHendelse extends AbstractAggregateRoot<VarslbarHendelse> {
     public static VarslbarHendelse nyHendelse(Avtale avtale, VarslbarHendelseType varslbarHendelseType, GamleVerdier gamleVerdier) {
         VarslbarHendelse varslbarHendelse = new VarslbarHendelse();
         varslbarHendelse.id = UUID.randomUUID();
-        varslbarHendelse.tidspunkt = LocalDateTime.now();
+        varslbarHendelse.tidspunkt = Now.localDateTime();
         varslbarHendelse.avtaleId = avtale.getId();
         varslbarHendelse.varslbarHendelseType = varslbarHendelseType;
         varslbarHendelse.registerEvent(new VarslbarHendelseOppstaatt(avtale, varslbarHendelse, gamleVerdier));

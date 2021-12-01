@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import lombok.Data;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
 import javax.persistence.Convert;
 import javax.persistence.Entity;
@@ -32,7 +33,7 @@ public class AvtaleForkortetEntitet {
         this.id = UUID.randomUUID();
         this.avtaleId = avtale.getId();
         this.avtaleInnholdId = avtaleInnhold.getId();
-        this.tidspunkt = Instant.now();
+        this.tidspunkt = Now.instant();
         this.utførtAv = utførtAv;
         this.nySluttDato = nySluttDato;
         this.grunn = grunn;

@@ -3,13 +3,13 @@ package no.nav.tag.tiltaksgjennomforing.journalfoering;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -79,10 +79,10 @@ public class InternalAvtaleControllerTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         avtale.setId(AVTALE_ID_1);
         Avtale avtale2 = TestData.enAvtaleMedFlereVersjoner();
-        avtale2.getVersjoner().get(0).setGodkjentAvVeileder(LocalDateTime.now());
+        avtale2.getVersjoner().get(0).setGodkjentAvVeileder(Now.localDateTime());
         avtale2.setId(AVTALE_ID_2);
         Avtale avtale3 = TestData.enAvtaleMedFlereVersjoner();
-        avtale3.getVersjoner().get(0).setGodkjentAvVeileder(LocalDateTime.now());
+        avtale3.getVersjoner().get(0).setGodkjentAvVeileder(Now.localDateTime());
         avtale3.setId(AVTALE_ID_3);
         return Arrays.asList(avtale, avtale2, avtale3);
     }

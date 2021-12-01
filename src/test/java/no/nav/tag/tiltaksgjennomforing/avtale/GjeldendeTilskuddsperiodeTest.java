@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -11,12 +12,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class GjeldendeTilskuddsperiodeTest {
 
     // 1 og 4
-    // Bør skrives om til å bruke fastsatte tider, i stedet for LocalDate.now(). Slik den er nå utledes det 4 perioder
+    // Bør skrives om til å bruke fastsatte tider, i stedet for Now.localDate(). Slik den er nå utledes det 4 perioder
     // hvis avtalestart blir før nyttår og avtaleslutt er etter nyttår. 3 perioder utledes hvis avtalestart og avtaleslutt er innenfor samme år.
     @Test
     public void godkjenner_og_neste_kan_behandles() {
-        LocalDate avtaleStart = LocalDate.now().minusMonths(3).plusDays(13);
-        LocalDate avtaleSlutt = LocalDate.now().plusMonths(6);
+        LocalDate avtaleStart = Now.localDate().minusMonths(3).plusDays(13);
+        LocalDate avtaleSlutt = Now.localDate().plusMonths(6);
         Avtale avtale = enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
 
         // 4
@@ -41,8 +42,8 @@ public class GjeldendeTilskuddsperiodeTest {
     // 2
     @Test
     public void en_periode() {
-        LocalDate avtaleStart = LocalDate.now();
-        LocalDate avtaleSlutt = LocalDate.now();
+        LocalDate avtaleStart = Now.localDate();
+        LocalDate avtaleSlutt = Now.localDate();
         Avtale avtale = enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
         assertThat(avtale.tilskuddsperiode(0)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
     }
@@ -50,8 +51,8 @@ public class GjeldendeTilskuddsperiodeTest {
     // 5
     @Test
     public void frem_i_tid() {
-        LocalDate avtaleStart = LocalDate.now().plusDays(15);
-        LocalDate avtaleSlutt = LocalDate.now().plusMonths(8);
+        LocalDate avtaleStart = Now.localDate().plusDays(15);
+        LocalDate avtaleSlutt = Now.localDate().plusMonths(8);
         Avtale avtale = enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
         assertThat(avtale.tilskuddsperiode(0)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
     }
@@ -59,8 +60,8 @@ public class GjeldendeTilskuddsperiodeTest {
     // 6
     @Test
     public void første_avslått__neste_kan_behandles() {
-        LocalDate avtaleStart = LocalDate.now().minusMonths(6);
-        LocalDate avtaleSlutt = LocalDate.now().plusMonths(8);
+        LocalDate avtaleStart = Now.localDate().minusMonths(6);
+        LocalDate avtaleSlutt = Now.localDate().plusMonths(8);
         Avtale avtale = enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
         avtale.avslåTilskuddsperiode(TestData.enNavIdent2(), EnumSet.of(Avslagsårsak.ANNET), "Forklaring");
         assertThat(avtale.tilskuddsperiode(0)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
@@ -69,8 +70,8 @@ public class GjeldendeTilskuddsperiodeTest {
     // 7
     @Test
     public void første_avslått__neste_kan_ikke_behandles() {
-        LocalDate avtaleStart = LocalDate.now();
-        LocalDate avtaleSlutt = LocalDate.now().plusMonths(8);
+        LocalDate avtaleStart = Now.localDate();
+        LocalDate avtaleSlutt = Now.localDate().plusMonths(8);
         Avtale avtale = enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
         avtale.avslåTilskuddsperiode(TestData.enNavIdent2(), EnumSet.of(Avslagsårsak.ANNET), "Forklaring");
         assertThat(avtale.tilskuddsperiode(0)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
@@ -79,13 +80,15 @@ public class GjeldendeTilskuddsperiodeTest {
     // 8
     @Test
     public void godkjenner_og_neste_kan_ikke_behandles() {
-        LocalDate avtaleStart = LocalDate.now();
-        LocalDate avtaleSlutt = LocalDate.now().plusMonths(6);
+        Now.fixedDate(LocalDate.of(2021, 11, 30));
+        LocalDate avtaleStart = Now.localDate();
+        LocalDate avtaleSlutt = Now.localDate().plusMonths(6);
         Avtale avtale = enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
         assertThat(avtale.gjeldendeTilskuddsperiode().getStartDato()).isEqualTo(avtaleStart);
         avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), avtale.getEnhetGeografisk());
         assertThat(avtale.gjeldendeTilskuddsperiode().getStartDato()).isEqualTo(avtaleStart);
         assertThat(avtale.gjeldendeTilskuddsperiode().getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
+        Now.resetClock();
     }
 
 
