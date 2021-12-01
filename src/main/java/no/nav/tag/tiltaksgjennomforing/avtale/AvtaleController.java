@@ -51,6 +51,7 @@ public class AvtaleController {
     }
 
     @GetMapping
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public List<Avtale> hentAlleAvtalerInnloggetBrukerHarTilgangTil(AvtalePredicate queryParametre,
                                                                     @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
                                                                     @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
