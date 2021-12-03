@@ -54,10 +54,6 @@ public class VeilarbArenaClient {
             throw new FeilkodeException(Feilkode.HENTING_AV_INNSATS_BEHOV_FEILET);
         }
 
-        if (Formidlingsgruppe.ugyldigFormidlingsgruppe(oppfølgingStatus.getFormidlingsgruppe())) {
-            throw new FeilkodeException(Feilkode.FORMIDLINGSGRUPPE_IKKE_RETTIGHET);
-        }
-
         if (Kvalifiseringsgruppe.ugyldigKvalifiseringsgruppe(oppfølgingStatus.getKvalifiseringsgruppe())) {
             throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET);
         }

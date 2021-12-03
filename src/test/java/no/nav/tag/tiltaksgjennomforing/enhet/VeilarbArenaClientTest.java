@@ -35,18 +35,6 @@ class VeilarbArenaClientTest {
     }
 
     @Test
-    public void sjekkAt_formidlingsgruppe_som_faller_utenfor_kaster_exception() {
-        String fnr_har_formidlingsgruppe_med_kode_IJOBS = "12345678901";
-        final Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
-        avtale.setDeltakerFnr(new Fnr(fnr_har_formidlingsgruppe_med_kode_IJOBS));
-        avtale.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
-
-        assertThatThrownBy(() -> veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale))
-                .isExactlyInstanceOf(FeilkodeException.class)
-                .hasMessage(Feilkode.FORMIDLINGSGRUPPE_IKKE_RETTIGHET.name());
-    }
-
-    @Test
     public void sjekkAt_kvalifiseringsgruppe_som_faller_utenfor_kaster_exception() {
         String fnr_har_kvalifiseringsgruppe_med_kode_IVURD = "02104317386";
         final Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
