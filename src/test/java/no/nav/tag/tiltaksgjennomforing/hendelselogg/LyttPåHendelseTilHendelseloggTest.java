@@ -5,6 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarselRepository;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.ArbeidsgiverNotifikasjonRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +32,14 @@ class LyttPåHendelseTilHendelseloggTest {
     HendelseloggRepository hendelseloggRepository;
     @Autowired
     VarselRepository varselRepository;
+    @Autowired
+    ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
 
     @BeforeEach
     public void setup() {
         hendelseloggRepository.deleteAll();
         varselRepository.deleteAll();
+        arbeidsgiverNotifikasjonRepository.deleteAll();
         avtaleRepository.deleteAll();
     }
 
