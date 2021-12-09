@@ -1,9 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import java.time.LocalDate;
-
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
+
+import java.time.LocalDate;
 
 public class MidlertidigLonnstilskuddStrategy extends LonnstilskuddStrategy {
     Kvalifiseringsgruppe kvalifiseringsgruppe;
@@ -26,7 +26,7 @@ public class MidlertidigLonnstilskuddStrategy extends LonnstilskuddStrategy {
     }
 
     @Override
-    void regnUtTotalLonnstilskudd() {
+    public void regnUtTotalLonnstilskudd() {
         super.regnUtTotalLonnstilskudd();
         regnUtDatoOgSumRedusert();
     }

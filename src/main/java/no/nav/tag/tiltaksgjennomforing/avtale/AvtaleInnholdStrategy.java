@@ -8,6 +8,8 @@ public interface AvtaleInnholdStrategy {
     default void endreTilskuddsberegning(EndreTilskuddsberegning endreTilskuddsberegning) {
         throw new RuntimeException("Ikke implementert");
     }
+    default void regnUtTotalLonnstilskudd() {
+    }
     Map<String, Object> alleFelterSomMåFyllesUt();
 
     void endreSluttDato(LocalDate nySluttDato);

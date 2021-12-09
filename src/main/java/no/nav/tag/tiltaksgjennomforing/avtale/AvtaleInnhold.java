@@ -195,6 +195,10 @@ public class AvtaleInnhold {
         innholdStrategi().endreTilskuddsberegning(tilskuddsberegning);
     }
 
+    public void reberegnLønnstilskudd() {
+        innholdStrategi().regnUtTotalLonnstilskudd();
+    }
+
     public void endreKontaktInfo(EndreKontaktInformasjon endreKontaktInformasjon) {
         setDeltakerFornavn(endreKontaktInformasjon.getDeltakerFornavn());
         setDeltakerEtternavn(endreKontaktInformasjon.getDeltakerEtternavn());
