@@ -14,14 +14,17 @@ public class SommerjobbStrategy extends LonnstilskuddStrategy {
     @Override
     public void endre(EndreAvtale endreAvtale) {
         endreAvtale.setStillingstype(Stillingstype.MIDLERTIDIG);
-        if(kvalifiseringsgruppe != null) {
-            final EndreAvtale endreAvtaleMedOppdatertProsentsats = settTilskuddsprosentSats(endreAvtale);
-            sjekkSommerjobbProsentsats(endreAvtaleMedOppdatertProsentsats);
-            super.endre(endreAvtaleMedOppdatertProsentsats);
-        }else {
-            sjekkSommerjobbProsentsats(endreAvtale);
-            super.endre(endreAvtale);
-        }
+        sjekkSommerjobbProsentsats(endreAvtale);
+        super.endre(endreAvtale);
+        // Midlertidig skrudd av utleding av lønnstilskuddprosent fra kvalifiseringsgruppe for å åpne for etterregistrering.
+//        if(kvalifiseringsgruppe != null) {
+//            final EndreAvtale endreAvtaleMedOppdatertProsentsats = settTilskuddsprosentSats(endreAvtale);
+//            sjekkSommerjobbProsentsats(endreAvtaleMedOppdatertProsentsats);
+//            super.endre(endreAvtaleMedOppdatertProsentsats);
+//        }else {
+//            sjekkSommerjobbProsentsats(endreAvtale);
+//            super.endre(endreAvtale);
+//        }
     }
 
     private void sjekkSommerjobbProsentsats(EndreAvtale endreAvtale) {
