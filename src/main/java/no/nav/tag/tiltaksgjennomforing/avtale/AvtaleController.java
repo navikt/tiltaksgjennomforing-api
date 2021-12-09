@@ -7,7 +7,6 @@ import no.nav.security.token.support.core.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.dokgen.DokgenService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
@@ -92,8 +91,7 @@ public class AvtaleController {
             @PathVariable("avtaleId") UUID avtaleId,
             @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
             @RequestBody EndreAvtale endreAvtale,
-            @CookieValue("innlogget-part") Avtalerolle innloggetPart)
-    {
+            @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
@@ -169,8 +167,10 @@ public class AvtaleController {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
-        veileder.sjekkOgHentOppfølgingStatus(avtale);
-        veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
+        if (opprettAvtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
+            veileder.sjekkOgHentOppfølgingStatus(avtale);
+            veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
+        }
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();

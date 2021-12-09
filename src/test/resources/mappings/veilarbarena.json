@@ -114,6 +114,31 @@
       }
     },
     {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPath": "/veilarbarena/api/arena/status",
+        "queryParameters": {
+          "fnr": {
+            "equalTo": "06109845173"
+          }
+        }
+      },
+      "response": {
+        "status": 404,
+        "jsonBody": {
+          "timestamp": "2021-01-04T13:06:25.211+00:00",
+          "status": 404,
+          "error": "Not Found",
+          "message": "",
+          "path": "/veilarbarena/api/arena/status?fnr=06109845173"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
       "priority": 2,
       "request": {
         "method": "GET",
