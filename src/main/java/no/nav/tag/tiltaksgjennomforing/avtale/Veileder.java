@@ -151,7 +151,9 @@ public class Veileder extends Avtalepart<NavIdent> {
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
-        veilarbArenaClient.sjekkOppfølingStatus(avtale);
+        if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
+            veilarbArenaClient.sjekkOppfølingStatus(avtale);
+        }
         avtale.godkjennForVeileder(getIdentifikator());
     }
 
@@ -170,7 +172,9 @@ public class Veileder extends Avtalepart<NavIdent> {
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
-        veilarbArenaClient.sjekkOppfølingStatus(avtale);
+        if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
+            veilarbArenaClient.sjekkOppfølingStatus(avtale);
+        }
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
     }
 
@@ -179,7 +183,9 @@ public class Veileder extends Avtalepart<NavIdent> {
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
-        veilarbArenaClient.sjekkOppfølingStatus(avtale);
+        if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
+            veilarbArenaClient.sjekkOppfølingStatus(avtale);
+        }
         avtale.godkjennForVeilederOgArbeidsgiver(getIdentifikator(), paVegneAvArbeidsgiverGrunn);
     }
 
@@ -188,7 +194,9 @@ public class Veileder extends Avtalepart<NavIdent> {
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
-        veilarbArenaClient.sjekkOppfølingStatus(avtale);
+        if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
+            veilarbArenaClient.sjekkOppfølingStatus(avtale);
+        }
         avtale.godkjennForVeilederOgDeltakerOgArbeidsgiver(getIdentifikator(), paVegneAvDeltakerOgArbeidsgiverGrunn);
     }
 

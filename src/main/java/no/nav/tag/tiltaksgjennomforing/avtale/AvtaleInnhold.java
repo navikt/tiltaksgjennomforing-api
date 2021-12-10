@@ -192,7 +192,8 @@ public class AvtaleInnhold {
     }
 
     private boolean tiltakstypeHarFastsattLonnstilskuddsprosentsatsUtIfraKvalifiseringsgruppe() {
-        return avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || avtale.getTiltakstype() == Tiltakstype.SOMMERJOBB;
+        // Midlertidig skrudd av utleding av lønnstilskuddprosent fra kvalifiseringsgruppe for å åpne for etterregistrering.
+        return avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD;  // || avtale.getTiltakstype() == Tiltakstype.SOMMERJOBB;
     }
 
     public boolean skalJournalfores() {
@@ -201,6 +202,10 @@ public class AvtaleInnhold {
 
     public void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning) {
         innholdStrategi().endreTilskuddsberegning(tilskuddsberegning);
+    }
+
+    public void reberegnLønnstilskudd() {
+        innholdStrategi().regnUtTotalLonnstilskudd();
     }
 
     public void endreKontaktInfo(EndreKontaktInformasjon endreKontaktInformasjon) {
