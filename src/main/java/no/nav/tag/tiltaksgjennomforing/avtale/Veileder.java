@@ -156,7 +156,9 @@ public class Veileder extends Avtalepart<NavIdent> {
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
-        veilarbArenaClient.sjekkOppfølingStatus(avtale);
+        if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
+            veilarbArenaClient.sjekkOppfølingStatus(avtale);
+        }
         avtale.godkjennForVeileder(getIdentifikator());
     }
 
