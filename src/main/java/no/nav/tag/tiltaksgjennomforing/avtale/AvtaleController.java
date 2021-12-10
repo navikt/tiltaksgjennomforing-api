@@ -42,6 +42,7 @@ public class AvtaleController {
     private final KontoregisterService kontoregisterService;
     private final DokgenService dokgenService;
     private final TilskuddsperiodeConfig tilskuddsperiodeConfig;
+    private final VeilarbArenaClient veilarbArenaClient;
 
     @GetMapping("/{avtaleId}")
     public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
@@ -97,6 +98,7 @@ public class AvtaleController {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
+        avtalepart.hentOppfølgingStatus(avtale, veilarbArenaClient);
         avtalepart.endreAvtale(sistEndret, endreAvtale, avtale, tilskuddsperiodeConfig.getTiltakstyper());
         Avtale lagretAvtale = avtaleRepository.save(avtale);
         return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
@@ -169,7 +171,8 @@ public class AvtaleController {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
-        veileder.sjekkOgHentOppfølgingStatus(avtale);
+        veileder.sjekkOgHentOppfølgingStatus(avtale, veilarbArenaClient);
+        veileder.settLonntilskuddsprosentsatsVedOpprettelseAvAvtale(avtale);
         veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());

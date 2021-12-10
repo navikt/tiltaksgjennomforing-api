@@ -172,7 +172,11 @@ public class AvtaleInnhold {
     }
 
     void endreAvtale(EndreAvtale nyAvtale) {
-        innholdStrategi().endre(nyAvtale);
+        if (tiltakstypeHarFastsattLonnstilskuddsprosentsatsUtIfraKvalifiseringsgruppe()) {
+            innholdStrategi().endreAvtaleInnholdMedKvalifiseringsgruppe(nyAvtale, avtale.getKvalifiseringsgruppe());
+        } else {
+            innholdStrategi().endre(nyAvtale);
+        }
     }
 
     public Set<String> felterSomIkkeErFyltUt() {
@@ -184,7 +188,11 @@ public class AvtaleInnhold {
     }
 
     private AvtaleInnholdStrategy innholdStrategi() {
-        return AvtaleInnholdStrategyFactory.create(this, avtale.getTiltakstype(), avtale.getKvalifiseringsgruppe());
+        return AvtaleInnholdStrategyFactory.create(this, avtale.getTiltakstype());
+    }
+
+    private boolean tiltakstypeHarFastsattLonnstilskuddsprosentsatsUtIfraKvalifiseringsgruppe() {
+        return avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || avtale.getTiltakstype() == Tiltakstype.SOMMERJOBB;
     }
 
     public boolean skalJournalfores() {

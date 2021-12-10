@@ -6,23 +6,26 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
 
 public class MidlertidigLonnstilskuddStrategy extends LonnstilskuddStrategy {
-    Kvalifiseringsgruppe kvalifiseringsgruppe;
 
-    public MidlertidigLonnstilskuddStrategy(AvtaleInnhold avtaleInnhold, Kvalifiseringsgruppe kvalifiseringsgruppe) {
+    public MidlertidigLonnstilskuddStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
-        this.kvalifiseringsgruppe = kvalifiseringsgruppe;
+    }
+
+    @Override
+    public void endreAvtaleInnholdMedKvalifiseringsgruppe(EndreAvtale endreAvtale, Kvalifiseringsgruppe kvalifiseringsgruppe) {
+        if (kvalifiseringsgruppe != null) {
+            final EndreAvtale endreAvtaleMedOppdatertProsentsats = settTilskuddsprosentSats(endreAvtale, kvalifiseringsgruppe);
+            this.endre(endreAvtaleMedOppdatertProsentsats);
+        } else {
+            sjekktilskuddsprosentSats(endreAvtale);
+            super.endre(endreAvtale);
+        }
     }
 
     @Override
     public void endre(EndreAvtale endreAvtale) {
-        if(kvalifiseringsgruppe != null) {
-            final EndreAvtale endreAvtaleMedOppdatertProsentsats = settTilskuddsprosentSats(endreAvtale);
-            sjekktilskuddsprosentSats(endreAvtaleMedOppdatertProsentsats);
-            super.endre(endreAvtaleMedOppdatertProsentsats);
-        }else {
-            sjekktilskuddsprosentSats(endreAvtale);
-            super.endre(endreAvtale);
-        }
+        sjekktilskuddsprosentSats(endreAvtale);
+        super.endre(endreAvtale);
     }
 
     @Override
@@ -38,7 +41,7 @@ public class MidlertidigLonnstilskuddStrategy extends LonnstilskuddStrategy {
         }
     }
 
-    private EndreAvtale settTilskuddsprosentSats(EndreAvtale endreAvtale) {
+    private EndreAvtale settTilskuddsprosentSats(EndreAvtale endreAvtale, Kvalifiseringsgruppe kvalifiseringsgruppe) {
         final Integer sats = kvalifiseringsgruppe.finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(40, 60);
         endreAvtale.setLonnstilskuddProsent(sats);
         return endreAvtale;

@@ -17,7 +17,7 @@ class BeregningLonnstilskuddTest {
     @BeforeEach
     public void setUp() {
         avtaleInnhold = new AvtaleInnhold();
-        strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, MIDLERTIDIG_LONNSTILSKUDD, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, MIDLERTIDIG_LONNSTILSKUDD);
     }
 
     @Test
