@@ -170,10 +170,10 @@ public class AvtaleController {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
-        veileder.settLonntilskuddsprosentsatsVedOpprettelseAvAvtale(avtale);
         if (opprettAvtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
             veileder.sjekkOgHentOppfølgingStatus(avtale, veilarbArenaClient);
             veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
+            veileder.settLonntilskuddsprosentsatsVedOpprettelseAvAvtale(avtale);
         }
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
