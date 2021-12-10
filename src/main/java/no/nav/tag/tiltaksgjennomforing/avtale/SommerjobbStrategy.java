@@ -24,6 +24,7 @@ public class SommerjobbStrategy extends LonnstilskuddStrategy {
     public void endre(EndreAvtale endreAvtale) {
         endreAvtale.setStillingstype(Stillingstype.MIDLERTIDIG);
         sjekkSommerjobbProsentsats(endreAvtale);
+        avtaleInnhold.setLonnstilskuddProsent(endreAvtale.getLonnstilskuddProsent());
         super.endre(endreAvtale);
     }
 

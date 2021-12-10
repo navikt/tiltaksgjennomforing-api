@@ -21,7 +21,6 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
             throw new FeilkodeException(Feilkode.FEIL_OTP_SATS);
         }
         avtaleInnhold.setArbeidsgiverKontonummer(nyAvtale.getArbeidsgiverKontonummer());
-        avtaleInnhold.setLonnstilskuddProsent(nyAvtale.getLonnstilskuddProsent());
         avtaleInnhold.setManedslonn(nyAvtale.getManedslonn());
         avtaleInnhold.setFeriepengesats(nyAvtale.getFeriepengesats());
         avtaleInnhold.setArbeidsgiveravgift(nyAvtale.getArbeidsgiveravgift());

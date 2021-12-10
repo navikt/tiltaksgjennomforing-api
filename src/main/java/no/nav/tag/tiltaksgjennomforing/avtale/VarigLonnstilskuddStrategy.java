@@ -14,6 +14,7 @@ public class VarigLonnstilskuddStrategy extends LonnstilskuddStrategy {
             endreAvtale.getLonnstilskuddProsent() < 0 || endreAvtale.getLonnstilskuddProsent() > 75)) {
             throw new FeilLonnstilskuddsprosentException();
         }
+        avtaleInnhold.setLonnstilskuddProsent(endreAvtale.getLonnstilskuddProsent());
         super.endre(endreAvtale);
     }
 
