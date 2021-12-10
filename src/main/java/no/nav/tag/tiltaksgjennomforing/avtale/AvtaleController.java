@@ -387,6 +387,7 @@ public class AvtaleController {
     public void settNyVeilederPåAvtale(@PathVariable("avtaleId") UUID avtaleId) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
         veileder.overtaAvtale(avtale);
         avtaleRepository.save(avtale);
     }

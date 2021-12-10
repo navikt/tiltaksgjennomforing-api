@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.hendelselogg;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarselRepository;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
@@ -158,6 +159,7 @@ class LyttPåHendelseTilHendelseloggTest {
 
     private Avtale harOpprettetAvtale() {
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS);
         avtaleRepository.save(avtale);
         return avtale;
     }

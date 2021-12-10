@@ -265,7 +265,6 @@ public class AvtaleTest {
                 AvtaleInnhold.Fields.stillingstype,
                 AvtaleInnhold.Fields.startDato,
                 AvtaleInnhold.Fields.sluttDato,
-                AvtaleInnhold.Fields.lonnstilskuddProsent,
                 AvtaleInnhold.Fields.arbeidsgiverKontonummer,
                 AvtaleInnhold.Fields.manedslonn,
                 AvtaleInnhold.Fields.feriepengesats,
@@ -685,6 +684,7 @@ public class AvtaleTest {
     @Test
     public void avtale_skal_kunne_godkjennes_når_den_erUfordelt() {
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.endreAvtale(Now.instant(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()));
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
         avtale.godkjennForDeltaker(TestData.enIdentifikator());
@@ -696,6 +696,7 @@ public class AvtaleTest {
     public void ufordelt_avtale_må_tildeles_før_veileder_godkjenner() {
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(
             new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.endreAvtale(Now.instant(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()));
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
         avtale.godkjennForDeltaker(TestData.enIdentifikator());
@@ -880,8 +881,8 @@ public class AvtaleTest {
     @Test
     public void forleng_og_forkort_skal_redusere_prosent() {
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
-        endreAvtale.setLonnstilskuddProsent(60);
         endreAvtale.setStartDato(Now.localDate());
         endreAvtale.setSluttDato(Now.localDate().plusMonths(12).minusDays(1));
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.noneOf(Tiltakstype.class));

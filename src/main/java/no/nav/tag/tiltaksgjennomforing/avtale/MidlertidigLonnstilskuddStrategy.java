@@ -14,8 +14,8 @@ public class MidlertidigLonnstilskuddStrategy extends LonnstilskuddStrategy {
     @Override
     public void endreAvtaleInnholdMedKvalifiseringsgruppe(EndreAvtale endreAvtale, Kvalifiseringsgruppe kvalifiseringsgruppe) {
         if (kvalifiseringsgruppe != null) {
-            final EndreAvtale endreAvtaleMedOppdatertProsentsats = settTilskuddsprosentSats(endreAvtale, kvalifiseringsgruppe);
-            this.endre(endreAvtaleMedOppdatertProsentsats);
+            settTilskuddsprosentSats(kvalifiseringsgruppe);
+            this.endre(endreAvtale);
         } else {
             sjekktilskuddsprosentSats(endreAvtale);
             super.endre(endreAvtale);
@@ -41,10 +41,9 @@ public class MidlertidigLonnstilskuddStrategy extends LonnstilskuddStrategy {
         }
     }
 
-    private EndreAvtale settTilskuddsprosentSats(EndreAvtale endreAvtale, Kvalifiseringsgruppe kvalifiseringsgruppe) {
+    private void settTilskuddsprosentSats(Kvalifiseringsgruppe kvalifiseringsgruppe) {
         final Integer sats = kvalifiseringsgruppe.finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(40, 60);
-        endreAvtale.setLonnstilskuddProsent(sats);
-        return endreAvtale;
+        avtaleInnhold.setLonnstilskuddProsent(sats);
     }
 
     private void regnUtDatoOgSumRedusert() {
