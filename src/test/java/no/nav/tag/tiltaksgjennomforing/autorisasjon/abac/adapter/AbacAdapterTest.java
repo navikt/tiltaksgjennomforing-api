@@ -3,14 +3,15 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ActiveProfiles({ Miljø.LOCAL, "wiremock" })
@@ -31,13 +32,12 @@ public class AbacAdapterTest {
     }
 
     @Test
-    public void skal_teste_abac_feiler_med_en_exception() {
-        assertThrows(TilgangskontrollException.class, () -> {
-            NavIdent veilederIdent = new NavIdent("F142226");
-            Fnr deltakerFnr = new Fnr("11111111111");
+    public void skal_teste_abac_feiler_gir_false() {
+        NavIdent veilederIdent = new NavIdent("F142226");
+        Fnr deltakerFnr = new Fnr("11111111111");
 
-            boolean verdic = abacAdapter.harLeseTilgang(veilederIdent, deltakerFnr);
-        });
+        boolean verdic = abacAdapter.harLeseTilgang(veilederIdent, deltakerFnr);
+        assertThat(verdic).isFalse();
     }
 
     @Test
