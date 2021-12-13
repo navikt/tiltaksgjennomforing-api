@@ -34,7 +34,7 @@ public class AbacAdapter {
             AbacResponse response = restTemplate.postForObject(abacProperties.getUri(), getHttpEntity(tilAbacRequestBody(navIdent.asString(), deltakerFnr.asString())), AbacResponse.class);
             return Objects.equals(response.response.decision, "Permit");
         } catch (RuntimeException ex) {
-            log.error("Abac feil: {}", ex);
+            log.error("Abac feil", ex);
             return false;
         }
     }
