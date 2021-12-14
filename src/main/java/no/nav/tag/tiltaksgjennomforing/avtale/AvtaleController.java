@@ -388,6 +388,7 @@ public class AvtaleController {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
+        veileder.sjekkOgHentOppfølgingStatus(avtale, veilarbArenaClient);
         veileder.overtaAvtale(avtale);
         avtaleRepository.save(avtale);
     }

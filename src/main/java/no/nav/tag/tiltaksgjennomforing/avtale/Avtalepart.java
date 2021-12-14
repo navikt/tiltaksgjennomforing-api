@@ -155,10 +155,8 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     public void hentOppfølgingStatus(Avtale avtale, VeilarbArenaClient veilarbArenaClient) {
         Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.hentOppfølgingStatus(avtale.getDeltakerFnr().asString());
-        if (oppfølgingsstatus != null &&
-                (oppfølgingsstatus.getKvalifiseringsgruppe() != avtale.getKvalifiseringsgruppe() ||
-                        oppfølgingsstatus.getFormidlingsgruppe() != avtale.getFormidlingsgruppe())
-        ) {
+        if (oppfølgingsstatus != null && (oppfølgingsstatus.getKvalifiseringsgruppe() != avtale.getKvalifiseringsgruppe() ||
+                oppfølgingsstatus.getFormidlingsgruppe() != avtale.getFormidlingsgruppe())) {
             this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
         }
     }
