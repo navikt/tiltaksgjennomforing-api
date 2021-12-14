@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.journalfoering;
 
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 @Timed
 @RequiredArgsConstructor
 @ProtectedWithClaims(issuer = "system")
+@Slf4j
 public class InternalAvtaleController {
 
     private final AvtaleInnholdRepository avtaleInnholdRepository;
@@ -27,10 +29,14 @@ public class InternalAvtaleController {
 
     @GetMapping
     public List<AvtaleTilJournalfoering> hentIkkeJournalfoerteAvtaler() {
-        innloggingService.validerSystembruker();
-        List<AvtaleInnhold> avtaleVersjoner = avtaleInnholdRepository.finnAvtaleVersjonerTilJournalfoering();
-        return avtaleVersjoner.stream().map(AvtaleTilJournalfoeringMapper::tilJournalfoering).collect(Collectors.toList());
-
+        try {
+            innloggingService.validerSystembruker();
+            List<AvtaleInnhold> avtaleVersjoner = avtaleInnholdRepository.finnAvtaleVersjonerTilJournalfoering();
+            return avtaleVersjoner.stream().map(AvtaleTilJournalfoeringMapper::tilJournalfoering).collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error("Feil ved henting av ikke-journalførte avtaler", e);
+            throw e;
+        }
     }
 
     @PutMapping
