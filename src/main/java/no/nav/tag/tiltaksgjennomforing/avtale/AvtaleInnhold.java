@@ -193,7 +193,7 @@ public class AvtaleInnhold {
 
     private boolean tiltakstypeHarFastsattLonnstilskuddsprosentsatsUtIfraKvalifiseringsgruppe() {
         // Midlertidig skrudd av utleding av lønnstilskuddprosent for Sommerjobb fra kvalifiseringsgruppe for å åpne for etterregistrering.
-        return avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD;  // || avtale.getTiltakstype() == Tiltakstype.SOMMERJOBB;
+        return avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD;
     }
 
     public boolean skalJournalfores() {

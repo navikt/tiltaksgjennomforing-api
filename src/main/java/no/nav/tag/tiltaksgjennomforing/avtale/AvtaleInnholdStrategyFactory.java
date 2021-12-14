@@ -1,7 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import lombok.experimental.UtilityClass;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 
 @UtilityClass
 public class AvtaleInnholdStrategyFactory {
