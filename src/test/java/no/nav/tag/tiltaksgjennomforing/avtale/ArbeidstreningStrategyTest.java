@@ -17,7 +17,7 @@ class ArbeidstreningStrategyTest {
     @BeforeEach
     private void setUp() {
         avtaleInnhold = new AvtaleInnhold();
-        strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, Tiltakstype.ARBEIDSTRENING, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, Tiltakstype.ARBEIDSTRENING);
     }
 
     @Test

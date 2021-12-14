@@ -21,7 +21,6 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
             throw new FeilkodeException(Feilkode.FEIL_OTP_SATS);
         }
         avtaleInnhold.setArbeidsgiverKontonummer(nyAvtale.getArbeidsgiverKontonummer());
-        avtaleInnhold.setLonnstilskuddProsent(nyAvtale.getLonnstilskuddProsent());
         avtaleInnhold.setManedslonn(nyAvtale.getManedslonn());
         avtaleInnhold.setFeriepengesats(nyAvtale.getFeriepengesats());
         avtaleInnhold.setArbeidsgiveravgift(nyAvtale.getArbeidsgiveravgift());
@@ -113,7 +112,6 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         alleFelter.put(AvtaleInnhold.Fields.stillingprosent, avtaleInnhold.getStillingprosent());
         alleFelter.put(AvtaleInnhold.Fields.arbeidsoppgaver, avtaleInnhold.getArbeidsoppgaver());
         alleFelter.put(AvtaleInnhold.Fields.arbeidsgiverKontonummer, avtaleInnhold.getArbeidsgiverKontonummer());
-        alleFelter.put(AvtaleInnhold.Fields.lonnstilskuddProsent, avtaleInnhold.getLonnstilskuddProsent());
         alleFelter.put(AvtaleInnhold.Fields.manedslonn, avtaleInnhold.getManedslonn());
         alleFelter.put(AvtaleInnhold.Fields.feriepengesats, avtaleInnhold.getFeriepengesats());
         alleFelter.put(AvtaleInnhold.Fields.otpSats, avtaleInnhold.getOtpSats());

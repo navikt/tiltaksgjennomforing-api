@@ -163,7 +163,7 @@ public class VeilederTest {
         when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel())).thenReturn(new Norg2GeoResponse(TestData.ENHET_GEOGRAFISK.getNavn(), TestData.ENHET_GEOGRAFISK.getVerdi()));
 
         Veileder veileder = new Veileder(TestData.enNavIdent(), tilgangskontrollService, persondataService, norg2Client,
-                Set.of(TestData.ENHET_GEOGRAFISK), new SlettemerkeProperties(), false, veilarbArenaClient, avtaleRepository);
+                Set.of(TestData.ENHET_GEOGRAFISK), new SlettemerkeProperties(), false, veilarbArenaClient);
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
 
         assertThat(avtale.getVeilederNavIdent()).isEqualTo(TestData.enNavIdent());
@@ -190,7 +190,7 @@ public class VeilederTest {
 
         SlettemerkeProperties slettemerkeProperties = new SlettemerkeProperties();
         slettemerkeProperties.setIdent(List.of(navIdent));
-        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class), Set.of(new NavEnhet("4802", "Trysil")), slettemerkeProperties, false, mock(VeilarbArenaClient.class), mock(AvtaleRepository.class));
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class), Set.of(new NavEnhet("4802", "Trysil")), slettemerkeProperties, false, mock(VeilarbArenaClient.class));
         veileder.slettemerk(avtale);
         assertThat(avtale.isSlettemerket()).isTrue();
     }
@@ -206,7 +206,7 @@ public class VeilederTest {
 
         SlettemerkeProperties slettemerkeProperties = new SlettemerkeProperties();
         slettemerkeProperties.setIdent(List.of(new NavIdent("Z123456")));
-        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class), Set.of(new NavEnhet("4802", "Trysil")), slettemerkeProperties, false, mock(VeilarbArenaClient.class), mock(AvtaleRepository.class));
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class), Set.of(new NavEnhet("4802", "Trysil")), slettemerkeProperties, false, mock(VeilarbArenaClient.class));
         assertThatThrownBy(() -> veileder.slettemerk(avtale)).isExactlyInstanceOf(IkkeAdminTilgangException.class);
     }
 

@@ -52,7 +52,7 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__veileder_skal_ha_lesetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_er_ok() {
-        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false, veilarbArenaClient, avtaleRepository);
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false, veilarbArenaClient);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(veileder.getIdentifikator(), avtale.getDeltakerFnr())).thenReturn(true);
 
         assertThat(veileder.harTilgang(avtale)).isTrue();
@@ -61,7 +61,7 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__veileder_skal_ikke_ha_lesetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_feiler() {
-        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false, veilarbArenaClient, avtaleRepository);
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false, veilarbArenaClient);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(veileder.getIdentifikator(), avtale.getDeltakerFnr())).thenReturn(false);
 
         assertThat(veileder.harTilgang(avtale)).isFalse();
@@ -69,7 +69,7 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__veileder_skal_ha_skrivetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_er_ok() {
-        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false, veilarbArenaClient, avtaleRepository);
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false, veilarbArenaClient);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(veileder.getIdentifikator(), avtale.getDeltakerFnr())).thenReturn(true);
 
         assertThat(veileder.harTilgang(avtale)).isTrue();
@@ -78,7 +78,7 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__veileder_skal_ikke_ha_skrivetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_feiler() {
-        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false, veilarbArenaClient, avtaleRepository);
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false, veilarbArenaClient);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(veileder.getIdentifikator(), avtale.getDeltakerFnr())).thenReturn(false);
 
         assertThat(veileder.harTilgang(avtale)).isFalse();
@@ -92,14 +92,14 @@ public class InnloggetBrukerTest {
     @Test
     public void harTilgang__ikkepart_veileder_skal_ikke_ha_lesetilgang_hvis_toggle_er_av() {
         assertThat(
-                new Veileder(new NavIdent("X123456"), tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false, veilarbArenaClient, avtaleRepository).harTilgang(avtale))
+                new Veileder(new NavIdent("X123456"), tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false, veilarbArenaClient).harTilgang(avtale))
                 .isFalse();
     }
 
     @Test
     public void harTilgang__ikkepart_veileder_skal_ikke_ha_skrivetilgang_hvis_toggle_er_av() {
         assertThat(
-                new Veileder(new NavIdent("X123456"), tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false, veilarbArenaClient, avtaleRepository).harTilgang(avtale))
+                new Veileder(new NavIdent("X123456"), tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false, veilarbArenaClient).harTilgang(avtale))
                 .isFalse();
     }
 
