@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
@@ -47,6 +48,17 @@ public class AvtaleController {
     public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         return avtalepart.hentAvtale(avtaleRepository, id);
+    }
+
+    @GetMapping("/{avtaleNr}/info")
+    public Avtale hentAvtaleInfo(@PathVariable("avtaleNr") Integer avtaleNr, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
+        Optional<Avtale> avtale = avtaleRepository.findByAvtaleNr(avtaleNr);
+        if (avtale.isEmpty()) {
+            throw new FeilkodeException(Feilkode.FINNER_IKKE_AVTALE_PÅ_AVTALENUMMER);
+        }
+        avtalepart.sjekkTilgang(avtale.get());
+        return avtale.get();
     }
 
     @GetMapping
@@ -395,6 +407,28 @@ public class AvtaleController {
         beslutter.godkjennTilskuddsperiode(avtale, godkjennTilskuddsperiodeRequest.getEnhet());
         avtaleRepository.save(avtale);
     }
+
+    @PostMapping("/{avtaleId}/set-om-avtalen-kan-etterregistreres")
+    @Transactional
+    public Avtale setOmAvtalenKanEtterregistreres(@PathVariable("avtaleId") UUID avtaleId){
+        Beslutter beslutter = innloggingService.hentBeslutter();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        beslutter.setOmAvtalenKanEtterregistreres(avtale);
+        avtaleRepository.save(avtale);
+        return avtale;
+    }
+/*
+    @GetMapping("/{avtaleNr}/info")
+    public Avtale hentAvtaleInfo(@PathVariable("avtaleNr") Integer avtaleNr, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
+        Optional<Avtale> avtale = avtaleRepository.findByAvtaleNr(avtaleNr);
+        if (avtale.isEmpty()) {
+            throw new FeilkodeException(Feilkode.FINNER_IKKE_AVTALE_PÅ_AVTALENUMMER);
+        }
+        avtalepart.sjekkTilgang(avtale.get());
+        return avtale.get();
+    }
+*/
 
     @PostMapping("/{avtaleId}/endre-kostnadssted")
     @Transactional

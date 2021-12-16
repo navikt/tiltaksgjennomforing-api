@@ -66,6 +66,7 @@ public abstract class Avtalepart<T extends Identifikator> {
         return avtale;
     }
 
+
     abstract void godkjennForAvtalepart(Avtale avtale);
 
     abstract boolean kanEndreAvtale();

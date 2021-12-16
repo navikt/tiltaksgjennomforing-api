@@ -35,6 +35,11 @@ public class Beslutter extends Avtalepart<NavIdent> {
         avtale.avslåTilskuddsperiode(getIdentifikator(), avslagsårsaker, avslagsforklaring);
     }
 
+    public void setOmAvtalenKanEtterregistreres(Avtale avtale){
+        sjekkTilgang(avtale);
+        avtale.togglegodkjennEtterregistrering();
+    }
+
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
         return tilgangskontrollService.harSkrivetilgangTilKandidat(getIdentifikator(), avtale.getDeltakerFnr());

@@ -75,6 +75,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private String enhetsnavnGeografisk;
     private String enhetOppfolging;
     private String enhetsnavnOppfolging;
+
+    private boolean erGodkjentForEtterregistrering;
+
     @Enumerated(EnumType.STRING)
     private Kvalifiseringsgruppe kvalifiseringsgruppe;
     @Enumerated(EnumType.STRING)
@@ -567,6 +570,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new TilskuddsperiodeAvslått(this, beslutter, gjeldendePeriode));
     }
 
+    public void togglegodkjennEtterregistrering(){
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        if(erAvtaleInngått()){
+            throw new FeilkodeException(Feilkode.KAN_IKKE_MERKES_FOR_ETTERREGISTREING_AVTALE_INNGATT);
+        }
+        setErGodkjentForEtterregistrering(!this.erGodkjentForEtterregistrering);
+    }
 
     protected TilskuddPeriodeStatus getGjeldendeTilskuddsperiodestatus() {
         TilskuddPeriode tilskuddPeriode = gjeldendeTilskuddsperiode();
