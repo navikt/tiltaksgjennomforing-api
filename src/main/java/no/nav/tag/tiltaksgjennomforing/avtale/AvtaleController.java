@@ -54,10 +54,12 @@ public class AvtaleController {
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public List<Avtale> hentAlleAvtalerInnloggetBrukerHarTilgangTil(AvtalePredicate queryParametre,
                                                                     @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
-                                                                    @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+                                                                    @CookieValue("innlogget-part") Avtalerolle innloggetPart,
+                                                                    @RequestParam(value = "skip", required = false, defaultValue = "0") Integer skip,
+                                                                    @RequestParam(value = "limit", required = false, defaultValue = "100000000") Integer limit) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        List<Avtale> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre);
-        return AvtaleSorterer.sorterAvtaler(sorteringskolonne, avtaler);
+        List<Avtale> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre, sorteringskolonne, skip, limit);
+        return avtaler;
     }
 
     @GetMapping("/{avtaleId}/status-detaljer")

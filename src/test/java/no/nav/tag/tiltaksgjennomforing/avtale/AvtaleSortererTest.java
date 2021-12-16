@@ -3,8 +3,9 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class AvtaleSortererTest {
     @Test
@@ -16,6 +17,8 @@ class AvtaleSortererTest {
         avtale2.setDeltakerFornavn("A");
         avtale3.setDeltakerFornavn(null);
         List<Avtale> usortertListe = List.of(avtale3, avtale1, avtale2);
-        assertThat(AvtaleSorterer.sorterAvtaler(AvtaleInnhold.Fields.deltakerFornavn, usortertListe)).containsExactly(avtale1, avtale2, avtale3);
+        List<Avtale> sortertListe = usortertListe.stream().sorted(AvtaleSorterer.comparatorForAvtale(AvtaleInnhold.Fields.deltakerFornavn)).collect(Collectors.toList());
+
+        assertThat(sortertListe).containsExactly(avtale2, avtale1, avtale3);
     }
 }

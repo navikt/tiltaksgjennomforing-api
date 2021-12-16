@@ -41,7 +41,7 @@ public class InnloggetArbeidsgiverTest {
     public void hentAlleAvtalerMedLesetilgang_uten_avbruttGrunn() {
         Set<BedriftNr> bedriftNrSet = Set.of(avtale.getBedriftNr());
         when(avtaleRepository.findAllByBedriftNrIn(eq(bedriftNrSet))).thenReturn(Arrays.asList(avtale));
-        List<Avtale> hentetAvtaler = arbeidsgiver.hentAlleAvtalerMedLesetilgang(avtaleRepository, new AvtalePredicate());
+        List<Avtale> hentetAvtaler = arbeidsgiver.hentAlleAvtalerMedLesetilgang(avtaleRepository, new AvtalePredicate(), Avtale.Fields.sistEndret, 0, Integer.MAX_VALUE);
         assertThat(hentetAvtaler.get(0).getAvbruttGrunn()).isNull();
     }
 

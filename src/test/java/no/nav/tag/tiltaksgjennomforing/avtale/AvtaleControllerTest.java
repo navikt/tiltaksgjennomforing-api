@@ -108,7 +108,7 @@ public class AvtaleControllerTest {
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(identTilInnloggetVeileder), any(Fnr.class))).thenReturn(true);
         AvtalePredicate avtalePredicate = new AvtalePredicate();
         avtalePredicate.setVeilederNavIdent(veilederNavIdent);
-        Iterable<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(avtalePredicate.setVeilederNavIdent(veilederNavIdent), Avtale.Fields.sistEndret, Avtalerolle.VEILEDER);
+        Iterable<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(avtalePredicate.setVeilederNavIdent(veilederNavIdent), Avtale.Fields.sistEndret, Avtalerolle.VEILEDER, 0, Integer.MAX_VALUE);
         assertThat(avtaler)
                 .contains(avtaleForVeilederSomSøkesEtter)
                 .doesNotContain(avtaleForAnnenVeilder);
@@ -123,7 +123,7 @@ public class AvtaleControllerTest {
         værInnloggetSom(veileder);
         when(avtaleRepository.findAllByVeilederNavIdent(veilederNavIdent)).thenReturn(List.of(avtaleForVeilederSomSøkesEtter));
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(identTilInnloggetVeileder), any(Fnr.class))).thenReturn(false);
-        Iterable<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(new AvtalePredicate().setVeilederNavIdent(veilederNavIdent), Avtale.Fields.sistEndret, Avtalerolle.VEILEDER);
+        Iterable<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(new AvtalePredicate().setVeilederNavIdent(veilederNavIdent), Avtale.Fields.sistEndret, Avtalerolle.VEILEDER, 0, Integer.MAX_VALUE);
         assertThat(avtaler).doesNotContain(avtaleForVeilederSomSøkesEtter);
     }
 
@@ -136,7 +136,7 @@ public class AvtaleControllerTest {
         værInnloggetSom(veileder);
         when(avtaleRepository.findAllByVeilederNavIdent(identTilInnloggetVeileder)).thenReturn(asList(avtaleForInnloggetVeileder, avtaleForAnnenVeilder));
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(identTilInnloggetVeileder), any(Fnr.class))).thenReturn(true);
-        Iterable<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(new AvtalePredicate().setVeilederNavIdent(identTilInnloggetVeileder), Avtale.Fields.sistEndret, Avtalerolle.VEILEDER);
+        Iterable<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(new AvtalePredicate().setVeilederNavIdent(identTilInnloggetVeileder), Avtale.Fields.sistEndret, Avtalerolle.VEILEDER, 0, Integer.MAX_VALUE);
         assertThat(avtaler)
                 .contains(avtaleForInnloggetVeileder)
                 .doesNotContain(avtaleForAnnenVeilder);
@@ -154,7 +154,7 @@ public class AvtaleControllerTest {
         when(avtaleRepository.findAllFordelteOrUfordeltByEnhet(navEnhet)).thenReturn(asList(nyAvtaleMedGeografiskEnhet, nyAvtaleMedOppfølgningsEnhet));
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any(Fnr.class))).thenReturn(true);
 
-        List<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(new AvtalePredicate().setNavEnhet(navEnhet), Avtale.Fields.sistEndret, Avtalerolle.VEILEDER);
+        List<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(new AvtalePredicate().setNavEnhet(navEnhet), Avtale.Fields.sistEndret, Avtalerolle.VEILEDER, 0, Integer.MAX_VALUE);
         assertThat(avtaler).isNotNull();
         assertThat(avtaler)
                 .contains(nyAvtaleMedGeografiskEnhet);
@@ -173,7 +173,7 @@ public class AvtaleControllerTest {
         when(avtaleRepository.findAllByAvtaleNr(TestData.ET_AVTALENR)).thenReturn(asList(enArbeidstreningsAvtale));
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any(Fnr.class))).thenReturn(true);
 
-        List<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(new AvtalePredicate().setAvtaleNr(TestData.ET_AVTALENR), Avtale.Fields.sistEndret, Avtalerolle.VEILEDER);
+        List<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(new AvtalePredicate().setAvtaleNr(TestData.ET_AVTALENR), Avtale.Fields.sistEndret, Avtalerolle.VEILEDER, 0, Integer.MAX_VALUE);
         assertThat(avtaler).isNotNull();
         assertThat(avtaler).contains(enArbeidstreningsAvtale);
 
@@ -239,7 +239,7 @@ public class AvtaleControllerTest {
         alleAvtaler.addAll(avtalerBrukerHarTilgangTil);
         alleAvtaler.addAll(lagListeMedAvtaler(avtaleUtenTilgang, 4));
         when(avtaleRepository.findAllByDeltakerFnr(deltaker.getIdentifikator())).thenReturn(alleAvtaler);
-        var hentedeAvtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(new AvtalePredicate(), Avtale.Fields.sistEndret, Avtalerolle.DELTAKER);
+        var hentedeAvtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(new AvtalePredicate(), Avtale.Fields.sistEndret, Avtalerolle.DELTAKER, 0, Integer.MAX_VALUE);
         assertThat(hentedeAvtaler)
                 .hasSize(avtalerBrukerHarTilgangTil.size())
                 .allMatch(deltaker::harTilgang);
