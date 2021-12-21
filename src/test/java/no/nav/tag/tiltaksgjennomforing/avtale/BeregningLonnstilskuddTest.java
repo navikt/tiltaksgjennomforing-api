@@ -17,7 +17,7 @@ class BeregningLonnstilskuddTest {
     @BeforeEach
     public void setUp() {
         avtaleInnhold = new AvtaleInnhold();
-        strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, MIDLERTIDIG_LONNSTILSKUDD, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, MIDLERTIDIG_LONNSTILSKUDD);
     }
 
     @Test
@@ -46,7 +46,7 @@ class BeregningLonnstilskuddTest {
         endreAvtale.setArbeidsgiveravgift(new BigDecimal(0.141));
 
         // WHEN
-        strategy.endre(endreAvtale);
+        strategy.endreAvtaleInnholdMedKvalifiseringsgruppe(endreAvtale, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
 
         // THEN
         assertThat(avtaleInnhold.getSumLonnstilskudd()).isEqualTo(15642);
@@ -63,7 +63,7 @@ class BeregningLonnstilskuddTest {
         endreAvtale.setArbeidsgiveravgift(new BigDecimal(0.141));
 
         // WHEN
-        strategy.endre(endreAvtale);
+        strategy.endreAvtaleInnholdMedKvalifiseringsgruppe(endreAvtale, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
 
         // THEN
         assertThat(avtaleInnhold.getSumLonnstilskudd()).isEqualTo(15642);

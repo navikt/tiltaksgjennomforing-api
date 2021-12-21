@@ -43,6 +43,7 @@ public class AvtaleController {
     private final KontoregisterService kontoregisterService;
     private final DokgenService dokgenService;
     private final TilskuddsperiodeConfig tilskuddsperiodeConfig;
+    private final VeilarbArenaClient veilarbArenaClient;
 
     @GetMapping("/{avtaleId}")
     public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
@@ -65,10 +66,12 @@ public class AvtaleController {
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public List<Avtale> hentAlleAvtalerInnloggetBrukerHarTilgangTil(AvtalePredicate queryParametre,
                                                                     @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
-                                                                    @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+                                                                    @CookieValue("innlogget-part") Avtalerolle innloggetPart,
+                                                                    @RequestParam(value = "skip", required = false, defaultValue = "0") Integer skip,
+                                                                    @RequestParam(value = "limit", required = false, defaultValue = "100000000") Integer limit) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        List<Avtale> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre);
-        return AvtaleSorterer.sorterAvtaler(sorteringskolonne, avtaler);
+        List<Avtale> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre, sorteringskolonne, skip, limit);
+        return avtaler;
     }
 
     @GetMapping("/{avtaleId}/status-detaljer")
@@ -104,11 +107,11 @@ public class AvtaleController {
             @PathVariable("avtaleId") UUID avtaleId,
             @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
             @RequestBody EndreAvtale endreAvtale,
-            @CookieValue("innlogget-part") Avtalerolle innloggetPart)
-    {
+            @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
+        avtalepart.hentOppfølgingStatus(avtale, veilarbArenaClient);
         avtalepart.endreAvtale(sistEndret, endreAvtale, avtale, tilskuddsperiodeConfig.getTiltakstyper());
         Avtale lagretAvtale = avtaleRepository.save(avtale);
         return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
@@ -181,8 +184,11 @@ public class AvtaleController {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
-        veileder.sjekkOgHentOppfølgingStatus(avtale);
-        veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
+        if (opprettAvtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
+            veileder.sjekkOgHentOppfølgingStatus(avtale, veilarbArenaClient);
+            veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
+            veileder.settLonntilskuddsprosentsatsVedOpprettelseAvAvtale(avtale);
+        }
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
@@ -395,6 +401,8 @@ public class AvtaleController {
     public void settNyVeilederPåAvtale(@PathVariable("avtaleId") UUID avtaleId) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
+        veileder.sjekkOgHentOppfølgingStatus(avtale, veilarbArenaClient);
         veileder.overtaAvtale(avtale);
         avtaleRepository.save(avtale);
     }

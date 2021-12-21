@@ -50,6 +50,7 @@ class LagVarselFraAvtaleHendelserTest {
     @Test
     void test_alt() {
         Avtale avtale = avtaleRepository.save(Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent()));
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
 
         assertHendelse(OPPRETTET, VEILEDER, VEILEDER, false);
         assertHendelse(OPPRETTET, VEILEDER, ARBEIDSGIVER, true);

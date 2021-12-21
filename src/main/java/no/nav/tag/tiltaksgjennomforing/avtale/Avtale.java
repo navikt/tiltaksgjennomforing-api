@@ -819,6 +819,22 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new TilskuddsberegningEndret(this, utførtAv));
     }
 
+    // Metode for å rydde opp i beregnede felter som ikke har blitt satt etter at lønnstilskuddsprosent manuelt i databasen har blitt satt inn
+    public void reberegnLønnstilskudd() {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        krevEnAvTiltakstyper(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
+        if (getSumLonnstilskudd() == null && Utils.erIkkeTomme(
+                getLonnstilskuddProsent(),
+                getArbeidsgiveravgift(),
+                getFeriepengesats(),
+                getManedslonn(),
+                getOtpSats())) {
+            gjeldendeInnhold().reberegnLønnstilskudd();
+            return;
+        }
+        throw new FeilkodeException(Feilkode.KAN_IKKE_REBEREGNE);
+    }
+
     private void krevEnAvTiltakstyper(Tiltakstype... tiltakstyper) {
         if (Stream.of(tiltakstyper).noneMatch(t -> t == tiltakstype)) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_FEIL_TILTAKSTYPE);
@@ -926,6 +942,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         Avtale getAvtale();
 
         void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning);
+
+        void reberegnLønnstilskudd();
 
         Set<String> felterSomIkkeErFyltUt();
     }

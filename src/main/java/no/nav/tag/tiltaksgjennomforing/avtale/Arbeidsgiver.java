@@ -194,8 +194,8 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     @Override
-    public List<Avtale> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
-        return super.hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre).stream().map(Arbeidsgiver::fjernAvbruttGrunn).collect(Collectors.toList());
+    public List<Avtale> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, String sorteringskolonne, int skip, int limit) {
+        return super.hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre, sorteringskolonne, skip, limit).stream().map(Arbeidsgiver::fjernAvbruttGrunn).collect(Collectors.toList());
     }
 
     public List<Avtale> hentAvtalerForMinsideArbeidsgiver(AvtaleRepository avtaleRepository, BedriftNr bedriftNr) {

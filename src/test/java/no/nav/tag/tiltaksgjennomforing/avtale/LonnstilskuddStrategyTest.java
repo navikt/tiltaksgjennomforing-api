@@ -18,7 +18,7 @@ class LonnstilskuddStrategyTest {
     @BeforeEach
     public void setUp() {
         avtaleInnhold = new AvtaleInnhold();
-        strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, MIDLERTIDIG_LONNSTILSKUDD, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, MIDLERTIDIG_LONNSTILSKUDD);
     }
 
     @Test
@@ -51,7 +51,7 @@ class LonnstilskuddStrategyTest {
 
     @Test
     public void sjekk_riktig_otp_sats() {
-        strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, VARIG_LONNSTILSKUDD, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, VARIG_LONNSTILSKUDD);
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         endreAvtale.setOtpSats(0.301);
         AssertFeilkode.assertFeilkode(Feilkode.FEIL_OTP_SATS, () -> strategy.endre(endreAvtale));

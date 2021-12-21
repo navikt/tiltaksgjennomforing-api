@@ -1,6 +1,17 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentGeoLokasjonFraPdlRespons;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
+import no.nav.tag.tiltaksgjennomforing.enhet.*;
+import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.hendelselogg.Hendelselogg;
+import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
+import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -11,17 +22,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
-import no.nav.tag.tiltaksgjennomforing.exceptions.*;
-import no.nav.tag.tiltaksgjennomforing.hendelselogg.Hendelselogg;
-import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
-import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
+import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentGeoLokasjonFraPdlRespons;
 
 @AllArgsConstructor
 @Slf4j
@@ -52,9 +53,12 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     abstract List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre);
 
-    public List<Avtale> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
+    public List<Avtale> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, String sorteringskolonne, int skip, int limit) {
         return hentAlleAvtalerMedMuligTilgang(avtaleRepository, queryParametre).stream()
                 .filter(queryParametre).filter(avtale -> !avtale.isFeilregistrert())
+                .sorted(AvtaleSorterer.comparatorForAvtale(sorteringskolonne))
+                .skip(skip)
+                .limit(limit)
                 .filter(this::harTilgang)
                 .collect(Collectors.toList());
     }
@@ -148,6 +152,34 @@ public abstract class Avtalepart<T extends Identifikator> {
                     avtale.setEnhetsnavnOppfolging(response.getNavn());
                 }
             }
+        }
+    }
+
+    public void sjekkOgHentOppfølgingStatus(Avtale avtale, VeilarbArenaClient veilarbArenaClient) {
+        Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
+        this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
+    }
+
+    public void hentOppfølgingStatus(Avtale avtale, VeilarbArenaClient veilarbArenaClient) {
+        Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.hentOppfølgingStatus(avtale.getDeltakerFnr().asString());
+        if (oppfølgingsstatus != null && (oppfølgingsstatus.getKvalifiseringsgruppe() != avtale.getKvalifiseringsgruppe() ||
+                oppfølgingsstatus.getFormidlingsgruppe() != avtale.getFormidlingsgruppe())) {
+            this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
+        }
+    }
+
+    private void settOppfølgingsStatus(Avtale avtale, Oppfølgingsstatus oppfølgingsstatus) {
+        avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
+        avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
+        avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
+
+
+    }
+
+    public void settLonntilskuddsprosentsatsVedOpprettelseAvAvtale(Avtale avtale) {
+        final Tiltakstype tiltakstype = avtale.getTiltakstype();
+        if (tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || tiltakstype == Tiltakstype.SOMMERJOBB) {
+            avtale.gjeldendeInnhold().endreAvtale(new EndreAvtale());
         }
     }
 }

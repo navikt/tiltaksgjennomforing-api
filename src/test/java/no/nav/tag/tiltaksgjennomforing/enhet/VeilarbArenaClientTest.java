@@ -10,6 +10,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.Instant;
+import java.util.EnumSet;
+
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
@@ -46,7 +49,8 @@ class VeilarbArenaClientTest {
                 .hasMessage(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET.name());
     }
 
-    @Test void hent_og_sjekk_oppfølging_status() {
+    @Test
+    public void hent_og_sjekk_oppfølging_status() {
         String fnr_har_riktig_kvalifisering_og_formidlingskode = "00000000000";
         final Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setDeltakerFnr(new Fnr(fnr_har_riktig_kvalifisering_og_formidlingskode));
@@ -55,6 +59,27 @@ class VeilarbArenaClientTest {
         assertThat(oppfølgingsstatus.getFormidlingsgruppe().getKode()).isEqualTo(("ARBS"));
         assertThat(oppfølgingsstatus.getKvalifiseringsgruppe().getKvalifiseringskode()).isEqualTo(("VARIG"));
         assertThat(oppfølgingsstatus.getOppfolgingsenhet()).isEqualTo(("0906"));
+    }
+
+    @Test
+    public void sjekk_at_lonnstilskuddsprosent_blir_satt_paa_midlertidiglonnstilskudd_ved_AvtaleInnhold_constructor() {
+        final Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setLonnstilskuddProsent(null);
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+
+        Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
+        avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
+        avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
+        avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
+        avtale.endreAvtale(Instant.now(),new EndreAvtale(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+
+        assertThat(avtale.gjeldendeInnhold().getLonnstilskuddProsent()).isNotNull();
+        assertThat(avtale.gjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(60);
+
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.endreAvtale(Instant.now(),new EndreAvtale(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+
+        assertThat(avtale.gjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(40);
     }
 
     @Test

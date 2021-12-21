@@ -4,24 +4,28 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
 
 public class SommerjobbStrategy extends LonnstilskuddStrategy {
-    Kvalifiseringsgruppe kvalifiseringsgruppe;
 
-    public SommerjobbStrategy(AvtaleInnhold avtaleInnhold, Kvalifiseringsgruppe kvalifiseringsgruppe) {
+    public SommerjobbStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
-        this.kvalifiseringsgruppe = kvalifiseringsgruppe;
+    }
+
+    @Override
+    public void endreAvtaleInnholdMedKvalifiseringsgruppe(EndreAvtale endreAvtale, Kvalifiseringsgruppe kvalifiseringsgruppe) {
+        if (kvalifiseringsgruppe != null) {
+            final EndreAvtale endreAvtaleMedOppdatertProsentsats = settTilskuddsprosentSats(endreAvtale, kvalifiseringsgruppe);
+            super.endre(endreAvtaleMedOppdatertProsentsats);
+        } else {
+            sjekkSommerjobbProsentsats(endreAvtale);
+            super.endre(endreAvtale);
+        }
     }
 
     @Override
     public void endre(EndreAvtale endreAvtale) {
         endreAvtale.setStillingstype(Stillingstype.MIDLERTIDIG);
-        if(kvalifiseringsgruppe != null) {
-            final EndreAvtale endreAvtaleMedOppdatertProsentsats = settTilskuddsprosentSats(endreAvtale);
-            sjekkSommerjobbProsentsats(endreAvtaleMedOppdatertProsentsats);
-            super.endre(endreAvtaleMedOppdatertProsentsats);
-        }else {
-            sjekkSommerjobbProsentsats(endreAvtale);
-            super.endre(endreAvtale);
-        }
+        sjekkSommerjobbProsentsats(endreAvtale);
+        avtaleInnhold.setLonnstilskuddProsent(endreAvtale.getLonnstilskuddProsent());
+        super.endre(endreAvtale);
     }
 
     private void sjekkSommerjobbProsentsats(EndreAvtale endreAvtale) {
@@ -31,7 +35,7 @@ public class SommerjobbStrategy extends LonnstilskuddStrategy {
         }
     }
 
-    private EndreAvtale settTilskuddsprosentSats(EndreAvtale endreAvtale) {
+    private EndreAvtale settTilskuddsprosentSats(EndreAvtale endreAvtale, Kvalifiseringsgruppe kvalifiseringsgruppe) {
         final Integer sats = kvalifiseringsgruppe.finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(50, 75);
         endreAvtale.setLonnstilskuddProsent(sats);
         return endreAvtale;

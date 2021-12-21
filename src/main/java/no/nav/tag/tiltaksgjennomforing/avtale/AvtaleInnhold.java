@@ -172,7 +172,11 @@ public class AvtaleInnhold {
     }
 
     void endreAvtale(EndreAvtale nyAvtale) {
-        innholdStrategi().endre(nyAvtale);
+        if (tiltakstypeHarFastsattLonnstilskuddsprosentsatsUtIfraKvalifiseringsgruppe()) {
+            innholdStrategi().endreAvtaleInnholdMedKvalifiseringsgruppe(nyAvtale, avtale.getKvalifiseringsgruppe());
+        } else {
+            innholdStrategi().endre(nyAvtale);
+        }
     }
 
     public Set<String> felterSomIkkeErFyltUt() {
@@ -184,7 +188,12 @@ public class AvtaleInnhold {
     }
 
     private AvtaleInnholdStrategy innholdStrategi() {
-        return AvtaleInnholdStrategyFactory.create(this, avtale.getTiltakstype(), avtale.getKvalifiseringsgruppe());
+        return AvtaleInnholdStrategyFactory.create(this, avtale.getTiltakstype());
+    }
+
+    private boolean tiltakstypeHarFastsattLonnstilskuddsprosentsatsUtIfraKvalifiseringsgruppe() {
+        // Midlertidig skrudd av utleding av lønnstilskuddprosent for Sommerjobb fra kvalifiseringsgruppe for å åpne for etterregistrering.
+        return avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD;
     }
 
     public boolean skalJournalfores() {
@@ -193,6 +202,10 @@ public class AvtaleInnhold {
 
     public void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning) {
         innholdStrategi().endreTilskuddsberegning(tilskuddsberegning);
+    }
+
+    public void reberegnLønnstilskudd() {
+        innholdStrategi().regnUtTotalLonnstilskudd();
     }
 
     public void endreKontaktInfo(EndreKontaktInformasjon endreKontaktInformasjon) {

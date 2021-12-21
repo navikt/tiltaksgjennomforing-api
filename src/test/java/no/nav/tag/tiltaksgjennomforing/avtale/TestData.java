@@ -370,7 +370,7 @@ public class TestData {
         lenient().when(veilarbArenaClient.sjekkOgHentOppfølgingStatus(any()))
                 .thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
         return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
-                Set.of(new NavEnhet("4802", "Oslo gamlebyen")), new SlettemerkeProperties(), false, veilarbArenaClient, avtaleRepository);
+                Set.of(new NavEnhet("4802", "Oslo gamlebyen")), new SlettemerkeProperties(), false, veilarbArenaClient);
     }
 
     public static Beslutter enBeslutter(Avtale avtale) {
@@ -460,7 +460,7 @@ public class TestData {
         AvtaleRepository avtaleRepository = mock(AvtaleRepository.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any())).thenReturn(true);
         return new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
-                Set.of(ENHET_OPPFØLGING), new SlettemerkeProperties(), false, mock(VeilarbArenaClient.class), avtaleRepository);
+                Set.of(ENHET_OPPFØLGING), new SlettemerkeProperties(), false, mock(VeilarbArenaClient.class));
     }
 
     public static Veileder enVeileder(Avtale avtale, PersondataService persondataService) {
@@ -468,7 +468,7 @@ public class TestData {
         KontoregisterService kontoregisterService = mock(KontoregisterService.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(avtale.getVeilederNavIdent(), avtale.getDeltakerFnr())).thenReturn(true);
         return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, persondataService, mock(Norg2Client.class),
-                Set.of(ENHET_OPPFØLGING), new SlettemerkeProperties(), false, mock(VeilarbArenaClient.class), mock(AvtaleRepository.class));
+                Set.of(ENHET_OPPFØLGING), new SlettemerkeProperties(), false, mock(VeilarbArenaClient.class));
     }
 
     public static PdlRespons enPdlrespons(boolean harKode6) {
