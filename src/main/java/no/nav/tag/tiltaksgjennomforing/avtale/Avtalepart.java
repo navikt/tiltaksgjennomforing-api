@@ -154,6 +154,12 @@ public abstract class Avtalepart<T extends Identifikator> {
         }
     }
 
+    public void sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(Avtale avtale, VeilarbArenaClient veilarbArenaClient) {
+        Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
+        this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
+        this.settLonntilskuddProsentsats(avtale);
+    }
+
     public void sjekkOgHentOppfølgingStatus(Avtale avtale, VeilarbArenaClient veilarbArenaClient) {
         Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
@@ -171,7 +177,6 @@ public abstract class Avtalepart<T extends Identifikator> {
         avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
         avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
         avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
-        settLonntilskuddProsentsats(avtale);
     }
 
     public void settLonntilskuddProsentsats(Avtale avtale) {
@@ -188,3 +193,5 @@ public abstract class Avtalepart<T extends Identifikator> {
         }
     }
 }
+
+
