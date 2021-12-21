@@ -104,6 +104,7 @@ public class TestData {
         avtale.setEnhetOppfolging(ENHET_GEOGRAFISK.getVerdi());
         avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        avtale.setErGodkjentForEtterregistrering(true);
         EndreAvtale endring = TestData.endringPåAlleFelter();
         endring.setStartDato(startDato);
         endring.setSluttDato(sluttDato);
@@ -124,6 +125,7 @@ public class TestData {
         avtale.setEnhetOppfolging(ENHET_OPPFØLGING.getVerdi());
         avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.setErGodkjentForEtterregistrering(true);
         avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
         avtale.setDeltakerFornavn("Lilly");
         avtale.setDeltakerEtternavn("Lønning");
@@ -172,6 +174,7 @@ public class TestData {
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), new NavIdent("Z123456"));
         avtale.setEnhetOppfolging(ENHET_OPPFØLGING.getVerdi());
         avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
+        avtale.setErGodkjentForEtterregistrering(true);
         EndreAvtale endreAvtale = endringPåAlleFelter();
         endreAvtale.setDeltakerFornavn("Solveig");
         endreAvtale.setDeltakerEtternavn("Sommerfeldt");
@@ -195,6 +198,7 @@ public class TestData {
         avtale.setEnhetOppfolging(ENHET_OPPFØLGING.getVerdi());
         avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
         avtale.setAvtaleNr(1);
+        avtale.setErGodkjentForEtterregistrering(true);
         EndreAvtale endreAvtale = endringPåAlleFelter();
         endreAvtale.setDeltakerFornavn("Solbe");
         endreAvtale.setDeltakerEtternavn("Sommerfeldt");
@@ -218,6 +222,7 @@ public class TestData {
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), new NavIdent("Z123456"));
         avtale.setEnhetOppfolging(ENHET_OPPFØLGING.getVerdi());
         avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
+        avtale.setErGodkjentForEtterregistrering(true);
         EndreAvtale endreAvtale = endringPåAlleFelter();
         endreAvtale.setDeltakerFornavn("Solfrid");
         endreAvtale.setDeltakerEtternavn("Sommerfeldt");

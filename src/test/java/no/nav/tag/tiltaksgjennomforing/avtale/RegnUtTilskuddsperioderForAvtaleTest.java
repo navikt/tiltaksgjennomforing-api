@@ -24,6 +24,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         endreAvtale.setSluttDato(til);
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
 
+
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(1);
         assertThat(avtale.getTilskuddPeriode().first().getBeløp()).isEqualTo(avtale.getSumLonnstilskudd() * 3);
         harRiktigeEgenskaper(avtale);
@@ -316,6 +317,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         LocalDate avtaleStart = LocalDate.of(2021, 1, 1);
         LocalDate avtaleSlutt = LocalDate.of(2021, 8, 1);
         Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
+
 
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.UTBETALT);
         avtale.tilskuddsperiode(1).setStatus(TilskuddPeriodeStatus.GODKJENT);
