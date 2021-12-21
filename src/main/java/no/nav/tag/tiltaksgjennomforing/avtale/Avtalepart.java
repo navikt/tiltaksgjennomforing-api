@@ -171,8 +171,14 @@ public abstract class Avtalepart<T extends Identifikator> {
         avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
         avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
         avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
+        settLonntilskuddProsentsats(avtale);
+    }
 
-
+    public void settLonntilskuddProsentsats(Avtale avtale) {
+        if (avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD) {
+            avtale.gjeldendeInnhold().setLonnstilskuddProsent(avtale.getKvalifiseringsgruppe()
+                    .finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(40, 60));
+        }
     }
 
     public void settLonntilskuddsprosentsatsVedOpprettelseAvAvtale(Avtale avtale) {
