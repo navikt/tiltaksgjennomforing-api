@@ -173,9 +173,8 @@ public class AvtaleController {
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
         if (opprettAvtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
-            veileder.sjekkOgHentOppfølgingStatus(avtale, veilarbArenaClient);
+            veileder.sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
             veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
-            veileder.settLonntilskuddsprosentsatsVedOpprettelseAvAvtale(avtale);
         }
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());

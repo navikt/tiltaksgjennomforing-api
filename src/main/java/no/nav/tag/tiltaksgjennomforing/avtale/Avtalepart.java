@@ -185,13 +185,6 @@ public abstract class Avtalepart<T extends Identifikator> {
                     .finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(40, 60));
         }
     }
-
-    public void settLonntilskuddsprosentsatsVedOpprettelseAvAvtale(Avtale avtale) {
-        final Tiltakstype tiltakstype = avtale.getTiltakstype();
-        if (tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || tiltakstype == Tiltakstype.SOMMERJOBB) {
-            avtale.gjeldendeInnhold().endreAvtale(new EndreAvtale());
-        }
-    }
 }
 
 
