@@ -76,7 +76,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private String enhetOppfolging;
     private String enhetsnavnOppfolging;
 
-    private boolean erGodkjentForEtterregistrering;
+    private boolean godkjentForEtterregistrering;
 
     @Enumerated(EnumType.STRING)
     private Kvalifiseringsgruppe kvalifiseringsgruppe;
@@ -575,7 +575,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if(erAvtaleInngått()){
             throw new FeilkodeException(Feilkode.KAN_IKKE_MERKES_FOR_ETTERREGISTREING_AVTALE_INNGATT);
         }
-        setErGodkjentForEtterregistrering(!this.erGodkjentForEtterregistrering);
+        setGodkjentForEtterregistrering(!this.godkjentForEtterregistrering);
     }
 
     protected TilskuddPeriodeStatus getGjeldendeTilskuddsperiodestatus() {
@@ -795,7 +795,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     private void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
-        StartOgSluttDatoStrategyFactory.create(getTiltakstype(), getKvalifiseringsgruppe()).sjekkStartOgSluttDato(startDato, sluttDato, isErGodkjentForEtterregistrering());
+        StartOgSluttDatoStrategyFactory.create(getTiltakstype(), getKvalifiseringsgruppe()).sjekkStartOgSluttDato(startDato, sluttDato, isGodkjentForEtterregistrering());
     }
 
     public void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning, NavIdent utførtAv) {

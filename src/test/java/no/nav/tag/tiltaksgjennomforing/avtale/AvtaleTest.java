@@ -904,7 +904,7 @@ public class AvtaleTest {
     public void beregning_av_lønnstilskudd_ut_ifra_kvalifiseringsgruppe_SITUASJONSBESTEMT_INNSATS_og_MIDLERTIDIG_LONNSTILSKUDD() {
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
-        avtale.setErGodkjentForEtterregistrering(true);
+        avtale.setGodkjentForEtterregistrering(true);
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.noneOf(Tiltakstype.class));
         assertThat(avtale.getLonnstilskuddProsent()).isEqualTo(40);
