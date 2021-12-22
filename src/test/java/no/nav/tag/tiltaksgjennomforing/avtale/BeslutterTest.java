@@ -2,17 +2,19 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.LOCAL_DATE;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.time.LocalDate;
+import java.util.*;
+
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.NavEnhetIkkeFunnetException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 
 
@@ -136,5 +138,21 @@ class BeslutterTest {
         });
     }
 
+    @Test
+    public void toggle_godkjent_for_etterregistrering() {
 
+        //GITT
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
+        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        endreAvtale.setStartDato(LocalDate.of(2021, 12, 12));
+        endreAvtale.setSluttDato(LocalDate.of(2021, 12, 1).plusYears(1));
+        Beslutter beslutter = TestData.enBeslutter(avtale);
+
+        // NÅR
+        beslutter.setOmAvtalenKanEtterregistreres(avtale);
+        assertThat(avtale.isGodkjentForEtterregistrering()).isTrue();
+
+        beslutter.setOmAvtalenKanEtterregistreres(avtale);
+        assertThat(avtale.isGodkjentForEtterregistrering()).isFalse();
+    }
 }

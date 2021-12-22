@@ -425,18 +425,6 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
         return avtale;
     }
-/*
-    @GetMapping("/{avtaleNr}/info")
-    public Avtale hentAvtaleInfo(@PathVariable("avtaleNr") Integer avtaleNr, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
-        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        Optional<Avtale> avtale = avtaleRepository.findByAvtaleNr(avtaleNr);
-        if (avtale.isEmpty()) {
-            throw new FeilkodeException(Feilkode.FINNER_IKKE_AVTALE_PÅ_AVTALENUMMER);
-        }
-        avtalepart.sjekkTilgang(avtale.get());
-        return avtale.get();
-    }
-*/
 
     @PostMapping("/{avtaleId}/endre-kostnadssted")
     @Transactional

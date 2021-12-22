@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Set;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.InstanceOfAssertFactories.LOCAL_DATE;
 
 public class AvtaleTest {
 
@@ -944,5 +944,46 @@ public class AvtaleTest {
         endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.noneOf(Tiltakstype.class));
         assertThat(avtale.getLonnstilskuddProsent()).isEqualTo(75);
+    }
+
+    @Test
+    public void godkjent_for_etterregistrering_starter_som_false() {
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
+        assertThat(avtale.isGodkjentForEtterregistrering()).isFalse();
+    }
+
+    @Test
+    public void avtale_setter_godkjent_for_etterregistrering() {
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
+        avtale.setGodkjentForEtterregistrering(true);
+        assertThat(avtale.isGodkjentForEtterregistrering()).isTrue();
+    }
+
+    @Test
+    public void avtale_kan_etterregistreres() {
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
+        avtale.setGodkjentForEtterregistrering(true);
+        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        endreAvtale.setStartDato(LocalDate.of(2021, 12, 12));
+        endreAvtale.setSluttDato(LocalDate.of(2021, 12, 1).plusYears(1));
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+
+    }
+
+    @Test
+    public void avtale_FORTIDLIG_STARTDATO () {
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
+        avtale.setGodkjentForEtterregistrering(false);
+        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        endreAvtale.setStartDato(LocalDate.of(2021, 12, 12));
+        endreAvtale.setSluttDato(LocalDate.of(2021, 12, 1).plusYears(1));
+
+        assertFeilkode(Feilkode.FORTIDLIG_STARTDATO, () -> avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype())));
+    }
+
+    @Test
+    public void avtale_feilkode_KAN_IKKE_MERKES_FOR_ETTERREGISTREING_AVTALE_INNGATT () {
+        Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        assertFeilkode(Feilkode.KAN_IKKE_MERKES_FOR_ETTERREGISTREING_AVTALE_INNGATT, avtale::togglegodkjennEtterregistrering);
     }
 }
