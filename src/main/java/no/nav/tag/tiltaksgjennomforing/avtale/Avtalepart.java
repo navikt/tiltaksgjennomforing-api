@@ -155,6 +155,12 @@ public abstract class Avtalepart<T extends Identifikator> {
         }
     }
 
+    public void sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(Avtale avtale, VeilarbArenaClient veilarbArenaClient) {
+        Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
+        this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
+        this.settLonntilskuddProsentsats(avtale);
+    }
+
     public void sjekkOgHentOppfølgingStatus(Avtale avtale, VeilarbArenaClient veilarbArenaClient) {
         Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
@@ -172,14 +178,14 @@ public abstract class Avtalepart<T extends Identifikator> {
         avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
         avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
         avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
-
-
     }
 
-    public void settLonntilskuddsprosentsatsVedOpprettelseAvAvtale(Avtale avtale) {
-        final Tiltakstype tiltakstype = avtale.getTiltakstype();
-        if (tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || tiltakstype == Tiltakstype.SOMMERJOBB) {
-            avtale.gjeldendeInnhold().endreAvtale(new EndreAvtale());
+    public void settLonntilskuddProsentsats(Avtale avtale) {
+        if (avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD) {
+            avtale.gjeldendeInnhold().setLonnstilskuddProsent(avtale.getKvalifiseringsgruppe()
+                    .finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(40, 60));
         }
     }
 }
+
+

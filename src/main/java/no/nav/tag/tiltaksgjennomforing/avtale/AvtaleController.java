@@ -185,9 +185,8 @@ public class AvtaleController {
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
         if (opprettAvtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
-            veileder.sjekkOgHentOppfølgingStatus(avtale, veilarbArenaClient);
+            veileder.sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
             veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
-            veileder.settLonntilskuddsprosentsatsVedOpprettelseAvAvtale(avtale);
         }
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
@@ -402,7 +401,7 @@ public class AvtaleController {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
-        veileder.sjekkOgHentOppfølgingStatus(avtale, veilarbArenaClient);
+        veileder.sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
         veileder.overtaAvtale(avtale);
         avtaleRepository.save(avtale);
     }
