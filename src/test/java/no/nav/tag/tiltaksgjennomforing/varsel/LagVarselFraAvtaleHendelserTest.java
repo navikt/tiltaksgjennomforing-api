@@ -62,6 +62,14 @@ class LagVarselFraAvtaleHendelserTest {
         assertHendelse(ENDRET, ARBEIDSGIVER, ARBEIDSGIVER, false);
         assertHendelse(ENDRET, ARBEIDSGIVER, DELTAKER, true);
 
+        avtale.togglegodkjennEtterregistrering(TestData.enNavIdent());
+        avtale = avtaleRepository.save(avtale);
+        assertHendelse(GODKJENT_FOR_ETTERREGISTRERING, BESLUTTER, VEILEDER, true);
+
+        avtale.togglegodkjennEtterregistrering(TestData.enNavIdent());
+        avtale = avtaleRepository.save(avtale);
+        assertHendelse(FJERNET_ETTERREGISTRERING, BESLUTTER, VEILEDER, true);
+
         avtale.delMedAvtalepart(DELTAKER);
         avtale = avtaleRepository.save(avtale);
         assertHendelse(DELT_MED_DELTAKER, VEILEDER, VEILEDER, false);

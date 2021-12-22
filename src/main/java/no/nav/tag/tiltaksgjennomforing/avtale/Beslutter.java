@@ -13,6 +13,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import org.apache.commons.lang3.NotImplementedException;
+import org.hibernate.query.QueryParameter;
 
 public class Beslutter extends Avtalepart<NavIdent> {
 
@@ -37,7 +38,7 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
     public void setOmAvtalenKanEtterregistreres(Avtale avtale){
         sjekkTilgang(avtale);
-        avtale.togglegodkjennEtterregistrering();
+        avtale.togglegodkjennEtterregistrering(getIdentifikator());
     }
 
     @Override
@@ -47,6 +48,10 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
+        return avtaleRepository.findAllByAvtaleNr(queryParametre.getAvtaleNr());
+    }
+
+    List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
         Set<String> navEnheter = hentNavEnheter();
         if (navEnheter.isEmpty()) {
             throw new NavEnhetIkkeFunnetException();

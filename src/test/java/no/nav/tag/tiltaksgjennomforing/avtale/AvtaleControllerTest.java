@@ -469,12 +469,4 @@ public class AvtaleControllerTest {
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         assertThatThrownBy(() -> avtaleController.hentBedriftKontonummer(avtale.getId(), Avtalerolle.VEILEDER)).isInstanceOf(KontoregisterFeilException.class);
     }
-
-    @Test
-    public void returnerer_ingen_avtale() {
-        Avtale avtale = enAvtaleMedAltUtfylt();
-        when(innloggingService.hentAvtalepart(Avtalerolle.BESLUTTER)).thenReturn(null);
-        when(avtaleRepository.findByAvtaleNr(avtale.getAvtaleNr())).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> avtaleController.hentAvtaleInfo(avtale.getAvtaleNr(), Avtalerolle.BESLUTTER)).isInstanceOf(FeilkodeException.class);
-    }
 }

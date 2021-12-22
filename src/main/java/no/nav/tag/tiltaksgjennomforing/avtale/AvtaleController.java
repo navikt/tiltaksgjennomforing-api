@@ -51,17 +51,6 @@ public class AvtaleController {
         return avtalepart.hentAvtale(avtaleRepository, id);
     }
 
-    @GetMapping("/{avtaleNr}/info")
-    public Avtale hentAvtaleInfo(@PathVariable("avtaleNr") Integer avtaleNr, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
-        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        Optional<Avtale> avtale = avtaleRepository.findByAvtaleNr(avtaleNr);
-        if (avtale.isEmpty()) {
-            throw new FeilkodeException(Feilkode.FINNER_IKKE_AVTALE_PÅ_AVTALENUMMER);
-        }
-        avtalepart.sjekkTilgang(avtale.get());
-        return avtale.get();
-    }
-
     @GetMapping
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public List<Avtale> hentAlleAvtalerInnloggetBrukerHarTilgangTil(AvtalePredicate queryParametre,
@@ -71,6 +60,14 @@ public class AvtaleController {
                                                                     @RequestParam(value = "limit", required = false, defaultValue = "100000000") Integer limit) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         List<Avtale> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre, sorteringskolonne, skip, limit);
+        return avtaler;
+    }
+
+    @GetMapping("/beslutter")
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    public List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(AvtalePredicate queryParametre) {
+        Beslutter beslutter = innloggingService.hentBeslutter();
+        List<Avtale> avtaler = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(avtaleRepository, queryParametre);
         return avtaler;
     }
 

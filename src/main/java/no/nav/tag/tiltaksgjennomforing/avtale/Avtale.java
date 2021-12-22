@@ -570,12 +570,19 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new TilskuddsperiodeAvslått(this, beslutter, gjeldendePeriode));
     }
 
-    public void togglegodkjennEtterregistrering(){
+    public void togglegodkjennEtterregistrering(NavIdent beslutter){
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
-        if(erAvtaleInngått()){
-            throw new FeilkodeException(Feilkode.KAN_IKKE_MERKES_FOR_ETTERREGISTREING_AVTALE_INNGATT);
+        if(erGodkjentAvArbeidsgiver() || erGodkjentAvDeltaker()){
+            throw new FeilkodeException(Feilkode.KAN_IKKE_MERKES_FOR_ETTERREGISTRERING_AVTALE_GODKJENT);
         }
         setGodkjentForEtterregistrering(!this.godkjentForEtterregistrering);
+        sistEndretNå();
+        if(this.godkjentForEtterregistrering){
+            registerEvent(new GodkjentForEtterregistrering(this, beslutter));
+        }
+        else {
+            registerEvent(new FjernetEtterregistrering(this, beslutter));
+        }
     }
 
     protected TilskuddPeriodeStatus getGjeldendeTilskuddsperiodestatus() {
