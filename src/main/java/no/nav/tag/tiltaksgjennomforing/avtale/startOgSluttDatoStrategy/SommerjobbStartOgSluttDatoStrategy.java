@@ -7,8 +7,8 @@ import java.time.LocalDate;
 
 public class SommerjobbStartOgSluttDatoStrategy implements StartOgSluttDatoStrategy {
     @Override
-    public void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
-        StartOgSluttDatoStrategy.super.sjekkStartOgSluttDato(startDato, sluttDato);
+    public void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato, boolean erGodkjentForEtterregistrering) {
+        StartOgSluttDatoStrategy.super.sjekkStartOgSluttDato(startDato, sluttDato, erGodkjentForEtterregistrering);
         if (startDato != null) {
             if (startDato.isBefore(LocalDate.of(2021, 6, 1)) ) {
                 throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_TIDLIG);

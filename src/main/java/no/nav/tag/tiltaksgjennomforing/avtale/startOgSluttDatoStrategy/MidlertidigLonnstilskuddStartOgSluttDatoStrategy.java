@@ -23,8 +23,8 @@ public class MidlertidigLonnstilskuddStartOgSluttDatoStrategy implements StartOg
     }
 
     @Override
-    public void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
-        StartOgSluttDatoStrategy.super.sjekkStartOgSluttDato(startDato, sluttDato);
+    public void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato,boolean erGodkjentForEtterregistrering) {
+        StartOgSluttDatoStrategy.super.sjekkStartOgSluttDato(startDato, sluttDato, erGodkjentForEtterregistrering);
         if (startDato != null && sluttDato != null && startDato.plusMonths(settMakslengdeUtIfraKvalifiseringsgruppe())
                 .isBefore(sluttDato)) {
             throw new VarighetForLangMidlertidigLonnstilskuddException();
