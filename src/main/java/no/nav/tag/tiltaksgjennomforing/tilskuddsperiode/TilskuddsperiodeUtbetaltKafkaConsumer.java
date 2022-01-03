@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -29,8 +28,11 @@ public class TilskuddsperiodeUtbetaltKafkaConsumer {
     public void tilskuddsperiodeUtbetalt(String jsonMelding) throws JsonProcessingException {
         RefusjonGodkjentMelding melding = objectMapper.readValue(jsonMelding, RefusjonGodkjentMelding.class);
         Avtale avtale = avtaleRepository.findById(melding.getAvtaleId()).orElseThrow();
-        TilskuddPeriode tilskuddPeriode = avtale.getTilskuddPeriode().stream().filter(it -> it.getId().equals(melding.getTilskuddsperiodeId())).findFirst().orElseThrow();
-        tilskuddPeriode.setStatus(TilskuddPeriodeStatus.UTBETALT);
+        avtale.getTilskuddPeriode().stream()
+            .filter(it -> it.getId().equals(melding.getTilskuddsperiodeId()))
+            .findFirst()
+            .orElseThrow()
+            .setStatus(TilskuddPeriodeStatus.UTBETALT);
         avtaleRepository.save(avtale);
     }
 }
