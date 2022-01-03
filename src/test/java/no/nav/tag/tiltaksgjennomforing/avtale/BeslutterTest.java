@@ -71,7 +71,7 @@ class BeslutterTest {
         when(avtaleRepository
                 .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(TilskuddPeriodeStatus.GODKJENT.name(), Set.of(TestData.ENHET_OPPFØLGING.getVerdi())))
                 .thenReturn(List.of(avtale));
-        List<Avtale> avtaler = beslutter.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
+        List<Avtale> avtaler = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(avtaleRepository, avtalePredicate);
 
         assertThat(avtaler).hasSize(1);
     }
@@ -103,7 +103,7 @@ class BeslutterTest {
         when(avtaleRepository
                 .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(TilskuddPeriodeStatus.UBEHANDLET.name(), Set.of(TestData.ENHET_OPPFØLGING.getVerdi())))
                 .thenReturn(List.of(avtale));
-        List<Avtale> avtales = beslutter.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
+        List<Avtale> avtales = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(avtaleRepository, avtalePredicate);
 
         assertThat(avtales).hasSize(1);
     }
@@ -134,7 +134,7 @@ class BeslutterTest {
         assertThrows(NavEnhetIkkeFunnetException.class, () -> {
             when(axsysService.hentEnheterNavAnsattHarTilgangTil(beslutter.getIdentifikator())).thenReturn(Collections.emptyList());
 
-            List<Avtale> avtales = beslutter.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
+            List<Avtale> avtales = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(avtaleRepository, avtalePredicate);
         });
     }
 
