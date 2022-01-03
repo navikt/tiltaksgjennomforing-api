@@ -23,7 +23,6 @@ public class TilskuddsperiodeUtbetaltKafkaConsumer {
         this.objectMapper = objectMapper;
     }
 
-    //TODO: test for denne og frontend implementasjon
     @KafkaListener(topics = Topics.REFUSJON_GODKJENT)
     public void tilskuddsperiodeUtbetalt(String jsonMelding) throws JsonProcessingException {
         RefusjonGodkjentMelding melding = objectMapper.readValue(jsonMelding, RefusjonGodkjentMelding.class);
