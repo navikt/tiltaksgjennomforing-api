@@ -24,7 +24,7 @@ public class ArbeidsgiverTest {
     @Test
     public void opphevGodkjenninger__kan_oppheve_ved_deltakergodkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         arbeidsgiver.opphevGodkjenninger(avtale);
         assertThat(avtale.erGodkjentAvDeltaker()).isFalse();
@@ -33,7 +33,7 @@ public class ArbeidsgiverTest {
     @Test
     public void opphevGodkjenninger__kan_ikke_oppheve_veiledergodkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvVeileder(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         assertThatThrownBy(() -> arbeidsgiver.opphevGodkjenninger(avtale)).isInstanceOf(KanIkkeOppheveException.class);
     }
@@ -61,8 +61,8 @@ public class ArbeidsgiverTest {
 
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
         assertThat(avtale.isOpprettetAvArbeidsgiver()).isTrue();
-        assertThat(avtale.getDeltakerFornavn()).isNull();
-        assertThat(avtale.getDeltakerEtternavn()).isNull();
+        assertThat(avtale.getGjeldendeInnhold().getDeltakerFornavn()).isNull();
+        assertThat(avtale.getGjeldendeInnhold().getDeltakerEtternavn()).isNull();
         assertThat(avtale.getEnhetGeografisk()).isEqualTo(navEnhet.getEnhetNr());
     }
 

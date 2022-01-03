@@ -19,9 +19,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.*;
 
@@ -195,7 +192,7 @@ public class AvtaleControllerTest {
         final OpprettAvtale opprettAvtale = new OpprettAvtale(avtale.getDeltakerFnr(), avtale.getBedriftNr(), Tiltakstype.ARBEIDSTRENING);
         værInnloggetSom(TestData.enVeileder(avtale));
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
-        when(eregService.hentVirksomhet(avtale.getBedriftNr())).thenReturn(new Organisasjon(avtale.getBedriftNr(), avtale.getBedriftNavn()));
+        when(eregService.hentVirksomhet(avtale.getBedriftNr())).thenReturn(new Organisasjon(avtale.getBedriftNr(), avtale.getGjeldendeInnhold().getBedriftNavn()));
         lenient().when(veilarbArenaClient.sjekkOgHentOppfølgingStatus(any())).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
         ResponseEntity svar = avtaleController.opprettAvtaleSomVeileder(opprettAvtale);
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -287,125 +284,6 @@ public class AvtaleControllerTest {
         if (avtalepart instanceof Arbeidsgiver) {
             lenient().when(innloggingService.hentArbeidsgiver()).thenReturn((Arbeidsgiver) avtalepart);
         }
-    }
-
-    //Tester er avhengig av tekster i AvtalePart class og subclasses
-    @Test
-    public void avtaleStatus__veileder_maa_fylleut_avtale_foer_godkjenning() {
-        Avtale avtale = TestData.enArbeidstreningAvtale();
-        Veileder veileder = TestData.enVeileder(avtale);
-        værInnloggetSom(veileder);
-        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId(), Avtalerolle.VEILEDER);
-        assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderAvtalePaabegynt);
-        assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo("");
-        assertThat(avtaleStatusDetaljer.infoDel2).isEqualTo("");
-    }
-
-    @Test
-    public void avtaleStatus__arbeidsgiver_maa_fylleut_avtale_foer_godkjenning() {
-        Avtale avtale = TestData.enArbeidstreningAvtale();
-        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        værInnloggetSom(arbeidsgiver);
-        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId(), Avtalerolle.ARBEIDSGIVER);
-        assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderAvtalePaabegynt);
-        assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo("");
-        assertThat(avtaleStatusDetaljer.infoDel2).isEqualTo("");
-        assertThat(avtaleStatusDetaljer.part1).isEqualTo("Deltaker har ikke godkjent");
-        assertThat(avtaleStatusDetaljer.part2).isEqualTo("Veileder har ikke godkjent");
-    }
-
-    @Test
-    public void avtaleStatus__deltaker_maa_be_om_utfylling_av_avtale_foer_godkjenning() {
-        Avtale avtale = TestData.enArbeidstreningAvtale();
-        Deltaker deltaker = TestData.enDeltaker(avtale);
-        værInnloggetSom(deltaker);
-        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId(), Avtalerolle.DELTAKER);
-        assertThat(avtaleStatusDetaljer.header).isEqualTo(Deltaker.tekstHeaderAvtalePaabegynt);
-        assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo(Deltaker.tekstAvtalePaabegynt);
-        assertThat(avtaleStatusDetaljer.infoDel2).isEqualTo("");
-
-    }
-
-    @Test
-    public void avtaleStatus__deltaker_og_arbeidsgiver_maa_godkjenne_avtale() {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        Deltaker deltaker = TestData.enDeltaker(avtale);
-        værInnloggetSom(deltaker);
-        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId(), Avtalerolle.DELTAKER);
-        assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderAvtaleVenterPaaDinGodkjenning);
-        assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo(Deltaker.tekstAvtaleVenterPaaDinGodkjenning);
-        assertThat(avtaleStatusDetaljer.infoDel2).isEqualTo(Deltaker.ekstraTekstAvtaleVenterPaaDinGodkjenning);
-
-    }
-
-    @Test
-    public void avtaleStatus__arbeidsgiver__maa_godkjenn__avtale() {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        værInnloggetSom(arbeidsgiver);
-        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId(), Avtalerolle.ARBEIDSGIVER);
-        assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderAvtaleVenterPaaDinGodkjenning);
-        assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo(Arbeidsgiver.tekstAvtaleVenterPaaDinGodkjenning);
-        assertThat(avtaleStatusDetaljer.infoDel2).isEqualTo(Arbeidsgiver.ekstraTekstAvtaleVenterPaaDinGodkjenning);
-    }
-
-    @Test
-    public void avtaleStatus__veileder_maa_vente_paa_andre_parter_godkjenning_kan_godkjenne_for_deltaker() {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        værInnloggetSom(TestData.enVeileder(avtale));
-        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId(), Avtalerolle.VEILEDER);
-        assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderVentAndreGodkjenning);
-        assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo("");
-        assertThat(avtaleStatusDetaljer.infoDel2).isEqualTo("");
-    }
-
-    @Test
-    public void avtaleStatus__veileder_maa_vente_paa_andre_parter_godkjenning_deltaker_har_godkjent() {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.godkjennForDeltaker(TestData.enDeltaker(avtale).getIdentifikator());
-        værInnloggetSom(TestData.enVeileder(avtale));
-        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId(), Avtalerolle.DELTAKER);
-        assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderVentAndreGodkjenning);
-        assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo("");
-        assertThat(avtaleStatusDetaljer.infoDel2).isEqualTo("");
-    }
-
-    @Test
-    public void avtaleStatus__deltaker_og_arbeidsgiver_har_godkjent_avtale() {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.godkjennForDeltaker(TestData.enDeltaker(avtale).getIdentifikator());
-        avtale.godkjennForArbeidsgiver(TestData.enArbeidsgiver(avtale).getIdentifikator());
-        var deltaker = TestData.enDeltaker(avtale);
-        værInnloggetSom(deltaker);
-        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId(), Avtalerolle.DELTAKER);
-        assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderVentAndreGodkjenning);
-        assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo("");
-        assertThat(avtaleStatusDetaljer.infoDel2).isEqualTo("");
-        var arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        værInnloggetSom(arbeidsgiver);
-        assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderVentAndreGodkjenning);
-        assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo("");
-        assertThat(avtaleStatusDetaljer.infoDel2).isEqualTo("");
-    }
-
-    @Test
-    public void avtaleStatus__godkjent_av_alle_parter() {
-        Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
-        avtale.setStartDato(Now.localDate().plusWeeks(1));
-        værInnloggetSom(TestData.enVeileder(avtale));
-        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        AvtaleStatusDetaljer avtaleStatusDetaljer = avtaleController.hentAvtaleStatusDetaljer(avtale.getId(), Avtalerolle.VEILEDER);
-        assertThat(avtaleStatusDetaljer.header).isEqualTo(Avtalepart.tekstHeaderAvtaleErGodkjentAvAllePartner);
-        assertThat(avtaleStatusDetaljer.infoDel1).isEqualTo(Avtalepart.tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato().format(Avtalepart.formatter) + ".");
-        assertThat(avtaleStatusDetaljer.infoDel2).isEqualTo(Veileder.ekstraTekstAvtleErGodkjentAvAllePartner);
     }
 
     @Test

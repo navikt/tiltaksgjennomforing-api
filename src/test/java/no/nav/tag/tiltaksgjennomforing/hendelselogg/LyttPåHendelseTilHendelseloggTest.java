@@ -21,7 +21,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@ActiveProfiles({Miljø.LOCAL, "wiremock"})
+@ActiveProfiles({ Miljø.LOCAL, "wiremock" })
 @DirtiesContext
 class LyttPåHendelseTilHendelseloggTest {
 
@@ -132,17 +132,6 @@ class LyttPåHendelseTilHendelseloggTest {
     }
 
     @Test
-    void skal_logge_låst_opp() {
-        Avtale avtale = harOpprettetAvtale();
-        ogEndretAvtale(avtale);
-        ogGodkjentAvDeltaker(avtale);
-        ogGodkjentAvArbeidsgiver(avtale);
-        ogGodkjentAvVeileder(avtale);
-        ogLåstOpp(avtale);
-        sjekkAtHendelseErLogget(avtale, VarslbarHendelseType.LÅST_OPP, Avtalerolle.VEILEDER);
-    }
-
-    @Test
     void skal_logge_avtale_overtatt() {
         Avtale avtale = harOpprettetAvtale();
         ogEndretAvtale(avtale);
@@ -202,11 +191,6 @@ class LyttPåHendelseTilHendelseloggTest {
 
     private void ogOpphevetAvVeileder(Avtale avtale) {
         TestData.enVeileder(avtale).opphevGodkjenninger(avtale);
-        avtaleRepository.save(avtale);
-    }
-
-    private void ogLåstOpp(Avtale avtale) {
-        TestData.enVeileder(avtale).låsOppAvtale(avtale);
         avtaleRepository.save(avtale);
     }
 
