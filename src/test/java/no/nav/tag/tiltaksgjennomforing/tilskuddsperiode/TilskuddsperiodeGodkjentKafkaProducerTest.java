@@ -1,7 +1,20 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.util.Map;
+import java.util.UUID;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -14,28 +27,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.LocalDate;
-import java.util.Map;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-
 @SpringBootTest(properties = { "tiltaksgjennomforing.kafka.enabled=true" })
 @DirtiesContext
 @ActiveProfiles({ Miljø.LOCAL })
-@EmbeddedKafka(partitions = 1, topics = { Topics.TILSKUDDSPERIODE_GODKJENT })
+@EmbeddedKafka(partitions = 1, topics = { Topics.TILSKUDDSPERIODE_GODKJENT, Topics.REFUSJON_GODKJENT })
 class TilskuddsperiodeGodkjentKafkaProducerTest {
 
     @Autowired
     private TilskuddsperiodeKafkaProducer tilskuddsperiodeKafkaProducer;
+
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private EmbeddedKafkaBroker embeddedKafka;
@@ -103,5 +115,33 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
         assertThat(jsonRefusjonRecord.get("avtaleNr")).isNotNull();
         assertThat(jsonRefusjonRecord.get("løpenummer")).isNotNull();
         assertThat(jsonRefusjonRecord.get("beslutterNavIdent")).isNotNull();
+    }
+
+    @Test
+    public void skal_kunne_behandle_refusjon_godkjent_på_kafka_topic() throws JSONException, JsonProcessingException {
+     //   when(featureToggleService.isEnabled(anyString())).thenReturn(true);
+
+        Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "false", embeddedKafka);
+        consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        var consumerFactory = new DefaultKafkaConsumerFactory<String, String>(consumerProps);
+        var consumer = consumerFactory.createConsumer();
+        embeddedKafka.consumeFromAllEmbeddedTopics(consumer);
+
+        // GITT
+        final UUID avtaleId = UUID.randomUUID();
+        final UUID tilskuddPeriodeId = UUID.randomUUID();
+
+
+        final RefusjonGodkjentMelding refusjonGodkjentMelding = new RefusjonGodkjentMelding(avtaleId,tilskuddPeriodeId);
+
+        //NÅR
+        kafkaTemplate.send(Topics.REFUSJON_GODKJENT,objectMapper.writeValueAsString(refusjonGodkjentMelding));
+
+        //SÅ
+        ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.REFUSJON_GODKJENT);
+        JSONObject jsonRefusjonRecord = new JSONObject(record.value());
+        assertThat(jsonRefusjonRecord.get("avtaleId")).isNotNull();
+        assertThat(jsonRefusjonRecord.get("tilskuddsperiodeId")).isNotNull();
     }
 }
