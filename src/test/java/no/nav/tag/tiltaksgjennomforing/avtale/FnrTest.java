@@ -76,11 +76,9 @@ public class FnrTest {
     public void testFnr5() {
         Now.fixedDate(LocalDate.of(2021, 12, 20));
         final Fnr fnr = new Fnr("23029149054");
-        final Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvArbeidsgiver();
-        AvtaleInnhold avtaleInnhold = avtale.gjeldendeInnhold();
-        avtaleInnhold.setStartDato(LocalDate.parse("2021-06-01"));
+        LocalDate startDato = LocalDate.of(2022, 1, 5);
         assertThat(fnr.erOver30årFørsteJanuar()).isFalse();
-        assertThat(fnr.erOver30årFraOppstartDato(avtaleInnhold.getStartDato())).isTrue();
+        assertThat(fnr.erOver30årFraOppstartDato(startDato)).isTrue();
         Now.resetClock();
     }
 
