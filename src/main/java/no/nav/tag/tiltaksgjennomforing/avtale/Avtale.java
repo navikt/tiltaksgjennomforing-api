@@ -45,12 +45,14 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiv
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiverErFordelt;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleSlettemerket;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.FjernetEtterregistrering;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GamleVerdier;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvDeltaker;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentForEtterregistrering;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltaker;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltakerOgArbeidsgiver;
