@@ -15,6 +15,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
     @Test
     public void en_tilskuddsperiode() {
+        Now.fixedDate(LocalDate.of(2021, 1, 1));
         LocalDate fra = LocalDate.of(2021, 1, 1);
         LocalDate til = LocalDate.of(2021, 3, 31);
 
@@ -28,10 +29,12 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(1);
         assertThat(avtale.getTilskuddPeriode().first().getBeløp()).isEqualTo(avtale.getSumLonnstilskudd() * 3);
         harRiktigeEgenskaper(avtale);
+        Now.resetClock();
     }
 
     @Test
     public void splitt_ved_nyttår() {
+        Now.fixedDate(LocalDate.of(2020, 12, 1));
         LocalDate fra = LocalDate.of(2020, 12, 1);
         LocalDate til = LocalDate.of(2021, 1, 31);
 
@@ -48,6 +51,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         TilskuddPeriode andre = iterator.next();
         assertThat(første.getBeløp()).isEqualTo(andre.getBeløp());
         harRiktigeEgenskaper(avtale);
+        Now.resetClock();
     }
 
     @Test
@@ -77,6 +81,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
     @Test
     public void finnTilskuddsperiodeForDato() {
+        Now.fixedDate(LocalDate.of(2021, 1, 1));
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         endreAvtale.setStartDato(LocalDate.of(2021, 1, 1));
@@ -88,6 +93,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
         assertThat(tilskuddPeriode1).isEqualTo(avtale.tilskuddsperiode(0));
         assertThat(tilskuddPeriode2).isEqualTo(avtale.tilskuddsperiode(1));
+        Now.resetClock();
 
     }
 
@@ -130,6 +136,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
     @Test
     public void splitt_etter_reduksjon_30_prosnt_lonnstilskudd() {
+        Now.fixedDate(LocalDate.of(2020, 6, 28));
         LocalDate startDato = LocalDate.of(2020, 6, 30);
         LocalDate sluttDato = LocalDate.of(2021, 1, 2);
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
@@ -142,10 +149,12 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(4);
         harRiktigeEgenskaper(avtale);
+        Now.resetClock();
     }
 
     @Test
     public void sjekk_at_reduksjon_skjer_etter_6_mnd_ved_40_prosent() {
+        Now.fixedDate(LocalDate.of(2021, 1, 1));
         LocalDate startDato = LocalDate.of(2021, 1, 1);
         LocalDate sluttDato = LocalDate.of(2021, 7, 1);
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
@@ -157,10 +166,12 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
         assertThat(avtale.getDatoForRedusertProsent()).isEqualTo(LocalDate.of(2021, 7, 1));
         harRiktigeEgenskaper(avtale);
+        Now.resetClock();
     }
 
     @Test
     public void sjekk_at_reduksjon_skjer_etter_12_mnd_ved_60_prosent() {
+        Now.fixedDate(LocalDate.of(2021,1,1));
         LocalDate startDato = LocalDate.of(2021, 1, 1);
         LocalDate sluttDato = LocalDate.of(2022, 1, 1);
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
@@ -173,10 +184,12 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
         assertThat(avtale.getDatoForRedusertProsent()).isEqualTo(LocalDate.of(2022, 1, 1));
         harRiktigeEgenskaper(avtale);
+        Now.resetClock();
     }
 
     @Test
     public void sjekk_at_ingen_redusering_under_1_år_60_prosent() {
+        Now.fixedDate(LocalDate.of(2021, 1, 1));
         LocalDate startDato = LocalDate.of(2021, 1, 1);
         LocalDate sluttDato = LocalDate.of(2021, 12, 31);
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
@@ -189,10 +202,12 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
         assertThat(avtale.getDatoForRedusertProsent()).isNull();
         harRiktigeEgenskaper(avtale);
+        Now.resetClock();
     }
 
     @Test
     public void sjekk_at_varig_lonnstilskudd_ikke_reduserses() {
+        Now.fixedDate(LocalDate.of(2021, 1, 1));
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         endreAvtale.setStartDato(LocalDate.of(2021, 1, 1));
@@ -202,6 +217,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
         assertThat(avtale.tilskuddsperiode(avtale.getTilskuddPeriode().size() - 1).getLonnstilskuddProsent()).isEqualTo(60);
         assertThat(avtale.getDatoForRedusertProsent()).isNull();
+        Now.resetClock();
     }
 
     @Test
@@ -219,6 +235,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
     @Test
     public void sjekk_at_nye_perioder_ved_forlengelse_starter_etter_utbetalte_perioder() {
+        Now.fixedDate(LocalDate.of(2021, 1, 1));
         Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 4, 1));
 
 
@@ -234,6 +251,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         assertThat(avtale.tilskuddsperiode(2).getStatus()).isEqualTo(TilskuddPeriodeStatus.UBEHANDLET);
 
         harRiktigeEgenskaper(avtale);
+        Now.resetClock();
     }
 
     @Test
@@ -292,6 +310,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
     @Test
     public void sjekk_at_godkjent_periode_ikke_annulleres_ved_forlengelse() {
+        Now.fixedDate(LocalDate.of(2021, 1, 1));
         LocalDate avtaleFørsteDag = LocalDate.of(2021, 1, 1);
         Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleFørsteDag, avtaleFørsteDag);
 
@@ -310,10 +329,12 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         assertThat(avtale.tilskuddsperiode(1).getSluttDato()).isEqualTo(avtaleFørsteDag.plusDays(1));
 
         harRiktigeEgenskaper(avtale);
+        Now.resetClock();
     }
 
     @Test
     public void sjekk_at_godkjent_periode_ikke_annulleres_ved_økonomiendring_i_et_hull() {
+        Now.fixedDate(LocalDate.of(2020, 6, 28));
         LocalDate avtaleStart = LocalDate.of(2021, 1, 1);
         LocalDate avtaleSlutt = LocalDate.of(2021, 8, 1);
         Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
@@ -336,6 +357,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         assertThat(avtale.tilskuddsperiode(2).getStatus()).isEqualTo(TilskuddPeriodeStatus.UTBETALT);
 
         harRiktigeEgenskaper(avtale);
+        Now.resetClock();
     }
 
     /* ------------ Metoder som kun brukes innad i denne test-klassen ------------ */

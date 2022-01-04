@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 
@@ -11,32 +12,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class GjeldendeTilskuddsperiodeTest {
 
-    // 1 og 4
-    // Bør skrives om til å bruke fastsatte tider, i stedet for Now.localDate(). Slik den er nå utledes det 4 perioder
-    // hvis avtalestart blir før nyttår og avtaleslutt er etter nyttår. 3 perioder utledes hvis avtalestart og avtaleslutt er innenfor samme år.
     @Test
     public void godkjenner_og_neste_kan_behandles() {
+        Now.fixedDate(LocalDate.of(2021, 4, 20));
         LocalDate avtaleStart = Now.localDate().minusMonths(3).plusDays(13);
         LocalDate avtaleSlutt = Now.localDate().plusMonths(6);
-        Avtale avtale = enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
 
-        // 4
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfyltMedGodkjentForEtterregistrering(avtaleStart, avtaleSlutt);
+
         assertThat(avtale.tilskuddsperiode(0)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
 
-        // 1
-        avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), avtale.getEnhetGeografisk());
+        avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), "0000");
         assertThat(avtale.tilskuddsperiode(1)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
 
-        // 3
-        avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), avtale.getEnhetGeografisk());
+        avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), "0000");
+        assertThat(avtale.tilskuddsperiode(1)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
 
-        if (avtale.tilskuddsperiode(2).kanBehandles()) {
-            // Periode index 2 kan være så langt frem i tid at den ikke kan behandles isåfall er fortsatt index 1 gjeldene.
-            assertThat(avtale.tilskuddsperiode(2)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
-        } else {
-            assertThat(avtale.tilskuddsperiode(1)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
-        }
-
+        Now.resetClock();
     }
 
     // 2
@@ -60,9 +52,12 @@ public class GjeldendeTilskuddsperiodeTest {
     // 6
     @Test
     public void første_avslått__neste_kan_behandles() {
+        Now.fixedDate(LocalDate.of(2021, 4, 20));
         LocalDate avtaleStart = Now.localDate().minusMonths(6);
         LocalDate avtaleSlutt = Now.localDate().plusMonths(8);
-        Avtale avtale = enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
+
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfyltMedGodkjentForEtterregistrering(avtaleStart, avtaleSlutt);
+
         avtale.avslåTilskuddsperiode(TestData.enNavIdent2(), EnumSet.of(Avslagsårsak.ANNET), "Forklaring");
         assertThat(avtale.tilskuddsperiode(0)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
     }
