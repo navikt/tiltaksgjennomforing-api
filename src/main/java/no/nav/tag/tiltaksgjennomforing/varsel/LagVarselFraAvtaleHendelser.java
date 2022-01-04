@@ -103,6 +103,18 @@ public class LagVarselFraAvtaleHendelser {
     }
 
     @EventListener
+    public void godkjentForEtterregistrering(GodkjentForEtterregistrering event) {
+        VarselFactory factory = new VarselFactory (event.getAvtale(), Avtalerolle.BESLUTTER, VarslbarHendelseType.GODKJENT_FOR_ETTERREGISTRERING);
+        varselRepository.save(factory.veileder());
+    }
+
+    @EventListener
+    public void fjernetEtterregistrering(FjernetEtterregistrering event) {
+        VarselFactory factory = new VarselFactory (event.getAvtale(), Avtalerolle.BESLUTTER, VarslbarHendelseType.FJERNET_ETTERREGISTRERING);
+        varselRepository.save(factory.veileder());
+    }
+
+    @EventListener
     public void avtaleInngått(AvtaleInngått event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), event.getUtførtAvRolle(), VarslbarHendelseType.AVTALE_INNGÅTT);
         varselRepository.saveAll(factory.alleParter());

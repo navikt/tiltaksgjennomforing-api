@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -64,19 +65,23 @@ public class FnrTest {
 
     @Test
     public void testFnr4() {
+        Now.fixedDate(LocalDate.of(2021, 12, 20));
         Fnr fnr = new Fnr("23029149054");
         assertThat(fnr.erOver30årFørsteJanuar()).isFalse();
         assertThat(fnr.erUnder16år()).isFalse();
+        Now.resetClock();
     }
 
     @Test
     public void testFnr5() {
+        Now.fixedDate(LocalDate.of(2021, 12, 20));
         final Fnr fnr = new Fnr("23029149054");
         final Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvArbeidsgiver();
         AvtaleInnhold avtaleInnhold = avtale.gjeldendeInnhold();
         avtaleInnhold.setStartDato(LocalDate.parse("2021-06-01"));
         assertThat(fnr.erOver30årFørsteJanuar()).isFalse();
         assertThat(fnr.erOver30årFraOppstartDato(avtaleInnhold.getStartDato())).isTrue();
+        Now.resetClock();
     }
 
     @Test

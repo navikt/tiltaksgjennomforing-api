@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
@@ -59,6 +60,14 @@ public class AvtaleController {
                                                                     @RequestParam(value = "limit", required = false, defaultValue = "100000000") Integer limit) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         List<Avtale> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre, sorteringskolonne, skip, limit);
+        return avtaler;
+    }
+
+    @GetMapping("/beslutter")
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    public List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(AvtalePredicate queryParametre) {
+        Beslutter beslutter = innloggingService.hentBeslutter();
+        List<Avtale> avtaler = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(avtaleRepository, queryParametre);
         return avtaler;
     }
 
@@ -401,6 +410,16 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         beslutter.godkjennTilskuddsperiode(avtale, godkjennTilskuddsperiodeRequest.getEnhet());
         avtaleRepository.save(avtale);
+    }
+
+    @PostMapping("/{avtaleId}/set-om-avtalen-kan-etterregistreres")
+    @Transactional
+    public Avtale setOmAvtalenKanEtterregistreres(@PathVariable("avtaleId") UUID avtaleId){
+        Beslutter beslutter = innloggingService.hentBeslutter();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        beslutter.setOmAvtalenKanEtterregistreres(avtale);
+        avtaleRepository.save(avtale);
+        return avtale;
     }
 
     @PostMapping("/{avtaleId}/endre-kostnadssted")

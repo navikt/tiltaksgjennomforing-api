@@ -134,6 +134,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private String enhetsnavnGeografisk;
     private String enhetOppfolging;
     private String enhetsnavnOppfolging;
+
+    private boolean godkjentForEtterregistrering;
+
     @Enumerated(EnumType.STRING)
     private Kvalifiseringsgruppe kvalifiseringsgruppe;
     @Enumerated(EnumType.STRING)
@@ -631,6 +634,20 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new TilskuddsperiodeAvslått(this, beslutter, gjeldendePeriode));
     }
 
+    public void togglegodkjennEtterregistrering(NavIdent beslutter){
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        if(erGodkjentAvArbeidsgiver() || erGodkjentAvDeltaker()){
+            throw new FeilkodeException(Feilkode.KAN_IKKE_MERKES_FOR_ETTERREGISTRERING_AVTALE_GODKJENT);
+        }
+        setGodkjentForEtterregistrering(!this.godkjentForEtterregistrering);
+        sistEndretNå();
+        if(this.godkjentForEtterregistrering){
+            registerEvent(new GodkjentForEtterregistrering(this, beslutter));
+        }
+        else {
+            registerEvent(new FjernetEtterregistrering(this, beslutter));
+        }
+    }
 
     protected TilskuddPeriodeStatus getGjeldendeTilskuddsperiodestatus() {
         TilskuddPeriode tilskuddPeriode = gjeldendeTilskuddsperiode();
@@ -830,6 +847,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     public void forlengAvtale(LocalDate nySluttDato, NavIdent utførtAv) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
 
+
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORLENGE_IKKE_GODKJENT_AVTALE);
         }
@@ -848,7 +866,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     private void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
-        StartOgSluttDatoStrategyFactory.create(getTiltakstype(), getKvalifiseringsgruppe()).sjekkStartOgSluttDato(startDato, sluttDato);
+        StartOgSluttDatoStrategyFactory.create(getTiltakstype(), getKvalifiseringsgruppe()).sjekkStartOgSluttDato(startDato, sluttDato, isGodkjentForEtterregistrering());
     }
 
     public void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning, NavIdent utførtAv) {

@@ -19,12 +19,14 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.*;
 
 import static java.util.Arrays.asList;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enArbeidstreningAvtale;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enNavIdent;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
