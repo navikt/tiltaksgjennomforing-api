@@ -11,6 +11,8 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -31,9 +33,11 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         avtaleRepository.save(lilly);
         avtaleRepository.save(TestData.enLonnstilskuddAvtaleGodkjentAvVeileder());
         avtaleRepository.save(TestData.enLonnstilskuddAvtaleGodkjentAvVeilederTilbakeITid());
+        Now.fixedDate(LocalDate.of(2021, 6, 1));
         avtaleRepository.save(TestData.enSommerjobbAvtaleGodkjentAvVeileder());
         avtaleRepository.save(TestData.enSommerjobbAvtaleGodkjentAvBeslutter());
         avtaleRepository.save(TestData.enSommerjobbAvtaleGodkjentAvArbeidsgiver());
+        Now.resetClock();
         avtaleRepository.save(TestData.enMentorAvtaleMedMedAltUtfylt());
         avtaleRepository.save(TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt());
         avtaleRepository.save(TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedGeografiskEnhet());
