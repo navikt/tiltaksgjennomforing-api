@@ -448,21 +448,21 @@ public class AvtaleTest {
     }
 
     @Test
-    public void status__avbrutt() {
+    public void status__annullert() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        avtale.avbryt(TestData.enVeileder(avtale), new AvbruttInfo(Now.localDate(), "grunnen"));
-        assertThat(avtale.status()).isEqualTo(Status.AVBRUTT.getBeskrivelse());
-        assertThat(avtale.getAvbruttDato()).isNotNull();
-        assertThat(avtale.getAvbruttGrunn()).isEqualTo("grunnen");
+        avtale.annuller(TestData.enVeileder(avtale), "grunnen");
+        assertThat(avtale.status()).isEqualTo(Status.ANNULLERT.getBeskrivelse());
+        assertThat(avtale.getAnnullertTidspunkt()).isNotNull();
+        assertThat(avtale.getAnnullertGrunn()).isEqualTo("grunnen");
     }
 
     @Test
     public void avbryt_ufordelt_avtale_skal_bli_fordelt() {
         Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
         Veileder veileder = TestData.enVeileder(new NavIdent("Z123456"));
-        avtale.avbryt(veileder, new AvbruttInfo(Now.localDate(), "grunnen"));
+        avtale.annuller(veileder, "grunnen");
 
-        assertThat(avtale.status()).isEqualTo(Status.AVBRUTT.getBeskrivelse());
+        assertThat(avtale.status()).isEqualTo(Status.ANNULLERT.getBeskrivelse());
         assertThat(avtale.erUfordelt()).isFalse();
         assertThat(avtale.getVeilederNavIdent()).isEqualTo(veileder.getIdentifikator());
     }
@@ -490,32 +490,6 @@ public class AvtaleTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setAvbrutt(true);
         assertThat(avtale.kanAvbrytes()).isFalse();
-    }
-
-    @Test
-    public void status__gjenopprettet() {
-        Avtale avtale = TestData.enArbeidstreningAvtale();
-        avtale.setAvbrutt(true);
-        avtale.setAvbruttDato(Now.localDate());
-        avtale.setAvbruttGrunn("enGrunn");
-
-        avtale.gjenopprett(TestData.enVeileder(avtale));
-        assertThat(avtale.status()).isNotEqualTo(Status.AVBRUTT.getBeskrivelse());
-        assertThat(avtale.getAvbruttDato()).isNull();
-        assertThat(avtale.getAvbruttGrunn()).isNull();
-    }
-
-    @Test
-    public void ikke_avbrutt_avtale_kan_ikke_gjenopprettes() {
-        Avtale godkjentAvtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
-        assertThat(godkjentAvtale.kanGjenopprettes()).isFalse();
-    }
-
-    @Test
-    public void avbrutt_avtale_kan_gjenopprettes() {
-        Avtale godkjentAvtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
-        godkjentAvtale.setAvbrutt(true);
-        assertThat(godkjentAvtale.kanGjenopprettes()).isTrue();
     }
 
     @Test
@@ -583,16 +557,16 @@ public class AvtaleTest {
     }
 
     @Test
-    public void sistEndretNå__kalles_ved_avbryt() throws InterruptedException {
+    public void sistEndretNå__kalles_ved_annuller() throws InterruptedException {
         Instant førEndringen = Now.instant();
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Thread.sleep(10);
-        avtale.avbryt(TestData.enVeileder(avtale), new AvbruttInfo());
+        avtale.annuller(TestData.enVeileder(avtale), "grunn");
         assertThat(avtale.getSistEndret()).isAfter(førEndringen);
     }
 
     @Test
-    public void sistEndretNå__kalles_ved_låsOppAvtale() throws InterruptedException {
+    public void sistEndretNå__kalles_ved_endreOppfølgingOgTilrettelegging() throws InterruptedException {
         Instant førEndringen = Now.instant();
         Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         Thread.sleep(10);

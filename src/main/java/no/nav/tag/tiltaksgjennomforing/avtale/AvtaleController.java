@@ -337,24 +337,6 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
-    @PostMapping("/{avtaleId}/gjenopprett")
-    @Transactional
-    public void gjenopprettAvtale(@PathVariable("avtaleId") UUID avtaleId) {
-        Veileder veileder = innloggingService.hentVeileder();
-        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        veileder.gjenopprettAvtale(avtale);
-        avtaleRepository.save(avtale);
-    }
-
-    @PostMapping("/{avtaleId}/avbryt")
-    @Transactional
-    public void avbryt(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret, @RequestBody AvbruttInfo avbruttInfo) {
-        Veileder veileder = innloggingService.hentVeileder();
-        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        veileder.avbrytAvtale(sistEndret, avbruttInfo, avtale);
-        avtaleRepository.save(avtale);
-    }
-
     @PostMapping("/{avtaleId}/annuller")
     @Transactional
     public void annuller(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret, @RequestBody AnnullertInfo annullertInfo) {

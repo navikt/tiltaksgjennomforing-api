@@ -81,19 +81,9 @@ public class Veileder extends Avtalepart<NavIdent> {
         }
     }
 
-    public void avbrytAvtale(Instant sistEndret, AvbruttInfo avbruttInfo, Avtale avtale) {
-        avtale.sjekkSistEndret(sistEndret);
-        avbruttInfo.grunnErOppgitt();
-        avtale.avbryt(this, avbruttInfo);
-    }
-
     public void annullerAvtale(Instant sistEndret, String annullerGrunn, Avtale avtale) {
         avtale.sjekkSistEndret(sistEndret);
         avtale.annuller(this, annullerGrunn);
-    }
-
-    public void gjenopprettAvtale(Avtale avtale) {
-        avtale.gjenopprett(this);
     }
 
     @Override

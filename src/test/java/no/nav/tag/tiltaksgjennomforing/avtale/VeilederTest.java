@@ -72,61 +72,26 @@ public class VeilederTest {
     }
 
     @Test
-    public void avbrytAvtale__kan_avbryt_avtale_etter_veiledergodkjenning() {
+    public void annullerAvtale__kan_annuller_avtale_etter_veiledergodkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.avbrytAvtale(avtale.getSistEndret(), new AvbruttInfo(Now.localDate(), "enGrunn"), avtale);
-        assertThat(avtale.isAvbrutt()).isTrue();
-        assertThat(avtale.getAvbruttDato()).isNotNull();
-        assertThat(avtale.getAvbruttGrunn()).isEqualTo("enGrunn");
+        veileder.annullerAvtale(avtale.getSistEndret(), "enGrunn", avtale);
+        assertThat(avtale.getAnnullertTidspunkt()).isNotNull();
+        assertThat(avtale.getAnnullertGrunn()).isEqualTo("enGrunn");
     }
 
     @Test
-    public void avbrytAvtale__kan_avbryte_avtale_foer_veiledergodkjenning() {
+    public void annullerAvtale__kan_annullere_avtale_foer_veiledergodkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.avbrytAvtale(avtale.getSistEndret(), new AvbruttInfo(Now.localDate(), "enGrunn"), avtale);
-        assertThat(avtale.isAvbrutt()).isTrue();
-        assertThat(avtale.getAvbruttDato()).isNotNull();
-        assertThat(avtale.getAvbruttGrunn()).isEqualTo("enGrunn");
-    }
-
-    @Test
-    public void gjenopprettAvtale__kan_gjenopprette_avtale_etter_veiledergodkjenning() {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
-        avtale.setAvbrutt(true);
-        avtale.setAvbruttGrunn("enGrunn");
-        avtale.setAvbruttDato(Now.localDate());
-
-        Veileder veileder = TestData.enVeileder(avtale);
-        veileder.gjenopprettAvtale(avtale);
-        assertThat(avtale.isAvbrutt()).isFalse();
-        assertThat(avtale.getAvbruttDato()).isNull();
-        assertThat(avtale.getAvbruttGrunn()).isNull();
-    }
-
-    @Test
-    public void gjenopprettAvtale__kan_gjenopprette_avtale_foer_veiledergodkjenning() {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
-        avtale.setAvbrutt(true);
-        avtale.setAvbruttGrunn("enGrunn");
-        avtale.setAvbruttDato(Now.localDate());
-        Veileder veileder = TestData.enVeileder(avtale);
-
-        veileder.gjenopprettAvtale(avtale);
-        assertThat(avtale.isAvbrutt()).isFalse();
-        assertThat(avtale.getAvbruttDato()).isNull();
-        assertThat(avtale.getAvbruttGrunn()).isNull();
+        veileder.annullerAvtale(avtale.getSistEndret(), "enGrunn", avtale);
+        assertThat(avtale.getAnnullertTidspunkt()).isNotNull();
+        assertThat(avtale.getAnnullertGrunn()).isEqualTo("enGrunn");
     }
 
     @Test

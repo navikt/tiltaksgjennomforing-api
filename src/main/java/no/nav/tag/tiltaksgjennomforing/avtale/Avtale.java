@@ -440,20 +440,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new AnnullertAvVeileder(this, veileder.getIdentifikator()));
     }
 
-    // TODO: Skal slettes, ikke i bruk
-    public void avbryt(Veileder veileder, AvbruttInfo avbruttInfo) {
-        if (this.kanAvbrytes()) {
-            this.setAvbrutt(true);
-            this.setAvbruttDato(avbruttInfo.getAvbruttDato());
-            this.setAvbruttGrunn(avbruttInfo.getAvbruttGrunn());
-            if (this.erUfordelt()) {
-                this.setVeilederNavIdent(veileder.getIdentifikator());
-            }
-            sistEndretNå();
-            registerEvent(new AvbruttAvVeileder(this, veileder.getIdentifikator()));
-        }
-    }
-
     public void overtaAvtale(NavIdent nyNavIdent) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         NavIdent gammelNavIdent = this.getVeilederNavIdent();
@@ -463,17 +449,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             this.registerEvent(new AvtaleOpprettetAvArbeidsgiverErFordelt(this));
         } else {
             registerEvent(new AvtaleNyVeileder(this, gammelNavIdent));
-        }
-    }
-
-    // TODO: Skal slettes, ikke i bruk
-    public void gjenopprett(Veileder veileder) {
-        if (this.kanGjenopprettes()) {
-            this.setAvbrutt(false);
-            this.setAvbruttDato(null);
-            this.setAvbruttGrunn(null);
-            sistEndretNå();
-            registerEvent(new AvtaleGjenopprettet(this, veileder.getIdentifikator()));
         }
     }
 
