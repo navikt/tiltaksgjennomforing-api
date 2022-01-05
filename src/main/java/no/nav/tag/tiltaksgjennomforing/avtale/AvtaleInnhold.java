@@ -60,6 +60,12 @@ public class AvtaleInnhold {
     private Integer stillingKonseptId;
     private Integer antallDagerPerUke;
 
+    @Embedded
+    private RefusjonKontaktperson refusjonKontaktperson;
+
+
+
+
 
     // Mentor
     private String mentorFornavn;
