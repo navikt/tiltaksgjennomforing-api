@@ -1,7 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.AssertFeilkode;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,7 +9,7 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.MIDLERTIDIG_LON
 import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.VARIG_LONNSTILSKUDD;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class LonnstilskuddStrategyTest {
+class MidlertidigLonnstilskuddStrategyTest {
 
     private AvtaleInnhold avtaleInnhold;
     private AvtaleInnholdStrategy strategy;
@@ -66,5 +65,13 @@ class LonnstilskuddStrategyTest {
 
         endreAvtale.setOtpSats(0.3);
         strategy.endre(endreAvtale);
+    }
+
+    @Test
+    void lonnstilskuddsprosent_skal_ikke_fylles_ut() {
+        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        endreAvtale.setLonnstilskuddProsent(null);
+        strategy.endre(endreAvtale);
+        assertThat(strategy.alleFelterSomMåFyllesUt()).doesNotContainKey(AvtaleInnhold.Fields.lonnstilskuddProsent);
     }
 }

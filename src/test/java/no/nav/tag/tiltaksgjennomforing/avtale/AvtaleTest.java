@@ -247,7 +247,7 @@ public class AvtaleTest {
     }
 
     @Test
-    public void kanIkkeGodkjennesNårNoeMangler__lønnstilskudd() {
+    public void kanIkkeGodkjennesNårNoeMangler__midlertidig_lønnstilskudd() {
         Set<String> lønnstilskuddfelter = Set.of(
                 AvtaleInnhold.Fields.deltakerFornavn,
                 AvtaleInnhold.Fields.deltakerEtternavn,
@@ -277,6 +277,43 @@ public class AvtaleTest {
         );
 
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
+
+        testAtAlleFelterMangler(avtale, lønnstilskuddfelter);
+        testAtHvertEnkeltFeltMangler(avtale, lønnstilskuddfelter);
+    }
+
+    @Test
+    public void kanIkkeGodkjennesNårNoeMangler__varig_lønnstilskudd() {
+        Set<String> lønnstilskuddfelter = Set.of(
+                AvtaleInnhold.Fields.deltakerFornavn,
+                AvtaleInnhold.Fields.deltakerEtternavn,
+                AvtaleInnhold.Fields.deltakerTlf,
+                AvtaleInnhold.Fields.bedriftNavn,
+                AvtaleInnhold.Fields.arbeidsgiverFornavn,
+                AvtaleInnhold.Fields.arbeidsgiverEtternavn,
+                AvtaleInnhold.Fields.arbeidsgiverTlf,
+                AvtaleInnhold.Fields.veilederFornavn,
+                AvtaleInnhold.Fields.veilederEtternavn,
+                AvtaleInnhold.Fields.veilederTlf,
+                AvtaleInnhold.Fields.stillingstittel,
+                AvtaleInnhold.Fields.arbeidsoppgaver,
+                AvtaleInnhold.Fields.stillingprosent,
+                AvtaleInnhold.Fields.antallDagerPerUke,
+                AvtaleInnhold.Fields.stillingstype,
+                AvtaleInnhold.Fields.startDato,
+                AvtaleInnhold.Fields.sluttDato,
+                AvtaleInnhold.Fields.arbeidsgiverKontonummer,
+                AvtaleInnhold.Fields.manedslonn,
+                AvtaleInnhold.Fields.feriepengesats,
+                AvtaleInnhold.Fields.otpSats,
+                AvtaleInnhold.Fields.arbeidsgiveravgift,
+                AvtaleInnhold.Fields.tilrettelegging,
+                AvtaleInnhold.Fields.oppfolging,
+                AvtaleInnhold.Fields.harFamilietilknytning,
+                AvtaleInnhold.Fields.lonnstilskuddProsent
+        );
+
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.VARIG_LONNSTILSKUDD), TestData.enNavIdent());
 
         testAtAlleFelterMangler(avtale, lønnstilskuddfelter);
         testAtHvertEnkeltFeltMangler(avtale, lønnstilskuddfelter);
@@ -340,7 +377,25 @@ public class AvtaleTest {
     @Test
     public void kanGodkjennesNaarAltErUtfylt() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.sjekkOmAltErUtfylt();
+        avtale.sjekkOmAltErKlarTilGodkjenning();
+    }
+
+    @Test
+    public void kan_ikke_godkjennes_når_alt_er_utfylt_men_beregning_mangler() {
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
+        avtale.setEnhetOppfolging("0000");
+        avtale.setEnhetsnavnOppfolging("0000");
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.endreAvtale(avtale.getSistEndret(), TestData.endringPåAlleFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+
+        // Later som at det har skjedd noe mystisk med prosenten, kan skyldes feil ved innhenting fra Arena
+        avtale.gjeldendeInnhold().setLonnstilskuddProsent(null);
+        assertFeilkode(Feilkode.MANGLER_BEREGNING, () -> avtale.sjekkOmAltErKlarTilGodkjenning());
+
+        // Later som at det har skjedd noe mystisk med sum, kan skyldes feil ved innhenting fra Arena
+        avtale.gjeldendeInnhold().setLonnstilskuddProsent(67);
+        avtale.gjeldendeInnhold().setSumLonnstilskudd(null);
+        assertFeilkode(Feilkode.MANGLER_BEREGNING, () -> avtale.sjekkOmAltErKlarTilGodkjenning());
     }
 
     @Test

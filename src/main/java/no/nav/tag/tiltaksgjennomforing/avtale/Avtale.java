@@ -251,14 +251,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     void godkjennForArbeidsgiver(Identifikator utfortAv) {
-        sjekkOmAltErUtfylt();
+        sjekkOmAltErKlarTilGodkjenning();
         this.setGodkjentAvArbeidsgiver(Now.localDateTime());
         sistEndretNå();
         registerEvent(new GodkjentAvArbeidsgiver(this, utfortAv));
     }
 
     void godkjennForVeileder(NavIdent utfortAv) {
-        sjekkOmAltErUtfylt();
+        sjekkOmAltErKlarTilGodkjenning();
         if (erUfordelt()) {
             throw new AvtaleErIkkeFordeltException();
         }
@@ -288,7 +288,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     void godkjennForVeilederOgDeltaker(NavIdent utfortAv, GodkjentPaVegneGrunn paVegneAvGrunn) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
-        sjekkOmAltErUtfylt();
+        sjekkOmAltErKlarTilGodkjenning();
         if (erGodkjentAvDeltaker()) {
             throw new DeltakerHarGodkjentException();
         }
@@ -317,7 +317,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     void godkjennForVeilederOgArbeidsgiver(NavIdent utfortAv, GodkjentPaVegneAvArbeidsgiverGrunn godkjentPaVegneAvArbeidsgiverGrunn) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
-        sjekkOmAltErUtfylt();
+        sjekkOmAltErKlarTilGodkjenning();
         if (tiltakstype != Tiltakstype.SOMMERJOBB) {
             throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_TILTAKSTYPE);
         }
@@ -348,7 +348,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     public void godkjennForVeilederOgDeltakerOgArbeidsgiver(NavIdent utfortAv, GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn paVegneAvDeltakerOgArbeidsgiverGrunn) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
-        sjekkOmAltErUtfylt();
+        sjekkOmAltErKlarTilGodkjenning();
         if (tiltakstype != Tiltakstype.SOMMERJOBB) {
             throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_TILTAKSTYPE);
         }
@@ -383,15 +383,19 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     void godkjennForDeltaker(Identifikator utfortAv) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
-        sjekkOmAltErUtfylt();
+        sjekkOmAltErKlarTilGodkjenning();
         this.setGodkjentAvDeltaker(Now.localDateTime());
         sistEndretNå();
         registerEvent(new GodkjentAvDeltaker(this, utfortAv));
     }
 
-    void sjekkOmAltErUtfylt() {
+    void sjekkOmAltErKlarTilGodkjenning() {
         if (!erAltUtfylt()) {
             throw new AltMåVæreFyltUtException();
+        }
+        if (List.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB).contains(tiltakstype) &&
+                Utils.erNoenTomme(gjeldendeInnhold().getSumLonnstilskudd(), gjeldendeInnhold().getLonnstilskuddProsent())) {
+            throw new FeilkodeException(Feilkode.MANGLER_BEREGNING);
         }
     }
 
