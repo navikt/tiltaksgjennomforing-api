@@ -29,51 +29,47 @@ public class SmsVarselFactory {
     }
 
     public List<SmsVarsel> arbeidsgiverRefusjonKlar() {
-        List<SmsVarsel> smsVarsel = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(), refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId())));
-        if(avtale.gjeldendeInnhold().getRefusjonKontaktperson() != null) {
-            if(!avtale.gjeldendeInnhold().getRefusjonKontaktperson().isØnskerInformasjonOmRefusjon()) {
-                smsVarsel.clear();
-            }
-            smsVarsel.add(SmsVarsel.nyttVarsel(avtale.gjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(), avtale.getBedriftNr(), refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId()));
-        }
-        return smsVarsel;
+        ArrayList<SmsVarsel> hovedkontaktForAvtalen = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(),
+            refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId())));
+
+        return leggTilMottakerSMSVarselForRefusjon(avtale, hovedkontaktForAvtalen, refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse);
     }
 
+
     public List<SmsVarsel> arbeidsgiverRefusjonKlarRevarsel() {
-        List<SmsVarsel> smsVarsel = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(), refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId())));
-        if(avtale.gjeldendeInnhold().getRefusjonKontaktperson() != null) {
-            if(!avtale.gjeldendeInnhold().getRefusjonKontaktperson().isØnskerInformasjonOmRefusjon()) {
-                smsVarsel.clear();
-            }
-            smsVarsel.add(SmsVarsel.nyttVarsel(avtale.gjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(), avtale.getBedriftNr(), refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId()));
-        }
-        return smsVarsel;
+        ArrayList<SmsVarsel> hovedkontaktForAvtalen = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(),
+            refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId())));
+
+        return leggTilMottakerSMSVarselForRefusjon(avtale, hovedkontaktForAvtalen, refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse);
     }
 
     public List<SmsVarsel> arbeidsgiverRefusjonForlengetVarsel() {
-        List<SmsVarsel> smsVarsel = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(), refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId())));
-        if(avtale.gjeldendeInnhold().getRefusjonKontaktperson() != null) {
-            if(!avtale.gjeldendeInnhold().getRefusjonKontaktperson().isØnskerInformasjonOmRefusjon()) {
-                smsVarsel.clear();
-            }
-            smsVarsel.add(SmsVarsel.nyttVarsel(avtale.gjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(), avtale.getBedriftNr(), refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId()));
-        }
-        return smsVarsel;
+        ArrayList<SmsVarsel> hovedkontaktForAvtalen = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(),
+            refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId())));
+
+        return leggTilMottakerSMSVarselForRefusjon(avtale, hovedkontaktForAvtalen, refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse);
     }
 
     public List<SmsVarsel> arbeidsgiverRefusjonKorrigertVarsel() {
-        List<SmsVarsel> smsVarsel = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(), refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId())));
-        if(avtale.gjeldendeInnhold().getRefusjonKontaktperson() != null) {
-            if(!avtale.gjeldendeInnhold().getRefusjonKontaktperson().isØnskerInformasjonOmRefusjon()) {
-                smsVarsel.clear();
-            }
-            smsVarsel.add(SmsVarsel.nyttVarsel(avtale.gjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(), avtale.getBedriftNr(), refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId()));
-        }
-        return smsVarsel;
+        ArrayList<SmsVarsel> hovedkontaktForAvtalen = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(),
+            refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId())));
+
+        return leggTilMottakerSMSVarselForRefusjon(avtale, hovedkontaktForAvtalen, refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse);
     }
 
     public SmsVarsel veileder() {
         return SmsVarsel.nyttVarsel(avtale.getVeilederTlf(), NAV_ORGNR, FAGSYSTEMSONE_VARSELTEKST, hendelse.getId());
+    }
+
+    private List<SmsVarsel> leggTilMottakerSMSVarselForRefusjon(Avtale avtale, List<SmsVarsel> smsVarsel, String avtale1, VarslbarHendelse hendelse) {
+        if(avtale.gjeldendeInnhold().getRefusjonKontaktperson() != null) {
+            if(!avtale.gjeldendeInnhold().getRefusjonKontaktperson().isØnskerInformasjonOmRefusjon()) {
+                smsVarsel.clear();
+            }
+            smsVarsel.add(SmsVarsel.nyttVarsel(avtale.gjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(), avtale.getBedriftNr(),
+                avtale1, hendelse.getId()));
+        }
+        return smsVarsel;
     }
 
     private static String refusjonForlengetTekst(Tiltakstype tiltakstype, Integer avtaleNr) {
