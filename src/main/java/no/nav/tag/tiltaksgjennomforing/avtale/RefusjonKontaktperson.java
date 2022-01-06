@@ -12,13 +12,12 @@ public class RefusjonKontaktperson {
      String refusjonKontaktpersonFornavn;
      String refusjonKontaktpersonEtternavn;
      String refusjonKontaktpersonTlf;
-
      boolean ønskerInformasjonOmRefusjon;
 
      public RefusjonKontaktperson() {
           this.refusjonKontaktpersonFornavn = "";
           this.refusjonKontaktpersonEtternavn = "";
           this.refusjonKontaktpersonTlf = "";
-          this.ønskerInformasjonOmRefusjon = false;
+          this.ønskerInformasjonOmRefusjon = true;
      }
 }
