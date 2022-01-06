@@ -104,7 +104,6 @@ public class TestData {
         avtale.setEnhetOppfolging(ENHET_GEOGRAFISK.getVerdi());
         avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
-        avtale.setGodkjentForEtterregistrering(true);
         EndreAvtale endring = TestData.endringPåAlleFelter();
         endring.setStartDato(startDato);
         endring.setSluttDato(sluttDato);
@@ -125,7 +124,6 @@ public class TestData {
         avtale.setEnhetOppfolging(ENHET_OPPFØLGING.getVerdi());
         avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
-        avtale.setGodkjentForEtterregistrering(true);
         avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
         avtale.setDeltakerFornavn("Lilly");
         avtale.setDeltakerEtternavn("Lønning");
@@ -174,7 +172,6 @@ public class TestData {
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), new NavIdent("Z123456"));
         avtale.setEnhetOppfolging(ENHET_OPPFØLGING.getVerdi());
         avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
-        avtale.setGodkjentForEtterregistrering(true);
         EndreAvtale endreAvtale = endringPåAlleFelter();
         endreAvtale.setDeltakerFornavn("Solveig");
         endreAvtale.setDeltakerEtternavn("Sommerfeldt");
@@ -198,7 +195,6 @@ public class TestData {
         avtale.setEnhetOppfolging(ENHET_OPPFØLGING.getVerdi());
         avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
         avtale.setAvtaleNr(1);
-        avtale.setGodkjentForEtterregistrering(true);
         EndreAvtale endreAvtale = endringPåAlleFelter();
         endreAvtale.setDeltakerFornavn("Solbe");
         endreAvtale.setDeltakerEtternavn("Sommerfeldt");
@@ -222,7 +218,6 @@ public class TestData {
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), new NavIdent("Z123456"));
         avtale.setEnhetOppfolging(ENHET_OPPFØLGING.getVerdi());
         avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
-        avtale.setGodkjentForEtterregistrering(true);
         EndreAvtale endreAvtale = endringPåAlleFelter();
         endreAvtale.setDeltakerFornavn("Solfrid");
         endreAvtale.setDeltakerEtternavn("Sommerfeldt");
@@ -248,6 +243,20 @@ public class TestData {
         avtale.setVersjon(1);
         avtale.setJournalpostId(null);
         avtale.setMaal(List.of());
+        return avtale;
+    }
+
+    public static Avtale enLonnstilskuddAvtaleMedAltUtfyltMedGodkjentForEtterregistrering(LocalDate avtaleStart, LocalDate avtaleSlutt){
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        EndreAvtale endring = TestData.endringPåAlleFelter();
+        endring.setStartDato(avtaleStart);
+        endring.setSluttDato(avtaleSlutt);
+        avtale.setGodkjentForEtterregistrering(true);
+        avtale.endreAvtale(Now.instant(), endring, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+        avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
+        avtale.godkjennForDeltaker(TestData.enIdentifikator());
+        avtale.godkjennForVeileder(TestData.enNavIdent());
         return avtale;
     }
 

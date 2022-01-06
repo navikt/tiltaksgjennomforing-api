@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -25,6 +26,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +53,7 @@ class RefusjonKlarConsumerTest {
     @Test
     @SneakyThrows
     public void skal_sende_sms_når_det_leses_varsel_kafkamelding() {
+        Now.fixedDate(LocalDate.of(2021, 6, 1));
         Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvBeslutter();
         avtale = avtaleRepository.save(avtale);
 
@@ -75,6 +78,7 @@ class RefusjonKlarConsumerTest {
         assertThat(jsonRefusjonRecord.get("meldingstekst")).isEqualTo(meldingstekst);
         assertThat(jsonRefusjonRecord.get("telefonnummer")).isEqualTo(avtale.getArbeidsgiverTlf());
         assertThat(jsonRefusjonRecord.get("identifikator")).isEqualTo(avtale.getBedriftNr().asString());
+        Now.resetClock();
 
     }
 
