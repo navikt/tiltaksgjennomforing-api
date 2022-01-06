@@ -1,11 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import lombok.Data;
 import javax.persistence.Embeddable;
+import lombok.AllArgsConstructor;
+import lombok.Value;
 
-@Data
+@Value
 @Embeddable
-
+@AllArgsConstructor
 public class RefusjonKontaktperson {
 
      String refusjonKontaktpersonFornavn;
@@ -14,4 +15,10 @@ public class RefusjonKontaktperson {
 
      boolean ønskerInformasjonOmRefusjon;
 
+     public RefusjonKontaktperson() {
+          this.refusjonKontaktpersonFornavn = "";
+          this.refusjonKontaktpersonEtternavn = "";
+          this.refusjonKontaktpersonTlf = "";
+          this.ønskerInformasjonOmRefusjon = false;
+     }
 }

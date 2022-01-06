@@ -1,5 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
@@ -25,20 +28,24 @@ public class SmsVarselFactory {
         return SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(), SELVBETJENINGSONE_VARSELTEKST, hendelse.getId());
     }
 
-    public SmsVarsel arbeidsgiverRefusjonKlar() {
-        return SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(), refusjonTekst(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId());
+    public List<SmsVarsel> arbeidsgiverRefusjonKlar() {
+        return List.of(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(), refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId()), SmsVarsel.nyttVarsel(avtale.gjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(), avtale.getBedriftNr(), refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId()));
     }
 
-    public SmsVarsel arbeidsgiverRefusjonKlarRevarsel() {
-        return SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(), refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId());
+    public List<SmsVarsel> arbeidsgiverRefusjonKlarRevarsel() {
+        List<SmsVarsel> smsVarsel = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(), refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId())));
+        if(avtale.gjeldendeInnhold().getRefusjonKontaktperson() != null) {
+            smsVarsel.add(SmsVarsel.nyttVarsel(avtale.gjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(), avtale.getBedriftNr(), refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId()));
+        }
+        return smsVarsel;
     }
 
-    public SmsVarsel arbeidsgiverRefusjonForlengetVarsel() {
-        return SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(), refusjonForlengetTekst(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId());
+    public List<SmsVarsel> arbeidsgiverRefusjonForlengetVarsel() {
+        return List.of(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(), refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId()), SmsVarsel.nyttVarsel(avtale.gjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(), avtale.getBedriftNr(), refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId()));
     }
 
-    public SmsVarsel arbeidsgiverRefusjonKorrigertVarsel() {
-        return SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(), refusjonTekstKorrigert(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId());
+    public List<SmsVarsel> arbeidsgiverRefusjonKorrigertVarsel() {
+        return List.of(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(), refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId()), SmsVarsel.nyttVarsel(avtale.gjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(), avtale.getBedriftNr(), refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId()));
     }
 
     public SmsVarsel veileder() {
@@ -66,7 +73,7 @@ public class SmsVarselFactory {
     private static String refusjonTekstRevarsel(Tiltakstype tiltakstype, Integer avtaleNr) {
         switch (tiltakstype) {
             case SOMMERJOBB:
-                return String.format("Fristen nærmer seg for å søke om refusjon for tilskudd til sommerjobb for avtale med nr: %d. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtaleNr);
+                return String.format("Fristen nærmer seg for å søke om refusjon for tilskudd til sommerjobb for avtale med nr: %s. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtaleNr);
             default:
                 throw new RuntimeException();
         }
