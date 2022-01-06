@@ -899,7 +899,7 @@ public class AvtaleTest {
     @Test
     public void forleng_over_24_mnd_midl_lts() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
-        assertFeilkode(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD, () -> avtale.forlengAvtale(avtale.getStartDato().plusMonths(24).plusDays(1), TestData.enNavIdent()));
+        assertFeilkode(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_24_MND, () -> avtale.forlengAvtale(avtale.getStartDato().plusMonths(24).plusDays(1), TestData.enNavIdent()));
     }
 
     @Test
