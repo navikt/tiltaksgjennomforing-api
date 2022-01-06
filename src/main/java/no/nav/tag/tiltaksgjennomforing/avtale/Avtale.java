@@ -1013,6 +1013,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new MålEndret(this, utførtAv));
     }
 
+    public void setTilskuddsperiodeUtbetalt(UUID tilskuddsperiodeId) {
+        this.getTilskuddPeriode().stream()
+            .filter(it -> it.getId().equals(tilskuddsperiodeId))
+            .findFirst()
+            .orElseThrow()
+            .setStatus(TilskuddPeriodeStatus.UTBETALT);
+    }
+
     private interface MetoderSomIkkeSkalDelegeresFraAvtaleInnhold {
         UUID getId();
 

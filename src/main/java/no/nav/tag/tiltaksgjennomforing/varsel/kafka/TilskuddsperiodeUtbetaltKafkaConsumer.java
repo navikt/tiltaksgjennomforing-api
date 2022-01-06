@@ -8,7 +8,6 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.RefusjonGodkjentMelding;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.Topics;
 import org.apache.kafka.clients.CommonClientConfigs;
@@ -76,18 +75,13 @@ public class TilskuddsperiodeUtbetaltKafkaConsumer {
     }
 
     /*
-     TODO: Bør flyttes til tilskuddsperiode pakken, men det er flere kafka configs som gjør at feiler.
-     Det funker her.
+     TODO: Bør flyttes til tilskuddsperiode pakken, men det er flere kafka configs som gjør at den feiler i test.
      */
     @KafkaListener(topics = Topics.REFUSJON_GODKJENT, containerFactory = "refusjonContainerFactory")
     public void tilskuddsperiodeUtbetalt(String jsonMelding) throws JsonProcessingException {
         RefusjonGodkjentMelding melding = objectMapper.readValue(jsonMelding, RefusjonGodkjentMelding.class);
         Avtale avtale = avtaleRepository.findById(melding.getAvtaleId()).orElseThrow();
-        avtale.getTilskuddPeriode().stream()
-            .filter(it -> it.getId().equals(melding.getTilskuddsperiodeId()))
-            .findFirst()
-            .orElseThrow()
-            .setStatus(TilskuddPeriodeStatus.UTBETALT);
+        avtale.setTilskuddsperiodeUtbetalt(melding.getTilskuddsperiodeId());
         avtaleRepository.save(avtale);
     }
 }
