@@ -30,9 +30,9 @@ public class SmsVarselFactory {
 
     public List<SmsVarsel> arbeidsgiverRefusjonKlar() {
         ArrayList<SmsVarsel> hovedkontaktForAvtalen = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(),
-            refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId())));
+            refusjonTekst(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId())));
 
-        return leggTilMottakerSMSVarselForRefusjon(avtale, hovedkontaktForAvtalen, refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse);
+        return leggTilMottakerSMSVarselForRefusjon(avtale, hovedkontaktForAvtalen, refusjonTekst(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse);
     }
 
 
@@ -45,16 +45,16 @@ public class SmsVarselFactory {
 
     public List<SmsVarsel> arbeidsgiverRefusjonForlengetVarsel() {
         ArrayList<SmsVarsel> hovedkontaktForAvtalen = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(),
-            refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId())));
+            refusjonForlengetTekst(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId())));
 
-        return leggTilMottakerSMSVarselForRefusjon(avtale, hovedkontaktForAvtalen, refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse);
+        return leggTilMottakerSMSVarselForRefusjon(avtale, hovedkontaktForAvtalen, refusjonForlengetTekst(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse);
     }
 
     public List<SmsVarsel> arbeidsgiverRefusjonKorrigertVarsel() {
         ArrayList<SmsVarsel> hovedkontaktForAvtalen = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(),
-            refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId())));
+            refusjonTekstKorrigert(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId())));
 
-        return leggTilMottakerSMSVarselForRefusjon(avtale, hovedkontaktForAvtalen, refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse);
+        return leggTilMottakerSMSVarselForRefusjon(avtale, hovedkontaktForAvtalen, refusjonTekstKorrigert(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse);
     }
 
     public SmsVarsel veileder() {
