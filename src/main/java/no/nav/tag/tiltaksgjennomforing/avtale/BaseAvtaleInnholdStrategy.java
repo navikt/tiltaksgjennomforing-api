@@ -32,6 +32,8 @@ public abstract class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy
         avtaleInnhold.setSluttDato(nyAvtale.getSluttDato());
         avtaleInnhold.setStillingprosent(nyAvtale.getStillingprosent());
         avtaleInnhold.setAntallDagerPerUke(nyAvtale.getAntallDagerPerUke());
+        avtaleInnhold.setØnskerInformasjonOmRefusjon(nyAvtale.isØnskerInformasjonOmRefusjon());
+        avtaleInnhold.setRefusjonKontaktperson(nyAvtale.getRefusjonKontaktperson());
     }
 
     @Override

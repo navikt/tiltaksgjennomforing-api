@@ -59,12 +59,10 @@ public class AvtaleInnhold {
     private Integer stillingStyrk08;
     private Integer stillingKonseptId;
     private Integer antallDagerPerUke;
+    private boolean ønskerInformasjonOmRefusjon;
 
-    @Embedded
-    private RefusjonKontaktperson refusjonKontaktperson;
-
-
-
+     @Embedded
+     private RefusjonKontaktperson refusjonKontaktperson;
 
 
     // Mentor
@@ -224,6 +222,8 @@ public class AvtaleInnhold {
         setArbeidsgiverFornavn(endreKontaktInformasjon.getArbeidsgiverFornavn());
         setArbeidsgiverEtternavn(endreKontaktInformasjon.getArbeidsgiverEtternavn());
         setArbeidsgiverTlf(endreKontaktInformasjon.getArbeidsgiverTlf());
+        setØnskerInformasjonOmRefusjon(endreKontaktInformasjon.isØnskerInformasjonOmRefusjon());
+        setRefusjonKontaktperson(endreKontaktInformasjon.getRefusjonKontaktperson());
     }
 
     public void endreStillingsInfo(EndreStillingsbeskrivelse endreStillingsbeskrivelse) {

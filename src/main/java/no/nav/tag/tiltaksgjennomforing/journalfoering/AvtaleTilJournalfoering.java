@@ -3,9 +3,11 @@ package no.nav.tag.tiltaksgjennomforing.journalfoering;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
 import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 
+import javax.persistence.Embedded;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -47,6 +49,11 @@ public class AvtaleTilJournalfoering {
     private Stillingstype stillingstype;
     private String arbeidsoppgaver;
     private Integer antallDagerPerUke;
+
+    private boolean ønskerInformasjonOmRefusjon;
+
+    @Embedded
+    private RefusjonKontaktperson refusjonKontaktperson;
 
     // Lønnstilskudd
     private String arbeidsgiverKontonummer;

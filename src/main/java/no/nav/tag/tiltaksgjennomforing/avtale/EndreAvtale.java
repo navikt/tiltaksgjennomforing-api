@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Embedded;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -36,6 +37,11 @@ public class EndreAvtale {
     private Integer stillingStyrk08;
     private Integer stillingKonseptId;
     private Integer antallDagerPerUke;
+
+    private boolean ønskerInformasjonOmRefusjon;
+
+    @Embedded
+    private RefusjonKontaktperson refusjonKontaktperson;
 
     // Arbeidstreningsfelter
     private List<Maal> maal = new ArrayList<>();

@@ -29,7 +29,7 @@ public class LagSmsVarselFraVarslbarHendelseTest {
     static void setUp() {
         avtale = TestData.enArbeidstreningAvtale();
         avtaleSommerjobb = TestData.enSommerjobbAvtale();
-      avtaleSommerjobb.gjeldendeInnhold().setRefusjonKontaktperson(new RefusjonKontaktperson("Donald","Duck", "55550123",false));
+        //avtaleSommerjobb.gjeldendeInnhold().setRefusjonKontaktperson(new RefusjonKontaktperson("Donald","Duck", "55550123",false));
 
         deltaker = tuple(
                 avtale.getDeltakerTlf(),
@@ -40,13 +40,13 @@ public class LagSmsVarselFraVarslbarHendelseTest {
                 avtale.getBedriftNr(),
                 "Du har mottatt et nytt varsel på https://arbeidsgiver.nav.no/tiltaksgjennomforing");
 
-      arbeidsgiverSommerjobb = tuple(
-          avtaleSommerjobb.getArbeidsgiverTlf(),
-          avtaleSommerjobb.getBedriftNr(),
-          "Fristen nærmer seg for å søke om refusjon for tilskudd til sommerjobb for avtale med nr: null. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.");
+        arbeidsgiverSommerjobb = tuple(
+                avtaleSommerjobb.getArbeidsgiverTlf(),
+                avtaleSommerjobb.getBedriftNr(),
+                "Fristen nærmer seg for å søke om refusjon for tilskudd til sommerjobb for avtale med nr: null. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.");
 
-     arbeidsgiverSommerjobbRefusjonKontaktperson = tuple(avtaleSommerjobb.gjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(),avtaleSommerjobb.getBedriftNr(),
-            "Fristen nærmer seg for å søke om refusjon for tilskudd til sommerjobb for avtale med nr: null. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.");
+     /*arbeidsgiverSommerjobbRefusjonKontaktperson = tuple(avtaleSommerjobb.gjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(),avtaleSommerjobb.getBedriftNr(),
+            "Fristen nærmer seg for å søke om refusjon for tilskudd til sommerjobb for avtale med nr: null. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV."); */
 
         veileder = tuple(
                 avtale.getVeilederTlf(),
@@ -73,8 +73,9 @@ public class LagSmsVarselFraVarslbarHendelseTest {
         assertThat(smsVarsler).extracting("telefonnummer", "identifikator", "meldingstekst")
                 .containsOnlyElementsOf(skalVarsles);
     }
+}
 
-
+/*
    @DisplayName("Skal varsle riktig mottakere når hendelse oppstår for sommerjobb")
     @ParameterizedTest(name = "{0}")
     @MethodSource("sommerjobbSMSvarselTilBådeArbeidsgiverOgKontaktPersonRefusjonProvider")
@@ -150,3 +151,4 @@ public class LagSmsVarselFraVarslbarHendelseTest {
         );
     }
 }
+*/
