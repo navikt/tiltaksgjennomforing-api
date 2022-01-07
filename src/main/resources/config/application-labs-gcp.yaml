@@ -14,9 +14,6 @@ spring:
 
 no.nav.security.jwt:
   issuer:
-    aad:
-      discoveryurl: null
-      accepted_audience: null
     selvbetjening:
       discoveryurl: http://tiltak-fakelogin/metadata?issuer=selvbetjening
       accepted_audience: aud-selvbetjening
