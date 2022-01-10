@@ -53,10 +53,8 @@ public class SmsVarselFactory {
     }
 
     public List<SmsVarsel> arbeidsgiverRefusjonKorrigertVarsel() {
-        ArrayList<SmsVarsel> hovedkontaktForAvtalen = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(),
-            refusjonTekstKorrigert(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId())));
-
-        return hentSMSVarselForRefusjonHvisValgt(avtale, hovedkontaktForAvtalen, refusjonTekstKorrigert(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse);
+        String smsTekst = refusjonTekstKorrigert(avtale.getTiltakstype(), avtale.getAvtaleNr());
+        return hentSMSVarselForRefusjonHvisValgt(avtale, smsHovedkontakt(smsTekst), smsTekst, hendelse);
     }
 
     public SmsVarsel veileder() {
