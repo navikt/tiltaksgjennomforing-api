@@ -31,12 +31,11 @@ public class SmsVarselFactory {
 
     public List<SmsVarsel> arbeidsgiverRefusjonKlar() {
         String smsTekst = refusjonTekst(avtale.getTiltakstype(), avtale.getAvtaleNr());
-        ArrayList<SmsVarsel> hovedkontaktForAvtalen = hentSmsVarselForHovedKontakt(smsTekst);
-        return hentSMSVarselForRefusjonHvisValgt(avtale, hovedkontaktForAvtalen, smsTekst, hendelse);
+        return hentSMSVarselForRefusjonHvisValgt(avtale, smsHovedkontakt(smsTekst), smsTekst, hendelse);
     }
 
     @NotNull
-    private ArrayList<SmsVarsel> hentSmsVarselForHovedKontakt(String melding) {
+    private ArrayList<SmsVarsel> smsHovedkontakt(String melding) {
         ArrayList<SmsVarsel> hovedkontaktForAvtalen = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(),
             melding, hendelse.getId())));
         return hovedkontaktForAvtalen;
@@ -44,10 +43,8 @@ public class SmsVarselFactory {
 
 
     public List<SmsVarsel> arbeidsgiverRefusjonKlarRevarsel() {
-        ArrayList<SmsVarsel> hovedkontaktForAvtalen = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(),
-            refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId())));
-
-        return hentSMSVarselForRefusjonHvisValgt(avtale, hovedkontaktForAvtalen, refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse);
+        String smsTekst = refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr());
+        return hentSMSVarselForRefusjonHvisValgt(avtale, smsHovedkontakt(smsTekst), smsTekst, hendelse);
     }
 
     public List<SmsVarsel> arbeidsgiverRefusjonForlengetVarsel() {
