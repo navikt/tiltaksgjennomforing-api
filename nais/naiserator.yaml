@@ -26,14 +26,14 @@ spec:
     path: /tiltaksgjennomforing-api/internal/healthcheck
     initialDelay: 60
     timeout: 1
-    periodSeconds: 10
-    failureThreshold: 30
+    periodSeconds: 30
+    failureThreshold: 300
   readiness:
     path: /tiltaksgjennomforing-api/internal/healthcheck
     initialDelay: 60
     timeout: 1
-    periodSeconds: 10
-    failureThreshold: 30
+    periodSeconds: 30
+    failureThreshold: 300
   resources:
     limits:
       cpu: 2000m
