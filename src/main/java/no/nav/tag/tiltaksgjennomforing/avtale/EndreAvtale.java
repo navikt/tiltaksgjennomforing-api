@@ -1,14 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import javax.persistence.Embedded;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Embedded;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -39,6 +38,7 @@ public class EndreAvtale {
     private Integer antallDagerPerUke;
 
     private boolean ønskerInformasjonOmRefusjon;
+
 
     @Embedded
     private RefusjonKontaktperson refusjonKontaktperson;

@@ -1,14 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-
-import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
 public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
     public LonnstilskuddStrategy(AvtaleInnhold avtaleInnhold) {
@@ -31,6 +30,7 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setStillingStyrk08(nyAvtale.getStillingStyrk08());
         avtaleInnhold.setStillingKonseptId(nyAvtale.getStillingKonseptId());
         avtaleInnhold.setOtpSats(nyAvtale.getOtpSats());
+        avtaleInnhold.setRefusjonKontaktperson(nyAvtale.getRefusjonKontaktperson());
         super.endre(nyAvtale);
         regnUtTotalLonnstilskudd();
     }

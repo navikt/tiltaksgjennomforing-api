@@ -107,6 +107,7 @@ public class TestData {
         avtale.setGodkjentAvNavIdent(TestData.enNavIdent());
         avtale.setIkrafttredelsestidspunkt(Now.localDateTime());
         avtale.setJournalpostId("1");
+        avtale.gjeldendeInnhold().setRefusjonKontaktperson(new RefusjonKontaktperson("Donald","Duck","55555123"));
         return avtale;
     }
 
