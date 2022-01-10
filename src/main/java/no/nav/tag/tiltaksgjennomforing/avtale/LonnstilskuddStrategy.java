@@ -30,6 +30,7 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setStillingStyrk08(nyAvtale.getStillingStyrk08());
         avtaleInnhold.setStillingKonseptId(nyAvtale.getStillingKonseptId());
         avtaleInnhold.setOtpSats(nyAvtale.getOtpSats());
+        avtaleInnhold.setØnskerInformasjonOmRefusjon(nyAvtale.isØnskerInformasjonOmRefusjon());
         avtaleInnhold.setRefusjonKontaktperson(nyAvtale.getRefusjonKontaktperson());
         super.endre(nyAvtale);
         regnUtTotalLonnstilskudd();
