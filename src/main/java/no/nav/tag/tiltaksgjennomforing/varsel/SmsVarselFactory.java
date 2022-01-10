@@ -50,9 +50,13 @@ public class SmsVarselFactory {
     }
 
     public List<SmsVarsel> arbeidsgiverRefusjonForlengetVarsel() {
-        if(!avtale.getTiltakstype().equals(SOMMERJOBB)) throw new RuntimeException();
+        erSommerjobbAvtale();
         String smsTekst = String.format("Fristen for å godkjenne refusjon for avtale med nr: %s har blitt forlenget. Du kan sjekke fristen og søke om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
         return hentSMSVarselForRefusjonHvisValgt(avtale, smsHovedkontakt(smsTekst), smsTekst, hendelse);
+    }
+
+    private void erSommerjobbAvtale() {
+        if(!avtale.getTiltakstype().equals(SOMMERJOBB)) throw new RuntimeException();
     }
 
     public List<SmsVarsel> arbeidsgiverRefusjonKorrigertVarsel() {
