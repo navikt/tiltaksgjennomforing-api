@@ -6,12 +6,14 @@ metadata:
   labels:
     team: arbeidsgiver
 spec:
+  {{#unless labs}}
   azure:
     application:
       enabled: true
       tenant: {{tenant}}
   kafka:
     pool: {{kafka-pool}}
+  {{/unless}}
   image: {{image}}
   team: arbeidsgiver
   port: 8080
