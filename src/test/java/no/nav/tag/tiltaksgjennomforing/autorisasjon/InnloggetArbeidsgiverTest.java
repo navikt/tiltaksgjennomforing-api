@@ -27,28 +27,28 @@ public class InnloggetArbeidsgiverTest {
 
     @BeforeEach
     public void setUp(){
-        avtale.setAnnullertGrunn("Hemmelig");
+        avtale.setAvbruttGrunn("Hemmelig");
     }
 
     @Test
-    public void hentAvtale_uten_annullertGrunn() {
+    public void hentAvtale_uten_avbruttGrunn() {
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         Avtale hentetAvtale = arbeidsgiver.hentAvtale(avtaleRepository, avtale.getId());
-        assertThat(hentetAvtale.getAnnullertGrunn()).isNull();
+        assertThat(hentetAvtale.getAvbruttGrunn()).isNull();
     }
 
     @Test
-    public void hentAlleAvtalerMedLesetilgang_uten_annullertGrunn() {
+    public void hentAlleAvtalerMedLesetilgang_uten_avbruttGrunn() {
         Set<BedriftNr> bedriftNrSet = Set.of(avtale.getBedriftNr());
         when(avtaleRepository.findAllByBedriftNrIn(eq(bedriftNrSet))).thenReturn(Arrays.asList(avtale));
         List<Avtale> hentetAvtaler = arbeidsgiver.hentAlleAvtalerMedLesetilgang(avtaleRepository, new AvtalePredicate(), Avtale.Fields.sistEndret, 0, Integer.MAX_VALUE);
-        assertThat(hentetAvtaler.get(0).getAnnullertGrunn()).isNull();
+        assertThat(hentetAvtaler.get(0).getAvbruttGrunn()).isNull();
     }
 
     @Test
-    public void hentAvtalerForMinsideArbeidsgiver_uten_annullertGrunn() {
+    public void hentAvtalerForMinsideArbeidsgiver_uten_avbruttGrunn() {
         when(avtaleRepository.findAllByBedriftNr(eq(avtale.getBedriftNr()))).thenReturn(Arrays.asList(avtale));
         List<Avtale> hentetAvtaler = arbeidsgiver.hentAvtalerForMinsideArbeidsgiver(avtaleRepository, avtale.getBedriftNr());
-        assertThat(hentetAvtaler.get(0).getAnnullertGrunn()).isNull();
+        assertThat(hentetAvtaler.get(0).getAvbruttGrunn()).isNull();
     }
 }

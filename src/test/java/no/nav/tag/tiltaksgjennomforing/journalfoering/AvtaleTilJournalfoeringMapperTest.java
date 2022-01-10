@@ -22,7 +22,7 @@ public class AvtaleTilJournalfoeringMapperTest {
     @BeforeEach
     public void setUp() {
         avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
-        avtaleInnhold = avtale.getGjeldendeInnhold();
+        avtaleInnhold = avtale.getVersjoner().get(0);
         grunn = new GodkjentPaVegneGrunn();
     }
 
@@ -36,9 +36,9 @@ public class AvtaleTilJournalfoeringMapperTest {
     public void mapper() {
         final UUID avtaleId = UUID.randomUUID();
         avtale.setId(avtaleId);
-        avtale.getGjeldendeInnhold().setGodkjentPaVegneAv(true);
+        avtale.setGodkjentPaVegneAv(true);
         avtale.setOpprettetTidspunkt(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setStillingstype(Stillingstype.FAST);
+        avtale.setStillingstype(Stillingstype.FAST);
 
         tilJournalfoering = tilJournalfoering(avtaleInnhold);
 
@@ -48,36 +48,36 @@ public class AvtaleTilJournalfoeringMapperTest {
         assertEquals(avtale.getBedriftNr().asString(), tilJournalfoering.getBedriftNr());
         assertEquals(avtale.getVeilederNavIdent().asString(), tilJournalfoering.getVeilederNavIdent());
         assertEquals(avtale.getOpprettetTidspunkt().toLocalDate(), tilJournalfoering.getOpprettet());
-        assertEquals(avtale.getGjeldendeInnhold().getDeltakerFornavn(), tilJournalfoering.getDeltakerFornavn());
-        assertEquals(avtale.getGjeldendeInnhold().getDeltakerEtternavn(), tilJournalfoering.getDeltakerEtternavn());
-        assertEquals(avtale.getGjeldendeInnhold().getDeltakerTlf(), tilJournalfoering.getDeltakerTlf());
-        assertEquals(avtale.getGjeldendeInnhold().getBedriftNavn(), tilJournalfoering.getBedriftNavn());
-        assertEquals(avtale.getGjeldendeInnhold().getArbeidsgiverFornavn(), tilJournalfoering.getArbeidsgiverFornavn());
-        assertEquals(avtale.getGjeldendeInnhold().getArbeidsgiverEtternavn(), tilJournalfoering.getArbeidsgiverEtternavn());
-        assertEquals(avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), tilJournalfoering.getArbeidsgiverTlf());
-        assertEquals(avtale.getGjeldendeInnhold().getVeilederFornavn(), tilJournalfoering.getVeilederFornavn());
-        assertEquals(avtale.getGjeldendeInnhold().getVeilederEtternavn(), tilJournalfoering.getVeilederEtternavn());
-        assertEquals(avtale.getGjeldendeInnhold().getVeilederTlf(), tilJournalfoering.getVeilederTlf());
-        assertEquals(avtale.getGjeldendeInnhold().getOppfolging(), tilJournalfoering.getOppfolging());
-        assertEquals(avtale.getGjeldendeInnhold().getTilrettelegging(), tilJournalfoering.getTilrettelegging());
-        assertEquals(avtale.getGjeldendeInnhold().getStartDato(), tilJournalfoering.getStartDato());
-        assertEquals(avtale.getGjeldendeInnhold().getSluttDato(), tilJournalfoering.getSluttDato());
-        assertEquals(avtale.getGjeldendeInnhold().getStillingprosent(), tilJournalfoering.getStillingprosent());
-        assertEquals(avtale.getGjeldendeInnhold().getAntallDagerPerUke(), tilJournalfoering.getAntallDagerPerUke());
-        assertEquals(avtale.getGjeldendeInnhold().getGodkjentAvDeltaker().toLocalDate(), tilJournalfoering.getGodkjentAvDeltaker());
-        assertEquals(avtale.getGjeldendeInnhold().getGodkjentAvArbeidsgiver().toLocalDate(), tilJournalfoering.getGodkjentAvArbeidsgiver());
-        assertEquals(avtale.getGjeldendeInnhold().getGodkjentAvVeileder().toLocalDate(), tilJournalfoering.getGodkjentAvVeileder());
-        assertEquals(avtale.getGjeldendeInnhold().isGodkjentPaVegneAv(), tilJournalfoering.isGodkjentPaVegneAv());
-        assertEquals(avtale.getGjeldendeInnhold().getVersjon(), tilJournalfoering.getVersjon());
+        assertEquals(avtale.getDeltakerFornavn(), tilJournalfoering.getDeltakerFornavn());
+        assertEquals(avtale.getDeltakerEtternavn(), tilJournalfoering.getDeltakerEtternavn());
+        assertEquals(avtale.getDeltakerTlf(), tilJournalfoering.getDeltakerTlf());
+        assertEquals(avtale.getBedriftNavn(), tilJournalfoering.getBedriftNavn());
+        assertEquals(avtale.getArbeidsgiverFornavn(), tilJournalfoering.getArbeidsgiverFornavn());
+        assertEquals(avtale.getArbeidsgiverEtternavn(), tilJournalfoering.getArbeidsgiverEtternavn());
+        assertEquals(avtale.getArbeidsgiverTlf(), tilJournalfoering.getArbeidsgiverTlf());
+        assertEquals(avtale.getVeilederFornavn(), tilJournalfoering.getVeilederFornavn());
+        assertEquals(avtale.getVeilederEtternavn(), tilJournalfoering.getVeilederEtternavn());
+        assertEquals(avtale.getVeilederTlf(), tilJournalfoering.getVeilederTlf());
+        assertEquals(avtale.getOppfolging(), tilJournalfoering.getOppfolging());
+        assertEquals(avtale.getTilrettelegging(), tilJournalfoering.getTilrettelegging());
+        assertEquals(avtale.getStartDato(), tilJournalfoering.getStartDato());
+        assertEquals(avtale.getSluttDato(), tilJournalfoering.getSluttDato());
+        assertEquals(avtale.getStillingprosent(), tilJournalfoering.getStillingprosent());
+        assertEquals(avtale.getAntallDagerPerUke(), tilJournalfoering.getAntallDagerPerUke());
+        assertEquals(avtale.getGodkjentAvDeltaker().toLocalDate(), tilJournalfoering.getGodkjentAvDeltaker());
+        assertEquals(avtale.getGodkjentAvArbeidsgiver().toLocalDate(), tilJournalfoering.getGodkjentAvArbeidsgiver());
+        assertEquals(avtale.getGodkjentAvVeileder().toLocalDate(), tilJournalfoering.getGodkjentAvVeileder());
+        assertEquals(avtale.isGodkjentPaVegneAv(), tilJournalfoering.isGodkjentPaVegneAv());
+        assertEquals(avtale.getVersjon(), tilJournalfoering.getVersjon());
         assertEquals(avtale.getTiltakstype(), tilJournalfoering.getTiltakstype());
-        assertEquals(avtale.getGjeldendeInnhold().getArbeidsgiverKontonummer(), tilJournalfoering.getArbeidsgiverKontonummer());
-        assertEquals(avtale.getGjeldendeInnhold().getStillingstittel(), tilJournalfoering.getStillingstittel());
-        assertEquals(avtale.getGjeldendeInnhold().getArbeidsoppgaver(), tilJournalfoering.getArbeidsoppgaver());
-        assertEquals(avtale.getGjeldendeInnhold().getLonnstilskuddProsent(), tilJournalfoering.getLonnstilskuddProsent());
-        assertEquals(avtale.getGjeldendeInnhold().getManedslonn(), tilJournalfoering.getManedslonn());
-        assertEquals(avtale.getGjeldendeInnhold().getFeriepengesats(), tilJournalfoering.getFeriepengesats());
-        assertEquals(avtale.getGjeldendeInnhold().getArbeidsgiveravgift(), tilJournalfoering.getArbeidsgiveravgift());
-        assertEquals(avtale.getGjeldendeInnhold().getManedslonn100pst(), tilJournalfoering.getManedslonn100pst());
+        assertEquals(avtale.getArbeidsgiverKontonummer(), tilJournalfoering.getArbeidsgiverKontonummer());
+        assertEquals(avtale.getStillingstittel(), tilJournalfoering.getStillingstittel());
+        assertEquals(avtale.getArbeidsoppgaver(), tilJournalfoering.getArbeidsoppgaver());
+        assertEquals(avtale.getLonnstilskuddProsent(), tilJournalfoering.getLonnstilskuddProsent());
+        assertEquals(avtale.getManedslonn(), tilJournalfoering.getManedslonn());
+        assertEquals(avtale.getFeriepengesats(), tilJournalfoering.getFeriepengesats());
+        assertEquals(avtale.getArbeidsgiveravgift(), tilJournalfoering.getArbeidsgiveravgift());
+        assertEquals(avtale.getManedslonn100pst(), tilJournalfoering.getManedslonn100pst());
         assertNotNull(avtaleInnhold.getStillingstype());
         assertEquals(avtaleInnhold.getStillingstype(), tilJournalfoering.getStillingstype());
     }
@@ -85,7 +85,7 @@ public class AvtaleTilJournalfoeringMapperTest {
     @Test
     public void paaVegneGrunnErIkkeBankId() {
         grunn.setIkkeBankId(true);
-        avtale.getGjeldendeInnhold().setGodkjentPaVegneGrunn(grunn);
+        avtale.setGodkjentPaVegneGrunn(grunn);
         tilJournalfoering = tilJournalfoering(avtaleInnhold);
         assertTrue(tilJournalfoering.getGodkjentPaVegneGrunn().isIkkeBankId());
         assertFalse(tilJournalfoering.getGodkjentPaVegneGrunn().isDigitalKompetanse());
@@ -95,7 +95,7 @@ public class AvtaleTilJournalfoeringMapperTest {
     @Test
     public void paaVegneGrunnErDigitalKompetanse() {
         grunn.setDigitalKompetanse(true);
-        avtale.getGjeldendeInnhold().setGodkjentPaVegneGrunn(grunn);
+        avtale.setGodkjentPaVegneGrunn(grunn);
         tilJournalfoering = tilJournalfoering(avtaleInnhold);
         assertFalse(tilJournalfoering.getGodkjentPaVegneGrunn().isIkkeBankId());
         assertTrue(tilJournalfoering.getGodkjentPaVegneGrunn().isDigitalKompetanse());
@@ -105,20 +105,20 @@ public class AvtaleTilJournalfoeringMapperTest {
     @Test
     public void paaVegneGrunnErReservert() {
         grunn.setReservert(true);
-        avtale.getGjeldendeInnhold().setGodkjentPaVegneGrunn(grunn);
+        avtale.setGodkjentPaVegneGrunn(grunn);
         tilJournalfoering = tilJournalfoering(avtaleInnhold);
         assertFalse(tilJournalfoering.getGodkjentPaVegneGrunn().isIkkeBankId());
         assertFalse(tilJournalfoering.getGodkjentPaVegneGrunn().isDigitalKompetanse());
         assertTrue(tilJournalfoering.getGodkjentPaVegneGrunn().isReservert());
 
-        avtale.getGjeldendeInnhold().setGodkjentPaVegneGrunn(null);
+        avtale.setGodkjentPaVegneGrunn(null);
         tilJournalfoering = tilJournalfoering(avtaleInnhold);
         assertNull(tilJournalfoering.getGodkjentPaVegneGrunn());
     }
 
     @Test
     public void ingenPaaVegneGrunn() {
-        avtale.getGjeldendeInnhold().setGodkjentPaVegneGrunn(null);
+        avtale.setGodkjentPaVegneGrunn(null);
         tilJournalfoering = tilJournalfoering(avtaleInnhold);
         assertNull(tilJournalfoering.getGodkjentPaVegneGrunn());
     }

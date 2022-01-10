@@ -29,6 +29,17 @@ import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentG
 @Data
 public abstract class Avtalepart<T extends Identifikator> {
     private final T identifikator;
+    static String tekstHeaderAvtalePaabegynt = "Du må fylle ut avtalen";
+    static String tekstHeaderVentAndreGodkjenning = "Vent til de andre har godkjent";
+    static String tekstHeaderAvtaleErGodkjentAvAllePartner = "Avtalen er ferdig utfylt og godkjent";
+    static String tekstAvtaleErGodkjentAvAllePartner = "Tiltaket starter ";
+    static String tekstHeaderAvtaleVenterPaaDinGodkjenning = "Du må godkjenne ";
+    static String tekstAvtaleVenterPaaAndrepartnerGodkjenning = "Andre partner må godkjenne avtalen";
+    static String ekstraTekstAvtaleVenterPaaAndrePartnerGodkjenning = "Avtalen kan ikke tas i bruk før de andre har godkjent avtalen.";
+    static String tekstHeaderAvtaleGjennomfores = "Tiltaket gjennomføres";
+    static String tekstHeaderAvtaleErAvsluttet = "Tiltaket er avsluttet";
+    static String tekstHeaderAvtaleAvbrutt = "Tiltaket er avbrutt";
+    static String tekstAvtaleAvbrutt = "Veilederen har bestemt at tiltaket og avtalen skal avbrytes.";
     static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd. MMMM yyyy");
 
     public boolean harTilgang(Avtale avtale) {
@@ -59,16 +70,12 @@ public abstract class Avtalepart<T extends Identifikator> {
         return avtale;
     }
 
-    public List<AvtaleInnhold> hentAvtaleVersjoner(AvtaleRepository avtaleRepository, AvtaleInnholdRepository avtaleInnholdRepository, UUID avtaleId) {
-        Avtale avtale = avtaleRepository.findById(avtaleId)
-                .orElseThrow(RessursFinnesIkkeException::new);
-        sjekkTilgang(avtale);
-        return avtaleInnholdRepository.findAllByAvtale(avtale);
-    }
 
     abstract void godkjennForAvtalepart(Avtale avtale);
 
     abstract boolean kanEndreAvtale();
+
+    public abstract AvtaleStatusDetaljer statusDetaljerForAvtale(Avtale avtale);
 
     public abstract boolean erGodkjentAvInnloggetBruker(Avtale avtale);
 
@@ -111,6 +118,8 @@ public abstract class Avtalepart<T extends Identifikator> {
         }
         opphevGodkjenningerSomAvtalepart(avtale);
     }
+
+    public abstract void låsOppAvtale(Avtale avtale);
 
     public abstract InnloggetBruker innloggetBruker();
 
@@ -173,8 +182,10 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     public void settLonntilskuddProsentsats(Avtale avtale) {
         if (avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD) {
-            avtale.getGjeldendeInnhold().setLonnstilskuddProsent(avtale.getKvalifiseringsgruppe()
+            avtale.gjeldendeInnhold().setLonnstilskuddProsent(avtale.getKvalifiseringsgruppe()
                     .finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(40, 60));
         }
     }
 }
+
+

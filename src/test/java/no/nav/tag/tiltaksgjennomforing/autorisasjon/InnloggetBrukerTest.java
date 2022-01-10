@@ -127,7 +127,7 @@ public class InnloggetBrukerTest {
     @Test
     public void harTilgang__arbeidsgiver_skal_ikke_ha_tilgang_til_avsluttet_avtale_eldre_enn_12_uker() {
         Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
-        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusDays(85));
+        avtale.setSluttDato(Now.localDate().minusDays(85));
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.values()));
         Arbeidsgiver Arbeidsgiver = new Arbeidsgiver(new Fnr("00000000009"), Set.of(), tilganger, null, null, null);
         assertThat(Arbeidsgiver.harTilgang(avtale)).isFalse();
@@ -136,7 +136,7 @@ public class InnloggetBrukerTest {
     @Test
     public void harTilgang__arbeidsgiver_skal_ha_tilgang_til_avsluttet_avtale_eldre_enn_12_uker_når_ikke_godkjent_av_veileder() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusDays(85));
+        avtale.setSluttDato(Now.localDate().minusDays(85));
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.values()));
         Arbeidsgiver Arbeidsgiver = new Arbeidsgiver(new Fnr("00000000009"), Set.of(), tilganger, null, null, null);
         assertThat(Arbeidsgiver.harTilgang(avtale)).isTrue();

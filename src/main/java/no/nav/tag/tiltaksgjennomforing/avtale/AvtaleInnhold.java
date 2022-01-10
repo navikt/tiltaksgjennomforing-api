@@ -131,6 +131,10 @@ public class AvtaleInnhold {
         return innhold;
     }
 
+    public UUID getAvtaleInnholdId() {
+        return id;
+    }
+
     public AvtaleInnhold nyVersjon(AvtaleInnholdType innholdType) {
         AvtaleInnhold nyVersjon = toBuilder()
                 .id(UUID.randomUUID())

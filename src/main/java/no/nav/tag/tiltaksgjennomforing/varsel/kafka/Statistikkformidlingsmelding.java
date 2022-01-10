@@ -19,10 +19,10 @@ public class Statistikkformidlingsmelding {
 
   public static Statistikkformidlingsmelding fraAvtale(Avtale avtale) {
     return new Statistikkformidlingsmelding(
-        avtale.getBedriftNr().toString(), avtale.getGjeldendeInnhold().getStillingstype(),
-        avtale.getGjeldendeInnhold().getStillingstittel(), avtale.getGjeldendeInnhold().getLonnstilskuddProsent(),
+        avtale.getBedriftNr().toString(), avtale.getStillingstype(),
+        avtale.getStillingstittel(), avtale.getLonnstilskuddProsent(),
         avtale.getTiltakstype(), avtale.getId().toString(),
-        String.format("%s %s", avtale.getGjeldendeInnhold().getDeltakerFornavn(), avtale.getGjeldendeInnhold().getDeltakerEtternavn()),
-        avtale.getGjeldendeInnhold().getId().toString());
+        String.format("%s %s", avtale.getDeltakerFornavn(), avtale.getDeltakerEtternavn()),
+        avtale.getAvtaleInnholdId().toString());
   }
 }

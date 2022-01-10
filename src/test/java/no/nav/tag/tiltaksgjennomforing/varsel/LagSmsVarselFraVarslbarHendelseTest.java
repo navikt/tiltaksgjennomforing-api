@@ -26,15 +26,15 @@ public class LagSmsVarselFraVarslbarHendelseTest {
     static void setUp() {
         avtale = TestData.enArbeidstreningAvtale();
         deltaker = tuple(
-                avtale.getGjeldendeInnhold().getDeltakerTlf(),
+                avtale.getDeltakerTlf(),
                 avtale.getDeltakerFnr(),
                 "Du har mottatt et nytt varsel på https://arbeidsgiver.nav.no/tiltaksgjennomforing");
         arbeidsgiver = tuple(
-                avtale.getGjeldendeInnhold().getArbeidsgiverTlf(),
+                avtale.getArbeidsgiverTlf(),
                 avtale.getBedriftNr(),
                 "Du har mottatt et nytt varsel på https://arbeidsgiver.nav.no/tiltaksgjennomforing");
         veileder = tuple(
-                avtale.getGjeldendeInnhold().getVeilederTlf(),
+                avtale.getVeilederTlf(),
                 SmsVarselFactory.NAV_ORGNR,
                 "Du har mottatt et nytt varsel på https://arbeidsgiver.nais.adeo.no/tiltaksgjennomforing");
     }
@@ -46,7 +46,7 @@ public class LagSmsVarselFraVarslbarHendelseTest {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelse.nyHendelse(avtale, hendelse), gamleVerdier);
         assertThat(smsVarsler).extracting("telefonnummer", "identifikator", "meldingstekst")
-                .isSubsetOf(skalVarsles);
+                .containsOnlyElementsOf(skalVarsles);
     }
 
     private static Stream<Arguments> provider() {

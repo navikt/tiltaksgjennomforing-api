@@ -53,9 +53,9 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
             case TILSKUDDSPERIODE_AVSLATT:
                 return tilskuddsperiodeAvslåttTekst(avtale, hendelseType.getTekst());
             case AVTALE_FORKORTET:
-                return "Avtale forkortet til " + avtale.getGjeldendeInnhold().getSluttDato().format(DateTimeFormatter.ofPattern("dd.MM.YYYY"));
+                return "Avtale forkortet til " + avtale.getSluttDato().format(DateTimeFormatter.ofPattern("dd.MM.YYYY"));
             case AVTALE_FORLENGET:
-                return "Avtale forlenget til " + avtale.getGjeldendeInnhold().getSluttDato().format(DateTimeFormatter.ofPattern("dd.MM.YYYY"));
+                return "Avtale forlenget til " + avtale.getSluttDato().format(DateTimeFormatter.ofPattern("dd.MM.YYYY"));
             default:
                 return hendelseType.getTekst();
         }

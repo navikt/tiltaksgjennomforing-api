@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Deltaker extends Avtalepart<Fnr> {
 
@@ -40,6 +41,49 @@ public class Deltaker extends Avtalepart<Fnr> {
     }
 
     @Override
+    public AvtaleStatusDetaljer statusDetaljerForAvtale(Avtale avtale) {
+        AvtaleStatusDetaljer avtaleStatusDetaljer = new AvtaleStatusDetaljer();
+        avtaleStatusDetaljer.setGodkjentAvInnloggetBruker(erGodkjentAvInnloggetBruker(avtale));
+        switch (avtale.statusSomEnum()) {
+            case ANNULLERT:
+                avtaleStatusDetaljer.setInnloggetBrukerStatus("Tiltaket er annullert", "Veileder har annullert tiltaket.", "");
+                break;
+            case AVBRUTT:
+                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleAvbrutt, tekstAvtaleAvbrutt, "");
+                break;
+            case PÅBEGYNT:
+                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtalePaabegynt, tekstAvtalePaabegynt, "");
+
+                break;
+            case MANGLER_GODKJENNING:
+                if (avtale.erGodkjentAvDeltaker())
+                    avtaleStatusDetaljer.setInnloggetBrukerStatus(
+                            tekstHeaderVentAndreGodkjenning, "", "");
+                else
+                    avtaleStatusDetaljer.setInnloggetBrukerStatus(
+                            tekstHeaderAvtaleVenterPaaDinGodkjenning, tekstAvtaleVenterPaaDinGodkjenning, ekstraTekstAvtaleVenterPaaDinGodkjenning);
+                break;
+            case KLAR_FOR_OPPSTART:
+                avtaleStatusDetaljer.setInnloggetBrukerStatus(
+                        tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato().format(formatter)+".", "");
+                break;
+            case GJENNOMFØRES:
+                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleGjennomfores, " ", "");
+                break;
+            case AVSLUTTET:
+                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErAvsluttet, tekstTiltaketErAvsluttet, "");
+                break;
+        }
+
+        avtaleStatusDetaljer.setPart1Detaljer((avtale.getBedriftNavn() != null && !avtale.getBedriftNavn().trim().equals("") ? avtale.getBedriftNavn() : "Arbeidsgiver")
+                + (avtale.erGodkjentAvArbeidsgiver() ? " har godkjent" : " har ikke godkjent"), avtale.erGodkjentAvArbeidsgiver());
+        avtaleStatusDetaljer.setPart2Detaljer((avtale.getVeilederFornavn() != null && !avtale.getVeilederFornavn().trim().equals("") ? avtale.getVeilederFornavn() : "Veileder") + " "
+                + (avtale.getVeilederEtternavn() != null && !avtale.getVeilederEtternavn().trim().equals("") ? avtale.getVeilederEtternavn() + " " : "")
+                + (avtale.erGodkjentAvVeileder() ? "har godkjent" :  "har ikke godkjent" ), avtale.erGodkjentAvVeileder());
+        return avtaleStatusDetaljer;
+    }
+
+    @Override
     public boolean erGodkjentAvInnloggetBruker(Avtale avtale) {
         return avtale.erGodkjentAvDeltaker();
     }
@@ -58,6 +102,11 @@ public class Deltaker extends Avtalepart<Fnr> {
     @Override
     protected Avtalerolle rolle() {
         return Avtalerolle.DELTAKER;
+    }
+
+    @Override
+    public void låsOppAvtale(Avtale avtale) {
+        throw new TilgangskontrollException("Deltaker kan ikke låse opp avtale");
     }
 
     @Override

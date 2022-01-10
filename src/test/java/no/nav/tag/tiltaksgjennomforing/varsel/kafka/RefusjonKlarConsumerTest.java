@@ -76,7 +76,7 @@ class RefusjonKlarConsumerTest {
 
         String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til sommerjobb for avtale med nr: %d. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
         assertThat(jsonRefusjonRecord.get("meldingstekst")).isEqualTo(meldingstekst);
-        assertThat(jsonRefusjonRecord.get("telefonnummer")).isEqualTo(avtale.getGjeldendeInnhold().getArbeidsgiverTlf());
+        assertThat(jsonRefusjonRecord.get("telefonnummer")).isEqualTo(avtale.getArbeidsgiverTlf());
         assertThat(jsonRefusjonRecord.get("identifikator")).isEqualTo(avtale.getBedriftNr().asString());
         Now.resetClock();
 

@@ -70,11 +70,11 @@ class StatistikkformidlingProducerTest {
     NavIdent veilederNavIdent = new NavIdent("X123456");
     BedriftNr bedriftNr = new BedriftNr("000111222");
     Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(deltakerFnr, bedriftNr, Tiltakstype.VARIG_LONNSTILSKUDD), veilederNavIdent);
-    avtale.getGjeldendeInnhold().setLonnstilskuddProsent(60);
-    avtale.getGjeldendeInnhold().setStillingstype(Stillingstype.FAST);
-    avtale.getGjeldendeInnhold().setStillingstittel("utvikler");
-    avtale.getGjeldendeInnhold().setDeltakerFornavn("Donald");
-    avtale.getGjeldendeInnhold().setDeltakerEtternavn("Duck");
+    avtale.setLonnstilskuddProsent(60);
+    avtale.setStillingstype(Stillingstype.FAST);
+    avtale.setStillingstittel("utvikler");
+    avtale.setDeltakerFornavn("Donald");
+    avtale.setDeltakerEtternavn("Duck");
 
     //NÅR
     statistikkFormidlingProducer.publiserStatistikkformidlingMelding(Statistikkformidlingsmelding.fraAvtale(avtale));
