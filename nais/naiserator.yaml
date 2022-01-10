@@ -50,6 +50,8 @@ spec:
   vault:
     enabled: true
   webproxy: true
+  strategy:
+    type: Recreate
   {{/unless}}
   prometheus:
     enabled: true
