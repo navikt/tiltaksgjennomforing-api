@@ -276,6 +276,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     void godkjennForVeileder(NavIdent utfortAv) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErKlarTilGodkjenning();
+        if (erGodkjentAvVeileder()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_VEILEDER_HAR_ALLEREDE_GODKJENT);
+        }
         if (erUfordelt()) {
             throw new AvtaleErIkkeFordeltException();
         }
@@ -312,6 +315,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (!erGodkjentAvArbeidsgiver()) {
             throw new ArbeidsgiverSkalGodkjenneFørVeilederException();
         }
+        if (erGodkjentAvVeileder()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_VEILEDER_HAR_ALLEREDE_GODKJENT);
+        }
         if (this.getTiltakstype() == Tiltakstype.SOMMERJOBB &&
                 this.getDeltakerFnr().erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
             throw new FeilkodeException(Feilkode.FOR_GAMMEL_FRA_OPPSTARTDATO);
@@ -344,6 +350,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (!erGodkjentAvDeltaker()) {
             throw new FeilkodeException(Feilkode.DELTAKER_SKAL_GODKJENNE_FOER_VEILEDER);
         }
+        if (erGodkjentAvVeileder()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_VEILEDER_HAR_ALLEREDE_GODKJENT);
+        }
 
         if (this.getDeltakerFnr().erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
             throw new FeilkodeException(Feilkode.FOR_GAMMEL_FRA_OPPSTARTDATO);
@@ -375,7 +384,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (erGodkjentAvArbeidsgiver()) {
             throw new FeilkodeException(Feilkode.ARBEIDSGIVER_HAR_GODKJENT);
         }
-
+        if (erGodkjentAvVeileder()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_VEILEDER_HAR_ALLEREDE_GODKJENT);
+        }
         if (this.getDeltakerFnr().erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
             throw new FeilkodeException(Feilkode.FOR_GAMMEL_FRA_OPPSTARTDATO);
         }
@@ -399,7 +410,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     void godkjennForDeltaker(Identifikator utfortAv) {
-        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErKlarTilGodkjenning();
         if (erGodkjentAvDeltaker()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_DELTAKER_HAR_ALLEREDE_GODKJENT);
@@ -410,6 +420,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     void sjekkOmAltErKlarTilGodkjenning() {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+
         if (!erAltUtfylt()) {
             throw new AltMåVæreFyltUtException();
         }
