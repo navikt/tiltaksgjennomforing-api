@@ -8,7 +8,6 @@ import java.util.List;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-import org.jetbrains.annotations.NotNull;
 
 public class SmsVarselFactory {
     public static final BedriftNr NAV_ORGNR = new BedriftNr("889640782");
@@ -33,26 +32,18 @@ public class SmsVarselFactory {
 
     public List<SmsVarsel> arbeidsgiverRefusjonKlar() {
         String smsTekst = refusjonTekst(avtale.getTiltakstype(), avtale.getAvtaleNr());
-        return hentSMSVarselForRefusjonHvisValgt(avtale, smsHovedkontakt(smsTekst), smsTekst, hendelse);
+        return hentSMSVarselForRefusjonHvisValgt(avtale,  smsTekst, hendelse);
     }
-
-    @NotNull
-    private ArrayList<SmsVarsel> smsHovedkontakt(String melding) {
-        ArrayList<SmsVarsel> hovedkontaktForAvtalen = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(),
-            melding, hendelse.getId())));
-        return hovedkontaktForAvtalen;
-    }
-
 
     public List<SmsVarsel> arbeidsgiverRefusjonKlarRevarsel() {
         String smsTekst = refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr());
-        return hentSMSVarselForRefusjonHvisValgt(avtale, smsHovedkontakt(smsTekst), smsTekst, hendelse);
+        return hentSMSVarselForRefusjonHvisValgt(avtale, smsTekst, hendelse);
     }
 
     public List<SmsVarsel> arbeidsgiverRefusjonForlengetVarsel() {
         erSommerjobbAvtale();
         String smsTekst = String.format("Fristen for å godkjenne refusjon for avtale med nr: %s har blitt forlenget. Du kan sjekke fristen og søke om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
-        return hentSMSVarselForRefusjonHvisValgt(avtale, smsHovedkontakt(smsTekst), smsTekst, hendelse);
+        return hentSMSVarselForRefusjonHvisValgt(avtale,  smsTekst, hendelse);
     }
 
     private void erSommerjobbAvtale() {
@@ -61,20 +52,22 @@ public class SmsVarselFactory {
 
     public List<SmsVarsel> arbeidsgiverRefusjonKorrigertVarsel() {
         String smsTekst = refusjonTekstKorrigert(avtale.getTiltakstype(), avtale.getAvtaleNr());
-        return hentSMSVarselForRefusjonHvisValgt(avtale, smsHovedkontakt(smsTekst), smsTekst, hendelse);
+        return hentSMSVarselForRefusjonHvisValgt(avtale,  smsTekst, hendelse);
     }
 
     public SmsVarsel veileder() {
         return SmsVarsel.nyttVarsel(avtale.getVeilederTlf(), NAV_ORGNR, FAGSYSTEMSONE_VARSELTEKST, hendelse.getId());
     }
 
-    private List<SmsVarsel> hentSMSVarselForRefusjonHvisValgt(Avtale avtale, List<SmsVarsel> smsVarsel, String avtale1, VarslbarHendelse hendelse) {
+    private List<SmsVarsel> hentSMSVarselForRefusjonHvisValgt(Avtale avtale, String smsTekst, VarslbarHendelse hendelse) {
+        ArrayList<SmsVarsel> smsVarsel = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(),
+            smsTekst, hendelse.getId())));
         if(avtale.gjeldendeInnhold().getRefusjonKontaktperson() != null) {
             if(!avtale.gjeldendeInnhold().isØnskerInformasjonOmRefusjon()) {
                 smsVarsel.clear();
             }
             smsVarsel.add(SmsVarsel.nyttVarsel(avtale.gjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(), avtale.getBedriftNr(),
-                avtale1, hendelse.getId()));
+                smsTekst, hendelse.getId()));
         }
         return smsVarsel;
     }
