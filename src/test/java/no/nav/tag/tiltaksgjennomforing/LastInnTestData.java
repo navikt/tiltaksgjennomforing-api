@@ -22,6 +22,8 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
+        if (avtaleRepository.count() > 0) return;
+
         log.info("Laster testdata");
         avtaleRepository.save(TestData.enArbeidstreningAvtale());
         avtaleRepository.save(TestData.enAvtaleMedAltUtfylt());
