@@ -198,6 +198,31 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         return gjeldendeInnhold.getAvtaleInngått() != null;
     }
 
+    @JsonProperty
+    public LocalDateTime godkjentAvDeltaker() { return gjeldendeInnhold.getGodkjentAvDeltaker();}
+    @JsonProperty
+    public LocalDateTime godkjentAvArbeidsgiver() { return gjeldendeInnhold.getGodkjentAvArbeidsgiver();}
+    @JsonProperty
+    public LocalDateTime godkjentAvVeileder() { return gjeldendeInnhold.getGodkjentAvVeileder();}
+    @JsonProperty
+    public LocalDateTime godkjentAvBeslutter() { return gjeldendeInnhold.getGodkjentAvBeslutter();}
+    @JsonProperty
+    private LocalDateTime avtaleInngått() {return gjeldendeInnhold.getAvtaleInngått();}
+    @JsonProperty
+    private NavIdent godkjentAvNavIdent() {return gjeldendeInnhold.getGodkjentAvNavIdent();}
+    @JsonProperty
+    private NavIdent godkjentAvBeslutterNavIdent() {return gjeldendeInnhold.getGodkjentAvBeslutterNavIdent();}
+    @JsonProperty
+    private GodkjentPaVegneGrunn godkjentPaVegneGrunn() {return gjeldendeInnhold.getGodkjentPaVegneGrunn();}
+    @JsonProperty
+    private boolean godkjentPaVegneAv() {return gjeldendeInnhold.isGodkjentPaVegneAv();}
+    @JsonProperty
+    private GodkjentPaVegneAvArbeidsgiverGrunn godkjentPaVegneAvArbeidsgiverGrunn() {return gjeldendeInnhold.getGodkjentPaVegneAvArbeidsgiverGrunn();}
+    @JsonProperty
+    private boolean godkjentPaVegneAvArbeidsgiver() {return gjeldendeInnhold.isGodkjentPaVegneAvArbeidsgiver();}
+
+
+
     private void sjekkOmAvtalenKanEndres() {
         if (erGodkjentAvDeltaker() || erGodkjentAvArbeidsgiver() || erGodkjentAvVeileder()) {
             throw new TilgangskontrollException("Godkjenninger må oppheves før avtalen kan endres.");
