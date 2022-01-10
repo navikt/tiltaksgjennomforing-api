@@ -62,13 +62,13 @@ public class SmsVarselFactory {
     }
 
     private List<SmsVarsel> leggTilMottakerSMSVarselForRefusjon(Avtale avtale, List<SmsVarsel> smsVarsel, String avtale1, VarslbarHendelse hendelse) {
-        /*if(avtale.gjeldendeInnhold().getRefusjonKontaktperson() != null) {
-            if(!avtale.gjeldendeInnhold().getRefusjonKontaktperson().isØnskerInformasjonOmRefusjon()) {
+        if(avtale.gjeldendeInnhold().getRefusjonKontaktperson() != null) {
+            if(!avtale.gjeldendeInnhold().isØnskerInformasjonOmRefusjon()) {
                 smsVarsel.clear();
             }
             smsVarsel.add(SmsVarsel.nyttVarsel(avtale.gjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(), avtale.getBedriftNr(),
                 avtale1, hendelse.getId()));
-        }*/
+        }
         return smsVarsel;
     }
 

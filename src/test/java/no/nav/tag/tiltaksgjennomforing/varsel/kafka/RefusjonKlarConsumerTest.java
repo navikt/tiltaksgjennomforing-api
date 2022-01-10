@@ -1,6 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 import lombok.SneakyThrows;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -24,13 +30,6 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(properties = { "tiltaksgjennomforing.kafka.enabled=true" })
 @EmbeddedKafka(partitions = 1, topics = { Topics.SMS_VARSEL, Topics.TILTAK_VARSEL })
@@ -76,7 +75,7 @@ class RefusjonKlarConsumerTest {
 
         String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til sommerjobb for avtale med nr: %d. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
         assertThat(jsonRefusjonRecord.get("meldingstekst")).isEqualTo(meldingstekst);
-        assertThat(jsonRefusjonRecord.get("telefonnummer")).isEqualTo(avtale.getArbeidsgiverTlf());
+        assertThat(jsonRefusjonRecord.get("telefonnummer")).isEqualTo(avtale.getRefusjonKontaktperson().getRefusjonKontaktpersonTlf());
         assertThat(jsonRefusjonRecord.get("identifikator")).isEqualTo(avtale.getBedriftNr().asString());
         Now.resetClock();
 

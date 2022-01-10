@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.tuple;
 import java.util.List;
 import java.util.stream.Stream;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GamleVerdier;
 import org.assertj.core.groups.Tuple;
@@ -20,7 +21,6 @@ public class LagSmsVarselFraVarslbarHendelseTest {
     private static Avtale avtaleSommerjobb;
     private static Tuple deltaker;
     private static Tuple arbeidsgiver;
-    private static Tuple arbeidsgiverSommerjobbRefusjonKontaktperson;
     private static Tuple arbeidsgiverSommerjobb;
     private static Tuple veileder;
 
@@ -28,7 +28,7 @@ public class LagSmsVarselFraVarslbarHendelseTest {
     static void setUp() {
         avtale = TestData.enArbeidstreningAvtale();
         avtaleSommerjobb = TestData.enSommerjobbAvtale();
-        //avtaleSommerjobb.gjeldendeInnhold().setRefusjonKontaktperson(new RefusjonKontaktperson("Donald","Duck", "55550123"));
+        avtaleSommerjobb.gjeldendeInnhold().setRefusjonKontaktperson(new RefusjonKontaktperson("Donald","Duck", "55550123"));
 
         deltaker = tuple(
                 avtale.getDeltakerTlf(),
@@ -44,9 +44,6 @@ public class LagSmsVarselFraVarslbarHendelseTest {
                 avtaleSommerjobb.getBedriftNr(),
                 "Fristen nærmer seg for å søke om refusjon for tilskudd til sommerjobb for avtale med nr: null. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.");
 
-/*     arbeidsgiverSommerjobbRefusjonKontaktperson = tuple(avtaleSommerjobb.gjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(),avtaleSommerjobb.getBedriftNr(),
-            "Fristen nærmer seg for å søke om refusjon for tilskudd til sommerjobb for avtale med nr: null. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.");
-*/
         veileder = tuple(
                 avtale.getVeilederTlf(),
                 SmsVarselFactory.NAV_ORGNR,
@@ -74,17 +71,18 @@ public class LagSmsVarselFraVarslbarHendelseTest {
     }
 
 
-/*
+
    @DisplayName("Skal varsle riktig mottakere når hendelse oppstår for sommerjobb")
     @ParameterizedTest(name = "{0}")
     @MethodSource("sommerjobbSMSvarselTilBådeArbeidsgiverOgKontaktPersonRefusjonProvider")
     void test_LagSmsVarsler_sommerjobbSMSvarselTilBådeArbeidsgiverOgKontaktPersonRefusjonProvider(VarslbarHendelseType hendelse, GamleVerdier gamleVerdier, List<Tuple> skalVarsles) {
         Avtale avtale = TestData.enSommerjobbAvtale();
+       avtale.gjeldendeInnhold().setRefusjonKontaktperson(new RefusjonKontaktperson("Donald","Duck", "55550123"));
         List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelse.nyHendelse(avtale, hendelse), gamleVerdier);
         assertThat(smsVarsler).extracting("telefonnummer", "identifikator", "meldingstekst")
                 .containsOnlyElementsOf(skalVarsles);
     }
-
+/*
     @DisplayName("Skal varsle riktig mottakere når hendelse oppstår for sommerjobb")
     @ParameterizedTest(name = "{0}")
     @MethodSource("sommerjobbSMSvarselForKunKontaktPersonRefusjonProvider")
@@ -129,23 +127,42 @@ public class LagSmsVarselFraVarslbarHendelseTest {
                     "Tidligere innsendt refusjon på avtale med nr null er korrigert. Se detaljer her: https://tiltak-refusjon.nav.no. Hilsen NAV.")))
         );
     }
-    /*
+
     private static Stream<Arguments> sommerjobbSMSvarselTilBådeArbeidsgiverOgKontaktPersonRefusjonProvider() {
         return Stream.of(
-                Arguments.of(VarslbarHendelseType.REFUSJON_KLAR_REVARSEL, new GamleVerdier(true, true), List.of(arbeidsgiverSommerjobb,
-                    arbeidsgiverSommerjobbRefusjonKontaktperson)),
+                Arguments.of(VarslbarHendelseType.REFUSJON_KLAR_REVARSEL, new GamleVerdier(true, true),
+                    List.of(arbeidsgiverSommerjobb,
+                        tuple(avtaleSommerjobb.gjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(),avtaleSommerjobb.getBedriftNr(),
+                        "Fristen nærmer seg for å søke om refusjon for tilskudd til sommerjobb for avtale med nr: null. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV."))),
 
-            Arguments.of(VarslbarHendelseType.REFUSJON_KLAR, new GamleVerdier(true, true), List.of(arbeidsgiverSommerjobb,
-                    arbeidsgiverSommerjobbRefusjonKontaktperson)),
+            Arguments.of(VarslbarHendelseType.REFUSJON_KLAR, new GamleVerdier(true, true), List.of(
+                tuple(avtaleSommerjobb.gjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(),avtaleSommerjobb.getBedriftNr(),
+                    "Dere kan nå søke om refusjon for tilskudd til sommerjobb for avtale med nr: null. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV."), tuple(
+                    avtaleSommerjobb.getArbeidsgiverTlf(),
+                    avtaleSommerjobb.getBedriftNr(),
+                    "Dere kan nå søke om refusjon for tilskudd til sommerjobb for avtale med nr: null. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.")
+                   )),
 
-            Arguments.of(VarslbarHendelseType.REFUSJON_FRIST_FORLENGET, new GamleVerdier(true, true), List.of(arbeidsgiverSommerjobb,
-                    arbeidsgiverSommerjobbRefusjonKontaktperson)),
+            Arguments.of(VarslbarHendelseType.REFUSJON_FRIST_FORLENGET, new GamleVerdier(true, true), List.of(tuple(avtaleSommerjobb.gjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(),avtaleSommerjobb.getBedriftNr(),
+                "Fristen for å godkjenne refusjon for avtale med nr: null har blitt forlenget. Du kan sjekke fristen og søke om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV."), tuple(
+                avtaleSommerjobb.getArbeidsgiverTlf(),
+                avtaleSommerjobb.getBedriftNr(),
+                "Fristen for å godkjenne refusjon for avtale med nr: null har blitt forlenget. Du kan sjekke fristen og søke om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.")
+            )),
 
-            Arguments.of(VarslbarHendelseType.REFUSJON_KORRIGERT, new GamleVerdier(true, true), List.of(arbeidsgiverSommerjobb,
-                    arbeidsgiverSommerjobbRefusjonKontaktperson))
+            Arguments.of(VarslbarHendelseType.REFUSJON_KORRIGERT, new GamleVerdier(true, true), List.of(
+                tuple(
+                    avtaleSommerjobb.getArbeidsgiverTlf(),
+                    avtaleSommerjobb.getBedriftNr(),
+                    "Tidligere innsendt refusjon på avtale med nr null er korrigert. Se detaljer her: https://tiltak-refusjon.nav.no. Hilsen NAV."),
+                tuple(avtaleSommerjobb.gjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(),avtaleSommerjobb.getBedriftNr(),
+                "Tidligere innsendt refusjon på avtale med nr null er korrigert. Se detaljer her: https://tiltak-refusjon.nav.no. Hilsen NAV.")
+
+            ))
+
         );
     }
-
+/*
     private static Stream<Arguments> sommerjobbSMSvarselForKunKontaktPersonRefusjonProvider() {
         return Stream.of(
                 Arguments.of(VarslbarHendelseType.REFUSJON_KLAR_REVARSEL, new GamleVerdier(true, true), List.of(arbeidsgiverSommerjobbRefusjonKontaktperson)),
