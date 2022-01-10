@@ -64,7 +64,7 @@ class VeilarbArenaClientTest {
     @Test
     public void sjekk_at_lonnstilskuddsprosent_blir_satt_paa_midlertidiglonnstilskudd_ved_AvtaleInnhold_constructor() {
         final Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
-        avtale.setLonnstilskuddProsent(null);
+        avtale.getGjeldendeInnhold().setLonnstilskuddProsent(null);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
 
         Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
@@ -73,13 +73,13 @@ class VeilarbArenaClientTest {
         avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
         avtale.endreAvtale(Instant.now(),new EndreAvtale(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
 
-        assertThat(avtale.gjeldendeInnhold().getLonnstilskuddProsent()).isNotNull();
-        assertThat(avtale.gjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(60);
+        assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isNotNull();
+        assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(60);
 
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.endreAvtale(Instant.now(),new EndreAvtale(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
 
-        assertThat(avtale.gjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(40);
+        assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(40);
     }
 
     @Test

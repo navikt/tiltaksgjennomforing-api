@@ -27,7 +27,7 @@ public class DokgenService {
     private final MeterRegistry meterRegistry;
 
     public byte[] avtalePdf(Avtale avtale) {
-        var avtaleTilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale.gjeldendeInnhold());
+        var avtaleTilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale.getGjeldendeInnhold());
         gangOppSatserMed100(avtaleTilJournalfoering);
         fjernGodkjentPåVegneAv(avtaleTilJournalfoering);
         try {

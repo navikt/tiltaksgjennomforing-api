@@ -38,7 +38,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
 
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(1);
-        assertThat(avtale.getTilskuddPeriode().first().getBeløp()).isEqualTo(avtale.getSumLonnstilskudd() * 3);
+        assertThat(avtale.getTilskuddPeriode().first().getBeløp()).isEqualTo(avtale.getGjeldendeInnhold().getSumLonnstilskudd() * 3);
         harRiktigeEgenskaper(avtale);
         Now.resetClock();
     }
@@ -72,8 +72,8 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         endreAvtale.setLonnstilskuddProsent(40);
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
-        TilskuddPeriode tilskuddpeirode6mndEtterStart = finnTilskuddsperiodeForDato(avtale.getStartDato().plusMonths(6), avtale);
-        TilskuddPeriode tilskuddperiodeDagenFør6Mnd = finnTilskuddsperiodeForDato(avtale.getStartDato().plusMonths(6).minusDays(1), avtale);
+        TilskuddPeriode tilskuddpeirode6mndEtterStart = finnTilskuddsperiodeForDato(avtale.getGjeldendeInnhold().getStartDato().plusMonths(6), avtale);
+        TilskuddPeriode tilskuddperiodeDagenFør6Mnd = finnTilskuddsperiodeForDato(avtale.getGjeldendeInnhold().getStartDato().plusMonths(6).minusDays(1), avtale);
 
         assertThat(tilskuddpeirode6mndEtterStart.getLonnstilskuddProsent()).isEqualTo(30);
         assertThat(tilskuddperiodeDagenFør6Mnd.getLonnstilskuddProsent()).isEqualTo(40);
@@ -105,7 +105,6 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         assertThat(tilskuddPeriode1).isEqualTo(avtale.tilskuddsperiode(0));
         assertThat(tilskuddPeriode2).isEqualTo(avtale.tilskuddsperiode(1));
         Now.resetClock();
-
     }
 
     @Test
@@ -115,8 +114,8 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
-        endreAvtale.setStartDato(avtale.getStartDato());
-        endreAvtale.setSluttDato(avtale.getSluttDato());
+        endreAvtale.setStartDato(avtale.getGjeldendeInnhold().getStartDato());
+        endreAvtale.setSluttDato(avtale.getGjeldendeInnhold().getSluttDato());
 
         avtale.oppdatereKostnadsstedForTilskuddsperioder(new NyttKostnadssted(ENHETS_NR, ENHETS_NAVN));
         assertThat(avtale.tilskuddsperiode(0).getEnhet()).isEqualTo(ENHETS_NR);
@@ -175,7 +174,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         endreAvtale.setLonnstilskuddProsent(40);
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
 
-        assertThat(avtale.getDatoForRedusertProsent()).isEqualTo(LocalDate.of(2021, 7, 1));
+        assertThat(avtale.getGjeldendeInnhold().getDatoForRedusertProsent()).isEqualTo(LocalDate.of(2021, 7, 1));
         harRiktigeEgenskaper(avtale);
         Now.resetClock();
     }
@@ -193,7 +192,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         endreAvtale.setLonnstilskuddProsent(60);
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
 
-        assertThat(avtale.getDatoForRedusertProsent()).isEqualTo(LocalDate.of(2022, 1, 1));
+        assertThat(avtale.getGjeldendeInnhold().getDatoForRedusertProsent()).isEqualTo(LocalDate.of(2022, 1, 1));
         harRiktigeEgenskaper(avtale);
         Now.resetClock();
     }
@@ -211,7 +210,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         endreAvtale.setLonnstilskuddProsent(60);
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
 
-        assertThat(avtale.getDatoForRedusertProsent()).isNull();
+        assertThat(avtale.getGjeldendeInnhold().getDatoForRedusertProsent()).isNull();
         harRiktigeEgenskaper(avtale);
         Now.resetClock();
     }
@@ -227,7 +226,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
 
         assertThat(avtale.tilskuddsperiode(avtale.getTilskuddPeriode().size() - 1).getLonnstilskuddProsent()).isEqualTo(60);
-        assertThat(avtale.getDatoForRedusertProsent()).isNull();
+        assertThat(avtale.getGjeldendeInnhold().getDatoForRedusertProsent()).isNull();
         Now.resetClock();
     }
 
@@ -256,11 +255,10 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         Now.fixedDate(LocalDate.of(2021, 1, 1));
         Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 4, 1));
 
-
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.UTBETALT);
         avtale.tilskuddsperiode(1).setStatus(TilskuddPeriodeStatus.UTBETALT);
 
-        avtale.forlengAvtale(avtale.getSluttDato().plusMonths(3), TestData.enNavIdent());
+        avtale.forlengAvtale(avtale.getGjeldendeInnhold().getSluttDato().plusMonths(3), TestData.enNavIdent());
 
         assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.UTBETALT);
         assertThat(avtale.tilskuddsperiode(1).getStatus()).isEqualTo(TilskuddPeriodeStatus.UTBETALT);
@@ -278,7 +276,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
         UUID idPåGodkjentTilskuddsperiode = avtale.tilskuddsperiode(0).getId();
 
-        avtale.forlengAvtale(avtale.getSluttDato().plusDays(1), TestData.enNavIdent());
+        avtale.forlengAvtale(avtale.getGjeldendeInnhold().getSluttDato().plusDays(1), TestData.enNavIdent());
 
         assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
         assertThat(avtale.tilskuddsperiode(0).getId()).isEqualTo(idPåGodkjentTilskuddsperiode);
@@ -293,9 +291,9 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
         EndreTilskuddsberegning endreTilskuddsberegning = EndreTilskuddsberegning.builder()
                 .manedslonn(99999)
-                .arbeidsgiveravgift(avtale.getArbeidsgiveravgift())
-                .feriepengesats(avtale.getFeriepengesats())
-                .otpSats(avtale.getOtpSats())
+                .arbeidsgiveravgift(avtale.getGjeldendeInnhold().getArbeidsgiveravgift())
+                .feriepengesats(avtale.getGjeldendeInnhold().getFeriepengesats())
+                .otpSats(avtale.getGjeldendeInnhold().getOtpSats())
                 .build();
         avtale.endreTilskuddsberegning(endreTilskuddsberegning, TestData.enNavIdent());
 
@@ -364,9 +362,9 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
         EndreTilskuddsberegning endreTilskuddsberegning = EndreTilskuddsberegning.builder()
                 .manedslonn(77777)
-                .arbeidsgiveravgift(avtale.getArbeidsgiveravgift())
-                .feriepengesats(avtale.getFeriepengesats())
-                .otpSats(avtale.getOtpSats())
+                .arbeidsgiveravgift(avtale.getGjeldendeInnhold().getArbeidsgiveravgift())
+                .feriepengesats(avtale.getGjeldendeInnhold().getFeriepengesats())
+                .otpSats(avtale.getGjeldendeInnhold().getOtpSats())
                 .build();
         avtale.endreTilskuddsberegning(endreTilskuddsberegning, TestData.enNavIdent());
 
@@ -381,7 +379,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
     /* ------------ Metoder som kun brukes innad i denne test-klassen ------------ */
     private void harRiktigeEgenskaper(Avtale avtale) {
         harOverlappendeDatoer(avtale.getTilskuddPeriode());
-        harAlleDageneIAvtalenperioden(avtale.getTilskuddPeriode(), avtale.getStartDato(), avtale.getSluttDato());
+        harAlleDageneIAvtalenperioden(avtale.getTilskuddPeriode(), avtale.getGjeldendeInnhold().getStartDato(), avtale.getGjeldendeInnhold().getSluttDato());
         harRiktigeLøpenumre(avtale.getTilskuddPeriode());
     }
 

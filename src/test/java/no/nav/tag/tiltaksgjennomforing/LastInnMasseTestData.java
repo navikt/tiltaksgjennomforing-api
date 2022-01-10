@@ -24,7 +24,7 @@ public class LastInnMasseTestData implements ApplicationListener<ApplicationRead
 
         for (int i = 0; i < 555; i++) {
             Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeilederTilbakeITid();
-            avtale.setDeltakerFornavn(new RandomStringGenerator.Builder().withinRange('a', 'z').build().generate(5));
+            avtale.getGjeldendeInnhold().setDeltakerFornavn(new RandomStringGenerator.Builder().withinRange('a', 'z').build().generate(5));
             avtaleRepository.save(avtale);
         }
     }

@@ -39,7 +39,7 @@ public class AvtalepartTest {
         veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
         assertThat(avtale.erGodkjentAvDeltaker()).isTrue();
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
-        assertThat(avtale.isGodkjentPaVegneAv()).isTrue();
+        assertThat(avtale.getGjeldendeInnhold().isGodkjentPaVegneAv()).isTrue();
     }
 
     @Test
@@ -86,8 +86,8 @@ public class AvtalepartTest {
     @Test
     public void godkjennForAvtalepart__skal_fungere_for_veileder() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         Veileder veileder = TestData.enVeileder(avtale);
         veileder.godkjennAvtale(avtale.getSistEndret(), avtale);
         assertThat(avtale.erGodkjentAvArbeidsgiver()).isTrue();
@@ -96,7 +96,7 @@ public class AvtalepartTest {
     @Test
     public void opphevGodkjenninger__veileder_skal_kunne_trekke_tilbake_egen_godkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvVeileder(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         Veileder veileder = TestData.enVeileder(avtale);
         veileder.opphevGodkjenninger(avtale);
         assertThat(avtale.erGodkjentAvVeileder()).isFalse();

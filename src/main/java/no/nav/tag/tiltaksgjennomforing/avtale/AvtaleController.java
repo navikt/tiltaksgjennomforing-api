@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
@@ -37,6 +36,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
 public class AvtaleController {
 
     private final AvtaleRepository avtaleRepository;
+    private final AvtaleInnholdRepository avtaleInnholdRepository;
     private final InnloggingService innloggingService;
     private final EregService eregService;
     private final Norg2Client norg2Client;
@@ -49,6 +49,12 @@ public class AvtaleController {
     public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         return avtalepart.hentAvtale(avtaleRepository, id);
+    }
+
+    @GetMapping("/{avtaleId}/versjoner")
+    public List<AvtaleInnhold> hentVersjoner(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
+        return avtalepart.hentAvtaleVersjoner(avtaleRepository, avtaleInnholdRepository, id);
     }
 
     @GetMapping
@@ -69,13 +75,6 @@ public class AvtaleController {
         Beslutter beslutter = innloggingService.hentBeslutter();
         List<Avtale> avtaler = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(avtaleRepository, queryParametre);
         return avtaler;
-    }
-
-    @GetMapping("/{avtaleId}/status-detaljer")
-    public AvtaleStatusDetaljer hentAvtaleStatusDetaljer(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
-        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        return avtalepart.statusDetaljerForAvtale(avtale);
     }
 
     @GetMapping("/{avtaleId}/pdf")
@@ -338,24 +337,6 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
-    @PostMapping("/{avtaleId}/gjenopprett")
-    @Transactional
-    public void gjenopprettAvtale(@PathVariable("avtaleId") UUID avtaleId) {
-        Veileder veileder = innloggingService.hentVeileder();
-        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        veileder.gjenopprettAvtale(avtale);
-        avtaleRepository.save(avtale);
-    }
-
-    @PostMapping("/{avtaleId}/avbryt")
-    @Transactional
-    public void avbryt(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret, @RequestBody AvbruttInfo avbruttInfo) {
-        Veileder veileder = innloggingService.hentVeileder();
-        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        veileder.avbrytAvtale(sistEndret, avbruttInfo, avtale);
-        avtaleRepository.save(avtale);
-    }
-
     @PostMapping("/{avtaleId}/annuller")
     @Transactional
     public void annuller(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret, @RequestBody AnnullertInfo annullertInfo) {
@@ -371,15 +352,6 @@ public class AvtaleController {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         veileder.slettemerk(avtale);
-        avtaleRepository.save(avtale);
-    }
-
-    @PostMapping("/{avtaleId}/laas-opp")
-    @Transactional
-    public void laasOpp(@PathVariable("avtaleId") UUID avtaleId) {
-        Veileder veileder = innloggingService.hentVeileder();
-        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        veileder.låsOppAvtale(avtale);
         avtaleRepository.save(avtale);
     }
 
