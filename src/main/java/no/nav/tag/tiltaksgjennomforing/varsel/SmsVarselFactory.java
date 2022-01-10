@@ -6,6 +6,7 @@ import java.util.List;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import org.jetbrains.annotations.NotNull;
 
 public class SmsVarselFactory {
     public static final BedriftNr NAV_ORGNR = new BedriftNr("889640782");
@@ -29,10 +30,16 @@ public class SmsVarselFactory {
     }
 
     public List<SmsVarsel> arbeidsgiverRefusjonKlar() {
-        ArrayList<SmsVarsel> hovedkontaktForAvtalen = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(),
-            refusjonTekst(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId())));
+        String smsTekst = refusjonTekst(avtale.getTiltakstype(), avtale.getAvtaleNr());
+        ArrayList<SmsVarsel> hovedkontaktForAvtalen = hentSmsVarselForHovedKontakt(smsTekst);
+        return hentSMSVarselForRefusjonHvisValgt(avtale, hovedkontaktForAvtalen, smsTekst, hendelse);
+    }
 
-        return leggTilMottakerSMSVarselForRefusjon(avtale, hovedkontaktForAvtalen, refusjonTekst(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse);
+    @NotNull
+    private ArrayList<SmsVarsel> hentSmsVarselForHovedKontakt(String melding) {
+        ArrayList<SmsVarsel> hovedkontaktForAvtalen = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(),
+            melding, hendelse.getId())));
+        return hovedkontaktForAvtalen;
     }
 
 
@@ -40,28 +47,28 @@ public class SmsVarselFactory {
         ArrayList<SmsVarsel> hovedkontaktForAvtalen = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(),
             refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId())));
 
-        return leggTilMottakerSMSVarselForRefusjon(avtale, hovedkontaktForAvtalen, refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse);
+        return hentSMSVarselForRefusjonHvisValgt(avtale, hovedkontaktForAvtalen, refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse);
     }
 
     public List<SmsVarsel> arbeidsgiverRefusjonForlengetVarsel() {
         ArrayList<SmsVarsel> hovedkontaktForAvtalen = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(),
             refusjonForlengetTekst(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId())));
 
-        return leggTilMottakerSMSVarselForRefusjon(avtale, hovedkontaktForAvtalen, refusjonForlengetTekst(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse);
+        return hentSMSVarselForRefusjonHvisValgt(avtale, hovedkontaktForAvtalen, refusjonForlengetTekst(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse);
     }
 
     public List<SmsVarsel> arbeidsgiverRefusjonKorrigertVarsel() {
         ArrayList<SmsVarsel> hovedkontaktForAvtalen = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(),
             refusjonTekstKorrigert(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse.getId())));
 
-        return leggTilMottakerSMSVarselForRefusjon(avtale, hovedkontaktForAvtalen, refusjonTekstKorrigert(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse);
+        return hentSMSVarselForRefusjonHvisValgt(avtale, hovedkontaktForAvtalen, refusjonTekstKorrigert(avtale.getTiltakstype(), avtale.getAvtaleNr()), hendelse);
     }
 
     public SmsVarsel veileder() {
         return SmsVarsel.nyttVarsel(avtale.getVeilederTlf(), NAV_ORGNR, FAGSYSTEMSONE_VARSELTEKST, hendelse.getId());
     }
 
-    private List<SmsVarsel> leggTilMottakerSMSVarselForRefusjon(Avtale avtale, List<SmsVarsel> smsVarsel, String avtale1, VarslbarHendelse hendelse) {
+    private List<SmsVarsel> hentSMSVarselForRefusjonHvisValgt(Avtale avtale, List<SmsVarsel> smsVarsel, String avtale1, VarslbarHendelse hendelse) {
         if(avtale.gjeldendeInnhold().getRefusjonKontaktperson() != null) {
             if(!avtale.gjeldendeInnhold().isØnskerInformasjonOmRefusjon()) {
                 smsVarsel.clear();
