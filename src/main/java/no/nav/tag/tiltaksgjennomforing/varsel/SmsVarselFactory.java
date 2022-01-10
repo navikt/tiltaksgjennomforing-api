@@ -1,5 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
+import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.SOMMERJOBB;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -48,7 +50,8 @@ public class SmsVarselFactory {
     }
 
     public List<SmsVarsel> arbeidsgiverRefusjonForlengetVarsel() {
-        String smsTekst = refusjonForlengetTekst(avtale.getTiltakstype(), avtale.getAvtaleNr());
+        if(!avtale.getTiltakstype().equals(SOMMERJOBB)) throw new RuntimeException();
+        String smsTekst = String.format("Fristen for å godkjenne refusjon for avtale med nr: %s har blitt forlenget. Du kan sjekke fristen og søke om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
         return hentSMSVarselForRefusjonHvisValgt(avtale, smsHovedkontakt(smsTekst), smsTekst, hendelse);
     }
 
@@ -70,15 +73,6 @@ public class SmsVarselFactory {
                 avtale1, hendelse.getId()));
         }
         return smsVarsel;
-    }
-
-    private static String refusjonForlengetTekst(Tiltakstype tiltakstype, Integer avtaleNr) {
-        switch (tiltakstype) {
-            case SOMMERJOBB:
-                return String.format("Fristen for å godkjenne refusjon for avtale med nr: %s har blitt forlenget. Du kan sjekke fristen og søke om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtaleNr);
-            default:
-                throw new RuntimeException();
-        }
     }
 
     private static String refusjonTekst(Tiltakstype tiltakstype, Integer avtaleNr) {
