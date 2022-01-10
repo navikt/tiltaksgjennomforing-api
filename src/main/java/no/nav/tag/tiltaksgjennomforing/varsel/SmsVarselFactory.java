@@ -36,7 +36,8 @@ public class SmsVarselFactory {
     }
 
     public List<SmsVarsel> arbeidsgiverRefusjonKlarRevarsel() {
-        String smsTekst = refusjonTekstRevarsel(avtale.getTiltakstype(), avtale.getAvtaleNr());
+        erSommerjobbAvtale();
+        String smsTekst = String.format("Fristen nærmer seg for å søke om refusjon for tilskudd til sommerjobb for avtale med nr: %s. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
         return hentSMSVarselForRefusjonHvisValgt(avtale, smsTekst, hendelse);
     }
 
@@ -76,15 +77,6 @@ public class SmsVarselFactory {
         switch (tiltakstype) {
             case SOMMERJOBB:
                 return String.format("Dere kan nå søke om refusjon for tilskudd til sommerjobb for avtale med nr: %s. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtaleNr);
-            default:
-                throw new RuntimeException();
-        }
-    }
-
-    private static String refusjonTekstRevarsel(Tiltakstype tiltakstype, Integer avtaleNr) {
-        switch (tiltakstype) {
-            case SOMMERJOBB:
-                return String.format("Fristen nærmer seg for å søke om refusjon for tilskudd til sommerjobb for avtale med nr: %s. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtaleNr);
             default:
                 throw new RuntimeException();
         }
