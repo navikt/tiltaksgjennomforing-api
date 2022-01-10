@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.List;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
-import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 
 public class SmsVarselFactory {
     public static final BedriftNr NAV_ORGNR = new BedriftNr("889640782");
@@ -31,20 +30,21 @@ public class SmsVarselFactory {
     }
 
     public List<SmsVarsel> arbeidsgiverRefusjonKlar() {
-        String smsTekst = refusjonTekst(avtale.getTiltakstype(), avtale.getAvtaleNr());
-        return hentSMSVarselForRefusjonHvisValgt(avtale,  smsTekst, hendelse);
+        erSommerjobbAvtale();
+        String smsTekst = String.format("Dere kan nå søke om refusjon for tilskudd til sommerjobb for avtale med nr: %s. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
+        return hentSMSerForValgtePersoner(avtale,  smsTekst, hendelse);
     }
 
     public List<SmsVarsel> arbeidsgiverRefusjonKlarRevarsel() {
         erSommerjobbAvtale();
         String smsTekst = String.format("Fristen nærmer seg for å søke om refusjon for tilskudd til sommerjobb for avtale med nr: %s. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
-        return hentSMSVarselForRefusjonHvisValgt(avtale, smsTekst, hendelse);
+        return hentSMSerForValgtePersoner(avtale, smsTekst, hendelse);
     }
 
     public List<SmsVarsel> arbeidsgiverRefusjonForlengetVarsel() {
         erSommerjobbAvtale();
         String smsTekst = String.format("Fristen for å godkjenne refusjon for avtale med nr: %s har blitt forlenget. Du kan sjekke fristen og søke om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
-        return hentSMSVarselForRefusjonHvisValgt(avtale,  smsTekst, hendelse);
+        return hentSMSerForValgtePersoner(avtale,  smsTekst, hendelse);
     }
 
     private void erSommerjobbAvtale() {
@@ -52,15 +52,16 @@ public class SmsVarselFactory {
     }
 
     public List<SmsVarsel> arbeidsgiverRefusjonKorrigertVarsel() {
-        String smsTekst = refusjonTekstKorrigert(avtale.getTiltakstype(), avtale.getAvtaleNr());
-        return hentSMSVarselForRefusjonHvisValgt(avtale,  smsTekst, hendelse);
+        erSommerjobbAvtale();
+        String smsTekst = String.format("Tidligere innsendt refusjon på avtale med nr %d er korrigert. Se detaljer her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
+        return hentSMSerForValgtePersoner(avtale,  smsTekst, hendelse);
     }
 
     public SmsVarsel veileder() {
         return SmsVarsel.nyttVarsel(avtale.getVeilederTlf(), NAV_ORGNR, FAGSYSTEMSONE_VARSELTEKST, hendelse.getId());
     }
 
-    private List<SmsVarsel> hentSMSVarselForRefusjonHvisValgt(Avtale avtale, String smsTekst, VarslbarHendelse hendelse) {
+    private List<SmsVarsel> hentSMSerForValgtePersoner(Avtale avtale, String smsTekst, VarslbarHendelse hendelse) {
         ArrayList<SmsVarsel> smsVarsel = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(),
             smsTekst, hendelse.getId())));
         if(avtale.gjeldendeInnhold().getRefusjonKontaktperson() != null) {
@@ -71,23 +72,5 @@ public class SmsVarselFactory {
                 smsTekst, hendelse.getId()));
         }
         return smsVarsel;
-    }
-
-    private static String refusjonTekst(Tiltakstype tiltakstype, Integer avtaleNr) {
-        switch (tiltakstype) {
-            case SOMMERJOBB:
-                return String.format("Dere kan nå søke om refusjon for tilskudd til sommerjobb for avtale med nr: %s. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtaleNr);
-            default:
-                throw new RuntimeException();
-        }
-    }
-
-    private static String refusjonTekstKorrigert(Tiltakstype tiltakstype, Integer avtaleNr) {
-        switch (tiltakstype) {
-            case SOMMERJOBB:
-                return String.format("Tidligere innsendt refusjon på avtale med nr %d er korrigert. Se detaljer her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtaleNr);
-            default:
-                throw new RuntimeException();
-        }
     }
 }
