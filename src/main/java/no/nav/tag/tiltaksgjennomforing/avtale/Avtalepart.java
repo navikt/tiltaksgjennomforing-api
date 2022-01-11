@@ -16,10 +16,7 @@ import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentGeoLokasjonFraPdlRespons;
@@ -42,21 +39,32 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     abstract List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre);
 
-    public List<Avtale> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, String sorteringskolonne, int skip, int limit) {
+    public List<Avtale> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtaleInnholdRepository avtaleInnholdRepository, AvtalePredicate queryParametre, String sorteringskolonne, int skip, int limit) {
         return hentAlleAvtalerMedMuligTilgang(avtaleRepository, queryParametre).stream()
                 .filter(queryParametre).filter(avtale -> !avtale.isFeilregistrert())
                 .sorted(AvtaleSorterer.comparatorForAvtale(sorteringskolonne))
                 .skip(skip)
                 .limit(limit)
                 .filter(this::harTilgang)
+                .peek(avtale -> migrerAvtale(avtaleRepository, null, avtale))
                 .collect(Collectors.toList());
     }
 
-    public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
+    public Avtale hentAvtale(AvtaleRepository avtaleRepository, AvtaleInnholdRepository avtaleInnholdRepository, UUID avtaleId) {
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
+        migrerAvtale(avtaleRepository, avtaleInnholdRepository, avtale);
         sjekkTilgang(avtale);
         return avtale;
+    }
+
+    private void migrerAvtale(AvtaleRepository avtaleRepository, AvtaleInnholdRepository avtaleInnholdRepository, Avtale avtale) {
+        if (avtale.getGjeldendeInnhold() == null) {
+            List<AvtaleInnhold> alleVersjonerForAvtale = avtaleInnholdRepository.findAllByAvtale(avtale);
+            AvtaleInnhold gjeldendeInnhold = alleVersjonerForAvtale.stream().max(Comparator.comparing(AvtaleInnhold::getVersjon)).orElseThrow();
+            avtale.setGjeldendeInnhold(gjeldendeInnhold);
+            avtaleRepository.save(avtale);
+        }
     }
 
     public List<AvtaleInnhold> hentAvtaleVersjoner(AvtaleRepository avtaleRepository, AvtaleInnholdRepository avtaleInnholdRepository, UUID avtaleId) {
@@ -118,8 +126,8 @@ public abstract class Avtalepart<T extends Identifikator> {
         return List.of(getIdentifikator());
     }
 
-    public List<Hendelselogg> hentHendelselogg(UUID avtaleId, AvtaleRepository avtaleRepository, HendelseloggRepository hendelseloggRepository) {
-        Avtale avtale = hentAvtale(avtaleRepository, avtaleId);
+    public List<Hendelselogg> hentHendelselogg(UUID avtaleId, AvtaleRepository avtaleRepository, HendelseloggRepository hendelseloggRepository, AvtaleInnholdRepository avtaleInnholdRepository) {
+        Avtale avtale = hentAvtale(avtaleRepository, avtaleInnholdRepository, avtaleId);
         return hendelseloggRepository.findAllByAvtaleId(avtale.getId());
     }
 

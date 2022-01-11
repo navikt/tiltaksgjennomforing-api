@@ -48,7 +48,7 @@ public class AvtaleController {
     @GetMapping("/{avtaleId}")
     public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        return avtalepart.hentAvtale(avtaleRepository, id);
+        return avtalepart.hentAvtale(avtaleRepository, avtaleInnholdRepository, id);
     }
 
     @GetMapping("/{avtaleId}/versjoner")
@@ -65,7 +65,7 @@ public class AvtaleController {
                                                                     @RequestParam(value = "skip", required = false, defaultValue = "0") Integer skip,
                                                                     @RequestParam(value = "limit", required = false, defaultValue = "100000000") Integer limit) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        List<Avtale> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre, sorteringskolonne, skip, limit);
+        List<Avtale> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(avtaleRepository, avtaleInnholdRepository, queryParametre, sorteringskolonne, skip, limit);
         return avtaler;
     }
 
@@ -80,7 +80,7 @@ public class AvtaleController {
     @GetMapping("/{avtaleId}/pdf")
     public HttpEntity<?> hentAvtalePdf(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        Avtale avtale = avtalepart.hentAvtale(avtaleRepository, avtaleId);
+        Avtale avtale = avtalepart.hentAvtale(avtaleRepository, avtaleInnholdRepository, avtaleId);
 
         if (!avtale.erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LASTE_NED_PDF);
@@ -154,7 +154,7 @@ public class AvtaleController {
     @GetMapping(path = "/{avtaleId}/kontonummer-arbeidsgiver")
     public String hentBedriftKontonummer(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        Avtale avtale = avtalepart.hentAvtale(avtaleRepository, avtaleId);
+        Avtale avtale = avtalepart.hentAvtale(avtaleRepository, avtaleInnholdRepository, avtaleId);
         return kontoregisterService.hentKontonummer(avtale.getBedriftNr().asString());
     }
 

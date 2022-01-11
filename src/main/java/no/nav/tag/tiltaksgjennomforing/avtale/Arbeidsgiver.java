@@ -145,8 +145,8 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     @Override
-    public List<Avtale> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, String sorteringskolonne, int skip, int limit) {
-        return super.hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre, sorteringskolonne, skip, limit).stream().map(Arbeidsgiver::fjernAvbruttGrunn).collect(Collectors.toList());
+    public List<Avtale> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtaleInnholdRepository avtaleInnholdRepository, AvtalePredicate queryParametre, String sorteringskolonne, int skip, int limit) {
+        return super.hentAlleAvtalerMedLesetilgang(avtaleRepository, avtaleInnholdRepository, queryParametre, sorteringskolonne, skip, limit).stream().map(Arbeidsgiver::fjernAvbruttGrunn).collect(Collectors.toList());
     }
 
     public List<Avtale> hentAvtalerForMinsideArbeidsgiver(AvtaleRepository avtaleRepository, BedriftNr bedriftNr) {
@@ -177,8 +177,8 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     @Override
-    public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
-        Avtale avtale = super.hentAvtale(avtaleRepository, avtaleId);
+    public Avtale hentAvtale(AvtaleRepository avtaleRepository, AvtaleInnholdRepository avtaleInnholdRepository, UUID avtaleId) {
+        Avtale avtale = super.hentAvtale(avtaleRepository, avtaleInnholdRepository, avtaleId);
         fjernAvbruttGrunn(avtale);
         fjernAnnullertGrunn(avtale);
         fjernKvalifiseringsgruppe(avtale);

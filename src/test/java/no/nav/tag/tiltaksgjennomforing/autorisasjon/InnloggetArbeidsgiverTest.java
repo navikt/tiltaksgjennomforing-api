@@ -14,6 +14,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,7 +34,7 @@ public class InnloggetArbeidsgiverTest {
     @Test
     public void hentAvtale_uten_annullertGrunn() {
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        Avtale hentetAvtale = arbeidsgiver.hentAvtale(avtaleRepository, avtale.getId());
+        Avtale hentetAvtale = arbeidsgiver.hentAvtale(avtaleRepository, mock(AvtaleInnholdRepository.class), avtale.getId());
         assertThat(hentetAvtale.getAnnullertGrunn()).isNull();
     }
 
@@ -41,7 +42,7 @@ public class InnloggetArbeidsgiverTest {
     public void hentAlleAvtalerMedLesetilgang_uten_annullertGrunn() {
         Set<BedriftNr> bedriftNrSet = Set.of(avtale.getBedriftNr());
         when(avtaleRepository.findAllByBedriftNrIn(eq(bedriftNrSet))).thenReturn(Arrays.asList(avtale));
-        List<Avtale> hentetAvtaler = arbeidsgiver.hentAlleAvtalerMedLesetilgang(avtaleRepository, new AvtalePredicate(), Avtale.Fields.sistEndret, 0, Integer.MAX_VALUE);
+        List<Avtale> hentetAvtaler = arbeidsgiver.hentAlleAvtalerMedLesetilgang(avtaleRepository, mock(AvtaleInnholdRepository.class), new AvtalePredicate(), Avtale.Fields.sistEndret, 0, Integer.MAX_VALUE);
         assertThat(hentetAvtaler.get(0).getAnnullertGrunn()).isNull();
     }
 
