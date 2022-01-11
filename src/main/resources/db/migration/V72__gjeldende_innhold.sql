@@ -1,0 +1,1 @@
+alter table avtale add column gjeldende_innhold_id uuid references avtale_innhold(id);
