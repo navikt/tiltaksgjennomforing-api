@@ -29,6 +29,8 @@ class LagVarselFraAvtaleHendelserTest {
     @Autowired
     AvtaleRepository avtaleRepository;
     @Autowired
+    AvtaleInnholdRepository avtaleInnholdRepository;
+    @Autowired
     VarselRepository varselRepository;
     @Autowired
     HendelseloggRepository hendelseloggRepository;
@@ -44,6 +46,7 @@ class LagVarselFraAvtaleHendelserTest {
         varselRepository.deleteAll();
         hendelseloggRepository.deleteAll();
         arbeidsgiverNotifikasjonRepository.deleteAll();
+        avtaleInnholdRepository.deleteAll();
         avtaleRepository.deleteAll();
     }
 

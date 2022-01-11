@@ -30,6 +30,8 @@ class LyttPåHendelseTilHendelseloggTest {
     @Autowired
     AvtaleRepository avtaleRepository;
     @Autowired
+    AvtaleInnholdRepository avtaleInnholdRepository;
+    @Autowired
     HendelseloggRepository hendelseloggRepository;
     @Autowired
     VarselRepository varselRepository;
@@ -41,6 +43,7 @@ class LyttPåHendelseTilHendelseloggTest {
         hendelseloggRepository.deleteAll();
         varselRepository.deleteAll();
         arbeidsgiverNotifikasjonRepository.deleteAll();
+        avtaleInnholdRepository.deleteAll();
         avtaleRepository.deleteAll();
     }
 
