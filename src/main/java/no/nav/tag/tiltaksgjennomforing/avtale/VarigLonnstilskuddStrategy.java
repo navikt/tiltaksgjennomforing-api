@@ -2,7 +2,15 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
 
+import java.util.Map;
+
 public class VarigLonnstilskuddStrategy extends LonnstilskuddStrategy {
+    @Override
+    public Map<String, Object> alleFelterSomMåFyllesUt() {
+        Map<String, Object> felterSomMåFyllesUt = super.alleFelterSomMåFyllesUt();
+        felterSomMåFyllesUt.put(AvtaleInnhold.Fields.lonnstilskuddProsent, avtaleInnhold.getLonnstilskuddProsent());
+        return felterSomMåFyllesUt;
+    }
 
     public VarigLonnstilskuddStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);

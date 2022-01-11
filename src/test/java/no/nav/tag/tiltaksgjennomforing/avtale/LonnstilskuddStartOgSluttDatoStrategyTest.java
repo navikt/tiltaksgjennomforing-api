@@ -39,13 +39,51 @@ class LonnstilskuddStartOgSluttDatoStrategyTest {
     }
 
     @Test
-    public void endreMidlertidigLønnstilskudd__startdato_og_sluttdato_satt_over_24mnd() {
+    public void endreMidlertidigLønnstilskudd__startdato_og_sluttdato_satt_over_24mnd__SPESIELT_TILPASSET_INNSATS() {
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(24).plusDays(1);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
-        assertFeilkode(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD, () -> endreAvtale(enMidlertidig(), endreAvtale));
+        Avtale avtale = enMidlertidig();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS);
+        assertFeilkode(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_24_MND, () -> endreAvtale(avtale, endreAvtale));
+    }
+
+    @Test
+    public void endreMidlertidigLønnstilskudd__startdato_og_sluttdato_satt_over_24mnd__VARIG_TILPASSET_INNSATS() {
+        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        LocalDate startDato = Now.localDate();
+        LocalDate sluttDato = startDato.plusMonths(24).plusDays(1);
+        endreAvtale.setStartDato(startDato);
+        endreAvtale.setSluttDato(sluttDato);
+        Avtale avtale = enMidlertidig();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        assertFeilkode(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_24_MND, () -> endreAvtale(avtale, endreAvtale));
+    }
+
+    @Test
+    public void endreMidlertidigLønnstilskudd__startdato_og_sluttdato_satt_over_24mnd__SITUASJONSBESTEMT_INNSATS() {
+        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        LocalDate startDato = Now.localDate();
+        LocalDate sluttDato = startDato.plusMonths(12).plusDays(1);
+        endreAvtale.setStartDato(startDato);
+        endreAvtale.setSluttDato(sluttDato);
+        Avtale avtale = enMidlertidig();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        assertFeilkode(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_12_MND, () -> endreAvtale(avtale, endreAvtale));
+    }
+
+    @Test
+    public void endreMidlertidigLønnstilskudd__startdato_og_sluttdato_satt_over_12mnd__ikke_satt() {
+        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        LocalDate startDato = Now.localDate();
+        LocalDate sluttDato = startDato.plusMonths(12).plusDays(1);
+        endreAvtale.setStartDato(startDato);
+        endreAvtale.setSluttDato(sluttDato);
+        Avtale avtale = enMidlertidig();
+        avtale.setKvalifiseringsgruppe(null);
+        assertFeilkode(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_12_MND, () -> endreAvtale(avtale, endreAvtale));
     }
 
     @Test

@@ -1,15 +1,26 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.utils.Now;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static org.assertj.core.api.Assertions.*;
+import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import org.junit.jupiter.api.Test;
 
 public class RegnUtTilskuddsperioderForAvtaleTest {
 
@@ -218,6 +229,13 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         assertThat(avtale.tilskuddsperiode(avtale.getTilskuddPeriode().size() - 1).getLonnstilskuddProsent()).isEqualTo(60);
         assertThat(avtale.getDatoForRedusertProsent()).isNull();
         Now.resetClock();
+    }
+
+    @Test
+    public void sjekk_at_avtalen_annulleres_ikke_om_den_har_en_utbetalt_tilskuddsperiode() {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.UTBETALT);
+        assertThrows(FeilkodeException.class, () ->   avtale.annuller(TestData.enVeileder(avtale), ""));
     }
 
     @Test

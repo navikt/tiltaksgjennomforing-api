@@ -80,7 +80,7 @@ jobs:
   deploy-prod:
     name: Deploy til prod
     runs-on: ubuntu-latest
-    needs: deploy-dev
+    needs: bygg
     steps:
       - name: Sjekk ut kode
         uses: actions/checkout@v2
@@ -116,4 +116,4 @@ jobs:
           CLUSTER: labs-gcp
           RESOURCE: nais/naiserator.yaml,nais/wiremock.yaml,nais/wiremock-mappings.yaml
           PRINT_PAYLOAD: true
-          VAR: deploytrigger=${{ github.run_number }},namespace=arbeidsgiver,labs=true,kafka-pool=nav-dev,tenant=trygdeetaten.no
+          VAR: deploytrigger=${{ github.run_number }},labs=true
