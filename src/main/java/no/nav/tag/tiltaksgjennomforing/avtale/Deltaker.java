@@ -13,12 +13,6 @@ public class Deltaker extends Avtalepart<Fnr> {
         super(identifikator);
     }
 
-    static String tekstHeaderAvtalePaabegynt = "Avtale påbegynt";
-    static String tekstAvtalePaabegynt = "Innholdet i avtalen fylles ut av arbeidsgiveren og veilederen. Hvis du er uenig i innholdet eller har spørsmål til avtalen, må du kontakte veilederen din via aktivitetsplanen før du godkjenner. Du kan godkjenne avtalen når alt er fylt ut.";
-    static String tekstAvtaleVenterPaaDinGodkjenning = "Les hele avtalen først. Du kan ikke endre teksten i avtalen. ";
-    static String ekstraTekstAvtaleVenterPaaDinGodkjenning = "Hvis du er uenig i innholdet, eller har spørsmål til avtalen, må du kontakte veilederen din via Aktivitetsplanen før du godkjenner.";
-    static String tekstTiltaketErAvsluttet = "Hvis du har spørsmål må du kontakte veilederen din.";
-
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
         return avtale.getDeltakerFnr().equals(getIdentifikator());

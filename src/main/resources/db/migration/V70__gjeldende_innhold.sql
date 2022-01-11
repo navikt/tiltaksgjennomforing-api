@@ -1,5 +1,6 @@
 alter table avtale_innhold alter column id set not null;
 alter table avtale_innhold add primary key (id);
+alter table avtale_innhold add constraint fk_avtale_avtale_innhold foreign key (avtale) references avtale (id);
 
 alter table avtale add column gjeldende_innhold_id uuid references avtale_innhold(id);
 

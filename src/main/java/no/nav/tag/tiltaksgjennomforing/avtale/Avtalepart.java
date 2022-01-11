@@ -41,12 +41,12 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     public List<Avtale> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtaleInnholdRepository avtaleInnholdRepository, AvtalePredicate queryParametre, String sorteringskolonne, int skip, int limit) {
         return hentAlleAvtalerMedMuligTilgang(avtaleRepository, queryParametre).stream()
+                .peek(avtale -> migrerAvtale(avtaleRepository, avtaleInnholdRepository, avtale))
                 .filter(queryParametre).filter(avtale -> !avtale.isFeilregistrert())
                 .sorted(AvtaleSorterer.comparatorForAvtale(sorteringskolonne))
                 .skip(skip)
                 .limit(limit)
                 .filter(this::harTilgang)
-                .peek(avtale -> migrerAvtale(avtaleRepository, null, avtale))
                 .collect(Collectors.toList());
     }
 
