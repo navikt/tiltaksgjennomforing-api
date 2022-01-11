@@ -1,17 +1,21 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
+import java.util.UUID;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.IdentifikatorConverter;
 import no.nav.tag.tiltaksgjennomforing.varsel.events.SmsVarselOpprettet;
 import no.nav.tag.tiltaksgjennomforing.varsel.events.SmsVarselResultatMottatt;
 import org.springframework.data.domain.AbstractAggregateRoot;
-
-import javax.persistence.*;
-import java.util.UUID;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -47,5 +51,11 @@ public class SmsVarsel extends AbstractAggregateRoot<SmsVarsel> {
     public void endreStatus(SmsVarselStatus status) {
         this.setStatus(status);
         registerEvent(new SmsVarselResultatMottatt(this));
+    }
+
+    public static SmsVarsel nyttVarselForGjeldendeKontaktpersonForRefusjon(Avtale avtale, String meldingstekst,
+        UUID varslbarHendelseId){
+        return nyttVarsel(avtale.gjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(), avtale.getBedriftNr(),
+            meldingstekst, varslbarHendelseId);
     }
 }

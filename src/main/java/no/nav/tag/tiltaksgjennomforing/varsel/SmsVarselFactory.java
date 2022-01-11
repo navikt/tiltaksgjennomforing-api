@@ -32,19 +32,19 @@ public class SmsVarselFactory {
     public List<SmsVarsel> arbeidsgiverRefusjonKlar() {
         erSommerjobbAvtale();
         String smsTekst = String.format("Dere kan nå søke om refusjon for tilskudd til sommerjobb for avtale med nr: %s. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
-        return hentSMSerForValgtePersoner(avtale,  smsTekst, hendelse);
+        return hentSMSVarselForValgtePersoner(avtale,  smsTekst, hendelse);
     }
 
     public List<SmsVarsel> arbeidsgiverRefusjonKlarRevarsel() {
         erSommerjobbAvtale();
         String smsTekst = String.format("Fristen nærmer seg for å søke om refusjon for tilskudd til sommerjobb for avtale med nr: %s. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
-        return hentSMSerForValgtePersoner(avtale, smsTekst, hendelse);
+        return hentSMSVarselForValgtePersoner(avtale, smsTekst, hendelse);
     }
 
     public List<SmsVarsel> arbeidsgiverRefusjonForlengetVarsel() {
         erSommerjobbAvtale();
         String smsTekst = String.format("Fristen for å godkjenne refusjon for avtale med nr: %s har blitt forlenget. Du kan sjekke fristen og søke om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
-        return hentSMSerForValgtePersoner(avtale,  smsTekst, hendelse);
+        return hentSMSVarselForValgtePersoner(avtale,  smsTekst, hendelse);
     }
 
     private void erSommerjobbAvtale() {
@@ -54,22 +54,21 @@ public class SmsVarselFactory {
     public List<SmsVarsel> arbeidsgiverRefusjonKorrigertVarsel() {
         erSommerjobbAvtale();
         String smsTekst = String.format("Tidligere innsendt refusjon på avtale med nr %d er korrigert. Se detaljer her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
-        return hentSMSerForValgtePersoner(avtale,  smsTekst, hendelse);
+        return hentSMSVarselForValgtePersoner(avtale,  smsTekst, hendelse);
     }
 
     public SmsVarsel veileder() {
         return SmsVarsel.nyttVarsel(avtale.getVeilederTlf(), NAV_ORGNR, FAGSYSTEMSONE_VARSELTEKST, hendelse.getId());
     }
 
-    private List<SmsVarsel> hentSMSerForValgtePersoner(Avtale avtale, String smsTekst, VarslbarHendelse hendelse) {
+    private List<SmsVarsel> hentSMSVarselForValgtePersoner(Avtale avtale, String smsTekst, VarslbarHendelse hendelse) {
         ArrayList<SmsVarsel> smsVarsel = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(),
             smsTekst, hendelse.getId())));
         if(avtale.gjeldendeInnhold().getRefusjonKontaktperson() != null) {
             if(!avtale.gjeldendeInnhold().isØnskerInformasjonOmRefusjon()) {
                 smsVarsel.clear();
             }
-            smsVarsel.add(SmsVarsel.nyttVarsel(avtale.gjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(), avtale.getBedriftNr(),
-                smsTekst, hendelse.getId()));
+            smsVarsel.add(SmsVarsel.nyttVarselForGjeldendeKontaktpersonForRefusjon(avtale, smsTekst, hendelse.getId()));
         }
         return smsVarsel;
     }
