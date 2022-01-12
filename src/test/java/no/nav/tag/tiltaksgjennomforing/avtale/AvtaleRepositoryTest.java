@@ -1,5 +1,18 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.ENHET_GEOGRAFISK;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.ENHET_OPPFØLGING;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
@@ -13,20 +26,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.ENHET_GEOGRAFISK;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.ENHET_OPPFØLGING;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @ActiveProfiles(Miljø.LOCAL)
@@ -106,13 +105,13 @@ public class AvtaleRepositoryTest {
     public void skalKunneLagreTilskuddsPeriode() {
         // Lage avtale
         Avtale lagretAvtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
-        lagretAvtale.setSumLonnstilskudd(20000);
+        lagretAvtale.getGjeldendeInnhold().setSumLonnstilskudd(20000);
         avtaleRepository.save(lagretAvtale);
 
         // Lagre tilskuddsperiode skal fungere
         EndreAvtale endreAvtale = new EndreAvtale();
-        endreAvtale.setStartDato(lagretAvtale.getStartDato());
-        endreAvtale.setSluttDato(lagretAvtale.getSluttDato());
+        endreAvtale.setStartDato(lagretAvtale.getGjeldendeInnhold().getStartDato());
+        endreAvtale.setSluttDato(lagretAvtale.getGjeldendeInnhold().getSluttDato());
         endreAvtale.setManedslonn(20000);
         endreAvtale.setStillingprosent(100);
         endreAvtale.setOtpSats(0.02);
@@ -131,7 +130,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void avtale_godkjent_pa_vegne_av_skal_lagres_med_pa_vegne_av_grunn() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
         godkjentPaVegneGrunn.setIkkeBankId(true);
         Veileder veileder = TestData.enVeileder(avtale);
@@ -139,13 +138,13 @@ public class AvtaleRepositoryTest {
         veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
         Avtale lagretAvtale = avtaleRepository.save(avtale);
 
-        assertThat(lagretAvtale.getGodkjentPaVegneGrunn().isIkkeBankId()).isEqualTo(godkjentPaVegneGrunn.isIkkeBankId());
+        assertThat(lagretAvtale.getGjeldendeInnhold().getGodkjentPaVegneGrunn().isIkkeBankId()).isEqualTo(godkjentPaVegneGrunn.isIkkeBankId());
     }
 
     @Test
     public void lagre_pa_vegne_skal_publisere_domainevent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         Veileder veileder = TestData.enVeileder(avtale);
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
         veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
@@ -190,8 +189,8 @@ public class AvtaleRepositoryTest {
     @Test
     public void godkjennForVeileder__skal_publisere_domainevent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         TestData.enVeileder(avtale).godkjennAvtale(avtale.getSistEndret(), avtale);
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).godkjentAvVeileder(any());

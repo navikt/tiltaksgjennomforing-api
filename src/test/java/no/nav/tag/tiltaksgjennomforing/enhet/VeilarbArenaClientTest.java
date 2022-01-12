@@ -1,7 +1,17 @@
 package no.nav.tag.tiltaksgjennomforing.enhet;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.time.Instant;
+import java.util.EnumSet;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import org.junit.jupiter.api.Test;
@@ -9,11 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.time.Instant;
-import java.util.EnumSet;
-
-import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles({Miljø.LOCAL, "wiremock"})
@@ -64,7 +69,7 @@ class VeilarbArenaClientTest {
     @Test
     public void sjekk_at_lonnstilskuddsprosent_blir_satt_paa_midlertidiglonnstilskudd_ved_AvtaleInnhold_constructor() {
         final Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
-        avtale.setLonnstilskuddProsent(null);
+        avtale.getGjeldendeInnhold().setLonnstilskuddProsent(null);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
 
         Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
@@ -73,13 +78,13 @@ class VeilarbArenaClientTest {
         avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
         avtale.endreAvtale(Instant.now(),new EndreAvtale(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
 
-        assertThat(avtale.gjeldendeInnhold().getLonnstilskuddProsent()).isNotNull();
-        assertThat(avtale.gjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(60);
+        assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isNotNull();
+        assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(60);
 
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.endreAvtale(Instant.now(),new EndreAvtale(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
 
-        assertThat(avtale.gjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(40);
+        assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(40);
     }
 
     @Test

@@ -22,11 +22,11 @@ public class SmsVarselFactory {
     }
 
     public SmsVarsel deltaker() {
-        return SmsVarsel.nyttVarsel(avtale.getDeltakerTlf(), avtale.getDeltakerFnr(), SELVBETJENINGSONE_VARSELTEKST, hendelse.getId());
+        return SmsVarsel.nyttVarsel(avtale.getGjeldendeInnhold().getDeltakerTlf(), avtale.getDeltakerFnr(), SELVBETJENINGSONE_VARSELTEKST, hendelse.getId());
     }
 
     public SmsVarsel arbeidsgiver() {
-        return SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(), SELVBETJENINGSONE_VARSELTEKST, hendelse.getId());
+        return SmsVarsel.nyttVarsel(avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), avtale.getBedriftNr(), SELVBETJENINGSONE_VARSELTEKST, hendelse.getId());
     }
 
     public List<SmsVarsel> arbeidsgiverRefusjonKlar() {
@@ -58,14 +58,14 @@ public class SmsVarselFactory {
     }
 
     public SmsVarsel veileder() {
-        return SmsVarsel.nyttVarsel(avtale.getVeilederTlf(), NAV_ORGNR, FAGSYSTEMSONE_VARSELTEKST, hendelse.getId());
+        return SmsVarsel.nyttVarsel(avtale.getGjeldendeInnhold().getVeilederTlf(), NAV_ORGNR, FAGSYSTEMSONE_VARSELTEKST, hendelse.getId());
     }
 
     private List<SmsVarsel> hentSMSVarselForValgtePersoner(Avtale avtale, String smsTekst, VarslbarHendelse hendelse) {
-        ArrayList<SmsVarsel> smsVarsel = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getArbeidsgiverTlf(), avtale.getBedriftNr(),
+        ArrayList<SmsVarsel> smsVarsel = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), avtale.getBedriftNr(),
             smsTekst, hendelse.getId())));
-        if(avtale.gjeldendeInnhold().getRefusjonKontaktperson() != null) {
-            if(!avtale.gjeldendeInnhold().isØnskerInformasjonOmRefusjon()) {
+        if(avtale.getGjeldendeInnhold().getRefusjonKontaktperson() != null) {
+            if(!avtale.getGjeldendeInnhold().isØnskerInformasjonOmRefusjon()) {
                 smsVarsel.clear();
             }
             smsVarsel.add(SmsVarsel.nyttVarselForGjeldendeKontaktpersonForRefusjon(avtale, smsTekst, hendelse.getId()));

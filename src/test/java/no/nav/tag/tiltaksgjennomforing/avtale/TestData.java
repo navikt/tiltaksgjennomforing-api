@@ -100,14 +100,14 @@ public class TestData {
 
     public static Avtale enAvtaleMedAltUtfyltGodkjentAvVeileder() {
         Avtale avtale = enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvArbeidsgiver(Now.localDateTime());
-        avtale.setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.setGodkjentAvVeileder(Now.localDateTime());
-        avtale.setAvtaleInngått(Now.localDateTime());
-        avtale.setGodkjentAvNavIdent(TestData.enNavIdent());
-        avtale.setIkrafttredelsestidspunkt(Now.localDateTime());
-        avtale.setJournalpostId("1");
-        avtale.gjeldendeInnhold().setRefusjonKontaktperson(new RefusjonKontaktperson("Donald","Duck","55555123"));
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent());
+        avtale.getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setJournalpostId("1");
+        avtale.getGjeldendeInnhold().setRefusjonKontaktperson(new RefusjonKontaktperson("Donald","Duck","55555123"));
         return avtale;
     }
 
@@ -152,46 +152,46 @@ public class TestData {
         avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
-        avtale.setDeltakerFornavn("Lilly");
-        avtale.setDeltakerEtternavn("Lønning");
         avtale.setTiltakstype(tiltakstype);
-        avtale.setArbeidsgiverKontonummer("22222222222");
-        avtale.setLonnstilskuddProsent(60);
-        avtale.setManedslonn(20000);
-        avtale.setFeriepengesats(BigDecimal.valueOf(0.12));
-        avtale.setArbeidsgiveravgift(BigDecimal.valueOf(0.141));
-        avtale.setVersjon(1);
-        avtale.setJournalpostId(null);
-        avtale.setMaal(List.of());
+        avtale.getGjeldendeInnhold().setDeltakerFornavn("Lilly");
+        avtale.getGjeldendeInnhold().setDeltakerEtternavn("Lønning");
+        avtale.getGjeldendeInnhold().setArbeidsgiverKontonummer("22222222222");
+        avtale.getGjeldendeInnhold().setLonnstilskuddProsent(60);
+        avtale.getGjeldendeInnhold().setManedslonn(20000);
+        avtale.getGjeldendeInnhold().setFeriepengesats(BigDecimal.valueOf(0.12));
+        avtale.getGjeldendeInnhold().setArbeidsgiveravgift(BigDecimal.valueOf(0.141));
+        avtale.getGjeldendeInnhold().setVersjon(1);
+        avtale.getGjeldendeInnhold().setJournalpostId(null);
+        avtale.getGjeldendeInnhold().setMaal(List.of());
         return avtale;
     }
 
     public static Avtale enLonnstilskuddAvtaleGodkjentAvVeileder() {
         Avtale avtale = enLonnstilskuddAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvArbeidsgiver(Now.localDateTime());
-        avtale.setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.setGodkjentAvVeileder(Now.localDateTime());
-        avtale.setAvtaleInngått(Now.localDateTime());
-        avtale.setGodkjentAvNavIdent(TestData.enNavIdent());
-        avtale.setIkrafttredelsestidspunkt(Now.localDateTime());
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
-        avtale.setJournalpostId("1");
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent());
+        avtale.getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setJournalpostId("1");
         return avtale;
     }
 
     public static Avtale enLonnstilskuddAvtaleGodkjentAvVeilederTilbakeITid() {
         Avtale avtale = enLonnstilskuddAvtaleMedAltUtfylt();
-        avtale.setDeltakerFornavn("Geir");
-        avtale.setDeltakerEtternavn("Geirsen");
-        avtale.setGodkjentAvArbeidsgiver(Now.localDateTime());
-        avtale.setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.setGodkjentAvVeileder(Now.localDateTime());
-        avtale.setAvtaleInngått(Now.localDateTime());
-        avtale.setGodkjentAvNavIdent(TestData.enNavIdent());
-        avtale.setIkrafttredelsestidspunkt(Now.localDateTime());
-        avtale.setStartDato(Now.localDate().minusMonths(3));
-        avtale.setSluttDato(Now.localDate().plusMonths(1));
-        avtale.setJournalpostId("1");
+        avtale.getGjeldendeInnhold().setDeltakerFornavn("Geir");
+        avtale.getGjeldendeInnhold().setDeltakerEtternavn("Geirsen");
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent());
+        avtale.getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusMonths(3));
+        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().plusMonths(1));
+        avtale.getGjeldendeInnhold().setJournalpostId("1");
         return avtale;
     }
 
@@ -208,11 +208,11 @@ public class TestData {
         endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
         endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
-        avtale.setGodkjentAvArbeidsgiver(Now.localDateTime());
-        avtale.setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.setGodkjentAvVeileder(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         NavIdent veileder = TestData.enNavIdent();
-        avtale.setGodkjentAvNavIdent(veileder);
+        avtale.getGjeldendeInnhold().setGodkjentAvNavIdent(veileder);
         avtale.setVeilederNavIdent(veileder);
         return avtale;
     }
@@ -231,13 +231,13 @@ public class TestData {
         endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
         endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
-        avtale.setGodkjentAvArbeidsgiver(Now.localDateTime());
-        avtale.setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.setGodkjentAvVeileder(Now.localDateTime());
-        avtale.setGodkjentAvBeslutter(Now.localDateTime());
-        avtale.setAvtaleInngått(Now.localDateTime());
-        avtale.setIkrafttredelsestidspunkt(Now.localDateTime());
-        avtale.setGodkjentAvNavIdent(TestData.enNavIdent());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvBeslutter(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent());
         return avtale;
     }
 
@@ -254,22 +254,22 @@ public class TestData {
         endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
         endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
-        avtale.setGodkjentAvArbeidsgiver(Now.localDateTime());
-        avtale.setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         return avtale;
     }
 
     public static Avtale enMentorAvtaleMedMedAltUtfylt() {
         Avtale avtale = enAvtaleMedAltUtfyltGodkjentAvVeileder();
         avtale.setTiltakstype(Tiltakstype.MENTOR);
-        avtale.setMentorFornavn("Jo");
-        avtale.setMentorEtternavn("Å");
-        avtale.setMentorOppgaver("Spise lunch med deltaker");
-        avtale.setMentorAntallTimer(30);
-        avtale.setMentorTimelonn(500);
-        avtale.setVersjon(1);
-        avtale.setJournalpostId(null);
-        avtale.setMaal(List.of());
+        avtale.getGjeldendeInnhold().setMentorFornavn("Jo");
+        avtale.getGjeldendeInnhold().setMentorEtternavn("Å");
+        avtale.getGjeldendeInnhold().setMentorOppgaver("Spise lunch med deltaker");
+        avtale.getGjeldendeInnhold().setMentorAntallTimer(30);
+        avtale.getGjeldendeInnhold().setMentorTimelonn(500);
+        avtale.getGjeldendeInnhold().setVersjon(1);
+        avtale.getGjeldendeInnhold().setJournalpostId(null);
+        avtale.getGjeldendeInnhold().setMaal(List.of());
         return avtale;
     }
 
@@ -456,31 +456,31 @@ public class TestData {
 
     public static Avtale enAvtaleMedFlereVersjoner() {
         Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
-        avtale.låsOppAvtale();
-        EndreAvtale endreAvtale = TestData.endringPåAlleArbeidstreningFelter();
-        endreAvtale.setDeltakerFornavn("Atle");
-        endreAvtale.setDeltakerEtternavn("Jørgensen");
-        endreAvtale.setOppfolging("Trenger mer oppfølging");
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
-        avtale.setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.setGodkjentAvArbeidsgiver(Now.localDateTime());
-        avtale.setGodkjentAvVeileder(Now.localDateTime());
-        avtale.setAvtaleInngått(Now.localDateTime());
-        avtale.setIkrafttredelsestidspunkt(Now.localDateTime());
+        avtale.endreKontaktInformasjon(new EndreKontaktInformasjon("Atle",
+                "Jørgensen",
+                avtale.getGjeldendeInnhold().getDeltakerTlf(),
+                avtale.getGjeldendeInnhold().getVeilederFornavn(),
+                avtale.getGjeldendeInnhold().getVeilederEtternavn(),
+                avtale.getGjeldendeInnhold().getVeilederTlf(),
+                avtale.getGjeldendeInnhold().getArbeidsgiverFornavn(),
+                avtale.getGjeldendeInnhold().getArbeidsgiverEtternavn(),
+                avtale.getGjeldendeInnhold().getArbeidsgiverTlf(),true,
+            new RefusjonKontaktperson("Atle", "Jørgensen", "12345678")),
+            TestData.enNavIdent());
         return avtale;
     }
 
     public static Avtale enAvtaleKlarForOppstart() {
         Avtale avtale = enAvtaleMedAltUtfylt();
-        avtale.setStartDato(Now.localDate().plusDays(7));
-        avtale.setSluttDato(avtale.getStartDato().plusMonths(1));
-        avtale.setGodkjentAvArbeidsgiver(Now.localDateTime());
-        avtale.setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.setGodkjentAvVeileder(Now.localDateTime());
-        avtale.setAvtaleInngått(Now.localDateTime());
-        avtale.setGodkjentAvNavIdent(TestData.enNavIdent());
-        avtale.setIkrafttredelsestidspunkt(Now.localDateTime());
-        avtale.setJournalpostId("1");
+        avtale.getGjeldendeInnhold().setStartDato(Now.localDate().plusDays(7));
+        avtale.getGjeldendeInnhold().setSluttDato(avtale.getGjeldendeInnhold().getStartDato().plusMonths(1));
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent());
+        avtale.getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setJournalpostId("1");
         return avtale;
     }
 
@@ -538,12 +538,12 @@ public class TestData {
     public static Avtale enArbeidstreningAvtaleGodkjentAvVeileder() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
-        avtale.setGodkjentAvArbeidsgiver(Now.localDateTime());
-        avtale.setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.setGodkjentAvVeileder(Now.localDateTime());
-        avtale.setAvtaleInngått(Now.localDateTime());
-        avtale.setIkrafttredelsestidspunkt(Now.localDateTime());
-        avtale.setJournalpostId("1");
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setJournalpostId("1");
         return avtale;
     }
 }

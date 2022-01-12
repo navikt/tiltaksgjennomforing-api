@@ -1,7 +1,48 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
+import static no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle.ARBEIDSGIVER;
+import static no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle.BESLUTTER;
+import static no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle.DELTAKER;
+import static no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle.VEILEDER;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.AVTALE_FORDELT;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.AVTALE_FORLENGET;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.DELT_MED_ARBEIDSGIVER;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.DELT_MED_DELTAKER;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.ENDRET;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.FJERNET_ETTERREGISTRERING;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.GODKJENT_AV_ARBEIDSGIVER;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.GODKJENT_AV_DELTAKER;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.GODKJENT_FOR_ETTERREGISTRERING;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.GODKJENT_PAA_VEGNE_AV;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.NY_VEILEDER;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.OPPRETTET;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.OPPRETTET_AV_ARBEIDSGIVER;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.STILLINGSBESKRIVELSE_ENDRET;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.TILSKUDDSBEREGNING_ENDRET;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.TILSKUDDSPERIODE_AVSLATT;
+import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.TILSKUDDSPERIODE_GODKJENT;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.EnumSet;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avslagsårsak;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnholdRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Beslutter;
+import no.nav.tag.tiltaksgjennomforing.avtale.Deltaker;
+import no.nav.tag.tiltaksgjennomforing.avtale.EndreStillingsbeskrivelse;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
+import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
@@ -16,18 +57,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.EnumSet;
-
-import static no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle.*;
-import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.*;
-import static org.assertj.core.api.Assertions.assertThat;
-
 @SpringBootTest
 @ActiveProfiles(Miljø.LOCAL)
 @DirtiesContext
 class LagVarselFraAvtaleHendelserTest {
     @Autowired
     AvtaleRepository avtaleRepository;
+    @Autowired
+    AvtaleInnholdRepository avtaleInnholdRepository;
     @Autowired
     VarselRepository varselRepository;
     @Autowired
@@ -44,6 +81,7 @@ class LagVarselFraAvtaleHendelserTest {
         varselRepository.deleteAll();
         hendelseloggRepository.deleteAll();
         arbeidsgiverNotifikasjonRepository.deleteAll();
+        avtaleInnholdRepository.deleteAll();
         avtaleRepository.deleteAll();
     }
 
@@ -117,29 +155,24 @@ class LagVarselFraAvtaleHendelserTest {
         assertIngenHendelse(GODKJENT_PAA_VEGNE_AV, DELTAKER);
 
         Beslutter beslutter = TestData.enBeslutter(avtale);
+        beslutter.avslåTilskuddsperiode(avtale, EnumSet.of(Avslagsårsak.FEIL_I_REGELFORSTÅELSE), "Forklaring");
+        avtale = avtaleRepository.save(avtale);
+        assertHendelse(TILSKUDDSPERIODE_AVSLATT, BESLUTTER, VEILEDER, true);
+        assertIngenHendelse(TILSKUDDSPERIODE_AVSLATT, ARBEIDSGIVER);
+        assertIngenHendelse(TILSKUDDSPERIODE_AVSLATT, DELTAKER);
+
+        veileder.sendTilbakeTilBeslutter(avtale);
         beslutter.godkjennTilskuddsperiode(avtale, TestData.ENHET_OPPFØLGING.getVerdi());
         avtale = avtaleRepository.save(avtale);
         assertHendelse(TILSKUDDSPERIODE_GODKJENT, BESLUTTER, VEILEDER, true);
         assertIngenHendelse(TILSKUDDSPERIODE_GODKJENT, ARBEIDSGIVER);
         assertIngenHendelse(TILSKUDDSPERIODE_GODKJENT, DELTAKER);
 
-        veileder.låsOppAvtale(avtale);
+        veileder.endreStillingbeskrivelse(EndreStillingsbeskrivelse.builder().stillingstittel("Tittel").arbeidsoppgaver("Oppgaver").stillingprosent(100).stillingKonseptId(1).stillingStyrk08(1).antallDagerPerUke(5).build(), avtale);
         avtale = avtaleRepository.save(avtale);
-        assertHendelse(LÅST_OPP, VEILEDER, VEILEDER, false);
-        assertHendelse(LÅST_OPP, VEILEDER, ARBEIDSGIVER, true);
-        assertHendelse(LÅST_OPP, VEILEDER, DELTAKER, true);
-
-        veileder.avbrytAvtale(Now.instant(), new AvbruttInfo(Now.localDate(), "Annet"), avtale);
-        avtale = avtaleRepository.save(avtale);
-        assertHendelse(AVBRUTT, VEILEDER, VEILEDER, false);
-        assertHendelse(AVBRUTT, VEILEDER, ARBEIDSGIVER, true);
-        assertHendelse(AVBRUTT, VEILEDER, DELTAKER, true);
-
-        veileder.gjenopprettAvtale(avtale);
-        avtale = avtaleRepository.save(avtale);
-        assertHendelse(GJENOPPRETTET, VEILEDER, VEILEDER, false);
-        assertHendelse(GJENOPPRETTET, VEILEDER, ARBEIDSGIVER, true);
-        assertHendelse(GJENOPPRETTET, VEILEDER, DELTAKER, true);
+        assertHendelse(STILLINGSBESKRIVELSE_ENDRET, VEILEDER, VEILEDER, false);
+        assertHendelse(STILLINGSBESKRIVELSE_ENDRET, VEILEDER, ARBEIDSGIVER, true);
+        assertHendelse(STILLINGSBESKRIVELSE_ENDRET, VEILEDER, DELTAKER, true);
 
         Veileder nyVeileder = TestData.enVeileder(new NavIdent("I000000"));
         nyVeileder.overtaAvtale(avtale);
@@ -147,16 +180,6 @@ class LagVarselFraAvtaleHendelserTest {
         assertHendelse(NY_VEILEDER, VEILEDER, VEILEDER, false);
         assertHendelse(NY_VEILEDER, VEILEDER, ARBEIDSGIVER, true);
         assertHendelse(NY_VEILEDER, VEILEDER, DELTAKER, true);
-
-        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleFelter(), VEILEDER, EnumSet.of(avtale.getTiltakstype()));
-        deltaker.godkjennAvtale(Now.instant(), avtale);
-        arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
-        veileder.godkjennAvtale(Now.instant(), avtale);
-        beslutter.avslåTilskuddsperiode(avtale, EnumSet.of(Avslagsårsak.FEIL_I_REGELFORSTÅELSE), "Forklaring");
-        avtale = avtaleRepository.save(avtale);
-        assertHendelse(TILSKUDDSPERIODE_AVSLATT, BESLUTTER, VEILEDER, true);
-        assertIngenHendelse(TILSKUDDSPERIODE_AVSLATT, ARBEIDSGIVER);
-        assertIngenHendelse(TILSKUDDSPERIODE_AVSLATT, DELTAKER);
     }
 
     @Test
@@ -182,7 +205,7 @@ class LagVarselFraAvtaleHendelserTest {
         avtaleRepository.save(avtale);
         Veileder veileder = TestData.enVeileder(avtale);
 
-        veileder.forlengAvtale(avtale.getSluttDato().plusMonths(1), avtale);
+        veileder.forlengAvtale(avtale.getGjeldendeInnhold().getSluttDato().plusMonths(1), avtale);
         avtaleRepository.save(avtale);
 
         assertHendelse(AVTALE_FORLENGET, VEILEDER, VEILEDER, false);

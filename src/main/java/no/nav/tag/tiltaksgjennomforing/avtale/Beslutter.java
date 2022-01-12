@@ -12,8 +12,6 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.NavEnhetIkkeFunnetException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
-import org.apache.commons.lang3.NotImplementedException;
-import org.hibernate.query.QueryParameter;
 
 public class Beslutter extends Avtalepart<NavIdent> {
 
@@ -81,11 +79,6 @@ public class Beslutter extends Avtalepart<NavIdent> {
     }
 
     @Override
-    public AvtaleStatusDetaljer statusDetaljerForAvtale(Avtale avtale) {
-        throw new NotImplementedException();
-    }
-
-    @Override
     public boolean erGodkjentAvInnloggetBruker(Avtale avtale) {
         return false;
     }
@@ -103,11 +96,6 @@ public class Beslutter extends Avtalepart<NavIdent> {
     @Override
     protected Avtalerolle rolle() {
         return Avtalerolle.BESLUTTER;
-    }
-
-    @Override
-    public void låsOppAvtale(Avtale avtale) {
-        throw new TilgangskontrollException("Beslutter kan ikke låse opp avtaler");
     }
 
     @Override

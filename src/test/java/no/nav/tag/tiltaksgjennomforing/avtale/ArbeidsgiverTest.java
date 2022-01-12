@@ -1,5 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Map;
+import java.util.Set;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
@@ -11,20 +18,12 @@ import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 
-import java.util.Map;
-import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 
 public class ArbeidsgiverTest {
     @Test
     public void opphevGodkjenninger__kan_oppheve_ved_deltakergodkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         arbeidsgiver.opphevGodkjenninger(avtale);
         assertThat(avtale.erGodkjentAvDeltaker()).isFalse();
@@ -33,7 +32,7 @@ public class ArbeidsgiverTest {
     @Test
     public void opphevGodkjenninger__kan_ikke_oppheve_veiledergodkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvVeileder(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         assertThatThrownBy(() -> arbeidsgiver.opphevGodkjenninger(avtale)).isInstanceOf(KanIkkeOppheveException.class);
     }
@@ -61,8 +60,8 @@ public class ArbeidsgiverTest {
 
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
         assertThat(avtale.isOpprettetAvArbeidsgiver()).isTrue();
-        assertThat(avtale.getDeltakerFornavn()).isNull();
-        assertThat(avtale.getDeltakerEtternavn()).isNull();
+        assertThat(avtale.getGjeldendeInnhold().getDeltakerFornavn()).isNull();
+        assertThat(avtale.getGjeldendeInnhold().getDeltakerEtternavn()).isNull();
         assertThat(avtale.getEnhetGeografisk()).isEqualTo(navEnhet.getEnhetNr());
     }
 

@@ -1,5 +1,14 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
@@ -11,11 +20,6 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidExcep
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
-
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.stream.Collectors;
 
 
 public class Arbeidsgiver extends Avtalepart<Fnr> {
@@ -42,7 +46,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     private static boolean sluttdatoPassertMedMerEnn12Uker(Avtale avtale) {
-        return avtale.erGodkjentAvVeileder() && avtale.getSluttDato().plusWeeks(12).isBefore(Now.localDate());
+        return avtale.erGodkjentAvVeileder() && avtale.getGjeldendeInnhold().getSluttDato().plusWeeks(12).isBefore(Now.localDate());
     }
 
     private static Avtale fjernAvbruttGrunn(Avtale avtale) {
@@ -85,50 +89,6 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     @Override
-    public AvtaleStatusDetaljer statusDetaljerForAvtale(Avtale avtale) {
-        AvtaleStatusDetaljer avtaleStatusDetaljer = new AvtaleStatusDetaljer();
-        avtaleStatusDetaljer.setGodkjentAvInnloggetBruker(erGodkjentAvInnloggetBruker(avtale));
-
-        switch (avtale.statusSomEnum()) {
-            case ANNULLERT:
-                avtaleStatusDetaljer.setInnloggetBrukerStatus("Tiltaket er annullert", "Veileder har annullert tiltaket.", "");
-                break;
-            case AVBRUTT:
-                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleAvbrutt, tekstAvtaleAvbrutt, "");
-                break;
-            case PÅBEGYNT:
-                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtalePaabegynt, "", "");
-                break;
-            case MANGLER_GODKJENNING:
-                if (avtale.erGodkjentAvArbeidsgiver())
-                    avtaleStatusDetaljer.setInnloggetBrukerStatus(
-                            tekstHeaderVentAndreGodkjenning, "", "");
-                else
-                    avtaleStatusDetaljer.setInnloggetBrukerStatus(
-                            tekstHeaderAvtaleVenterPaaDinGodkjenning,
-                            Arbeidsgiver.tekstAvtaleVenterPaaDinGodkjenning, ekstraTekstAvtaleVenterPaaDinGodkjenning);
-                break;
-            case KLAR_FOR_OPPSTART:
-                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErGodkjentAvAllePartner, tekstAvtaleErGodkjentAvAllePartner + avtale.getStartDato().format(formatter) + ".", "");
-                break;
-            case GJENNOMFØRES:
-                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleGjennomfores, "", "");
-                break;
-            case AVSLUTTET:
-                avtaleStatusDetaljer.setInnloggetBrukerStatus(tekstHeaderAvtaleErAvsluttet, tekstTiltaketErAvsluttet, "");
-                break;
-        }
-
-        avtaleStatusDetaljer.setPart1Detaljer((avtale.getDeltakerFornavn() != null && !avtale.getDeltakerFornavn().trim().equals("") ? avtale.getDeltakerFornavn() : "Deltaker") + " " +
-                (avtale.getDeltakerEtternavn() != null && !avtale.getDeltakerEtternavn().trim().equals("") ? avtale.getDeltakerEtternavn() + " " : "")
-                + (avtale.erGodkjentAvDeltaker() ? "har godkjent" : "har ikke godkjent"), avtale.erGodkjentAvDeltaker());
-        avtaleStatusDetaljer.setPart2Detaljer((avtale.getVeilederFornavn() != null && !avtale.getVeilederFornavn().trim().equals("") ? avtale.getVeilederFornavn() : "Veileder") + " "
-                + (avtale.getVeilederEtternavn() != null && !avtale.getVeilederEtternavn().trim().equals("") ? avtale.getVeilederEtternavn() + " " : "")
-                + (avtale.erGodkjentAvVeileder() ? "har godkjent" : "har ikke godkjent"), avtale.erGodkjentAvVeileder());
-        return avtaleStatusDetaljer;
-    }
-
-    @Override
     public boolean erGodkjentAvInnloggetBruker(Avtale avtale) {
         return avtale.erGodkjentAvArbeidsgiver();
     }
@@ -146,11 +106,6 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     @Override
     protected Avtalerolle rolle() {
         return Avtalerolle.ARBEIDSGIVER;
-    }
-
-    @Override
-    public void låsOppAvtale(Avtale avtale) {
-        throw new TilgangskontrollException("Arbeidsgiver kan ikke låse opp avtale");
     }
 
     @Override

@@ -1,7 +1,27 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.temporal.ChronoUnit;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Deltaker;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
+import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
@@ -9,15 +29,6 @@ import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.time.temporal.ChronoUnit;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
 
 public class InnloggetBrukerTest {
 
@@ -127,7 +138,7 @@ public class InnloggetBrukerTest {
     @Test
     public void harTilgang__arbeidsgiver_skal_ikke_ha_tilgang_til_avsluttet_avtale_eldre_enn_12_uker() {
         Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
-        avtale.setSluttDato(Now.localDate().minusDays(85));
+        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusDays(85));
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.values()));
         Arbeidsgiver Arbeidsgiver = new Arbeidsgiver(new Fnr("00000000009"), Set.of(), tilganger, null, null, null);
         assertThat(Arbeidsgiver.harTilgang(avtale)).isFalse();
@@ -136,7 +147,7 @@ public class InnloggetBrukerTest {
     @Test
     public void harTilgang__arbeidsgiver_skal_ha_tilgang_til_avsluttet_avtale_eldre_enn_12_uker_når_ikke_godkjent_av_veileder() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setSluttDato(Now.localDate().minusDays(85));
+        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusDays(85));
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.values()));
         Arbeidsgiver Arbeidsgiver = new Arbeidsgiver(new Fnr("00000000009"), Set.of(), tilganger, null, null, null);
         assertThat(Arbeidsgiver.harTilgang(avtale)).isTrue();

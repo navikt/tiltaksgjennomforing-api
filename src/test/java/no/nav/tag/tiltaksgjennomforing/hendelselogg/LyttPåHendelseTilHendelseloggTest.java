@@ -1,7 +1,19 @@
 package no.nav.tag.tiltaksgjennomforing.hendelselogg;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.EnumSet;
+import java.util.List;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnholdRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.avtale.Deltaker;
+import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
+import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarselRepository;
@@ -15,13 +27,8 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.EnumSet;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @SpringBootTest
-@ActiveProfiles({Miljø.LOCAL, "wiremock"})
+@ActiveProfiles({ Miljø.LOCAL, "wiremock" })
 @DirtiesContext
 class LyttPåHendelseTilHendelseloggTest {
 
@@ -29,6 +36,8 @@ class LyttPåHendelseTilHendelseloggTest {
     ApplicationEventPublisher eventPublisher;
     @Autowired
     AvtaleRepository avtaleRepository;
+    @Autowired
+    AvtaleInnholdRepository avtaleInnholdRepository;
     @Autowired
     HendelseloggRepository hendelseloggRepository;
     @Autowired
@@ -41,6 +50,7 @@ class LyttPåHendelseTilHendelseloggTest {
         hendelseloggRepository.deleteAll();
         varselRepository.deleteAll();
         arbeidsgiverNotifikasjonRepository.deleteAll();
+        avtaleInnholdRepository.deleteAll();
         avtaleRepository.deleteAll();
     }
 
@@ -117,32 +127,6 @@ class LyttPåHendelseTilHendelseloggTest {
     }
 
     @Test
-    void skal_logge_avbryt() {
-        Avtale avtale = harOpprettetAvtale();
-        ogAvbrutt(avtale);
-        sjekkAtHendelseErLogget(avtale, VarslbarHendelseType.AVBRUTT, Avtalerolle.VEILEDER);
-    }
-
-    @Test
-    void skal_logge_gjenopprett() {
-        Avtale avtale = harOpprettetAvtale();
-        ogAvbrutt(avtale);
-        ogGjenopprettet(avtale);
-        sjekkAtHendelseErLogget(avtale, VarslbarHendelseType.GJENOPPRETTET, Avtalerolle.VEILEDER);
-    }
-
-    @Test
-    void skal_logge_låst_opp() {
-        Avtale avtale = harOpprettetAvtale();
-        ogEndretAvtale(avtale);
-        ogGodkjentAvDeltaker(avtale);
-        ogGodkjentAvArbeidsgiver(avtale);
-        ogGodkjentAvVeileder(avtale);
-        ogLåstOpp(avtale);
-        sjekkAtHendelseErLogget(avtale, VarslbarHendelseType.LÅST_OPP, Avtalerolle.VEILEDER);
-    }
-
-    @Test
     void skal_logge_avtale_overtatt() {
         Avtale avtale = harOpprettetAvtale();
         ogEndretAvtale(avtale);
@@ -202,24 +186,6 @@ class LyttPåHendelseTilHendelseloggTest {
 
     private void ogOpphevetAvVeileder(Avtale avtale) {
         TestData.enVeileder(avtale).opphevGodkjenninger(avtale);
-        avtaleRepository.save(avtale);
-    }
-
-    private void ogLåstOpp(Avtale avtale) {
-        TestData.enVeileder(avtale).låsOppAvtale(avtale);
-        avtaleRepository.save(avtale);
-    }
-
-    private void ogAvbrutt(Avtale avtale) {
-        AvbruttInfo avbruttInfo = new AvbruttInfo();
-        avbruttInfo.setAvbruttDato(Now.localDate());
-        avbruttInfo.setAvbruttGrunn("En grunn");
-        TestData.enVeileder(avtale).avbrytAvtale(Now.instant(), avbruttInfo, avtale);
-        avtaleRepository.save(avtale);
-    }
-
-    private void ogGjenopprettet(Avtale avtale) {
-        TestData.enVeileder(avtale).gjenopprettAvtale(avtale);
         avtaleRepository.save(avtale);
     }
 

@@ -55,7 +55,7 @@ public class SmsVarsel extends AbstractAggregateRoot<SmsVarsel> {
 
     public static SmsVarsel nyttVarselForGjeldendeKontaktpersonForRefusjon(Avtale avtale, String meldingstekst,
         UUID varslbarHendelseId){
-        return nyttVarsel(avtale.gjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(), avtale.getBedriftNr(),
+        return nyttVarsel(avtale.getGjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(), avtale.getBedriftNr(),
             meldingstekst, varslbarHendelseId);
     }
 }
