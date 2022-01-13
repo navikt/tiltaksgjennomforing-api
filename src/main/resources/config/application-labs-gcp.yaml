@@ -60,7 +60,7 @@ tiltaksgjennomforing:
   oppgave:
     oppgave-uri: http://tiltaksgjennomforing-wiremock/api/v1/oppgaver
   veilarbarena:
-    url: http://tiltaksgjennomforing-wiremock/veilarbarena/oppfolgingsstatus
+    url: http://tiltaksgjennomforing-wiremock/veilarbarena/api/arena/status
     nav-consumer-id: tiltaksgjennomforing-api
   norg2:
     geografisk:

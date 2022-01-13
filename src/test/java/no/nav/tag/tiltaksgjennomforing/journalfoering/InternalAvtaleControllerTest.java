@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -24,7 +25,7 @@ public class InternalAvtaleControllerTest {
     private static final UUID AVTALE_ID_1 = UUID.randomUUID();
     private static final UUID AVTALE_ID_2 = UUID.randomUUID();
     private static final UUID AVTALE_ID_3 = UUID.randomUUID();
-    private List<AvtaleInnhold> avtaleInnholdList = avtalerMedFemGodkjenteVersjoner().stream().flatMap(avtale -> avtale.getVersjoner().stream()).collect(Collectors.toList());
+    private List<AvtaleInnhold> avtaleInnholdList = treAvtalerSomSkalJournalføres().stream().map(avtale -> avtale.getGjeldendeInnhold()).collect(Collectors.toList());
 
     @InjectMocks
     private InternalAvtaleController internalAvtaleController;
@@ -43,7 +44,7 @@ public class InternalAvtaleControllerTest {
         doNothing().when(innloggingService).validerSystembruker();
         when(avtaleInnholdRepository.finnAvtaleVersjonerTilJournalfoering()).thenReturn(avtaleInnholdList);
         List<AvtaleTilJournalfoering> avtalerTilJournalfoering = internalAvtaleController.hentIkkeJournalfoerteAvtaler();
-        assertEquals(5, avtalerTilJournalfoering.size());
+        assertThat(avtalerTilJournalfoering).hasSize(3);
         avtalerTilJournalfoering.forEach(avtaleTilJournalfoering -> assertNotNull(avtaleTilJournalfoering.getAvtaleId()));
     }
 
@@ -57,7 +58,7 @@ public class InternalAvtaleControllerTest {
 
     @Test
     public void journalfoererAvtaler() {
-        List<AvtaleInnhold> godkjenteAvtaleVersjoner = avtalerMedFemGodkjenteVersjoner().stream().flatMap(avtale ->avtale.getVersjoner().stream()).collect(Collectors.toList());
+        List<AvtaleInnhold> godkjenteAvtaleVersjoner = treAvtalerSomSkalJournalføres().stream().map(avtale -> avtale.getGjeldendeInnhold()).collect(Collectors.toList());
         Map<UUID, String> map = new HashMap<>();
         godkjenteAvtaleVersjoner.forEach(avtaleInnhold -> map.put(avtaleInnhold.getId(), "1"));
 
@@ -75,14 +76,14 @@ public class InternalAvtaleControllerTest {
         verify(avtaleRepository, never()).saveAll(anyIterable());
     }
 
-    private static List<Avtale> avtalerMedFemGodkjenteVersjoner() {
+    private static List<Avtale> treAvtalerSomSkalJournalføres() {
         Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         avtale.setId(AVTALE_ID_1);
         Avtale avtale2 = TestData.enAvtaleMedFlereVersjoner();
-        avtale2.getVersjoner().get(0).setGodkjentAvVeileder(Now.localDateTime());
+        avtale2.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         avtale2.setId(AVTALE_ID_2);
         Avtale avtale3 = TestData.enAvtaleMedFlereVersjoner();
-        avtale3.getVersjoner().get(0).setGodkjentAvVeileder(Now.localDateTime());
+        avtale3.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         avtale3.setId(AVTALE_ID_3);
         return Arrays.asList(avtale, avtale2, avtale3);
     }

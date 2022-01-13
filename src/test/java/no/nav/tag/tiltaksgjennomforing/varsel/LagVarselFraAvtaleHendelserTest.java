@@ -29,6 +29,8 @@ class LagVarselFraAvtaleHendelserTest {
     @Autowired
     AvtaleRepository avtaleRepository;
     @Autowired
+    AvtaleInnholdRepository avtaleInnholdRepository;
+    @Autowired
     VarselRepository varselRepository;
     @Autowired
     HendelseloggRepository hendelseloggRepository;
@@ -44,6 +46,7 @@ class LagVarselFraAvtaleHendelserTest {
         varselRepository.deleteAll();
         hendelseloggRepository.deleteAll();
         arbeidsgiverNotifikasjonRepository.deleteAll();
+        avtaleInnholdRepository.deleteAll();
         avtaleRepository.deleteAll();
     }
 
@@ -117,29 +120,24 @@ class LagVarselFraAvtaleHendelserTest {
         assertIngenHendelse(GODKJENT_PAA_VEGNE_AV, DELTAKER);
 
         Beslutter beslutter = TestData.enBeslutter(avtale);
+        beslutter.avslåTilskuddsperiode(avtale, EnumSet.of(Avslagsårsak.FEIL_I_REGELFORSTÅELSE), "Forklaring");
+        avtale = avtaleRepository.save(avtale);
+        assertHendelse(TILSKUDDSPERIODE_AVSLATT, BESLUTTER, VEILEDER, true);
+        assertIngenHendelse(TILSKUDDSPERIODE_AVSLATT, ARBEIDSGIVER);
+        assertIngenHendelse(TILSKUDDSPERIODE_AVSLATT, DELTAKER);
+
+        veileder.sendTilbakeTilBeslutter(avtale);
         beslutter.godkjennTilskuddsperiode(avtale, TestData.ENHET_OPPFØLGING.getVerdi());
         avtale = avtaleRepository.save(avtale);
         assertHendelse(TILSKUDDSPERIODE_GODKJENT, BESLUTTER, VEILEDER, true);
         assertIngenHendelse(TILSKUDDSPERIODE_GODKJENT, ARBEIDSGIVER);
         assertIngenHendelse(TILSKUDDSPERIODE_GODKJENT, DELTAKER);
 
-        veileder.låsOppAvtale(avtale);
+        veileder.endreStillingbeskrivelse(EndreStillingsbeskrivelse.builder().stillingstittel("Tittel").arbeidsoppgaver("Oppgaver").stillingprosent(100).stillingKonseptId(1).stillingStyrk08(1).antallDagerPerUke(5).build(), avtale);
         avtale = avtaleRepository.save(avtale);
-        assertHendelse(LÅST_OPP, VEILEDER, VEILEDER, false);
-        assertHendelse(LÅST_OPP, VEILEDER, ARBEIDSGIVER, true);
-        assertHendelse(LÅST_OPP, VEILEDER, DELTAKER, true);
-
-        veileder.avbrytAvtale(Now.instant(), new AvbruttInfo(Now.localDate(), "Annet"), avtale);
-        avtale = avtaleRepository.save(avtale);
-        assertHendelse(AVBRUTT, VEILEDER, VEILEDER, false);
-        assertHendelse(AVBRUTT, VEILEDER, ARBEIDSGIVER, true);
-        assertHendelse(AVBRUTT, VEILEDER, DELTAKER, true);
-
-        veileder.gjenopprettAvtale(avtale);
-        avtale = avtaleRepository.save(avtale);
-        assertHendelse(GJENOPPRETTET, VEILEDER, VEILEDER, false);
-        assertHendelse(GJENOPPRETTET, VEILEDER, ARBEIDSGIVER, true);
-        assertHendelse(GJENOPPRETTET, VEILEDER, DELTAKER, true);
+        assertHendelse(STILLINGSBESKRIVELSE_ENDRET, VEILEDER, VEILEDER, false);
+        assertHendelse(STILLINGSBESKRIVELSE_ENDRET, VEILEDER, ARBEIDSGIVER, true);
+        assertHendelse(STILLINGSBESKRIVELSE_ENDRET, VEILEDER, DELTAKER, true);
 
         Veileder nyVeileder = TestData.enVeileder(new NavIdent("I000000"));
         nyVeileder.overtaAvtale(avtale);
@@ -147,16 +145,6 @@ class LagVarselFraAvtaleHendelserTest {
         assertHendelse(NY_VEILEDER, VEILEDER, VEILEDER, false);
         assertHendelse(NY_VEILEDER, VEILEDER, ARBEIDSGIVER, true);
         assertHendelse(NY_VEILEDER, VEILEDER, DELTAKER, true);
-
-        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleFelter(), VEILEDER, EnumSet.of(avtale.getTiltakstype()));
-        deltaker.godkjennAvtale(Now.instant(), avtale);
-        arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
-        veileder.godkjennAvtale(Now.instant(), avtale);
-        beslutter.avslåTilskuddsperiode(avtale, EnumSet.of(Avslagsårsak.FEIL_I_REGELFORSTÅELSE), "Forklaring");
-        avtale = avtaleRepository.save(avtale);
-        assertHendelse(TILSKUDDSPERIODE_AVSLATT, BESLUTTER, VEILEDER, true);
-        assertIngenHendelse(TILSKUDDSPERIODE_AVSLATT, ARBEIDSGIVER);
-        assertIngenHendelse(TILSKUDDSPERIODE_AVSLATT, DELTAKER);
     }
 
     @Test
@@ -182,7 +170,7 @@ class LagVarselFraAvtaleHendelserTest {
         avtaleRepository.save(avtale);
         Veileder veileder = TestData.enVeileder(avtale);
 
-        veileder.forlengAvtale(avtale.getSluttDato().plusMonths(1), avtale);
+        veileder.forlengAvtale(avtale.getGjeldendeInnhold().getSluttDato().plusMonths(1), avtale);
         avtaleRepository.save(avtale);
 
         assertHendelse(AVTALE_FORLENGET, VEILEDER, VEILEDER, false);

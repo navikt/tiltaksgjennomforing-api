@@ -106,13 +106,13 @@ public class AvtaleRepositoryTest {
     public void skalKunneLagreTilskuddsPeriode() {
         // Lage avtale
         Avtale lagretAvtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
-        lagretAvtale.setSumLonnstilskudd(20000);
+        lagretAvtale.getGjeldendeInnhold().setSumLonnstilskudd(20000);
         avtaleRepository.save(lagretAvtale);
 
         // Lagre tilskuddsperiode skal fungere
         EndreAvtale endreAvtale = new EndreAvtale();
-        endreAvtale.setStartDato(lagretAvtale.getStartDato());
-        endreAvtale.setSluttDato(lagretAvtale.getSluttDato());
+        endreAvtale.setStartDato(lagretAvtale.getGjeldendeInnhold().getStartDato());
+        endreAvtale.setSluttDato(lagretAvtale.getGjeldendeInnhold().getSluttDato());
         endreAvtale.setManedslonn(20000);
         endreAvtale.setStillingprosent(100);
         endreAvtale.setOtpSats(0.02);
@@ -131,7 +131,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void avtale_godkjent_pa_vegne_av_skal_lagres_med_pa_vegne_av_grunn() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
         godkjentPaVegneGrunn.setIkkeBankId(true);
         Veileder veileder = TestData.enVeileder(avtale);
@@ -139,13 +139,13 @@ public class AvtaleRepositoryTest {
         veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
         Avtale lagretAvtale = avtaleRepository.save(avtale);
 
-        assertThat(lagretAvtale.getGodkjentPaVegneGrunn().isIkkeBankId()).isEqualTo(godkjentPaVegneGrunn.isIkkeBankId());
+        assertThat(lagretAvtale.getGjeldendeInnhold().getGodkjentPaVegneGrunn().isIkkeBankId()).isEqualTo(godkjentPaVegneGrunn.isIkkeBankId());
     }
 
     @Test
     public void lagre_pa_vegne_skal_publisere_domainevent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         Veileder veileder = TestData.enVeileder(avtale);
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
         veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
@@ -190,8 +190,8 @@ public class AvtaleRepositoryTest {
     @Test
     public void godkjennForVeileder__skal_publisere_domainevent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         TestData.enVeileder(avtale).godkjennAvtale(avtale.getSistEndret(), avtale);
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).godkjentAvVeileder(any());
