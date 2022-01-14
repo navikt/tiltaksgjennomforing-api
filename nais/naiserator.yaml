@@ -74,7 +74,7 @@ spec:
   accessPolicy:
     inbound:
       rules:
-        -application: tiltak-proxy
+        - application: tiltak-proxy
   {{/unless}}
   envFrom:
     - configmap: loginservice-idporten
