@@ -52,6 +52,8 @@ spec:
   webproxy: true
   strategy:
     type: RollingUpdate
+  tokenx:
+    enabled: true
   {{/unless}}
   prometheus:
     enabled: true
@@ -68,5 +70,11 @@ spec:
         - application: tiltak-refusjon-api
         - application: tiltak-dokgen
   {{/if}}
+  {{#unless labs}}
+  accessPolicy:
+    inbound:
+      rules:
+        - application: tiltak-proxy
+  {{/unless}}
   envFrom:
     - configmap: loginservice-idporten
