@@ -65,7 +65,7 @@ public class SmsVarselFactory {
         ArrayList<SmsVarsel> smsVarsel = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), avtale.getBedriftNr(),
             smsTekst, hendelse.getId())));
         if(avtale.getGjeldendeInnhold().getRefusjonKontaktperson() != null) {
-            if(!avtale.getGjeldendeInnhold().isØnskerInformasjonOmRefusjon()) {
+            if(!avtale.getGjeldendeInnhold().getRefusjonKontaktperson().isØnskerInformasjonOmRefusjon()) {
                 smsVarsel.clear();
             }
             smsVarsel.add(SmsVarsel.nyttVarselForGjeldendeKontaktpersonForRefusjon(avtale, smsTekst, hendelse.getId()));

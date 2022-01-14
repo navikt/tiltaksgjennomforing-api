@@ -107,7 +107,7 @@ public class TestData {
         avtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent());
         avtale.getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         avtale.getGjeldendeInnhold().setJournalpostId("1");
-        avtale.getGjeldendeInnhold().setRefusjonKontaktperson(new RefusjonKontaktperson("Donald","Duck","55555123"));
+        avtale.getGjeldendeInnhold().setRefusjonKontaktperson(new RefusjonKontaktperson("Donald","Duck","55555123", true));
         return avtale;
     }
 
@@ -238,6 +238,7 @@ public class TestData {
         avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
         avtale.getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent());
+        avtale.getGjeldendeInnhold().setRefusjonKontaktperson(null);
         return avtale;
     }
 
@@ -360,7 +361,7 @@ public class TestData {
         endreAvtale.setOtpSats(0.02);
         endreAvtale.setStillingstype(Stillingstype.FAST);
         endreAvtale.setAntallDagerPerUke(5);
-        endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678"));
+        endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678", true));
         return endreAvtale;
     }
 
@@ -464,8 +465,8 @@ public class TestData {
                 avtale.getGjeldendeInnhold().getVeilederTlf(),
                 avtale.getGjeldendeInnhold().getArbeidsgiverFornavn(),
                 avtale.getGjeldendeInnhold().getArbeidsgiverEtternavn(),
-                avtale.getGjeldendeInnhold().getArbeidsgiverTlf(),true,
-            new RefusjonKontaktperson("Atle", "Jørgensen", "12345678")),
+                avtale.getGjeldendeInnhold().getArbeidsgiverTlf(),
+            new RefusjonKontaktperson("Atle", "Jørgensen", "12345678",true)),
             TestData.enNavIdent());
         return avtale;
     }

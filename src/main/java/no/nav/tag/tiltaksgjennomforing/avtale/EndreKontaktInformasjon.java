@@ -15,6 +15,5 @@ public class EndreKontaktInformasjon {
     String arbeidsgiverFornavn;
     String arbeidsgiverEtternavn;
     String arbeidsgiverTlf;
-    boolean ønskerInformasjonOmRefusjon;
     RefusjonKontaktperson refusjonKontaktperson;
 }

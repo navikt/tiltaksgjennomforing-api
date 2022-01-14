@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
@@ -30,7 +31,6 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setStillingStyrk08(nyAvtale.getStillingStyrk08());
         avtaleInnhold.setStillingKonseptId(nyAvtale.getStillingKonseptId());
         avtaleInnhold.setOtpSats(nyAvtale.getOtpSats());
-        avtaleInnhold.setØnskerInformasjonOmRefusjon(nyAvtale.isØnskerInformasjonOmRefusjon());
         avtaleInnhold.setRefusjonKontaktperson(nyAvtale.getRefusjonKontaktperson());
         super.endre(nyAvtale);
         regnUtTotalLonnstilskudd();
@@ -119,6 +119,11 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         alleFelter.put(AvtaleInnhold.Fields.arbeidsgiveravgift, avtaleInnhold.getArbeidsgiveravgift());
         alleFelter.put(AvtaleInnhold.Fields.harFamilietilknytning, avtaleInnhold.getHarFamilietilknytning());
         alleFelter.put(AvtaleInnhold.Fields.stillingstype, avtaleInnhold.getStillingstype());
+        if(avtaleInnhold.getRefusjonKontaktperson() != null){
+            alleFelter.put(Fields.refusjonKontaktpersonFornavn, avtaleInnhold.getRefusjonKontaktperson().getRefusjonKontaktpersonFornavn());
+            alleFelter.put(Fields.refusjonKontaktpersonEtternavn, avtaleInnhold.getRefusjonKontaktperson().getRefusjonKontaktpersonEtternavn());
+            alleFelter.put(Fields.refusjonKontaktpersonTlf, avtaleInnhold.getRefusjonKontaktperson().getRefusjonKontaktpersonTlf());
+        }
         if (avtaleInnhold.getHarFamilietilknytning() != null && avtaleInnhold.getHarFamilietilknytning()) {
             alleFelter.put(AvtaleInnhold.Fields.familietilknytningForklaring, avtaleInnhold.getFamilietilknytningForklaring());
         }

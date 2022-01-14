@@ -20,6 +20,7 @@ import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.json.JSONObject;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -75,10 +76,15 @@ class RefusjonKlarConsumerTest {
 
         String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til sommerjobb for avtale med nr: %d. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
         assertThat(jsonRefusjonRecord.get("meldingstekst")).isEqualTo(meldingstekst);
-        assertThat(jsonRefusjonRecord.get("telefonnummer")).isEqualTo(avtale.getGjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf());
+        assertThat(jsonRefusjonRecord.get("telefonnummer")).isEqualTo(avtale.getGjeldendeInnhold().getArbeidsgiverTlf());
         assertThat(jsonRefusjonRecord.get("identifikator")).isEqualTo(avtale.getBedriftNr().asString());
-        Now.resetClock();
 
+
+    }
+
+    @AfterEach
+    public void afterEach() {
+        Now.resetClock();
     }
 
 }

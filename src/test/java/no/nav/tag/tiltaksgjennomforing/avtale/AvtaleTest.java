@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.AvtaleErIkkeFordeltException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
@@ -314,11 +315,12 @@ public class AvtaleTest {
                 AvtaleInnhold.Fields.tilrettelegging,
                 AvtaleInnhold.Fields.oppfolging,
                 AvtaleInnhold.Fields.harFamilietilknytning,
-                AvtaleInnhold.Fields.lonnstilskuddProsent
+                AvtaleInnhold.Fields.lonnstilskuddProsent,
+             Fields.refusjonKontaktpersonFornavn
         );
 
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.VARIG_LONNSTILSKUDD), TestData.enNavIdent());
-
+        avtale.getGjeldendeInnhold().setRefusjonKontaktperson(new RefusjonKontaktperson(null,"Duck","12345678",true));
         testAtAlleFelterMangler(avtale, lønnstilskuddfelter);
         testAtHvertEnkeltFeltMangler(avtale, lønnstilskuddfelter);
     }

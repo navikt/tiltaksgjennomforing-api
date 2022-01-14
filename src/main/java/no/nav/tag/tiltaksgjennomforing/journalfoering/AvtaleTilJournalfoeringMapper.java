@@ -66,7 +66,6 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setSumLonnstilskudd(avtaleInnhold.getSumLonnstilskudd());
         avtaleTilJournalfoering.setStillingstype(avtaleInnhold.getStillingstype());
         avtaleTilJournalfoering.setManedslonn100pst(avtaleInnhold.getManedslonn100pst());
-        avtaleTilJournalfoering.setØnskerInformasjonOmRefusjon(avtaleInnhold.isØnskerInformasjonOmRefusjon());
         avtaleTilJournalfoering.setRefusjonKontaktperson(avtaleInnhold.getRefusjonKontaktperson());
         return avtaleTilJournalfoering;
     }

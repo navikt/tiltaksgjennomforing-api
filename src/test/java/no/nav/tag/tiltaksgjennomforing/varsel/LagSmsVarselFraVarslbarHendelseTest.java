@@ -29,7 +29,7 @@ public class LagSmsVarselFraVarslbarHendelseTest {
     static void setUp() {
         avtale = TestData.enArbeidstreningAvtale();
         avtaleSommerjobb = TestData.enSommerjobbAvtale();
-        avtaleSommerjobb.getGjeldendeInnhold().setRefusjonKontaktperson(new RefusjonKontaktperson("Donald","Duck", "55550123"));
+        avtaleSommerjobb.getGjeldendeInnhold().setRefusjonKontaktperson(new RefusjonKontaktperson("Donald","Duck", "55550123", false));
 
         deltaker = tuple(
                 avtale.getGjeldendeInnhold().getDeltakerTlf(),
@@ -79,7 +79,7 @@ public class LagSmsVarselFraVarslbarHendelseTest {
     @MethodSource("sommerjobbSMSvarselTilBådeArbeidsgiverOgKontaktPersonRefusjonProvider")
     void test_LagSmsVarsler_sommerjobbSMSvarselTilBådeArbeidsgiverOgKontaktPersonRefusjonProvider(VarslbarHendelseType hendelse, GamleVerdier gamleVerdier, List<Tuple> skalVarsles) {
         Avtale avtale = TestData.enSommerjobbAvtale();
-       avtale.getGjeldendeInnhold().setRefusjonKontaktperson(new RefusjonKontaktperson("Donald","Duck", "55550123"));
+       avtale.getGjeldendeInnhold().setRefusjonKontaktperson(new RefusjonKontaktperson("Donald","Duck", "55550123", true));
         List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelse.nyHendelse(avtale, hendelse), gamleVerdier);
         assertThat(smsVarsler).extracting("telefonnummer", "identifikator", "meldingstekst")
                 .containsOnlyElementsOf(skalVarsles);
@@ -90,8 +90,7 @@ public class LagSmsVarselFraVarslbarHendelseTest {
     @MethodSource("sommerjobbSMSvarselForKunKontaktPersonRefusjonProvider")
     void test_LagSmsVarsler_sommerjobbSMSvarselTForKunKontaktPersonRefusjonProvider(VarslbarHendelseType hendelse, GamleVerdier gamleVerdier, List<Tuple> skalVarsles) {
         Avtale avtale = TestData.enSommerjobbAvtale();
-      avtale.getGjeldendeInnhold().setØnskerInformasjonOmRefusjon(false);
-      avtale.getGjeldendeInnhold().setRefusjonKontaktperson(new RefusjonKontaktperson("Donald","Duck", "55550123"));
+      avtale.getGjeldendeInnhold().setRefusjonKontaktperson(new RefusjonKontaktperson("Donald","Duck", "55550123", false));
         List<SmsVarsel> smsVarsler = LagSmsVarselFraVarslbarHendelse.lagSmsVarsler(avtale, VarslbarHendelse.nyHendelse(avtale, hendelse), gamleVerdier);
         assertThat(smsVarsler).extracting("telefonnummer", "identifikator", "meldingstekst")
                 .containsOnlyElementsOf(skalVarsles);
