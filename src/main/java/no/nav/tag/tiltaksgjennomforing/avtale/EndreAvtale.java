@@ -40,7 +40,7 @@ public class EndreAvtale {
     private String refusjonKontaktpersonFornavn;
     private String refusjonKontaktpersonEtternavn;
     private String refusjonKontaktpersonTlf;
-    private boolean ønskerInformasjonOmRefusjon;
+    private Boolean ønskerInformasjonOmRefusjon;
 
     // Arbeidstreningsfelter
     private List<Maal> maal = new ArrayList<>();
@@ -76,6 +76,6 @@ public class EndreAvtale {
             this.refusjonKontaktpersonFornavn = refusjonKontaktperson.getRefusjonKontaktpersonFornavn();
             this.refusjonKontaktpersonEtternavn = refusjonKontaktperson.getRefusjonKontaktpersonEtternavn();
             this.refusjonKontaktpersonTlf = refusjonKontaktperson.getRefusjonKontaktpersonTlf();
-            this.ønskerInformasjonOmRefusjon = refusjonKontaktperson.isØnskerInformasjonOmRefusjon();
+            this.ønskerInformasjonOmRefusjon = refusjonKontaktperson.getØnskerInformasjonOmRefusjon();
     }
 }

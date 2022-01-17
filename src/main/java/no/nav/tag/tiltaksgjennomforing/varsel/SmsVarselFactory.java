@@ -68,8 +68,8 @@ public class SmsVarselFactory {
         ArrayList<SmsVarsel> smsVarsel = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), avtale.getBedriftNr(),
             smsTekst, hendelse.getId())));
         if(avtale.getGjeldendeInnhold().getRefusjonKontaktperson() != null) {
-            log.info("SMS VARSEL Ønsker info om refusjon: {} ", avtale.getGjeldendeInnhold().getRefusjonKontaktperson().isØnskerInformasjonOmRefusjon());
-            if(!avtale.getGjeldendeInnhold().getRefusjonKontaktperson().isØnskerInformasjonOmRefusjon()) {
+            log.info("SMS VARSEL Ønsker info om refusjon: {} ", avtale.getGjeldendeInnhold().getRefusjonKontaktperson().getØnskerInformasjonOmRefusjon());
+            if(!avtale.getGjeldendeInnhold().getRefusjonKontaktperson().getØnskerInformasjonOmRefusjon()) {
                 smsVarsel.clear();
             }
             smsVarsel.add(SmsVarsel.nyttVarselForGjeldendeKontaktpersonForRefusjon(avtale, smsTekst, hendelse.getId()));

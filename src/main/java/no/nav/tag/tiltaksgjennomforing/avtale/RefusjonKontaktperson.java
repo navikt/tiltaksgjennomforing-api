@@ -14,7 +14,7 @@ public class RefusjonKontaktperson {
      String refusjonKontaktpersonFornavn;
      String refusjonKontaktpersonEtternavn;
      String refusjonKontaktpersonTlf;
-     boolean ønskerInformasjonOmRefusjon;
+     Boolean ønskerInformasjonOmRefusjon;
 
 
 
