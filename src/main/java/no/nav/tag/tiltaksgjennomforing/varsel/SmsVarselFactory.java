@@ -5,9 +5,11 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.SOMMERJOBB;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 
+@Slf4j
 public class SmsVarselFactory {
     public static final BedriftNr NAV_ORGNR = new BedriftNr("889640782");
     private static final String SELVBETJENINGSONE_VARSELTEKST = "Du har mottatt et nytt varsel på https://arbeidsgiver.nav.no/tiltaksgjennomforing";
@@ -62,6 +64,7 @@ public class SmsVarselFactory {
     }
 
     private List<SmsVarsel> hentSMSVarselForValgtePersoner(Avtale avtale, String smsTekst, VarslbarHendelse hendelse) {
+        log.info("Sender SMS til {} getRefusjonKontaktperson", avtale.getGjeldendeInnhold().getRefusjonKontaktperson());
         ArrayList<SmsVarsel> smsVarsel = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), avtale.getBedriftNr(),
             smsTekst, hendelse.getId())));
         if(avtale.getGjeldendeInnhold().getRefusjonKontaktperson() != null) {
@@ -70,6 +73,8 @@ public class SmsVarselFactory {
             }
             smsVarsel.add(SmsVarsel.nyttVarselForGjeldendeKontaktpersonForRefusjon(avtale, smsTekst, hendelse.getId()));
         }
+        log.info("SMS VARSEL {} {}", smsVarsel.size(), smsVarsel);
         return smsVarsel;
+
     }
 }
