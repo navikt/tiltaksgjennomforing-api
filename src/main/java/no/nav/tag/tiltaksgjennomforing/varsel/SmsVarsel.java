@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.IdentifikatorConverter;
@@ -17,6 +18,7 @@ import no.nav.tag.tiltaksgjennomforing.varsel.events.SmsVarselOpprettet;
 import no.nav.tag.tiltaksgjennomforing.varsel.events.SmsVarselResultatMottatt;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
+@Slf4j
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
@@ -44,6 +46,7 @@ public class SmsVarsel extends AbstractAggregateRoot<SmsVarsel> {
         varsel.identifikator = identifikator;
         varsel.meldingstekst = meldingstekst;
         varsel.varslbarHendelse = varslbarHendelseId;
+        log.info("SENDER SMS: {}, {}", varsel.telefonnummer, varsel);
         varsel.registerEvent(new SmsVarselOpprettet(varsel));
         return varsel;
     }
