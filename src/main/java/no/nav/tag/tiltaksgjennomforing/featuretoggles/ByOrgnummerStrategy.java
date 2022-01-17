@@ -45,7 +45,8 @@ public class ByOrgnummerStrategy implements Strategy {
              return List.of();
          }
          try {
-             Set<AltinnReportee> altinnOrganisasjoner = altinnTilgangsstyringService.hentAltinnOrganisasjoner(new Fnr(currentUserId));
+             //TODO: Fungerer pt. ikke. bruker kun dummy hentArbeidsgivrtoken.
+             Set<AltinnReportee> altinnOrganisasjoner = altinnTilgangsstyringService.hentAltinnOrganisasjoner(new Fnr(currentUserId), () -> "");
              return altinnOrganisasjoner.stream().map(org -> org.getOrganizationNumber()).collect(Collectors.toList());
          }catch (Exception e){
              log.error("Feil ved oppslag på brukers organisasjoner i Altinn: {}", e.getMessage());

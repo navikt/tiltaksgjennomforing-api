@@ -26,6 +26,9 @@ no.nav.gcp.kafka.aiven:
 
 no.nav.security.jwt:
   issuer:
+    tokenx:
+      discoveryurl: https://tokendings.dev-gcp.nais.io/.well-known/oauth-authorization-server
+      accepted_audience: dev-fss:arbeidsgiver:tiltaksgjennomforing-api
     selvbetjening:
       discoveryurl: https://tiltak-fakelogin.labs.nais.io/metadata?issuer=selvbetjening
       accepted_audience: aud-selvbetjening

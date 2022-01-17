@@ -62,19 +62,20 @@ public class AltinnTilgangsstyringService {
 
     }
 
-    public Map<BedriftNr, Collection<Tiltakstype>> hentTilganger(Fnr fnr) {
+    public Map<BedriftNr, Collection<Tiltakstype>> hentTilganger(Fnr fnr, HentArbeidsgiverToken hentArbeidsgiverToken) {
         Multimap<BedriftNr, Tiltakstype> tilganger = HashMultimap.create();
+        String arbeidsgiverToken = hentArbeidsgiverToken.hentArbeidsgiverToken();
 
-        AltinnReportee[] arbeidstreningOrger = kallAltinn(altinnTilgangsstyringProperties.getArbtreningServiceCode(), altinnTilgangsstyringProperties.getArbtreningServiceEdition(), fnr);
+        AltinnReportee[] arbeidstreningOrger = kallAltinn(altinnTilgangsstyringProperties.getArbtreningServiceCode(), altinnTilgangsstyringProperties.getArbtreningServiceEdition(), fnr, arbeidsgiverToken);
         leggTil(tilganger, arbeidstreningOrger, Tiltakstype.ARBEIDSTRENING);
 
-        AltinnReportee[] varigLtsOrger = kallAltinn(altinnTilgangsstyringProperties.getLtsVarigServiceCode(), altinnTilgangsstyringProperties.getLtsVarigServiceEdition(), fnr);
+        AltinnReportee[] varigLtsOrger = kallAltinn(altinnTilgangsstyringProperties.getLtsVarigServiceCode(), altinnTilgangsstyringProperties.getLtsVarigServiceEdition(), fnr, arbeidsgiverToken);
         leggTil(tilganger, varigLtsOrger, Tiltakstype.VARIG_LONNSTILSKUDD);
 
-        AltinnReportee[] midlLtsOrger = kallAltinn(altinnTilgangsstyringProperties.getLtsMidlertidigServiceCode(), altinnTilgangsstyringProperties.getLtsMidlertidigServiceEdition(), fnr);
+        AltinnReportee[] midlLtsOrger = kallAltinn(altinnTilgangsstyringProperties.getLtsMidlertidigServiceCode(), altinnTilgangsstyringProperties.getLtsMidlertidigServiceEdition(), fnr, arbeidsgiverToken);
         leggTil(tilganger, midlLtsOrger, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
 
-        AltinnReportee[] sommerjobbOrger = kallAltinn(altinnTilgangsstyringProperties.getSommerjobbServiceCode(), altinnTilgangsstyringProperties.getSommerjobbServiceEdition(), fnr);
+        AltinnReportee[] sommerjobbOrger = kallAltinn(altinnTilgangsstyringProperties.getSommerjobbServiceCode(), altinnTilgangsstyringProperties.getSommerjobbServiceEdition(), fnr, arbeidsgiverToken);
         leggTil(tilganger, sommerjobbOrger, Tiltakstype.SOMMERJOBB);
 
         return tilganger.asMap();
@@ -88,23 +89,23 @@ public class AltinnTilgangsstyringService {
         }
     }
 
-    public Set<AltinnReportee> hentAltinnOrganisasjoner(Fnr fnr) {
-        return new HashSet<>(List.of(kallAltinn(null, null, fnr)));
+    public Set<AltinnReportee> hentAltinnOrganisasjoner(Fnr fnr, HentArbeidsgiverToken hentArbeidsgiverToken) {
+        return new HashSet<>(List.of(kallAltinn(null, null, fnr, hentArbeidsgiverToken.hentArbeidsgiverToken())));
     }
 
-    private AltinnReportee[] kallAltinn(Integer serviceCode, Integer serviceEdition, Fnr fnr) {
+    private AltinnReportee[] kallAltinn(Integer serviceCode, Integer serviceEdition, Fnr fnr, String arbeidsgiverToken) {
         try {
-                List<AltinnReportee> reportees;
-                if (serviceCode != null && serviceEdition != null) {
-                    reportees = klient.hentOrganisasjoner(
-                            new SelvbetjeningToken(tokenUtils.hentSelvbetjeningToken()),
-                            new Subject(fnr.asString()), new ServiceCode(serviceCode.toString()), new ServiceEdition(serviceEdition.toString()),
-                            true
-                    );
-                } else {
-                    reportees = klient.hentOrganisasjoner(new SelvbetjeningToken(tokenUtils.hentSelvbetjeningToken()), new Subject(fnr.asString()), true);
-                }
-                return reportees.toArray(new AltinnReportee[0]);
+            List<AltinnReportee> reportees;
+            if (serviceCode != null && serviceEdition != null) {
+                reportees = klient.hentOrganisasjoner(
+                        new SelvbetjeningToken(arbeidsgiverToken),
+                        new Subject(fnr.asString()), new ServiceCode(serviceCode.toString()), new ServiceEdition(serviceEdition.toString()),
+                        true
+                );
+            } else {
+                reportees = klient.hentOrganisasjoner(new SelvbetjeningToken(arbeidsgiverToken), new Subject(fnr.asString()), true);
+            }
+            return reportees.toArray(new AltinnReportee[0]);
 
         } catch (AltinnrettigheterProxyKlientFallbackException exception) {
             log.warn("Feil ved kall mot Altinn.", exception);

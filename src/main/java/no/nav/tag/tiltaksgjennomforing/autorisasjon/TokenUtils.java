@@ -19,10 +19,11 @@ public class TokenUtils {
     private static final String ACR = "acr";
     private static final String LEVEL4 = "Level4";
 
-    enum Issuer {
+   public enum Issuer {
         ISSUER_ISSO("isso"),
         ISSUER_SELVBETJENING("selvbetjening"),
-        ISSUER_SYSTEM("system");
+        ISSUER_SYSTEM("system"),
+        ISSUER_TOKENX("tokenx");
 
         final String issuerName;
 
@@ -42,7 +43,8 @@ public class TokenUtils {
     public Optional<BrukerOgIssuer> hentBrukerOgIssuer() {
         return hentClaim(ISSUER_SYSTEM, "sub").map(sub -> new BrukerOgIssuer(ISSUER_SYSTEM, sub))
             .or(() -> hentClaim(ISSUER_SELVBETJENING, "sub").map(sub -> new BrukerOgIssuer(ISSUER_SELVBETJENING, sub)))
-            .or(() -> hentClaim(ISSUER_ISSO, "NAVident").map(sub -> new BrukerOgIssuer(ISSUER_ISSO, sub)));
+            .or(() -> hentClaim(ISSUER_ISSO, "NAVident").map(sub -> new BrukerOgIssuer(ISSUER_ISSO, sub)))
+            .or(() -> hentClaim(ISSUER_TOKENX, "pid").map(it -> new BrukerOgIssuer(ISSUER_TOKENX, it)));
     }
 
     public boolean harAdGruppe(UUID gruppeAD) {
@@ -82,6 +84,9 @@ public class TokenUtils {
 
     public String hentSelvbetjeningToken() {
         return contextHolder.getTokenValidationContext().getJwtToken(ISSUER_SELVBETJENING.issuerName).getTokenAsString();
+    }
+    public String hentTokenx() {
+        return contextHolder.getTokenValidationContext().getJwtToken(ISSUER_TOKENX.issuerName).getTokenAsString();
     }
 
 }

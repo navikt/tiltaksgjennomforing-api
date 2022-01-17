@@ -10,6 +10,8 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.BrukerOgIssuer;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.ArbeidsgiverTokenStrategyFactoryInterface;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.HentArbeidsgiverToken;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
@@ -35,6 +37,7 @@ public class InnloggingService {
     private final AxsysService axsysService;
     private final SlettemerkeProperties slettemerkeProperties;
     private final VeilarbArenaClient veilarbArenaClient;
+    private final ArbeidsgiverTokenStrategyFactoryInterface arbeidsgiverTokenStrategyFactory;
 
     public Avtalepart hentAvtalepart(Avtalerolle avtalerolle) {
         BrukerOgIssuer brukerOgIssuer = tokenUtils.hentBrukerOgIssuer().orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget."));
@@ -44,10 +47,12 @@ public class InnloggingService {
             return new Deltaker(new Fnr(brukerOgIssuer.getBrukerIdent()));
         }
 
-        else if (issuer == Issuer.ISSUER_SELVBETJENING && avtalerolle == Avtalerolle.ARBEIDSGIVER) {
+        else if ((issuer == Issuer.ISSUER_SELVBETJENING || issuer == Issuer.ISSUER_TOKENX) && avtalerolle == Avtalerolle.ARBEIDSGIVER) {
+            HentArbeidsgiverToken hentArbeidsgiverToken = arbeidsgiverTokenStrategyFactory.create(issuer);
+
             Set<AltinnReportee> altinnOrganisasjoner = altinnTilgangsstyringService
-                    .hentAltinnOrganisasjoner(new Fnr(brukerOgIssuer.getBrukerIdent()));
-            Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(new Fnr(brukerOgIssuer.getBrukerIdent()));
+                    .hentAltinnOrganisasjoner(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
+            Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
             return new Arbeidsgiver(new Fnr(brukerOgIssuer.getBrukerIdent()), altinnOrganisasjoner, tilganger, persondataService, norg2Client, veilarbArenaClient);
         }
 

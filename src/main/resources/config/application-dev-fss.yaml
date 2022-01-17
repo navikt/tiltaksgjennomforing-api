@@ -15,6 +15,9 @@ spring:
 
 no.nav.security.jwt:
   issuer:
+    tokenx:
+      discoveryurl: ${TOKEN_X_WELL_KNOWN_URL}
+      accepted_audience: ${TOKEN_X_CLIENT_ID}
     selvbetjening:
       discoveryurl: ${LOGINSERVICE_IDPORTEN_DISCOVERY_URL}
       accepted_audience: 0090b6e1-ffcc-4c37-bc21-049f7d1f0fe5
