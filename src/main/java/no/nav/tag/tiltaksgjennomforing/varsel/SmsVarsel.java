@@ -11,7 +11,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.IdentifikatorConverter;
 import no.nav.tag.tiltaksgjennomforing.varsel.events.SmsVarselOpprettet;
@@ -46,7 +45,6 @@ public class SmsVarsel extends AbstractAggregateRoot<SmsVarsel> {
         varsel.identifikator = identifikator;
         varsel.meldingstekst = meldingstekst;
         varsel.varslbarHendelse = varslbarHendelseId;
-        log.info("SENDER SMS: {}, {}", varsel.telefonnummer, varsel);
         varsel.registerEvent(new SmsVarselOpprettet(varsel));
         return varsel;
     }
@@ -54,11 +52,5 @@ public class SmsVarsel extends AbstractAggregateRoot<SmsVarsel> {
     public void endreStatus(SmsVarselStatus status) {
         this.setStatus(status);
         registerEvent(new SmsVarselResultatMottatt(this));
-    }
-
-    public static SmsVarsel nyttVarselForGjeldendeKontaktpersonForRefusjon(Avtale avtale, String meldingstekst,
-        UUID varslbarHendelseId){
-        return nyttVarsel(avtale.getGjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(), avtale.getBedriftNr(),
-            meldingstekst, varslbarHendelseId);
     }
 }

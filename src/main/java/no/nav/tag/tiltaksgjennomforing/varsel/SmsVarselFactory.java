@@ -3,11 +3,11 @@ package no.nav.tag.tiltaksgjennomforing.varsel;
 import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.SOMMERJOBB;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
 
 @Slf4j
 public class SmsVarselFactory {
@@ -63,19 +63,19 @@ public class SmsVarselFactory {
         return SmsVarsel.nyttVarsel(avtale.getGjeldendeInnhold().getVeilederTlf(), NAV_ORGNR, FAGSYSTEMSONE_VARSELTEKST, hendelse.getId());
     }
 
-    private List<SmsVarsel> hentSMSVarselForValgtePersoner(Avtale avtale, String smsTekst, VarslbarHendelse hendelse) {
-        log.info("Sender SMS til {} getRefusjonKontaktperson", avtale.getGjeldendeInnhold().getRefusjonKontaktperson());
-        ArrayList<SmsVarsel> smsVarsel = new ArrayList<>(Arrays.asList(SmsVarsel.nyttVarsel(avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), avtale.getBedriftNr(),
-            smsTekst, hendelse.getId())));
+    private List<SmsVarsel> hentSMSVarselForValgtePersoner(final Avtale avtale,final String smsTekst, final VarslbarHendelse hendelse) {
+        ArrayList<SmsVarsel> smsVarselList = new ArrayList<>();
+        SmsVarsel smsArbeidsgiver = SmsVarsel.nyttVarsel(avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), avtale.getBedriftNr(),
+            smsTekst, hendelse.getId());
+        smsVarselList.add(smsArbeidsgiver);
         if(avtale.getGjeldendeInnhold().getRefusjonKontaktperson() != null && avtale.getGjeldendeInnhold().getRefusjonKontaktperson().erIkkeTom()) {
-            log.info("SMS VARSEL Ønsker info om refusjon: {} ", avtale.getGjeldendeInnhold().getRefusjonKontaktperson().getØnskerInformasjonOmRefusjon());
-            if(!avtale.getGjeldendeInnhold().getRefusjonKontaktperson().getØnskerInformasjonOmRefusjon()) {
-                smsVarsel.clear();
+            final RefusjonKontaktperson refusjonKontaktperson = avtale.getGjeldendeInnhold().getRefusjonKontaktperson();
+            final SmsVarsel smsArbeidsgiverRefusjonKontaktperson = SmsVarsel.nyttVarsel(refusjonKontaktperson.getRefusjonKontaktpersonTlf(), avtale.getBedriftNr(), smsTekst, hendelse.getId());
+            if(!refusjonKontaktperson.getØnskerInformasjonOmRefusjon()) {
+                smsVarselList.remove(smsArbeidsgiver);
             }
-            smsVarsel.add(SmsVarsel.nyttVarselForGjeldendeKontaktpersonForRefusjon(avtale, smsTekst, hendelse.getId()));
+            smsVarselList.add(smsArbeidsgiverRefusjonKontaktperson);
         }
-        log.info("SMS VARSEL {} {}", smsVarsel.size(), smsVarsel);
-        return smsVarsel;
-
+        return smsVarselList;
     }
 }
