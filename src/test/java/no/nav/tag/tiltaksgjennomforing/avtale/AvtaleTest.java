@@ -242,10 +242,7 @@ public class AvtaleTest {
                 AvtaleInnhold.Fields.startDato,
                 AvtaleInnhold.Fields.sluttDato,
                 AvtaleInnhold.Fields.tilrettelegging,
-                AvtaleInnhold.Fields.oppfolging,
-            Fields.refusjonKontaktpersonEtternavn,
-            Fields.refusjonKontaktpersonFornavn,
-            Fields.refusjonKontaktpersonTlf
+                AvtaleInnhold.Fields.oppfolging
         );
 
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.ARBEIDSTRENING), TestData.enNavIdent());
@@ -281,10 +278,7 @@ public class AvtaleTest {
                 AvtaleInnhold.Fields.arbeidsgiveravgift,
                 AvtaleInnhold.Fields.tilrettelegging,
                 AvtaleInnhold.Fields.oppfolging,
-                AvtaleInnhold.Fields.harFamilietilknytning,
-            Fields.refusjonKontaktpersonEtternavn,
-            Fields.refusjonKontaktpersonFornavn,
-            Fields.refusjonKontaktpersonTlf
+                AvtaleInnhold.Fields.harFamilietilknytning
         );
 
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
@@ -353,9 +347,7 @@ public class AvtaleTest {
                 AvtaleInnhold.Fields.mentorAntallTimer,
                 AvtaleInnhold.Fields.mentorOppgaver,
                 AvtaleInnhold.Fields.tilrettelegging,
-                AvtaleInnhold.Fields.oppfolging, Fields.refusjonKontaktpersonEtternavn,
-            Fields.refusjonKontaktpersonFornavn,
-            Fields.refusjonKontaktpersonTlf
+                AvtaleInnhold.Fields.oppfolging
         );
 
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), TestData.enNavIdent());

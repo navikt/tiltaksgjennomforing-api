@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Embedded;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,10 +38,9 @@ public class EndreAvtale {
     private Integer antallDagerPerUke;
 
 
-    private String refusjonKontaktpersonFornavn;
-    private String refusjonKontaktpersonEtternavn;
-    private String refusjonKontaktpersonTlf;
-    private Boolean ønskerInformasjonOmRefusjon;
+
+    @Embedded
+    private RefusjonKontaktperson refusjonKontaktperson;
 
     // Arbeidstreningsfelter
     private List<Maal> maal = new ArrayList<>();
@@ -64,7 +64,7 @@ public class EndreAvtale {
     private Integer mentorTimelonn;
 
 
-    public RefusjonKontaktperson getRefusjonKontaktperson(){
+    /*public RefusjonKontaktperson getRefusjonKontaktperson(){
         if(refusjonKontaktpersonTlf == null && refusjonKontaktpersonFornavn == null && refusjonKontaktpersonEtternavn == null) {
             return null;
         }
@@ -77,5 +77,5 @@ public class EndreAvtale {
             this.refusjonKontaktpersonEtternavn = refusjonKontaktperson.getRefusjonKontaktpersonEtternavn();
             this.refusjonKontaktpersonTlf = refusjonKontaktperson.getRefusjonKontaktpersonTlf();
             this.ønskerInformasjonOmRefusjon = refusjonKontaktperson.getØnskerInformasjonOmRefusjon();
-    }
+    }*/
 }

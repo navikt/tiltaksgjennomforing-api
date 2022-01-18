@@ -143,7 +143,6 @@ public class AvtaleInnhold {
 
     public static AvtaleInnhold nyttTomtInnhold(Tiltakstype tiltakstype) {
         var innhold = new AvtaleInnhold();
-        innhold.refusjonKontaktperson = new RefusjonKontaktperson();
         innhold.setId(UUID.randomUUID());
         innhold.setVersjon(1);
         innhold.setInnholdType(AvtaleInnholdType.INNGÅ);
