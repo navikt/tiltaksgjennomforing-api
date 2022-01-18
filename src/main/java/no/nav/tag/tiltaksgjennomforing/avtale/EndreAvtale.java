@@ -36,7 +36,10 @@ public class EndreAvtale {
     private Integer stillingKonseptId;
     private Integer antallDagerPerUke;
 
-    private RefusjonKontaktperson refusjonKontaktperson;
+    private String refusjonKontaktpersonFornavn;
+    private String refusjonKontaktpersonEtternavn;
+    private String refusjonKontaktpersonTlf;
+    private Boolean ønskerVarslingOmRefusjon;
 
     // Arbeidstreningsfelter
     private List<Maal> maal = new ArrayList<>();
@@ -59,4 +62,21 @@ public class EndreAvtale {
     private Integer mentorAntallTimer;
     private Integer mentorTimelonn;
 
+
+    public RefusjonKontaktperson getRefusjonKontaktperson(){
+        if(refusjonKontaktpersonTlf == null && refusjonKontaktpersonFornavn == null && refusjonKontaktpersonEtternavn == null) {
+            return null;
+        }
+
+     return new RefusjonKontaktperson(refusjonKontaktpersonFornavn, refusjonKontaktpersonEtternavn, refusjonKontaktpersonTlf,
+         ønskerVarslingOmRefusjon);
+    }
+
+    public void setRefusjonKontaktperson(RefusjonKontaktperson refusjonKontaktperson) {
+        if(refusjonKontaktperson == null) { return; }
+        this.refusjonKontaktpersonFornavn = refusjonKontaktperson.getRefusjonKontaktpersonFornavn();
+        this.refusjonKontaktpersonEtternavn = refusjonKontaktperson.getRefusjonKontaktpersonEtternavn();
+        this.refusjonKontaktpersonTlf = refusjonKontaktperson.getRefusjonKontaktpersonTlf();
+        this.ønskerVarslingOmRefusjon = refusjonKontaktperson.getØnskerVarslingOmRefusjon();
+    }
 }

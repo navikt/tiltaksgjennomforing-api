@@ -1,18 +1,16 @@
 package no.nav.tag.tiltaksgjennomforing.journalfoering;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
 import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-
-import javax.persistence.Embedded;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -50,9 +48,6 @@ public class AvtaleTilJournalfoering {
     private String arbeidsoppgaver;
     private Integer antallDagerPerUke;
 
-    private boolean ønskerInformasjonOmRefusjon;
-
-    @Embedded
     private RefusjonKontaktperson refusjonKontaktperson;
 
     // Lønnstilskudd
