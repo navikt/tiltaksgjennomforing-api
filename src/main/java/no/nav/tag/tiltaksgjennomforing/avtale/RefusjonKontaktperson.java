@@ -14,7 +14,7 @@ public class RefusjonKontaktperson {
      String refusjonKontaktpersonFornavn;
      String refusjonKontaktpersonEtternavn;
      String refusjonKontaktpersonTlf;
-     Boolean ønskerInformasjonOmRefusjon;
+     Boolean ønskerVarslingOmRefusjon;
 
 
 
@@ -23,7 +23,7 @@ public class RefusjonKontaktperson {
           this.refusjonKontaktpersonFornavn = "";
           this.refusjonKontaktpersonEtternavn = "";
           this.refusjonKontaktpersonTlf = "";
-          this.ønskerInformasjonOmRefusjon = true;
+          this.ønskerVarslingOmRefusjon = true;
      }
 
      public boolean erIkkeTom() {
