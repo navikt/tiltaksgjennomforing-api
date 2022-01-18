@@ -15,4 +15,5 @@ public class EndreKontaktInformasjon {
     String arbeidsgiverFornavn;
     String arbeidsgiverEtternavn;
     String arbeidsgiverTlf;
+    RefusjonKontaktperson refusjonKontaktperson;
 }

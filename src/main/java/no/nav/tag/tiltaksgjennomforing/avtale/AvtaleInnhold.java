@@ -1,19 +1,37 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
-import lombok.experimental.FieldNameConstants;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erTom;
 
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erTom;
+import javax.persistence.CascadeType;
+import javax.persistence.Convert;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.FieldNameConstants;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 // Lombok
 @Data
@@ -59,6 +77,9 @@ public class AvtaleInnhold {
     private Integer stillingStyrk08;
     private Integer stillingKonseptId;
     private Integer antallDagerPerUke;
+
+     @Embedded
+     private RefusjonKontaktperson refusjonKontaktperson;
 
 
     // Mentor
@@ -214,6 +235,7 @@ public class AvtaleInnhold {
         setArbeidsgiverFornavn(endreKontaktInformasjon.getArbeidsgiverFornavn());
         setArbeidsgiverEtternavn(endreKontaktInformasjon.getArbeidsgiverEtternavn());
         setArbeidsgiverTlf(endreKontaktInformasjon.getArbeidsgiverTlf());
+        setRefusjonKontaktperson(endreKontaktInformasjon.getRefusjonKontaktperson());
     }
 
     public void endreStillingsInfo(EndreStillingsbeskrivelse endreStillingsbeskrivelse) {

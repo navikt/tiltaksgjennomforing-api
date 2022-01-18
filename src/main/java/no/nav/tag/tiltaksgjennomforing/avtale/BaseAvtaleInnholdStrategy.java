@@ -1,10 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.utils.Now;
-
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
 public abstract class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy {
     final AvtaleInnhold avtaleInnhold;
@@ -32,6 +32,7 @@ public abstract class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy
         avtaleInnhold.setSluttDato(nyAvtale.getSluttDato());
         avtaleInnhold.setStillingprosent(nyAvtale.getStillingprosent());
         avtaleInnhold.setAntallDagerPerUke(nyAvtale.getAntallDagerPerUke());
+        avtaleInnhold.setRefusjonKontaktperson(nyAvtale.getRefusjonKontaktperson());
     }
 
     @Override
@@ -54,6 +55,11 @@ public abstract class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy
         alleFelter.put(AvtaleInnhold.Fields.antallDagerPerUke, avtaleInnhold.getAntallDagerPerUke());
         alleFelter.put(AvtaleInnhold.Fields.oppfolging, avtaleInnhold.getOppfolging());
         alleFelter.put(AvtaleInnhold.Fields.tilrettelegging, avtaleInnhold.getTilrettelegging());
+        if(avtaleInnhold.getRefusjonKontaktperson() != null){
+            alleFelter.put(Fields.refusjonKontaktpersonFornavn, avtaleInnhold.getRefusjonKontaktperson().getRefusjonKontaktpersonFornavn());
+            alleFelter.put(Fields.refusjonKontaktpersonEtternavn, avtaleInnhold.getRefusjonKontaktperson().getRefusjonKontaktpersonEtternavn());
+            alleFelter.put(Fields.refusjonKontaktpersonTlf, avtaleInnhold.getRefusjonKontaktperson().getRefusjonKontaktpersonTlf());
+        }
         return alleFelter;
     }
 

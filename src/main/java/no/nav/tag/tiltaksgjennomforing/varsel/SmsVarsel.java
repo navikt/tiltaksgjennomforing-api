@@ -1,18 +1,23 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
+import java.util.UUID;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.IdentifikatorConverter;
 import no.nav.tag.tiltaksgjennomforing.varsel.events.SmsVarselOpprettet;
 import no.nav.tag.tiltaksgjennomforing.varsel.events.SmsVarselResultatMottatt;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
-import javax.persistence.*;
-import java.util.UUID;
-
+@Slf4j
 @Data
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor

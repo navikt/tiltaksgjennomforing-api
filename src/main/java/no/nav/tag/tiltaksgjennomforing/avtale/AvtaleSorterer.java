@@ -1,8 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import lombok.experimental.UtilityClass;
-
 import java.util.Comparator;
+import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class AvtaleSorterer {

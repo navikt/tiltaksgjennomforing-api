@@ -1,11 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import java.util.ArrayList;
+import java.util.List;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Deltaker extends Avtalepart<Fnr> {
 
