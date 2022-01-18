@@ -71,10 +71,10 @@ public class SmsVarselFactory {
         if(avtale.getGjeldendeInnhold().getRefusjonKontaktperson() != null && avtale.getGjeldendeInnhold().getRefusjonKontaktperson().erIkkeTom()) {
             final RefusjonKontaktperson refusjonKontaktperson = avtale.getGjeldendeInnhold().getRefusjonKontaktperson();
             final SmsVarsel smsArbeidsgiverRefusjonKontaktperson = SmsVarsel.nyttVarsel(refusjonKontaktperson.getRefusjonKontaktpersonTlf(), avtale.getBedriftNr(), smsTekst, hendelse.getId());
+            smsVarselList.add(smsArbeidsgiverRefusjonKontaktperson);
             if(!refusjonKontaktperson.getØnskerInformasjonOmRefusjon()) {
                 smsVarselList.remove(smsArbeidsgiver);
             }
-            smsVarselList.add(smsArbeidsgiverRefusjonKontaktperson);
         }
         return smsVarselList;
     }
