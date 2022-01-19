@@ -1,12 +1,11 @@
 package no.nav.tag.tiltaksgjennomforing.datavarehus;
 
-import lombok.experimental.UtilityClass;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.UUID;
+import lombok.experimental.UtilityClass;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 
 @UtilityClass
 public class AvroTiltakHendelseFabrikk {

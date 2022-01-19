@@ -1,16 +1,26 @@
 package no.nav.tag.tiltaksgjennomforing.journalfoering;
 
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import static no.nav.tag.tiltaksgjennomforing.journalfoering.AvtaleTilJournalfoeringMapper.tilJournalfoering;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.Arrays;
+import java.util.UUID;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
+import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
+import no.nav.tag.tiltaksgjennomforing.avtale.Maal;
+import no.nav.tag.tiltaksgjennomforing.avtale.MaalKategori;
+import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
+import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.Arrays;
-import java.util.UUID;
-
-import static no.nav.tag.tiltaksgjennomforing.journalfoering.AvtaleTilJournalfoeringMapper.tilJournalfoering;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class AvtaleTilJournalfoeringMapperTest {
 

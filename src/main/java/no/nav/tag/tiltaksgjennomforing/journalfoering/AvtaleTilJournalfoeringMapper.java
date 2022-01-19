@@ -1,9 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.journalfoering;
 
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
-
 import java.util.ArrayList;
 import java.util.List;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
+import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
+import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.avtale.Maal;
 
 public class AvtaleTilJournalfoeringMapper {
 
@@ -63,6 +66,7 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setSumLonnstilskudd(avtaleInnhold.getSumLonnstilskudd());
         avtaleTilJournalfoering.setStillingstype(avtaleInnhold.getStillingstype());
         avtaleTilJournalfoering.setManedslonn100pst(avtaleInnhold.getManedslonn100pst());
+        avtaleTilJournalfoering.setRefusjonKontaktperson(avtaleInnhold.getRefusjonKontaktperson());
         return avtaleTilJournalfoering;
     }
 

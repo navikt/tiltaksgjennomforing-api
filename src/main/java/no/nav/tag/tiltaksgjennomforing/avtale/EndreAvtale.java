@@ -1,13 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -37,6 +36,11 @@ public class EndreAvtale {
     private Integer stillingKonseptId;
     private Integer antallDagerPerUke;
 
+    private String refusjonKontaktpersonFornavn;
+    private String refusjonKontaktpersonEtternavn;
+    private String refusjonKontaktpersonTlf;
+    private Boolean ønskerVarslingOmRefusjon;
+
     // Arbeidstreningsfelter
     private List<Maal> maal = new ArrayList<>();
 
@@ -57,4 +61,22 @@ public class EndreAvtale {
     private String mentorOppgaver;
     private Integer mentorAntallTimer;
     private Integer mentorTimelonn;
+
+
+    public RefusjonKontaktperson getRefusjonKontaktperson(){
+        if(refusjonKontaktpersonTlf == null && refusjonKontaktpersonFornavn == null && refusjonKontaktpersonEtternavn == null) {
+            return null;
+        }
+
+     return new RefusjonKontaktperson(refusjonKontaktpersonFornavn, refusjonKontaktpersonEtternavn, refusjonKontaktpersonTlf,
+         ønskerVarslingOmRefusjon);
+    }
+
+    public void setRefusjonKontaktperson(RefusjonKontaktperson refusjonKontaktperson) {
+        if(refusjonKontaktperson == null) { return; }
+        this.refusjonKontaktpersonFornavn = refusjonKontaktperson.getRefusjonKontaktpersonFornavn();
+        this.refusjonKontaktpersonEtternavn = refusjonKontaktperson.getRefusjonKontaktpersonEtternavn();
+        this.refusjonKontaktpersonTlf = refusjonKontaktperson.getRefusjonKontaktpersonTlf();
+        this.ønskerVarslingOmRefusjon = refusjonKontaktperson.getØnskerVarslingOmRefusjon();
+    }
 }

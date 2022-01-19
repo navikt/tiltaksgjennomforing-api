@@ -1,24 +1,44 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.*;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.enhet.*;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
-import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
-import no.nav.tag.tiltaksgjennomforing.persondata.*;
-import no.nav.tag.tiltaksgjennomforing.utils.Now;
-import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelse;
-import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.*;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
+import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
+import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
+import no.nav.tag.tiltaksgjennomforing.persondata.Adressebeskyttelse;
+import no.nav.tag.tiltaksgjennomforing.persondata.Data;
+import no.nav.tag.tiltaksgjennomforing.persondata.HentGeografiskTilknytning;
+import no.nav.tag.tiltaksgjennomforing.persondata.HentPerson;
+import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
+import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelse;
+import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 
 public class TestData {
 
@@ -30,6 +50,12 @@ public class TestData {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         return Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING), veilderNavIdent);
     }
+
+    public static Avtale enSommerjobbAvtale() {
+        NavIdent veilderNavIdent = new NavIdent("Z123456");
+        return Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.SOMMERJOBB), veilderNavIdent);
+    }
+
 
     public static Avtale enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt() {
         return Avtale.arbeidsgiverOppretterAvtale(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING));
@@ -81,6 +107,7 @@ public class TestData {
         avtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent());
         avtale.getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         avtale.getGjeldendeInnhold().setJournalpostId("1");
+        avtale.getGjeldendeInnhold().setRefusjonKontaktperson(new RefusjonKontaktperson("Donald","Duck","55555123", true));
         return avtale;
     }
 
@@ -211,6 +238,7 @@ public class TestData {
         avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
         avtale.getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent());
+        avtale.getGjeldendeInnhold().setRefusjonKontaktperson(null);
         return avtale;
     }
 
@@ -333,6 +361,7 @@ public class TestData {
         endreAvtale.setOtpSats(0.02);
         endreAvtale.setStillingstype(Stillingstype.FAST);
         endreAvtale.setAntallDagerPerUke(5);
+        endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678", true));
         return endreAvtale;
     }
 
@@ -436,7 +465,9 @@ public class TestData {
                 avtale.getGjeldendeInnhold().getVeilederTlf(),
                 avtale.getGjeldendeInnhold().getArbeidsgiverFornavn(),
                 avtale.getGjeldendeInnhold().getArbeidsgiverEtternavn(),
-                avtale.getGjeldendeInnhold().getArbeidsgiverTlf()), TestData.enNavIdent());
+                avtale.getGjeldendeInnhold().getArbeidsgiverTlf(),
+            new RefusjonKontaktperson("Atle", "Jørgensen", "12345678",true)),
+            TestData.enNavIdent());
         return avtale;
     }
 

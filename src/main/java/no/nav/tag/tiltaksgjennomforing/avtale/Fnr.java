@@ -58,6 +58,13 @@ public class Fnr extends Identifikator {
         return this.fødselsdato().isBefore(opprettetTidspunkt.minusYears(30));
     }
 
+    public boolean erOver67ÅrFraOppstartDato(LocalDate oppstartDato) {
+        if (this.asString().equals("00000000000")) {
+            return false;
+        }
+        return this.fødselsdato().isBefore(oppstartDato.minusYears(67).plusDays(1));
+    }
+
     private String getDayInMonth() {
         return parseSynthenticNumber(parseDNumber(this.asString())).substring(0, 2);
     }

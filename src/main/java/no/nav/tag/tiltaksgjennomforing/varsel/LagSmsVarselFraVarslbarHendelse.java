@@ -1,15 +1,14 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GamleVerdier;
 import no.nav.tag.tiltaksgjennomforing.varsel.events.VarslbarHendelseOppstaatt;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -27,13 +26,13 @@ public class LagSmsVarselFraVarslbarHendelse {
             case DELT_MED_ARBEIDSGIVER:
                 return List.of(factory.arbeidsgiver());
             case REFUSJON_KLAR:
-                return List.of(factory.arbeidsgiverRefusjonKlar());
+                return factory.arbeidsgiverRefusjonKlar();
             case REFUSJON_KLAR_REVARSEL:
-                return List.of(factory.arbeidsgiverRefusjonKlarRevarsel());
+                return factory.arbeidsgiverRefusjonKlarRevarsel();
             case REFUSJON_FRIST_FORLENGET:
-                return List.of(factory.arbeidsgiverRefusjonForlengetVarsel());
+                return factory.arbeidsgiverRefusjonForlengetVarsel();
             case REFUSJON_KORRIGERT:
-                return List.of(factory.arbeidsgiverRefusjonKorrigertVarsel());
+                return factory.arbeidsgiverRefusjonKorrigertVarsel();
             case GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER: {
                 var varslinger = new ArrayList<SmsVarsel>();
                 if (gamleVerdier.isGodkjentAvDeltaker()) {
