@@ -2,9 +2,8 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
-import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.ArbeidsgiverTokenStrategyFactoryImpl;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import org.junit.jupiter.api.Test;
@@ -13,15 +12,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.ENHET_OPPFØLGING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -46,6 +43,9 @@ public class InnloggingServiceTest {
     @Mock
     private BeslutterAdGruppeProperties beslutterAdGruppeProperties;
 
+    @Mock
+    private ArbeidsgiverTokenStrategyFactoryImpl arbeidsgiverTokenStrategyFactory;
+
     @Test
     public void hentInnloggetBruker__er_selvbetjeningbruker() {
         InnloggetDeltaker selvbetjeningBruker = TestData.enInnloggetDeltaker();
@@ -56,13 +56,15 @@ public class InnloggingServiceTest {
     @Test
     public void hentInnloggetBruker__selvbetjeningbruker_type_arbeidsgiver_skal_hente_organisasjoner() {
         InnloggetArbeidsgiver selvbetjeningBruker = new InnloggetArbeidsgiver(new Fnr("11111111111"), Set.of(), Map.of());
-        when(altinnTilgangsstyringService.hentTilganger(selvbetjeningBruker.getIdentifikator())).thenReturn(Map.of());
-        when(altinnTilgangsstyringService.hentAltinnOrganisasjoner(selvbetjeningBruker.getIdentifikator())).thenReturn(Set.of());
+        when(altinnTilgangsstyringService.hentTilganger(eq((Fnr) selvbetjeningBruker.getIdentifikator()), any())).thenReturn(Map.of());
+        when(altinnTilgangsstyringService.hentAltinnOrganisasjoner(eq((Fnr) selvbetjeningBruker.getIdentifikator()), any())).thenReturn(Set.of());
         værInnloggetArbeidsgiver(selvbetjeningBruker);
 
+       when(arbeidsgiverTokenStrategyFactory.create(Issuer.ISSUER_SELVBETJENING)).thenReturn(() -> "");
+
         assertThat(innloggingService.hentInnloggetBruker(Optional.of(Avtalerolle.ARBEIDSGIVER).get())).isEqualTo(selvbetjeningBruker);
-        verify(altinnTilgangsstyringService).hentTilganger(selvbetjeningBruker.getIdentifikator());
-        verify(altinnTilgangsstyringService).hentAltinnOrganisasjoner(selvbetjeningBruker.getIdentifikator());
+        verify(altinnTilgangsstyringService).hentTilganger(eq((Fnr) selvbetjeningBruker.getIdentifikator()), any());
+        verify(altinnTilgangsstyringService).hentAltinnOrganisasjoner(eq((Fnr) selvbetjeningBruker.getIdentifikator()), any());
     }
 
     @Test

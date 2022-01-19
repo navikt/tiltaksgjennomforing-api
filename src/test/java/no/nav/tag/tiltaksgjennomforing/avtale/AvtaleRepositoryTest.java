@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.ArbeidsgiverTokenStrategyFactoryInterface;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
 import no.nav.tag.tiltaksgjennomforing.metrikker.MetrikkRegistrering;
@@ -43,6 +44,9 @@ public class AvtaleRepositoryTest {
 
     @MockBean
     private MetrikkRegistrering metrikkRegistrering;
+
+    @Autowired
+    private ArbeidsgiverTokenStrategyFactoryInterface arbeidsgiverTokenStrategyFactory;
 
     @BeforeEach
     public void setup() {

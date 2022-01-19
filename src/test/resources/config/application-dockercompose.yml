@@ -90,10 +90,6 @@ no.nav.security.jwt:
       discoveryurl: https://tiltak-fakelogin.labs.nais.io/metadata?issuer=isso
       accepted_audience: aud-isso
       cookie_name: isso-idtoken
-    aad:
-      discoveryurl: https://tiltak-fakelogin.labs.nais.io/metadata?issuer=aad
-      accepted_audience: aud-aad
-      cookie_name: aad-token
   client: null
 
 ELECTOR_PATH: null
