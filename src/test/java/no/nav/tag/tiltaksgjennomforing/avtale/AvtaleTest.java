@@ -78,12 +78,12 @@ public class AvtaleTest {
 
     @Test
     public void nyAvtaleSkalFeileHvisDeltakerErForUng() {
-        assertFeilkode(Feilkode.IKKE_GAMMEL_NOK, () -> Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("24010970772"), new BedriftNr("000111222"), Tiltakstype.ARBEIDSTRENING), null));
+        assertFeilkode(Feilkode.SOMMERJOBB_IKKE_GAMMEL_NOK, () -> Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("24010970772"), new BedriftNr("000111222"), Tiltakstype.ARBEIDSTRENING), null));
     }
 
     @Test
     public void nyAvtaleSkalFeileHvisDeltakerErForGammelForSommerjobb() {
-        assertFeilkode(Feilkode.FOR_GAMMEL, () -> Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("08098114468"), new BedriftNr("000111222"), Tiltakstype.SOMMERJOBB), null));
+        assertFeilkode(Feilkode.SOMMERJOBB_FOR_GAMMEL, () -> Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("08098114468"), new BedriftNr("000111222"), Tiltakstype.SOMMERJOBB), null));
     }
 
     @Test
@@ -1007,5 +1007,16 @@ public class AvtaleTest {
     @Test
     public void forlenge_avtale_etter_etterregistrering() {
         // Implementer meg
+    }
+
+    @Test
+    void kan_ikke_godkjenne_når_deltaker_er_67_år() {
+        NavIdent veilderNavIdent = new NavIdent("Z123456");
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("06015522834"), TestData.etBedriftNr(), Tiltakstype.VARIG_LONNSTILSKUDD), veilderNavIdent);
+        avtale.endreAvtale(avtale.getSistEndret(), TestData.endringPåAlleFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+        avtale.godkjennForArbeidsgiver(TestData.etFodselsnummer());
+        assertFeilkode(Feilkode.DELTAKER_67_AAR, () -> avtale.godkjennForVeilederOgDeltaker(TestData.enNavIdent(), TestData.enGodkjentPaVegneGrunn()));
+        avtale.godkjennForDeltaker(TestData.etFodselsnummer());
+        assertFeilkode(Feilkode.DELTAKER_67_AAR, () -> avtale.godkjennForVeileder(TestData.enNavIdent()));
     }
 }

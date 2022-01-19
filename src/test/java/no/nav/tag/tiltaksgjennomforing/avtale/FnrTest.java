@@ -95,4 +95,17 @@ public class FnrTest {
         assertThat(fnr.erUnder16år()).isFalse();
         assertThat(fnr.erOver30år()).isFalse();
     }
+
+    @Test
+    void testOver67ÅrVedOppstart() {
+        Fnr fnr = new Fnr("30015521534");
+
+        Now.fixedDate(LocalDate.of(2022, 1, 29));
+        assertThat(fnr.erOver67ÅrFraOppstartDato(Now.localDate())).isFalse();
+
+        Now.fixedDate(LocalDate.of(2022, 1, 30));
+        assertThat(fnr.erOver67ÅrFraOppstartDato(Now.localDate())).isTrue();
+
+        Now.resetClock();
+    }
 }
