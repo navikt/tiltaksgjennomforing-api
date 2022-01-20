@@ -43,7 +43,7 @@ public class InnloggingService {
         BrukerOgIssuer brukerOgIssuer = tokenUtils.hentBrukerOgIssuer().orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget."));
         Issuer issuer = brukerOgIssuer.getIssuer();
 
-        if (issuer == Issuer.ISSUER_SELVBETJENING && avtalerolle == Avtalerolle.DELTAKER) {
+        if ((issuer == Issuer.ISSUER_SELVBETJENING || issuer == Issuer.ISSUER_TOKENX) && avtalerolle == Avtalerolle.DELTAKER) {
             return new Deltaker(new Fnr(brukerOgIssuer.getBrukerIdent()));
         }
 
