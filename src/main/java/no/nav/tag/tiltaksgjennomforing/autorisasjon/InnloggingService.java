@@ -1,9 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.BrukerOgIssuer;
@@ -22,6 +18,11 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.stereotype.Component;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -69,7 +70,7 @@ public class InnloggingService {
                 throw new FeilkodeException(Feilkode.MANGLER_AD_GRUPPE_BESLUTTER);
             }
         } else {
-            throw new TilgangskontrollException("Ugyldig kombinasjon av issuer og rolle.");
+            throw new FeilkodeException(Feilkode.UGYLDIG_KOMBINASJON_AV_ISSUER_OG_ROLLE);
         }
     }
 
