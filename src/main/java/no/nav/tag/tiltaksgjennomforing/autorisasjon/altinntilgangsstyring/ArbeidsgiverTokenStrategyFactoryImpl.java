@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 @Profile(value = { Miljø.PROD_FSS, Miljø.DEV_FSS })
-public class ArbeidsgiverTokenStrategyFactoryImpl implements ArbeidsgiverTokenStrategyFactoryInterface {
+public class ArbeidsgiverTokenStrategyFactoryImpl implements ArbeidsgiverTokenStrategyFactory {
     private final TokenUtils tokenUtils;
     private final OAuth2AccessTokenService oAuth2AccessTokenService;
     private final ClientConfigurationProperties clientConfigurationProperties;

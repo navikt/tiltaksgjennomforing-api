@@ -1,8 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring;
 
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.HentArbeidsgiverToken;
 
-public interface ArbeidsgiverTokenStrategyFactoryInterface {
+public interface ArbeidsgiverTokenStrategyFactory {
     HentArbeidsgiverToken create(TokenUtils.Issuer issuer);
 }

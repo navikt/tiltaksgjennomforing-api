@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.ArbeidsgiverTokenStrategyFactoryInterface;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.ArbeidsgiverTokenStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
 import no.nav.tag.tiltaksgjennomforing.metrikker.MetrikkRegistrering;
@@ -46,7 +46,7 @@ public class AvtaleRepositoryTest {
     private MetrikkRegistrering metrikkRegistrering;
 
     @Autowired
-    private ArbeidsgiverTokenStrategyFactoryInterface arbeidsgiverTokenStrategyFactory;
+    private ArbeidsgiverTokenStrategyFactory arbeidsgiverTokenStrategyFactory;
 
     @BeforeEach
     public void setup() {
