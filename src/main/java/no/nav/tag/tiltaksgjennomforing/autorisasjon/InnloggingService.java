@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.BrukerOgIssuer;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer;
@@ -17,6 +18,8 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
@@ -26,8 +29,8 @@ import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class InnloggingService {
-
     private final SystembrukerProperties systembrukerProperties;
     private final BeslutterAdGruppeProperties beslutterAdGruppeProperties;
     private final TokenUtils tokenUtils;
@@ -70,6 +73,7 @@ public class InnloggingService {
                 throw new FeilkodeException(Feilkode.MANGLER_AD_GRUPPE_BESLUTTER);
             }
         } else {
+            log.warn("Ugyldig kombinasjon av issuer={} og rolle={}", issuer, avtalerolle);
             throw new FeilkodeException(Feilkode.UGYLDIG_KOMBINASJON_AV_ISSUER_OG_ROLLE);
         }
     }
