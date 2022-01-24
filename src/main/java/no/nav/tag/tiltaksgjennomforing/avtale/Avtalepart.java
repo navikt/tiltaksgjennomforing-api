@@ -23,8 +23,6 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.hendelselogg.Hendelselogg;
-import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 
 @AllArgsConstructor
@@ -119,11 +117,6 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     public Collection<? extends Identifikator> identifikatorer() {
         return List.of(getIdentifikator());
-    }
-
-    public List<Hendelselogg> hentHendelselogg(UUID avtaleId, AvtaleRepository avtaleRepository, HendelseloggRepository hendelseloggRepository) {
-        Avtale avtale = hentAvtale(avtaleRepository, avtaleId);
-        return hendelseloggRepository.findAllByAvtaleId(avtale.getId());
     }
 
     protected void leggTilGeografiskEnhet(Avtale avtale, PdlRespons pdlRespons, Norg2Client norg2Client) {

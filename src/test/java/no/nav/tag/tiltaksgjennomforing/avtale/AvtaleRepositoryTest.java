@@ -16,7 +16,6 @@ import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.ArbeidsgiverTokenStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
 import no.nav.tag.tiltaksgjennomforing.metrikker.MetrikkRegistrering;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarselRepository;
@@ -37,9 +36,6 @@ public class AvtaleRepositoryTest {
     private AvtaleRepository avtaleRepository;
 
     @Autowired
-    private HendelseloggRepository hendelseloggRepository;
-
-    @Autowired
     private VarselRepository varselRepository;
 
     @MockBean
@@ -50,7 +46,6 @@ public class AvtaleRepositoryTest {
 
     @BeforeEach
     public void setup() {
-        hendelseloggRepository.deleteAll();
         varselRepository.deleteAll();
         avtaleRepository.deleteAll();
     }

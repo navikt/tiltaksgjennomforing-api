@@ -45,7 +45,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
-import no.nav.tag.tiltaksgjennomforing.hendelselogg.HendelseloggRepository;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.ArbeidsgiverNotifikasjonRepository;
 import no.nav.tag.tiltaksgjennomforing.varsel.oppgave.LagGosysVarselLytter;
@@ -68,8 +67,6 @@ class LagVarselFraAvtaleHendelserTest {
     @Autowired
     VarselRepository varselRepository;
     @Autowired
-    HendelseloggRepository hendelseloggRepository;
-    @Autowired
     ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
     @MockBean
     LagGosysVarselLytter lagGosysVarselLytter;
@@ -79,7 +76,6 @@ class LagVarselFraAvtaleHendelserTest {
     @BeforeEach
     void setUp() {
         varselRepository.deleteAll();
-        hendelseloggRepository.deleteAll();
         arbeidsgiverNotifikasjonRepository.deleteAll();
         avtaleInnholdRepository.deleteAll();
         avtaleRepository.deleteAll();
