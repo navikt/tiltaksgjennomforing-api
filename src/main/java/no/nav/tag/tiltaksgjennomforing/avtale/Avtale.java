@@ -647,7 +647,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     public void togglegodkjennEtterregistrering(NavIdent beslutter) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
-        if (erGodkjentAvArbeidsgiver() || erGodkjentAvDeltaker()) {
+        if (erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_MERKES_FOR_ETTERREGISTRERING_AVTALE_GODKJENT);
         }
         setGodkjentForEtterregistrering(!this.godkjentForEtterregistrering);

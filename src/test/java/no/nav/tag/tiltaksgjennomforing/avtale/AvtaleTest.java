@@ -1005,6 +1005,13 @@ public class AvtaleTest {
     }
 
     @Test
+    public void avtale_skal_kunne_etterregistrere_med_arbeidsgiver_godkjenning() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
+        avtale.togglegodkjennEtterregistrering(TestData.enNavIdent());
+    }
+
+    @Test
     public void forlenge_avtale_etter_etterregistrering() {
         // Implementer meg
     }
