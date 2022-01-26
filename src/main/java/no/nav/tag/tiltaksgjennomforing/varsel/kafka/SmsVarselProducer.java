@@ -27,7 +27,7 @@ public class SmsVarselProducer {
 
             @Override
             public void onSuccess(SendResult<String, SmsVarselMelding> result) {
-                log.info("SmsVarsel med smsVarselId={} sendt på Kafka topic", smsVarsel.getSmsVarselId());
+                log.info("SmsVarsel med smsVarselId={} sendt på Kafka topic {}", smsVarsel.getSmsVarselId(), result.getProducerRecord().topic());
             }
         });
     }
