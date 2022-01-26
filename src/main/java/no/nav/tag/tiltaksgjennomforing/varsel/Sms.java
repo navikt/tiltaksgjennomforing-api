@@ -21,7 +21,7 @@ import java.util.UUID;
 @Entity
 public class Sms {
     @Id
-    private UUID id;
+    private UUID smsVarselId;
     private String telefonnummer;
     @Convert(converter = IdentifikatorConverter.class)
     private Identifikator identifikator;
@@ -37,7 +37,7 @@ public class Sms {
                                  String meldingstekst,
                                  VarslbarHendelseType hendelseType, UUID avtaleId) {
         Sms sms = new Sms();
-        sms.id = UUID.randomUUID();
+        sms.smsVarselId = UUID.randomUUID();
         sms.telefonnummer = telefonnummer;
         sms.identifikator = identifikator;
         sms.meldingstekst = meldingstekst;

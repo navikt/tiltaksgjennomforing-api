@@ -1,5 +1,5 @@
 create table sms (
-    id uuid primary key,
+    sms_varsel_id uuid primary key,
     telefonnummer varchar,
     identifikator varchar,
     meldingstekst varchar,
