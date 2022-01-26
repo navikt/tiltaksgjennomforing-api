@@ -43,6 +43,9 @@ public class AvtaleRepositoryTest {
     @Autowired
     private SmsRepository smsRepository;
 
+    @Autowired
+    private AvtaleInnholdRepository avtaleInnholdRepository;
+
     @MockBean
     private MetrikkRegistrering metrikkRegistrering;
 
@@ -53,6 +56,7 @@ public class AvtaleRepositoryTest {
     public void setup() {
         varselRepository.deleteAll();
         smsRepository.deleteAll();
+        avtaleInnholdRepository.deleteAll();
         avtaleRepository.deleteAll();
     }
 
