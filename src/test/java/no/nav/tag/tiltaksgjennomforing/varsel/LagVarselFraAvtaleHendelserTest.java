@@ -72,9 +72,12 @@ class LagVarselFraAvtaleHendelserTest {
     LagGosysVarselLytter lagGosysVarselLytter;
     @Autowired
     VeilarbArenaClient veilarbArenaClient;
+    @Autowired
+    SmsRepository smsRepository;
 
     @BeforeEach
     void setUp() {
+        smsRepository.deleteAll();
         varselRepository.deleteAll();
         arbeidsgiverNotifikasjonRepository.deleteAll();
         avtaleInnholdRepository.deleteAll();
