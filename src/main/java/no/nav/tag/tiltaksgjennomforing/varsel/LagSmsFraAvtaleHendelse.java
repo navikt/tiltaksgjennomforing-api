@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
-@Profile({ Miljø.DEV_FSS, "dockercompose", Miljø.LOCAL })
+@Profile({ Miljø.DEV_FSS, "dockercompose", Miljø.LOCAL, Miljø.PROD_FSS })
 public class LagSmsFraAvtaleHendelse {
     private final SmsRepository smsRepository;
     private final SmsProducer smsProducer;
