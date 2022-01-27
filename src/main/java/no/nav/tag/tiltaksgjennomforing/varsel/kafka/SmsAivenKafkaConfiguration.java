@@ -58,6 +58,8 @@ public class SmsAivenKafkaConfiguration {
         props.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, sslKeystoreLocationEnvKey);
         props.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, sslKeystorePasswordEnvKey);
 
+        props.put(JsonSerializer.ADD_TYPE_INFO_HEADERS, false);
+
         props.put("schema.registry.url", schemaRegistryUrl);
         props.put("basic.auth.credentials.source", schemaRegistryCredentialsSource);
         props.put("basic.auth.user.info", schemaRegistryUserInfo);
