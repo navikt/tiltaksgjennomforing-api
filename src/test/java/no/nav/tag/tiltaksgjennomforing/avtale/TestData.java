@@ -1,44 +1,24 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.*;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
+import no.nav.tag.tiltaksgjennomforing.enhet.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
-import no.nav.tag.tiltaksgjennomforing.persondata.Adressebeskyttelse;
-import no.nav.tag.tiltaksgjennomforing.persondata.Data;
-import no.nav.tag.tiltaksgjennomforing.persondata.HentGeografiskTilknytning;
-import no.nav.tag.tiltaksgjennomforing.persondata.HentPerson;
-import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
-import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
-import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.persondata.*;
+import no.nav.tag.tiltaksgjennomforing.sporingslogg.Sporingslogg;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
-import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelse;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.*;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 public class TestData {
 
@@ -451,8 +431,8 @@ public class TestData {
         return new Identifikator("test-id");
     }
 
-    public static VarslbarHendelse enHendelse(Avtale avtale) {
-        return VarslbarHendelse.nyHendelse(avtale, VarslbarHendelseType.OPPRETTET);
+    public static Sporingslogg enHendelse(Avtale avtale) {
+        return Sporingslogg.nyHendelse(avtale, VarslbarHendelseType.OPPRETTET);
     }
 
     public static Avtale enAvtaleMedFlereVersjoner() {

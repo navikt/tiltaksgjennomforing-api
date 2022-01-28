@@ -4,6 +4,8 @@ import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.sporingslogg.Sporingslogg;
+import no.nav.tag.tiltaksgjennomforing.sporingslogg.SporingsloggRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,9 +17,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @ActiveProfiles(Miljø.LOCAL)
 @DirtiesContext
-public class VarslbarHendelseRepositoryTest {
+public class SporingsloggRepositoryTest {
     @Autowired
-    private VarslbarHendelseRepository varslbarHendelseRepository;
+    private SporingsloggRepository sporingsloggRepository;
     @Autowired
     private AvtaleRepository avtaleRepository;
 
@@ -25,8 +27,8 @@ public class VarslbarHendelseRepositoryTest {
     public void save__lagrer_alle_felter() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         avtaleRepository.save(avtale);
-        VarslbarHendelse varslbarHendelse = TestData.enHendelse(avtale);
-        VarslbarHendelse lagretVarslbarHendelse = varslbarHendelseRepository.save(varslbarHendelse);
+        Sporingslogg varslbarHendelse = TestData.enHendelse(avtale);
+        Sporingslogg lagretVarslbarHendelse = sporingsloggRepository.save(varslbarHendelse);
         assertThat(lagretVarslbarHendelse.getId()).isNotNull();
         assertThat(lagretVarslbarHendelse.getTidspunkt()).isNotNull();
         assertThat(lagretVarslbarHendelse).isEqualToIgnoringNullFields(varslbarHendelse);
