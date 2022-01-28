@@ -2,8 +2,8 @@ package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
-import no.nav.tag.tiltaksgjennomforing.varsel.SmsVarsel;
-import no.nav.tag.tiltaksgjennomforing.varsel.SmsVarselRepository;
+import no.nav.tag.tiltaksgjennomforing.varsel.Sms;
+import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -21,24 +21,21 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DirtiesContext
 @SpringBootTest(properties = { "tiltaksgjennomforing.kafka.enabled=true" })
 @ActiveProfiles({ Miljø.LOCAL })
-@EmbeddedKafka(partitions = 1, controlledShutdown = false, topics = { Topics.SMS_VARSEL, Topics.SMS_VARSEL_RESULTAT })
+@EmbeddedKafka(partitions = 1, controlledShutdown = false, topics = { Topics.TILTAK_SMS })
 public class SmsVarselProducerTest {
-
-    @Autowired
-    private TransactionTemplate transactionTemplate;
     @Autowired
     private EmbeddedKafkaBroker embeddedKafka;
     @Autowired
-    private SmsVarselRepository repository;
+    private SmsProducer producer;
 
     private Consumer<String, String> consumer;
 
@@ -50,14 +47,14 @@ public class SmsVarselProducerTest {
 
         ConsumerFactory<String, String> cf = new DefaultKafkaConsumerFactory<>(consumerProps);
         consumer = cf.createConsumer();
-        embeddedKafka.consumeFromAnEmbeddedTopic(consumer, Topics.SMS_VARSEL);
+        embeddedKafka.consumeFromAnEmbeddedTopic(consumer, Topics.TILTAK_SMS);
     }
 
     @Test
     public void smsVarselOpprettet__skal_sendes_på_kafka_topic_med_riktige_felter() throws JSONException {
-        transactionTemplate.execute(status -> repository.save(SmsVarsel.nyttVarsel("tlf", new Identifikator("id"), "melding", null)));
+        producer.sendSmsVarselMeldingTilKafka(Sms.nyttVarsel("tlf", new Identifikator("id"), "melding", VarslbarHendelseType.AVTALE_INNGÅTT, UUID.randomUUID()));
 
-        ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.SMS_VARSEL);
+        ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.TILTAK_SMS);
         JSONObject json = new JSONObject(record.value());
         assertThat(json.getString("smsVarselId")).isNotNull();
         assertThat(json.getString("identifikator")).isEqualTo("id");

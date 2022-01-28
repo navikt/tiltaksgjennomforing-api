@@ -1,51 +1,25 @@
 package no.nav.tag.tiltaksgjennomforing.metrikker;
 
 import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
-import no.nav.tag.tiltaksgjennomforing.varsel.SmsVarselRepository;
-import no.nav.tag.tiltaksgjennomforing.varsel.events.SmsVarselResultatMottatt;
+import no.nav.tag.tiltaksgjennomforing.varsel.events.SmsSendt;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class MetrikkRegistrering {
     private final MeterRegistry meterRegistry;
-    private final SmsVarselRepository smsVarselRepository;
-
-    @PostConstruct
-    public void init() {
-        Gauge.builder("tiltaksgjennomforing.smsvarsel.usendt", smsVarselRepository::antallUsendte)
-                .register(meterRegistry);
-    }
 
     @EventListener
-    public void smsVarselResultatMottatt(SmsVarselResultatMottatt event) {
-        switch (event.getSmsVarsel().getStatus()) {
-            case SENDT:
-                smsVarselSendt();
-                break;
-            case FEIL:
-                smsVarselFeil();
-                break;
-        }
-    }
-
-    public void smsVarselSendt() {
+    public void smsSendt(SmsSendt event) {
         Counter.builder("tiltaksgjennomforing.smsvarsel.sendt").register(meterRegistry).increment();
-    }
-
-    public void smsVarselFeil() {
-        Counter.builder("tiltaksgjennomforing.smsvarsel.feil").register(meterRegistry).increment();
     }
 
     @EventListener

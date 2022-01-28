@@ -20,7 +20,7 @@ public class SmsProducer {
     }
 
     public void sendSmsVarselMeldingTilKafka(Sms sms) {
-        kafkaTemplate.send(Topics.SMS_AIVEN, sms.getSmsVarselId().toString(), sms).addCallback(new ListenableFutureCallback<>() {
+        kafkaTemplate.send(Topics.TILTAK_SMS, sms.getSmsVarselId().toString(), sms).addCallback(new ListenableFutureCallback<>() {
             @Override
             public void onFailure(Throwable ex) {
                 log.warn("Sms med id={} kunne ikke sendes til Kafka topic", sms.getSmsVarselId());

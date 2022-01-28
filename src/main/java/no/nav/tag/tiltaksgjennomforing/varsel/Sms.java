@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.IdentifikatorConverter;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import no.nav.tag.tiltaksgjennomforing.varsel.events.SmsSendt;
+import org.springframework.data.domain.AbstractAggregateRoot;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -19,7 +21,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-public class Sms {
+public class Sms extends AbstractAggregateRoot<Sms> {
     @Id
     private UUID smsVarselId;
     private String telefonnummer;
@@ -35,7 +37,8 @@ public class Sms {
     public static Sms nyttVarsel(String telefonnummer,
                                  Identifikator identifikator,
                                  String meldingstekst,
-                                 VarslbarHendelseType hendelseType, UUID avtaleId) {
+                                 VarslbarHendelseType hendelseType,
+                                 UUID avtaleId) {
         Sms sms = new Sms();
         sms.smsVarselId = UUID.randomUUID();
         sms.telefonnummer = telefonnummer;
@@ -45,6 +48,7 @@ public class Sms {
         sms.tidspunkt = Now.localDateTime();
         sms.avtaleId = avtaleId;
         sms.avsenderApplikasjon = "tiltaksgjennomforing-api";
+        sms.registerEvent(new SmsSendt(sms));
         return sms;
     }
 }

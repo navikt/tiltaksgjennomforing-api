@@ -27,7 +27,7 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class RefusjonKlarConsumer {
+public class RefusjonVarselConsumer {
     private final AvtaleRepository avtaleRepository;
 
     @Value("${no.nav.gcp.kafka.aiven.bootstrap-servers}")

@@ -1,21 +1,18 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
 import lombok.RequiredArgsConstructor;
-import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.varsel.kafka.SmsProducer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
-@Profile({ Miljø.DEV_FSS, "dockercompose", Miljø.LOCAL, Miljø.PROD_FSS })
 public class LagSmsFraAvtaleHendelse {
     private final SmsRepository smsRepository;
     private final SmsProducer smsProducer;

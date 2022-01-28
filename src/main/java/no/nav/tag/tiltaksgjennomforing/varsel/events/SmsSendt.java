@@ -4,6 +4,6 @@ import lombok.Value;
 import no.nav.tag.tiltaksgjennomforing.varsel.Sms;
 
 @Value
-public class SmsLagret {
+public class SmsSendt {
     Sms sms;
 }
