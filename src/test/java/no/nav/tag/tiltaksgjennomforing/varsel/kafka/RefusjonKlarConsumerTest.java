@@ -33,7 +33,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(properties = { "tiltaksgjennomforing.kafka.enabled=true" })
-@EmbeddedKafka(partitions = 1, topics = { Topics.SMS_VARSEL, Topics.TILTAK_VARSEL })
+@EmbeddedKafka(partitions = 1, topics = { Topics.SMS_AIVEN, Topics.TILTAK_VARSEL })
 @DirtiesContext
 @ActiveProfiles({ Miljø.LOCAL })
 class RefusjonKlarConsumerTest {
@@ -71,7 +71,7 @@ class RefusjonKlarConsumerTest {
 
         embeddedKafka.consumeFromAllEmbeddedTopics(consumer);
 
-        ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.SMS_VARSEL);
+        ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.SMS_AIVEN);
         JSONObject jsonRefusjonRecord = new JSONObject(record.value());
 
         String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til sommerjobb for avtale med nr: %d. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
