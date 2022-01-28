@@ -2,7 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
+import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.request.ArbeidsgiverMutationRequest;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.request.Variables;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
@@ -128,9 +128,9 @@ public class NotifikasjonService {
 
     public void oppgaveUtfoert(
             Avtale avtale,
-            VarslbarHendelseType hendelseTypeSomSkalMerkesUtfoert,
+            HendelseType hendelseTypeSomSkalMerkesUtfoert,
             MutationStatus status,
-            VarslbarHendelseType hendelseTypeForNyNotifikasjon) {
+            HendelseType hendelseTypeForNyNotifikasjon) {
 
         final List<ArbeidsgiverNotifikasjon> notifikasjonList =
                 handler.finnUtfoertNotifikasjon(avtale.getId(), hendelseTypeSomSkalMerkesUtfoert, status.getStatus());
@@ -173,7 +173,7 @@ public class NotifikasjonService {
         if (!notifikasjonlist.isEmpty()) {
             notifikasjonlist.forEach(n -> {
                 final NotifikasjonEvent event = handler.finnEllerOpprettNotifikasjonForHendelse(
-                        avtale, n.getId(), VarslbarHendelseType.ANNULLERT, this, notifikasjonParser,
+                        avtale, n.getId(), HendelseType.ANNULLERT, this, notifikasjonParser,
                         MutationStatus.SOFT_DELETE_NOTIFIKASJON_VELLYKKET, NotifikasjonOperasjonType.SOFTDELETE_NOTIFIKASJON);
 
                 if (!event.notifikasjonFerdigBehandlet) {

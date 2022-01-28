@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.IdentifikatorConverter;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -31,13 +32,13 @@ public class Sms extends AbstractAggregateRoot<Sms> {
     private UUID avtaleId;
     private LocalDateTime tidspunkt;
     @Enumerated(EnumType.STRING)
-    private VarslbarHendelseType hendelseType;
+    private HendelseType hendelseType;
     private String avsenderApplikasjon;
 
     public static Sms nyttVarsel(String telefonnummer,
                                  Identifikator identifikator,
                                  String meldingstekst,
-                                 VarslbarHendelseType hendelseType,
+                                 HendelseType hendelseType,
                                  UUID avtaleId) {
         Sms sms = new Sms();
         sms.smsVarselId = UUID.randomUUID();

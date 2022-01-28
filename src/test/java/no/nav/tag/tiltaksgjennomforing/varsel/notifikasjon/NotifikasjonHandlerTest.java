@@ -1,8 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
-import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.FellesResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.nyBeskjed.NyBeskjedResponse;
@@ -83,7 +83,7 @@ public class NotifikasjonHandlerTest {
 
         ArbeidsgiverNotifikasjon notifikasjon =
                 ArbeidsgiverNotifikasjon.nyHendelse(TestData.enArbeidstreningAvtale(),
-                        VarslbarHendelseType.GODKJENT_AV_VEILEDER,
+                        HendelseType.GODKJENT_AV_VEILEDER,
                         notifikasjonService, parser);
 
         final NyBeskjedResponse parsetBeskjedResponse = notifikasjonHandler.readResponse(response, NyBeskjedResponse.class);

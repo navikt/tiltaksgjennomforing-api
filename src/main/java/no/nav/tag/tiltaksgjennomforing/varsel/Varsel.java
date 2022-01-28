@@ -1,25 +1,18 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
-import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
-import no.nav.tag.tiltaksgjennomforing.avtale.IdentifikatorConverter;
-import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.data.domain.AbstractAggregateRoot;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -34,7 +27,7 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
     private Identifikator identifikator;
     private String tekst;
     @Enumerated(EnumType.STRING)
-    private VarslbarHendelseType hendelseType;
+    private HendelseType hendelseType;
     private boolean bjelle;
     private UUID avtaleId;
     private LocalDateTime tidspunkt;
@@ -43,11 +36,11 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
     @Enumerated(EnumType.STRING)
     private Avtalerolle utførtAv;
 
-    private static String tilskuddsperiodeAvslåttTekst(Avtale avtale, String varslbarHendelseTekst) {
+    private static String tilskuddsperiodeAvslåttTekst(Avtale avtale, String hendelseTypeTekst) {
         TilskuddPeriode gjeldendePeriode = avtale.gjeldendeTilskuddsperiode();
         String avslagÅrsaker = gjeldendePeriode.getAvslagsårsaker().stream()
                 .map(type -> type.getTekst().toLowerCase()).collect(Collectors.joining(", "));
-        return varslbarHendelseTekst
+        return hendelseTypeTekst
                 .concat(gjeldendePeriode.getAvslåttAvNavIdent().asString())
                 .concat(". Årsak til retur: ")
                 .concat(avslagÅrsaker)
@@ -55,7 +48,7 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
                 .concat(gjeldendePeriode.getAvslagsforklaring());
     }
 
-    private static String getVarslbarHendelseTekst(Avtale avtale, VarslbarHendelseType hendelseType) {
+    private static String lagVarselTekst(Avtale avtale, HendelseType hendelseType) {
         switch (hendelseType) {
             case TILSKUDDSPERIODE_AVSLATT:
                 return tilskuddsperiodeAvslåttTekst(avtale, hendelseType.getTekst());
@@ -68,13 +61,13 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
         }
     }
 
-    public static Varsel nyttVarsel(Identifikator identifikator, boolean bjelle, Avtale avtale, Avtalerolle mottaker, Avtalerolle utførtAv, VarslbarHendelseType varslbarHendelseType, UUID avtaleId) {
+    public static Varsel nyttVarsel(Identifikator identifikator, boolean bjelle, Avtale avtale, Avtalerolle mottaker, Avtalerolle utførtAv, HendelseType hendelseType, UUID avtaleId) {
         Varsel varsel = new Varsel();
         varsel.id = UUID.randomUUID();
         varsel.tidspunkt = Now.localDateTime();
         varsel.identifikator = identifikator;
-        varsel.tekst = getVarslbarHendelseTekst(avtale, varslbarHendelseType);
-        varsel.hendelseType = varslbarHendelseType;
+        varsel.tekst = lagVarselTekst(avtale, hendelseType);
+        varsel.hendelseType = hendelseType;
         varsel.avtaleId = avtaleId;
         varsel.bjelle = bjelle;
         varsel.mottaker = mottaker;

@@ -1,48 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle.ARBEIDSGIVER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle.BESLUTTER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle.DELTAKER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle.VEILEDER;
-import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.AVTALE_FORDELT;
-import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.AVTALE_FORLENGET;
-import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.DELT_MED_ARBEIDSGIVER;
-import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.DELT_MED_DELTAKER;
-import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.ENDRET;
-import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.FJERNET_ETTERREGISTRERING;
-import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER;
-import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER;
-import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.GODKJENT_AV_ARBEIDSGIVER;
-import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.GODKJENT_AV_DELTAKER;
-import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.GODKJENT_FOR_ETTERREGISTRERING;
-import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.GODKJENT_PAA_VEGNE_AV;
-import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.NY_VEILEDER;
-import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.OPPRETTET;
-import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.OPPRETTET_AV_ARBEIDSGIVER;
-import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.STILLINGSBESKRIVELSE_ENDRET;
-import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.TILSKUDDSBEREGNING_ENDRET;
-import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.TILSKUDDSPERIODE_AVSLATT;
-import static no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType.TILSKUDDSPERIODE_GODKJENT;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.EnumSet;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avslagsårsak;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnholdRepository;
-import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
-import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
-import no.nav.tag.tiltaksgjennomforing.avtale.Beslutter;
-import no.nav.tag.tiltaksgjennomforing.avtale.Deltaker;
-import no.nav.tag.tiltaksgjennomforing.avtale.EndreStillingsbeskrivelse;
-import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
-import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
-import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -55,6 +14,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.util.EnumSet;
+
+import static no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle.*;
+import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ActiveProfiles(Miljø.LOCAL)
@@ -225,13 +190,13 @@ class LagVarselFraAvtaleHendelserTest {
         assertHendelse(TILSKUDDSBEREGNING_ENDRET, VEILEDER, DELTAKER, true);
     }
 
-    private void assertHendelse(VarslbarHendelseType hendelseType, Avtalerolle utførtAv, Avtalerolle mottaker, boolean bjelle) {
+    private void assertHendelse(HendelseType hendelseType, Avtalerolle utførtAv, Avtalerolle mottaker, boolean bjelle) {
         assertThat(varselRepository.findAll())
                 .filteredOn(varsel -> varsel.getMottaker() == mottaker && varsel.getUtførtAv() == utførtAv && varsel.getHendelseType() == hendelseType && varsel.isBjelle() == bjelle)
                 .hasSize(1);
     }
 
-    private void assertIngenHendelse(VarslbarHendelseType hendelseType, Avtalerolle mottaker) {
+    private void assertIngenHendelse(HendelseType hendelseType, Avtalerolle mottaker) {
         assertThat(varselRepository.findAll())
                 .filteredOn(varsel -> varsel.getMottaker() == mottaker && varsel.getHendelseType() == hendelseType)
                 .isEmpty();

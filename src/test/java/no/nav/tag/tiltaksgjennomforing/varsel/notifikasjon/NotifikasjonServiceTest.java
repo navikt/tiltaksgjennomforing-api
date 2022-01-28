@@ -3,8 +3,8 @@ package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
-import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ public class NotifikasjonServiceTest {
         avtaleRepository.save(avtale);
         notifikasjon = ArbeidsgiverNotifikasjon.nyHendelse(
                 avtale,
-                VarslbarHendelseType.OPPRETTET,
+                HendelseType.OPPRETTET,
                 notifikasjonService,
                 parser);
     }
@@ -100,7 +100,7 @@ public class NotifikasjonServiceTest {
 
         assertThat(notifikasjon).isNotNull();
         assertThat(notifikasjon.getAvtaleId()).isEqualTo(avtale.getId());
-        assertThat(notifikasjon.getHendelseType()).isEqualTo(VarslbarHendelseType.OPPRETTET);
+        assertThat(notifikasjon.getHendelseType()).isEqualTo(HendelseType.OPPRETTET);
         assertThat(notifikasjon.getStatusResponse()).isEqualTo(MutationStatus.NY_OPPGAVE_VELLYKKET.getStatus());
     }
 
@@ -127,8 +127,8 @@ public class NotifikasjonServiceTest {
 
         notifikasjonService.oppgaveUtfoert(
                 avtale,
-                VarslbarHendelseType.OPPRETTET,
-                MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
+                HendelseType.OPPRETTET,
+                MutationStatus.NY_OPPGAVE_VELLYKKET, HendelseType.AVTALE_INNGÅTT);
 
         List<ArbeidsgiverNotifikasjon> oppdatertNotifikasjonList =
                 arbeidsgiverNotifikasjonRepository.findAllByAvtaleId(avtale.getId());
@@ -152,13 +152,13 @@ public class NotifikasjonServiceTest {
 
         notifikasjonService.oppgaveUtfoert(
                 avtale,
-                VarslbarHendelseType.OPPRETTET,
-                MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
+                HendelseType.OPPRETTET,
+                MutationStatus.NY_OPPGAVE_VELLYKKET, HendelseType.AVTALE_INNGÅTT);
 
         notifikasjonService.oppgaveUtfoert(
                 avtale,
-                VarslbarHendelseType.OPPRETTET,
-                MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
+                HendelseType.OPPRETTET,
+                MutationStatus.NY_OPPGAVE_VELLYKKET, HendelseType.AVTALE_INNGÅTT);
 
         List<ArbeidsgiverNotifikasjon> oppdatertNotifikasjonList =
                 arbeidsgiverNotifikasjonRepository.findAllByAvtaleId(avtale.getId());
@@ -199,17 +199,17 @@ public class NotifikasjonServiceTest {
         arbeidsgiverNotifikasjonRepository.deleteAll();
 
         final ArbeidsgiverNotifikasjon not_avtaleOpprettet =
-                ArbeidsgiverNotifikasjon.nyHendelse(avtale, VarslbarHendelseType.OPPRETTET, notifikasjonService, parser);
+                ArbeidsgiverNotifikasjon.nyHendelse(avtale, HendelseType.OPPRETTET, notifikasjonService, parser);
 
         final ArbeidsgiverNotifikasjon not_avtaleInngattBeskjed =
-                ArbeidsgiverNotifikasjon.nyHendelse(avtale, VarslbarHendelseType.AVTALE_INNGÅTT, notifikasjonService, parser);
+                ArbeidsgiverNotifikasjon.nyHendelse(avtale, HendelseType.AVTALE_INNGÅTT, notifikasjonService, parser);
 
         notifikasjonService.opprettOppgave(not_avtaleOpprettet,
                 NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()),
                 NotifikasjonTekst.TILTAK_AVTALE_OPPRETTET);
 
         notifikasjonService.oppgaveUtfoert(avtale,
-                VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
+                HendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET, HendelseType.AVTALE_INNGÅTT);
 
         notifikasjonService.opprettNyBeskjed(not_avtaleInngattBeskjed,
                 NotifikasjonMerkelapp.getMerkelapp(avtale.getTiltakstype().getBeskrivelse()),

@@ -2,15 +2,16 @@ package no.nav.tag.tiltaksgjennomforing.varsel;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 
 import java.util.List;
 
 public class VarselFactory {
     private final Avtale avtale;
     private final Avtalerolle utførtAv;
-    private final VarslbarHendelseType hendelseType;
+    private final HendelseType hendelseType;
 
-    public VarselFactory(Avtale avtale, Avtalerolle utførtAv, VarslbarHendelseType hendelseType) {
+    public VarselFactory(Avtale avtale, Avtalerolle utførtAv, HendelseType hendelseType) {
         this.avtale = avtale;
         this.hendelseType = hendelseType;
         this.utførtAv = utførtAv;

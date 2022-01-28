@@ -1,8 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
 import io.micrometer.core.annotation.Timed;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
+import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -28,7 +27,7 @@ public interface ArbeidsgiverNotifikasjonRepository extends JpaRepository<Arbeid
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     List<ArbeidsgiverNotifikasjon> findArbeidsgiverNotifikasjonByAvtaleIdAndHendelseTypeAndStatusResponse(
             UUID avtaleId,
-            VarslbarHendelseType hendelsetype,
+            HendelseType hendelsetype,
             String statusResponse);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})

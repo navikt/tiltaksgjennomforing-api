@@ -27,10 +27,10 @@ public class SporingsloggRepositoryTest {
     public void save__lagrer_alle_felter() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         avtaleRepository.save(avtale);
-        Sporingslogg varslbarHendelse = TestData.enHendelse(avtale);
-        Sporingslogg lagretVarslbarHendelse = sporingsloggRepository.save(varslbarHendelse);
-        assertThat(lagretVarslbarHendelse.getId()).isNotNull();
-        assertThat(lagretVarslbarHendelse.getTidspunkt()).isNotNull();
-        assertThat(lagretVarslbarHendelse).isEqualToIgnoringNullFields(varslbarHendelse);
+        Sporingslogg sporingslogg = TestData.enHendelse(avtale);
+        Sporingslogg lagretSporingslogg = sporingsloggRepository.save(sporingslogg);
+        assertThat(lagretSporingslogg.getId()).isNotNull();
+        assertThat(lagretSporingslogg.getTidspunkt()).isNotNull();
+        assertThat(lagretSporingslogg).isEqualToIgnoringNullFields(sporingslogg);
     }
 }

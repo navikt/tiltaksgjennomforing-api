@@ -10,7 +10,6 @@ import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.persondata.*;
 import no.nav.tag.tiltaksgjennomforing.sporingslogg.Sporingslogg;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
-import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -432,7 +431,7 @@ public class TestData {
     }
 
     public static Sporingslogg enHendelse(Avtale avtale) {
-        return Sporingslogg.nyHendelse(avtale, VarslbarHendelseType.OPPRETTET);
+        return Sporingslogg.nyHendelse(avtale, HendelseType.OPPRETTET);
     }
 
     public static Avtale enAvtaleMedFlereVersjoner() {

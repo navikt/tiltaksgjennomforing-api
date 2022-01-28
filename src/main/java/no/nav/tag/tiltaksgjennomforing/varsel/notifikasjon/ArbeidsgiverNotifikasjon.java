@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNrConverter;
+import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
-import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -26,7 +26,7 @@ public class ArbeidsgiverNotifikasjon {
     private LocalDateTime tidspunkt;
     private UUID avtaleId;
     @Enumerated(EnumType.STRING)
-    private VarslbarHendelseType hendelseType;
+    private HendelseType hendelseType;
     @Convert(converter = BedriftNrConverter.class)
     private BedriftNr virksomhetsnummer;
     private String lenke;
@@ -41,7 +41,7 @@ public class ArbeidsgiverNotifikasjon {
 
     public static ArbeidsgiverNotifikasjon nyHendelse(
             Avtale avtale,
-            VarslbarHendelseType varslbarHendelseType,
+            HendelseType hendelseType,
             NotifikasjonService notifikasjonService,
             NotifikasjonParser notifikasjonParser) {
 
@@ -54,7 +54,7 @@ public class ArbeidsgiverNotifikasjon {
         notifikasjon.id = UUID.randomUUID();
         notifikasjon.tidspunkt = Now.localDateTime();
         notifikasjon.avtaleId = avtale.getId();
-        notifikasjon.hendelseType = varslbarHendelseType;
+        notifikasjon.hendelseType = hendelseType;
         notifikasjon.virksomhetsnummer = avtale.getBedriftNr();
         notifikasjon.lenke = lenke;
         notifikasjon.serviceCode = notifikasjonerProperties.getServiceCode();

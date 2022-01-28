@@ -1,11 +1,11 @@
-package no.nav.tag.tiltaksgjennomforing.varsel;
+package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum VarslbarHendelseType {
+public enum HendelseType {
     OPPRETTET("Avtale er opprettet av veileder"),
     GODKJENT_AV_ARBEIDSGIVER("Avtale er godkjent av arbeidsgiver"),
     GODKJENT_AV_VEILEDER("Avtale er godkjent av veileder"),

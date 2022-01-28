@@ -3,8 +3,8 @@ package no.nav.tag.tiltaksgjennomforing.sporingslogg;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
-import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -22,14 +22,14 @@ public class Sporingslogg {
     private LocalDateTime tidspunkt;
     private UUID avtaleId;
     @Enumerated(EnumType.STRING)
-    private VarslbarHendelseType hendelseType;
+    private HendelseType hendelseType;
 
-    public static Sporingslogg nyHendelse(Avtale avtale, VarslbarHendelseType hendelseType) {
-        Sporingslogg varslbarHendelse = new Sporingslogg();
-        varslbarHendelse.id = UUID.randomUUID();
-        varslbarHendelse.tidspunkt = Now.localDateTime();
-        varslbarHendelse.avtaleId = avtale.getId();
-        varslbarHendelse.hendelseType = hendelseType;
-        return varslbarHendelse;
+    public static Sporingslogg nyHendelse(Avtale avtale, HendelseType hendelseType) {
+        Sporingslogg sporingslogg = new Sporingslogg();
+        sporingslogg.id = UUID.randomUUID();
+        sporingslogg.tidspunkt = Now.localDateTime();
+        sporingslogg.avtaleId = avtale.getId();
+        sporingslogg.hendelseType = hendelseType;
+        return sporingslogg;
     }
 }

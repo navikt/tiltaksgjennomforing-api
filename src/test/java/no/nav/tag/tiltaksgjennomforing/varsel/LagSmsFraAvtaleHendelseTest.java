@@ -44,10 +44,10 @@ class LagSmsFraAvtaleHendelseTest {
         avtale.getGjeldendeInnhold().setDeltakerTlf("42234567");
         avtale.delMedAvtalepart(Avtalerolle.ARBEIDSGIVER);
         avtaleRepository.save(avtale);
-        assertSmsOpprettetOgSendt(VarslbarHendelseType.DELT_MED_ARBEIDSGIVER, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
+        assertSmsOpprettetOgSendt(HendelseType.DELT_MED_ARBEIDSGIVER, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
         avtale.delMedAvtalepart(Avtalerolle.DELTAKER);
         avtaleRepository.save(avtale);
-        assertSmsOpprettetOgSendt(VarslbarHendelseType.DELT_MED_DELTAKER, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
+        assertSmsOpprettetOgSendt(HendelseType.DELT_MED_DELTAKER, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
     }
 
     @Test
@@ -57,10 +57,10 @@ class LagSmsFraAvtaleHendelseTest {
         Deltaker deltaker = TestData.enDeltaker(avtale);
         arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
         avtaleRepository.save(avtale);
-        assertSmsOpprettetOgSendt(VarslbarHendelseType.GODKJENT_AV_ARBEIDSGIVER, avtale.getId(), avtale.getGjeldendeInnhold().getVeilederTlf(), FAGSYSTEMSONE_VARSELTEKST);
+        assertSmsOpprettetOgSendt(HendelseType.GODKJENT_AV_ARBEIDSGIVER, avtale.getId(), avtale.getGjeldendeInnhold().getVeilederTlf(), FAGSYSTEMSONE_VARSELTEKST);
         deltaker.godkjennAvtale(Instant.now(), avtale);
         avtaleRepository.save(avtale);
-        assertSmsOpprettetOgSendt(VarslbarHendelseType.GODKJENT_AV_DELTAKER, avtale.getId(), avtale.getGjeldendeInnhold().getVeilederTlf(), FAGSYSTEMSONE_VARSELTEKST);
+        assertSmsOpprettetOgSendt(HendelseType.GODKJENT_AV_DELTAKER, avtale.getId(), avtale.getGjeldendeInnhold().getVeilederTlf(), FAGSYSTEMSONE_VARSELTEKST);
     }
 
     @Test
@@ -74,8 +74,8 @@ class LagSmsFraAvtaleHendelseTest {
         veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
         avtaleRepository.save(avtale);
 
-        assertSmsOpprettetOgSendt(VarslbarHendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
-        assertSmsOpprettetOgSendt(VarslbarHendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
+        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
+        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
     }
 
     @Test
@@ -88,15 +88,15 @@ class LagSmsFraAvtaleHendelseTest {
         //Arbeidsgiver opphever deltaker
         arbeidsgiver.opphevGodkjenninger(avtale);
         avtaleRepository.save(avtale);
-        assertSmsOpprettetOgSendt(VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
+        assertSmsOpprettetOgSendt(HendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
 
         deltaker.godkjennAvtale(Instant.now(), avtale);
         arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
         //Veileder opphever arbeidsgiver og deltaker
         veileder.opphevGodkjenninger(avtale);
         avtaleRepository.save(avtale);
-        assertSmsOpprettetOgSendt(VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
-        assertSmsOpprettetOgSendt(VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
+        assertSmsOpprettetOgSendt(HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
+        assertSmsOpprettetOgSendt(HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
     }
 
     @Test
@@ -108,7 +108,7 @@ class LagSmsFraAvtaleHendelseTest {
         avtaleRepository.save(avtale);
 
         String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til sommerjobb for avtale med nr: %s. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
-        assertSmsOpprettetOgSendt(VarslbarHendelseType.REFUSJON_KLAR, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+        assertSmsOpprettetOgSendt(HendelseType.REFUSJON_KLAR, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
     }
     @Test
     void refusjonKlarRevarsel() {
@@ -118,7 +118,7 @@ class LagSmsFraAvtaleHendelseTest {
         avtale.refusjonRevarsel();
         avtaleRepository.save(avtale);
         String meldingstekst = String.format("Fristen nærmer seg for å søke om refusjon for tilskudd til sommerjobb for avtale med nr: %s. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
-        assertSmsOpprettetOgSendt(VarslbarHendelseType.REFUSJON_KLAR_REVARSEL, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+        assertSmsOpprettetOgSendt(HendelseType.REFUSJON_KLAR_REVARSEL, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
     }
     @Test
     void refusjonFristForlenget() {
@@ -128,7 +128,7 @@ class LagSmsFraAvtaleHendelseTest {
         avtale.refusjonFristForlenget();
         avtaleRepository.save(avtale);
         String meldingstekst = String.format("Fristen for å godkjenne refusjon for avtale med nr: %s har blitt forlenget. Du kan sjekke fristen og søke om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
-        assertSmsOpprettetOgSendt(VarslbarHendelseType.REFUSJON_FRIST_FORLENGET, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+        assertSmsOpprettetOgSendt(HendelseType.REFUSJON_FRIST_FORLENGET, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
     }
     @Test
     void refusjonKorrigert() {
@@ -138,7 +138,7 @@ class LagSmsFraAvtaleHendelseTest {
         avtale.refusjonKorrigert();
         avtaleRepository.save(avtale);
         String meldingstekst = String.format("Tidligere innsendt refusjon på avtale med nr %d er korrigert. Se detaljer her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
-        assertSmsOpprettetOgSendt(VarslbarHendelseType.REFUSJON_KORRIGERT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+        assertSmsOpprettetOgSendt(HendelseType.REFUSJON_KORRIGERT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
     }
 
 
@@ -152,8 +152,8 @@ class LagSmsFraAvtaleHendelseTest {
         avtale.refusjonKorrigert();
         avtaleRepository.save(avtale);
         String meldingstekst = String.format("Tidligere innsendt refusjon på avtale med nr %d er korrigert. Se detaljer her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
-        assertSmsOpprettetOgSendt(VarslbarHendelseType.REFUSJON_KORRIGERT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
-        assertSmsOpprettetOgSendt(VarslbarHendelseType.REFUSJON_KORRIGERT, avtale.getId(), avtale.getGjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(), meldingstekst);
+        assertSmsOpprettetOgSendt(HendelseType.REFUSJON_KORRIGERT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+        assertSmsOpprettetOgSendt(HendelseType.REFUSJON_KORRIGERT, avtale.getId(), avtale.getGjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(), meldingstekst);
     }
 
     @Test
@@ -166,34 +166,34 @@ class LagSmsFraAvtaleHendelseTest {
         avtale.refusjonKorrigert();
         avtaleRepository.save(avtale);
         String meldingstekst = String.format("Tidligere innsendt refusjon på avtale med nr %d er korrigert. Se detaljer her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
-        assertSmsIkkeOpprettetEllerSendt(VarslbarHendelseType.REFUSJON_KORRIGERT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
-        assertSmsOpprettetOgSendt(VarslbarHendelseType.REFUSJON_KORRIGERT, avtale.getId(), avtale.getGjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(), meldingstekst);
+        assertSmsIkkeOpprettetEllerSendt(HendelseType.REFUSJON_KORRIGERT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+        assertSmsOpprettetOgSendt(HendelseType.REFUSJON_KORRIGERT, avtale.getId(), avtale.getGjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf(), meldingstekst);
     }
 
-    private void assertSmsOpprettetOgSendt(VarslbarHendelseType varslbarHendelseType, UUID avtaleId, String telefonnummer, String meldingstekst) {
+    private void assertSmsOpprettetOgSendt(HendelseType hendelseType, UUID avtaleId, String telefonnummer, String meldingstekst) {
         assertThat(smsRepository.findAll())
-                .filteredOn(sms -> sms.getHendelseType() == varslbarHendelseType
+                .filteredOn(sms -> sms.getHendelseType() == hendelseType
                         && sms.getAvtaleId().equals(avtaleId)
                         && sms.getTelefonnummer().equals(telefonnummer)
                         && sms.getMeldingstekst().equals(meldingstekst))
                 .hasSize(1);
         verify(smsProducer).sendSmsVarselMeldingTilKafka(argThat((Sms sms) ->
                 sms.getAvtaleId().equals(avtaleId)
-                && sms.getHendelseType().equals(varslbarHendelseType)
+                && sms.getHendelseType().equals(hendelseType)
                 && sms.getTelefonnummer().equals(telefonnummer)
                 && sms.getMeldingstekst().equals(meldingstekst)));
     }
 
-    private void assertSmsIkkeOpprettetEllerSendt(VarslbarHendelseType varslbarHendelseType, UUID avtaleId, String telefonnummer, String meldingstekst) {
+    private void assertSmsIkkeOpprettetEllerSendt(HendelseType hendelseType, UUID avtaleId, String telefonnummer, String meldingstekst) {
         assertThat(smsRepository.findAll())
-                .filteredOn(sms -> sms.getHendelseType() == varslbarHendelseType
+                .filteredOn(sms -> sms.getHendelseType() == hendelseType
                         && sms.getAvtaleId().equals(avtaleId)
                         && sms.getTelefonnummer().equals(telefonnummer)
                         && sms.getMeldingstekst().equals(meldingstekst))
                 .hasSize(0);
         verify(smsProducer, never()).sendSmsVarselMeldingTilKafka(argThat((Sms sms) ->
                 sms.getAvtaleId().equals(avtaleId)
-                        && sms.getHendelseType().equals(varslbarHendelseType)
+                        && sms.getHendelseType().equals(hendelseType)
                         && sms.getTelefonnummer().equals(telefonnummer)
                         && sms.getMeldingstekst().equals(meldingstekst)));
     }

@@ -2,8 +2,8 @@ package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
-import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
@@ -18,7 +18,7 @@ public class NotifikasjonHendelseLytter {
     private final NotifikasjonService notifikasjonService;
     private final NotifikasjonParser parser;
 
-    private void opprettOgSendNyBeskjed(Avtale avtale, VarslbarHendelseType hendelseType, NotifikasjonTekst tekst) {
+    private void opprettOgSendNyBeskjed(Avtale avtale, HendelseType hendelseType, NotifikasjonTekst tekst) {
         final ArbeidsgiverNotifikasjon notifikasjon = ArbeidsgiverNotifikasjon.nyHendelse(avtale,
                 hendelseType, notifikasjonService, parser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
@@ -30,7 +30,7 @@ public class NotifikasjonHendelseLytter {
     @EventListener
     public void avtaleOpprettet(AvtaleOpprettetAvVeileder event) {
         final ArbeidsgiverNotifikasjon notifikasjon = ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(),
-                VarslbarHendelseType.OPPRETTET, notifikasjonService, parser);
+                HendelseType.OPPRETTET, notifikasjonService, parser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
         notifikasjonService.opprettOppgave(notifikasjon,
                 NotifikasjonMerkelapp.getMerkelapp(event.getAvtale().getTiltakstype().getBeskrivelse()),
@@ -40,7 +40,7 @@ public class NotifikasjonHendelseLytter {
     @EventListener
     public void godkjenningerOpphevetAvVeileder(GodkjenningerOpphevetAvVeileder event) {
         final ArbeidsgiverNotifikasjon notifikasjon = ArbeidsgiverNotifikasjon.nyHendelse(event.getAvtale(),
-                VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, notifikasjonService, parser);
+                HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, notifikasjonService, parser);
         arbeidsgiverNotifikasjonRepository.save(notifikasjon);
         notifikasjonService.opprettOppgave(notifikasjon,
                 NotifikasjonMerkelapp.getMerkelapp(event.getAvtale().getTiltakstype().getBeskrivelse()),
@@ -49,58 +49,58 @@ public class NotifikasjonHendelseLytter {
 
     @EventListener
     public void avtaleKlarForRefusjon(RefusjonKlar event) {
-        opprettOgSendNyBeskjed(event.getAvtale(), VarslbarHendelseType.REFUSJON_KLAR,
+        opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.REFUSJON_KLAR,
                 NotifikasjonTekst.TILTAK_AVTALE_KLAR_REFUSJON);
     }
 
     @EventListener
     public void godkjentAvArbeidsgiver(GodkjentAvArbeidsgiver event) {
         notifikasjonService.oppgaveUtfoert(
-                event.getAvtale(),VarslbarHendelseType.OPPRETTET,
-                MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
+                event.getAvtale(), HendelseType.OPPRETTET,
+                MutationStatus.NY_OPPGAVE_VELLYKKET, HendelseType.AVTALE_INNGÅTT);
         notifikasjonService.oppgaveUtfoert(event.getAvtale(),
-                VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
+                HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, MutationStatus.NY_OPPGAVE_VELLYKKET, HendelseType.AVTALE_INNGÅTT);
     }
 
     @EventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
         notifikasjonService.oppgaveUtfoert(event.getAvtale(),
-                VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
+                HendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET, HendelseType.AVTALE_INNGÅTT);
         notifikasjonService.oppgaveUtfoert(event.getAvtale(),
-                VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
+                HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, MutationStatus.NY_OPPGAVE_VELLYKKET, HendelseType.AVTALE_INNGÅTT);
     }
 
     @EventListener
     public void godkjentPaVegneAv(GodkjentPaVegneAvDeltaker event) {
         notifikasjonService.oppgaveUtfoert(event.getAvtale(),
-                VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
+                HendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET, HendelseType.AVTALE_INNGÅTT);
         notifikasjonService.oppgaveUtfoert(event.getAvtale(),
-                VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
+                HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, MutationStatus.NY_OPPGAVE_VELLYKKET, HendelseType.AVTALE_INNGÅTT);
     }
 
     @EventListener
     public void godkjentPaVegneAvArbeidsgiver(GodkjentPaVegneAvArbeidsgiver event) {
         notifikasjonService.oppgaveUtfoert(event.getAvtale(),
-                VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
+                HendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET, HendelseType.AVTALE_INNGÅTT);
         notifikasjonService.oppgaveUtfoert(event.getAvtale(),
-                VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
+                HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, MutationStatus.NY_OPPGAVE_VELLYKKET, HendelseType.AVTALE_INNGÅTT);
     }
 
     @EventListener
     public void godkjentPaVegneAvDeltakerOgArbeidsgiver(GodkjentPaVegneAvDeltakerOgArbeidsgiver event) {
         notifikasjonService.oppgaveUtfoert(event.getAvtale(),
-                VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
+                HendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET, HendelseType.AVTALE_INNGÅTT);
         notifikasjonService.oppgaveUtfoert(event.getAvtale(),
-                VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
+                HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, MutationStatus.NY_OPPGAVE_VELLYKKET, HendelseType.AVTALE_INNGÅTT);
     }
 
     @EventListener
     public void avtaleInngått(AvtaleInngått event) {
         notifikasjonService.oppgaveUtfoert(event.getAvtale(),
-                VarslbarHendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
+                HendelseType.OPPRETTET, MutationStatus.NY_OPPGAVE_VELLYKKET, HendelseType.AVTALE_INNGÅTT);
         notifikasjonService.oppgaveUtfoert(event.getAvtale(),
-                VarslbarHendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, MutationStatus.NY_OPPGAVE_VELLYKKET, VarslbarHendelseType.AVTALE_INNGÅTT);
-        opprettOgSendNyBeskjed(event.getAvtale(), VarslbarHendelseType.AVTALE_INNGÅTT, NotifikasjonTekst.TILTAK_AVTALE_INNGATT);
+                HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, MutationStatus.NY_OPPGAVE_VELLYKKET, HendelseType.AVTALE_INNGÅTT);
+        opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.AVTALE_INNGÅTT, NotifikasjonTekst.TILTAK_AVTALE_INNGATT);
     }
 
     @EventListener
@@ -115,43 +115,43 @@ public class NotifikasjonHendelseLytter {
 
     @EventListener
     public void målEndret(MålEndret event) {
-        opprettOgSendNyBeskjed(event.getAvtale(), VarslbarHendelseType.MÅL_ENDRET,
+        opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.MÅL_ENDRET,
                 NotifikasjonTekst.TILTAK_MÅL_ENDRET);
     }
 
     @EventListener
     public void endreStillingbeskrivelse(StillingsbeskrivelseEndret event) {
-        opprettOgSendNyBeskjed(event.getAvtale(), VarslbarHendelseType.STILLINGSBESKRIVELSE_ENDRET,
+        opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.STILLINGSBESKRIVELSE_ENDRET,
                 NotifikasjonTekst.TILTAK_STILLINGSBESKRIVELSE_ENDRET);
     }
 
     @EventListener
     public void endreOppfølgingOgTilretteleggingInformasjon(OppfølgingOgTilretteleggingEndret event) {
-        opprettOgSendNyBeskjed(event.getAvtale(), VarslbarHendelseType.OPPFØLGING_OG_TILRETTELEGGING_ENDRET,
+        opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.OPPFØLGING_OG_TILRETTELEGGING_ENDRET,
                 NotifikasjonTekst.TILTAK_OPPFØLGING_OG_TILRETTELEGGING_ENDRET);
     }
 
     @EventListener
     public void endreKontaktInformasjon(KontaktinformasjonEndret event) {
-        opprettOgSendNyBeskjed(event.getAvtale(), VarslbarHendelseType.KONTAKTINFORMASJON_ENDRET,
+        opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.KONTAKTINFORMASJON_ENDRET,
                 NotifikasjonTekst.TILTAK_KONTAKTINFORMASJON_ENDRET);
     }
 
     @EventListener
     public void endreTilskuddsberegning(TilskuddsberegningEndret event) {
-        opprettOgSendNyBeskjed(event.getAvtale(), VarslbarHendelseType.TILSKUDDSBEREGNING_ENDRET,
+        opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.TILSKUDDSBEREGNING_ENDRET,
                 NotifikasjonTekst.TILTAK_TILSKUDDSBEREGNING_ENDRET);
     }
 
     @EventListener
     public void forkortAvtale(AvtaleForkortet event) {
-        opprettOgSendNyBeskjed(event.getAvtale(), VarslbarHendelseType.AVTALE_FORKORTET,
+        opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.AVTALE_FORKORTET,
                 NotifikasjonTekst.TILTAK_AVTALE_FORKORTET);
     }
 
     @EventListener
     public void forlengAvtale(AvtaleForlenget event) {
-        opprettOgSendNyBeskjed(event.getAvtale(), VarslbarHendelseType.AVTALE_FORLENGET,
+        opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.AVTALE_FORLENGET,
                 NotifikasjonTekst.TILTAK_AVTALE_FORLENGET);
     }
 }

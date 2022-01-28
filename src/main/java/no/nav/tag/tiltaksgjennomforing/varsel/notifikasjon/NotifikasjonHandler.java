@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.varsel.VarslbarHendelseType;
+import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.FeilVedSendingResponse.FeilVedSendingResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.FellesResponse;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
@@ -97,7 +97,7 @@ public class NotifikasjonHandler {
     protected NotifikasjonEvent finnEllerOpprettNotifikasjonForHendelse(
             Avtale avtale,
             UUID notifikasjonReferanseId,
-            VarslbarHendelseType hendelseTypeForNyNotifikasjon,
+            HendelseType hendelseTypeForNyNotifikasjon,
             NotifikasjonService service,
             NotifikasjonParser parser,
             MutationStatus onsketStatus,
@@ -121,7 +121,7 @@ public class NotifikasjonHandler {
         return event;
     }
 
-    protected List<ArbeidsgiverNotifikasjon> finnUtfoertNotifikasjon(UUID id, VarslbarHendelseType hendelsetype, String statusResponse) {
+    protected List<ArbeidsgiverNotifikasjon> finnUtfoertNotifikasjon(UUID id, HendelseType hendelsetype, String statusResponse) {
         return arbeidsgiverNotifikasjonRepository
                 .findArbeidsgiverNotifikasjonByAvtaleIdAndHendelseTypeAndStatusResponse(id, hendelsetype, statusResponse);
     }
