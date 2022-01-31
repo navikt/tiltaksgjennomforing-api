@@ -12,14 +12,16 @@ mutation OpprettNyBeskjed(
     metadata: {
       eksternId: $eksternId
       grupperingsid: $grupperingsId
+      virksomhetsnummer: $virksomhetsnummer
     }
-    mottaker: {
-      altinn: {
-        serviceCode: $serviceCode
-        serviceEdition: $serviceEdition
-        virksomhetsnummer: $virksomhetsnummer
+    mottakere: [
+      {
+        altinn: {
+          serviceCode: $serviceCode
+          serviceEdition: $serviceEdition
+        }
       }
-    }
+    ]
     notifikasjon: {
       merkelapp: $merkelapp
       tekst: $tekst
