@@ -107,7 +107,8 @@ public abstract class Avtalepart<T extends Identifikator> {
         if (!kanOppheveGodkjenninger(avtale)) {
             throw new KanIkkeOppheveException();
         }
-        if (!avtale.erGodkjentAvVeileder() && !avtale.erGodkjentAvArbeidsgiver() && !avtale.erGodkjentAvDeltaker()) {
+        if ((!avtale.erGodkjentAvVeileder() && !avtale.erGodkjentAvArbeidsgiver() && !avtale.erGodkjentAvDeltaker())
+            || (avtale.erGodkjentAvVeileder() && avtale.erGodkjentAvArbeidsgiver() && avtale.erGodkjentAvDeltaker())) {
             throw new KanIkkeOppheveException();
         }
         opphevGodkjenningerSomAvtalepart(avtale);

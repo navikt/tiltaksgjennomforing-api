@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.eq;
@@ -70,16 +71,14 @@ public class VeilederTest {
     }
 
     @Test
-    public void opphevGodkjenninger__kan_alltid_oppheve_godkjenninger() {
+    public void opphevGodkjenninger__kan_ikke_oppheve_godkjenninger_når_alle_har_godkjent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.opphevGodkjenninger(avtale);
-        assertThat(avtale.erGodkjentAvDeltaker()).isFalse();
-        assertThat(avtale.erGodkjentAvArbeidsgiver()).isFalse();
-        assertThat(avtale.erGodkjentAvVeileder()).isFalse();
+        assertFeilkode(Feilkode.KAN_IKKE_OPPHEVE, () -> veileder.opphevGodkjenninger(avtale));
+
     }
 
     @Test

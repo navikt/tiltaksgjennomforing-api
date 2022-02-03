@@ -102,6 +102,21 @@ public class AvtalepartTest {
     }
 
     @Test
+    public void opphevGodkjenninger__feiler_hvis_alle_har_allerede_godkjent() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
+        arbeidsgiver.godkjennForAvtalepart(avtale);
+        Veileder veileder = TestData.enVeileder(avtale);
+        GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
+        veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
+        assertThat(avtale.erGodkjentAvDeltaker()).isTrue();
+        assertThat(avtale.erGodkjentAvVeileder()).isTrue();
+        assertThat(avtale.erGodkjentAvArbeidsgiver()).isTrue();
+        assertThat(avtale.getGjeldendeInnhold().isGodkjentPaVegneAv()).isTrue();
+        assertFeilkode(Feilkode.KAN_IKKE_OPPHEVE, () -> veileder.opphevGodkjenninger(avtale));
+    }
+
+    @Test
     public void opphevGodkjenninger__feiler_hvis_ingen_har_godkjent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Veileder veileder = TestData.enVeileder(avtale);
