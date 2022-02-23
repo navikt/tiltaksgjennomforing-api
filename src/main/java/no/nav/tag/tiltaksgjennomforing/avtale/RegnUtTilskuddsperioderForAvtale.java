@@ -1,5 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import lombok.experimental.UtilityClass;
+import no.nav.tag.tiltaksgjennomforing.utils.Periode;
+
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -8,14 +11,12 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.experimental.UtilityClass;
-import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 
 @UtilityClass
 public class RegnUtTilskuddsperioderForAvtale {
 
     private final static BigDecimal DAGER_I_MÅNED = new BigDecimal("30.4375");
-    private final static int ANTALL_MÅNEDER_I_EN_PERIODE = 3;
+    private final static int ANTALL_MÅNEDER_I_EN_PERIODE = 1;
 
     public static List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(Integer sumLønnstilskuddPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed, Integer lonnstilskuddprosent, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMånedRedusert) {
         if (datoForRedusertProsent == null) {
@@ -64,12 +65,28 @@ public class RegnUtTilskuddsperioderForAvtale {
         }
         List<LocalDate> startDatoer = datoFraOgMed.datesUntil(datoTilOgMed.plusDays(1), Period.ofMonths(ANTALL_MÅNEDER_I_EN_PERIODE)).collect(Collectors.toList());
         ArrayList<Periode> datoPar = new ArrayList<>();
-        for (int i = 0; i < startDatoer.size() - 1; i++) {
-            LocalDate fra = startDatoer.get(i);
-            LocalDate til = startDatoer.get(i + 1).minusDays(1);
-            datoPar.addAll(splittHvisNyttÅr(fra, til));
+        for (int i = 0; i < startDatoer.size(); i++) {
+
+            if (i == 0) {
+                LocalDate fra = startDatoer.get(i);
+                LocalDate til = LocalDate.of(fra.getYear(), fra.getMonth(), fra.lengthOfMonth());
+                datoPar.addAll(splittHvisNyttÅr(fra, til));
+            } else if (i > 0 && startDatoer.get(i).getMonth() != startDatoer.get(i - 1).getMonth()) {
+                // Havnet i ny mnd - start på 01
+                LocalDate fra = LocalDate.of(startDatoer.get(i).getYear(), startDatoer.get(i).getMonth(), 01);
+                LocalDate til = fra.plusDays(fra.lengthOfMonth()).minusDays(1).isAfter(datoTilOgMed) ? datoTilOgMed : fra.plusDays(fra.lengthOfMonth()).minusDays(1);
+                //LocalDate til = fra.plusDays(fra.lengthOfMonth()).minusDays(1);//startDatoer.get(i + 1).minusDays(1);
+                datoPar.addAll(splittHvisNyttÅr(fra, til));
+            } else {
+                LocalDate fra = startDatoer.get(i);
+                LocalDate til = startDatoer.get(i + 1).minusDays(1);
+                datoPar.addAll(splittHvisNyttÅr(fra, til));
+            }
+
         }
-        datoPar.addAll(splittHvisNyttÅr(startDatoer.get(startDatoer.size() - 1), datoTilOgMed));
+        LocalDate sisteFra = LocalDate.of(datoTilOgMed.getYear(), datoTilOgMed.getMonth(), 01);
+        datoPar.addAll(splittHvisNyttÅr(sisteFra, datoTilOgMed));
+        //datoPar.addAll(splittHvisNyttÅr(startDatoer.get(startDatoer.size() - 1), datoTilOgMed));
         return datoPar;
     }
 
