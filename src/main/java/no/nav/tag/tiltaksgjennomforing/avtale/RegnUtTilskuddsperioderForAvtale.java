@@ -66,28 +66,17 @@ public class RegnUtTilskuddsperioderForAvtale {
         List<LocalDate> startDatoer = datoFraOgMed.datesUntil(datoTilOgMed.plusDays(1), Period.ofMonths(ANTALL_MÅNEDER_I_EN_PERIODE)).collect(Collectors.toList());
         ArrayList<Periode> datoPar = new ArrayList<>();
         for (int i = 0; i < startDatoer.size(); i++) {
-
             // fra: Hvis startdato er lik datoFraOgMed, bruk denne, hvis ikke, bruk første datoen i mnd.
             LocalDate fra = startDatoer.get(i).equals(datoFraOgMed) ? startDatoer.get(i) : førsteDatoIMnd(startDatoer.get(i));
             // til: Hvis siste dag i mnd. er mindre enn datoTilOgMed, bruk siste dag i mnd, ellers bruk datoTilOgMed
             LocalDate til = sisteDagIMnd(startDatoer.get(i)).isBefore(datoTilOgMed) ? sisteDagIMnd(startDatoer.get(i)) : datoTilOgMed;
 
-
-
             datoPar.addAll(splittHvisNyttÅr(fra, til));
-
-
-
-            //LocalDate fra = startDatoer.get(i);
-            //LocalDate til = startDatoer.get(i + 1).minusDays(1);
-            //datoPar.addAll(splittHvisNyttÅr(fra, til));
         }
-        //datoPar.addAll(splittHvisNyttÅr(startDatoer.get(startDatoer.size() - 1), datoTilOgMed));
         // Legg til siste periode hvis den ikke kom med i loopen
         if (datoPar.get(datoPar.size() - 1).getSlutt() != datoTilOgMed) {
             datoPar.addAll(splittHvisNyttÅr(førsteDatoIMnd(datoTilOgMed), datoTilOgMed));
         }
-
         return datoPar;
     }
 
