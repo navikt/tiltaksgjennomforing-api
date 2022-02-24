@@ -1,26 +1,17 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.fail;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class RegnUtTilskuddsperioderForAvtaleTest {
 
@@ -373,6 +364,42 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         assertThat(avtale.tilskuddsperiode(2).getStatus()).isEqualTo(TilskuddPeriodeStatus.UTBETALT);
 
         harRiktigeEgenskaper(avtale);
+        Now.resetClock();
+    }
+
+    @Test
+    public void genererMaks1MndTilskuddsperiode() {
+        Now.fixedDate(LocalDate.of(2021, 1, 01));
+        LocalDate avtaleStart = LocalDate.of(2021, 1, 1);
+        LocalDate avtaleSlutt = LocalDate.of(2021, 6, 2);
+        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
+
+        avtale.getTilskuddPeriode().forEach(tilskuddPeriode -> {
+            LocalDate fra = tilskuddPeriode.getStartDato();
+            LocalDate til = tilskuddPeriode.getSluttDato();
+            // fra og til dato er i samme måned
+            assertThat(fra.getMonth()).isEqualTo(til.getMonth());
+            // Det er maks 1 måneds lengde på tilskuddsperiodene
+            int dagerITilskuddsperiode = fra.until(til).getDays() + 1;
+            int dagerIMåneden = fra.lengthOfMonth();
+            assertThat(dagerITilskuddsperiode).isLessThanOrEqualTo(dagerIMåneden);
+        });
+        Now.resetClock();
+    }
+
+    @Test
+    public void splittVedMånedsskifte() {
+        Now.fixedDate(LocalDate.of(2021, 1, 01));
+        LocalDate avtaleStart = LocalDate.of(2021, 1, 20);
+        LocalDate avtaleSlutt = LocalDate.of(2022, 3, 2);
+        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
+
+        avtale.getTilskuddPeriode().forEach(tilskuddPeriode -> {
+            // start- og sluttdato er alltid i samme måned
+            assertThat(tilskuddPeriode.getStartDato().getMonth()).isEqualTo(tilskuddPeriode.getSluttDato().getMonth());
+        });
+
+
         Now.resetClock();
     }
 
