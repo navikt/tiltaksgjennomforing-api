@@ -69,7 +69,7 @@ public class RegnUtTilskuddsperioderForAvtale {
             // fra: Hvis startdato er lik datoFraOgMed, bruk denne, hvis ikke, bruk første datoen i mnd.
             LocalDate fra = startDatoer.get(i).equals(datoFraOgMed) ? startDatoer.get(i) : førsteDatoIMnd(startDatoer.get(i));
             // til: Hvis siste dag i mnd. er mindre enn datoTilOgMed, bruk siste dag i mnd, ellers bruk datoTilOgMed
-            LocalDate til = sisteDagIMnd(startDatoer.get(i)).isBefore(datoTilOgMed) ? sisteDagIMnd(startDatoer.get(i)) : datoTilOgMed;
+            LocalDate til = sisteDatoIMnd(startDatoer.get(i)).isBefore(datoTilOgMed) ? sisteDatoIMnd(startDatoer.get(i)) : datoTilOgMed;
 
             datoPar.addAll(splittHvisNyttÅr(fra, til));
         }
@@ -83,7 +83,7 @@ public class RegnUtTilskuddsperioderForAvtale {
     private LocalDate førsteDatoIMnd(LocalDate dato) {
         return LocalDate.of(dato.getYear(), dato.getMonth(), 01);
     }
-    private LocalDate sisteDagIMnd(LocalDate dato) {
+    private LocalDate sisteDatoIMnd(LocalDate dato) {
         return LocalDate.of(dato.getYear(), dato.getMonth(), dato.lengthOfMonth());
     }
 
