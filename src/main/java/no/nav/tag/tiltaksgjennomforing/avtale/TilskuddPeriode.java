@@ -112,7 +112,7 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
         if (løpenummer == 1) {
             return LocalDate.MIN;
         }
-        return startDato.minusMonths(1);
+        return startDato.minusMonths(3);
     }
 
     void godkjenn(NavIdent beslutter, String enhet) {
