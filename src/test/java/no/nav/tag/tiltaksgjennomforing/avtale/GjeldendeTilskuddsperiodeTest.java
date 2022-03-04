@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -26,7 +26,21 @@ public class GjeldendeTilskuddsperiodeTest {
         assertThat(avtale.tilskuddsperiode(1)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
 
         avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), "0000");
-        assertThat(avtale.tilskuddsperiode(1)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
+        assertThat(avtale.tilskuddsperiode(2)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
+
+        avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), "0000");
+        assertThat(avtale.tilskuddsperiode(3)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
+
+        avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), "0000");
+        assertThat(avtale.tilskuddsperiode(4)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
+
+
+        avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), "0000");
+        assertThat(avtale.tilskuddsperiode(5)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
+
+        // Tilskuddsperiode index 5 har startdato som er mer enn 3 mnd frem i tid og vil ikke bli godkjent, slik den vil fortsatt være gjeldende.
+        avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), "0000");
+        assertThat(avtale.tilskuddsperiode(5)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
 
         Now.resetClock();
     }
@@ -73,6 +87,7 @@ public class GjeldendeTilskuddsperiodeTest {
     }
 
     // 8
+    @Disabled("Vil ikke virke lenger pga. tilskuddsperioder er 1mnd. nå istedenfor 3.")
     @Test
     public void godkjenner_og_neste_kan_ikke_behandles() {
         Now.fixedDate(LocalDate.of(2021, 11, 30));
@@ -86,5 +101,25 @@ public class GjeldendeTilskuddsperiodeTest {
         Now.resetClock();
     }
 
+    @Test
+    public void godkjenner_3_første_tilskuddsperioder_neste_kan_ikke_behandles() {
+        Now.fixedDate(LocalDate.of(2021, 11, 30));
+        LocalDate avtaleStart = Now.localDate();
+        LocalDate avtaleSlutt = Now.localDate().plusMonths(6);
+        Avtale avtale = enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
+
+        assertThat(avtale.gjeldendeTilskuddsperiode().getStartDato()).isEqualTo(avtaleStart);
+        avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), avtale.getEnhetGeografisk());
+        assertThat(avtale.gjeldendeTilskuddsperiode()).isEqualTo(avtale.tilskuddsperiode(1));
+        avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), avtale.getEnhetGeografisk());
+        assertThat(avtale.gjeldendeTilskuddsperiode()).isEqualTo(avtale.tilskuddsperiode(2));
+        avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), avtale.getEnhetGeografisk());
+        assertThat(avtale.gjeldendeTilskuddsperiode()).isEqualTo(avtale.tilskuddsperiode(3));
+        avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), avtale.getEnhetGeografisk());
+        assertThat(avtale.gjeldendeTilskuddsperiode()).isEqualTo(avtale.tilskuddsperiode(3));
+        assertThat(avtale.gjeldendeTilskuddsperiode().getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
+
+
+    }
 
 }

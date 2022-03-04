@@ -1,5 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import lombok.experimental.UtilityClass;
+import no.nav.tag.tiltaksgjennomforing.utils.Periode;
+
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -8,14 +11,12 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import lombok.experimental.UtilityClass;
-import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 
 @UtilityClass
 public class RegnUtTilskuddsperioderForAvtale {
 
     private final static BigDecimal DAGER_I_MÅNED = new BigDecimal("30.4375");
-    private final static int ANTALL_MÅNEDER_I_EN_PERIODE = 3;
+    private final static int ANTALL_MÅNEDER_I_EN_PERIODE = 1;
 
     public static List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(Integer sumLønnstilskuddPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed, Integer lonnstilskuddprosent, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMånedRedusert) {
         if (datoForRedusertProsent == null) {
@@ -64,13 +65,26 @@ public class RegnUtTilskuddsperioderForAvtale {
         }
         List<LocalDate> startDatoer = datoFraOgMed.datesUntil(datoTilOgMed.plusDays(1), Period.ofMonths(ANTALL_MÅNEDER_I_EN_PERIODE)).collect(Collectors.toList());
         ArrayList<Periode> datoPar = new ArrayList<>();
-        for (int i = 0; i < startDatoer.size() - 1; i++) {
-            LocalDate fra = startDatoer.get(i);
-            LocalDate til = startDatoer.get(i + 1).minusDays(1);
+        for (int i = 0; i < startDatoer.size(); i++) {
+            // fra: Hvis startdato er lik datoFraOgMed, bruk denne, hvis ikke, bruk første datoen i mnd.
+            LocalDate fra = startDatoer.get(i).equals(datoFraOgMed) ? startDatoer.get(i) : førsteDatoIMnd(startDatoer.get(i));
+            // til: Hvis siste dag i mnd. er mindre enn datoTilOgMed, bruk siste dag i mnd, ellers bruk datoTilOgMed
+            LocalDate til = sisteDatoIMnd(startDatoer.get(i)).isBefore(datoTilOgMed) ? sisteDatoIMnd(startDatoer.get(i)) : datoTilOgMed;
+
             datoPar.addAll(splittHvisNyttÅr(fra, til));
         }
-        datoPar.addAll(splittHvisNyttÅr(startDatoer.get(startDatoer.size() - 1), datoTilOgMed));
+        // Legg til siste periode hvis den ikke kom med i loopen
+        if (datoPar.get(datoPar.size() - 1).getSlutt() != datoTilOgMed) {
+            datoPar.addAll(splittHvisNyttÅr(førsteDatoIMnd(datoTilOgMed), datoTilOgMed));
+        }
         return datoPar;
+    }
+
+    private LocalDate førsteDatoIMnd(LocalDate dato) {
+        return LocalDate.of(dato.getYear(), dato.getMonth(), 01);
+    }
+    private LocalDate sisteDatoIMnd(LocalDate dato) {
+        return LocalDate.of(dato.getYear(), dato.getMonth(), dato.lengthOfMonth());
     }
 
     private static List<Periode> splittHvisNyttÅr (LocalDate fraDato, LocalDate tilDato) {
