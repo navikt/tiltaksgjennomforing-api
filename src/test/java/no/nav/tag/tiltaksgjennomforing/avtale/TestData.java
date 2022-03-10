@@ -35,6 +35,20 @@ public class TestData {
         return Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.SOMMERJOBB), veilderNavIdent);
     }
 
+    public static Avtale enMidlertidigLonnstilskuddsjobbAvtale() {
+        NavIdent veilderNavIdent = new NavIdent("Z123456");
+        return Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), veilderNavIdent);
+    }
+
+    public static Avtale enVarigLonnstilskuddsjobbAvtale() {
+        NavIdent veilderNavIdent = new NavIdent("Z123456");
+        return Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.VARIG_LONNSTILSKUDD), veilderNavIdent);
+    }
+
+    public static Avtale enMentorAvtale() {
+        NavIdent veilderNavIdent = new NavIdent("Z123456");
+        return Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.MENTOR), veilderNavIdent);
+    }
 
     public static Avtale enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt() {
         return Avtale.arbeidsgiverOppretterAvtale(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING));

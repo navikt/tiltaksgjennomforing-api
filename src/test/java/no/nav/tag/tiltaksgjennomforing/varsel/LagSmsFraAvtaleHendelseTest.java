@@ -100,7 +100,7 @@ class LagSmsFraAvtaleHendelseTest {
     }
 
     @Test
-    void refusjonKlar() {
+    void refusjon_somerjobb_klar() {
         Avtale avtale = TestData.enSommerjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         // I et reelt scenario kan ikke refusjonKlar bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
@@ -110,8 +110,58 @@ class LagSmsFraAvtaleHendelseTest {
         String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til sommerjobb for avtale med nr: %s. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
         assertSmsOpprettetOgSendt(HendelseType.REFUSJON_KLAR, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
     }
+
     @Test
-    void refusjonKlarRevarsel() {
+    void refusjon_midlertidig_lonnstilskudd_klar() {
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
+        avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
+        // I et reelt scenario kan ikke refusjonKlar bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
+        avtale.refusjonKlar();
+        avtaleRepository.save(avtale);
+
+        String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til midlertidig lønnstilskudd for avtale med nr: %s. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
+        assertSmsOpprettetOgSendt(HendelseType.REFUSJON_KLAR, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+    }
+
+    @Test
+    void refusjon_varig_lonnstilskudd_Klar() {
+        Avtale avtale = TestData.enVarigLonnstilskuddsjobbAvtale();
+        avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
+        // I et reelt scenario kan ikke refusjonKlar bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
+        avtale.refusjonKlar();
+        avtaleRepository.save(avtale);
+
+        String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til varig lønnstilskudd for avtale med nr: %s. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
+        assertSmsOpprettetOgSendt(HendelseType.REFUSJON_KLAR, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+    }
+
+    @Test
+    void refusjon_mentor_klar() {
+        Avtale avtale = TestData.enMentorAvtale();
+        avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
+        // I et reelt scenario kan ikke refusjonKlar bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
+        avtale.refusjonKlar();
+        avtaleRepository.save(avtale);
+
+        String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til mentor for avtale med nr: %s. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
+        assertSmsIkkeOpprettetEllerSendt(HendelseType.REFUSJON_KLAR, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+    }
+
+    @Test
+    void refusjon_arbeidstrening_klar() {
+        Avtale avtale = TestData.enArbeidstreningAvtale();
+        avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
+        // I et reelt scenario kan ikke refusjonKlar bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
+        avtale.refusjonKlar();
+        avtaleRepository.save(avtale);
+
+        String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til arbeidstrening for avtale med nr: %s. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
+        assertSmsIkkeOpprettetEllerSendt(HendelseType.REFUSJON_KLAR, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+
+    }
+
+    @Test
+    void refusjon_sommerjobb_klar_revarsel() {
         Avtale avtale = TestData.enSommerjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         // I et reelt scenario kan ikke refusjonRevarsel bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
@@ -120,8 +170,53 @@ class LagSmsFraAvtaleHendelseTest {
         String meldingstekst = String.format("Fristen nærmer seg for å søke om refusjon for tilskudd til sommerjobb for avtale med nr: %s. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
         assertSmsOpprettetOgSendt(HendelseType.REFUSJON_KLAR_REVARSEL, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
     }
+
     @Test
-    void refusjonFristForlenget() {
+    void refusjon_midlertidig_lonnstilskudd_klar_revarsel() {
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
+        avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
+        // I et reelt scenario kan ikke refusjonRevarsel bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
+        avtale.refusjonRevarsel();
+        avtaleRepository.save(avtale);
+        String meldingstekst = String.format("Fristen nærmer seg for å søke om refusjon for tilskudd til midlertidig lønnstilskudd for avtale med nr: %s. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
+        assertSmsOpprettetOgSendt(HendelseType.REFUSJON_KLAR_REVARSEL, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+    }
+
+    @Test
+    void refusjon_varig_lonnstilskudd_klar_revarsel() {
+        Avtale avtale = TestData.enVarigLonnstilskuddsjobbAvtale();
+        avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
+        // I et reelt scenario kan ikke refusjonRevarsel bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
+        avtale.refusjonRevarsel();
+        avtaleRepository.save(avtale);
+        String meldingstekst = String.format("Fristen nærmer seg for å søke om refusjon for tilskudd til varig lønnstilskudd for avtale med nr: %s. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
+        assertSmsOpprettetOgSendt(HendelseType.REFUSJON_KLAR_REVARSEL, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+    }
+
+    @Test
+    void refusjon_mentor_klar_revarsel() {
+        Avtale avtale = TestData.enMentorAvtale();
+        avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
+        // I et reelt scenario kan ikke refusjonRevarsel bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
+        avtale.refusjonRevarsel();
+        avtaleRepository.save(avtale);
+        String meldingstekst = String.format("Fristen nærmer seg for å søke om refusjon for tilskudd til mentor for avtale med nr: %s. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
+        assertSmsIkkeOpprettetEllerSendt(HendelseType.REFUSJON_KLAR_REVARSEL, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+    }
+
+    @Test
+    void refusjon_arbeidstrening_klar_revarsel() {
+        Avtale avtale = TestData.enArbeidstreningAvtale();
+        avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
+        // I et reelt scenario kan ikke refusjonRevarsel bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
+        avtale.refusjonRevarsel();
+        avtaleRepository.save(avtale);
+        String meldingstekst = String.format("Fristen nærmer seg for å søke om refusjon for tilskudd til arbeidstrening for avtale med nr: %s. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
+        assertSmsIkkeOpprettetEllerSendt(HendelseType.REFUSJON_KLAR_REVARSEL, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+    }
+
+    @Test
+    void refusjon_sommerjobb_frist_forlenget() {
         Avtale avtale = TestData.enSommerjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         // I et reelt scenario kan ikke refusjonFristForlenget bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
@@ -130,8 +225,53 @@ class LagSmsFraAvtaleHendelseTest {
         String meldingstekst = String.format("Fristen for å godkjenne refusjon for avtale med nr: %s har blitt forlenget. Du kan sjekke fristen og søke om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
         assertSmsOpprettetOgSendt(HendelseType.REFUSJON_FRIST_FORLENGET, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
     }
+
     @Test
-    void refusjonKorrigert() {
+    void refusjon_midlertidig_lonnstilskudd_frist_forlenget() {
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
+        avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
+        // I et reelt scenario kan ikke refusjonFristForlenget bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
+        avtale.refusjonFristForlenget();
+        avtaleRepository.save(avtale);
+        String meldingstekst = String.format("Fristen for å godkjenne refusjon for avtale med nr: %s har blitt forlenget. Du kan sjekke fristen og søke om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
+        assertSmsOpprettetOgSendt(HendelseType.REFUSJON_FRIST_FORLENGET, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+    }
+
+    @Test
+    void refusjon_varig_lonnstilskudd_frist_forlenget() {
+        Avtale avtale = TestData.enVarigLonnstilskuddsjobbAvtale();
+        avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
+        // I et reelt scenario kan ikke refusjonFristForlenget bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
+        avtale.refusjonFristForlenget();
+        avtaleRepository.save(avtale);
+        String meldingstekst = String.format("Fristen for å godkjenne refusjon for avtale med nr: %s har blitt forlenget. Du kan sjekke fristen og søke om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
+        assertSmsOpprettetOgSendt(HendelseType.REFUSJON_FRIST_FORLENGET, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+    }
+
+    @Test
+    void refusjon_mentor_frist_forlenget() {
+        Avtale avtale = TestData.enMentorAvtale();
+        avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
+        // I et reelt scenario kan ikke refusjonFristForlenget bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
+        avtale.refusjonFristForlenget();
+        avtaleRepository.save(avtale);
+        String meldingstekst = String.format("Fristen for å godkjenne refusjon for avtale med nr: %s har blitt forlenget. Du kan sjekke fristen og søke om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
+        assertSmsIkkeOpprettetEllerSendt(HendelseType.REFUSJON_FRIST_FORLENGET, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+    }
+
+    @Test
+    void refusjon_arbeidstrening_frist_forlenget() {
+        Avtale avtale = TestData.enArbeidstreningAvtale();
+        avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
+        // I et reelt scenario kan ikke refusjonFristForlenget bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
+        avtale.refusjonFristForlenget();
+        avtaleRepository.save(avtale);
+        String meldingstekst = String.format("Fristen for å godkjenne refusjon for avtale med nr: %s har blitt forlenget. Du kan sjekke fristen og søke om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
+        assertSmsIkkeOpprettetEllerSendt(HendelseType.REFUSJON_FRIST_FORLENGET, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+    }
+
+    @Test
+    void refusjon_sommerjobb_korrigert() {
         Avtale avtale = TestData.enSommerjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         // I et reelt scenario kan ikke refusjonKorrigert bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
@@ -139,6 +279,50 @@ class LagSmsFraAvtaleHendelseTest {
         avtaleRepository.save(avtale);
         String meldingstekst = String.format("Tidligere innsendt refusjon på avtale med nr %d er korrigert. Se detaljer her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
         assertSmsOpprettetOgSendt(HendelseType.REFUSJON_KORRIGERT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+    }
+
+    @Test
+    void refusjon_midlertidig_lonnstilskudd_korrigert() {
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
+        avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
+        // I et reelt scenario kan ikke refusjonKorrigert bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
+        avtale.refusjonKorrigert();
+        avtaleRepository.save(avtale);
+        String meldingstekst = String.format("Tidligere innsendt refusjon på avtale med nr %d er korrigert. Se detaljer her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
+        assertSmsOpprettetOgSendt(HendelseType.REFUSJON_KORRIGERT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+    }
+
+    @Test
+    void refusjon_varig_lonnstilskudd_korrigert() {
+        Avtale avtale = TestData.enVarigLonnstilskuddsjobbAvtale();
+        avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
+        // I et reelt scenario kan ikke refusjonKorrigert bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
+        avtale.refusjonKorrigert();
+        avtaleRepository.save(avtale);
+        String meldingstekst = String.format("Tidligere innsendt refusjon på avtale med nr %d er korrigert. Se detaljer her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
+        assertSmsOpprettetOgSendt(HendelseType.REFUSJON_KORRIGERT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+    }
+
+    @Test
+    void refusjon_mentor_korrigert() {
+        Avtale avtale = TestData.enMentorAvtale();
+        avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
+        // I et reelt scenario kan ikke refusjonKorrigert bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
+        avtale.refusjonKorrigert();
+        avtaleRepository.save(avtale);
+        String meldingstekst = String.format("Tidligere innsendt refusjon på avtale med nr %d er korrigert. Se detaljer her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
+        assertSmsIkkeOpprettetEllerSendt(HendelseType.REFUSJON_KORRIGERT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+    }
+
+    @Test
+    void refusjon_arbeidstrening_korrigert() {
+        Avtale avtale = TestData.enArbeidstreningAvtale();
+        avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
+        // I et reelt scenario kan ikke refusjonKorrigert bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
+        avtale.refusjonKorrigert();
+        avtaleRepository.save(avtale);
+        String meldingstekst = String.format("Tidligere innsendt refusjon på avtale med nr %d er korrigert. Se detaljer her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
+        assertSmsIkkeOpprettetEllerSendt(HendelseType.REFUSJON_KORRIGERT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
     }
 
 
