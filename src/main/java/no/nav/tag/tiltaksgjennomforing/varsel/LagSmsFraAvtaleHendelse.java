@@ -1,10 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
 import lombok.RequiredArgsConstructor;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
-import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
-import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.varsel.kafka.SmsProducer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -69,24 +66,36 @@ public class LagSmsFraAvtaleHendelse {
     }
     @EventListener
     public void refusjonKlar(RefusjonKlar event) {
-        String smsTekst = String.format("Dere kan nå søke om refusjon for tilskudd til sommerjobb for avtale med nr: %s. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", event.getAvtale().getAvtaleNr());
-        refusjonVarslingMedKontaktperson(event.getAvtale(), smsTekst, HendelseType.REFUSJON_KLAR);
+        if(event.getAvtale().getTiltakstype() == Tiltakstype.SOMMERJOBB || event.getAvtale().getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || event.getAvtale().getTiltakstype() == Tiltakstype.VARIG_LONNSTILSKUDD){
+            String tiltakNavn = event.getAvtale().getTiltakstype().getBeskrivelse().toLowerCase();
+            String smsTekst = String.format("Dere kan nå søke om refusjon for tilskudd til %s for avtale med nr: %s. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", tiltakNavn, event.getAvtale().getAvtaleNr());
+            refusjonVarslingMedKontaktperson(event.getAvtale(), smsTekst, HendelseType.REFUSJON_KLAR);
+        }
     }
+
     @EventListener
     public void refusjonKlarRevarsel(RefusjonKlarRevarsel event) {
-        String smsTekst = String.format("Fristen nærmer seg for å søke om refusjon for tilskudd til sommerjobb for avtale med nr: %s. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", event.getAvtale().getAvtaleNr());
-        refusjonVarslingMedKontaktperson(event.getAvtale(), smsTekst, HendelseType.REFUSJON_KLAR_REVARSEL);
+        if(event.getAvtale().getTiltakstype() == Tiltakstype.SOMMERJOBB || event.getAvtale().getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || event.getAvtale().getTiltakstype() == Tiltakstype.VARIG_LONNSTILSKUDD) {
+            String tiltakNavn = event.getAvtale().getTiltakstype().getBeskrivelse().toLowerCase();
+            String smsTekst = String.format("Fristen nærmer seg for å søke om refusjon for tilskudd til %s for avtale med nr: %s. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.",tiltakNavn, event.getAvtale().getAvtaleNr());
+            refusjonVarslingMedKontaktperson(event.getAvtale(), smsTekst, HendelseType.REFUSJON_KLAR_REVARSEL);
+        }
     }
+
     @EventListener
     public void refusjonFristForlenget(RefusjonFristForlenget event) {
-        String smsTekst = String.format("Fristen for å godkjenne refusjon for avtale med nr: %s har blitt forlenget. Du kan sjekke fristen og søke om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", event.getAvtale().getAvtaleNr());
-        refusjonVarslingMedKontaktperson(event.getAvtale(), smsTekst, HendelseType.REFUSJON_FRIST_FORLENGET);
-
+        if(event.getAvtale().getTiltakstype() == Tiltakstype.SOMMERJOBB || event.getAvtale().getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || event.getAvtale().getTiltakstype() == Tiltakstype.VARIG_LONNSTILSKUDD) {
+            String smsTekst = String.format("Fristen for å godkjenne refusjon for avtale med nr: %s har blitt forlenget. Du kan sjekke fristen og søke om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", event.getAvtale().getAvtaleNr());
+            refusjonVarslingMedKontaktperson(event.getAvtale(), smsTekst, HendelseType.REFUSJON_FRIST_FORLENGET);
+        }
     }
+
     @EventListener
     public void refusjonKorrigert(RefusjonKorrigert event) {
-        String smsTekst = String.format("Tidligere innsendt refusjon på avtale med nr %d er korrigert. Se detaljer her: https://tiltak-refusjon.nav.no. Hilsen NAV.", event.getAvtale().getAvtaleNr());
-        refusjonVarslingMedKontaktperson(event.getAvtale(), smsTekst, HendelseType.REFUSJON_KORRIGERT);
+        if(event.getAvtale().getTiltakstype() == Tiltakstype.SOMMERJOBB || event.getAvtale().getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || event.getAvtale().getTiltakstype() == Tiltakstype.VARIG_LONNSTILSKUDD) {
+            String smsTekst = String.format("Tidligere innsendt refusjon på avtale med nr %d er korrigert. Se detaljer her: https://tiltak-refusjon.nav.no. Hilsen NAV.", event.getAvtale().getAvtaleNr());
+            refusjonVarslingMedKontaktperson(event.getAvtale(), smsTekst, HendelseType.REFUSJON_KORRIGERT);
+        }
     }
 
     private void refusjonVarslingMedKontaktperson(Avtale avtale, String smsTekst, HendelseType hendelseType) {
