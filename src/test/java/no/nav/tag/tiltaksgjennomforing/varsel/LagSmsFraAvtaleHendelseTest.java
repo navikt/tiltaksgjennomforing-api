@@ -144,7 +144,7 @@ class LagSmsFraAvtaleHendelseTest {
     void refusjon_mentor_klar() {
         Avtale avtale = TestData.enMentorAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
-        LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
+        LocalDate fristForGodkjenning = LocalDate.of(2022, 04, 05);
         // I et reelt scenario kan ikke refusjonKlar bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
         avtale.refusjonKlar(fristForGodkjenning);
         avtaleRepository.save(avtale);
@@ -254,6 +254,7 @@ class LagSmsFraAvtaleHendelseTest {
         String meldingstekst = String.format("Fristen for å godkjenne refusjon for avtale med nr: %s har blitt forlenget. Du kan sjekke fristen og søke om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
         assertSmsOpprettetOgSendt(HendelseType.REFUSJON_FRIST_FORLENGET, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
     }
+
 
     @Test
     void refusjon_mentor_frist_forlenget() {
