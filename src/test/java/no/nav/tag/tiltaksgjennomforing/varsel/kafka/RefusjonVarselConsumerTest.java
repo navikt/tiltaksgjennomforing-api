@@ -58,7 +58,7 @@ class RefusjonVarselConsumerTest {
         Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvBeslutter();
         avtale = avtaleRepository.save(avtale);
 
-        var varselMelding = new RefusjonVarselMelding(avtale.getId(), avtale.tilskuddsperiode(0).getId(), VarselType.KLAR);
+        var varselMelding = new RefusjonVarselMelding(avtale.getId(), avtale.tilskuddsperiode(0).getId(), VarselType.KLAR, avtale.tilskuddsperiode(0).getSluttDato().plusMonths(2));
         String meldingSomString = objectMapper.writeValueAsString(varselMelding);
         Header header = new RecordHeader("__TypeId__", "no.nav.arbeidsgiver.tiltakrefusjon.refusjon.RefusjonVarselMelding".getBytes(StandardCharsets.UTF_8));
         Thread.sleep(100L);
@@ -75,7 +75,7 @@ class RefusjonVarselConsumerTest {
         ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.TILTAK_SMS);
         JSONObject jsonRefusjonRecord = new JSONObject(record.value());
 
-        String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til sommerjobb for avtale med nr: %d. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
+        String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til sommerjobb for avtale med nr: %d. Frist for å søke %s . Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr(), avtale.tilskuddsperiode(0).getSluttDato().plusMonths(2));
         assertThat(jsonRefusjonRecord.get("meldingstekst")).isEqualTo(meldingstekst);
         assertThat(jsonRefusjonRecord.get("telefonnummer")).isEqualTo(avtale.getGjeldendeInnhold().getArbeidsgiverTlf());
         assertThat(jsonRefusjonRecord.get("identifikator")).isEqualTo(avtale.getBedriftNr().asString());

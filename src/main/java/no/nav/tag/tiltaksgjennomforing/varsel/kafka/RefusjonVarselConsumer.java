@@ -75,7 +75,7 @@ public class RefusjonVarselConsumer {
 
         try {
             switch (varselType) {
-                case KLAR -> avtale.refusjonKlar();
+                case KLAR -> avtale.refusjonKlar(refusjonVarselMelding.getFristForGodkjenning());
                 case REVARSEL -> avtale.refusjonRevarsel();
                 case FRIST_FORLENGET -> avtale.refusjonFristForlenget();
                 case KORRIGERT -> avtale.refusjonKorrigert();

@@ -13,6 +13,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -103,11 +104,13 @@ class LagSmsFraAvtaleHendelseTest {
     void refusjon_somerjobb_klar() {
         Avtale avtale = TestData.enSommerjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
+        LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
+
         // I et reelt scenario kan ikke refusjonKlar bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
-        avtale.refusjonKlar();
+        avtale.refusjonKlar(fristForGodkjenning);
         avtaleRepository.save(avtale);
 
-        String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til sommerjobb for avtale med nr: %s. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
+        String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til sommerjobb for avtale med nr: %s. Frist for å søke %s . Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr(), fristForGodkjenning);
         assertSmsOpprettetOgSendt(HendelseType.REFUSJON_KLAR, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
     }
 
@@ -115,11 +118,12 @@ class LagSmsFraAvtaleHendelseTest {
     void refusjon_midlertidig_lonnstilskudd_klar() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
+        LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
         // I et reelt scenario kan ikke refusjonKlar bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
-        avtale.refusjonKlar();
+        avtale.refusjonKlar(fristForGodkjenning);
         avtaleRepository.save(avtale);
 
-        String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til midlertidig lønnstilskudd for avtale med nr: %s. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
+        String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til midlertidig lønnstilskudd for avtale med nr: %s. Frist for å søke %s . Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr(), fristForGodkjenning);
         assertSmsOpprettetOgSendt(HendelseType.REFUSJON_KLAR, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
     }
 
@@ -127,11 +131,12 @@ class LagSmsFraAvtaleHendelseTest {
     void refusjon_varig_lonnstilskudd_Klar() {
         Avtale avtale = TestData.enVarigLonnstilskuddsjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
+        LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
         // I et reelt scenario kan ikke refusjonKlar bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
-        avtale.refusjonKlar();
+        avtale.refusjonKlar(fristForGodkjenning);
         avtaleRepository.save(avtale);
 
-        String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til varig lønnstilskudd for avtale med nr: %s. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
+        String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til varig lønnstilskudd for avtale med nr: %s. Frist for å søke %s . Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr(), fristForGodkjenning);
         assertSmsOpprettetOgSendt(HendelseType.REFUSJON_KLAR, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
     }
 
@@ -139,11 +144,12 @@ class LagSmsFraAvtaleHendelseTest {
     void refusjon_mentor_klar() {
         Avtale avtale = TestData.enMentorAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
+        LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
         // I et reelt scenario kan ikke refusjonKlar bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
-        avtale.refusjonKlar();
+        avtale.refusjonKlar(fristForGodkjenning);
         avtaleRepository.save(avtale);
 
-        String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til mentor for avtale med nr: %s. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
+        String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til mentor for avtale med nr: %s. Frist for å søke %s . Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr(), fristForGodkjenning);
         assertSmsIkkeOpprettetEllerSendt(HendelseType.REFUSJON_KLAR, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
     }
 
@@ -151,11 +157,12 @@ class LagSmsFraAvtaleHendelseTest {
     void refusjon_arbeidstrening_klar() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
+        LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
         // I et reelt scenario kan ikke refusjonKlar bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
-        avtale.refusjonKlar();
+        avtale.refusjonKlar(fristForGodkjenning);
         avtaleRepository.save(avtale);
 
-        String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til arbeidstrening for avtale med nr: %s. Frist for å søke er om to måneder. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
+        String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til arbeidstrening for avtale med nr: %s. Frist for å søke %s . Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr(), fristForGodkjenning);
         assertSmsIkkeOpprettetEllerSendt(HendelseType.REFUSJON_KLAR, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
 
     }
