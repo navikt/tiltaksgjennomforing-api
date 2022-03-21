@@ -68,7 +68,7 @@ public class LagSmsFraAvtaleHendelse {
     public void refusjonKlar(RefusjonKlar event) {
         if(event.getAvtale().getTiltakstype() == Tiltakstype.SOMMERJOBB || event.getAvtale().getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || event.getAvtale().getTiltakstype() == Tiltakstype.VARIG_LONNSTILSKUDD){
             String tiltakNavn = event.getAvtale().getTiltakstype().getBeskrivelse().toLowerCase();
-            String smsTekst = String.format("Dere kan nå søke om refusjon for tilskudd til %s for avtale med nr: %s. Frist for å søke %s . Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", tiltakNavn, event.getAvtale().getAvtaleNr(), event.getFristForGodkjenning());
+            String smsTekst = String.format("Dere kan nå søke om refusjon for tilskudd til %s for avtale med nr: %s. Frist for å søke er %s. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", tiltakNavn, event.getAvtale().getAvtaleNr(), event.getFristForGodkjenning());
             refusjonVarslingMedKontaktperson(event.getAvtale(), smsTekst, HendelseType.REFUSJON_KLAR);
         }
     }

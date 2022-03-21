@@ -75,7 +75,7 @@ class RefusjonVarselConsumerTest {
         ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.TILTAK_SMS);
         JSONObject jsonRefusjonRecord = new JSONObject(record.value());
 
-        String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til sommerjobb for avtale med nr: %d. Frist for å søke %s . Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr(), avtale.tilskuddsperiode(0).getSluttDato().plusMonths(2));
+        String meldingstekst = String.format("Dere kan nå søke om refusjon for tilskudd til sommerjobb for avtale med nr: %d. Frist for å søke er %s. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr(), avtale.tilskuddsperiode(0).getSluttDato().plusMonths(2));
         assertThat(jsonRefusjonRecord.get("meldingstekst")).isEqualTo(meldingstekst);
         assertThat(jsonRefusjonRecord.get("telefonnummer")).isEqualTo(avtale.getGjeldendeInnhold().getArbeidsgiverTlf());
         assertThat(jsonRefusjonRecord.get("identifikator")).isEqualTo(avtale.getBedriftNr().asString());
