@@ -208,9 +208,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new RefusjonKlar(this, fristForGodkjenning));
     }
 
-    public void refusjonRevarsel() {
+    public void refusjonRevarsel(LocalDate fristForGodkjenning) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
-        registerEvent(new RefusjonKlarRevarsel(this));
+        registerEvent(new RefusjonKlarRevarsel(this, fristForGodkjenning));
     }
 
     public void refusjonFristForlenget() {
