@@ -36,7 +36,9 @@ public class VeilarbArenaClient {
 
     public Oppfølgingsstatus sjekkOgHentOppfølgingStatus(Avtale avtale) {
         Oppfølgingsstatus oppfølgingStatus = hentOppfølgingStatus(avtale.getDeltakerFnr().asString());
-        sjekkStatus(avtale, oppfølgingStatus);
+        if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
+            sjekkStatus(avtale, oppfølgingStatus);
+        }
         return oppfølgingStatus;
     }
 

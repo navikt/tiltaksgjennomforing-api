@@ -180,7 +180,7 @@ public class AvtaleController {
     }
 
 
-    // Veileder-operasjoner
+    /** VEILEDER-OPERASJONER **/
 
     @PostMapping
     @Transactional
@@ -188,10 +188,8 @@ public class AvtaleController {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
-        if (opprettAvtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
-            veileder.sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
-            veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
-        }
+        veileder.sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
+        veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();

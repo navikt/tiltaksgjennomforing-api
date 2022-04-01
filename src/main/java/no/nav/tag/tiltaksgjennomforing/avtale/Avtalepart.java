@@ -145,8 +145,10 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     public void sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(Avtale avtale, VeilarbArenaClient veilarbArenaClient) {
         Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
-        this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
-        this.settLonntilskuddProsentsats(avtale);
+        if(oppfølgingsstatus != null) {
+            this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
+            this.settLonntilskuddProsentsats(avtale);
+        }
     }
 
     public void sjekkOgHentOppfølgingStatus(Avtale avtale, VeilarbArenaClient veilarbArenaClient) {
