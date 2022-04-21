@@ -44,7 +44,7 @@
       "priority": 1,
       "request": {
         "method": "GET",
-        "urlPattern": "^.*\\/veilarbarena\\/api\\/arena\\/status\\?fnr=12345678901"
+        "urlPattern": "^.*\\/veilarbarena\\/api\\/arena\\/status\\?fnr=09019621658"
       },
       "response": {
         "status": 200,
