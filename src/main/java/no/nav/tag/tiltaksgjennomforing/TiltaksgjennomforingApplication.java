@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import no.nav.security.token.support.spring.api.EnableJwtTokenValidation;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -8,11 +9,13 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @EnableJwtTokenValidation(ignore = {
+        "org.springdoc",
         "springfox.documentation.swagger.web.ApiResourceController",
         "org.springframework"
 })
 @EnableConfigurationProperties
 @EnableJpaRepositories
+@OpenAPIDefinition
 public class TiltaksgjennomforingApplication {
     public static void main(String[] args) {
         String clusterName = System.getenv("NAIS_CLUSTER_NAME");

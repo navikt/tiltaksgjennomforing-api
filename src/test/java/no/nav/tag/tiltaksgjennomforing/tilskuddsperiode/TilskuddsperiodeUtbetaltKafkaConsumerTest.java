@@ -12,7 +12,7 @@ import java.util.Optional;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
-import no.nav.tag.tiltaksgjennomforing.varsel.kafka.TilskuddsperiodeUtbetaltKafkaConsumer;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.TilskuddsperiodeUtbetaltKafkaConsumer;
 import org.junit.jupiter.api.Test;
 
 class TilskuddsperiodeUtbetaltKafkaConsumerTest {

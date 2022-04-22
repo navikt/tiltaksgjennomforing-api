@@ -28,19 +28,19 @@ public class ClearCacheInterceptorTest {
     public void skal_ikke_evicte_cache_hvis_header_er_false() throws Exception {
         when(request.getHeader(ClearCacheInterceptor.CLEAR_CACHE_HEADER)).thenReturn("false");
         clearCacheInterceptor.preHandle(request, null, null);
-        verifyZeroInteractions(abacAdapter, axsysService);
+        verifyNoMoreInteractions(abacAdapter, axsysService);
     }
     
     @Test
     public void skal_ikke_evicte_cache_hvis_header_er_tilfeldig_streng() throws Exception {
         when(request.getHeader(ClearCacheInterceptor.CLEAR_CACHE_HEADER)).thenReturn("ajsdfbgjd");
         clearCacheInterceptor.preHandle(request, null, null);
-        verifyZeroInteractions(abacAdapter, axsysService);
+        verifyNoMoreInteractions(abacAdapter, axsysService);
     }
     
     @Test
     public void skal_ikke_evicte_cache_hvis_header_er_udefinert() throws Exception {
         clearCacheInterceptor.preHandle(request, null, null);
-        verifyZeroInteractions(abacAdapter, axsysService);
+        verifyNoMoreInteractions(abacAdapter, axsysService);
     }
 }
