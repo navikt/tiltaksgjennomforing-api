@@ -5,6 +5,7 @@ public enum Tiltakstype {
     MIDLERTIDIG_LONNSTILSKUDD("Midlertidig lønnstilskudd", "ab0336", "MIDLONTIL"),
     VARIG_LONNSTILSKUDD("Varig lønnstilskudd", "ab0337", "VARLONTIL"),
     MENTOR("Mentor", "ab0416", "MENTOR"),
+    INKLUDERINGSTILSKUDD("Inkludering tilskudd", "ab0417", "INKLUTILS"),
     SOMMERJOBB("Sommerjobb", "ab0450", null);
 
     final String beskrivelse;

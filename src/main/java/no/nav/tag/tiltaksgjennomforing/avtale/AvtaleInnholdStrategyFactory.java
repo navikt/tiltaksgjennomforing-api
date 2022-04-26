@@ -14,6 +14,8 @@ public class AvtaleInnholdStrategyFactory {
                 return new VarigLonnstilskuddStrategy(avtaleInnhold);
             case MENTOR:
                 return new MentorStrategy(avtaleInnhold);
+            case INKLUDERINGSTILSKUDD:
+                return new InkluderingsTiltakStrategy(avtaleInnhold);
             case SOMMERJOBB:
                 return new SommerjobbStrategy(avtaleInnhold);
         }

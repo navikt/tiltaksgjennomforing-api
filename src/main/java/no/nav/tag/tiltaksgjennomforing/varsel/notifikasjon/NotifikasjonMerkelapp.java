@@ -4,6 +4,7 @@ public enum NotifikasjonMerkelapp {
     LONNTILSKUDD("Lønnstilskudd"),
     MENTOR("Mentor"),
     SOMMERJOBB("Sommerjobb"),
+    INKLUDERINGSTILSKUDD("Inkluderingstilskudd"),
     ARBEIDSTRENING("Arbeidstrening");
 
     private final String merkelapp;
@@ -25,6 +26,8 @@ public enum NotifikasjonMerkelapp {
                 return NotifikasjonMerkelapp.MENTOR;
             case "Sommerjobb":
                 return NotifikasjonMerkelapp.SOMMERJOBB;
+            case "Inkluderingstilskudd":
+                return NotifikasjonMerkelapp.INKLUDERINGSTILSKUDD;
             case "Arbeidstrening":
             default:
                 return NotifikasjonMerkelapp.ARBEIDSTRENING;
