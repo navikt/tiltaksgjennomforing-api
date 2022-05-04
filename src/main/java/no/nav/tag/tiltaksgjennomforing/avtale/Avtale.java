@@ -1033,4 +1033,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             .orElseThrow()
             .setStatus(TilskuddPeriodeStatus.UTBETALT);
     }
+
+    public void oppdaterTilskuddsperiodestatus(UUID tilskuddsperiodeId, TilskuddPeriodeStatus status) {
+        this.getTilskuddPeriode().stream()
+                .filter(it -> it.getId().equals(tilskuddsperiodeId))
+                .findFirst()
+                .orElseThrow()
+                .setStatus(status);
+    }
 }
