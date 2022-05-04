@@ -7,4 +7,9 @@ import java.util.UUID;
 @Value
 public class TilskuddsperiodeAnnullertMelding {
     UUID tilskuddsperiodeId;
+    TilskuddsperiodeAnnullertÅrsak årsak;
+}
+
+enum TilskuddsperiodeAnnullertÅrsak {
+    AVTALE_ANNULLERT, REFUSJON_FRIST_UTGÅTT, REFUSJON_IKKE_SØKT,
 }
