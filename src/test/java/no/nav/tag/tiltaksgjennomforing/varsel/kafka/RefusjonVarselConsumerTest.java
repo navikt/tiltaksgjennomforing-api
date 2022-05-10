@@ -74,6 +74,7 @@ class RefusjonVarselConsumerTest {
          this.embeddedKafkaBroker.consumeFromAnEmbeddedTopic(consumer, Topics.TILTAK_VARSEL);
          ConsumerRecords<String, RefusjonVarselMelding> replies = KafkaTestUtils.getRecords(consumer);
          assertThat(replies.count()).isGreaterThanOrEqualTo(1);
+         // Resette fixeddate !!
      }
 
 }
