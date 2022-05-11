@@ -43,7 +43,7 @@ public class TilskuddsperiodeKafkaProducer {
     @TransactionalEventListener
     public void tilskuddsperiodeAnnullert(TilskuddsperiodeAnnullert event) {
         UUID tilskuddsperiodeId = event.getTilskuddsperiode().getId();
-        TilskuddsperiodeAnnullertMelding melding = new TilskuddsperiodeAnnullertMelding(tilskuddsperiodeId);
+        TilskuddsperiodeAnnullertMelding melding = new TilskuddsperiodeAnnullertMelding(tilskuddsperiodeId, TilskuddsperiodeAnnullertÅrsak.AVTALE_ANNULLERT);
         publiserTilskuddsperiodeAnnullertMelding(melding);
     }
 
