@@ -52,6 +52,9 @@ public class AvtaleRepositoryTest {
     @Autowired
     private ArbeidsgiverTokenStrategyFactory arbeidsgiverTokenStrategyFactory;
 
+    @MockBean
+    private TilskuddsperiodeConfig tilskuddsperiodeConfig;
+
     @BeforeEach
     public void setup() {
         varselRepository.deleteAll();
@@ -77,7 +80,7 @@ public class AvtaleRepositoryTest {
         EndreAvtale endreAvtale = new EndreAvtale();
         Maal maal = TestData.etMaal();
         endreAvtale.setMaal(List.of(maal));
-        lagretAvtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale.getTiltakstype()));
+        lagretAvtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale.getTiltakstype()), tilskuddsperiodeConfig.getPilotvirksomheter());
         avtaleRepository.save(lagretAvtale);
 
         // Lage ny avtale
@@ -87,7 +90,7 @@ public class AvtaleRepositoryTest {
         EndreAvtale endreAvtale2 = new EndreAvtale();
         Maal maal2 = TestData.etMaal();
         endreAvtale2.setMaal(List.of(maal2));
-        lagretAvtale2.endreAvtale(Now.instant(), endreAvtale2, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale.getTiltakstype()));
+        lagretAvtale2.endreAvtale(Now.instant(), endreAvtale2, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale.getTiltakstype()), tilskuddsperiodeConfig.getPilotvirksomheter());
         avtaleRepository.save(lagretAvtale2);
     }
 
@@ -98,7 +101,7 @@ public class AvtaleRepositoryTest {
 
         // Lagre maal skal fungere
         EndreAvtale endreAvtale = new EndreAvtale();
-        lagretAvtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale.getTiltakstype()));
+        lagretAvtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale.getTiltakstype()), tilskuddsperiodeConfig.getPilotvirksomheter());
         avtaleRepository.save(lagretAvtale);
 
         // Lage ny avtale
@@ -106,7 +109,7 @@ public class AvtaleRepositoryTest {
 
         // Lagre maal skal enda fungere
         EndreAvtale endreAvtale2 = new EndreAvtale();
-        lagretAvtale2.endreAvtale(Now.instant(), endreAvtale2, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale2.getTiltakstype()));
+        lagretAvtale2.endreAvtale(Now.instant(), endreAvtale2, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale2.getTiltakstype()), tilskuddsperiodeConfig.getPilotvirksomheter());
         avtaleRepository.save(lagretAvtale2);
     }
 
@@ -128,7 +131,7 @@ public class AvtaleRepositoryTest {
         endreAvtale.setArbeidsgiveravgift(BigDecimal.valueOf(0.141));
         endreAvtale.setLonnstilskuddProsent(40);
 
-        lagretAvtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale.getTiltakstype()));
+        lagretAvtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(lagretAvtale.getTiltakstype()), tilskuddsperiodeConfig.getPilotvirksomheter());
         Avtale nyLagretAvtale = avtaleRepository.save(lagretAvtale);
 
         var perioder = nyLagretAvtale.getTilskuddPeriode();
@@ -174,7 +177,7 @@ public class AvtaleRepositoryTest {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering, never()).avtaleEndret(any());
-        avtale.endreAvtale(Now.instant(), TestData.ingenEndring(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+        avtale.endreAvtale(Now.instant(), TestData.ingenEndring(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), tilskuddsperiodeConfig.getPilotvirksomheter());
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).avtaleEndret(any());
     }

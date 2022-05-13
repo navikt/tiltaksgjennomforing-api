@@ -56,6 +56,7 @@ tiltaksgjennomforing:
     fixed-delay: 600000
   tilskuddsperioder:
     tiltakstyper: SOMMERJOBB
+    pilotvirksomheter: ${tiltaksgjennomforing.pilot.pilotvirksomheter}
 
 no.nav.security.jwt:
   client:
