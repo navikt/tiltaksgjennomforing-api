@@ -420,4 +420,12 @@ public class AvtaleController {
         beslutter.avslåTilskuddsperiode(avtale, avslagRequest.getAvslagsårsaker(), avslagRequest.getAvslagsforklaring());
         avtaleRepository.save(avtale);
     }
+
+    @GetMapping("/{avtaleId}/er-pilot")
+    public Boolean sjekkOmAvtaleErPilot(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
+        Avtale avtale = avtalepart.hentAvtale(avtaleRepository, id);
+        return tilskuddsperiodeConfig.getPilotvirksomheter().contains(avtale.getBedriftNr());
+    }
+
 }
