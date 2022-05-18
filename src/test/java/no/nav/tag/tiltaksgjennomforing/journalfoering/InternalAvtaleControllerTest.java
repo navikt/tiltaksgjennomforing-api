@@ -11,11 +11,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -39,6 +35,8 @@ public class InternalAvtaleControllerTest {
     private static final UUID AVTALE_ID_3 = UUID.randomUUID();
     private List<AvtaleInnhold> avtaleInnholdList = treAvtalerSomSkalJournalføres().stream().map(avtale -> avtale.getGjeldendeInnhold()).collect(Collectors.toList());
 
+    private List<AvtaleInnhold> avtaleInnholdListMedTilskuddsPerioder = enAvtaleMedTilskudsPerioderSomSkalJournalføres().stream().map(avtale -> avtale.getGjeldendeInnhold()).collect(Collectors.toList());
+
     @InjectMocks
     private InternalAvtaleController internalAvtaleController;
 
@@ -50,6 +48,16 @@ public class InternalAvtaleControllerTest {
 
     @Mock
     private AvtaleInnholdRepository avtaleInnholdRepository;
+
+    @Test
+    public void henterAvtalerMedTilskuddsperioderTilJournalfoering() {
+        doNothing().when(innloggingService).validerSystembruker();
+        when(avtaleInnholdRepository.finnAvtaleVersjonerTilJournalfoering()).thenReturn(avtaleInnholdListMedTilskuddsPerioder);
+        List<AvtaleTilJournalfoering> avtalerTilJournalfoering = internalAvtaleController.hentIkkeJournalfoerteAvtaler();
+        assertThat(avtalerTilJournalfoering).hasSize(1);
+        assertThat(avtalerTilJournalfoering.get(0).getTilskuddsPerioder()).hasSize(1);
+        avtalerTilJournalfoering.forEach(avtaleTilJournalfoering -> assertNotNull(avtaleTilJournalfoering.getAvtaleId()));
+    }
 
     @Test
     public void henterAvtalerTilJournalfoering() {
@@ -97,7 +105,15 @@ public class InternalAvtaleControllerTest {
         Avtale avtale3 = TestData.enAvtaleMedFlereVersjoner();
         avtale3.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         avtale3.setId(AVTALE_ID_3);
+
         return Arrays.asList(avtale, avtale2, avtale3);
+    }
+
+    private static List<Avtale> enAvtaleMedTilskudsPerioderSomSkalJournalføres() {
+        Avtale avtale4 = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate(), Now.localDate());
+        avtale4.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
+        avtale4.setId(AVTALE_ID_3);
+        return Arrays.asList(avtale4);
     }
 }
 
