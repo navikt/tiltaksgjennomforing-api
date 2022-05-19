@@ -186,7 +186,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         sjekkSistEndret(sistEndret);
         sjekkStartOgSluttDato(nyAvtale.getStartDato(), nyAvtale.getSluttDato());
         getGjeldendeInnhold().endreAvtale(nyAvtale);
-        if (tiltakstyperMedTilskuddsperioder.contains(tiltakstype) || pilotvirksomheter.contains(bedriftNr)) {
+        if (tiltakstyperMedTilskuddsperioder.contains(tiltakstype) || erPilotVirksomhet(pilotvirksomheter)) {
             nyeTilskuddsperioder();
         }
         sistEndretNå();
