@@ -11,17 +11,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
-import no.nav.tag.tiltaksgjennomforing.avtale.Deltaker;
-import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
-import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
-import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
@@ -63,7 +53,8 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__veileder_skal_ha_lesetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_er_ok() {
-        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false, veilarbArenaClient);
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), new TilskuddsperiodeConfig(),
+        false, veilarbArenaClient);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(veileder.getIdentifikator(), avtale.getDeltakerFnr())).thenReturn(true);
 
         assertThat(veileder.harTilgang(avtale)).isTrue();
@@ -72,7 +63,7 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__veileder_skal_ikke_ha_lesetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_feiler() {
-        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false, veilarbArenaClient);
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), new TilskuddsperiodeConfig(), false, veilarbArenaClient);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(veileder.getIdentifikator(), avtale.getDeltakerFnr())).thenReturn(false);
 
         assertThat(veileder.harTilgang(avtale)).isFalse();
@@ -80,7 +71,7 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__veileder_skal_ha_skrivetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_er_ok() {
-        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false, veilarbArenaClient);
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), new TilskuddsperiodeConfig(), false, veilarbArenaClient);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(veileder.getIdentifikator(), avtale.getDeltakerFnr())).thenReturn(true);
 
         assertThat(veileder.harTilgang(avtale)).isTrue();
@@ -89,7 +80,7 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__veileder_skal_ikke_ha_skrivetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_feiler() {
-        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false, veilarbArenaClient);
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), new TilskuddsperiodeConfig(), false, veilarbArenaClient);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(veileder.getIdentifikator(), avtale.getDeltakerFnr())).thenReturn(false);
 
         assertThat(veileder.harTilgang(avtale)).isFalse();
@@ -103,14 +94,14 @@ public class InnloggetBrukerTest {
     @Test
     public void harTilgang__ikkepart_veileder_skal_ikke_ha_lesetilgang_hvis_toggle_er_av() {
         assertThat(
-                new Veileder(new NavIdent("X123456"), tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false, veilarbArenaClient).harTilgang(avtale))
+                new Veileder(new NavIdent("X123456"), tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), new TilskuddsperiodeConfig(), false, veilarbArenaClient).harTilgang(avtale))
                 .isFalse();
     }
 
     @Test
     public void harTilgang__ikkepart_veileder_skal_ikke_ha_skrivetilgang_hvis_toggle_er_av() {
         assertThat(
-                new Veileder(new NavIdent("X123456"), tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), false, veilarbArenaClient).harTilgang(avtale))
+                new Veileder(new NavIdent("X123456"), tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), new TilskuddsperiodeConfig(), false, veilarbArenaClient).harTilgang(avtale))
                 .isFalse();
     }
 
