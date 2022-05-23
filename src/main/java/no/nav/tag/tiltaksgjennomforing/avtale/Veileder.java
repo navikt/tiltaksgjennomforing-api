@@ -32,6 +32,7 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     private final PersondataService persondataService;
     private final SlettemerkeProperties slettemerkeProperties;
+    private final TilskuddsperiodeConfig tilskuddsperiodeConfig;
     private final boolean harAdGruppeForBeslutter;
     private final Norg2Client norg2Client;
     private final Set<NavEnhet> navEnheter;
@@ -43,6 +44,7 @@ public class Veileder extends Avtalepart<NavIdent> {
                     Norg2Client norg2Client,
                     Set<NavEnhet> navEnheter,
                     SlettemerkeProperties slettemerkeProperties,
+                    TilskuddsperiodeConfig tilskuddsperiodeConfig,
                     boolean harAdGruppeForBeslutter,
                     VeilarbArenaClient veilarbArenaClient) {
 
@@ -54,6 +56,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         this.slettemerkeProperties = slettemerkeProperties;
         this.harAdGruppeForBeslutter = harAdGruppeForBeslutter;
         this.veilarbArenaClient = veilarbArenaClient;
+        this.tilskuddsperiodeConfig = tilskuddsperiodeConfig;
     }
 
     @Override
@@ -104,7 +107,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
             veilarbArenaClient.sjekkOppfølingStatus(avtale);
         }
-        avtale.godkjennForVeileder(getIdentifikator());
+        avtale.godkjennForVeileder(getIdentifikator(), tilskuddsperiodeConfig.getPilotvirksomheter());
     }
 
     @Override
@@ -125,7 +128,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
             veilarbArenaClient.sjekkOppfølingStatus(avtale);
         }
-        avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
+        avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn, tilskuddsperiodeConfig.getPilotvirksomheter());
     }
 
     public void godkjennForVeilederOgArbeidsgiver(GodkjentPaVegneAvArbeidsgiverGrunn paVegneAvArbeidsgiverGrunn, Avtale avtale) {
@@ -136,7 +139,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
             veilarbArenaClient.sjekkOppfølingStatus(avtale);
         }
-        avtale.godkjennForVeilederOgArbeidsgiver(getIdentifikator(), paVegneAvArbeidsgiverGrunn);
+        avtale.godkjennForVeilederOgArbeidsgiver(getIdentifikator(), paVegneAvArbeidsgiverGrunn, tilskuddsperiodeConfig.getPilotvirksomheter());
     }
 
     public void godkjennForVeilederOgDeltakerOgArbeidsgiver(GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn paVegneAvDeltakerOgArbeidsgiverGrunn, Avtale avtale) {
@@ -147,7 +150,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
             veilarbArenaClient.sjekkOppfølingStatus(avtale);
         }
-        avtale.godkjennForVeilederOgDeltakerOgArbeidsgiver(getIdentifikator(), paVegneAvDeltakerOgArbeidsgiverGrunn);
+        avtale.godkjennForVeilederOgDeltakerOgArbeidsgiver(getIdentifikator(), paVegneAvDeltakerOgArbeidsgiverGrunn, tilskuddsperiodeConfig.getPilotvirksomheter());
     }
 
     @Override

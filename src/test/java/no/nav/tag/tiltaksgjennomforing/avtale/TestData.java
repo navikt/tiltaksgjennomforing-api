@@ -87,7 +87,7 @@ public class TestData {
     public static Avtale enAvtaleMedAltUtfylt() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING), veilderNavIdent);
-        avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+        avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
         return avtale;
     }
 
@@ -113,7 +113,7 @@ public class TestData {
         EndreAvtale endring = TestData.endringPåAlleFelter();
         endring.setStartDato(startDato);
         endring.setSluttDato(sluttDato);
-        avtale.endreAvtale(Now.instant(), endring, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+        avtale.endreAvtale(Now.instant(), endring, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
         return avtale;
     }
 
@@ -127,10 +127,10 @@ public class TestData {
         EndreAvtale endring = TestData.endringPåAlleFelter();
         endring.setStartDato(startDato);
         endring.setSluttDato(sluttDato);
-        avtale.endreAvtale(Now.instant(), endring, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+        avtale.endreAvtale(Now.instant(), endring, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
         avtale.godkjennForDeltaker(TestData.enIdentifikator());
-        avtale.godkjennForVeileder(TestData.enNavIdent());
+        avtale.godkjennForVeileder(TestData.enNavIdent(), List.of());
         return avtale;
     }
 
@@ -144,7 +144,7 @@ public class TestData {
         avtale.setEnhetOppfolging(ENHET_OPPFØLGING.getVerdi());
         avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
-        avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+        avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
         avtale.setTiltakstype(tiltakstype);
         avtale.getGjeldendeInnhold().setDeltakerFornavn("Lilly");
         avtale.getGjeldendeInnhold().setDeltakerEtternavn("Lønning");
@@ -200,7 +200,7 @@ public class TestData {
         endreAvtale.setArbeidsgiveravgift(new BigDecimal("0.141"));
         endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
         endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
@@ -223,7 +223,7 @@ public class TestData {
         endreAvtale.setArbeidsgiveravgift(new BigDecimal("0.141"));
         endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
         endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
@@ -247,7 +247,7 @@ public class TestData {
         endreAvtale.setArbeidsgiveravgift(new BigDecimal("0.141"));
         endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
         endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         return avtale;
@@ -274,10 +274,10 @@ public class TestData {
         endring.setStartDato(avtaleStart);
         endring.setSluttDato(avtaleSlutt);
         avtale.setGodkjentForEtterregistrering(true);
-        avtale.endreAvtale(Now.instant(), endring, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+        avtale.endreAvtale(Now.instant(), endring, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
         avtale.godkjennForDeltaker(TestData.enIdentifikator());
-        avtale.godkjennForVeileder(TestData.enNavIdent());
+        avtale.godkjennForVeileder(TestData.enNavIdent(), List.of());
         return avtale;
     }
 
@@ -406,7 +406,7 @@ public class TestData {
         lenient().when(veilarbArenaClient.sjekkOgHentOppfølgingStatus(any()))
                 .thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
         return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
-                Set.of(new NavEnhet("4802", "Oslo gamlebyen")), new SlettemerkeProperties(), false, veilarbArenaClient);
+                Set.of(new NavEnhet("4802", "Oslo gamlebyen")), new SlettemerkeProperties(), new TilskuddsperiodeConfig(), false, veilarbArenaClient);
     }
 
     public static Beslutter enBeslutter(Avtale avtale) {
@@ -496,7 +496,7 @@ public class TestData {
         AvtaleRepository avtaleRepository = mock(AvtaleRepository.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any())).thenReturn(true);
         return new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
-                Set.of(ENHET_OPPFØLGING), new SlettemerkeProperties(), false, mock(VeilarbArenaClient.class));
+                Set.of(ENHET_OPPFØLGING), new SlettemerkeProperties(), new TilskuddsperiodeConfig(), false, mock(VeilarbArenaClient.class));
     }
 
     public static Veileder enVeileder(Avtale avtale, PersondataService persondataService) {
@@ -504,7 +504,7 @@ public class TestData {
         KontoregisterService kontoregisterService = mock(KontoregisterService.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(avtale.getVeilederNavIdent(), avtale.getDeltakerFnr())).thenReturn(true);
         return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, persondataService, mock(Norg2Client.class),
-                Set.of(ENHET_OPPFØLGING), new SlettemerkeProperties(), false, mock(VeilarbArenaClient.class));
+                Set.of(ENHET_OPPFØLGING), new SlettemerkeProperties(), new TilskuddsperiodeConfig(), false, mock(VeilarbArenaClient.class));
     }
 
     public static PdlRespons enPdlrespons(boolean harKode6) {
@@ -531,7 +531,7 @@ public class TestData {
 
     public static Avtale enArbeidstreningAvtaleGodkjentAvVeileder() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+        avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());

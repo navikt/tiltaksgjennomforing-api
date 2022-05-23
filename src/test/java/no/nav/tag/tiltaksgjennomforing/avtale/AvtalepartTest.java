@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.EnumSet;
+import java.util.List;
+
 import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørVeilederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
@@ -17,7 +19,7 @@ public class AvtalepartTest {
     public void endreAvtale__skal_feile_for_deltaker() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Deltaker deltaker = TestData.enDeltaker(avtale);
-        assertThatThrownBy(() -> deltaker.endreAvtale(avtale.getSistEndret(), TestData.ingenEndring(), avtale, EnumSet.of(avtale.getTiltakstype()))).isInstanceOf(KanIkkeEndreException.class);
+        assertThatThrownBy(() -> deltaker.endreAvtale(avtale.getSistEndret(), TestData.ingenEndring(), avtale, EnumSet.of(avtale.getTiltakstype()), List.of())).isInstanceOf(KanIkkeEndreException.class);
     }
 
     @Test
@@ -45,14 +47,14 @@ public class AvtalepartTest {
     public void endreAvtale__skal_fungere_for_arbeidsgiver() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.endreAvtale(Now.instant(), TestData.ingenEndring(), avtale, EnumSet.of(avtale.getTiltakstype()));
+        arbeidsgiver.endreAvtale(Now.instant(), TestData.ingenEndring(), avtale, EnumSet.of(avtale.getTiltakstype()), List.of());
     }
 
     @Test
     public void endreAvtale__skal_fungere_for_veileder() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.endreAvtale(Now.instant(), TestData.ingenEndring(), avtale, EnumSet.of(avtale.getTiltakstype()));
+        veileder.endreAvtale(Now.instant(), TestData.ingenEndring(), avtale, EnumSet.of(avtale.getTiltakstype()), List.of());
     }
 
     @Test

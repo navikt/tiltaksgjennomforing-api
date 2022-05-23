@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.Instant;
 import java.util.EnumSet;
+import java.util.List;
+
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
@@ -76,13 +78,13 @@ class VeilarbArenaClientTest {
         avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
         avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
         avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
-        avtale.endreAvtale(Instant.now(),new EndreAvtale(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+        avtale.endreAvtale(Instant.now(),new EndreAvtale(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
 
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isNotNull();
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(60);
 
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
-        avtale.endreAvtale(Instant.now(),new EndreAvtale(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+        avtale.endreAvtale(Instant.now(),new EndreAvtale(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
 
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(40);
     }
