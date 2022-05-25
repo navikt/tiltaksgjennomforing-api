@@ -950,7 +950,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
                 endreKontaktInformasjon.getVeilederTlf(),
                 endreKontaktInformasjon.getArbeidsgiverFornavn(),
                 endreKontaktInformasjon.getArbeidsgiverEtternavn(),
-                endreKontaktInformasjon.getArbeidsgiverTlf())
+                endreKontaktInformasjon.getArbeidsgiverTlf(),
+                endreKontaktInformasjon.getRefusjonKontaktperson().getRefusjonKontaktpersonFornavn(),
+                endreKontaktInformasjon.getRefusjonKontaktperson().getRefusjonKontaktpersonEtternavn(),
+                endreKontaktInformasjon.getRefusjonKontaktperson().getRefusjonKontaktpersonTlf())
         ) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_KONTAKTINFO_GRUNN_MANGLER);
         }
