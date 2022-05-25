@@ -333,7 +333,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     private Boolean erPilotVirksomhet(List<BedriftNr> pilotvirksomheter) {
-        return pilotvirksomheter.contains(bedriftNr) && tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD;
+        return pilotvirksomheter.contains(bedriftNr) && (tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD);
     }
 
     void godkjennForVeileder(NavIdent utfortAv, List<BedriftNr> pilotvirksomheter) {
