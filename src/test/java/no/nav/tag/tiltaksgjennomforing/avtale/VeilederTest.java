@@ -1,12 +1,14 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
@@ -71,14 +73,24 @@ public class VeilederTest {
     }
 
     @Test
-    public void opphevGodkjenninger__kan_ikke_oppheve_godkjenninger_når_alle_har_godkjent() {
+    public void opphevGodkjenninger__kan_ikke_oppheve_godkjenninger_når_avtale_er_inngått() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setAvtaleInngått(LocalDateTime.now());
         Veileder veileder = TestData.enVeileder(avtale);
         assertFeilkode(Feilkode.KAN_IKKE_OPPHEVE, () -> veileder.opphevGodkjenninger(avtale));
-
+    }
+    @Test public void opphevGodkjenninger__kan_oppheve_godkjenninger_hvis_alle_parter_har_godkjent_men_ikke_inngått() {
+        Now.fixedDate(LocalDate.of(2021, 6, 1));
+        Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();
+        Veileder veileder = TestData.enVeileder(avtale);
+        assertThat(avtale.godkjentAvArbeidsgiver() != null && avtale.godkjentAvDeltaker() != null && avtale.godkjentAvVeileder() != null).isTrue();
+        assertThat(avtale.erAvtaleInngått()).isFalse();
+        veileder.opphevGodkjenninger(avtale);
+        assertThat(avtale.godkjentAvArbeidsgiver() == null && avtale.godkjentAvDeltaker() == null && avtale.godkjentAvVeileder() == null).isTrue();
+        Now.resetClock();
     }
 
     @Test
