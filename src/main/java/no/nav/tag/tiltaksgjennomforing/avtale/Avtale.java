@@ -166,7 +166,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         this.gjeldendeInnhold.setAvtale(this);
     }
 
-    public static Avtale veilederOppretterAvtale(OpprettAvtale opprettAvtale, NavIdent navIdent) {
+    public static Avtale
+    veilederOppretterAvtale(OpprettAvtale opprettAvtale, NavIdent navIdent) {
         Avtale avtale = new Avtale(opprettAvtale);
         avtale.veilederNavIdent = sjekkAtIkkeNull(navIdent, "Veileders NAV-ident må være satt.");
         avtale.registerEvent(new AvtaleOpprettetAvVeileder(avtale, navIdent));
