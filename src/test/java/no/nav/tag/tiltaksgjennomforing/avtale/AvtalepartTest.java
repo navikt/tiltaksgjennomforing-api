@@ -104,7 +104,7 @@ public class AvtalepartTest {
     }
 
     @Test
-    public void opphevGodkjenninger__feiler_hvis_alle_har_allerede_godkjent() {
+    public void opphevGodkjenninger__feiler_hvis_alle_har_allerede_godkjent_og_avtale_er_inngått() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         arbeidsgiver.godkjennForAvtalepart(avtale);
@@ -115,7 +115,7 @@ public class AvtalepartTest {
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
         assertThat(avtale.erGodkjentAvArbeidsgiver()).isTrue();
         assertThat(avtale.getGjeldendeInnhold().isGodkjentPaVegneAv()).isTrue();
-        assertFeilkode(Feilkode.KAN_IKKE_OPPHEVE, () -> veileder.opphevGodkjenninger(avtale));
+        assertFeilkode(Feilkode.KAN_IKKE_OPPHEVE_GODKJENNINGER_VED_INNGAATT_AVTALE, () -> veileder.opphevGodkjenninger(avtale));
     }
 
     @Test

@@ -1,6 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentGeoLokasjonFraPdlRespons;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
+import no.nav.tag.tiltaksgjennomforing.enhet.*;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
+import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -10,20 +16,8 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
-import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
+
+import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentGeoLokasjonFraPdlRespons;
 
 @AllArgsConstructor
 @Slf4j
@@ -107,9 +101,12 @@ public abstract class Avtalepart<T extends Identifikator> {
         if (!kanOppheveGodkjenninger(avtale)) {
             throw new KanIkkeOppheveException();
         }
-        if ((!avtale.erGodkjentAvVeileder() && !avtale.erGodkjentAvArbeidsgiver() && !avtale.erGodkjentAvDeltaker())
-            || (avtale.erGodkjentAvVeileder() && avtale.erGodkjentAvArbeidsgiver() && avtale.erGodkjentAvDeltaker())) {
+        boolean ingenParterHarGodkjent = !avtale.erGodkjentAvVeileder() && !avtale.erGodkjentAvArbeidsgiver() && !avtale.erGodkjentAvDeltaker();
+        if (ingenParterHarGodkjent) {
             throw new KanIkkeOppheveException();
+        }
+        if (avtale.erAvtaleInngått()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_OPPHEVE_GODKJENNINGER_VED_INNGAATT_AVTALE);
         }
         opphevGodkjenningerSomAvtalepart(avtale);
     }
@@ -145,7 +142,7 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     public void sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(Avtale avtale, VeilarbArenaClient veilarbArenaClient) {
         Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
-        if(oppfølgingsstatus != null) {
+        if (oppfølgingsstatus != null) {
             this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
             this.settLonntilskuddProsentsats(avtale);
         }
