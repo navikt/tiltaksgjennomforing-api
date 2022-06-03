@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Value;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -38,9 +39,11 @@ public class TilskuddsperiodeGodkjentMelding {
     Integer løpenummer;
     String enhet;
     NavIdent beslutterNavIdent;
+    LocalDateTime godkjentTidspunkt;
 
     public static TilskuddsperiodeGodkjentMelding create(Avtale avtale, TilskuddPeriode tilskuddsperiode) {
-        return new TilskuddsperiodeGodkjentMelding(avtale.getId(),
+        return new TilskuddsperiodeGodkjentMelding
+                (avtale.getId(),
                 tilskuddsperiode.getId(),
                 avtale.getGjeldendeInnhold().getId(),
                 avtale.getTiltakstype(),
@@ -60,7 +63,8 @@ public class TilskuddsperiodeGodkjentMelding {
                 avtale.getAvtaleNr(),
                 tilskuddsperiode.getLøpenummer(),
                 tilskuddsperiode.getEnhet(),
-                tilskuddsperiode.getGodkjentAvNavIdent()
+                tilskuddsperiode.getGodkjentAvNavIdent(),
+                tilskuddsperiode.getGodkjentTidspunkt()
         );
     }
 }
