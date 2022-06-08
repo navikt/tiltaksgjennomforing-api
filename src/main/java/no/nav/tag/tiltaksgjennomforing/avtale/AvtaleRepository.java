@@ -32,14 +32,12 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     List<Avtale> findAllByVeilederNavIdent(NavIdent veilederNavIdent);
 
-
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Query("FROM Avtale "
             + "where veilederNavIdent is null "
             + "and (enhetOppfolging in (?1) or enhetGeografisk in (?1))")
     List<Avtale> findAllUfordelteByEnhet(String navEnhet);
 
-    
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Query("FROM Avtale "
             + "where enhetOppfolging in (?1) or enhetGeografisk in (?1)")
@@ -55,17 +53,6 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Override
     Avtale save(Avtale entity);
-
-    @Query(value =
-            "SELECT distinct AVTALE.* FROM AVTALE " +
-                    "LEFT JOIN AVTALE_INNHOLD " +
-                    "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
-                    "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
-                    "AND AVTALE.tiltakstype not in ('ARBEIDSTRENING') " +
-                    "AND EXISTS (SELECT * FROM TILSKUDD_PERIODE where TILSKUDD_PERIODE.status =  ?1 AND TILSKUDD_PERIODE.AVTALE_ID = AVTALE.ID) " +
-                    "AND (AVTALE.ENHET_OPPFOLGING IN (?2) " +
-                    "OR AVTALE.ENHET_GEOGRAFISK IN (?2))", nativeQuery = true)
-    List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter2(String tilskuddsperiodestatus, Set<String> navEnheter);
 
     @Query(value =
             "SELECT distinct AVTALE.* FROM AVTALE " +

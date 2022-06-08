@@ -1,11 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
@@ -42,16 +38,24 @@ public class Beslutter extends Avtalepart<NavIdent> {
         avtale.togglegodkjennEtterregistrering(getIdentifikator());
     }
 
-    private List<Avtale> filtrereVekkAvslattPerioder(List<Avtale> avtaler) {
-        return avtaler.stream()
-                .filter(avtale -> avtale.gjeldendeTilskuddsperiode().getStatus() != TilskuddPeriodeStatus.AVSLÅTT)
-                .collect(Collectors.toList());
+    private List<Avtale> sorterEtterGittValg(List<Avtale> avtaler, String sorteringskolonne) {
+        if(sorteringskolonne == null) {
+            sorteringskolonne = "startDato";
+        }
+        avtaler.sort(AvtaleSorterer.comparatorForAvtale(sorteringskolonne));
+        return avtaler;
     }
 
-    private List<Avtale> filtrereAvslattPerioder(List<Avtale> avtaler) {
-        return avtaler.stream()
+    private List<Avtale> filtrereVekkAvslattPerioder(List<Avtale> avtaler, String sorteringskolonne) {
+        return sorterEtterGittValg(avtaler.stream()
+                .filter(avtale -> avtale.gjeldendeTilskuddsperiode().getStatus() != TilskuddPeriodeStatus.AVSLÅTT)
+                .collect(Collectors.toList()), sorteringskolonne);
+    }
+
+    private List<Avtale> filtrereAvslattPerioder(List<Avtale> avtaler, String sorteringskolonne) {
+        return sorterEtterGittValg(avtaler.stream()
                 .filter(avtale -> avtale.gjeldendeTilskuddsperiode().getStatus() == TilskuddPeriodeStatus.AVSLÅTT)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()), sorteringskolonne);
     }
 
     @Override
@@ -64,11 +68,12 @@ public class Beslutter extends Avtalepart<NavIdent> {
         return avtaleRepository.findAllByAvtaleNr(queryParametre.getAvtaleNr());
     }
 
-    List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
+    List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, String sorteringskolonne) {
         Set<String> navEnheter = hentNavEnheter();
         if (navEnheter.isEmpty()) {
             throw new NavEnhetIkkeFunnetException();
         }
+
         TilskuddPeriodeStatus status = queryParametre.getTilskuddPeriodeStatus();
         String tiltakstype = null;
 
@@ -85,16 +90,16 @@ public class Beslutter extends Avtalepart<NavIdent> {
                    avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(
                    status.name(),
                    navEnheter,
-                   tiltakstype));
+                   tiltakstype), sorteringskolonne);
             case AVSLÅTT -> filtrereAvslattPerioder(avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterAvslatt(
                             status.name(),
                             navEnheter,
-                            tiltakstype));
+                            tiltakstype), sorteringskolonne);
             default -> filtrereVekkAvslattPerioder(
                     avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
                             status.name(),
                             navEnheter,
-                            tiltakstype));
+                            tiltakstype), sorteringskolonne);
         };
     }
 
