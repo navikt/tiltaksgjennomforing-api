@@ -66,7 +66,7 @@ class BeslutterTest {
         // NÅR
         when(axsysService.hentEnheterNavAnsattHarTilgangTil(beslutter.getIdentifikator())).thenReturn(List.of(TestData.ENHET_OPPFØLGING));
         when(avtaleRepository
-                .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(TilskuddPeriodeStatus.GODKJENT.name(), Set.of(TestData.ENHET_OPPFØLGING.getVerdi()), null))
+                .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(TilskuddPeriodeStatus.GODKJENT.name(), Set.of(TestData.ENHET_OPPFØLGING.getVerdi()), null))
                 .thenReturn(List.of(avtale));
         List<Avtale> avtaler = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(avtaleRepository, avtalePredicate, null);
 
@@ -80,11 +80,15 @@ class BeslutterTest {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
         TilskuddPeriode tilskuddPeriode = new TilskuddPeriode();
         tilskuddPeriode.setBeløp(1200);
+        tilskuddPeriode.setStartDato(LocalDate.now().plusDays(14));
+        tilskuddPeriode.setLøpenummer(1);
         tilskuddPeriode.setStatus(TilskuddPeriodeStatus.UBEHANDLET);
         tilskuddPeriode.setAvtale(avtale);
 
         TilskuddPeriode tilskuddPeriode2 = new TilskuddPeriode();
         tilskuddPeriode2.setBeløp(1250);
+        tilskuddPeriode2.setStartDato(LocalDate.now().plusDays(14).plusMonths(1));
+        tilskuddPeriode2.setLøpenummer(2);
         tilskuddPeriode2.setStatus(TilskuddPeriodeStatus.UBEHANDLET);
         tilskuddPeriode2.setAvtale(avtale);
 
@@ -100,7 +104,12 @@ class BeslutterTest {
         when(avtaleRepository
                 .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(TilskuddPeriodeStatus.UBEHANDLET.name(), Set.of(TestData.ENHET_OPPFØLGING.getVerdi()), null))
                 .thenReturn(List.of(avtale));
-        List<Avtale> avtales = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(avtaleRepository, avtalePredicate, null);
+
+        List<Avtale> avtales = beslutter
+                .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
+                        avtaleRepository,
+                        avtalePredicate,
+                        null);
 
         assertThat(avtales).hasSize(1);
     }
@@ -131,7 +140,10 @@ class BeslutterTest {
         assertThrows(NavEnhetIkkeFunnetException.class, () -> {
             when(axsysService.hentEnheterNavAnsattHarTilgangTil(beslutter.getIdentifikator())).thenReturn(Collections.emptyList());
 
-            List<Avtale> avtales = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(avtaleRepository, avtalePredicate, null);
+            List<Avtale> avtales = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
+                    avtaleRepository,
+                    avtalePredicate,
+                    null);
         });
     }
 
