@@ -23,7 +23,7 @@ public class SommerjobbStartOgSluttDatoStrategyTest {
     @Test
     public void sjekkStartOgSluttDatoTilbakeITidUtenEtterregistreringInnenForFireUkerSommerjobbPeriode(){
         LocalDate avtaleStart = LocalDate.of(LocalDate.now().minusYears(2).getYear(), 8,31);
-        LocalDate avtaleSlutt = LocalDate.of(LocalDate.now().minusYears(2).getYear(),9,28);
+        LocalDate avtaleSlutt = LocalDate.of(LocalDate.now().minusYears(2).getYear(),9,27);
 
 
         boolean erAvtaleInngått = true;
@@ -66,6 +66,22 @@ public class SommerjobbStartOgSluttDatoStrategyTest {
         boolean erGodkjentForEtterregistrering = true;
         SommerjobbStartOgSluttDatoStrategy sommerjobbStartOgSluttDatoStrategy = new SommerjobbStartOgSluttDatoStrategy();
         assertFeilkode(Feilkode.SOMMERJOBB_FOR_LANG_VARIGHET, () -> sommerjobbStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt ,erGodkjentForEtterregistrering, erAvtaleInngått));
+    }
+
+    @Test
+    public void avtale_periode_kan_ikke_være_over_4_uker() {
+        LocalDate avtaleStart = LocalDate.of(LocalDate.now().plusYears(1).getYear(),6,1);
+        LocalDate avtaleSlutt = LocalDate.of(LocalDate.now().plusYears(1).getYear(),6,29);
+        SommerjobbStartOgSluttDatoStrategy sommerjobbStartOgSluttDatoStrategy = new SommerjobbStartOgSluttDatoStrategy();
+        assertFeilkode(Feilkode.SOMMERJOBB_FOR_LANG_VARIGHET, () -> sommerjobbStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt, false, false));
+    }
+
+    @Test
+    public void avtale_periode_akkurat_4_uker() {
+        LocalDate avtaleStart = LocalDate.of(LocalDate.now().plusYears(1).getYear(),6,1);
+        LocalDate avtaleSlutt = LocalDate.of(LocalDate.now().plusYears(1).getYear(),6,28);
+        SommerjobbStartOgSluttDatoStrategy sommerjobbStartOgSluttDatoStrategy = new SommerjobbStartOgSluttDatoStrategy();
+        sommerjobbStartOgSluttDatoStrategy.sjekkStartOgSluttDato(avtaleStart, avtaleSlutt, false, false);
     }
 
     @Test
