@@ -228,7 +228,7 @@ public class AvtaleRepositoryTest {
         Set<String> navEnheter = Set.of(ENHET_OPPFØLGING.getVerdi());
 
         List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
-            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter);
+            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter, null);
 
         assertThat(avtalerMedTilskuddsperioder).isEmpty();
     }
@@ -240,7 +240,7 @@ public class AvtaleRepositoryTest {
         Set<String> navEnheter = Set.of(ENHET_OPPFØLGING.getVerdi());
 
         List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
-            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter);
+            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter, null);
 
         assertThat(avtalerMedTilskuddsperioder).containsOnly(lagretAvtale);
     }
@@ -255,7 +255,7 @@ public class AvtaleRepositoryTest {
         avtaleRepository.save(lagretAvtale);
 
         List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
-            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter);
+            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter, null);
 
         assertThat(avtalerMedTilskuddsperioder).doesNotContain(lagretAvtale);
         Now.resetClock();
@@ -271,7 +271,7 @@ public class AvtaleRepositoryTest {
         avtaleRepository.save(lagretAvtale);
 
         List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
-            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter);
+            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter, null);
 
         assertThat(avtalerMedTilskuddsperioder).isEmpty();
     }
