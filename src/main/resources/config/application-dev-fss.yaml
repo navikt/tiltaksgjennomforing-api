@@ -127,8 +127,9 @@ tiltaksgjennomforing:
     enabled: true
   dvh-melding:
     feature-enabled: true
-  tilskuddsperioder:
     tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD
+  tilskuddsperioder:
+    tiltakstyper: SOMMERJOBB
 
 http:
   proxy:
