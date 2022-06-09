@@ -36,24 +36,19 @@ public class Beslutter extends Avtalepart<NavIdent> {
         avtale.togglegodkjennEtterregistrering(getIdentifikator());
     }
 
-    private List<Avtale> sorterEtterGittValg(List<Avtale> avtaler, String sorteringskolonne) {
-        if(sorteringskolonne == null) {
-            sorteringskolonne = "startDato";
-        }
-        avtaler.sort(AvtaleSorterer.comparatorForAvtale(sorteringskolonne));
-        return avtaler;
-    }
 
     private List<Avtale> filtrereVekkAvslattPerioder(List<Avtale> avtaler, String sorteringskolonne) {
-        return sorterEtterGittValg(avtaler.stream()
+        return avtaler.stream()
                 .filter(avtale -> avtale.gjeldendeTilskuddsperiode().getStatus() != TilskuddPeriodeStatus.AVSLÅTT)
-                .collect(Collectors.toList()), sorteringskolonne);
+                .sorted(AvtaleSorterer.comparatorForAvtale(sorteringskolonne))
+                .collect(Collectors.toList());
     }
 
     private List<Avtale> filtrereAvslattPerioder(List<Avtale> avtaler, String sorteringskolonne) {
-        return sorterEtterGittValg(avtaler.stream()
+        return avtaler.stream()
                 .filter(avtale -> avtale.gjeldendeTilskuddsperiode().getStatus() == TilskuddPeriodeStatus.AVSLÅTT)
-                .collect(Collectors.toList()), sorteringskolonne);
+                .sorted(AvtaleSorterer.comparatorForAvtale(sorteringskolonne))
+                .collect(Collectors.toList());
     }
 
     @Override

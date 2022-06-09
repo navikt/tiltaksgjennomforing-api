@@ -83,7 +83,7 @@ public class AvtaleController {
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
             AvtalePredicate queryParametre,
-            @RequestParam(value = "sorteringskolonne", required = false) String sorteringskolonne
+            @RequestParam(value = "sorteringskolonne", required = false, defaultValue = "startDato") String sorteringskolonne
     ) {
         Beslutter beslutter = innloggingService.hentBeslutter();
         List<Avtale> avtaler = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
