@@ -61,7 +61,11 @@ public class Beslutter extends Avtalepart<NavIdent> {
         return avtaleRepository.findAllByAvtaleNr(queryParametre.getAvtaleNr());
     }
 
-    List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, String sorteringskolonne) {
+    List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
+            AvtaleRepository avtaleRepository,
+            AvtalePredicate queryParametre,
+            String sorteringskolonne) {
+
         Set<String> navEnheter = hentNavEnheter();
         if (navEnheter.isEmpty()) {
             throw new NavEnhetIkkeFunnetException();

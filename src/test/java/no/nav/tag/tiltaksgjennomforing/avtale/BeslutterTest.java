@@ -68,7 +68,7 @@ class BeslutterTest {
         when(avtaleRepository
                 .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(TilskuddPeriodeStatus.GODKJENT.name(), Set.of(TestData.ENHET_OPPFØLGING.getVerdi()), null))
                 .thenReturn(List.of(avtale));
-        List<Avtale> avtaler = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(avtaleRepository, avtalePredicate, null);
+        List<Avtale> avtaler = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(avtaleRepository, avtalePredicate, "startDato");
 
         assertThat(avtaler).hasSize(1);
     }
@@ -109,7 +109,7 @@ class BeslutterTest {
                 .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
                         avtaleRepository,
                         avtalePredicate,
-                        null);
+                        "startDato");
 
         assertThat(avtales).hasSize(1);
     }
