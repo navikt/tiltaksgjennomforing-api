@@ -16,9 +16,6 @@ public class RefusjonKontaktperson {
      String refusjonKontaktpersonTlf;
      Boolean ønskerVarslingOmRefusjon;
 
-
-
-
      public RefusjonKontaktperson() {
           this.refusjonKontaktpersonFornavn = "";
           this.refusjonKontaktpersonEtternavn = "";

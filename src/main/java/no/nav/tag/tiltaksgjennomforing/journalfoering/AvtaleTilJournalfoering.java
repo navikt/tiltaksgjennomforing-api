@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
 import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 
 @Data
@@ -81,5 +82,7 @@ public class AvtaleTilJournalfoering {
     private LocalDate godkjentAvDeltaker;
     private LocalDate godkjentAvArbeidsgiver;
     private LocalDate godkjentAvVeileder;
+    private List<TilskuddPeriode> tilskuddsPerioder;
     private boolean godkjentPaVegneAv;
+
 }

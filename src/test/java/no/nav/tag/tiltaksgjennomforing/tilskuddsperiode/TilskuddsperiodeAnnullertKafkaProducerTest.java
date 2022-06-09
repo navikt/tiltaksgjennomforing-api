@@ -54,7 +54,7 @@ class TilskuddsperiodeAnnullertKafkaProducerTest {
 
         // GITT
         final UUID tilskuddPeriodeId = UUID.randomUUID();
-        var tilskuddMelding = new TilskuddsperiodeAnnullertMelding(tilskuddPeriodeId);
+        var tilskuddMelding = new TilskuddsperiodeAnnullertMelding(tilskuddPeriodeId, TilskuddsperiodeAnnullertÅrsak.AVTALE_ANNULLERT);
 
         //NÅR
         tilskuddsperiodeKafkaProducer.publiserTilskuddsperiodeAnnullertMelding(tilskuddMelding);

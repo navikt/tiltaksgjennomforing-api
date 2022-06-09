@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
@@ -88,7 +89,7 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
         final TilskuddsperiodeGodkjentMelding tilskuddMelding = new TilskuddsperiodeGodkjentMelding(avtaleId,
                 tilskuddPeriodeId, avtaleInnholdId, tiltakstype, deltakerFornavn, deltakerEtternavn,
                 deltakerFnr, veilederNavIdent, bedriftNavn, bedriftnummer, tilskuddBeløp, tilskuddFraDato, tilskuddTilDato, 10.6, 0.02, 14.1, 60, avtaleNr, løpenummer,
-            "4808", beslutterNavIdent);
+            "4808", beslutterNavIdent, LocalDateTime.now());
 
         //NÅR
         tilskuddsperiodeKafkaProducer.publiserTilskuddsperiodeGodkjentMelding(tilskuddMelding);
@@ -116,6 +117,7 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
         assertThat(jsonRefusjonRecord.get("avtaleNr")).isNotNull();
         assertThat(jsonRefusjonRecord.get("løpenummer")).isNotNull();
         assertThat(jsonRefusjonRecord.get("beslutterNavIdent")).isNotNull();
+        assertThat(jsonRefusjonRecord.get("godkjentTidspunkt")).isNotNull();
     }
 
     @Test

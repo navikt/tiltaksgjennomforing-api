@@ -101,5 +101,6 @@ tiltaksgjennomforing:
     fixed-delay: 20000
   tilskuddsperioder:
     tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD
+    pilotvirksomheter: '999999999'
 
 ELECTOR_PATH: null

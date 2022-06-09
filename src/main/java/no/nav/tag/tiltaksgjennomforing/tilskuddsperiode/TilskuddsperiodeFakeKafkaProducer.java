@@ -38,7 +38,7 @@ public class TilskuddsperiodeFakeKafkaProducer {
 
     @TransactionalEventListener
     public void tilskuddsperiodeAnnullert(TilskuddsperiodeAnnullert event) {
-        TilskuddsperiodeAnnullertMelding melding = new TilskuddsperiodeAnnullertMelding(event.getTilskuddsperiode().getId());
+        TilskuddsperiodeAnnullertMelding melding = new TilskuddsperiodeAnnullertMelding(event.getTilskuddsperiode().getId(), TilskuddsperiodeAnnullertÅrsak.AVTALE_ANNULLERT);
         try {
             restTemplate.exchange(url + "/tilskuddsperiode-annullert", HttpMethod.POST, new HttpEntity<>(melding), Void.class);
         } catch (RestClientException e) {
