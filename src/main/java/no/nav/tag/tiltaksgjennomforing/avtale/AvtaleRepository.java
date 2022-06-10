@@ -63,7 +63,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                     "AND (:tiltakstype is null or AVTALE.TILTAKSTYPE LIKE :tiltakstype) " +
                     "AND EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
                     "(:tilskuddsperiodestatus LIKE 'UBEHANDLET' AND :tilskuddsperiodestatus = status AND " +
-                    "((start_dato - INTERVAL 3 MONTH <= current_date) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET')))) " +
+                    "((start_dato - INTERVAL(3) MONTH <= current_date) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET')))) " +
                     "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter))", nativeQuery = true)
     List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
             @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
@@ -81,7 +81,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                      "((:tilskuddsperiodestatus LIKE 'GODKJENT' AND :tilskuddsperiodestatus = status))) " +
                     "AND NOT EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where " +
                     "avtale_id = AVTALE.ID AND status LIKE 'UBEHANDLET' " +
-                    "AND ((start_dato - INTERVAL 3 MONTH <= current_date) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET'))) " +
+                    "AND ((start_dato - INTERVAL(3) MONTH <= current_date) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET'))) " +
                     "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter))", nativeQuery = true)
     List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(
             @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
@@ -97,7 +97,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                     "AND (:tiltakstype is null or AVTALE.TILTAKSTYPE LIKE :tiltakstype) " +
                     "AND EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
                     "(:tilskuddsperiodestatus LIKE 'AVSLÅTT' AND :tilskuddsperiodestatus = status) " +
-                    "AND ((start_dato - INTERVAL 3 MONTH <= current_date) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET'))) " +
+                    "AND ((start_dato - INTERVAL(3) MONTH <= current_date) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET'))) " +
                     "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter))", nativeQuery = true)
     List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterAvslatt(
             @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
