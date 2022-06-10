@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
@@ -65,8 +66,7 @@ class BeslutterTest {
         tilskuddPeriode.setAvtale(avtale);
         avtale.setTilskuddPeriode(new TreeSet<>(List.of(tilskuddPeriode)));
 
-        Period period = Period.between(LocalDate.now(), LocalDate.now().plusMonths(3));
-        int plussDato = period.getDays();
+        int plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
 
         Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService);
 
@@ -107,8 +107,7 @@ class BeslutterTest {
 
         avtale.setTilskuddPeriode(new TreeSet<>(List.of(tilskuddPeriode, tilskuddPeriode2)));
 
-        Period period = Period.between(LocalDate.now(), LocalDate.now().plusMonths(3));
-        int plussDato = period.getDays();
+        int plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
 
         Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService);
 
