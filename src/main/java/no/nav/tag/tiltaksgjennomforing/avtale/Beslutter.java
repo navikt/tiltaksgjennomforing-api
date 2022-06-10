@@ -1,5 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
@@ -73,11 +77,11 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
         TilskuddPeriodeStatus status = queryParametre.getTilskuddPeriodeStatus();
         String tiltakstype = null;
+        int plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
 
         if(queryParametre.getTiltakstype() != null) {
             tiltakstype = queryParametre.getTiltakstype().toString();
         }
-
         if (status == null) {
             status = TilskuddPeriodeStatus.UBEHANDLET;
         }
@@ -87,16 +91,16 @@ public class Beslutter extends Avtalepart<NavIdent> {
                    avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(
                    status.name(),
                    navEnheter,
-                   tiltakstype), sorteringskolonne);
+                   tiltakstype, plussDato), sorteringskolonne);
             case AVSLÅTT -> filtrereAvslattPerioder(avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterAvslatt(
                             status.name(),
                             navEnheter,
-                            tiltakstype), sorteringskolonne);
+                            tiltakstype, plussDato), sorteringskolonne);
             default -> filtrereVekkAvslattPerioder(
                     avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
                             status.name(),
                             navEnheter,
-                            tiltakstype), sorteringskolonne);
+                            tiltakstype, plussDato), sorteringskolonne);
         };
     }
 

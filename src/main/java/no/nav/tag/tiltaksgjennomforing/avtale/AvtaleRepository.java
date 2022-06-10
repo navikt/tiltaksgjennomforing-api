@@ -63,30 +63,32 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                     "AND (:tiltakstype is null or AVTALE.TILTAKSTYPE LIKE :tiltakstype) " +
                     "AND EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
                     "(:tilskuddsperiodestatus LIKE 'UBEHANDLET' AND :tilskuddsperiodestatus = status AND " +
-                    "((start_dato - INTERVAL '3 MONTH' <= current_date) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET')))) " +
+                    "((start_dato <= current_date + CAST(:plussDato as INTEGER)) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET')))) " +
                     "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter))", nativeQuery = true)
     List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
             @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
             @Param("navEnheter") Set<String> navEnheter,
-            @Param("tiltakstype") String tiltakstype);
-
-    @Query(value =
-            "SELECT distinct AVTALE.* FROM AVTALE " +
-                    "LEFT JOIN AVTALE_INNHOLD " +
-                    "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
-                    "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
-                    "AND AVTALE.tiltakstype not in ('ARBEIDSTRENING') " +
-                    "AND (:tiltakstype is null or AVTALE.TILTAKSTYPE LIKE :tiltakstype) " +
-                    "AND EXISTS (SELECT avtale_id, status FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
-                     "((:tilskuddsperiodestatus LIKE 'GODKJENT' AND :tilskuddsperiodestatus = status))) " +
-                    "AND NOT EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where " +
-                    "avtale_id = AVTALE.ID AND status LIKE 'UBEHANDLET' " +
-                    "AND ((start_dato - INTERVAL '3 MONTH' <= current_date) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET'))) " +
-                    "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter))", nativeQuery = true)
-    List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(
-            @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
-            @Param("navEnheter") Set<String> navEnheter,
-            @Param("tiltakstype") String tiltakstype);
+            @Param("tiltakstype") String tiltakstype,
+            @Param("plussDato") int plussDato);
+// ( :interval )\\:\\:interval
+@Query(value =
+        "SELECT distinct AVTALE.* FROM AVTALE " +
+                "LEFT JOIN AVTALE_INNHOLD " +
+                "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
+                "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
+                "AND AVTALE.tiltakstype not in ('ARBEIDSTRENING') " +
+                "AND (:tiltakstype is null or AVTALE.TILTAKSTYPE LIKE :tiltakstype) " +
+                "AND EXISTS (SELECT avtale_id, status FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
+                "((:tilskuddsperiodestatus LIKE 'GODKJENT' AND :tilskuddsperiodestatus = status))) " +
+                "AND NOT EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where " +
+                "avtale_id = AVTALE.ID AND status LIKE 'UBEHANDLET' " +
+                "AND ((start_dato <= current_date + CAST(:plussDato AS INTEGER)) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET'))) " +
+                "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter))", nativeQuery = true)
+List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(
+        @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
+        @Param("navEnheter") Set<String> navEnheter,
+        @Param("tiltakstype") String tiltakstype,
+        @Param("plussDato") int plussDato);
 
     @Query(value =
             "SELECT distinct AVTALE.* FROM AVTALE " +
@@ -97,12 +99,13 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                     "AND (:tiltakstype is null or AVTALE.TILTAKSTYPE LIKE :tiltakstype) " +
                     "AND EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
                     "(:tilskuddsperiodestatus LIKE 'AVSLÅTT' AND :tilskuddsperiodestatus = status) " +
-                    "AND ((start_dato - INTERVAL '3 MONTH' <= current_date) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET'))) " +
+                    "AND ((start_dato <= current_date + CAST(:plussDato as INTEGER)) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET'))) " +
                     "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter))", nativeQuery = true)
     List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterAvslatt(
             @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
             @Param("navEnheter") Set<String> navEnheter,
-            @Param("tiltakstype") String tiltakstype);
+            @Param("tiltakstype") String tiltakstype,
+            @Param("plussDato") int plussDato);
 
 }
 
