@@ -48,7 +48,7 @@ class BeslutterTest {
                         TilskuddPeriodeStatus.GODKJENT.name(),
                         Set.of(TestData.ENHET_OPPFØLGING.getVerdi()),
                         null,
-                        90))
+                        "90"))
                 .thenReturn(List.of(avtale));
         List<Avtale> avtaler = beslutter.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
 
@@ -66,7 +66,7 @@ class BeslutterTest {
         tilskuddPeriode.setAvtale(avtale);
         avtale.setTilskuddPeriode(new TreeSet<>(List.of(tilskuddPeriode)));
 
-        int plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
+        Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
 
         Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService);
 
@@ -79,7 +79,7 @@ class BeslutterTest {
                 .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(
                         TilskuddPeriodeStatus.GODKJENT.name(),
                         Set.of(TestData.ENHET_OPPFØLGING.getVerdi()),
-                        null, plussDato))
+                        null, plussDato.toString()))
                 .thenReturn(List.of(avtale));
         List<Avtale> avtaler = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(avtaleRepository, avtalePredicate, "startDato");
 
@@ -107,7 +107,7 @@ class BeslutterTest {
 
         avtale.setTilskuddPeriode(new TreeSet<>(List.of(tilskuddPeriode, tilskuddPeriode2)));
 
-        int plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
+        Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
 
         Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService);
 
@@ -121,7 +121,7 @@ class BeslutterTest {
                         TilskuddPeriodeStatus.UBEHANDLET.name(),
                         Set.of(TestData.ENHET_OPPFØLGING.getVerdi()),
                         null,
-                        plussDato))
+                        plussDato.toString()))
                 .thenReturn(List.of(avtale));
 
         List<Avtale> avtales = beslutter

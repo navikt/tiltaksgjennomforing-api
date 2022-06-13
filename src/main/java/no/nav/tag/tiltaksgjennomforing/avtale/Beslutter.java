@@ -80,7 +80,7 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
         TilskuddPeriodeStatus status = queryParametre.getTilskuddPeriodeStatus();
         String tiltakstype = null;
-        int plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
+        Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
 
         if(queryParametre.getTiltakstype() != null) {
             tiltakstype = queryParametre.getTiltakstype().toString();
@@ -100,16 +100,16 @@ public class Beslutter extends Avtalepart<NavIdent> {
                    avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(
                    status.name(),
                    navEnheter,
-                   tiltakstype, plussDato), sorteringskolonne);
+                   tiltakstype, plussDato.toString()), sorteringskolonne);
             case AVSLÅTT -> filtrereAvslattPerioder(avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterAvslatt(
                             status.name(),
                             navEnheter,
-                            tiltakstype, plussDato), sorteringskolonne);
+                            tiltakstype, plussDato.toString()), sorteringskolonne);
             default -> filtrereVekkAvslattPerioder(
                     avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
                             status.name(),
                             navEnheter,
-                            tiltakstype, plussDato), sorteringskolonne);
+                            tiltakstype, plussDato.toString()), sorteringskolonne);
         };
     }
 

@@ -6,12 +6,17 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.swing.text.html.parser.Entity;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecificationExecutor {
+
+
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Override
     Optional<Avtale> findById(UUID id);
@@ -54,6 +59,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     @Override
     Avtale save(Avtale entity);
 
+
     @Query(value =
             "SELECT distinct AVTALE.* FROM AVTALE " +
                     "LEFT JOIN AVTALE_INNHOLD " +
@@ -63,13 +69,13 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                     "AND (:tiltakstype is null or AVTALE.TILTAKSTYPE LIKE :tiltakstype) " +
                     "AND EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
                     "(:tilskuddsperiodestatus LIKE 'UBEHANDLET' AND :tilskuddsperiodestatus = status AND " +
-                    "((start_dato <= current_date + CAST(:plussDato as INTEGER)) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET')))) " +
+                    "((start_dato <= current_date + CAST(:plussDato as INTEGER )) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET')))) " +
                     "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter))", nativeQuery = true)
     List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
             @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
             @Param("navEnheter") Set<String> navEnheter,
             @Param("tiltakstype") String tiltakstype,
-            @Param("plussDato") int plussDato);
+            @Param("plussDato") String plussDato);
 // ( :interval )\\:\\:interval
 @Query(value =
         "SELECT distinct AVTALE.* FROM AVTALE " +
@@ -88,7 +94,7 @@ List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(
         @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
         @Param("navEnheter") Set<String> navEnheter,
         @Param("tiltakstype") String tiltakstype,
-        @Param("plussDato") int plussDato);
+        @Param("plussDato") String plussDato);
 
     @Query(value =
             "SELECT distinct AVTALE.* FROM AVTALE " +
@@ -105,7 +111,7 @@ List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(
             @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
             @Param("navEnheter") Set<String> navEnheter,
             @Param("tiltakstype") String tiltakstype,
-            @Param("plussDato") int plussDato);
+            @Param("plussDato") String plussDato);
 
 }
 
