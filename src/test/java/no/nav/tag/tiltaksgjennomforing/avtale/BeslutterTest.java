@@ -47,8 +47,7 @@ class BeslutterTest {
                 .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
                         TilskuddPeriodeStatus.GODKJENT.name(),
                         Set.of(TestData.ENHET_OPPFØLGING.getVerdi()),
-                        null,
-                        "90"))
+                        null))
                 .thenReturn(List.of(avtale));
         List<Avtale> avtaler = beslutter.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
 
@@ -79,7 +78,7 @@ class BeslutterTest {
                 .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(
                         TilskuddPeriodeStatus.GODKJENT.name(),
                         Set.of(TestData.ENHET_OPPFØLGING.getVerdi()),
-                        null, plussDato.toString()))
+                        null))
                 .thenReturn(List.of(avtale));
         List<Avtale> avtaler = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(avtaleRepository, avtalePredicate, "startDato");
 
@@ -120,8 +119,7 @@ class BeslutterTest {
                 .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
                         TilskuddPeriodeStatus.UBEHANDLET.name(),
                         Set.of(TestData.ENHET_OPPFØLGING.getVerdi()),
-                        null,
-                        plussDato.toString()))
+                        null))
                 .thenReturn(List.of(avtale));
 
         List<Avtale> avtales = beslutter

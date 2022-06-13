@@ -43,12 +43,24 @@ public class Beslutter extends Avtalepart<NavIdent> {
         avtale.togglegodkjennEtterregistrering(getIdentifikator());
     }
 
+    private List<Avtale> filtrereUbehandletPerioder(List<Avtale> avtaler, String sorteringskolonne) {
+        return avtaler.stream().
+                filter(avtale -> avtale.gjeldendeTilskuddsperiode().getStatus() != TilskuddPeriodeStatus.AVSLÅTT &&
+                        avtale.getTilskuddPeriode().stream().anyMatch(tilskuddPeriode ->{
+                            int val = LocalDate.now().compareTo(tilskuddPeriode.getStartDato().minusMonths(3));
+                            return val >= 0 && tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET;
+                        }))
+                .sorted(AvtaleSorterer.comparatorForAvtale(sorteringskolonne)).collect(Collectors.toList());
+    }
 
-    private List<Avtale> filtrereVekkAvslattPerioder(List<Avtale> avtaler, String sorteringskolonne) {
+    private List<Avtale> filtrereGodkjentPerioder(List<Avtale> avtaler, String sorteringskolonne) {
         return avtaler.stream()
-                .filter(avtale -> avtale.gjeldendeTilskuddsperiode().getStatus() != TilskuddPeriodeStatus.AVSLÅTT)
-                .sorted(AvtaleSorterer.comparatorForAvtale(sorteringskolonne))
-                .collect(Collectors.toList());
+                .filter(avtale -> avtale.gjeldendeTilskuddsperiode().getStatus() != TilskuddPeriodeStatus.AVSLÅTT &&
+                        avtale.getTilskuddPeriode().stream().allMatch(tilskuddPeriode ->{
+                            int val = LocalDate.now().compareTo(tilskuddPeriode.getStartDato().minusMonths(3));
+                            return !(val >= 0 && tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET);
+                        }))
+                .sorted(AvtaleSorterer.comparatorForAvtale(sorteringskolonne)).collect(Collectors.toList());
     }
 
     private List<Avtale> filtrereAvslattPerioder(List<Avtale> avtaler, String sorteringskolonne) {
@@ -89,27 +101,21 @@ public class Beslutter extends Avtalepart<NavIdent> {
             status = TilskuddPeriodeStatus.UBEHANDLET;
         }
 
-        log.info("status {}", status);
-        log.info("navEnheter {}", navEnheter);
-        log.info("tiltakstype {}", tiltakstype);
-        log.info("plussDato {}", plussDato);
-        log.info("sorteringskolonne {}", sorteringskolonne);
-
        return switch (status) {
-           case GODKJENT -> filtrereVekkAvslattPerioder(
+           case GODKJENT -> filtrereGodkjentPerioder(
                    avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(
                    status.name(),
                    navEnheter,
-                   tiltakstype, plussDato.toString()), sorteringskolonne);
+                   tiltakstype), sorteringskolonne);
             case AVSLÅTT -> filtrereAvslattPerioder(avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterAvslatt(
                             status.name(),
                             navEnheter,
                             tiltakstype, plussDato.toString()), sorteringskolonne);
-            default -> filtrereVekkAvslattPerioder(
+            default -> filtrereUbehandletPerioder(
                     avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
                             status.name(),
                             navEnheter,
-                            tiltakstype, plussDato.toString()), sorteringskolonne);
+                            tiltakstype), sorteringskolonne);
         };
     }
 

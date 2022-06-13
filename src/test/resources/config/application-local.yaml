@@ -5,12 +5,6 @@ spring:
     username: sa
     password: sa
     driverClassName: org.h2.Driver
-  jpa:
-    hibernate:
-      ddl-auto: update
-      naming:
-        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
-
   h2:
     console:
       enabled: true

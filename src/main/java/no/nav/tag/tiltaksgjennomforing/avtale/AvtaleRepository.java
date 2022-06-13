@@ -6,9 +6,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.swing.text.html.parser.Entity;
+import javax.persistence.Column;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -68,14 +66,13 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                     "AND AVTALE.tiltakstype not in ('ARBEIDSTRENING') " +
                     "AND (:tiltakstype is null or AVTALE.TILTAKSTYPE LIKE :tiltakstype) " +
                     "AND EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
-                    "(:tilskuddsperiodestatus LIKE 'UBEHANDLET' AND :tilskuddsperiodestatus = status AND " +
-                    "((start_dato <= current_date + CAST(:plussDato as INTEGER )) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET')))) " +
+                    "(:tilskuddsperiodestatus LIKE 'UBEHANDLET' AND :tilskuddsperiodestatus = status)) " +
                     "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter))", nativeQuery = true)
     List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
             @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
             @Param("navEnheter") Set<String> navEnheter,
-            @Param("tiltakstype") String tiltakstype,
-            @Param("plussDato") String plussDato);
+            @Param("tiltakstype") String tiltakstype);
+
 // ( :interval )\\:\\:interval
 @Query(value =
         "SELECT distinct AVTALE.* FROM AVTALE " +
@@ -86,15 +83,11 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                 "AND (:tiltakstype is null or AVTALE.TILTAKSTYPE LIKE :tiltakstype) " +
                 "AND EXISTS (SELECT avtale_id, status FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
                 "((:tilskuddsperiodestatus LIKE 'GODKJENT' AND :tilskuddsperiodestatus = status))) " +
-                "AND NOT EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where " +
-                "avtale_id = AVTALE.ID AND status LIKE 'UBEHANDLET' " +
-                "AND ((start_dato <= current_date + CAST(:plussDato AS INTEGER)) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET'))) " +
                 "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter))", nativeQuery = true)
 List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(
         @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
         @Param("navEnheter") Set<String> navEnheter,
-        @Param("tiltakstype") String tiltakstype,
-        @Param("plussDato") String plussDato);
+        @Param("tiltakstype") String tiltakstype);
 
     @Query(value =
             "SELECT distinct AVTALE.* FROM AVTALE " +
