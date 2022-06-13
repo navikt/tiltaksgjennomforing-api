@@ -92,7 +92,6 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
         TilskuddPeriodeStatus status = queryParametre.getTilskuddPeriodeStatus();
         String tiltakstype = null;
-        Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
 
         if(queryParametre.getTiltakstype() != null) {
             tiltakstype = queryParametre.getTiltakstype().toString();
@@ -110,7 +109,7 @@ public class Beslutter extends Avtalepart<NavIdent> {
             case AVSLÅTT -> filtrereAvslattPerioder(avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterAvslatt(
                             status.name(),
                             navEnheter,
-                            tiltakstype, plussDato.toString()), sorteringskolonne);
+                            tiltakstype), sorteringskolonne);
             default -> filtrereUbehandletPerioder(
                     avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
                             status.name(),
