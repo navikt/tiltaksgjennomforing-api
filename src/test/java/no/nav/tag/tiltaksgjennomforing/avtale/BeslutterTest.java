@@ -3,10 +3,14 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
@@ -33,14 +37,17 @@ class BeslutterTest {
         avtale.setTilskuddPeriode(new TreeSet<>(List.of(tilskuddPeriode)));
 
         Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService);
-
+        Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
         AvtalePredicate avtalePredicate = new AvtalePredicate();
         avtalePredicate.setTilskuddPeriodeStatus(TilskuddPeriodeStatus.UBEHANDLET);
 
         // NÅR
         when(axsysService.hentEnheterNavAnsattHarTilgangTil(beslutter.getIdentifikator())).thenReturn(List.of(TestData.ENHET_OPPFØLGING));
         when(avtaleRepository
-                .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(TilskuddPeriodeStatus.GODKJENT.name(), Set.of(TestData.ENHET_OPPFØLGING.getVerdi()), null))
+                .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
+                        TilskuddPeriodeStatus.GODKJENT.name(),
+                        Set.of(TestData.ENHET_OPPFØLGING.getVerdi()),
+                        plussDato))
                 .thenReturn(List.of(avtale));
         List<Avtale> avtaler = beslutter.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
 
@@ -56,7 +63,10 @@ class BeslutterTest {
         tilskuddPeriode.setStatus(TilskuddPeriodeStatus.GODKJENT);
         tilskuddPeriode.setBeløp(1200);
         tilskuddPeriode.setAvtale(avtale);
+        tilskuddPeriode.setStartDato(LocalDate.now().minusMonths(3));
         avtale.setTilskuddPeriode(new TreeSet<>(List.of(tilskuddPeriode)));
+
+        Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
 
         Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService);
 
@@ -66,7 +76,10 @@ class BeslutterTest {
         // NÅR
         when(axsysService.hentEnheterNavAnsattHarTilgangTil(beslutter.getIdentifikator())).thenReturn(List.of(TestData.ENHET_OPPFØLGING));
         when(avtaleRepository
-                .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(TilskuddPeriodeStatus.GODKJENT.name(), Set.of(TestData.ENHET_OPPFØLGING.getVerdi()), null))
+                .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(
+                        TilskuddPeriodeStatus.GODKJENT.name(),
+                        Set.of(TestData.ENHET_OPPFØLGING.getVerdi()),
+                        plussDato))
                 .thenReturn(List.of(avtale));
         List<Avtale> avtaler = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(avtaleRepository, avtalePredicate, "startDato");
 
@@ -84,6 +97,7 @@ class BeslutterTest {
         tilskuddPeriode.setLøpenummer(1);
         tilskuddPeriode.setStatus(TilskuddPeriodeStatus.UBEHANDLET);
         tilskuddPeriode.setAvtale(avtale);
+        tilskuddPeriode.setStartDato(LocalDate.now().minusMonths(2));
 
         TilskuddPeriode tilskuddPeriode2 = new TilskuddPeriode();
         tilskuddPeriode2.setBeløp(1250);
@@ -91,18 +105,22 @@ class BeslutterTest {
         tilskuddPeriode2.setLøpenummer(2);
         tilskuddPeriode2.setStatus(TilskuddPeriodeStatus.UBEHANDLET);
         tilskuddPeriode2.setAvtale(avtale);
+        tilskuddPeriode2.setStartDato(LocalDate.now().minusMonths(1));
 
         avtale.setTilskuddPeriode(new TreeSet<>(List.of(tilskuddPeriode, tilskuddPeriode2)));
 
         Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService);
-
+        Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
         AvtalePredicate avtalePredicate = new AvtalePredicate();
         avtalePredicate.setTilskuddPeriodeStatus(null);
 
         // NÅR
         when(axsysService.hentEnheterNavAnsattHarTilgangTil(beslutter.getIdentifikator())).thenReturn(List.of(TestData.ENHET_OPPFØLGING));
         when(avtaleRepository
-                .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(TilskuddPeriodeStatus.UBEHANDLET.name(), Set.of(TestData.ENHET_OPPFØLGING.getVerdi()), null))
+                .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
+                        TilskuddPeriodeStatus.UBEHANDLET.name(),
+                        Set.of(TestData.ENHET_OPPFØLGING.getVerdi()),
+                        plussDato))
                 .thenReturn(List.of(avtale));
 
         List<Avtale> avtales = beslutter

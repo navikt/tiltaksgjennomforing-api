@@ -1,7 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
@@ -10,6 +13,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 
+@Slf4j
 public class Beslutter extends Avtalepart<NavIdent> {
 
     private TilgangskontrollService tilgangskontrollService;
@@ -36,20 +40,22 @@ public class Beslutter extends Avtalepart<NavIdent> {
         avtale.togglegodkjennEtterregistrering(getIdentifikator());
     }
 
-
-    private List<Avtale> filtrereVekkAvslattPerioder(List<Avtale> avtaler, String sorteringskolonne) {
+    private List<Avtale> filtrereVekkAvslattPerioder(List<Avtale> avtaler, Tiltakstype tiltakstype, String sorteringskolonne) {
         return avtaler.stream()
-                .filter(avtale -> avtale.gjeldendeTilskuddsperiode().getStatus() != TilskuddPeriodeStatus.AVSLÅTT)
+                .filter(avtale -> avtale.gjeldendeTilskuddsperiode().getStatus() != TilskuddPeriodeStatus.AVSLÅTT &&
+                        (avtale.getTiltakstype() == tiltakstype || tiltakstype == null))
                 .sorted(AvtaleSorterer.comparatorForAvtale(sorteringskolonne))
                 .collect(Collectors.toList());
     }
 
-    private List<Avtale> filtrereAvslattPerioder(List<Avtale> avtaler, String sorteringskolonne) {
+    private List<Avtale> filtrereOgFinAvslattPerioder(List<Avtale> avtaler, Tiltakstype tiltakstype, String sorteringskolonne) {
         return avtaler.stream()
-                .filter(avtale -> avtale.gjeldendeTilskuddsperiode().getStatus() == TilskuddPeriodeStatus.AVSLÅTT)
+                .filter(avtale -> avtale.gjeldendeTilskuddsperiode().getStatus() == TilskuddPeriodeStatus.AVSLÅTT &&
+                        (avtale.getTiltakstype() == tiltakstype || tiltakstype == null))
                 .sorted(AvtaleSorterer.comparatorForAvtale(sorteringskolonne))
                 .collect(Collectors.toList());
     }
+
 
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
@@ -72,31 +78,36 @@ public class Beslutter extends Avtalepart<NavIdent> {
         }
 
         TilskuddPeriodeStatus status = queryParametre.getTilskuddPeriodeStatus();
-        String tiltakstype = null;
+        Tiltakstype tiltakstype = queryParametre.getTiltakstype();
+        Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
 
-        if(queryParametre.getTiltakstype() != null) {
-            tiltakstype = queryParametre.getTiltakstype().toString();
-        }
 
         if (status == null) {
             status = TilskuddPeriodeStatus.UBEHANDLET;
         }
 
-       return switch (status) {
-           case GODKJENT -> filtrereVekkAvslattPerioder(
-                   avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(
-                   status.name(),
-                   navEnheter,
-                   tiltakstype), sorteringskolonne);
-            case AVSLÅTT -> filtrereAvslattPerioder(avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterAvslatt(
+        return switch (status) {
+            case GODKJENT -> filtrereVekkAvslattPerioder(
+                    avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(
                             status.name(),
                             navEnheter,
-                            tiltakstype), sorteringskolonne);
+                            plussDato),
+                    tiltakstype,
+                    sorteringskolonne);
+            case AVSLÅTT -> filtrereOgFinAvslattPerioder(
+                    avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterAvslatt(
+                            status.name(),
+                            navEnheter,
+                            plussDato),
+                    tiltakstype,
+                    sorteringskolonne);
             default -> filtrereVekkAvslattPerioder(
                     avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
                             status.name(),
                             navEnheter,
-                            tiltakstype), sorteringskolonne);
+                            plussDato),
+                    tiltakstype,
+                    sorteringskolonne);
         };
     }
 

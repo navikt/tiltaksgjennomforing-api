@@ -18,6 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -230,8 +231,9 @@ public class AvtaleRepositoryTest {
         avtaleRepository.save(lagretAvtale);
         Set<String> navEnheter = Set.of(ENHET_OPPFØLGING.getVerdi());
 
+        Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
         List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
-            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter, null);
+            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter, plussDato);
 
         assertThat(avtalerMedTilskuddsperioder).isEmpty();
     }
@@ -241,9 +243,9 @@ public class AvtaleRepositoryTest {
 
         Avtale lagretAvtale = avtaleRepository.save(TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate(), Now.localDate().plusDays(15)));
         Set<String> navEnheter = Set.of(ENHET_OPPFØLGING.getVerdi());
-
+        Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
         List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
-            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter, null);
+            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter, plussDato);
 
         assertThat(avtalerMedTilskuddsperioder).containsOnly(lagretAvtale);
     }
@@ -256,9 +258,9 @@ public class AvtaleRepositoryTest {
 
         lagretAvtale.godkjennTilskuddsperiode(TestData.enInnloggetBeslutter().getIdentifikator(), lagretAvtale.getEnhetGeografisk());
         avtaleRepository.save(lagretAvtale);
-
+        Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
         List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
-            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter, null);
+            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter, plussDato);
 
         assertThat(avtalerMedTilskuddsperioder).doesNotContain(lagretAvtale);
         Now.resetClock();
@@ -272,9 +274,9 @@ public class AvtaleRepositoryTest {
 
         lagretAvtale.godkjennTilskuddsperiode(TestData.enInnloggetBeslutter().getIdentifikator(), lagretAvtale.getEnhetGeografisk());
         avtaleRepository.save(lagretAvtale);
-
+        Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
         List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
-            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter, null);
+            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter, plussDato);
 
         assertThat(avtalerMedTilskuddsperioder).isEmpty();
     }
