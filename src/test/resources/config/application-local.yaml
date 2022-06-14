@@ -5,6 +5,12 @@ spring:
     username: sa
     password: sa
     driverClassName: org.h2.Driver
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        use_sql_comments: true
+        format_sql: true
   h2:
     console:
       enabled: true
@@ -104,3 +110,6 @@ tiltaksgjennomforing:
     pilotvirksomheter: '999999999'
 
 ELECTOR_PATH: null
+logging:
+  level:
+    sql: trace

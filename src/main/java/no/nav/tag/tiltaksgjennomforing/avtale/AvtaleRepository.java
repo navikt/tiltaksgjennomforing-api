@@ -64,30 +64,14 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                     "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
                     "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
                     "AND AVTALE.tiltakstype not in ('ARBEIDSTRENING') " +
-                    "AND (:tiltakstype is null or AVTALE.TILTAKSTYPE LIKE :tiltakstype) " +
+                    "AND (:tiltakstype is null or AVTALE.TILTAKSTYPE = :tiltakstype) " +
                     "AND EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
-                    "(:tilskuddsperiodestatus LIKE 'UBEHANDLET' AND :tilskuddsperiodestatus = status)) " +
+                    ":tilskuddsperiodestatus LIKE status) " +
                     "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter))", nativeQuery = true)
     List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
             @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
             @Param("navEnheter") Set<String> navEnheter,
-            @Param("tiltakstype") String tiltakstype);
-
-// ( :interval )\\:\\:interval
-@Query(value =
-        "SELECT distinct AVTALE.* FROM AVTALE " +
-                "LEFT JOIN AVTALE_INNHOLD " +
-                "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
-                "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
-                "AND AVTALE.tiltakstype not in ('ARBEIDSTRENING') " +
-                "AND (:tiltakstype is null or AVTALE.TILTAKSTYPE LIKE :tiltakstype) " +
-                "AND EXISTS (SELECT avtale_id, status FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
-                "((:tilskuddsperiodestatus LIKE 'GODKJENT' AND :tilskuddsperiodestatus = status))) " +
-                "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter))", nativeQuery = true)
-List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(
-        @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
-        @Param("navEnheter") Set<String> navEnheter,
-        @Param("tiltakstype") String tiltakstype);
+            @Param("tiltakstype") Tiltakstype tiltakstype);
 
     @Query(value =
             "SELECT distinct AVTALE.* FROM AVTALE " +
@@ -95,14 +79,29 @@ List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(
                     "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
                     "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
                     "AND AVTALE.tiltakstype not in ('ARBEIDSTRENING') " +
-                    "AND (:tiltakstype is null or AVTALE.TILTAKSTYPE LIKE :tiltakstype) " +
+                    "AND (:tiltakstype is null or AVTALE.TILTAKSTYPE = :tiltakstype) " +
                     "AND EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
-                    "(:tilskuddsperiodestatus LIKE 'AVSLÅTT' AND :tilskuddsperiodestatus = status)) " +
+                    ":tilskuddsperiodestatus LIKE status) " +
+                    "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter))", nativeQuery = true)
+List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(
+        @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
+        @Param("navEnheter") Set<String> navEnheter,
+        @Param("tiltakstype") Tiltakstype tiltakstype);
+
+    @Query(value =
+            "SELECT distinct AVTALE.* FROM AVTALE " +
+                    "LEFT JOIN AVTALE_INNHOLD " +
+                    "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
+                    "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
+                    "AND AVTALE.tiltakstype not in ('ARBEIDSTRENING') " +
+                    "AND (:tiltakstype is null or AVTALE.TILTAKSTYPE = :tiltakstype) " +
+                    "AND EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
+                    ":tilskuddsperiodestatus LIKE status) " +
                     "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter))", nativeQuery = true)
     List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterAvslatt(
             @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
             @Param("navEnheter") Set<String> navEnheter,
-            @Param("tiltakstype") String tiltakstype);
+            @Param("tiltakstype") Tiltakstype tiltakstype);
 
 }
 

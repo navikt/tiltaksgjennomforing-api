@@ -1,12 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.Period;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
@@ -91,10 +87,10 @@ public class Beslutter extends Avtalepart<NavIdent> {
         }
 
         TilskuddPeriodeStatus status = queryParametre.getTilskuddPeriodeStatus();
-        String tiltakstype = null;
+        Tiltakstype tiltakstype = null;
 
         if(queryParametre.getTiltakstype() != null) {
-            tiltakstype = queryParametre.getTiltakstype().toString();
+            tiltakstype = queryParametre.getTiltakstype();
         }
         if (status == null) {
             status = TilskuddPeriodeStatus.UBEHANDLET;
