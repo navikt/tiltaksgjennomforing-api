@@ -109,7 +109,8 @@ public class Beslutter extends Avtalepart<NavIdent> {
             default -> filtrereUbehandletPerioder(
                     avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
                             status.name(),
-                            navEnheter), sorteringskolonne);
+                            navEnheter,
+                            tiltakstype), sorteringskolonne);
         };
     }
 
