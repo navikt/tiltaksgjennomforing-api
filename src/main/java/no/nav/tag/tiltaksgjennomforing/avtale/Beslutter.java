@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -88,6 +89,7 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
         TilskuddPeriodeStatus status = queryParametre.getTilskuddPeriodeStatus();
         Tiltakstype tiltakstype = null;
+        Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
 
         if(queryParametre.getTiltakstype() != null) {
             tiltakstype = queryParametre.getTiltakstype();
@@ -110,7 +112,7 @@ public class Beslutter extends Avtalepart<NavIdent> {
                     avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
                             status.name(),
                             navEnheter,
-                            tiltakstype != null ? tiltakstype.toString() : null), sorteringskolonne);
+                            plussDato), sorteringskolonne);
         };
     }
 

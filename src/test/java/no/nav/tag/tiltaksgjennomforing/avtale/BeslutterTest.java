@@ -37,7 +37,7 @@ class BeslutterTest {
         avtale.setTilskuddPeriode(new TreeSet<>(List.of(tilskuddPeriode)));
 
         Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService);
-
+        Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
         AvtalePredicate avtalePredicate = new AvtalePredicate();
         avtalePredicate.setTilskuddPeriodeStatus(TilskuddPeriodeStatus.UBEHANDLET);
 
@@ -47,7 +47,7 @@ class BeslutterTest {
                 .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
                         TilskuddPeriodeStatus.GODKJENT.name(),
                         Set.of(TestData.ENHET_OPPFØLGING.getVerdi()),
-                        null))
+                        plussDato))
                 .thenReturn(List.of(avtale));
         List<Avtale> avtaler = beslutter.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
 
@@ -110,7 +110,7 @@ class BeslutterTest {
         avtale.setTilskuddPeriode(new TreeSet<>(List.of(tilskuddPeriode, tilskuddPeriode2)));
 
         Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService);
-
+        Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
         AvtalePredicate avtalePredicate = new AvtalePredicate();
         avtalePredicate.setTilskuddPeriodeStatus(null);
 
@@ -120,7 +120,7 @@ class BeslutterTest {
                 .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
                         TilskuddPeriodeStatus.UBEHANDLET.name(),
                         Set.of(TestData.ENHET_OPPFØLGING.getVerdi()),
-                        null))
+                        plussDato))
                 .thenReturn(List.of(avtale));
 
         List<Avtale> avtales = beslutter
