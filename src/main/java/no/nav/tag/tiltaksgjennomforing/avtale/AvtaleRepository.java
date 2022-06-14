@@ -58,7 +58,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     Avtale save(Avtale entity);
 
 
-    @Query(value =
+/*    @Query(value =
             "SELECT distinct AVTALE.* FROM AVTALE " +
                     "LEFT JOIN AVTALE_INNHOLD " +
                     "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
@@ -67,11 +67,17 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                     "AND (:tiltakstype is null or AVTALE.TILTAKSTYPE = :tiltakstype) " +
                     "AND EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
                     ":tilskuddsperiodestatus LIKE status) " +
-                    "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter))", nativeQuery = true)
-    List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
-            @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
-            @Param("navEnheter") Set<String> navEnheter,
-            @Param("tiltakstype") Tiltakstype tiltakstype);
+                    "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter))", nativeQuery = true)*/
+@Query(value =
+        "SELECT distinct AVTALE.* FROM AVTALE " +
+                "LEFT JOIN AVTALE_INNHOLD " +
+                "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
+                "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
+                "AND AVTALE.tiltakstype not in ('ARBEIDSTRENING') " +
+                "AND EXISTS (SELECT * FROM TILSKUDD_PERIODE where TILSKUDD_PERIODE.status =  ?1 AND TILSKUDD_PERIODE.AVTALE_ID = AVTALE.ID) " +
+                "AND (AVTALE.ENHET_OPPFOLGING IN (?2) " +
+                "OR AVTALE.ENHET_GEOGRAFISK IN (?2))", nativeQuery = true)
+List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(String tilskuddsperiodestatus, Set<String> navEnheter);
 
     @Query(value =
             "SELECT distinct AVTALE.* FROM AVTALE " +

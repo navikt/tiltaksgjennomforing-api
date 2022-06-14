@@ -46,8 +46,7 @@ class BeslutterTest {
         when(avtaleRepository
                 .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
                         TilskuddPeriodeStatus.GODKJENT.name(),
-                        Set.of(TestData.ENHET_OPPFØLGING.getVerdi()),
-                        null))
+                        Set.of(TestData.ENHET_OPPFØLGING.getVerdi())))
                 .thenReturn(List.of(avtale));
         List<Avtale> avtaler = beslutter.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
 
@@ -119,8 +118,7 @@ class BeslutterTest {
         when(avtaleRepository
                 .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
                         TilskuddPeriodeStatus.UBEHANDLET.name(),
-                        Set.of(TestData.ENHET_OPPFØLGING.getVerdi()),
-                        null))
+                        Set.of(TestData.ENHET_OPPFØLGING.getVerdi())))
                 .thenReturn(List.of(avtale));
 
         List<Avtale> avtales = beslutter
