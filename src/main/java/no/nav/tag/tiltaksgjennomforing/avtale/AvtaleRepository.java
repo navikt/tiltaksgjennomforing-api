@@ -74,11 +74,11 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                 "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
                 "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
                 "AND AVTALE.tiltakstype not in ('ARBEIDSTRENING') " +
-                "AND (?3 is null or AVTALE.TILTAKSTYPE = ?3) " +
                 "AND EXISTS (SELECT * FROM TILSKUDD_PERIODE where TILSKUDD_PERIODE.status =  ?1 AND TILSKUDD_PERIODE.AVTALE_ID = AVTALE.ID) " +
                 "AND (AVTALE.ENHET_OPPFOLGING IN (?2) " +
-                "OR AVTALE.ENHET_GEOGRAFISK IN (?2))", nativeQuery = true)
-List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(String tilskuddsperiodestatus, Set<String> navEnheter, Tiltakstype tiltakstype);
+                "OR AVTALE.ENHET_GEOGRAFISK IN (?2)) " +
+                "AND (?3 is null or AVTALE.TILTAKSTYPE LIKE ?3) ", nativeQuery = true)
+List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(String tilskuddsperiodestatus, Set<String> navEnheter, String tiltakstype);
 
     @Query(value =
             "SELECT distinct AVTALE.* FROM AVTALE " +

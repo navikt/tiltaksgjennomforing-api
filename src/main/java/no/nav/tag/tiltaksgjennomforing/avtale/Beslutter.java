@@ -110,7 +110,7 @@ public class Beslutter extends Avtalepart<NavIdent> {
                     avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
                             status.name(),
                             navEnheter,
-                            tiltakstype), sorteringskolonne);
+                            tiltakstype != null ? tiltakstype.toString() : null), sorteringskolonne);
         };
     }
 
