@@ -79,7 +79,7 @@ class BeslutterTest {
                 .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(
                         TilskuddPeriodeStatus.GODKJENT.name(),
                         Set.of(TestData.ENHET_OPPFØLGING.getVerdi()),
-                        null))
+                        plussDato))
                 .thenReturn(List.of(avtale));
         List<Avtale> avtaler = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(avtaleRepository, avtalePredicate, "startDato");
 

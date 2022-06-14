@@ -103,11 +103,11 @@ public class Beslutter extends Avtalepart<NavIdent> {
                    avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(
                    status.name(),
                    navEnheter,
-                   tiltakstype), sorteringskolonne);
+                   plussDato), sorteringskolonne);
             case AVSLÅTT -> filtrereAvslattPerioder(avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterAvslatt(
                             status.name(),
                             navEnheter,
-                            tiltakstype), sorteringskolonne);
+                            plussDato), sorteringskolonne);
             default -> filtrereUbehandletPerioder(
                     avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
                             status.name(),
