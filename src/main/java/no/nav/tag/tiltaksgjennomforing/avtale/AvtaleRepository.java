@@ -58,16 +58,6 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     Avtale save(Avtale entity);
 
 
-/*    @Query(value =
-            "SELECT distinct AVTALE.* FROM AVTALE " +
-                    "LEFT JOIN AVTALE_INNHOLD " +
-                    "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
-                    "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
-                    "AND AVTALE.tiltakstype not in ('ARBEIDSTRENING') " +
-                    "AND (:tiltakstype is null or AVTALE.TILTAKSTYPE = :tiltakstype) " +
-                    "AND EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
-                    ":tilskuddsperiodestatus LIKE status) " +
-                    "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter))", nativeQuery = true)*/
 @Query(value =
         "SELECT distinct AVTALE.* FROM AVTALE " +
                 "LEFT JOIN AVTALE_INNHOLD " +
