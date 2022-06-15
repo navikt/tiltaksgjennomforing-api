@@ -8,7 +8,7 @@ public class InkluderingsTiltakStrategy extends BaseAvtaleInnholdStrategy {
     public InkluderingsTiltakStrategy(AvtaleInnhold avtaleInnhold){
         super(avtaleInnhold);
     }
-
+/*
     @Override
     public void endre(EndreAvtale nyAvtale) {
         avtaleInnhold.setMentorFornavn(nyAvtale.getMentorFornavn());
@@ -30,4 +30,6 @@ public class InkluderingsTiltakStrategy extends BaseAvtaleInnholdStrategy {
         alleFelter.put(AvtaleInnhold.Fields.mentorTimelonn, avtaleInnhold.getMentorTimelonn());
         return alleFelter;
     }
+
+ */
 }
