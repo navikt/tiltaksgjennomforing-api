@@ -12,6 +12,7 @@ public class AvtaleSorterer {
             case AvtaleInnhold.Fields.deltakerEtternavn -> Comparator.comparing(avtale -> lowercaseEllerNull(avtale.getGjeldendeInnhold().getDeltakerEtternavn()), Comparator.nullsLast(Comparator.naturalOrder()));
             case AvtaleInnhold.Fields.deltakerFornavn -> Comparator.comparing(avtale -> lowercaseEllerNull(avtale.getGjeldendeInnhold().getDeltakerFornavn()), Comparator.nullsLast(Comparator.naturalOrder()));
             case "status" -> Comparator.comparing(Avtale::status);
+            case "startDato" -> Comparator.comparing(avtale -> avtale.gjeldendeTilskuddsperiode().getStartDato(), Comparator.nullsLast(Comparator.naturalOrder()));
             default -> Comparator.comparing(Avtale::getSistEndret, Comparator.reverseOrder());
         };
     }
