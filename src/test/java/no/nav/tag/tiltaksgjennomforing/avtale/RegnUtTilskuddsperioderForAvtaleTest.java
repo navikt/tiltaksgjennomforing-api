@@ -168,7 +168,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
 
         assertThat(avtale.getGjeldendeInnhold().getDatoForRedusertProsent()).isEqualTo(LocalDate.of(2022, 1, 1));
-        assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(68);
+        assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(67);
         harRiktigeEgenskaper(avtale);
         Now.resetClock();
     }
@@ -188,7 +188,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
 
         assertThat(avtale.getGjeldendeInnhold().getDatoForRedusertProsent()).isEqualTo(LocalDate.of(2022, 2, 1));
-        assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(70);
+        assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(67);
         harRiktigeEgenskaper(avtale);
         Now.resetClock();
     }
@@ -217,7 +217,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
     public void sjett_at_reduksjon_ikke_skjer_før_12_mnd_over_68_prosent_eller_høyre(){
         Now.fixedDate(LocalDate.of(2021, 1, 1));
         LocalDate startDato = LocalDate.of(2021, 2, 1);
-        LocalDate sluttDato = LocalDate.of(2021, 6, 1);
+        LocalDate sluttDato = LocalDate.of(2021, 3, 1);
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
 
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
