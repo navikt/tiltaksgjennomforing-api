@@ -111,7 +111,7 @@ public class VeilederTest {
 
     @Test
     public void opphevgodkjenninger__kan_ikke_oppheve_hvis_første_tilskuddsperiode_er_godkjent() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
 
         // Gi veileder tilgang til deltaker
@@ -220,7 +220,7 @@ public class VeilederTest {
 
     @Test
     public void slettemerke__avtale_med_tilgang() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         NavIdent navIdent = new NavIdent("Z123456");
 
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
@@ -235,7 +235,7 @@ public class VeilederTest {
 
     @Test
     public void slettemerke__avtale_uten_tilgang() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
 
         NavIdent navIdent = new NavIdent("X123456");
 
@@ -250,7 +250,7 @@ public class VeilederTest {
 
     @Test
     public void slettemerket_ikke_tilgang_til_avtale() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setSlettemerket(true);
         Veileder veileder = TestData.enVeileder(avtale);
         assertThat(veileder.harTilgang(avtale)).isFalse();

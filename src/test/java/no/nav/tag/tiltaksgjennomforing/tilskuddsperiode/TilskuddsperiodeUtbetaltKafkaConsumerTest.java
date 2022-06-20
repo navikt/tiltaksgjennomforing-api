@@ -12,7 +12,6 @@ import java.util.Optional;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
-import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.TilskuddsperiodeUtbetaltKafkaConsumer;
 import org.junit.jupiter.api.Test;
 
 class TilskuddsperiodeUtbetaltKafkaConsumerTest {
@@ -23,7 +22,7 @@ class TilskuddsperiodeUtbetaltKafkaConsumerTest {
     AvtaleRepository avtaleRepository = mock(AvtaleRepository.class);
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(new JavaTimeModule());
-    Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+    Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
     when(avtaleRepository.findById(any())).thenReturn(Optional.of(avtale));
 
     // NÅR

@@ -47,7 +47,7 @@ class VeilarbArenaClientTest {
     @Test
     public void sjekkAt_kvalifiseringsgruppe_som_faller_utenfor_kaster_exception() {
         String fnr_har_kvalifiseringsgruppe_med_kode_IVURD = "02104317386";
-        final Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        final Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setDeltakerFnr(new Fnr(fnr_har_kvalifiseringsgruppe_med_kode_IVURD));
         avtale.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
 
@@ -59,7 +59,7 @@ class VeilarbArenaClientTest {
     @Test
     public void hent_og_sjekk_oppfølging_status() {
         String fnr_har_riktig_kvalifisering_og_formidlingskode = "00000000000";
-        final Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        final Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setDeltakerFnr(new Fnr(fnr_har_riktig_kvalifisering_og_formidlingskode));
 
         Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
@@ -70,7 +70,7 @@ class VeilarbArenaClientTest {
 
     @Test
     public void sjekk_at_lonnstilskuddsprosent_blir_satt_paa_midlertidiglonnstilskudd_ved_AvtaleInnhold_constructor() {
-        final Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        final Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setLonnstilskuddProsent(null);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
 
