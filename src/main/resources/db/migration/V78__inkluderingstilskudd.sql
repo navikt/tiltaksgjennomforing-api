@@ -1,7 +1,7 @@
 CREATE TABLE inkluderingstilskudd
 (
     id uuid primary key,
-    avtale_id integer,
+    avtale_innhold uuid,
     beløp integer,
     type varchar,
     forklaring varchar,

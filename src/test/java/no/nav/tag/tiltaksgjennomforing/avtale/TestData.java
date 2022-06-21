@@ -30,6 +30,14 @@ public class TestData {
         return Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING), veilderNavIdent);
     }
 
+    public static Avtale enInkluderingstilskuddAvtale() {
+        NavIdent veilderNavIdent = new NavIdent("Z123456");
+        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.INKLUDERINGSTILSKUDD), veilderNavIdent);
+        avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
+
+        return avtale;
+    }
+
     public static Avtale enSommerjobbAvtale() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         return Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.SOMMERJOBB), veilderNavIdent);
@@ -335,6 +343,7 @@ public class TestData {
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(12));
         endreAvtale.setStillingprosent(50);
         endreAvtale.getMaal().add(TestData.etMaal());
+        endreAvtale.getInkluderingstilskudd().add(TestData.etInkluderingstilskudd());
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
         endreAvtale.setArbeidsgiverKontonummer("000111222");
         endreAvtale.setStillingstittel("Butikkbetjent");
@@ -422,6 +431,14 @@ public class TestData {
         maal.setKategori(MaalKategori.FÅ_JOBB_I_BEDRIFTEN);
         maal.setBeskrivelse("Lære butikkarbeid");
         return maal;
+    }
+
+    public static Inkluderingstilskudd etInkluderingstilskudd() {
+        Inkluderingstilskudd i = new Inkluderingstilskudd();
+        i.setBeløp(15000);
+        i.setForklaring("Noe penger for programvare");
+        i.setType(Inkluderingstilskuddtyper.PROGRAMVARE);
+        return i;
     }
 
     public static GodkjentPaVegneGrunn enGodkjentPaVegneGrunn() {
@@ -540,4 +557,6 @@ public class TestData {
         avtale.getGjeldendeInnhold().setJournalpostId("1");
         return avtale;
     }
+
+
 }

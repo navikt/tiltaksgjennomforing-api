@@ -44,6 +44,9 @@ public class EndreAvtale {
     // Arbeidstreningsfelter
     private List<Maal> maal = new ArrayList<>();
 
+    // Inkluderingstilskuddsfelter
+    private List<Inkluderingstilskudd> inkluderingstilskudd = new ArrayList<>();
+
     // Lønnstilskuddsfelter
     private String arbeidsgiverKontonummer;
     private Integer lonnstilskuddProsent;
