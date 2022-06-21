@@ -23,7 +23,7 @@ public class SommerjobbStartOgSluttDatoStrategy implements StartOgSluttDatoStrat
           if (sluttDato.isBefore(LocalDate.of(sluttDato.getYear(), 6, 1)) ) {
             throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_TIDLIG);
           }
-          if (sluttDato.isAfter(LocalDate.of(sluttDato.getYear(), 8, 31))) {
+          if (sluttDato.isAfter(LocalDate.of(sluttDato.getYear(), 9, 27))) {
             throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_SENT);
           }
         }
