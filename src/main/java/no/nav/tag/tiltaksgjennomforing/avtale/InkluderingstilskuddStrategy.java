@@ -3,9 +3,9 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import java.util.HashMap;
 import java.util.Map;
 
-public class InkluderingsTiltakStrategy extends BaseAvtaleInnholdStrategy {
+public class InkluderingstilskuddStrategy extends BaseAvtaleInnholdStrategy {
 
-    public InkluderingsTiltakStrategy(AvtaleInnhold avtaleInnhold){
+    public InkluderingstilskuddStrategy(AvtaleInnhold avtaleInnhold){
         super(avtaleInnhold);
     }
 
