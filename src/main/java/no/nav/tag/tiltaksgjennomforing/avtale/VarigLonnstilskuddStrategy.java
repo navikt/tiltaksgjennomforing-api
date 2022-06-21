@@ -8,8 +8,8 @@ import java.util.Map;
 public class VarigLonnstilskuddStrategy extends LonnstilskuddStrategy {
 
     public static final int MAX_75_PROSENT = 75;
-    public static final int MAX_68_PROSENT_GRENSE_ETTER_12_MND = 68;
-    public static final int SATS_67_PROSENT_ETTER_12_MND = 67;
+    public static final int GRENSE_ETTER_12_MND_68_PROSENT = 68;
+    public static final int MAX_SATS_67_PROSENT_ETTER_12_MND = 67;
 
     @Override
     public Map<String, Object> alleFelterSomMåFyllesUt() {
@@ -47,10 +47,10 @@ public class VarigLonnstilskuddStrategy extends LonnstilskuddStrategy {
         return null;
     }
     private void regnutEtter12MånederVarighetOgOver68ProsentTilskudd() {
-        if(avtaleInnhold.getLonnstilskuddProsent() == null || avtaleInnhold.getLonnstilskuddProsent() < MAX_68_PROSENT_GRENSE_ETTER_12_MND) return;
+        if(avtaleInnhold.getLonnstilskuddProsent() == null || avtaleInnhold.getLonnstilskuddProsent() < GRENSE_ETTER_12_MND_68_PROSENT) return;
         LocalDate datoForRedusertProsent = getDatoForRedusertProsent(avtaleInnhold.getStartDato(), avtaleInnhold.getSluttDato(), avtaleInnhold.getLonnstilskuddProsent());
         if(datoForRedusertProsent != null){
-            avtaleInnhold.setLonnstilskuddProsent(SATS_67_PROSENT_ETTER_12_MND);
+            avtaleInnhold.setLonnstilskuddProsent(MAX_SATS_67_PROSENT_ETTER_12_MND);
             avtaleInnhold.setDatoForRedusertProsent(datoForRedusertProsent);
             Integer sumLønnstilskuddRedusert = regnUtRedusertLønnstilskudd();
             avtaleInnhold.setSumLønnstilskuddRedusert(sumLønnstilskuddRedusert);
