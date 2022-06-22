@@ -29,7 +29,7 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         avtaleRepository.save(TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder());
         avtaleRepository.save(TestData.enAvtaleMedFlereVersjoner());
         avtaleRepository.save(TestData.enAvtaleKlarForOppstart());
-        Avtale lilly = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        Avtale lilly = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         lilly.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         avtaleRepository.save(lilly);
         avtaleRepository.save(TestData.enLonnstilskuddAvtaleGodkjentAvVeileder());

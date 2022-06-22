@@ -781,7 +781,7 @@ public class AvtaleTest {
 
     @Test
     public void endre_tilskuddsberegning_kun_inngått_avtale() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         assertFeilkode(Feilkode.KAN_IKKE_ENDRE_OKONOMI_IKKE_GODKJENT_AVTALE, () -> avtale.endreTilskuddsberegning(TestData.enEndreTilskuddsberegning(), TestData.enNavIdent()));
     }
 
@@ -819,7 +819,7 @@ public class AvtaleTest {
 
     @Test
     public void forleng_kun_ved_inngått_avtale() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         assertFeilkode(Feilkode.KAN_IKKE_FORLENGE_IKKE_GODKJENT_AVTALE, () -> avtale.forlengAvtale(avtale.getGjeldendeInnhold().getStartDato().plusMonths(1), TestData.enNavIdent()));
     }
 
@@ -939,7 +939,7 @@ public class AvtaleTest {
     public void lonnstilskudd_må_være_godkjent_av_beslutter_hvis_pilotbedrift() {
         // Sjekker at en lønnstilskuddavtale som er i pilot ikke blir inngått før første tilskuddsperiode blir godkjent
 
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         assertThat(avtale.statusSomEnum()).isEqualTo(Status.MANGLER_GODKJENNING);
         Deltaker deltaker = TestData.enDeltaker(avtale);
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);

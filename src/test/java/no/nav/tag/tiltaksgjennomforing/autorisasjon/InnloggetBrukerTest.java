@@ -146,7 +146,7 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__arbeidsgiver_med_arbeidsgivertilgang_skal_ikke_ha_lonnstilskuddtilgang() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING));
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(new Fnr("00000000009"), Set.of(), tilganger, null, null, null);
         assertThat(arbeidsgiver.harTilgang(avtale)).isFalse();

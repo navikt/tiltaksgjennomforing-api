@@ -4,12 +4,10 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -29,7 +27,7 @@ class BeslutterTest {
     public void hentAlleAvtalerMedMuligTilgang__hent_ingen_GODKJENTE_når_avtaler_har_gjeldende_tilskuddsperiodestatus_ubehandlet() {
 
         // GITT
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         TilskuddPeriode tilskuddPeriode = new TilskuddPeriode();
         tilskuddPeriode.setStatus(TilskuddPeriodeStatus.GODKJENT);
         tilskuddPeriode.setBeløp(1200);
@@ -58,7 +56,7 @@ class BeslutterTest {
     public void hentAlleAvtalerMedMuligTilgang__kan_hente_avtale_Med_godkjent_periode() {
 
         // GITT
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         TilskuddPeriode tilskuddPeriode = new TilskuddPeriode();
         tilskuddPeriode.setStatus(TilskuddPeriodeStatus.GODKJENT);
         tilskuddPeriode.setBeløp(1200);
@@ -90,7 +88,7 @@ class BeslutterTest {
     public void hentAlleAvtalerMedMuligTilgang__kan_hente_kun_en_avtale_Med_to_ubehandlet_perioder() {
 
         // GITT
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         TilskuddPeriode tilskuddPeriode = new TilskuddPeriode();
         tilskuddPeriode.setBeløp(1200);
         tilskuddPeriode.setStartDato(LocalDate.now().plusDays(14));
@@ -136,7 +134,7 @@ class BeslutterTest {
     public void hentAlleAvtalerMedMuligTilgang__kaster_en_NAV_ENHET_IKKE_FUNNET_EXCEPTION_når_nav_enhet_er_tom_under_henting() {
 
         // GITT
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         TilskuddPeriode tilskuddPeriode = new TilskuddPeriode();
         tilskuddPeriode.setBeløp(1200);
         tilskuddPeriode.setStatus(TilskuddPeriodeStatus.UBEHANDLET);

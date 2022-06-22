@@ -122,7 +122,7 @@ public class AvtaleRepositoryTest {
     @Test
     public void skalKunneLagreTilskuddsPeriode() {
         // Lage avtale
-        Avtale lagretAvtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        Avtale lagretAvtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         lagretAvtale.getGjeldendeInnhold().setSumLonnstilskudd(20000);
         avtaleRepository.save(lagretAvtale);
 
