@@ -7,9 +7,8 @@ import java.util.Map;
 
 public class VarigLonnstilskuddStrategy extends LonnstilskuddStrategy {
 
-    public static final int MAX_75_PROSENT = 75;
-    public static final int GRENSE_ETTER_12_MND_68_PROSENT = 68;
-    public static final int MAX_SATS_67_PROSENT_ETTER_12_MND = 67;
+    public static final int GRENSE_68_PROSENT_ETTER_12_MND = 68;
+    public static final int MAX_67_PROSENT_ETTER_12_MND = 67;
 
     @Override
     public Map<String, Object> alleFelterSomMåFyllesUt() {
@@ -25,7 +24,7 @@ public class VarigLonnstilskuddStrategy extends LonnstilskuddStrategy {
     @Override
     public void endre(EndreAvtale endreAvtale) {
         if (endreAvtale.getLonnstilskuddProsent() != null && (
-            endreAvtale.getLonnstilskuddProsent() < 0 || endreAvtale.getLonnstilskuddProsent() > MAX_75_PROSENT)) {
+            endreAvtale.getLonnstilskuddProsent() < 0 || endreAvtale.getLonnstilskuddProsent() > 75)) {
             throw new FeilLonnstilskuddsprosentException();
         }
         avtaleInnhold.setLonnstilskuddProsent(endreAvtale.getLonnstilskuddProsent());
@@ -35,7 +34,7 @@ public class VarigLonnstilskuddStrategy extends LonnstilskuddStrategy {
     @Override
     public void regnUtTotalLonnstilskudd() {
         super.regnUtTotalLonnstilskudd();
-        regnutEtter12MånederVarighetOgOver68ProsentTilskudd();
+        regnUtDatoOgSumRedusert();
     }
     private LocalDate getDatoForRedusertProsent(LocalDate startDato, LocalDate sluttDato, Integer lonnstilskuddprosent) {
         if (startDato == null || sluttDato == null || lonnstilskuddprosent == null) {
@@ -46,20 +45,24 @@ public class VarigLonnstilskuddStrategy extends LonnstilskuddStrategy {
         }
         return null;
     }
-    private void regnutEtter12MånederVarighetOgOver68ProsentTilskudd() {
-        if(avtaleInnhold.getLonnstilskuddProsent() == null || avtaleInnhold.getLonnstilskuddProsent() < GRENSE_ETTER_12_MND_68_PROSENT) return;
-        LocalDate datoForRedusertProsent = getDatoForRedusertProsent(avtaleInnhold.getStartDato(), avtaleInnhold.getSluttDato(), avtaleInnhold.getLonnstilskuddProsent());
-        if(datoForRedusertProsent != null){
-            avtaleInnhold.setLonnstilskuddProsent(MAX_SATS_67_PROSENT_ETTER_12_MND);
-            avtaleInnhold.setDatoForRedusertProsent(datoForRedusertProsent);
-            Integer sumLønnstilskuddRedusert = regnUtRedusertLønnstilskudd();
-            avtaleInnhold.setSumLønnstilskuddRedusert(sumLønnstilskuddRedusert);
+    private void regnUtDatoOgSumRedusert() {
+        if(avtaleInnhold.getLonnstilskuddProsent() == null || avtaleInnhold.getLonnstilskuddProsent() < GRENSE_68_PROSENT_ETTER_12_MND) {
+            avtaleInnhold.setDatoForRedusertProsent(null);
+            avtaleInnhold.setSumLønnstilskuddRedusert(null);
+            return;
         }
+        LocalDate datoForRedusertProsent = getDatoForRedusertProsent(avtaleInnhold.getStartDato(), avtaleInnhold.getSluttDato(), avtaleInnhold.getLonnstilskuddProsent());
+        avtaleInnhold.setDatoForRedusertProsent(datoForRedusertProsent);
+        Integer sumLønnstilskuddRedusert = regnUtRedusertLønnstilskudd();
+        avtaleInnhold.setSumLønnstilskuddRedusert(sumLønnstilskuddRedusert);
+
     }
 
     private Integer regnUtRedusertLønnstilskudd() {
         if (avtaleInnhold.getDatoForRedusertProsent() != null && avtaleInnhold.getLonnstilskuddProsent() != null) {
-            return getSumLonnsTilskudd(avtaleInnhold.getSumLonnsutgifter(), avtaleInnhold.getLonnstilskuddProsent());
+            int lonnstilskuddProsent = avtaleInnhold.getLonnstilskuddProsent();
+            if(lonnstilskuddProsent >= GRENSE_68_PROSENT_ETTER_12_MND) lonnstilskuddProsent = MAX_67_PROSENT_ETTER_12_MND;
+            return getSumLonnsTilskudd(avtaleInnhold.getSumLonnsutgifter(), lonnstilskuddProsent);
         } else {
             return null;
         }

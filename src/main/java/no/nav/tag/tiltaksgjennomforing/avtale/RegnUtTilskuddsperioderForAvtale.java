@@ -18,7 +18,7 @@ public class RegnUtTilskuddsperioderForAvtale {
     private final static BigDecimal DAGER_I_MÅNED = new BigDecimal("30.4375");
     private final static int ANTALL_MÅNEDER_I_EN_PERIODE = 1;
 
-    public static List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(Integer sumLønnstilskuddPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed, Integer lonnstilskuddprosent, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMånedRedusert) {
+    public static List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(Tiltakstype tiltakstype,Integer sumLønnstilskuddPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed, Integer lonnstilskuddprosent, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMånedRedusert) {
         if (datoForRedusertProsent == null) {
             return lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
                 Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMåned);
@@ -32,7 +32,7 @@ public class RegnUtTilskuddsperioderForAvtale {
 
             List<TilskuddPeriode> tilskuddperioderEtterRedusering = lagPeriode(datoForRedusertProsent, datoTilOgMed).stream().map(datoPar -> {
                 Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMånedRedusert);
-                return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), lonnstilskuddprosent - 10);
+                return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), getLonnstilskuddProsent(tiltakstype, lonnstilskuddprosent));
             }).collect(Collectors.toList());
 
             ArrayList<TilskuddPeriode> tilskuddsperioder = new ArrayList<>();
@@ -41,6 +41,14 @@ public class RegnUtTilskuddsperioderForAvtale {
             return tilskuddsperioder;
         }
 
+    }
+
+    private static int getLonnstilskuddProsent(Tiltakstype tiltakstype, Integer lonnstilskuddprosent) {
+        if(tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD){
+            if(lonnstilskuddprosent >= 68) return 67;
+            return lonnstilskuddprosent;
+        }
+        return lonnstilskuddprosent - 10;
     }
 
     public static Integer beløpForPeriode(LocalDate datoFraOgMed, LocalDate datoTilOgMed, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMåned, Integer sumLønnstilskuddPerMånedRedusert) {
