@@ -343,7 +343,7 @@ public class TestData {
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(12));
         endreAvtale.setStillingprosent(50);
         endreAvtale.getMaal().add(TestData.etMaal());
-        endreAvtale.getInkluderingstilskudd().add(TestData.etInkluderingstilskudd());
+        endreAvtale.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgift());
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
         endreAvtale.setArbeidsgiverKontonummer("000111222");
         endreAvtale.setStillingstittel("Butikkbetjent");
@@ -433,11 +433,10 @@ public class TestData {
         return maal;
     }
 
-    public static Inkluderingstilskudd etInkluderingstilskudd() {
-        Inkluderingstilskudd i = new Inkluderingstilskudd();
+    public static Inkluderingstilskuddsutgift enInkluderingstilskuddsutgift() {
+        Inkluderingstilskuddsutgift i = new Inkluderingstilskuddsutgift();
         i.setBeløp(15000);
-        i.setForklaring("Noe penger for programvare");
-        i.setType(Inkluderingstilskuddtyper.PROGRAMVARE);
+        i.setType(InkluderingstilskuddsutgiftType.PROGRAMVARE);
         return i;
     }
 

@@ -11,9 +11,9 @@ public class InkluderingstilskuddStrategy extends BaseAvtaleInnholdStrategy {
 
     @Override
     public void endre(EndreAvtale nyAvtale) {
-        avtaleInnhold.getInkluderingstilskudd().clear();
-        avtaleInnhold.getInkluderingstilskudd().addAll(nyAvtale.getInkluderingstilskudd());
-        avtaleInnhold.getInkluderingstilskudd().forEach(i -> i.setAvtaleInnhold(avtaleInnhold));
+        avtaleInnhold.getInkluderingstilskuddsutgift().clear();
+        avtaleInnhold.getInkluderingstilskuddsutgift().addAll(nyAvtale.getInkluderingstilskuddsutgift());
+        avtaleInnhold.getInkluderingstilskuddsutgift().forEach(i -> i.setAvtaleInnhold(avtaleInnhold));
         super.endre(nyAvtale);
     }
 
@@ -21,7 +21,7 @@ public class InkluderingstilskuddStrategy extends BaseAvtaleInnholdStrategy {
     public Map<String, Object> alleFelterSomMåFyllesUt() {
         var alleFelter = new HashMap<String, Object>();
         alleFelter.putAll(super.alleFelterSomMåFyllesUt());
-        alleFelter.put(AvtaleInnhold.Fields.inkluderingstilskudd, avtaleInnhold.getInkluderingstilskudd());
+        alleFelter.put(AvtaleInnhold.Fields.inkluderingstilskuddsutgift, avtaleInnhold.getInkluderingstilskuddsutgift());
         return alleFelter;
     }
 

@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-public enum Inkluderingstilskuddtyper {
+public enum InkluderingstilskuddsutgiftType {
     TILRETTELEGGINGSBEHOV,
     TILTAKSPLASS,
     UTSTYR,

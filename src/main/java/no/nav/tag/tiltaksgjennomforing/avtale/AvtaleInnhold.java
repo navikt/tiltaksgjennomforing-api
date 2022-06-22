@@ -111,7 +111,7 @@ public class AvtaleInnhold {
     private List<Maal> maal = new ArrayList<>();
     @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
-    private List<Inkluderingstilskudd> inkluderingstilskudd = new ArrayList<>();
+    private List<Inkluderingstilskuddsutgift> inkluderingstilskuddsutgift = new ArrayList<>();
 
     // Godkjenning
     private LocalDateTime godkjentAvDeltaker;
@@ -156,7 +156,7 @@ public class AvtaleInnhold {
         AvtaleInnhold nyVersjon = toBuilder()
                 .id(UUID.randomUUID())
                 .maal(kopiAvMål())
-                .inkluderingstilskudd(kopiAvInkluderingstilskudd())
+                .inkluderingstilskuddsutgift(kopiAvInkluderingstilskuddsutgifer())
                 .godkjentAvDeltaker(null)
                 .godkjentAvArbeidsgiver(null)
                 .godkjentAvVeileder(null)
@@ -170,7 +170,7 @@ public class AvtaleInnhold {
                 .innholdType(innholdType)
                 .build();
         nyVersjon.getMaal().forEach(m -> m.setAvtaleInnhold(nyVersjon));
-        nyVersjon.getInkluderingstilskudd().forEach(i -> i.setAvtaleInnhold(nyVersjon));
+        nyVersjon.getInkluderingstilskuddsutgift().forEach(i -> i.setAvtaleInnhold(nyVersjon));
         return nyVersjon;
     }
 
@@ -178,13 +178,13 @@ public class AvtaleInnhold {
         AvtaleInnhold nyVersjon = toBuilder()
                 .id(UUID.randomUUID())
                 .maal(kopiAvMål())
-                .inkluderingstilskudd(kopiAvInkluderingstilskudd())
+                .inkluderingstilskuddsutgift(kopiAvInkluderingstilskuddsutgifer())
                 .journalpostId(null)
                 .versjon(versjon + 1)
                 .innholdType(innholdType)
                 .build();
         nyVersjon.getMaal().forEach(m -> m.setAvtaleInnhold(nyVersjon));
-        nyVersjon.getInkluderingstilskudd().forEach(i -> i.setAvtaleInnhold(nyVersjon));
+        nyVersjon.getInkluderingstilskuddsutgift().forEach(i -> i.setAvtaleInnhold(nyVersjon));
         return nyVersjon;
     }
 
@@ -192,8 +192,8 @@ public class AvtaleInnhold {
         return maal.stream().map(m -> new Maal(m)).collect(Collectors.toList());
     }
 
-    private List<Inkluderingstilskudd> kopiAvInkluderingstilskudd() {
-        return inkluderingstilskudd.stream().map(i -> new Inkluderingstilskudd(i)).collect(Collectors.toList());
+    private List<Inkluderingstilskuddsutgift> kopiAvInkluderingstilskuddsutgifer() {
+        return inkluderingstilskuddsutgift.stream().map(i -> new Inkluderingstilskuddsutgift(i)).collect(Collectors.toList());
     }
 
     void endreAvtale(EndreAvtale nyAvtale) {
