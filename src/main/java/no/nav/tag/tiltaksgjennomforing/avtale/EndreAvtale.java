@@ -46,6 +46,7 @@ public class EndreAvtale {
 
     // Inkluderingstilskuddsfelter
     private List<Inkluderingstilskuddsutgift> inkluderingstilskuddsutgift = new ArrayList<>();
+    private String inkluderingstilskuddBegrunnelse;
 
     // Lønnstilskuddsfelter
     private String arbeidsgiverKontonummer;

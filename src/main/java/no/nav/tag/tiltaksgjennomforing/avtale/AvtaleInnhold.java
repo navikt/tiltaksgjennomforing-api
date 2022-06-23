@@ -19,6 +19,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -109,9 +111,19 @@ public class AvtaleInnhold {
     @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
     private List<Maal> maal = new ArrayList<>();
+    // Inkluderingstilskudd
     @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
     private List<Inkluderingstilskuddsutgift> inkluderingstilskuddsutgift = new ArrayList<>();
+    private String inkluderingstilskuddBegrunnelse;
+
+    @JsonProperty
+    public Integer inkluderingstilskuddTotalBeløp() {
+        return inkluderingstilskuddsutgift.stream().map(inkluderingstilskuddsutgift -> inkluderingstilskuddsutgift.getBeløp())
+                .collect(Collectors.toList()).stream()
+                .reduce(0, Integer::sum);
+    }
+    //private Integer inkluderingstilskuddTotalBeløp;
 
     // Godkjenning
     private LocalDateTime godkjentAvDeltaker;
