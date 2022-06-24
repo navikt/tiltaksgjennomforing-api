@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;
-import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 
 import javax.persistence.*;
 import java.util.UUID;
@@ -14,29 +13,24 @@ import java.util.UUID;
 @Entity
 @Accessors(chain = true)
 @FieldNameConstants
-public class Maal {
+public class Inkluderingstilskuddsutgift {
     @Id
     @GeneratedValue
     private UUID id;
+    private Integer beløp;
     @Enumerated(EnumType.STRING)
-    private MaalKategori kategori;
-    private String beskrivelse;
+    private InkluderingstilskuddsutgiftType type;
     @ManyToOne
-    @JoinColumn(name = "avtale_innhold")
+    @JoinColumn(name = "avtale_innhold_id")
     @JsonIgnore
     @ToString.Exclude
     private AvtaleInnhold avtaleInnhold;
 
-    public Maal() {}
+    public Inkluderingstilskuddsutgift() {}
 
-    public Maal(Maal fra) {
+    public Inkluderingstilskuddsutgift(Inkluderingstilskuddsutgift utgift) {
         id = UUID.randomUUID();
-        kategori = fra.kategori;
-        beskrivelse = fra.beskrivelse;
-    }
-
-
-    public void sjekkMaalLengde() {
-        Utils.sjekkAtTekstIkkeOverskrider1000Tegn(this.getBeskrivelse(), "Maks lengde for mål er 1000 tegn");
+        beløp = utgift.beløp;
+        type = utgift.type;
     }
 }
