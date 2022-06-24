@@ -30,6 +30,7 @@ public class ArbeidstreningStrategy extends BaseAvtaleInnholdStrategy {
         alleFelterSomMåFyllesUt.put(AvtaleInnhold.Fields.stillingstittel, avtaleInnhold.getStillingstittel());
         alleFelterSomMåFyllesUt.put(AvtaleInnhold.Fields.arbeidsoppgaver, avtaleInnhold.getArbeidsoppgaver());
         alleFelterSomMåFyllesUt.put(AvtaleInnhold.Fields.maal, avtaleInnhold.getMaal());
+        alleFelterSomMåFyllesUt.put(AvtaleInnhold.Fields.antallDagerPerUke, avtaleInnhold.getAntallDagerPerUke());
         return alleFelterSomMåFyllesUt;
     }
 }

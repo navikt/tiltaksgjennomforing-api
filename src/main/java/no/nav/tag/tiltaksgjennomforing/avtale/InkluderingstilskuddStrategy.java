@@ -21,8 +21,9 @@ public class InkluderingstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.getInkluderingstilskuddsutgift().clear();
         avtaleInnhold.getInkluderingstilskuddsutgift().addAll(nyAvtale.getInkluderingstilskuddsutgift());
         avtaleInnhold.getInkluderingstilskuddsutgift().forEach(i -> i.setAvtaleInnhold(avtaleInnhold));
-
         avtaleInnhold.setInkluderingstilskuddBegrunnelse(nyAvtale.getInkluderingstilskuddBegrunnelse());
+        avtaleInnhold.setHarFamilietilknytning(nyAvtale.getHarFamilietilknytning());
+        avtaleInnhold.setFamilietilknytningForklaring(nyAvtale.getFamilietilknytningForklaring());
 
         super.endre(nyAvtale);
     }
@@ -31,7 +32,13 @@ public class InkluderingstilskuddStrategy extends BaseAvtaleInnholdStrategy {
     public Map<String, Object> alleFelterSomMåFyllesUt() {
         var alleFelter = new HashMap<String, Object>();
         alleFelter.putAll(super.alleFelterSomMåFyllesUt());
+        // TODO: Her må alle felter som ikke er felles for alle avtaler legges inn!
         alleFelter.put(AvtaleInnhold.Fields.inkluderingstilskuddsutgift, avtaleInnhold.getInkluderingstilskuddsutgift());
+        alleFelter.put(AvtaleInnhold.Fields.inkluderingstilskuddBegrunnelse, avtaleInnhold.getInkluderingstilskuddBegrunnelse());
+        alleFelter.put(AvtaleInnhold.Fields.harFamilietilknytning, avtaleInnhold.getHarFamilietilknytning());
+        if (avtaleInnhold.getHarFamilietilknytning() != null && avtaleInnhold.getHarFamilietilknytning()) {
+            alleFelter.put(AvtaleInnhold.Fields.familietilknytningForklaring, avtaleInnhold.getFamilietilknytningForklaring());
+        }
         return alleFelter;
     }
 

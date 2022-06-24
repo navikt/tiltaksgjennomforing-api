@@ -21,7 +21,7 @@ public class Inkluderingstilskuddsutgift {
     @Enumerated(EnumType.STRING)
     private InkluderingstilskuddsutgiftType type;
     @ManyToOne
-    @JoinColumn(name = "avtale_innhold")
+    @JoinColumn(name = "avtale_innhold_id")
     @JsonIgnore
     @ToString.Exclude
     private AvtaleInnhold avtaleInnhold;

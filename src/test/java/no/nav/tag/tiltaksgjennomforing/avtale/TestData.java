@@ -344,6 +344,7 @@ public class TestData {
         endreAvtale.setStillingprosent(50);
         endreAvtale.getMaal().add(TestData.etMaal());
         endreAvtale.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgift());
+        endreAvtale.setInkluderingstilskuddBegrunnelse("Behov for inkluderingstilskudd");
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
         endreAvtale.setArbeidsgiverKontonummer("000111222");
         endreAvtale.setStillingstittel("Butikkbetjent");
