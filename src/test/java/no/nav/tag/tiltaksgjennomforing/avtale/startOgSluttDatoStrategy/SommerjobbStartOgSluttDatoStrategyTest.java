@@ -22,9 +22,8 @@ public class SommerjobbStartOgSluttDatoStrategyTest {
 
     @Test
     public void sjekkStartOgSluttDatoTilbakeITidUtenEtterregistreringInnenForFireUkerSommerjobbPeriode(){
-        LocalDate avtaleStart = LocalDate.of(LocalDate.now().minusYears(2).getYear(), 8,31);
-        LocalDate avtaleSlutt = LocalDate.of(LocalDate.now().minusYears(2).getYear(),9,27);
-
+        LocalDate avtaleStart = LocalDate.of(LocalDate.now().minusYears(2).getYear(), 9,1);
+        LocalDate avtaleSlutt = LocalDate.of(LocalDate.now().minusYears(2).getYear(),9,28);
 
         boolean erAvtaleInngått = true;
         boolean erGodkjentForEtterregistrering = true;

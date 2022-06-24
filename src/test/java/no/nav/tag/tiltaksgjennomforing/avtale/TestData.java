@@ -113,7 +113,7 @@ public class TestData {
     }
 
     public static Avtale enLønnstilskuddsAvtaleMedStartOgSlutt(LocalDate startDato, LocalDate sluttDato) {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setEnhetGeografisk(ENHET_GEOGRAFISK.getVerdi());
         avtale.setEnhetsnavnGeografisk(ENHET_GEOGRAFISK.getNavn());
         avtale.setEnhetOppfolging(ENHET_OPPFØLGING.getVerdi());
@@ -126,7 +126,7 @@ public class TestData {
     }
 
     public static Avtale enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate startDato, LocalDate sluttDato) {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setEnhetGeografisk(ENHET_OPPFØLGING.getVerdi());
         avtale.setEnhetsnavnGeografisk(ENHET_GEOGRAFISK.getNavn());
         avtale.setEnhetOppfolging(ENHET_GEOGRAFISK.getVerdi());
@@ -142,7 +142,7 @@ public class TestData {
         return avtale;
     }
 
-    public static Avtale enLonnstilskuddAvtaleMedAltUtfylt() {
+    public static Avtale enMidlertidigLonnstilskuddAvtaleMedAltUtfylt() {
         return enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
     }
 
@@ -168,7 +168,7 @@ public class TestData {
     }
 
     public static Avtale enLonnstilskuddAvtaleGodkjentAvVeileder() {
-        Avtale avtale = enLonnstilskuddAvtaleMedAltUtfylt();
+        Avtale avtale = enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
@@ -181,7 +181,7 @@ public class TestData {
     }
 
     public static Avtale enLonnstilskuddAvtaleGodkjentAvVeilederTilbakeITid() {
-        Avtale avtale = enLonnstilskuddAvtaleMedAltUtfylt();
+        Avtale avtale = enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setDeltakerFornavn("Geir");
         avtale.getGjeldendeInnhold().setDeltakerEtternavn("Geirsen");
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
@@ -276,7 +276,7 @@ public class TestData {
     }
 
     public static Avtale enLonnstilskuddAvtaleMedAltUtfyltMedGodkjentForEtterregistrering(LocalDate avtaleStart, LocalDate avtaleSlutt){
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
         EndreAvtale endring = TestData.endringPåAlleFelter();
         endring.setStartDato(avtaleStart);
