@@ -26,13 +26,11 @@ public class Inkluderingstilskuddsutgift {
     @ToString.Exclude
     private AvtaleInnhold avtaleInnhold;
 
-    public Inkluderingstilskuddsutgift() {
+    public Inkluderingstilskuddsutgift() {}
 
-    }
-
-    public Inkluderingstilskuddsutgift(Inkluderingstilskuddsutgift fra) {
+    public Inkluderingstilskuddsutgift(Inkluderingstilskuddsutgift utgift) {
         id = UUID.randomUUID();
-        beløp = fra.beløp;
-        type = fra.type;
+        beløp = utgift.beløp;
+        type = utgift.type;
     }
 }

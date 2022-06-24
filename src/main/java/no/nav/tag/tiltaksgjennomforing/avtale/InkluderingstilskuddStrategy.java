@@ -32,7 +32,7 @@ public class InkluderingstilskuddStrategy extends BaseAvtaleInnholdStrategy {
     public Map<String, Object> alleFelterSomMåFyllesUt() {
         var alleFelter = new HashMap<String, Object>();
         alleFelter.putAll(super.alleFelterSomMåFyllesUt());
-        // TODO: Her må alle felter som ikke er felles for alle avtaler legges inn!
+
         alleFelter.put(AvtaleInnhold.Fields.inkluderingstilskuddsutgift, avtaleInnhold.getInkluderingstilskuddsutgift());
         alleFelter.put(AvtaleInnhold.Fields.inkluderingstilskuddBegrunnelse, avtaleInnhold.getInkluderingstilskuddBegrunnelse());
         alleFelter.put(AvtaleInnhold.Fields.harFamilietilknytning, avtaleInnhold.getHarFamilietilknytning());

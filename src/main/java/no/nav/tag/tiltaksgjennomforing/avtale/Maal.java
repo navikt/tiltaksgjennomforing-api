@@ -27,8 +27,7 @@ public class Maal {
     @ToString.Exclude
     private AvtaleInnhold avtaleInnhold;
 
-    public Maal() {
-    }
+    public Maal() {}
 
     public Maal(Maal fra) {
         id = UUID.randomUUID();

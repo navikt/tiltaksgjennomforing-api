@@ -123,7 +123,6 @@ public class AvtaleInnhold {
                 .collect(Collectors.toList()).stream()
                 .reduce(0, Integer::sum);
     }
-    //private Integer inkluderingstilskuddTotalBeløp;
 
     // Godkjenning
     private LocalDateTime godkjentAvDeltaker;
@@ -162,28 +161,6 @@ public class AvtaleInnhold {
             innhold.setStillingstype(Stillingstype.MIDLERTIDIG);
         }
         return innhold;
-    }
-
-    public AvtaleInnhold nyVersjon(AvtaleInnholdType innholdType) {
-        AvtaleInnhold nyVersjon = toBuilder()
-                .id(UUID.randomUUID())
-                .maal(kopiAvMål())
-                .inkluderingstilskuddsutgift(kopiAvInkluderingstilskuddsutgifer())
-                .godkjentAvDeltaker(null)
-                .godkjentAvArbeidsgiver(null)
-                .godkjentAvVeileder(null)
-                .godkjentAvBeslutter(null)
-                .avtaleInngått(null)
-                .ikrafttredelsestidspunkt(null)
-                .godkjentPaVegneAv(false)
-                .godkjentPaVegneGrunn(null)
-                .journalpostId(null)
-                .versjon(versjon + 1)
-                .innholdType(innholdType)
-                .build();
-        nyVersjon.getMaal().forEach(m -> m.setAvtaleInnhold(nyVersjon));
-        nyVersjon.getInkluderingstilskuddsutgift().forEach(i -> i.setAvtaleInnhold(nyVersjon));
-        return nyVersjon;
     }
 
     public AvtaleInnhold nyGodkjentVersjon(AvtaleInnholdType innholdType) {
