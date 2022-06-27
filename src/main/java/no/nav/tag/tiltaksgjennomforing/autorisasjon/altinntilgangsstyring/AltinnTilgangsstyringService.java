@@ -78,6 +78,12 @@ public class AltinnTilgangsstyringService {
         AltinnReportee[] sommerjobbOrger = kallAltinn(altinnTilgangsstyringProperties.getSommerjobbServiceCode(), altinnTilgangsstyringProperties.getSommerjobbServiceEdition(), fnr, arbeidsgiverToken);
         leggTil(tilganger, sommerjobbOrger, Tiltakstype.SOMMERJOBB);
 
+        AltinnReportee[] mentorOrger = kallAltinn(altinnTilgangsstyringProperties.getMentorServiceCode(), altinnTilgangsstyringProperties.getMentorServiceEdition(), fnr, arbeidsgiverToken);
+        leggTil(tilganger, mentorOrger, Tiltakstype.MENTOR);
+
+        AltinnReportee[] inkluderingstilskuddOrger = kallAltinn(altinnTilgangsstyringProperties.getInkluderingstilskuddServiceCode(), altinnTilgangsstyringProperties.getInkluderingstilskuddServiceEdition(), fnr, arbeidsgiverToken);
+        leggTil(tilganger, inkluderingstilskuddOrger, Tiltakstype.INKLUDERINGSTILSKUDD);
+
         return tilganger.asMap();
     }
 
