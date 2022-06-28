@@ -174,10 +174,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (opprettMentorAvtale.getTiltakstype() == Tiltakstype.SOMMERJOBB && opprettMentorAvtale.getDeltakerFnr().erOver30årFørsteJanuar()) {
             throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_GAMMEL);
         }
-        //:TODO Legg mentorFNR i avtale...
         this.id = UUID.randomUUID();
         this.opprettetTidspunkt = Now.localDateTime();
         this.deltakerFnr = opprettMentorAvtale.getDeltakerFnr();
+        this.mentorFnr = opprettMentorAvtale.getMentorFnr();
         this.bedriftNr = opprettMentorAvtale.getBedriftNr();
         this.tiltakstype = opprettMentorAvtale.getTiltakstype();
         this.sistEndret = Now.instant();

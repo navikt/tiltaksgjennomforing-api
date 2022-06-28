@@ -16,6 +16,7 @@ public class MentorStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setMentorEtternavn(nyAvtale.getMentorEtternavn());
         avtaleInnhold.setMentorOppgaver(nyAvtale.getMentorOppgaver());
         avtaleInnhold.setMentorAntallTimer(nyAvtale.getMentorAntallTimer());
+        avtaleInnhold.setMentorTlf(nyAvtale.getMentorTlf());
         avtaleInnhold.setMentorTimelonn(nyAvtale.getMentorTimelonn());
         super.endre(nyAvtale);
     }

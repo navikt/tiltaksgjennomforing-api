@@ -281,6 +281,7 @@ public class TestData {
         avtale.getGjeldendeInnhold().setMentorEtternavn("Å");
         avtale.getGjeldendeInnhold().setMentorOppgaver("Spise lunch med deltaker");
         avtale.getGjeldendeInnhold().setMentorAntallTimer(30);
+        avtale.getGjeldendeInnhold().setMentorTlf("12345678");
         avtale.getGjeldendeInnhold().setMentorTimelonn(500);
         avtale.getGjeldendeInnhold().setVersjon(1);
         avtale.getGjeldendeInnhold().setJournalpostId(null);
@@ -369,6 +370,7 @@ public class TestData {
         endreAvtale.setMentorEtternavn("Mentorsen");
         endreAvtale.setMentorOppgaver("Mentoroppgaver");
         endreAvtale.setMentorAntallTimer(10);
+        endreAvtale.setMentorTlf("12348594837");
         endreAvtale.setMentorTimelonn(1000);
         endreAvtale.setHarFamilietilknytning(true);
         endreAvtale.setFamilietilknytningForklaring("En middels god forklaring");
