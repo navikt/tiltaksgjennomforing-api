@@ -131,6 +131,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private String enhetsnavnGeografisk;
     private String enhetOppfolging;
     private String enhetsnavnOppfolging;
+    private String mentorFnr;
 
     private boolean godkjentForEtterregistrering;
 

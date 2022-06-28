@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OpprettMentorAvtale {
     private Fnr deltakerFnr;
-    private Fnr mentorFnr;
+    private String mentorFnr;
     private BedriftNr bedriftNr;
     private Tiltakstype tiltakstype;
     private Avtalerolle avtalerolle;
