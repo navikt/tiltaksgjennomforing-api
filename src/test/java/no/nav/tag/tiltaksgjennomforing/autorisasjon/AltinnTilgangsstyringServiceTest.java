@@ -63,7 +63,7 @@ public class AltinnTilgangsstyringServiceTest {
         assertThat(tilganger).doesNotContainKeys(new BedriftNr("910825550"), new BedriftNr("910825555"));
 
         // Virksomheter skal være i tilgang-map
-        assertThat(tilganger.get(new BedriftNr("999999999"))).containsOnly(Tiltakstype.ARBEIDSTRENING, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
+        assertThat(tilganger.get(new BedriftNr("999999999"))).containsOnly(Tiltakstype.ARBEIDSTRENING, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB, Tiltakstype.MENTOR);
         assertThat(tilganger.get(new BedriftNr("910712314"))).containsOnly(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         assertThat(tilganger.get(new BedriftNr("910712306"))).containsOnly(Tiltakstype.VARIG_LONNSTILSKUDD);
 

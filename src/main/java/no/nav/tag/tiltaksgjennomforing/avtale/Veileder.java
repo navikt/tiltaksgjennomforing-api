@@ -262,4 +262,23 @@ public class Veileder extends Avtalepart<NavIdent> {
             throw new FeilkodeException(Feilkode.ENHET_FINNES_IKKE);
         }
     }
+
+    public Avtale opprettMentorAvtale(OpprettMentorAvtale opprettMentorAvtale) {
+        boolean harAbacTilgang = tilgangskontrollService.harSkrivetilgangTilKandidat(getIdentifikator(), opprettMentorAvtale.getDeltakerFnr());
+        if (!harAbacTilgang) {
+            throw new IkkeTilgangTilDeltakerException();
+        }
+
+        final PdlRespons persondata = persondataService.hentPersondata(opprettMentorAvtale.getDeltakerFnr());
+        boolean erKode6 = persondataService.erKode6(persondata);
+
+        if (erKode6) {
+            throw new KanIkkeOppretteAvtalePåKode6Exception();
+        }
+
+        Avtale avtale = Avtale.veilederOppretterAvtale(opprettMentorAvtale, getIdentifikator());
+        avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(persondata));
+        leggTilGeografiskEnhet(avtale, persondata, norg2Client);
+        return avtale;
+    }
 }

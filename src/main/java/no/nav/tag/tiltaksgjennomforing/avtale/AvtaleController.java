@@ -10,6 +10,8 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.Protected;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.dokgen.DokgenService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
@@ -198,6 +200,58 @@ public class AvtaleController {
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
         veileder.sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
         veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
+        Avtale opprettetAvtale = avtaleRepository.save(avtale);
+        URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
+        return ResponseEntity.created(uri).build();
+    }
+
+    @PostMapping("/opprett-menter-som-veileder")
+    @Transactional
+    public ResponseEntity<?> opprettMentorAvtaleSomVeileder(@RequestBody OpprettMentorAvtale opprettMentorAvtale) {
+        Avtale avtale = null;
+        String bedriftNavn = eregService.hentVirksomhet(opprettMentorAvtale.getBedriftNr()).getBedriftNavn();
+        if(opprettMentorAvtale.getAvtalerolle().equals(Avtalerolle.VEILEDER)){
+            Veileder veileder = innloggingService.hentVeileder();;
+            avtale = veileder.opprettMentorAvtale(opprettMentorAvtale);
+            veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
+        }
+        else if(opprettMentorAvtale.getAvtalerolle().equals(Avtalerolle.ARBEIDSGIVER)){
+            Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
+            avtale = arbeidsgiver.opprettMentorAvtale(opprettMentorAvtale);
+            arbeidsgiver.hentOgSettOppfølgingStatus(avtale);
+            arbeidsgiver.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
+        }
+        if(avtale == null){
+            throw new RuntimeException("dfgmd");
+        }
+        avtale.leggTilBedriftNavn(bedriftNavn);
+        Avtale opprettetAvtale = avtaleRepository.save(avtale);
+        URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
+        return ResponseEntity.created(uri).build();
+    }
+
+    @PostMapping("/opprett-mentor-avtale")
+    @Transactional
+    public ResponseEntity<?> opprettMentorAvtale(@RequestBody OpprettMentorAvtale opprettMentorAvtale) {
+        InnloggetBruker innloggetBruker = innloggingService.hentInnloggetBruker(Avtalerolle.VEILEDER);
+        Avtale avtale = null;
+        String bedriftNavn = eregService.hentVirksomhet(opprettMentorAvtale.getBedriftNr()).getBedriftNavn();
+        if(innloggetBruker instanceof Veileder){
+            Veileder veileder = (Veileder) innloggetBruker;
+            avtale = veileder.opprettMentorAvtale(opprettMentorAvtale);
+            veileder.sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
+            veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
+        }
+        else if(innloggetBruker instanceof Arbeidsgiver){
+            Arbeidsgiver arbeidsgiver = (Arbeidsgiver) innloggetBruker;
+            avtale = arbeidsgiver.opprettMentorAvtale(opprettMentorAvtale);
+            arbeidsgiver.hentOgSettOppfølgingStatus(avtale);
+            arbeidsgiver.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
+        }
+        if(avtale == null){
+            throw new RuntimeException("dfgmd");
+        }
+        avtale.leggTilBedriftNavn(bedriftNavn);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();

@@ -165,6 +165,25 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         this.gjeldendeInnhold = AvtaleInnhold.nyttTomtInnhold(tiltakstype);
         this.gjeldendeInnhold.setAvtale(this);
     }
+    private Avtale(OpprettMentorAvtale opprettMentorAvtale) {
+        sjekkAtIkkeNull(opprettMentorAvtale.getDeltakerFnr(), "Deltakers fnr må være satt.");
+        sjekkAtIkkeNull(opprettMentorAvtale.getBedriftNr(), "Arbeidsgivers bedriftnr må være satt.");
+        if (opprettMentorAvtale.getDeltakerFnr().erUnder16år()) {
+            throw new FeilkodeException(Feilkode.SOMMERJOBB_IKKE_GAMMEL_NOK);
+        }
+        if (opprettMentorAvtale.getTiltakstype() == Tiltakstype.SOMMERJOBB && opprettMentorAvtale.getDeltakerFnr().erOver30årFørsteJanuar()) {
+            throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_GAMMEL);
+        }
+        //:TODO Legg mentorFNR i avtale...
+        this.id = UUID.randomUUID();
+        this.opprettetTidspunkt = Now.localDateTime();
+        this.deltakerFnr = opprettMentorAvtale.getDeltakerFnr();
+        this.bedriftNr = opprettMentorAvtale.getBedriftNr();
+        this.tiltakstype = opprettMentorAvtale.getTiltakstype();
+        this.sistEndret = Now.instant();
+        this.gjeldendeInnhold = AvtaleInnhold.nyttTomtInnhold(tiltakstype);
+        this.gjeldendeInnhold.setAvtale(this);
+    }
 
     public static Avtale veilederOppretterAvtale(OpprettAvtale opprettAvtale, NavIdent navIdent) {
         Avtale avtale = new Avtale(opprettAvtale);
@@ -172,9 +191,20 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         avtale.registerEvent(new AvtaleOpprettetAvVeileder(avtale, navIdent));
         return avtale;
     }
-
+    public static Avtale veilederOppretterAvtale(OpprettMentorAvtale opprettMentorAvtale, NavIdent navIdent) {
+        Avtale avtale = new Avtale(opprettMentorAvtale);
+        avtale.veilederNavIdent = sjekkAtIkkeNull(navIdent, "Veileders NAV-ident må være satt.");
+        avtale.registerEvent(new AvtaleOpprettetAvVeileder(avtale, navIdent));
+        return avtale;
+    }
     public static Avtale arbeidsgiverOppretterAvtale(OpprettAvtale opprettAvtale) {
         Avtale avtale = new Avtale(opprettAvtale);
+        avtale.opprettetAvArbeidsgiver = true;
+        avtale.registerEvent(new AvtaleOpprettetAvArbeidsgiver(avtale));
+        return avtale;
+    }
+    public static Avtale arbeidsgiverOppretterAvtale(OpprettMentorAvtale opprettMentorAvtale) {
+        Avtale avtale = new Avtale(opprettMentorAvtale);
         avtale.opprettetAvArbeidsgiver = true;
         avtale.registerEvent(new AvtaleOpprettetAvArbeidsgiver(avtale));
         return avtale;
