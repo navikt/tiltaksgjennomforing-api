@@ -796,10 +796,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     public void sendTilbakeTilBeslutter() {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         var rettede = tilskuddPeriode.stream()
-                .filter(t -> t.isAktiv())
+                .filter(TilskuddPeriode::isAktiv)
                 .filter(t -> t.getStatus() == TilskuddPeriodeStatus.AVSLÅTT)
-                .map(TilskuddPeriode::deaktiverOgLagNyUbehandlet)
-                .collect(Collectors.toList());
+                .map(TilskuddPeriode::deaktiverOgLagNyUbehandlet).toList();
         tilskuddPeriode.addAll(rettede);
     }
 
@@ -951,13 +950,21 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
                 endreKontaktInformasjon.getVeilederTlf(),
                 endreKontaktInformasjon.getArbeidsgiverFornavn(),
                 endreKontaktInformasjon.getArbeidsgiverEtternavn(),
-                endreKontaktInformasjon.getArbeidsgiverTlf(),
-                endreKontaktInformasjon.getRefusjonKontaktperson().getRefusjonKontaktpersonFornavn(),
-                endreKontaktInformasjon.getRefusjonKontaktperson().getRefusjonKontaktpersonEtternavn(),
-                endreKontaktInformasjon.getRefusjonKontaktperson().getRefusjonKontaktpersonTlf())
+                endreKontaktInformasjon.getArbeidsgiverTlf())
         ) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_KONTAKTINFO_GRUNN_MANGLER);
         }
+        if((this.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD ||
+                this.getTiltakstype() == Tiltakstype.VARIG_LONNSTILSKUDD ||
+                this.getTiltakstype() == Tiltakstype.SOMMERJOBB) &&
+                Utils.erNoenTomme(
+                endreKontaktInformasjon.getRefusjonKontaktperson().getRefusjonKontaktpersonFornavn(),
+                endreKontaktInformasjon.getRefusjonKontaktperson().getRefusjonKontaktpersonEtternavn(),
+                endreKontaktInformasjon.getRefusjonKontaktperson().getRefusjonKontaktpersonTlf()))
+        {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_KONTAKTINFO_GRUNN_MANGLER);
+        }
+
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_KONTAKTINFO);
         getGjeldendeInnhold().endreKontaktInfo(endreKontaktInformasjon);
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
