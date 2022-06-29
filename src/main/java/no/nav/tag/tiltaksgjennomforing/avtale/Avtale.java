@@ -954,16 +954,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         ) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_KONTAKTINFO_GRUNN_MANGLER);
         }
-        if((this.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD ||
-                this.getTiltakstype() == Tiltakstype.VARIG_LONNSTILSKUDD ||
-                this.getTiltakstype() == Tiltakstype.SOMMERJOBB) &&
-                Utils.erNoenTomme(
-                endreKontaktInformasjon.getRefusjonKontaktperson().getRefusjonKontaktpersonFornavn(),
-                endreKontaktInformasjon.getRefusjonKontaktperson().getRefusjonKontaktpersonEtternavn(),
-                endreKontaktInformasjon.getRefusjonKontaktperson().getRefusjonKontaktpersonTlf()))
-        {
-            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_KONTAKTINFO_GRUNN_MANGLER);
-        }
 
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_KONTAKTINFO);
         getGjeldendeInnhold().endreKontaktInfo(endreKontaktInformasjon);
