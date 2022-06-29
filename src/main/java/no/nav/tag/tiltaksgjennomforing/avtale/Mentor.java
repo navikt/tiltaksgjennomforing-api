@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import java.util.ArrayList;
 import java.util.List;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetMentor;
@@ -14,17 +15,17 @@ public class Mentor extends Avtalepart<Fnr> {
 
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
-        throw new NotImplementedException();
+        return avtale.getMentorFnr().equals(getIdentifikator().asString());
     }
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
-        throw new NotImplementedException();
+        return new ArrayList<Avtale>(avtaleRepository.findAllByMentorFnr(getIdentifikator().asString()));
     }
 
     @Override
     public void godkjennForAvtalepart(Avtale avtale) {
-        throw new NotImplementedException();
+        avtale.setMentorSignertTaushetserklæring(true);
     }
 
     @Override
@@ -34,7 +35,7 @@ public class Mentor extends Avtalepart<Fnr> {
 
     @Override
     public boolean erGodkjentAvInnloggetBruker(Avtale avtale) {
-        throw new NotImplementedException();
+        return avtale.getMentorFnr().equals(getIdentifikator().asString()) && avtale.isMentorSignertTaushetserklæring();
     }
 
 

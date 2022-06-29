@@ -133,6 +133,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private String enhetsnavnOppfolging;
     private String mentorFnr;
 
+    private  boolean mentorSignertTaushetserklæring;
+
     private boolean godkjentForEtterregistrering;
 
     @Enumerated(EnumType.STRING)
