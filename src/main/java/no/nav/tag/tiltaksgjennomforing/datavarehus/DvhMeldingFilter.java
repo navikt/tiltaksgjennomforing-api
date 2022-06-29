@@ -18,7 +18,7 @@ public class DvhMeldingFilter {
             return false;
         }
         if (!dvhMeldingFeatureProperties.getTiltakstyper().contains(avtale.getTiltakstype())) {
-            log.info("Tiltakstype {} skal ikke til DVH.", avtale.getTiltakstype());
+            log.info("Tiltakstype {} skal ikke til Datavarehus. Sender ikke melding.", avtale.getTiltakstype());
         }
         return avtale.erAvtaleInngått() && dvhMeldingFeatureProperties.getTiltakstyper().contains(avtale.getTiltakstype());
     }
