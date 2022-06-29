@@ -25,7 +25,7 @@ public class Mentor extends Avtalepart<Fnr> {
 
     @Override
     public void godkjennForAvtalepart(Avtale avtale) {
-        avtale.setMentorSignertTaushetserklæring(true);
+        avtale.godkjennForMentor(getIdentifikator());
     }
 
     @Override
@@ -35,9 +35,8 @@ public class Mentor extends Avtalepart<Fnr> {
 
     @Override
     public boolean erGodkjentAvInnloggetBruker(Avtale avtale) {
-        return avtale.getMentorFnr().equals(getIdentifikator().asString()) && avtale.isMentorSignertTaushetserklæring();
+        return avtale.getMentorFnr().equals(getIdentifikator().asString()) && avtale.erGodkjentAvMentor();
     }
-
 
     @Override
     boolean kanOppheveGodkjenninger(Avtale avtale) {

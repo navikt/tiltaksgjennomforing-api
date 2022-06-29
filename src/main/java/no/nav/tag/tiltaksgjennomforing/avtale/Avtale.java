@@ -29,42 +29,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvbruttAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortet;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlenget;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiverErFordelt;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleSlettemerket;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.FjernetEtterregistrering;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GamleVerdier;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvDeltaker;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentForEtterregistrering;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltaker;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltakerOgArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.KontaktinformasjonEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.MålEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.OppfølgingOgTilretteleggingEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonFristForlenget;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKlar;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKlarRevarsel;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKorrigert;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.StillingsbeskrivelseEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsberegningEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAnnullert;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAvslått;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeForkortet;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeGodkjent;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttDatoStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
@@ -132,8 +97,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private String enhetOppfolging;
     private String enhetsnavnOppfolging;
     private String mentorFnr;
-
-    private  boolean mentorSignertTaushetserklæring;
 
     private boolean godkjentForEtterregistrering;
 
@@ -276,6 +239,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     @JsonProperty
+    public boolean erGodkjentAvMentor() {
+        return gjeldendeInnhold.getGodkjentAvMentor() != null;
+    }
+
+    @JsonProperty
     public boolean erGodkjentAvArbeidsgiver() {
         return gjeldendeInnhold.getGodkjentAvArbeidsgiver() != null;
     }
@@ -292,6 +260,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     @JsonProperty
     public LocalDateTime godkjentAvDeltaker() { return gjeldendeInnhold.getGodkjentAvDeltaker();}
+
+    @JsonProperty
+    public LocalDateTime godkjentAvMentor() { return gjeldendeInnhold.getGodkjentAvMentor();}
+
     @JsonProperty
     public LocalDateTime godkjentAvArbeidsgiver() { return gjeldendeInnhold.getGodkjentAvArbeidsgiver();}
     @JsonProperty
@@ -518,6 +490,16 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         gjeldendeInnhold.setGodkjentAvDeltaker(Now.localDateTime());
         sistEndretNå();
         registerEvent(new GodkjentAvDeltaker(this, utfortAv));
+    }
+
+    void godkjennForMentor(Identifikator utfortAv) {
+        sjekkOmAltErKlarTilGodkjenning();
+        if (erGodkjentAvMentor()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_DELTAKER_HAR_ALLEREDE_GODKJENT);
+        }
+        gjeldendeInnhold.setGodkjentAvMentor(Now.localDateTime());
+        sistEndretNå();
+        registerEvent(new GodkjentAvMentor(this, utfortAv));
     }
 
     void sjekkOmAltErKlarTilGodkjenning() {
