@@ -128,7 +128,7 @@ tiltaksgjennomforing:
     enabled: true
   dvh-melding:
     feature-enabled: true
-    tiltakstyper: SOMMERJOBB
+    tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD
 http:
   proxy:
     parametername: nothing
