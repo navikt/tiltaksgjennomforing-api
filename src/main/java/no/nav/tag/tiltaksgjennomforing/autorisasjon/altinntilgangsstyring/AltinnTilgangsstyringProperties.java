@@ -23,4 +23,8 @@ public class AltinnTilgangsstyringProperties {
     private Integer arbtreningServiceEdition;
     private Integer sommerjobbServiceCode;
     private Integer sommerjobbServiceEdition;
+    private Integer inkluderingstilskuddServiceCode;
+    private Integer inkluderingstilskuddServiceEdition;
+    private Integer mentorServiceCode;
+    private Integer mentorServiceEdition;
 }
