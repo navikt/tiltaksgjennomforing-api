@@ -1,11 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import java.util.ArrayList;
 import java.util.List;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetMentor;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
-import org.apache.commons.lang3.NotImplementedException;
 
 public class Mentor extends Avtalepart<Fnr> {
 
@@ -20,7 +18,16 @@ public class Mentor extends Avtalepart<Fnr> {
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
-        return new ArrayList<Avtale>(avtaleRepository.findAllByMentorFnr(getIdentifikator().asString()));
+        return avtaleRepository.findAllByMentorFnr(getIdentifikator().asString()).stream()
+                .map(avtale -> {
+                    if(!avtale.erGodkjentAvMentor()) {
+                        avtale.setGjeldendeInnhold(null);
+                        avtale.setDeltakerFnr(null);
+                        avtale.setVeilederNavIdent(null);
+                        return avtale;
+                    }
+                    return avtale;
+                }).toList();
     }
 
     @Override

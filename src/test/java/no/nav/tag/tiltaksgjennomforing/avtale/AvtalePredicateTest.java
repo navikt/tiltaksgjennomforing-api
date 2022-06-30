@@ -119,4 +119,20 @@ public class AvtalePredicateTest {
         query.setAvtaleNr(TestData.ET_AVTALENR);
         assertThat(query.test(avtale)).isTrue();
     }
+
+    @Test
+    void  avtale_uten_avtaleInnhold_skal_returnere_false_predicate_uten_exceptions() {
+        Avtale avtale = TestData.enArbeidstreningsAvtaleMedGittAvtaleNr();
+        avtale.setGjeldendeInnhold(null);
+        AvtalePredicate query = new AvtalePredicate();
+        assertThat(query.test(avtale)).isFalse();
+    }
+
+    @Test
+    void  avtale_uten_avtaleInnhold_skal_returnere_true_predicate_en_mentor_avtale_med_skjulte_verdier_usignert() {
+        Avtale avtale = TestData.enMentorAvtale();
+        avtale.setGjeldendeInnhold(null);
+        AvtalePredicate query = new AvtalePredicate();
+        assertThat(query.test(avtale)).isTrue();
+    }
 }
