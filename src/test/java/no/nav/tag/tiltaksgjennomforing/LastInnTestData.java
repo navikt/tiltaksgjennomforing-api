@@ -25,6 +25,7 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
 
         log.info("Laster testdata");
         avtaleRepository.save(TestData.enArbeidstreningAvtale());
+        avtaleRepository.save(TestData.enMentorAvtale());
         avtaleRepository.save(TestData.enAvtaleMedAltUtfylt());
         avtaleRepository.save(TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder());
         avtaleRepository.save(TestData.enAvtaleMedFlereVersjoner());
