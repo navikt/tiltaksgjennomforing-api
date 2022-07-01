@@ -21,6 +21,7 @@ public class Mentor extends Avtalepart<Fnr> {
 
     @Override
     public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
+        //TODO: kjør en super.hentAvtale()....også sjekk erGodkjentAvMentor
         Avtale avtale = avtaleRepository.findById(avtaleId)
             .orElseThrow(RessursFinnesIkkeException::new);
         sjekkTilgang(avtale);
@@ -34,6 +35,7 @@ public class Mentor extends Avtalepart<Fnr> {
         return avtaleRepository.findAllByMentorFnr(getIdentifikator().asString()).stream()
                 .map(avtale -> {
                     if(!avtale.erGodkjentAvMentor()) {
+                        //Todo flytte den til egen metode i avtale
                         AvtaleInnhold innhold = AvtaleInnhold.nyttTomtInnhold(avtale.getTiltakstype());
                         innhold.setBedriftNavn(avtale.getGjeldendeInnhold().getBedriftNavn());
                         innhold.setAvtale(avtale);
