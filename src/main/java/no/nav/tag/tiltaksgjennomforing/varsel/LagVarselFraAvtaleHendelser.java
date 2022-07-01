@@ -176,6 +176,12 @@ public class LagVarselFraAvtaleHendelser {
     }
 
     @EventListener
+    public void inkluderingstilskuddEndret(InkluderingstilskuddEndret event) {
+        VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, HendelseType.INKLUDERINGSTILSKUDD_ENDRET);
+        varselRepository.saveAll(factory.alleParter());
+    }
+
+    @EventListener
     public void endreTilskuddsberegning(TilskuddsberegningEndret event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, HendelseType.TILSKUDDSBEREGNING_ENDRET);
         varselRepository.saveAll(factory.alleParter());

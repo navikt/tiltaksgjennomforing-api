@@ -6,6 +6,7 @@ public enum NotifikasjonTekst {
     TILTAK_AVTALE_KLAR_REFUSJON("Du kan nå søke om refusjon."),
     TILTAK_STILLINGSBESKRIVELSE_ENDRET("Stillingsbeskrivelse i avtale endret av veileder."),
     TILTAK_MÅL_ENDRET("Mål i avtale endret av veileder."),
+    TILTAK_INKLUDERINGSTILSKUDD_ENDRET("Inkluderingstilskudd i avtalen endret av veileder."),
     TILTAK_OPPFØLGING_OG_TILRETTELEGGING_ENDRET("Oppfølging og tilrettelegging i avtale endret av veileder."),
     TILTAK_AVTALE_FORKORTET("Avtale forkortet."),
     TILTAK_AVTALE_FORLENGET("Avtale forlenget av veileder."),
