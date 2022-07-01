@@ -20,7 +20,7 @@ public class MentorTest {
     public void hentAlleAvtalerMedMuligTilgang__mentor_en_avtale() {
 
         // GITT
-        Avtale avtale = TestData.enMentorAvtale();
+        Avtale avtale = TestData.enMentorAvtaleUsignert();
         avtale.setMentorFnr("00000000000");
         Mentor mentor = new Mentor(new Fnr("00000000000"));
         AvtalePredicate avtalePredicate = new AvtalePredicate();
@@ -36,7 +36,7 @@ public class MentorTest {
     public void hentAlleAvtalerMedMuligTilgang__mentor_en_ikke_signert_avtale_skal_returnere_avtale_med_kun_bedrift_navn() {
 
         // GITT
-        Avtale avtale = TestData.enMentorAvtale();
+        Avtale avtale = TestData.enMentorAvtaleUsignert();
         avtale.getGjeldendeInnhold().setGodkjentAvMentor(null);
         avtale.setMentorFnr("00000000000");
         Mentor mentor = new Mentor(new Fnr("00000000000"));

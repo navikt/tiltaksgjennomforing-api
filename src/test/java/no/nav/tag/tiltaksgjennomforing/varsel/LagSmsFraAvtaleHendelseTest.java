@@ -1,7 +1,24 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.UUID;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.avtale.Deltaker;
+import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
+import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
+import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
+import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.varsel.kafka.SmsProducer;
 import no.nav.tag.tiltaksgjennomforing.varsel.kafka.Topics;
 import org.junit.jupiter.api.Test;
@@ -11,15 +28,6 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 @SpringBootTest(properties = { "tiltaksgjennomforing.kafka.enabled=true" })
 @DirtiesContext
@@ -142,7 +150,7 @@ class LagSmsFraAvtaleHendelseTest {
 
     @Test
     void refusjon_mentor_klar() {
-        Avtale avtale = TestData.enMentorAvtale();
+        Avtale avtale = TestData.enMentorAvtaleUsignert();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         LocalDate fristForGodkjenning = LocalDate.of(2022, 04, 05);
         // I et reelt scenario kan ikke refusjonKlar bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
@@ -205,7 +213,7 @@ class LagSmsFraAvtaleHendelseTest {
 
     @Test
     void refusjon_mentor_klar_revarsel() {
-        Avtale avtale = TestData.enMentorAvtale();
+        Avtale avtale = TestData.enMentorAvtaleUsignert();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
         // I et reelt scenario kan ikke refusjonRevarsel bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
@@ -263,7 +271,7 @@ class LagSmsFraAvtaleHendelseTest {
 
     @Test
     void refusjon_mentor_frist_forlenget() {
-        Avtale avtale = TestData.enMentorAvtale();
+        Avtale avtale = TestData.enMentorAvtaleUsignert();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         // I et reelt scenario kan ikke refusjonFristForlenget bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
         avtale.refusjonFristForlenget();
@@ -318,7 +326,7 @@ class LagSmsFraAvtaleHendelseTest {
 
     @Test
     void refusjon_mentor_korrigert() {
-        Avtale avtale = TestData.enMentorAvtale();
+        Avtale avtale = TestData.enMentorAvtaleUsignert();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         // I et reelt scenario kan ikke refusjonKorrigert bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
         avtale.refusjonKorrigert();

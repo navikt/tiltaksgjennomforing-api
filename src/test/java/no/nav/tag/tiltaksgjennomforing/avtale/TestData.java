@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -66,9 +67,23 @@ public class TestData {
         return Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.VARIG_LONNSTILSKUDD), veilderNavIdent);
     }
 
-    public static Avtale enMentorAvtale() {
+    public static Avtale enMentorAvtaleUsignert() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        return Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.MENTOR), veilderNavIdent);
+        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.MENTOR), veilderNavIdent);
+        avtale.setMentorFnr("00000000000");
+        avtale.setBedriftNr(new BedriftNr("999999999"));
+        avtale.getGjeldendeInnhold().setBedriftNavn("Donald Duck Co..");
+         return avtale;
+    }
+
+    public static Avtale enMentorAvtaleSignert() {
+        NavIdent veilderNavIdent = new NavIdent("Z123456");
+        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.MENTOR), veilderNavIdent);
+        avtale.setMentorFnr("00000000000");
+        avtale.setBedriftNr(new BedriftNr("999999999"));
+        avtale.getGjeldendeInnhold().setGodkjentAvMentor(LocalDateTime.now());
+        avtale.getGjeldendeInnhold().setBedriftNavn("Donald Duck Co..");
+         return avtale;
     }
 
     public static Avtale enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt() {
