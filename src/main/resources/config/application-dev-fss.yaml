@@ -132,6 +132,7 @@ tiltaksgjennomforing:
   dvh-melding:
     feature-enabled: true
     tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD
+    gruppe-tilgang: 1d338ec7-6443-41fa-a11a-de2931b7fc1a
   tilskuddsperioder:
     tiltakstyper: SOMMERJOBB
 
