@@ -38,6 +38,14 @@ public class TestData {
         return avtale;
     }
 
+    public static Avtale enInkluderingstilskuddAvtaleUtfyltOgGodkjentAvArbeidsgiver() {
+        NavIdent veilderNavIdent = new NavIdent("Z123456");
+        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.INKLUDERINGSTILSKUDD), veilderNavIdent);
+        avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleInkluderingstilskuddFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        return avtale;
+    }
+
     public static Avtale enSommerjobbAvtale() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         return Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.SOMMERJOBB), veilderNavIdent);
@@ -299,6 +307,31 @@ public class TestData {
         return new EndreAvtale();
     }
 
+    public static EndreAvtale endringPåAlleInkluderingstilskuddFelter() {
+        EndreAvtale endreAvtale = new EndreAvtale();
+        endreAvtale.setDeltakerFornavn("Geirulf");
+        endreAvtale.setDeltakerEtternavn("Persen");
+        endreAvtale.setDeltakerTlf("22334455");
+        endreAvtale.setBedriftNavn("Inkluderende Butikk AS");
+        endreAvtale.setArbeidsgiverFornavn("Per");
+        endreAvtale.setArbeidsgiverEtternavn("Larsen");
+        endreAvtale.setArbeidsgiverTlf("33333333");
+        endreAvtale.setVeilederFornavn("Vera");
+        endreAvtale.setVeilederEtternavn("Veiledersen");
+        endreAvtale.setVeilederTlf("44444444");
+        endreAvtale.setOppfolging("Telefon hver uke");
+        endreAvtale.setTilrettelegging("Ingen");
+        endreAvtale.setStartDato(Now.localDate());
+        endreAvtale.setSluttDato(endreAvtale.getStartDato().plusWeeks(2));
+        endreAvtale.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgift(13337, InkluderingstilskuddsutgiftType.PROGRAMVARE));
+        endreAvtale.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgift(25697, InkluderingstilskuddsutgiftType.OPPLÆRING));
+        endreAvtale.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgift(7195, InkluderingstilskuddsutgiftType.UTSTYR));
+        endreAvtale.setInkluderingstilskuddBegrunnelse("Behov for tilskudd til dyre programvarelisenser og opplæring i disse.");
+        endreAvtale.setHarFamilietilknytning(true);
+        endreAvtale.setFamilietilknytningForklaring("En middels god forklaring");
+        return endreAvtale;
+    }
+
     public static EndreAvtale endringPåAlleArbeidstreningFelter() {
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setDeltakerFornavn("Dagny");
@@ -343,7 +376,7 @@ public class TestData {
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(12));
         endreAvtale.setStillingprosent(50);
         endreAvtale.getMaal().add(TestData.etMaal());
-        endreAvtale.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgift());
+        endreAvtale.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgift(25000, InkluderingstilskuddsutgiftType.PROGRAMVARE));
         endreAvtale.setInkluderingstilskuddBegrunnelse("Behov for inkluderingstilskudd");
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
         endreAvtale.setArbeidsgiverKontonummer("000111222");
@@ -434,10 +467,10 @@ public class TestData {
         return maal;
     }
 
-    public static Inkluderingstilskuddsutgift enInkluderingstilskuddsutgift() {
+    public static Inkluderingstilskuddsutgift enInkluderingstilskuddsutgift(Integer beløp, InkluderingstilskuddsutgiftType type) {
         Inkluderingstilskuddsutgift i = new Inkluderingstilskuddsutgift();
-        i.setBeløp(15000);
-        i.setType(InkluderingstilskuddsutgiftType.PROGRAMVARE);
+        i.setBeløp(beløp);
+        i.setType(type);
         return i;
     }
 
