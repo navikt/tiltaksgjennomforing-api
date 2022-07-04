@@ -213,6 +213,11 @@ public class Veileder extends Avtalepart<NavIdent> {
         avtale.endreMål(endreMål, getIdentifikator());
     }
 
+    public void endreInkluderingstilskudd(EndreInkluderingstilskudd endreInkluderingstilskudd, Avtale avtale) {
+        sjekkTilgang(avtale);
+        avtale.endreInkluderingstilskudd(endreInkluderingstilskudd, getIdentifikator());
+    }
+
     public void forkortAvtale(Avtale avtale, LocalDate sluttDato, String grunn, String annetGrunn) {
         sjekkTilgang(avtale);
         avtale.forkortAvtale(sluttDato, grunn, annetGrunn, getIdentifikator());
