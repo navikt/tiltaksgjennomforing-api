@@ -275,9 +275,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     @JsonProperty
-    public boolean erGodkjentAvMentor() {
+    public boolean erGodkjentTaushetserklæringAvMentor() {
         if(gjeldendeInnhold == null) return false;
-        return gjeldendeInnhold.getGodkjentAvMentor() != null;
+        return gjeldendeInnhold.getGodkjentTaushetserklæringAvMentor() != null;
     }
 
     @JsonProperty
@@ -299,7 +299,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     public LocalDateTime godkjentAvDeltaker() { return gjeldendeInnhold.getGodkjentAvDeltaker();}
 
     @JsonProperty
-    public LocalDateTime godkjentAvMentor() { return gjeldendeInnhold.getGodkjentAvMentor();}
+    public LocalDateTime godkjentAvMentor() { return gjeldendeInnhold.getGodkjentTaushetserklæringAvMentor();}
 
     @JsonProperty
     public LocalDateTime godkjentAvArbeidsgiver() { return gjeldendeInnhold.getGodkjentAvArbeidsgiver();}
@@ -531,10 +531,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     void godkjennForMentor(Identifikator utfortAv) {
         sjekkOmAltErKlarTilGodkjenning();
-        if (erGodkjentAvMentor()) {
+        if (erGodkjentTaushetserklæringAvMentor()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_MENTOR_HAR_ALLEREDE_GODKJENT);
         }
-        gjeldendeInnhold.setGodkjentAvMentor(Now.localDateTime());
+        gjeldendeInnhold.setGodkjentTaushetserklæringAvMentor(Now.localDateTime());
         sistEndretNå();
         registerEvent(new GodkjentAvMentor(this, utfortAv));
     }
@@ -560,7 +560,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     public Status statusSomEnum() {
         if (getAnnullertTidspunkt() != null) {
             return Status.ANNULLERT;
-        }else if(Tiltakstype.MENTOR == tiltakstype && !erGodkjentAvMentor()){
+        }else if(Tiltakstype.MENTOR == tiltakstype && !erGodkjentTaushetserklæringAvMentor()){
             return Status.MANGLER_SIGNATUR;
         } else if (isAvbrutt()) {
             return Status.AVBRUTT;

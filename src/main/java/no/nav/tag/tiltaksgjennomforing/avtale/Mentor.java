@@ -25,7 +25,7 @@ public class Mentor extends Avtalepart<Fnr> {
         Avtale avtale = avtaleRepository.findById(avtaleId)
             .orElseThrow(RessursFinnesIkkeException::new);
         sjekkTilgang(avtale);
-        if(!avtale.erGodkjentAvMentor()) throw new TilgangskontrollException("Ikke tilgang til avtale");
+        if(!avtale.erGodkjentTaushetserklæringAvMentor()) throw new TilgangskontrollException("Ikke tilgang til avtale");
         return avtale;
     }
 
@@ -34,7 +34,7 @@ public class Mentor extends Avtalepart<Fnr> {
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
         return avtaleRepository.findAllByMentorFnr(getIdentifikator().asString()).stream()
                 .map(avtale -> {
-                    if(!avtale.erGodkjentAvMentor()) {
+                    if(!avtale.erGodkjentTaushetserklæringAvMentor()) {
                         //Todo flytte den til egen metode i avtale
                         AvtaleInnhold innhold = AvtaleInnhold.nyttTomtInnhold(avtale.getTiltakstype());
                         innhold.setBedriftNavn(avtale.getGjeldendeInnhold().getBedriftNavn());
@@ -60,7 +60,7 @@ public class Mentor extends Avtalepart<Fnr> {
 
     @Override
     public boolean erGodkjentAvInnloggetBruker(Avtale avtale) {
-        return avtale.getMentorFnr().equals(getIdentifikator().asString()) && avtale.erGodkjentAvMentor();
+        return avtale.getMentorFnr().equals(getIdentifikator().asString()) && avtale.erGodkjentTaushetserklæringAvMentor();
     }
 
     @Override

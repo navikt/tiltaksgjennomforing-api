@@ -37,7 +37,7 @@ public class MentorTest {
 
         // GITT
         Avtale avtale = TestData.enMentorAvtaleUsignert();
-        avtale.getGjeldendeInnhold().setGodkjentAvMentor(null);
+        avtale.getGjeldendeInnhold().setGodkjentTaushetserklæringAvMentor(null);
         avtale.setMentorFnr("00000000000");
         Mentor mentor = new Mentor(new Fnr("00000000000"));
         AvtalePredicate avtalePredicate = new AvtalePredicate();

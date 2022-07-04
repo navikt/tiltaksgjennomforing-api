@@ -81,7 +81,7 @@ public class TestData {
         Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.MENTOR), veilderNavIdent);
         avtale.setMentorFnr("00000000000");
         avtale.setBedriftNr(new BedriftNr("999999999"));
-        avtale.getGjeldendeInnhold().setGodkjentAvMentor(LocalDateTime.now());
+        avtale.getGjeldendeInnhold().setGodkjentTaushetserklæringAvMentor(LocalDateTime.now());
         avtale.getGjeldendeInnhold().setBedriftNavn("Donald Duck Co..");
          return avtale;
     }

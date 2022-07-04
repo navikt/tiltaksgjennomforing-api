@@ -117,7 +117,7 @@ public class AvtaleInnhold {
 
     // Godkjenning
     private LocalDateTime godkjentAvDeltaker;
-    private LocalDateTime godkjentAvMentor;
+    private LocalDateTime godkjentTaushetserklæringAvMentor;
     private LocalDateTime godkjentAvArbeidsgiver;
     private LocalDateTime godkjentAvVeileder;
     private LocalDateTime godkjentAvBeslutter;
