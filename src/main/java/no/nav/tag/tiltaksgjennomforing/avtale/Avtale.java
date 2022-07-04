@@ -530,7 +530,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     void godkjennForMentor(Identifikator utfortAv) {
-        sjekkOmAltErKlarTilGodkjenning();
         if (erGodkjentTaushetserklæringAvMentor()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_MENTOR_HAR_ALLEREDE_GODKJENT);
         }
