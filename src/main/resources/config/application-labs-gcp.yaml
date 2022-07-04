@@ -86,6 +86,6 @@ tiltaksgjennomforing:
     enabled: false
   tilskuddsperioder:
     tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD
-    pilotvirksomheter: 999999999
+    pilotvirksomheter: '999999999'
 
 ELECTOR_PATH: null
