@@ -47,7 +47,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvArbe
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvDeltaker;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvMentor;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentForEtterregistrering;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvArbeidsgiver;
@@ -60,6 +59,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonFristForlenget;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKlar;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKlarRevarsel;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKorrigert;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.SignertAvMentor;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.StillingsbeskrivelseEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsberegningEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAnnullert;
@@ -362,7 +362,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             throw new SamtidigeEndringerException();
         }
     }
-
+    //TODO TEST MEG
     void godkjennForArbeidsgiver(Identifikator utfortAv) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErKlarTilGodkjenning();
@@ -377,7 +377,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private Boolean erPilotVirksomhet(List<BedriftNr> pilotvirksomheter) {
         return pilotvirksomheter.contains(bedriftNr) && (tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD);
     }
-
+    //TODO TEST MEG
     void godkjennForVeileder(NavIdent utfortAv, List<BedriftNr> pilotvirksomheter) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErKlarTilGodkjenning();
@@ -387,7 +387,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (erUfordelt()) {
             throw new AvtaleErIkkeFordeltException();
         }
-        if (!erGodkjentAvArbeidsgiver() || !erGodkjentAvDeltaker()) {
+        //TEST MEG
+        if (this.getTiltakstype() == Tiltakstype.MENTOR && (!erGodkjentAvArbeidsgiver() || !erGodkjentAvDeltaker() || !erGodkjentTaushetserklæringAvMentor())) {
+            throw new VeilederSkalGodkjenneSistException();
+        }else if (!erGodkjentAvArbeidsgiver() || !erGodkjentAvDeltaker()) {
             throw new VeilederSkalGodkjenneSistException();
         }
         if (this.getTiltakstype() == Tiltakstype.SOMMERJOBB &&
@@ -413,7 +416,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         gjeldendeInnhold.setAvtaleInngått(tidspunkt);
         registerEvent(new AvtaleInngått(this, utførtAvRolle, utførtAv));
     }
-
+    //TODO TEST MEG
     void godkjennForVeilederOgDeltaker(NavIdent utfortAv, GodkjentPaVegneGrunn paVegneAvGrunn, List<BedriftNr> pilotvirksomheter) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErKlarTilGodkjenning();
@@ -429,6 +432,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (this.getTiltakstype() == Tiltakstype.SOMMERJOBB &&
                 this.getDeltakerFnr().erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
             throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_GAMMEL_FRA_OPPSTARTDATO);
+        }
+        if (this.getTiltakstype() == Tiltakstype.MENTOR && (!erGodkjentAvArbeidsgiver() || !erGodkjentAvDeltaker() || !erGodkjentTaushetserklæringAvMentor())) {
+            throw new VeilederSkalGodkjenneSistException();
         }
         if (this.getDeltakerFnr().erOver67ÅrFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
             throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
@@ -448,7 +454,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         sistEndretNå();
         registerEvent(new GodkjentPaVegneAvDeltaker(this, utfortAv));
     }
-
+    //TODO TEST MEG
     void godkjennForVeilederOgArbeidsgiver(NavIdent utfortAv, GodkjentPaVegneAvArbeidsgiverGrunn godkjentPaVegneAvArbeidsgiverGrunn, List<BedriftNr> pilotvirksomheter) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErKlarTilGodkjenning();
@@ -467,6 +473,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (this.getDeltakerFnr().erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
             throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_GAMMEL_FRA_OPPSTARTDATO);
         }
+        if (this.getTiltakstype() == Tiltakstype.MENTOR && (!erGodkjentAvArbeidsgiver() || !erGodkjentAvDeltaker() || !erGodkjentTaushetserklæringAvMentor())) {
+            throw new VeilederSkalGodkjenneSistException();
+        }
         godkjentPaVegneAvArbeidsgiverGrunn.valgtMinstEnGrunn();
         LocalDateTime tidspunkt = Now.localDateTime();
         gjeldendeInnhold.setGodkjentAvVeileder(tidspunkt);
@@ -482,6 +491,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new GodkjentPaVegneAvArbeidsgiver(this, utfortAv));
     }
 
+    //TODO TEST MEG
     public void godkjennForVeilederOgDeltakerOgArbeidsgiver(NavIdent utfortAv, GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn paVegneAvDeltakerOgArbeidsgiverGrunn, List<BedriftNr> pilotvirksomheter) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErKlarTilGodkjenning();
@@ -496,6 +506,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         if (erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_VEILEDER_HAR_ALLEREDE_GODKJENT);
+        }
+        if (this.getTiltakstype() == Tiltakstype.MENTOR && (!erGodkjentAvArbeidsgiver() || !erGodkjentAvDeltaker() || !erGodkjentTaushetserklæringAvMentor())) {
+            throw new VeilederSkalGodkjenneSistException();
         }
         if (this.getDeltakerFnr().erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
             throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_GAMMEL_FRA_OPPSTARTDATO);
@@ -535,7 +548,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         gjeldendeInnhold.setGodkjentTaushetserklæringAvMentor(Now.localDateTime());
         sistEndretNå();
-        registerEvent(new GodkjentAvMentor(this, utfortAv));
+        registerEvent(new SignertAvMentor(this, utfortAv));
     }
 
     void sjekkOmAltErKlarTilGodkjenning() {

@@ -1,10 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
+import java.util.List;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
-
-import java.util.List;
 
 public class VarselFactory {
     private final Avtale avtale;
@@ -29,7 +29,15 @@ public class VarselFactory {
         return Varsel.nyttVarsel(avtale.getVeilederNavIdent(), utførtAv != Avtalerolle.VEILEDER, avtale, Avtalerolle.VEILEDER, utførtAv, hendelseType, avtale.getId());
     }
 
+    //TODO: TEST MEG
+    public Varsel mentor() {
+        return Varsel.nyttVarsel(new Fnr(avtale.getMentorFnr()), utførtAv != Avtalerolle.MENTOR, avtale, Avtalerolle.MENTOR, utførtAv, hendelseType, avtale.getId());
+    }
+
     public List<Varsel> alleParter() {
-        return List.of(deltaker(), arbeidsgiver(), veileder());
+        return switch (avtale.getTiltakstype()){
+            case MENTOR ->  List.of(deltaker(), arbeidsgiver(), veileder(), mentor());
+            default ->  List.of(deltaker(), arbeidsgiver(), veileder());
+        };
     }
 }

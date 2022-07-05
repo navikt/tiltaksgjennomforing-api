@@ -3,7 +3,31 @@ package no.nav.tag.tiltaksgjennomforing.sporingslogg;
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvbruttAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleGjenopprettet;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleLåstOpp;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiverErFordelt;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvDeltaker;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltaker;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltakerOgArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonFristForlenget;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKlar;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKlarRevarsel;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKorrigert;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.SignertAvMentor;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAvslått;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeGodkjent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -78,6 +102,11 @@ public class LagSporingsloggFraAvtaleHendelser {
 
     @EventListener
     public void godkjentAvDeltaker(GodkjentAvDeltaker event) {
+        sporingsloggRepository.save(Sporingslogg.nyHendelse(event.getAvtale(), HendelseType.GODKJENT_AV_DELTAKER));
+    }
+
+    @EventListener
+    public void godkjentAvDeltaker(SignertAvMentor event) {
         sporingsloggRepository.save(Sporingslogg.nyHendelse(event.getAvtale(), HendelseType.GODKJENT_AV_DELTAKER));
     }
 

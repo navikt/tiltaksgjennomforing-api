@@ -10,6 +10,7 @@ public enum HendelseType {
     GODKJENT_AV_ARBEIDSGIVER("Avtale er godkjent av arbeidsgiver"),
     GODKJENT_AV_VEILEDER("Avtale er godkjent av veileder"),
     GODKJENT_AV_DELTAKER("Avtale er godkjent av deltaker"),
+    SIGNERT_AV_MENTOR("Mentor har signert taushetserklæring"),
     GODKJENT_PAA_VEGNE_AV("Veileder godkjente avtalen på vegne av seg selv og deltaker"),
     GODKJENT_PAA_VEGNE_AV_DELTAKER_OG_ARBEIDSGIVER("Veileder godkjente avtalen på vegne av seg selv, deltaker og arbeidsgiver"),
     GODKJENT_PAA_VEGNE_AV_ARBEIDSGIVER("Veileder godkjente avtalen på vegne av seg selv og arbeidsgiver"),

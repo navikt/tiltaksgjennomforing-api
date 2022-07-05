@@ -6,7 +6,25 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleLåstOpp;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleSlettemerket;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvDeltaker;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltaker;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltakerOgArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.SignertAvMentor;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAvslått;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeGodkjent;
 import no.nav.tag.tiltaksgjennomforing.varsel.events.SmsSendt;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -64,6 +82,14 @@ public class MetrikkRegistrering {
         Avtalerolle rolle = Avtalerolle.DELTAKER;
         Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
         log.info("Avtale godkjent, avtaleId={}, avtalepart={}, tiltakstype={}", event.getAvtale().getId(), rolle, tiltakstype);
+        counter("avtale.godkjenning.godkjent", rolle, tiltakstype).increment();
+    }
+
+    @EventListener
+    public void godkjentAvMentor(SignertAvMentor event) {
+        Avtalerolle rolle = Avtalerolle.MENTOR;
+        Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
+        log.info("Mentor har signert taushetserklæring, avtaleId={}, avtalepart={}, tiltakstype={}", event.getAvtale().getId(), rolle, tiltakstype);
         counter("avtale.godkjenning.godkjent", rolle, tiltakstype).increment();
     }
 

@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -72,7 +71,15 @@ public class TestData {
         Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.MENTOR), veilderNavIdent);
         avtale.setMentorFnr("00000000000");
         avtale.setBedriftNr(new BedriftNr("999999999"));
-        avtale.getGjeldendeInnhold().setBedriftNavn("Donald Duck Co..");
+        EndreAvtale endreAvtale = endringPåAlleFelter();
+        endreAvtale.setDeltakerFornavn("Solfrid");
+        endreAvtale.setBedriftNavn("Donald Duck Co..");
+        endreAvtale.setDeltakerEtternavn("Sommerfeldt");
+        endreAvtale.setFeriepengesats(new BigDecimal("0.12"));
+        endreAvtale.setArbeidsgiveravgift(new BigDecimal("0.141"));
+        endreAvtale.setStartDato(Now.localDate());
+        endreAvtale.setSluttDato(Now.localDate().plusWeeks(4).minusDays(1));
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
          return avtale;
     }
 
@@ -81,8 +88,18 @@ public class TestData {
         Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.MENTOR), veilderNavIdent);
         avtale.setMentorFnr("00000000000");
         avtale.setBedriftNr(new BedriftNr("999999999"));
-        avtale.getGjeldendeInnhold().setGodkjentTaushetserklæringAvMentor(LocalDateTime.now());
-        avtale.getGjeldendeInnhold().setBedriftNavn("Donald Duck Co..");
+        EndreAvtale endreAvtale = endringPåAlleFelter();
+        endreAvtale.setDeltakerFornavn("Solfrid");
+        endreAvtale.setBedriftNavn("Donald Duck Co..");
+        endreAvtale.setDeltakerEtternavn("Sommerfeldt");
+        endreAvtale.setFeriepengesats(new BigDecimal("0.12"));
+        endreAvtale.setArbeidsgiveravgift(new BigDecimal("0.141"));
+        endreAvtale.setStartDato(Now.localDate());
+        endreAvtale.setSluttDato(Now.localDate().plusWeeks(4).minusDays(1));
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
+        avtale.godkjennForMentor(new Fnr("00000000000"));
+        avtale.godkjentAvArbeidsgiver();
+        avtale.godkjennForDeltaker(new Fnr("00000000000"));
          return avtale;
     }
 
@@ -292,6 +309,7 @@ public class TestData {
     public static Avtale enMentorAvtaleMedMedAltUtfylt() {
         Avtale avtale = enAvtaleMedAltUtfyltGodkjentAvVeileder();
         avtale.setTiltakstype(Tiltakstype.MENTOR);
+        avtale.setMentorFnr("00000000000");
         avtale.getGjeldendeInnhold().setMentorFornavn("Jo");
         avtale.getGjeldendeInnhold().setMentorEtternavn("Å");
         avtale.getGjeldendeInnhold().setMentorOppgaver("Spise lunch med deltaker");
