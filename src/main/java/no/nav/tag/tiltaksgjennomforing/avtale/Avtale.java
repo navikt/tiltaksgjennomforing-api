@@ -1014,9 +1014,16 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
                 throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_INKLUDERINGSTILSKUDD_IKKE_BELOP_ELLER_TYPE);
             }
         }
+        List<Inkluderingstilskuddsutgift> inkluderingstilskuddsutgifterPåForrigeVersjon = getGjeldendeInnhold().getInkluderingstilskuddsutgift();
+
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_INKLUDERINGSTILSKUDD);
-        getGjeldendeInnhold().getInkluderingstilskuddsutgift().clear();
-        List<Inkluderingstilskuddsutgift> nyeInkluderingstilskuddsutgifter = endreInkluderingstilskudd.getInkluderingstilskuddsutgift().stream().map(m -> new Inkluderingstilskuddsutgift().setId(UUID.randomUUID()).setBeløp(m.getBeløp()).setType(m.getType())).collect(Collectors.toList());
+       // getGjeldendeInnhold().getInkluderingstilskuddsutgift().clear();
+
+        // Fjern id-er fra forrige versjon. Skal kun legge til.
+        List<UUID> iderFraForrigeVersjon = inkluderingstilskuddsutgifterPåForrigeVersjon.stream().map(Inkluderingstilskuddsutgift::getId).collect(Collectors.toList());
+        List<Inkluderingstilskuddsutgift> nye = endreInkluderingstilskudd.getInkluderingstilskuddsutgift().stream().filter(e -> !iderFraForrigeVersjon.contains(e.getId())).collect(Collectors.toList());
+
+        List<Inkluderingstilskuddsutgift> nyeInkluderingstilskuddsutgifter = nye.stream().map(m -> new Inkluderingstilskuddsutgift().setId(UUID.randomUUID()).setBeløp(m.getBeløp()).setType(m.getType())).collect(Collectors.toList());
         getGjeldendeInnhold().getInkluderingstilskuddsutgift().addAll(nyeInkluderingstilskuddsutgifter);
         getGjeldendeInnhold().getInkluderingstilskuddsutgift().forEach(i -> i.setAvtaleInnhold(getGjeldendeInnhold()));
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
