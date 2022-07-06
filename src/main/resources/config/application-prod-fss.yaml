@@ -91,6 +91,10 @@ tiltaksgjennomforing:
     ltsVarigServiceEdition: 2
     arbtreningServiceCode: 5332
     arbtreningServiceEdition: 2
+    mentorServiceCode: 5516
+    mentorServiceEdition: 4
+    inkluderingstilskuddServiceCode: 5516
+    inkluderingstilskuddServiceEdition: 5
   altinn-varsel:
     uri: https://pep-gw.oera.no:9443/ekstern/altinn/notificationagencyexternalbasic/v1
   ereg:
@@ -128,7 +132,7 @@ tiltaksgjennomforing:
     enabled: true
   dvh-melding:
     feature-enabled: true
-    tiltakstyper: SOMMERJOBB
+    tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD
 http:
   proxy:
     parametername: nothing

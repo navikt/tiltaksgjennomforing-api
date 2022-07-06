@@ -17,6 +17,9 @@ public class DvhMeldingFilter {
             log.info("Feature arbeidsgiver.tiltaksgjennomforing-api.dvh-melding er ikke skrudd på, sender ingen melding til datavarehus");
             return false;
         }
+        if (!dvhMeldingFeatureProperties.getTiltakstyper().contains(avtale.getTiltakstype())) {
+            log.info("Tiltakstype {} skal ikke til Datavarehus. Sender ikke melding.", avtale.getTiltakstype());
+        }
         return avtale.erAvtaleInngått() && dvhMeldingFeatureProperties.getTiltakstyper().contains(avtale.getTiltakstype());
     }
 

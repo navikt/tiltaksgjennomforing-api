@@ -297,6 +297,16 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
+    @PostMapping("/{avtaleId}/endre-inkluderingstilskudd")
+    @Transactional
+    public void endreInkluderingstilskudd(@PathVariable("avtaleId") UUID avtaleId,
+                         @RequestBody EndreInkluderingstilskudd endreInkluderingstilskudd) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        veileder.endreInkluderingstilskudd(endreInkluderingstilskudd, avtale);
+        avtaleRepository.save(avtale);
+    }
+
     @PostMapping("/{avtaleId}/endre-stillingbeskrivelse")
     @Transactional
     public void endreStillingbeskrivelse(@PathVariable("avtaleId") UUID avtaleId,

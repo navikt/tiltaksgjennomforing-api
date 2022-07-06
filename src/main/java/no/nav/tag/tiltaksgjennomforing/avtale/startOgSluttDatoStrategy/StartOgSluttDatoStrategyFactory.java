@@ -16,6 +16,8 @@ public class StartOgSluttDatoStrategyFactory {
                 return new VarigLonnstilskuddStartOgSluttDatoStrategy();
             case MENTOR:
                 return new MentorStartOgSluttDatoStrategy();
+            case INKLUDERINGSTILSKUDD:
+                return new InkluderingstilskuddStartOgSluttDatoStrategy();
             case SOMMERJOBB:
                 return new SommerjobbStartOgSluttDatoStrategy();
         }

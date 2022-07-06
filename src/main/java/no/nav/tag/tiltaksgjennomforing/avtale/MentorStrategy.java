@@ -31,6 +31,7 @@ public class MentorStrategy extends BaseAvtaleInnholdStrategy {
         alleFelter.put(AvtaleInnhold.Fields.mentorAntallTimer, avtaleInnhold.getMentorAntallTimer());
         alleFelter.put(AvtaleInnhold.Fields.mentorTimelonn, avtaleInnhold.getMentorTimelonn());
         alleFelter.put(Fields.mentorTlf, avtaleInnhold.getMentorTlf());
+
         return alleFelter;
     }
 }

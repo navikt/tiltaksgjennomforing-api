@@ -42,6 +42,10 @@ tiltaksgjennomforing:
     ltsVarigServiceEdition: 2
     sommerjobbServiceCode: 5516
     sommerjobbServiceEdition: 3
+    mentorServiceCode: 5516
+    mentorServiceEdition: 4
+    inkluderingstilskuddServiceCode: 5516
+    inkluderingstilskuddServiceEdition: 5
     arbtreningServiceCode: 5332
     arbtreningServiceEdition: 1
     altinnApiKey: foo
@@ -82,5 +86,6 @@ tiltaksgjennomforing:
     enabled: false
   tilskuddsperioder:
     tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD
+    pilotvirksomheter: '999999999'
 
 ELECTOR_PATH: null

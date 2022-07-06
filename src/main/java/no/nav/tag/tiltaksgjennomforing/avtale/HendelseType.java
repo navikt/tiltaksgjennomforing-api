@@ -31,6 +31,7 @@ public enum HendelseType {
     AVTALE_FORKORTET("Avtale forkortet"),
     AVTALE_FORLENGET("Avtale forlenget av veileder"),
     MÅL_ENDRET("Mål endret av veileder"),
+    INKLUDERINGSTILSKUDD_ENDRET("Inkluderingstilskudd endret av veileder"),
     TILSKUDDSBEREGNING_ENDRET("Tilskuddsberegning endret av veileder"),
     KONTAKTINFORMASJON_ENDRET("Kontaktinformasjon endret av veileder"),
     STILLINGSBESKRIVELSE_ENDRET("Stillingsbeskrivelse endret av veileder" ),

@@ -13,7 +13,7 @@
             "matches": "5332|5516|^$"
           },
           "serviceEdition": {
-            "matches": "1|2|3|^$"
+            "matches": "1|2|3|4|5|^$"
           }
         }
       },

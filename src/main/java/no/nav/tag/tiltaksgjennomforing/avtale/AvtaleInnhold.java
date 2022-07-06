@@ -6,11 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Convert;
@@ -23,6 +19,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -114,6 +112,18 @@ public class AvtaleInnhold {
     @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
     private List<Maal> maal = new ArrayList<>();
+    // Inkluderingstilskudd
+    @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
+    private List<Inkluderingstilskuddsutgift> inkluderingstilskuddsutgift = new ArrayList<>();
+    private String inkluderingstilskuddBegrunnelse;
+
+    @JsonProperty
+    public Integer inkluderingstilskuddTotalBeløp() {
+        return inkluderingstilskuddsutgift.stream().map(inkluderingstilskuddsutgift -> inkluderingstilskuddsutgift.getBeløp())
+                .collect(Collectors.toList()).stream()
+                .reduce(0, Integer::sum);
+    }
 
     // Godkjenning
     private LocalDateTime godkjentAvDeltaker;
@@ -143,6 +153,7 @@ public class AvtaleInnhold {
     @Enumerated(EnumType.STRING)
     private AvtaleInnholdType innholdType;
 
+
     public static AvtaleInnhold nyttTomtInnhold(Tiltakstype tiltakstype) {
         var innhold = new AvtaleInnhold();
         innhold.setId(UUID.randomUUID());
@@ -154,40 +165,26 @@ public class AvtaleInnhold {
         return innhold;
     }
 
-    public AvtaleInnhold nyVersjon(AvtaleInnholdType innholdType) {
-        AvtaleInnhold nyVersjon = toBuilder()
-                .id(UUID.randomUUID())
-                .maal(kopiAvMål())
-                .godkjentAvDeltaker(null)
-                .godkjentAvArbeidsgiver(null)
-                .godkjentAvVeileder(null)
-                .godkjentAvBeslutter(null)
-                .avtaleInngått(null)
-                .ikrafttredelsestidspunkt(null)
-                .godkjentPaVegneAv(false)
-                .godkjentPaVegneGrunn(null)
-                .journalpostId(null)
-                .versjon(versjon + 1)
-                .innholdType(innholdType)
-                .build();
-        nyVersjon.getMaal().forEach(m -> m.setAvtaleInnhold(nyVersjon));
-        return nyVersjon;
-    }
-
     public AvtaleInnhold nyGodkjentVersjon(AvtaleInnholdType innholdType) {
         AvtaleInnhold nyVersjon = toBuilder()
                 .id(UUID.randomUUID())
                 .maal(kopiAvMål())
+                .inkluderingstilskuddsutgift(kopiAvInkluderingstilskuddsutgifer())
                 .journalpostId(null)
                 .versjon(versjon + 1)
                 .innholdType(innholdType)
                 .build();
         nyVersjon.getMaal().forEach(m -> m.setAvtaleInnhold(nyVersjon));
+        nyVersjon.getInkluderingstilskuddsutgift().forEach(i -> i.setAvtaleInnhold(nyVersjon));
         return nyVersjon;
     }
 
     private List<Maal> kopiAvMål() {
         return maal.stream().map(m -> new Maal(m)).collect(Collectors.toList());
+    }
+
+    private List<Inkluderingstilskuddsutgift> kopiAvInkluderingstilskuddsutgifer() {
+        return inkluderingstilskuddsutgift.stream().map(i -> new Inkluderingstilskuddsutgift(i)).collect(Collectors.toList());
     }
 
     void endreAvtale(EndreAvtale nyAvtale) {

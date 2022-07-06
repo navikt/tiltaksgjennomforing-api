@@ -120,6 +120,12 @@ public class NotifikasjonHendelseLytter {
     }
 
     @EventListener
+    public void inkluderingstilskuddEndret(InkluderingstilskuddEndret event) {
+        opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.INKLUDERINGSTILSKUDD_ENDRET,
+                NotifikasjonTekst.TILTAK_INKLUDERINGSTILSKUDD_ENDRET);
+    }
+
+    @EventListener
     public void endreStillingbeskrivelse(StillingsbeskrivelseEndret event) {
         opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.STILLINGSBESKRIVELSE_ENDRET,
                 NotifikasjonTekst.TILTAK_STILLINGSBESKRIVELSE_ENDRET);
