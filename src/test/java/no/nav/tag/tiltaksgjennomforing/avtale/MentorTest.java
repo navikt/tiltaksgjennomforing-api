@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -30,6 +31,19 @@ public class MentorTest {
         List<Avtale> avtaler = mentor.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
 
         assertThat(avtaler).isNotEmpty();
+    }
+
+    @Test
+    public void harTilgangTilAvtale__mentor_en_avtale_annen_mentor() {
+
+        // GITT
+        Avtale avtale = TestData.enMentorAvtaleUsignert();
+        avtale.setMentorFnr("77665521872");
+        Mentor mentor = new Mentor(new Fnr("00000000000"));
+        AvtalePredicate avtalePredicate = new AvtalePredicate();
+        // NÅR
+        boolean hartilgang = mentor.harTilgangTilAvtale(avtale);
+        assertFalse(hartilgang);
     }
 
     @Test
