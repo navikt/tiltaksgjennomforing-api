@@ -95,7 +95,6 @@ public class LagVarselFraAvtaleHendelser {
         VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER);
         varselRepository.saveAll(factory.alleParter());
     }
- //TODO: TEST MEG
     @EventListener
     public void godkjentAvDeltaker(GodkjentAvDeltaker event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.DELTAKER, HendelseType.GODKJENT_AV_DELTAKER);
@@ -103,7 +102,7 @@ public class LagVarselFraAvtaleHendelser {
     }
 
     @EventListener
-    public void godkjentAvDeltaker(SignertAvMentor event) {
+    public void signertAvMentor(SignertAvMentor event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.MENTOR, HendelseType.SIGNERT_AV_MENTOR);
         varselRepository.saveAll(factory.alleParter());
     }

@@ -179,7 +179,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         this.id = UUID.randomUUID();
         this.opprettetTidspunkt = Now.localDateTime();
         this.deltakerFnr = opprettMentorAvtale.getDeltakerFnr();
-        this.mentorFnr = opprettMentorAvtale.getMentorFnr();
+        this.mentorFnr = opprettMentorAvtale.getMentorFnr().asString();
         this.bedriftNr = opprettMentorAvtale.getBedriftNr();
         this.tiltakstype = opprettMentorAvtale.getTiltakstype();
         this.sistEndret = Now.instant();
