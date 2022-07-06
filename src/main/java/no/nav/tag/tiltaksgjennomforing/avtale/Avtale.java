@@ -30,7 +30,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvbruttAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortet;
@@ -631,20 +630,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     private void sjekkAtIkkeAvtalenInneholderUtbetaltTilskuddsperiode() {
         if(this.getTilskuddPeriode().stream().anyMatch(TilskuddPeriode::erUtbetalt)) throw new FeilkodeException(Feilkode.AVTALE_INNEHOLDER_UTBETALT_TILSKUDDSPERIODE);
-    }
-
-    // TODO: Skal slettes, ikke i bruk
-    public void avbryt(Veileder veileder, AvbruttInfo avbruttInfo) {
-        if (this.kanAvbrytes()) {
-            this.setAvbrutt(true);
-            this.setAvbruttDato(avbruttInfo.getAvbruttDato());
-            this.setAvbruttGrunn(avbruttInfo.getAvbruttGrunn());
-            if (this.erUfordelt()) {
-                this.setVeilederNavIdent(veileder.getIdentifikator());
-            }
-            sistEndretNå();
-            registerEvent(new AvbruttAvVeileder(this, veileder.getIdentifikator()));
-        }
     }
 
     public void overtaAvtale(NavIdent nyNavIdent) {
