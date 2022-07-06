@@ -12,6 +12,7 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,6 +32,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6E
 import no.nav.tag.tiltaksgjennomforing.exceptions.KontoregisterFeilException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
@@ -193,6 +195,18 @@ public class AvtaleControllerTest {
         assertThat(avtaler).isNotNull();
         assertThat(avtaler).contains(enArbeidstreningsAvtale);
 
+    }
+
+    @Test
+    public void mentorGodkjennTaushetserklæring_når_innlogget_er_ikke_Mentor(){
+        Avtale enMentorAvtale = TestData.enMentorAvtaleUsignert();
+        NavIdent navIdent = new NavIdent("Z123456");
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), new TilskuddsperiodeConfig(), false, veilarbArenaClient);
+        værInnloggetSom(veileder);
+
+        assertThatThrownBy(() -> {
+            avtaleController.mentorGodkjennTaushetserklæring(enMentorAvtale.getId(), Instant.now(),Avtalerolle.DELTAKER);
+        }).isExactlyInstanceOf(TiltaksgjennomforingException.class);
     }
 
     @Test
