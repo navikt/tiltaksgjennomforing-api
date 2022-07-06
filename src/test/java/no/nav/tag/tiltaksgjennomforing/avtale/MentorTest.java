@@ -49,7 +49,10 @@ public class MentorTest {
         assertThat(avtaler).isNotEmpty();
         assertThat(avtaler.get(0).getDeltakerFnr()).isNull();
         assertThat(avtaler.get(0).getVeilederNavIdent()).isNull();
-        assertThat(avtaler.get(0).getGjeldendeInnhold()).isNull();
+        assertThat(avtaler.get(0).getGjeldendeInnhold().getDeltakerFornavn()).isNull();
+        assertThat(avtaler.get(0).getGjeldendeInnhold().getDeltakerEtternavn()).isNull();
+        assertThat(avtaler.get(0).getGjeldendeInnhold().getVeilederTlf()).isNull();
+        assertThat(avtaler.get(0).getGjeldendeInnhold().getArbeidsgiverKontonummer()).isNull();
     }
 
 
