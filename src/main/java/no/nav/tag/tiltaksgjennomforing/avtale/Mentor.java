@@ -26,7 +26,6 @@ public class Mentor extends Avtalepart<Fnr> {
         return avtale;
     }
 
-    //TODO Test visning av avtale liste med tom gjeldende innhold
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
         return avtaleRepository.findAllByMentorFnr(getIdentifikator().asString()).stream()
