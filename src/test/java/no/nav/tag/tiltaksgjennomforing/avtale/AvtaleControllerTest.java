@@ -210,6 +210,18 @@ public class AvtaleControllerTest {
     }
 
     @Test
+    public void mentorGodkjennTaushetserklæring_når_innlogget_er__Mentor(){
+        Avtale enMentorAvtale = TestData.enMentorAvtaleUsignert();
+        Fnr fnr = new Fnr("00000000000");
+        Mentor mentor = new Mentor(fnr);
+        værInnloggetSom(mentor);
+
+        when(avtaleRepository.findById(enMentorAvtale.getId())).thenReturn(Optional.of(enMentorAvtale));
+
+        avtaleController.mentorGodkjennTaushetserklæring(enMentorAvtale.getId(), Instant.now(),Avtalerolle.DELTAKER);
+    }
+
+    @Test
     public void hentSkalKastTilgangskontrollExceptionHvisInnloggetSelvbetjeningBrukerIkkeHarTilgang() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         værInnloggetSom(new Arbeidsgiver(new Fnr("55555566666"), Set.of(), Map.of(), null, null, null));
