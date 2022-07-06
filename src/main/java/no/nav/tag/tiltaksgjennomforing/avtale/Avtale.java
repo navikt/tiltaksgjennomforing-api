@@ -386,7 +386,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (erUfordelt()) {
             throw new AvtaleErIkkeFordeltException();
         }
-        //TODO: TEST MEG
         if (this.getTiltakstype() == Tiltakstype.MENTOR && (!erGodkjentAvArbeidsgiver() || !erGodkjentAvDeltaker() || !erGodkjentTaushetserklæringAvMentor())) {
             throw new VeilederSkalGodkjenneSistException();
         }else if (!erGodkjentAvArbeidsgiver() || !erGodkjentAvDeltaker()) {
