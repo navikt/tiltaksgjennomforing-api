@@ -29,19 +29,7 @@ public class Mentor extends Avtalepart<Fnr> {
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
         return avtaleRepository.findAllByMentorFnr(getIdentifikator().asString()).stream()
-                .map(avtale -> {
-                    if(!avtale.erGodkjentTaushetserklæringAvMentor()) {
-                        //Todo flytte den til egen metode i avtale
-                        AvtaleInnhold innhold = AvtaleInnhold.nyttTomtInnhold(avtale.getTiltakstype());
-                        innhold.setBedriftNavn(avtale.getGjeldendeInnhold().getBedriftNavn());
-                        innhold.setAvtale(avtale);
-                        avtale.setGjeldendeInnhold(innhold);
-                        avtale.setDeltakerFnr(null);
-                        avtale.setVeilederNavIdent(null);
-                        return avtale;
-                    }
-                    return avtale;
-                }).toList();
+                .map(Avtale::gjemInnholdOmMentorIkkeHarSignertErklæring).toList();
     }
 
     @Override

@@ -491,6 +491,19 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new GodkjentPaVegneAvArbeidsgiver(this, utfortAv));
     }
 
+    public Avtale gjemInnholdOmMentorIkkeHarSignertErklæring(){
+        if(!erGodkjentTaushetserklæringAvMentor()) {
+            AvtaleInnhold innhold = AvtaleInnhold.nyttTomtInnhold(getTiltakstype());
+            innhold.setBedriftNavn(getGjeldendeInnhold().getBedriftNavn());
+            innhold.setAvtale(this);
+            setGjeldendeInnhold(innhold);
+            setDeltakerFnr(null);
+            setVeilederNavIdent(null);
+            return this;
+        }
+        return null;
+    }
+
     //TODO TEST MEG
     public void godkjennForVeilederOgDeltakerOgArbeidsgiver(NavIdent utfortAv, GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn paVegneAvDeltakerOgArbeidsgiverGrunn, List<BedriftNr> pilotvirksomheter) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
