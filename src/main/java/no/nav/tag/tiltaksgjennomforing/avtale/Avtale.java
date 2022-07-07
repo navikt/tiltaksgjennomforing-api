@@ -499,7 +499,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             setVeilederNavIdent(null);
             return this;
         }
-        return null;
+        return this;
     }
 
     //TODO TEST MEG
