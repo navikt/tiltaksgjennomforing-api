@@ -428,7 +428,7 @@ public class TestData {
         endreAvtale.setOppfolging("Telefon hver uke");
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
-        endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(12));
+        endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(12).minusDays(1));
         endreAvtale.setStillingprosent(50);
         endreAvtale.getMaal().add(TestData.etMaal());
         endreAvtale.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgift(25000, InkluderingstilskuddsutgiftType.PROGRAMVARE));

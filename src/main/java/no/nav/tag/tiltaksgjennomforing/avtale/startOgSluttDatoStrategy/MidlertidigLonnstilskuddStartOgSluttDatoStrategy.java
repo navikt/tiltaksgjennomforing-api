@@ -21,16 +21,16 @@ public class MidlertidigLonnstilskuddStartOgSluttDatoStrategy implements StartOg
 
         if (startDato != null && sluttDato != null) {
             if ((kvalifiseringsgruppe == Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS || kvalifiseringsgruppe == Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS)
-                    && startDato.plusMonths(TJUEFIRE_MND_MAKS_LENGDE).isBefore(sluttDato)) {
+                    && startDato.plusMonths(TJUEFIRE_MND_MAKS_LENGDE).minusDays(1).isBefore(sluttDato)) {
                 throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_24_MND);
             }
 
-            if (kvalifiseringsgruppe == Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS && startDato.plusMonths(TOLV_MND_MAKS_LENGDE).isBefore(sluttDato)) {
+            if (kvalifiseringsgruppe == Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS && startDato.plusMonths(TOLV_MND_MAKS_LENGDE).minusDays(1).isBefore(sluttDato)) {
                 throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_12_MND);
             }
 
             // Ikke funnet kvalifiseringsgruppe, default 12 mnd
-            if (kvalifiseringsgruppe == null && startDato.plusMonths(TOLV_MND_MAKS_LENGDE).isBefore(sluttDato)) {
+            if (kvalifiseringsgruppe == null && startDato.plusMonths(TOLV_MND_MAKS_LENGDE).minusDays(1).isBefore(sluttDato)) {
                 throw new FeilkodeException(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_12_MND);
             }
         }

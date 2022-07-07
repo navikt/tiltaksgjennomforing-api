@@ -176,7 +176,7 @@ public class AvtaleTest {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         EndreAvtale endreAvtale = new EndreAvtale();
         LocalDate startDato = Now.localDate();
-        LocalDate sluttDato = startDato.plusMonths(18);
+        LocalDate sluttDato = startDato.plusMonths(18).minusDays(1);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
@@ -189,7 +189,7 @@ public class AvtaleTest {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         EndreAvtale endreAvtale = new EndreAvtale();
         LocalDate startDato = Now.localDate();
-        LocalDate sluttDato = startDato.plusMonths(18).plusDays(1);
+        LocalDate sluttDato = startDato.plusMonths(18);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
         assertThatThrownBy(() -> avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of())).isInstanceOf(VarighetForLangArbeidstreningException.class);
@@ -495,7 +495,7 @@ public class AvtaleTest {
     public void status__veileder_har_godkjent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate().plusDays(1));
-        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().plusDays(1).plusMonths(1));
+        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().plusDays(1).plusMonths(1).minusDays(1));
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
@@ -819,7 +819,7 @@ public class AvtaleTest {
     @Test
     public void forleng_kun_ved_inngått_avtale() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        assertFeilkode(Feilkode.KAN_IKKE_FORLENGE_IKKE_GODKJENT_AVTALE, () -> avtale.forlengAvtale(avtale.getGjeldendeInnhold().getStartDato().plusMonths(1), TestData.enNavIdent()));
+        assertFeilkode(Feilkode.KAN_IKKE_FORLENGE_IKKE_GODKJENT_AVTALE, () -> avtale.forlengAvtale(avtale.getGjeldendeInnhold().getStartDato().plusMonths(1).minusDays(1), TestData.enNavIdent()));
     }
 
     @Test
@@ -832,20 +832,20 @@ public class AvtaleTest {
     public void forleng_over_4_uker_sommerjobb() {
         Now.fixedDate(LocalDate.of(2021, 6, 1));
         Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();
-        assertFeilkode(Feilkode.SOMMERJOBB_FOR_LANG_VARIGHET, () -> avtale.forlengAvtale(avtale.getGjeldendeInnhold().getStartDato().plusWeeks(4).plusDays(1), TestData.enNavIdent()));
+        assertFeilkode(Feilkode.SOMMERJOBB_FOR_LANG_VARIGHET, () -> avtale.forlengAvtale(avtale.getGjeldendeInnhold().getStartDato().plusWeeks(4), TestData.enNavIdent()));
         Now.resetClock();
     }
 
     @Test
     public void forleng_24_mnd_midl_lts() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
-        avtale.forlengAvtale(avtale.getGjeldendeInnhold().getStartDato().plusMonths(24), TestData.enNavIdent());
+        avtale.forlengAvtale(avtale.getGjeldendeInnhold().getStartDato().plusMonths(24).minusDays(1), TestData.enNavIdent());
     }
 
     @Test
     public void forleng_over_24_mnd_midl_lts() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
-        assertFeilkode(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_24_MND, () -> avtale.forlengAvtale(avtale.getGjeldendeInnhold().getStartDato().plusMonths(24).plusDays(1), TestData.enNavIdent()));
+        assertFeilkode(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_24_MND, () -> avtale.forlengAvtale(avtale.getGjeldendeInnhold().getStartDato().plusMonths(24), TestData.enNavIdent()));
     }
 
     @Test
