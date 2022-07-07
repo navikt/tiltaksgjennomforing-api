@@ -4,37 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvbruttAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortet;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlenget;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleGjenopprettet;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleLåstOpp;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiverErFordelt;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.FjernetEtterregistrering;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvDeltaker;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentForEtterregistrering;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltaker;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltakerOgArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.KontaktinformasjonEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.MålEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.OppfølgingOgTilretteleggingEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.SignertAvMentor;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.StillingsbeskrivelseEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsberegningEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAvslått;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeGodkjent;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -95,7 +65,6 @@ public class LagVarselFraAvtaleHendelser {
         VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER);
         varselRepository.saveAll(factory.alleParter());
     }
- //TODO: TEST MEG
     @EventListener
     public void godkjentAvDeltaker(GodkjentAvDeltaker event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.DELTAKER, HendelseType.GODKJENT_AV_DELTAKER);
@@ -103,7 +72,7 @@ public class LagVarselFraAvtaleHendelser {
     }
 
     @EventListener
-    public void godkjentAvDeltaker(SignertAvMentor event) {
+    public void signertAvMentor(SignertAvMentor event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.MENTOR, HendelseType.SIGNERT_AV_MENTOR);
         varselRepository.saveAll(factory.alleParter());
     }

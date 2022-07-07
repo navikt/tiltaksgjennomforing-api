@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -33,6 +34,19 @@ public class MentorTest {
     }
 
     @Test
+    public void harTilgangTilAvtale__mentor_en_avtale_annen_mentor() {
+
+        // GITT
+        Avtale avtale = TestData.enMentorAvtaleUsignert();
+        avtale.setMentorFnr("77665521872");
+        Mentor mentor = new Mentor(new Fnr("00000000000"));
+        AvtalePredicate avtalePredicate = new AvtalePredicate();
+        // NÅR
+        boolean hartilgang = mentor.harTilgangTilAvtale(avtale);
+        assertFalse(hartilgang);
+    }
+
+    @Test
     public void hentAlleAvtalerMedMuligTilgang__mentor_en_ikke_signert_avtale_skal_returnere_avtale_med_kun_bedrift_navn() {
 
         // GITT
@@ -49,7 +63,10 @@ public class MentorTest {
         assertThat(avtaler).isNotEmpty();
         assertThat(avtaler.get(0).getDeltakerFnr()).isNull();
         assertThat(avtaler.get(0).getVeilederNavIdent()).isNull();
-        assertThat(avtaler.get(0).getGjeldendeInnhold()).isNull();
+        assertThat(avtaler.get(0).getGjeldendeInnhold().getDeltakerFornavn()).isNull();
+        assertThat(avtaler.get(0).getGjeldendeInnhold().getDeltakerEtternavn()).isNull();
+        assertThat(avtaler.get(0).getGjeldendeInnhold().getVeilederTlf()).isNull();
+        assertThat(avtaler.get(0).getGjeldendeInnhold().getArbeidsgiverKontonummer()).isNull();
     }
 
 

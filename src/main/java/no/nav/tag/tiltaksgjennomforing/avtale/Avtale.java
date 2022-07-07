@@ -143,7 +143,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         this.id = UUID.randomUUID();
         this.opprettetTidspunkt = Now.localDateTime();
         this.deltakerFnr = opprettMentorAvtale.getDeltakerFnr();
-        this.mentorFnr = opprettMentorAvtale.getMentorFnr();
+        this.mentorFnr = opprettMentorAvtale.getMentorFnr().asString();
         this.bedriftNr = opprettMentorAvtale.getBedriftNr();
         this.tiltakstype = opprettMentorAvtale.getTiltakstype();
         this.sistEndret = Now.instant();
@@ -351,7 +351,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (erUfordelt()) {
             throw new AvtaleErIkkeFordeltException();
         }
-        //TEST MEG
         if (this.getTiltakstype() == Tiltakstype.MENTOR && (!erGodkjentAvArbeidsgiver() || !erGodkjentAvDeltaker() || !erGodkjentTaushetserklæringAvMentor())) {
             throw new VeilederSkalGodkjenneSistException();
         }else if (!erGodkjentAvArbeidsgiver() || !erGodkjentAvDeltaker()) {
@@ -453,6 +452,19 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         sistEndretNå();
         registerEvent(new GodkjentPaVegneAvArbeidsgiver(this, utfortAv));
+    }
+
+    public Avtale gjemInnholdOmMentorIkkeHarSignertErklæring(){
+        if(!erGodkjentTaushetserklæringAvMentor()) {
+            AvtaleInnhold innhold = AvtaleInnhold.nyttTomtInnhold(getTiltakstype());
+            innhold.setBedriftNavn(getGjeldendeInnhold().getBedriftNavn());
+            innhold.setAvtale(this);
+            setGjeldendeInnhold(innhold);
+            setDeltakerFnr(null);
+            setVeilederNavIdent(null);
+            return this;
+        }
+        return null;
     }
 
     //TODO TEST MEG
@@ -582,20 +594,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     private void sjekkAtIkkeAvtalenInneholderUtbetaltTilskuddsperiode() {
         if(this.getTilskuddPeriode().stream().anyMatch(TilskuddPeriode::erUtbetalt)) throw new FeilkodeException(Feilkode.AVTALE_INNEHOLDER_UTBETALT_TILSKUDDSPERIODE);
-    }
-
-    // TODO: Skal slettes, ikke i bruk
-    public void avbryt(Veileder veileder, AvbruttInfo avbruttInfo) {
-        if (this.kanAvbrytes()) {
-            this.setAvbrutt(true);
-            this.setAvbruttDato(avbruttInfo.getAvbruttDato());
-            this.setAvbruttGrunn(avbruttInfo.getAvbruttGrunn());
-            if (this.erUfordelt()) {
-                this.setVeilederNavIdent(veileder.getIdentifikator());
-            }
-            sistEndretNå();
-            registerEvent(new AvbruttAvVeileder(this, veileder.getIdentifikator()));
-        }
     }
 
     public void overtaAvtale(NavIdent nyNavIdent) {

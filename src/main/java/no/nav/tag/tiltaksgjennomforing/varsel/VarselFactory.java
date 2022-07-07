@@ -29,7 +29,6 @@ public class VarselFactory {
         return Varsel.nyttVarsel(avtale.getVeilederNavIdent(), utførtAv != Avtalerolle.VEILEDER, avtale, Avtalerolle.VEILEDER, utførtAv, hendelseType, avtale.getId());
     }
 
-    //TODO: TEST MEG
     public Varsel mentor() {
         return Varsel.nyttVarsel(new Fnr(avtale.getMentorFnr()), utførtAv != Avtalerolle.MENTOR, avtale, Avtalerolle.MENTOR, utførtAv, hendelseType, avtale.getId());
     }

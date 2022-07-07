@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.UUID;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetMentor;
-import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 
 public class Mentor extends Avtalepart<Fnr> {
@@ -13,7 +14,6 @@ public class Mentor extends Avtalepart<Fnr> {
         super(identifikator);
     }
 
-    //TODO: Test tilgang om erIkke godkjent
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
         return avtale.getMentorFnr().equals(getIdentifikator().asString());
@@ -21,31 +21,15 @@ public class Mentor extends Avtalepart<Fnr> {
 
     @Override
     public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
-        //TODO: kjør en super.hentAvtale()....også sjekk erGodkjentAvMentor
-        Avtale avtale = avtaleRepository.findById(avtaleId)
-            .orElseThrow(RessursFinnesIkkeException::new);
-        sjekkTilgang(avtale);
-        if(!avtale.erGodkjentTaushetserklæringAvMentor()) throw new TilgangskontrollException("Ikke tilgang til avtale");
+        Avtale avtale = super.hentAvtale(avtaleRepository,avtaleId);
+        if(!avtale.erGodkjentTaushetserklæringAvMentor()) throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_AVTALE);
         return avtale;
     }
 
-    //TODO Test visning av avtale liste med tom gjeldende innhold
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
         return avtaleRepository.findAllByMentorFnr(getIdentifikator().asString()).stream()
-                .map(avtale -> {
-                    if(!avtale.erGodkjentTaushetserklæringAvMentor()) {
-                        //Todo flytte den til egen metode i avtale
-                        AvtaleInnhold innhold = AvtaleInnhold.nyttTomtInnhold(avtale.getTiltakstype());
-                        innhold.setBedriftNavn(avtale.getGjeldendeInnhold().getBedriftNavn());
-                        innhold.setAvtale(avtale);
-                        avtale.setGjeldendeInnhold(innhold);
-                        avtale.setDeltakerFnr(null);
-                        avtale.setVeilederNavIdent(null);
-                        return avtale;
-                    }
-                    return avtale;
-                }).toList();
+                .map(Avtale::gjemInnholdOmMentorIkkeHarSignertErklæring).toList();
     }
 
     @Override

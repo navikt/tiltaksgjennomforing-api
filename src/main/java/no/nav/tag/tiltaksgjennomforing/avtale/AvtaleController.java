@@ -158,7 +158,6 @@ public class AvtaleController {
         avtalepart.godkjennAvtale(sistEndret, avtale);
         avtaleRepository.save(avtale);
     }
-    //TODO: TEST MEG SOM MENTOR
     @PostMapping("/{avtaleId}/mentorGodkjennTaushetserklæring")
     @Transactional
     public void mentorGodkjennTaushetserklæring(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
