@@ -26,7 +26,6 @@ public class Mentor extends Avtalepart<Fnr> {
         return avtale;
     }
 
-    //TODO TEST MEG
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
         return avtaleRepository.findAllByMentorFnr(getIdentifikator().asString()).stream()
@@ -35,7 +34,7 @@ public class Mentor extends Avtalepart<Fnr> {
 
     @Override
     public void godkjennForAvtalepart(Avtale avtale) {
-        avtale.godkjennTaushetserklæringForMentor(getIdentifikator());
+        avtale.godkjentTaushetserklæringForMentor(getIdentifikator());
     }
 
     @Override

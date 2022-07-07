@@ -21,16 +21,20 @@ public class MentorTest {
     public void hentAlleAvtalerMedMuligTilgang__mentor_en_avtale() {
 
         // GITT
-        Avtale avtale = TestData.enMentorAvtaleUsignert();
-        avtale.setMentorFnr("00000000000");
+        Avtale avtaleUsignert = TestData.enMentorAvtaleUsignert();
+        Avtale avtaleSignert = TestData.enMentorAvtaleSignert();
+        avtaleUsignert.setMentorFnr("00000000000");
+        avtaleSignert.setMentorFnr("00000000000");
         Mentor mentor = new Mentor(new Fnr("00000000000"));
         AvtalePredicate avtalePredicate = new AvtalePredicate();
         // NÅR
-        when(avtaleRepository.findAllByMentorFnr(anyString())).thenReturn(List.of(avtale));
+        when(avtaleRepository.findAllByMentorFnr(anyString())).thenReturn(List.of(avtaleUsignert,avtaleSignert));
 
         List<Avtale> avtaler = mentor.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
 
-        assertThat(avtaler).isNotEmpty();
+        assertThat(avtaler.size()).isEqualTo(2);
+        assertThat(avtaler.get(0)).isEqualTo(avtaleUsignert);
+        assertThat(avtaler.get(1)).isEqualTo(avtaleSignert);
     }
 
     @Test

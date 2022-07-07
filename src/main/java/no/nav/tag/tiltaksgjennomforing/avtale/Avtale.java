@@ -51,6 +51,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentForEtterregistrerin
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltaker;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltakerOgArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.InkluderingstilskuddEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.KontaktinformasjonEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.MålEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.OppfølgingOgTilretteleggingEndret;
@@ -497,7 +498,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             setGjeldendeInnhold(innhold);
             setDeltakerFnr(null);
             setVeilederNavIdent(null);
-            return this;
         }
         return this;
     }
@@ -553,7 +553,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new GodkjentAvDeltaker(this, utfortAv));
     }
 
-    void godkjennTaushetserklæringForMentor(Identifikator utfortAv) {
+    void godkjentTaushetserklæringForMentor(Identifikator utfortAv) {
         if (erGodkjentTaushetserklæringAvMentor()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_MENTOR_HAR_ALLEREDE_GODKJENT);
         }
@@ -859,10 +859,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     public void sendTilbakeTilBeslutter() {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         var rettede = tilskuddPeriode.stream()
-                .filter(t -> t.isAktiv())
+                .filter(TilskuddPeriode::isAktiv)
                 .filter(t -> t.getStatus() == TilskuddPeriodeStatus.AVSLÅTT)
-                .map(TilskuddPeriode::deaktiverOgLagNyUbehandlet)
-                .collect(Collectors.toList());
+                .map(TilskuddPeriode::deaktiverOgLagNyUbehandlet).toList();
         tilskuddPeriode.addAll(rettede);
     }
 
@@ -1014,13 +1013,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
                 endreKontaktInformasjon.getVeilederTlf(),
                 endreKontaktInformasjon.getArbeidsgiverFornavn(),
                 endreKontaktInformasjon.getArbeidsgiverEtternavn(),
-                endreKontaktInformasjon.getArbeidsgiverTlf(),
-                endreKontaktInformasjon.getRefusjonKontaktperson().getRefusjonKontaktpersonFornavn(),
-                endreKontaktInformasjon.getRefusjonKontaktperson().getRefusjonKontaktpersonEtternavn(),
-                endreKontaktInformasjon.getRefusjonKontaktperson().getRefusjonKontaktpersonTlf())
+                endreKontaktInformasjon.getArbeidsgiverTlf())
         ) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_KONTAKTINFO_GRUNN_MANGLER);
         }
+
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_KONTAKTINFO);
         getGjeldendeInnhold().endreKontaktInfo(endreKontaktInformasjon);
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
@@ -1095,6 +1092,35 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         sistEndretNå();
         sendTilbakeTilBeslutter();
         registerEvent(new MålEndret(this, utførtAv));
+    }
+
+    public void endreInkluderingstilskudd(EndreInkluderingstilskudd endreInkluderingstilskudd, NavIdent utførtAv) {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+
+        krevEnAvTiltakstyper(Tiltakstype.INKLUDERINGSTILSKUDD);
+        if (!erGodkjentAvVeileder()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_INKLUDERINGSTILSKUDD_IKKE_INNGAATT_AVTALE);
+        }
+        if (endreInkluderingstilskudd.getInkluderingstilskuddsutgift().isEmpty()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_INKLUDERINGSTILSKUDD_TOM_LISTE);
+        }
+        if (endreInkluderingstilskudd.inkluderingstilskuddTotalBeløp() > 136000) {
+            throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_SUM_FOR_HØY);
+        }
+        for (Inkluderingstilskuddsutgift i : endreInkluderingstilskudd.getInkluderingstilskuddsutgift()) {
+            if (Utils.erNoenTomme(i.getBeløp(), i.getType())) {
+                throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_INKLUDERINGSTILSKUDD_IKKE_BELOP_ELLER_TYPE);
+            }
+        }
+        gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_INKLUDERINGSTILSKUDD);
+        getGjeldendeInnhold().getInkluderingstilskuddsutgift().clear();
+        List<Inkluderingstilskuddsutgift> nyeInkluderingstilskuddsutgifter = endreInkluderingstilskudd.getInkluderingstilskuddsutgift().stream().map(m -> new Inkluderingstilskuddsutgift().setId(UUID.randomUUID()).setBeløp(m.getBeløp()).setType(m.getType())).collect(Collectors.toList());
+        getGjeldendeInnhold().getInkluderingstilskuddsutgift().addAll(nyeInkluderingstilskuddsutgifter);
+        getGjeldendeInnhold().getInkluderingstilskuddsutgift().forEach(i -> i.setAvtaleInnhold(getGjeldendeInnhold()));
+        getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
+        sistEndretNå();
+        sendTilbakeTilBeslutter();
+        registerEvent(new InkluderingstilskuddEndret(this, utførtAv));
     }
 
     public void setTilskuddsperiodeUtbetalt(UUID tilskuddsperiodeId) {
