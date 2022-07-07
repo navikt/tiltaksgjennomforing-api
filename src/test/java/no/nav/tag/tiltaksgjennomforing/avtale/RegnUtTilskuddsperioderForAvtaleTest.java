@@ -277,7 +277,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
     public void sjekk_at_reduksjon_skjer_etter_12_mnd_ved_60_prosent() {
         Now.fixedDate(LocalDate.of(2021,1,1));
         LocalDate startDato = LocalDate.of(2021, 1, 1);
-        LocalDate sluttDato = LocalDate.of(2023, 1, 1);
+        LocalDate sluttDato = LocalDate.of(2022, 12, 31);
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS);
         EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
