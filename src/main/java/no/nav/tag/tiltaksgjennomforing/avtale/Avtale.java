@@ -553,7 +553,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new GodkjentAvDeltaker(this, utfortAv));
     }
 
-    void godkjennForMentor(Identifikator utfortAv) {
+    void godkjennTaushetserklæringForMentor(Identifikator utfortAv) {
         if (erGodkjentTaushetserklæringAvMentor()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_MENTOR_HAR_ALLEREDE_GODKJENT);
         }

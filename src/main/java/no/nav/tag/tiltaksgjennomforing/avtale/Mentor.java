@@ -34,7 +34,7 @@ public class Mentor extends Avtalepart<Fnr> {
 
     @Override
     public void godkjennForAvtalepart(Avtale avtale) {
-        avtale.godkjennForMentor(getIdentifikator());
+        avtale.godkjennTaushetserklæringForMentor(getIdentifikator());
     }
 
     @Override

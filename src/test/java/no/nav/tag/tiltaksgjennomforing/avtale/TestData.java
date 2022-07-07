@@ -97,7 +97,7 @@ public class TestData {
         endreAvtale.setStartDato(Now.localDate());
         endreAvtale.setSluttDato(Now.localDate().plusWeeks(4).minusDays(1));
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
-        avtale.godkjennForMentor(new Fnr("00000000000"));
+        avtale.godkjennTaushetserklæringForMentor(new Fnr("00000000000"));
         avtale.godkjentAvArbeidsgiver();
         avtale.godkjennForDeltaker(new Fnr("00000000000"));
          return avtale;
