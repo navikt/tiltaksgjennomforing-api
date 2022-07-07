@@ -350,7 +350,6 @@ public class AvtaleTest {
                 AvtaleInnhold.Fields.veilederTlf,
                 AvtaleInnhold.Fields.startDato,
                 AvtaleInnhold.Fields.sluttDato,
-                AvtaleInnhold.Fields.antallDagerPerUke,
                 AvtaleInnhold.Fields.mentorFornavn,
                 AvtaleInnhold.Fields.mentorEtternavn,
                 AvtaleInnhold.Fields.mentorTimelonn,
