@@ -1,15 +1,14 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import java.time.LocalDate;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
-
-import java.time.LocalDate;
 
 public class Fnr extends Identifikator {
 
     public Fnr(String fnr) {
         super(fnr);
-        if (!erGyldigFnr(fnr)) {
+        if (fnr != null && !erGyldigFnr(fnr)) {
             throw new TiltaksgjennomforingException("Ugyldig fødselsnummer. Må bestå av 11 tegn.");
         }
     }

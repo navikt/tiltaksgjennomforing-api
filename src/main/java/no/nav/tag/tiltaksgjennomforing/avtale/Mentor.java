@@ -16,7 +16,7 @@ public class Mentor extends Avtalepart<Fnr> {
 
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
-        return avtale.getMentorFnr().equals(getIdentifikator().asString());
+        return avtale.getMentorFnr().equals(getIdentifikator());
     }
 
     @Override

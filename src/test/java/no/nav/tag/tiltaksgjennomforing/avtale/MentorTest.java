@@ -23,7 +23,7 @@ public class MentorTest {
         // GITT
         Avtale avtaleUsignert = TestData.enMentorAvtaleUsignert();
         Avtale avtaleSignert = TestData.enMentorAvtaleSignert();
-        avtaleUsignert.setMentorFnr("00000000000");
+        avtaleUsignert.setMentorFnr(new Fnr("00000000000"));
         Mentor mentor = new Mentor(new Fnr("00000000000"));
         AvtalePredicate avtalePredicate = new AvtalePredicate();
         // NÅR
@@ -41,7 +41,7 @@ public class MentorTest {
 
         // GITT
         Avtale avtale = TestData.enMentorAvtaleUsignert();
-        avtale.setMentorFnr("77665521872");
+        avtale.setMentorFnr(new Fnr("77665521872"));
         Mentor mentor = new Mentor(new Fnr("00000000000"));
         AvtalePredicate avtalePredicate = new AvtalePredicate();
         // NÅR
@@ -55,7 +55,7 @@ public class MentorTest {
         // GITT
         Avtale avtale = TestData.enMentorAvtaleUsignert();
         avtale.getGjeldendeInnhold().setGodkjentTaushetserklæringAvMentor(null);
-        avtale.setMentorFnr("00000000000");
+        avtale.setMentorFnr(new Fnr("00000000000"));
         Mentor mentor = new Mentor(new Fnr("00000000000"));
         AvtalePredicate avtalePredicate = new AvtalePredicate();
         // NÅR

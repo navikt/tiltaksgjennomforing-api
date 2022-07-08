@@ -100,6 +100,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     @Convert(converter = FnrConverter.class)
     private Fnr deltakerFnr;
+    @Convert(converter = FnrConverter.class)
+    private Fnr mentorFnr;
     @Convert(converter = BedriftNrConverter.class)
     private BedriftNr bedriftNr;
     @Convert(converter = NavIdentConverter.class)
@@ -132,7 +134,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private String enhetsnavnGeografisk;
     private String enhetOppfolging;
     private String enhetsnavnOppfolging;
-    private String mentorFnr;
+
 
     private boolean godkjentForEtterregistrering;
 
@@ -179,7 +181,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         this.id = UUID.randomUUID();
         this.opprettetTidspunkt = Now.localDateTime();
         this.deltakerFnr = opprettMentorAvtale.getDeltakerFnr();
-        this.mentorFnr = opprettMentorAvtale.getMentorFnr().asString();
+        this.mentorFnr = opprettMentorAvtale.getMentorFnr();
         this.bedriftNr = opprettMentorAvtale.getBedriftNr();
         this.tiltakstype = opprettMentorAvtale.getTiltakstype();
         this.sistEndret = Now.instant();

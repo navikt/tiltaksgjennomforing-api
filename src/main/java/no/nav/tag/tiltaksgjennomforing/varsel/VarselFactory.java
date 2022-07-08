@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.varsel;
 import java.util.List;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
-import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 
 public class VarselFactory {
@@ -30,7 +29,7 @@ public class VarselFactory {
     }
 
     public Varsel mentor() {
-        return Varsel.nyttVarsel(new Fnr(avtale.getMentorFnr()), utførtAv != Avtalerolle.MENTOR, avtale, Avtalerolle.MENTOR, utførtAv, hendelseType, avtale.getId());
+        return Varsel.nyttVarsel(avtale.getMentorFnr(), utførtAv != Avtalerolle.MENTOR, avtale, Avtalerolle.MENTOR, utførtAv, hendelseType, avtale.getId());
     }
 
     public List<Varsel> alleParter() {

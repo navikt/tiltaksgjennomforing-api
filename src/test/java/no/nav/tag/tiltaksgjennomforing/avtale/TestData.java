@@ -85,7 +85,7 @@ public class TestData {
     public static Avtale enMentorAvtaleUsignert() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.MENTOR), veilderNavIdent);
-        avtale.setMentorFnr("00000000000");
+        avtale.setMentorFnr(new Fnr("00000000000"));
         avtale.setBedriftNr(new BedriftNr("999999999"));
         EndreAvtale endreAvtale = endringPåAlleFelter();
         endreAvtale.setDeltakerFornavn("Solfrid");
@@ -102,7 +102,7 @@ public class TestData {
     public static Avtale enMentorAvtaleSignert() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.MENTOR), veilderNavIdent);
-        avtale.setMentorFnr("00000000000");
+        avtale.setMentorFnr(new Fnr("00000000000"));
         avtale.setBedriftNr(new BedriftNr("999999999"));
         EndreAvtale endreAvtale = endringPåAlleFelter();
         endreAvtale.setDeltakerFornavn("Solfrid");
@@ -325,7 +325,7 @@ public class TestData {
     public static Avtale enMentorAvtaleMedMedAltUtfylt() {
         Avtale avtale = enAvtaleMedAltUtfyltGodkjentAvVeileder();
         avtale.setTiltakstype(Tiltakstype.MENTOR);
-        avtale.setMentorFnr("00000000000");
+        avtale.setMentorFnr(new Fnr("00000000000"));
         avtale.getGjeldendeInnhold().setMentorFornavn("Jo");
         avtale.getGjeldendeInnhold().setMentorEtternavn("Å");
         avtale.getGjeldendeInnhold().setMentorOppgaver("Spise lunch med deltaker");
