@@ -2,7 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -27,7 +27,7 @@ public class MentorTest {
         Mentor mentor = new Mentor(new Fnr("00000000000"));
         AvtalePredicate avtalePredicate = new AvtalePredicate();
         // NÅR
-        when(avtaleRepository.findAllByMentorFnr(anyString())).thenReturn(List.of(avtaleUsignert,avtaleSignert));
+        when(avtaleRepository.findAllByMentorFnr(any())).thenReturn(List.of(avtaleUsignert,avtaleSignert));
 
         List<Avtale> avtaler = mentor.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
 
@@ -59,7 +59,7 @@ public class MentorTest {
         Mentor mentor = new Mentor(new Fnr("00000000000"));
         AvtalePredicate avtalePredicate = new AvtalePredicate();
         // NÅR
-        when(avtaleRepository.findAllByMentorFnr(anyString())).thenReturn(List.of(avtale));
+        when(avtaleRepository.findAllByMentorFnr(any())).thenReturn(List.of(avtale));
 
         List<Avtale> avtaler = mentor.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
 

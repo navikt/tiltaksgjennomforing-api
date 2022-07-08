@@ -28,7 +28,7 @@ public class Mentor extends Avtalepart<Fnr> {
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
-        return avtaleRepository.findAllByMentorFnr(getIdentifikator().asString()).stream()
+        return avtaleRepository.findAllByMentorFnr(getIdentifikator()).stream()
                 .map(this::gjemInnholdOmMentorIkkeHarSignertErklæring).toList();
     }
 
