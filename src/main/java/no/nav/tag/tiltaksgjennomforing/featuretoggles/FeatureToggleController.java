@@ -22,7 +22,6 @@ public class FeatureToggleController {
     }
 
     @GetMapping
-    @Unprotected
     public Map<String, Boolean> feature(@RequestParam("feature") List<String> features) {
         return featureToggleService.hentFeatureToggles(features);
     }

@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJwtTokenValidation(ignore = {
         "org.springdoc",
         "springfox.documentation.swagger.web.ApiResourceController",
+        "no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleController",
         "org.springframework"
 })
 @EnableConfigurationProperties
