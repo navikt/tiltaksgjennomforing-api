@@ -4,6 +4,7 @@ package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiverErFordelt;
@@ -37,48 +38,46 @@ public class AvtaleVarselProducer {
 
 
     @TransactionalEventListener
-    public void avtaleEndret(AvtaleEndret avtaleEndret) {
-        String avtaleId = avtaleEndret.getAvtale().getId().toString();
-        this.publiserMelding(Topics.AVTALE_ENDRET, avtaleId, AvtalePubliseringsType.AVTALE_ENDRET, avtaleEndret);
+    public void avtaleEndret(AvtaleEndret event) {
+        this.publiserMelding(AvtalePubliseringsType.ENDRET, event.getAvtale());
     }
 
     @TransactionalEventListener
-    public void avtaleOpprettetAvVeileder(AvtaleOpprettetAvVeileder avtaleOpprettetAvVeileder) {
-        String avtaleId = avtaleOpprettetAvVeileder.getAvtale().getId().toString();
-        this.publiserMelding(Topics.AVTALE_OPPRETTET, avtaleId, AvtalePubliseringsType.AVTALE_OPPRETTET_AV_VEILEDER, avtaleOpprettetAvVeileder);
+    public void avtaleOpprettetAvVeileder(AvtaleOpprettetAvVeileder event) {
+        this.publiserMelding(AvtalePubliseringsType.OPPRETTET_VEILEDER, event.getAvtale());
     }
 
     @TransactionalEventListener
-    public void avtaleOpprettetAvArbeidsgiver(AvtaleOpprettetAvArbeidsgiver avtaleOpprettetAvArbeidsgiver) {
-        String avtaleId = avtaleOpprettetAvArbeidsgiver.getAvtale().getId().toString();
-        this.publiserMelding(Topics.AVTALE_OPPRETTET, avtaleId, AvtalePubliseringsType.AVTALE_OPPRETTET_AV_ARBEIDSGIVER, avtaleOpprettetAvArbeidsgiver);
+    public void avtaleOpprettetAvArbeidsgiver(AvtaleOpprettetAvArbeidsgiver event) {
+        this.publiserMelding(AvtalePubliseringsType.OPPRETTET_ARBEIDSGIVER, event.getAvtale());
     }
 
     @TransactionalEventListener
-    public void overtaAvtale(AvtaleOpprettetAvArbeidsgiverErFordelt avtaleOpprettetAvArbeidsgiverErFordelt) {
-        String avtaleId = avtaleOpprettetAvArbeidsgiverErFordelt.getAvtale().getId().toString();
-        this.publiserMelding(Topics.AVTALE_ENDRET, avtaleId, AvtalePubliseringsType.AVTALE_OPPRETTET_AV_ARBEIDSGIVER_ER_FORDELT, avtaleOpprettetAvArbeidsgiverErFordelt);
+    public void overtaAvtale(AvtaleOpprettetAvArbeidsgiverErFordelt event) {
+        this.publiserMelding(AvtalePubliseringsType.AVTALE_FORDELT, event.getAvtale());
     }
 
-    protected void publiserMelding(String topic, String meldingId, String key,  Object innkommendeMelding) {
+    protected void publiserMelding(AvtalePubliseringsType key, Avtale avtale) {
+        AvtalePublisering avtalePublisering = new AvtalePublisering(key, avtale);
+        UUID meldingId = UUID.randomUUID();
         String melding = null;
         try {
-            melding = objectMapper.writeValueAsString(innkommendeMelding);
+            melding = objectMapper.writeValueAsString(avtalePublisering);
         } catch (JsonProcessingException exception) {
-            log.error("greide ikke parse object om til JSON melding med id {} til topic {}", meldingId, topic);
+            log.error("greide ikke parse object om til JSON melding med id {} til topic {}", meldingId, Topics.AVTALE_VARSEL);
             log.error("feilmelding", exception);
             return;
         }
-        aivenKafkaTemplate.send(topic, key, melding)
+        aivenKafkaTemplate.send(Topics.AVTALE_VARSEL, key.name(), melding)
                 .addCallback(new ListenableFutureCallback<SendResult<String, String>>() {
                     @Override
                     public void onFailure(Throwable ex) {
-                        log.error("Melding med id {} sendt til kafka topic {} feilet", meldingId, topic);
+                        log.error("Melding med id {} sendt til kafka topic {} feilet", meldingId, Topics.AVTALE_VARSEL);
                     }
 
                     @Override
                     public void onSuccess(SendResult<String, String> result) {
-                        log.info("Melding med id {} sendt til kafka topic {} var vellykket", meldingId, topic);
+                        log.info("Melding med id {} sendt til kafka topic {} var vellykket", meldingId, Topics.AVTALE_VARSEL);
                     }
                 });
 

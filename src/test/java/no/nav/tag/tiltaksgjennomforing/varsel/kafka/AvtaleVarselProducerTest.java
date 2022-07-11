@@ -25,6 +25,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext
 @ActiveProfiles({ Miljø.LOCAL })
 @EnableKafka
-@EmbeddedKafka(partitions = 1, topics = { Topics.AVTALE_ENDRET })
+@EmbeddedKafka(partitions = 1, topics = { Topics.AVTALE_VARSEL })
 public class AvtaleVarselProducerTest {
 
     @Autowired
@@ -50,9 +51,8 @@ public class AvtaleVarselProducerTest {
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setArbeidsgiverTlf("45342334");
         AvtaleEndret avtaleEndret = new AvtaleEndret(avtale, utfortAv);
-        String avtaleId = avtaleEndret.getAvtale().getId().toString();
 
-        avtaleVarselProducer.publiserMelding(Topics.AVTALE_ENDRET, avtaleId, AvtalePubliseringsType.AVTALE_ENDRET, avtaleEndret);
+        avtaleVarselProducer.publiserMelding(AvtalePubliseringsType.ENDRET, avtaleEndret.getAvtale());
         Thread.sleep(1000L);
 
         Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "true", this.embeddedKafkaBroker);
@@ -63,7 +63,7 @@ public class AvtaleVarselProducerTest {
                 new StringDeserializer()
         );
         Consumer<String, RefusjonVarselMelding> consumer = consumerFactory.createConsumer();
-        this.embeddedKafkaBroker.consumeFromAnEmbeddedTopic(consumer, Topics.AVTALE_ENDRET);
+        this.embeddedKafkaBroker.consumeFromAnEmbeddedTopic(consumer, Topics.AVTALE_VARSEL);
         ConsumerRecords<String, RefusjonVarselMelding> replies = KafkaTestUtils.getRecords(consumer);
         assertThat(replies.count()).isGreaterThanOrEqualTo(1);
         Now.resetClock();
