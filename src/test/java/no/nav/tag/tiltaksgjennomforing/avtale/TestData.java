@@ -86,16 +86,29 @@ public class TestData {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.MENTOR), veilderNavIdent);
         avtale.setMentorFnr(new Fnr("00000000000"));
-        avtale.setBedriftNr(new BedriftNr("999999999"));
-        EndreAvtale endreAvtale = endringPåAlleFelter();
-        endreAvtale.setDeltakerFornavn("Solfrid");
-        endreAvtale.setBedriftNavn("Donald Duck Co..");
-        endreAvtale.setDeltakerEtternavn("Sommerfeldt");
-        endreAvtale.setFeriepengesats(new BigDecimal("0.12"));
-        endreAvtale.setArbeidsgiveravgift(new BigDecimal("0.141"));
-        endreAvtale.setStartDato(Now.localDate());
-        endreAvtale.setSluttDato(Now.localDate().plusWeeks(4).minusDays(1));
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
+        avtale.getGjeldendeInnhold().setBedriftNavn("Donald Duck Co..");
+        avtale.setEnhetOppfolging(ENHET_OPPFØLGING.getVerdi());
+        avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.getGjeldendeInnhold().setDeltakerFornavn("Donal");
+        avtale.getGjeldendeInnhold().setDeltakerEtternavn("Duck");
+        avtale.getGjeldendeInnhold().setDeltakerTlf("12312323");
+        avtale.getGjeldendeInnhold().setArbeidsgiverFornavn("Onkel");
+        avtale.getGjeldendeInnhold().setArbeidsgiverEtternavn("Skrue");
+        avtale.getGjeldendeInnhold().setArbeidsgiverTlf("12312345");
+        avtale.getGjeldendeInnhold().setVeilederFornavn("Minni");
+        avtale.getGjeldendeInnhold().setVeilederEtternavn("Mus");
+        avtale.getGjeldendeInnhold().setVeilederTlf("12312367");
+        avtale.getGjeldendeInnhold().setMentorFornavn("Petter");
+        avtale.getGjeldendeInnhold().setMentorEtternavn("Samrt");
+        avtale.getGjeldendeInnhold().setMentorTlf("12312389");
+        avtale.getGjeldendeInnhold().setMentorOppgaver("Hepp Hepp");
+        avtale.getGjeldendeInnhold().setMentorAntallTimer(20);
+        avtale.getGjeldendeInnhold().setMentorTimelonn(300);
+        avtale.getGjeldendeInnhold().setStartDato(Now.localDate());
+        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().plusWeeks(2).minusDays(1));
+        avtale.getGjeldendeInnhold().setOppfolging("Oppfølging");
+        avtale.getGjeldendeInnhold().setTilrettelegging("Tilrettelegging");
          return avtale;
     }
 
@@ -319,6 +332,22 @@ public class TestData {
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        return avtale;
+    }
+
+    public static Avtale enMentorAvtaleUtenGodkjenninger() {
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), new NavIdent("Z123456"));
+        avtale.setTiltakstype(Tiltakstype.MENTOR);
+        avtale.setMentorFnr(new Fnr("00000000000"));
+        avtale.getGjeldendeInnhold().setMentorFornavn("Jo");
+        avtale.getGjeldendeInnhold().setMentorEtternavn("Å");
+        avtale.getGjeldendeInnhold().setMentorOppgaver("Spise lunch med deltaker");
+        avtale.getGjeldendeInnhold().setMentorAntallTimer(30);
+        avtale.getGjeldendeInnhold().setMentorTlf("12345678");
+        avtale.getGjeldendeInnhold().setMentorTimelonn(500);
+        avtale.getGjeldendeInnhold().setVersjon(1);
+        avtale.getGjeldendeInnhold().setJournalpostId(null);
+        avtale.getGjeldendeInnhold().setMaal(List.of());
         return avtale;
     }
 

@@ -69,15 +69,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeGodkjent;
 import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttDatoStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AltMåVæreFyltUtException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørVeilederException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AvtaleErIkkeFordeltException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.DeltakerHarGodkjentException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -379,7 +371,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private Boolean erPilotVirksomhet(List<BedriftNr> pilotvirksomheter) {
         return pilotvirksomheter.contains(bedriftNr) && (tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD);
     }
-    //TODO TEST MEG
+
     void godkjennForVeileder(NavIdent utfortAv, List<BedriftNr> pilotvirksomheter) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErKlarTilGodkjenning();
@@ -390,8 +382,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             throw new AvtaleErIkkeFordeltException();
         }
         if (this.getTiltakstype() == Tiltakstype.MENTOR && (!erGodkjentAvArbeidsgiver() || !erGodkjentAvDeltaker() || !erGodkjentTaushetserklæringAvMentor())) {
-            throw new VeilederSkalGodkjenneSistException();
-        }else if (!erGodkjentAvArbeidsgiver() || !erGodkjentAvDeltaker()) {
+            throw new MentorMåSignereTaushetserklæringFørVeilederException();
+        }
+        if (!erGodkjentAvArbeidsgiver() || !erGodkjentAvDeltaker()) {
             throw new VeilederSkalGodkjenneSistException();
         }
         if (this.getTiltakstype() == Tiltakstype.SOMMERJOBB &&

@@ -221,6 +221,7 @@ public class AvtaleController {
         if(opprettMentorAvtale.getAvtalerolle().equals(Avtalerolle.VEILEDER)){
             Veileder veileder = innloggingService.hentVeileder();;
             avtale = veileder.opprettMentorAvtale(opprettMentorAvtale);
+            veileder.sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
             veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
         }
         else if(opprettMentorAvtale.getAvtalerolle().equals(Avtalerolle.ARBEIDSGIVER)){

@@ -37,7 +37,7 @@ public enum Kvalifiseringsgruppe {
         };
     }
 
-    public static boolean kvalifisererTilMidlertidiglonnstilskuddOgSommerjobb(Kvalifiseringsgruppe kvalifiseringsgruppe) {
+    public static boolean kvalifisererTilMidlertidiglonnstilskuddOgSommerjobbOgMentor(Kvalifiseringsgruppe kvalifiseringsgruppe) {
         return switch (kvalifiseringsgruppe) {
             case SPESIELT_TILPASSET_INNSATS, SITUASJONSBESTEMT_INNSATS, VARIG_TILPASSET_INNSATS -> true;
             default -> false;
