@@ -63,7 +63,6 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                 "LEFT JOIN AVTALE_INNHOLD " +
                 "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
                 "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
-                "AND AVTALE.tiltakstype not in ('ARBEIDSTRENING') " +
                 "AND EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
                 "(:tilskuddsperiodestatus LIKE 'UBEHANDLET' AND :tilskuddsperiodestatus = status AND " +
                 "((start_dato <= current_date + CAST(:plussDato as INTEGER )) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET')))) " +
@@ -78,7 +77,6 @@ List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet
                     "LEFT JOIN AVTALE_INNHOLD " +
                     "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
                     "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
-                    "AND AVTALE.tiltakstype not in ('ARBEIDSTRENING') " +
                     "AND EXISTS (SELECT avtale_id, status FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
                     "((:tilskuddsperiodestatus LIKE 'GODKJENT' AND :tilskuddsperiodestatus = status))) " +
                     "AND NOT EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where " +
@@ -95,7 +93,6 @@ List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet
                     "LEFT JOIN AVTALE_INNHOLD " +
                     "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
                     "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
-                    "AND AVTALE.tiltakstype not in ('ARBEIDSTRENING') " +
                     "AND EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
                     "(:tilskuddsperiodestatus LIKE 'AVSLÅTT' AND :tilskuddsperiodestatus = status) " +
                     "AND ((start_dato <= current_date + CAST(:plussDato as INTEGER)) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET'))) " +

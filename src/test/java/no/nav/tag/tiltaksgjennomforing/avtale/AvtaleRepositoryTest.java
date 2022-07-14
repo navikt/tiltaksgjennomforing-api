@@ -225,9 +225,7 @@ public class AvtaleRepositoryTest {
 
     @Test
     public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_ikke_kunne_hente_avtale_med_tiltakstype_arbeidstrening() {
-
-        Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate(), Now.localDate().plusMonths(2));
-        lagretAvtale.setTiltakstype(Tiltakstype.ARBEIDSTRENING);
+        Avtale lagretAvtale = TestData.enArbeidstreningAvtale();
         avtaleRepository.save(lagretAvtale);
         Set<String> navEnheter = Set.of(ENHET_OPPFØLGING.getVerdi());
 
