@@ -217,6 +217,9 @@ public class AvtaleController {
     @Transactional
     public ResponseEntity<?> opprettMentorAvtale(@RequestBody OpprettMentorAvtale opprettMentorAvtale) {
         Avtale avtale = null;
+        if(opprettMentorAvtale.getDeltakerFnr().equals(opprettMentorAvtale.getMentorFnr())){
+            throw new FeilkodeException(Feilkode.DELTAGER_OG_MENTOR_KAN_IKKE_HA_SAMME_FØDSELSNUMMER);
+        }
         String bedriftNavn = eregService.hentVirksomhet(opprettMentorAvtale.getBedriftNr()).getBedriftNavn();
         if(opprettMentorAvtale.getAvtalerolle().equals(Avtalerolle.VEILEDER)){
             Veileder veileder = innloggingService.hentVeileder();;
