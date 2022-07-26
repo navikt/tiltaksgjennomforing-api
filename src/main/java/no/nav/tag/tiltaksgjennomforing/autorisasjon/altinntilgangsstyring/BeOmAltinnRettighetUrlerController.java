@@ -20,14 +20,16 @@ public class BeOmAltinnRettighetUrlerController {
     @GetMapping
     public Map<Tiltakstype, String> beOmRettighetUrler(@RequestParam("orgNr") String orgNr) {
         return Map.of(
-                Tiltakstype.ARBEIDSTRENING, beOmRettighetUrl(orgNr, props.getArbtreningServiceCode(), props.getArbtreningServiceEdition()),
-                Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, beOmRettighetUrl(orgNr, props.getLtsMidlertidigServiceCode(), props.getLtsMidlertidigServiceEdition()),
-                Tiltakstype.VARIG_LONNSTILSKUDD, beOmRettighetUrl(orgNr, props.getLtsVarigServiceCode(), props.getLtsVarigServiceEdition()),
-                Tiltakstype.SOMMERJOBB, beOmRettighetUrl(orgNr, props.getSommerjobbServiceCode(), props.getSommerjobbServiceEdition())
+                Tiltakstype.ARBEIDSTRENING, beOmRettighetUrl(orgNr),
+                Tiltakstype.INKLUDERINGSTILSKUDD, beOmRettighetUrl(orgNr),
+                Tiltakstype.MENTOR, beOmRettighetUrl(orgNr),
+                Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, beOmRettighetUrl(orgNr),
+                Tiltakstype.VARIG_LONNSTILSKUDD, beOmRettighetUrl(orgNr),
+                Tiltakstype.SOMMERJOBB, beOmRettighetUrl(orgNr)
         );
     }
 
-    private String beOmRettighetUrl(String orgNr, Integer serviceCode, Integer serviceEdition) {
+    private String beOmRettighetUrl(String orgNr) {
         return props.getBeOmRettighetBaseUrl() + "&bedrift=" + orgNr;
     }
 }
