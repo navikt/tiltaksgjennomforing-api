@@ -1,23 +1,44 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.*;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.enhet.*;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
-import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
-import no.nav.tag.tiltaksgjennomforing.persondata.*;
-import no.nav.tag.tiltaksgjennomforing.sporingslogg.Sporingslogg;
-import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.*;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetMentor;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
+import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
+import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
+import no.nav.tag.tiltaksgjennomforing.persondata.Adressebeskyttelse;
+import no.nav.tag.tiltaksgjennomforing.persondata.Data;
+import no.nav.tag.tiltaksgjennomforing.persondata.HentGeografiskTilknytning;
+import no.nav.tag.tiltaksgjennomforing.persondata.HentPerson;
+import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
+import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.sporingslogg.Sporingslogg;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
 public class TestData {
 
@@ -61,9 +82,54 @@ public class TestData {
         return Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.VARIG_LONNSTILSKUDD), veilderNavIdent);
     }
 
-    public static Avtale enMentorAvtale() {
+    public static Avtale enMentorAvtaleUsignert() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        return Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.MENTOR), veilderNavIdent);
+        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.MENTOR), veilderNavIdent);
+        avtale.setMentorFnr(new Fnr("00000000000"));
+        avtale.getGjeldendeInnhold().setBedriftNavn("Donald Duck Co..");
+        avtale.setEnhetOppfolging(ENHET_OPPFØLGING.getVerdi());
+        avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.getGjeldendeInnhold().setDeltakerFornavn("Donal");
+        avtale.getGjeldendeInnhold().setDeltakerEtternavn("Duck");
+        avtale.getGjeldendeInnhold().setDeltakerTlf("12312323");
+        avtale.getGjeldendeInnhold().setArbeidsgiverFornavn("Onkel");
+        avtale.getGjeldendeInnhold().setArbeidsgiverEtternavn("Skrue");
+        avtale.getGjeldendeInnhold().setArbeidsgiverTlf("12312345");
+        avtale.getGjeldendeInnhold().setVeilederFornavn("Minni");
+        avtale.getGjeldendeInnhold().setVeilederEtternavn("Mus");
+        avtale.getGjeldendeInnhold().setVeilederTlf("12312367");
+        avtale.getGjeldendeInnhold().setMentorFornavn("Petter");
+        avtale.getGjeldendeInnhold().setMentorEtternavn("Samrt");
+        avtale.getGjeldendeInnhold().setMentorTlf("12312389");
+        avtale.getGjeldendeInnhold().setMentorOppgaver("Hepp Hepp");
+        avtale.getGjeldendeInnhold().setMentorAntallTimer(20);
+        avtale.getGjeldendeInnhold().setMentorTimelonn(300);
+        avtale.getGjeldendeInnhold().setStartDato(Now.localDate());
+        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().plusWeeks(2).minusDays(1));
+        avtale.getGjeldendeInnhold().setOppfolging("Oppfølging");
+        avtale.getGjeldendeInnhold().setTilrettelegging("Tilrettelegging");
+         return avtale;
+    }
+
+    public static Avtale enMentorAvtaleSignert() {
+        NavIdent veilderNavIdent = new NavIdent("Z123456");
+        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.MENTOR), veilderNavIdent);
+        avtale.setMentorFnr(new Fnr("00000000000"));
+        avtale.setBedriftNr(new BedriftNr("999999999"));
+        EndreAvtale endreAvtale = endringPåAlleFelter();
+        endreAvtale.setDeltakerFornavn("Solfrid");
+        endreAvtale.setBedriftNavn("Donald Duck Co..");
+        endreAvtale.setDeltakerEtternavn("Sommerfeldt");
+        endreAvtale.setFeriepengesats(new BigDecimal("0.12"));
+        endreAvtale.setArbeidsgiveravgift(new BigDecimal("0.141"));
+        endreAvtale.setStartDato(Now.localDate());
+        endreAvtale.setSluttDato(Now.localDate().plusWeeks(4).minusDays(1));
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
+        avtale.godkjennForMentor(new Fnr("00000000000"));
+        avtale.godkjentAvArbeidsgiver();
+        avtale.godkjennForDeltaker(new Fnr("00000000000"));
+         return avtale;
     }
 
     public static Avtale enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt() {
@@ -269,13 +335,31 @@ public class TestData {
         return avtale;
     }
 
-    public static Avtale enMentorAvtaleMedMedAltUtfylt() {
-        Avtale avtale = enAvtaleMedAltUtfyltGodkjentAvVeileder();
+    public static Avtale enMentorAvtaleUtenGodkjenninger() {
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), new NavIdent("Z123456"));
         avtale.setTiltakstype(Tiltakstype.MENTOR);
+        avtale.setMentorFnr(new Fnr("00000000000"));
         avtale.getGjeldendeInnhold().setMentorFornavn("Jo");
         avtale.getGjeldendeInnhold().setMentorEtternavn("Å");
         avtale.getGjeldendeInnhold().setMentorOppgaver("Spise lunch med deltaker");
         avtale.getGjeldendeInnhold().setMentorAntallTimer(30);
+        avtale.getGjeldendeInnhold().setMentorTlf("12345678");
+        avtale.getGjeldendeInnhold().setMentorTimelonn(500);
+        avtale.getGjeldendeInnhold().setVersjon(1);
+        avtale.getGjeldendeInnhold().setJournalpostId(null);
+        avtale.getGjeldendeInnhold().setMaal(List.of());
+        return avtale;
+    }
+
+    public static Avtale enMentorAvtaleMedMedAltUtfylt() {
+        Avtale avtale = enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        avtale.setTiltakstype(Tiltakstype.MENTOR);
+        avtale.setMentorFnr(new Fnr("00000000000"));
+        avtale.getGjeldendeInnhold().setMentorFornavn("Jo");
+        avtale.getGjeldendeInnhold().setMentorEtternavn("Å");
+        avtale.getGjeldendeInnhold().setMentorOppgaver("Spise lunch med deltaker");
+        avtale.getGjeldendeInnhold().setMentorAntallTimer(30);
+        avtale.getGjeldendeInnhold().setMentorTlf("12345678");
         avtale.getGjeldendeInnhold().setMentorTimelonn(500);
         avtale.getGjeldendeInnhold().setVersjon(1);
         avtale.getGjeldendeInnhold().setJournalpostId(null);
@@ -391,6 +475,7 @@ public class TestData {
         endreAvtale.setMentorEtternavn("Mentorsen");
         endreAvtale.setMentorOppgaver("Mentoroppgaver");
         endreAvtale.setMentorAntallTimer(10);
+        endreAvtale.setMentorTlf("12348594837");
         endreAvtale.setMentorTimelonn(1000);
         endreAvtale.setHarFamilietilknytning(true);
         endreAvtale.setFamilietilknytningForklaring("En middels god forklaring");
@@ -407,6 +492,10 @@ public class TestData {
 
     public static InnloggetDeltaker enInnloggetDeltaker() {
         return new InnloggetDeltaker(new Fnr("99999999999"));
+    }
+
+    public static InnloggetMentor enInnloggetMentor() {
+        return new InnloggetMentor(new Fnr("99999999999"));
     }
 
     public static InnloggetArbeidsgiver enInnloggetArbeidsgiver() {

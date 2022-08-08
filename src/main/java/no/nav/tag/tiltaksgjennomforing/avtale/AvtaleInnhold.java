@@ -86,6 +86,7 @@ public class AvtaleInnhold {
     private String mentorOppgaver;
     private Integer mentorAntallTimer;
     private Integer mentorTimelonn;
+    private String mentorTlf;
 
     // Lønnstilskudd
     private String arbeidsgiverKontonummer;
@@ -126,6 +127,7 @@ public class AvtaleInnhold {
 
     // Godkjenning
     private LocalDateTime godkjentAvDeltaker;
+    private LocalDateTime godkjentTaushetserklæringAvMentor;
     private LocalDateTime godkjentAvArbeidsgiver;
     private LocalDateTime godkjentAvVeileder;
     private LocalDateTime godkjentAvBeslutter;

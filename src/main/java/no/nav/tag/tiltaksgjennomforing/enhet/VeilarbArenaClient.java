@@ -25,9 +25,10 @@ public class VeilarbArenaClient {
         this.veilarbArenaProperties = veilarbArenaProperties;
     }
 
-    private boolean erMidlerTidiglonnstilskuddEllerSommerjobb(Tiltakstype tiltakstype) {
+    private boolean erMidlerTidiglonnstilskuddEllerSommerjobbEllerMentor(Tiltakstype tiltakstype) {
         return (tiltakstype == Tiltakstype.SOMMERJOBB ||
-                tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+                tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD) ||
+                tiltakstype == Tiltakstype.MENTOR;
     }
 
     private boolean erVariglonnstilskudd(Tiltakstype tiltakstype) {
@@ -60,8 +61,8 @@ public class VeilarbArenaClient {
             throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET);
         }
 
-        if (erMidlerTidiglonnstilskuddEllerSommerjobb(avtale.getTiltakstype()) &&
-                !Kvalifiseringsgruppe.kvalifisererTilMidlertidiglonnstilskuddOgSommerjobb(oppfølgingStatus.getKvalifiseringsgruppe())) {
+        if (erMidlerTidiglonnstilskuddEllerSommerjobbEllerMentor(avtale.getTiltakstype()) &&
+                !Kvalifiseringsgruppe.kvalifisererTilMidlertidiglonnstilskuddOgSommerjobbOgMentor(oppfølgingStatus.getKvalifiseringsgruppe())) {
             throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_MIDLERTIDIG_LONNTILSKUDD_OG_SOMMERJOBB_FEIL);
         }
 

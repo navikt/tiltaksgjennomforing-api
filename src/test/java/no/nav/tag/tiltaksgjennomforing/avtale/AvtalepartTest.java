@@ -6,10 +6,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.EnumSet;
 import java.util.List;
-
 import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørVeilederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.MentorMåSignereTaushetserklæringFørVeilederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
@@ -28,6 +28,26 @@ public class AvtalepartTest {
         Veileder veileder = TestData.enVeileder(avtale);
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
         assertThatThrownBy(() -> veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale)).isInstanceOf(ArbeidsgiverSkalGodkjenneFørVeilederException.class);
+    }
+
+    @Test
+    public void godkjennForVeileder__skal_feile_hvis_mentor_ikke_har_signert() {
+        Avtale avtale = TestData.enMentorAvtaleUsignert();
+        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
+        arbeidsgiver.godkjennAvtale(avtale.getSistEndret().plusMillis(60000), avtale);
+        Deltaker deltaker = TestData.enDeltaker(avtale);
+        deltaker.godkjennAvtale(avtale.getSistEndret().plusMillis(60000), avtale);
+        Veileder veileder = TestData.enVeileder(avtale);
+        assertThatThrownBy(() -> veileder.godkjennAvtale(avtale.getSistEndret().plusMillis(60000), avtale)).isInstanceOf(MentorMåSignereTaushetserklæringFørVeilederException.class);
+    }
+
+    @Test
+    public void godkjennForVeilederOgDeltaker__skal_feile_hvis_mentor_ikke_har_signert() {
+        Avtale avtale = TestData.enMentorAvtaleUsignert();
+        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
+        arbeidsgiver.godkjennAvtale(avtale.getSistEndret().plusMillis(60000), avtale);
+        Veileder veileder = TestData.enVeileder(avtale);
+        assertThatThrownBy(() -> veileder.godkjennForVeilederOgDeltaker(new GodkjentPaVegneGrunn(), avtale)).isInstanceOf(MentorMåSignereTaushetserklæringFørVeilederException.class);
     }
 
     @Test

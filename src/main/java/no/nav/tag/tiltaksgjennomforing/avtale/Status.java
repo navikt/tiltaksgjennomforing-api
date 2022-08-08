@@ -4,6 +4,7 @@ public enum Status {
     ANNULLERT("Annullert"),
     AVBRUTT("Avbrutt"),
     PÅBEGYNT("Påbegynt"),
+    MANGLER_SIGNATUR("Mangler Signatur"),
     MANGLER_GODKJENNING("Mangler godkjenning"),
     KLAR_FOR_OPPSTART("Klar for oppstart"),
     GJENNOMFØRES("Gjennomføres"),

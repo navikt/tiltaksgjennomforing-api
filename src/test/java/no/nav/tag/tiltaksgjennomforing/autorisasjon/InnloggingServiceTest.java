@@ -1,20 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.ArbeidsgiverTokenStrategyFactoryImpl;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.*;
-
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.ENHET_OPPFØLGING;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,6 +8,25 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.ArbeidsgiverTokenStrategyFactoryImpl;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 public class InnloggingServiceTest {
@@ -48,11 +52,19 @@ public class InnloggingServiceTest {
     @Mock
     private ArbeidsgiverTokenStrategyFactoryImpl arbeidsgiverTokenStrategyFactory;
 
+
     @Test
     public void hentInnloggetBruker__er_selvbetjeningbruker() {
         InnloggetDeltaker selvbetjeningBruker = TestData.enInnloggetDeltaker();
         værInnloggetDeltaker(selvbetjeningBruker);
         assertThat(innloggingService.hentInnloggetBruker(Avtalerolle.DELTAKER)).isEqualTo(selvbetjeningBruker);
+    }
+
+    @Test
+    public void hentInnloggetBruker__er_selvbetjeningbruker_mentor() {
+        InnloggetMentor selvbetjeningMentor = TestData.enInnloggetMentor();
+        værInnloggetMentor(selvbetjeningMentor);
+        assertThat(innloggingService.hentInnloggetBruker(Avtalerolle.MENTOR)).isEqualTo(selvbetjeningMentor);
     }
 
     @Test
@@ -129,6 +141,11 @@ public class InnloggingServiceTest {
     private void værInnloggetDeltaker(InnloggetDeltaker bruker) {
         when(tokenUtils.hentBrukerOgIssuer())
                 .thenReturn(Optional.of(new TokenUtils.BrukerOgIssuer(Issuer.ISSUER_SELVBETJENING, bruker.getIdentifikator().asString())));
+    }
+
+    private void værInnloggetMentor(InnloggetMentor mentor) {
+        when(tokenUtils.hentBrukerOgIssuer())
+                .thenReturn(Optional.of(new TokenUtils.BrukerOgIssuer(Issuer.ISSUER_SELVBETJENING, mentor.getIdentifikator().asString())));
     }
 
     private void værInnloggetArbeidsgiver(InnloggetArbeidsgiver bruker) {

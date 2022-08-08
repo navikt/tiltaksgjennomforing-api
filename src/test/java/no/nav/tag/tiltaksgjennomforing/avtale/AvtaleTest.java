@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
@@ -351,14 +350,14 @@ public class AvtaleTest {
                 AvtaleInnhold.Fields.veilederTlf,
                 AvtaleInnhold.Fields.startDato,
                 AvtaleInnhold.Fields.sluttDato,
-                AvtaleInnhold.Fields.antallDagerPerUke,
                 AvtaleInnhold.Fields.mentorFornavn,
                 AvtaleInnhold.Fields.mentorEtternavn,
                 AvtaleInnhold.Fields.mentorTimelonn,
-                AvtaleInnhold.Fields.mentorAntallTimer,
                 AvtaleInnhold.Fields.mentorOppgaver,
+                AvtaleInnhold.Fields.mentorAntallTimer,
                 AvtaleInnhold.Fields.tilrettelegging,
-                AvtaleInnhold.Fields.oppfolging
+                AvtaleInnhold.Fields.oppfolging,
+                AvtaleInnhold.Fields.mentorTlf
         );
 
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), TestData.enNavIdent());

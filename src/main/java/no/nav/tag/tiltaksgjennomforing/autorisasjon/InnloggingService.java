@@ -1,5 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
@@ -9,7 +13,18 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.ArbeidsgiverTokenStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.HentArbeidsgiverToken;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalepart;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Beslutter;
+import no.nav.tag.tiltaksgjennomforing.avtale.Deltaker;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Mentor;
+import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddsperiodeConfig;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
@@ -19,11 +34,6 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.stereotype.Component;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -46,20 +56,17 @@ public class InnloggingService {
         BrukerOgIssuer brukerOgIssuer = tokenUtils.hentBrukerOgIssuer().orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget."));
         Issuer issuer = brukerOgIssuer.getIssuer();
 
-        if ((issuer == Issuer.ISSUER_SELVBETJENING || issuer == Issuer.ISSUER_TOKENX) && avtalerolle == Avtalerolle.DELTAKER) {
-            return new Deltaker(new Fnr(brukerOgIssuer.getBrukerIdent()));
-        }
-
-        else if ((issuer == Issuer.ISSUER_SELVBETJENING || issuer == Issuer.ISSUER_TOKENX) && avtalerolle == Avtalerolle.ARBEIDSGIVER) {
+        if ((issuer == Issuer.ISSUER_SELVBETJENING || issuer == Issuer.ISSUER_TOKENX) && (avtalerolle == Avtalerolle.DELTAKER || avtalerolle == Avtalerolle.MENTOR)) {
+            if(avtalerolle == Avtalerolle.DELTAKER) return new Deltaker(new Fnr(brukerOgIssuer.getBrukerIdent()));
+            else return new Mentor(new Fnr(brukerOgIssuer.getBrukerIdent()));
+        }else if ((issuer == Issuer.ISSUER_SELVBETJENING || issuer == Issuer.ISSUER_TOKENX) && avtalerolle == Avtalerolle.ARBEIDSGIVER) {
             HentArbeidsgiverToken hentArbeidsgiverToken = arbeidsgiverTokenStrategyFactory.create(issuer);
 
             Set<AltinnReportee> altinnOrganisasjoner = altinnTilgangsstyringService
                     .hentAltinnOrganisasjoner(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
             Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
             return new Arbeidsgiver(new Fnr(brukerOgIssuer.getBrukerIdent()), altinnOrganisasjoner, tilganger, persondataService, norg2Client, veilarbArenaClient);
-        }
-
-        else if (issuer == Issuer.ISSUER_ISSO && avtalerolle == Avtalerolle.VEILEDER) {
+        } else if (issuer == Issuer.ISSUER_ISSO && avtalerolle == Avtalerolle.VEILEDER) {
             NavIdent navIdent = new NavIdent(brukerOgIssuer.getBrukerIdent());
             Set<NavEnhet> navEnheter = hentNavEnheter(navIdent);
             boolean harAdGruppeForBeslutter = tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId());

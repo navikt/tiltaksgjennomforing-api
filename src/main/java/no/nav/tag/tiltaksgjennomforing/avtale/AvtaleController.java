@@ -17,6 +17,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import org.springframework.http.HttpEntity;
@@ -157,6 +158,15 @@ public class AvtaleController {
         avtalepart.godkjennAvtale(sistEndret, avtale);
         avtaleRepository.save(avtale);
     }
+    @PostMapping("/{avtaleId}/mentorGodkjennTaushetserklæring")
+    @Transactional
+    public void mentorGodkjennTaushetserklæring(@PathVariable("avtaleId") UUID avtaleId, @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
+        if(!avtalepart.rolle().equals(Avtalerolle.MENTOR)) throw new TiltaksgjennomforingException("Du må være mentor for å signere her");
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        avtalepart.godkjennAvtale(sistEndret, avtale);
+        avtaleRepository.save(avtale);
+    }
 
 
     // Arbeidsgiver-operasjoner
@@ -202,6 +212,36 @@ public class AvtaleController {
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
     }
+
+    @PostMapping("/opprett-mentor-avtale")
+    @Transactional
+    public ResponseEntity<?> opprettMentorAvtale(@RequestBody OpprettMentorAvtale opprettMentorAvtale) {
+        Avtale avtale = null;
+        if(opprettMentorAvtale.getDeltakerFnr().equals(opprettMentorAvtale.getMentorFnr())){
+            throw new FeilkodeException(Feilkode.DELTAGER_OG_MENTOR_KAN_IKKE_HA_SAMME_FØDSELSNUMMER);
+        }
+        String bedriftNavn = eregService.hentVirksomhet(opprettMentorAvtale.getBedriftNr()).getBedriftNavn();
+        if(opprettMentorAvtale.getAvtalerolle().equals(Avtalerolle.VEILEDER)){
+            Veileder veileder = innloggingService.hentVeileder();;
+            avtale = veileder.opprettMentorAvtale(opprettMentorAvtale);
+            veileder.sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
+            veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
+        }
+        else if(opprettMentorAvtale.getAvtalerolle().equals(Avtalerolle.ARBEIDSGIVER)){
+            Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
+            avtale = arbeidsgiver.opprettMentorAvtale(opprettMentorAvtale);
+            arbeidsgiver.hentOgSettOppfølgingStatus(avtale);
+            arbeidsgiver.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
+        }
+        if(avtale == null){
+            throw new RuntimeException("dfgmd");
+        }
+        avtale.leggTilBedriftNavn(bedriftNavn);
+        Avtale opprettetAvtale = avtaleRepository.save(avtale);
+        URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
+        return ResponseEntity.created(uri).build();
+    }
+
 
     @PostMapping("/{avtaleId}/forkort")
     @Transactional

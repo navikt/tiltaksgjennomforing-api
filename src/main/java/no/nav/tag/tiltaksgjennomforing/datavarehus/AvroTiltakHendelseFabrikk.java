@@ -49,6 +49,7 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setDigitalKompetanse(avtale.getGjeldendeInnhold().getGodkjentPaVegneGrunn() != null && avtale.getGjeldendeInnhold().getGodkjentPaVegneGrunn().isDigitalKompetanse());
         hendelse.setGodkjentAvDeltaker(toInstant(avtale.getGjeldendeInnhold().getGodkjentAvDeltaker()));
         hendelse.setGodkjentAvArbeidsgiver(toInstant(avtale.getGjeldendeInnhold().getGodkjentAvArbeidsgiver()));
+        hendelse.setGodkjentAvArbeidsgiver(toInstant(avtale.getGjeldendeInnhold().getGodkjentAvArbeidsgiver()));
         hendelse.setGodkjentAvVeileder(toInstant(avtale.getGjeldendeInnhold().getGodkjentAvVeileder()));
         hendelse.setGodkjentAvBeslutter(toInstant(avtale.getGjeldendeInnhold().getGodkjentAvBeslutter()));
         hendelse.setAvtaleInngaatt(toInstant(avtale.getGjeldendeInnhold().getAvtaleInngått()));

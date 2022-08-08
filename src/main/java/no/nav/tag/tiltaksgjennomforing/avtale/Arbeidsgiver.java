@@ -188,4 +188,14 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         fjernKvalifiseringsgruppe(avtale);
         return avtale;
     }
+
+    public Avtale opprettMentorAvtale(OpprettMentorAvtale opprettMentorAvtale) {
+        if (!harTilgangPåTiltakIBedrift(opprettMentorAvtale.getBedriftNr(), opprettMentorAvtale.getTiltakstype())) {
+            throw new TilgangskontrollException("Har ikke tilgang på tiltak i valgt bedrift");
+        }
+        Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(opprettMentorAvtale);
+        final PdlRespons persondata = persondataService.hentPersondata(opprettMentorAvtale.getDeltakerFnr());
+        leggTilGeografiskEnhet(avtale, persondata, norg2Client);
+        return avtale;
+    }
 }
