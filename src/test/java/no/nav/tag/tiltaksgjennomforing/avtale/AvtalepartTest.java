@@ -9,7 +9,6 @@ import java.util.List;
 import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørVeilederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.MentorMåSignereTaushetserklæringFørVeilederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
@@ -38,7 +37,7 @@ public class AvtalepartTest {
         Deltaker deltaker = TestData.enDeltaker(avtale);
         deltaker.godkjennAvtale(avtale.getSistEndret().plusMillis(60000), avtale);
         Veileder veileder = TestData.enVeileder(avtale);
-        assertThatThrownBy(() -> veileder.godkjennAvtale(avtale.getSistEndret().plusMillis(60000), avtale)).isInstanceOf(MentorMåSignereTaushetserklæringFørVeilederException.class);
+        assertFeilkode(Feilkode.MENTOR_MÅ_SIGNERE_TAUSHETSERKLÆRING,() -> veileder.godkjennAvtale(avtale.getSistEndret().plusMillis(60000), avtale));
     }
 
     @Test
@@ -47,7 +46,7 @@ public class AvtalepartTest {
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         arbeidsgiver.godkjennAvtale(avtale.getSistEndret().plusMillis(60000), avtale);
         Veileder veileder = TestData.enVeileder(avtale);
-        assertThatThrownBy(() -> veileder.godkjennForVeilederOgDeltaker(new GodkjentPaVegneGrunn(), avtale)).isInstanceOf(MentorMåSignereTaushetserklæringFørVeilederException.class);
+        assertFeilkode(Feilkode.MENTOR_MÅ_SIGNERE_TAUSHETSERKLÆRING,() -> veileder.godkjennForVeilederOgDeltaker(new GodkjentPaVegneGrunn(), avtale));
     }
 
     @Test

@@ -234,7 +234,7 @@ public class AvtaleController {
             arbeidsgiver.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
         }
         if(avtale == null){
-            throw new RuntimeException("dfgmd");
+            throw new RuntimeException("Opprett Mentor fant ingen avtale å behandle.");
         }
         avtale.leggTilBedriftNavn(bedriftNavn);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
