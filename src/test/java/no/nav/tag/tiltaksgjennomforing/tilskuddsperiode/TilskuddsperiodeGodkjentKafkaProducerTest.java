@@ -39,7 +39,7 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(properties = { "tiltaksgjennomforing.kafka.enabled=true" })
 @DirtiesContext
 @ActiveProfiles({ Miljø.LOCAL })
-@EmbeddedKafka(partitions = 1, topics = { Topics.TILSKUDDSPERIODE_GODKJENT, Topics.REFUSJON_GODKJENT })
+@EmbeddedKafka(partitions = 1, topics = { Topics.TILSKUDDSPERIODE_GODKJENT })
 class TilskuddsperiodeGodkjentKafkaProducerTest {
 
     @Autowired
@@ -118,32 +118,5 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
         assertThat(jsonRefusjonRecord.get("løpenummer")).isNotNull();
         assertThat(jsonRefusjonRecord.get("beslutterNavIdent")).isNotNull();
         assertThat(jsonRefusjonRecord.get("godkjentTidspunkt")).isNotNull();
-    }
-
-    @Test
-    @Disabled
-    public void skal_kunne_behandle_refusjon_godkjent_på_kafka_topic() throws JSONException, JsonProcessingException {
-        Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "false", embeddedKafka);
-        consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        var consumerFactory = new DefaultKafkaConsumerFactory<String, String>(consumerProps);
-        var consumer = consumerFactory.createConsumer();
-        embeddedKafka.consumeFromAllEmbeddedTopics(consumer);
-
-        // GITT
-        final UUID avtaleId = UUID.randomUUID();
-        final UUID tilskuddPeriodeId = UUID.randomUUID();
-
-
-        final RefusjonGodkjentMelding refusjonGodkjentMelding = new RefusjonGodkjentMelding(avtaleId,tilskuddPeriodeId);
-
-        //NÅR
-        kafkaTemplate.send(Topics.REFUSJON_GODKJENT,objectMapper.writeValueAsString(refusjonGodkjentMelding));
-
-        //SÅ
-        ConsumerRecord<String, String> record = KafkaTestUtils.getSingleRecord(consumer, Topics.REFUSJON_GODKJENT);
-        JSONObject jsonRefusjonRecord = new JSONObject(record.value());
-        assertThat(jsonRefusjonRecord.get("avtaleId")).isNotNull();
-        assertThat(jsonRefusjonRecord.get("tilskuddsperiodeId")).isNotNull();
     }
 }
