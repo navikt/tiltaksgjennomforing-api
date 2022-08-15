@@ -58,4 +58,11 @@ class TilskuddPeriodeTest {
         NavIdent beslutter = TestData.enNavIdent();
         assertFeilkode(Feilkode.TILSKUDDSPERIODE_AVSLAGSFORKLARING_PAAKREVD, () -> tilskuddPeriode.avslå(beslutter, EnumSet.of(Avslagsårsak.FEIL_I_REGELFORSTÅELSE), "   "));
     }
+
+    @Test
+    void sjekker_utbetalt_status() {
+        TilskuddPeriode tilskuddPeriode = TestData.enTilskuddPeriode();
+        tilskuddPeriode.setStatus(TilskuddPeriodeStatus.UTBETALT);
+        assertThat(tilskuddPeriode.erUtbetalt()).isTrue();
+    }
 }
