@@ -19,7 +19,7 @@ import java.util.Map;
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
 @Component
 @Slf4j
-public class TilskuddsperiodeUtbetaltKafkaConsumerConfig {
+public class RefusjonEndretBetalingsstatusKafkaConsumerConfig {
 
     @Value("${no.nav.gcp.kafka.aiven.bootstrap-servers}")
     private String gcpBootstrapServers;
