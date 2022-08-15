@@ -39,7 +39,7 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(properties = { "tiltaksgjennomforing.kafka.enabled=true" })
 @DirtiesContext
 @ActiveProfiles({ Miljø.LOCAL })
-@EmbeddedKafka(partitions = 1, topics = { Topics.TILSKUDDSPERIODE_GODKJENT, Topics.REFUSJON_GODKJENT })
+@EmbeddedKafka(partitions = 1, topics = { Topics.TILSKUDDSPERIODE_GODKJENT })
 class TilskuddsperiodeGodkjentKafkaProducerTest {
 
     @Autowired
