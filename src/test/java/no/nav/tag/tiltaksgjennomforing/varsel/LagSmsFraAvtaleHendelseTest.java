@@ -9,16 +9,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
-import no.nav.tag.tiltaksgjennomforing.avtale.Deltaker;
-import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
-import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
-import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
-import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
-import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.varsel.kafka.SmsProducer;
 import no.nav.tag.tiltaksgjennomforing.varsel.kafka.Topics;
 import org.junit.jupiter.api.Test;
@@ -85,6 +76,26 @@ class LagSmsFraAvtaleHendelseTest {
 
         assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
         assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
+    }
+
+    @Test
+    void avtaleInngåttMentor() {
+        Avtale avtale = TestData.enMentorAvtaleUsignert();
+        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
+        Mentor mentor = TestData.enMentor(avtale);
+        mentor.godkjennAvtale(Instant.now(), avtale);
+        arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
+        Veileder veileder = TestData.enVeileder(avtale);
+
+        GodkjentPaVegneGrunn godkjentPaVegneGrunn = new GodkjentPaVegneGrunn();
+        godkjentPaVegneGrunn.setIkkeBankId(true);
+        veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
+
+        avtaleRepository.save(avtale);
+
+        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
+        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
+        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getMentorTlf(), SELVBETJENINGSONE_VARSELTEKST);
     }
 
     @Test

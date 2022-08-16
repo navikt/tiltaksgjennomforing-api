@@ -41,8 +41,15 @@ public class LagSmsFraAvtaleHendelse {
     public void avtaleInngått(AvtaleInngått event) {
         var smsTilDeltaker = smsTilDeltaker(event.getAvtale(), HendelseType.AVTALE_INNGÅTT);
         var smsTilArbeidsgiver = smsTilArbeidsgiver(event.getAvtale(), HendelseType.AVTALE_INNGÅTT);
+
+        if(event.getAvtale().getTiltakstype() == Tiltakstype.MENTOR) {
+            var smsTilMentor = smsTilMentor(event.getAvtale(), HendelseType.AVTALE_INNGÅTT);
+            lagreOgSendKafkaMelding(smsTilMentor);
+        }
+
         lagreOgSendKafkaMelding(smsTilDeltaker);
         lagreOgSendKafkaMelding(smsTilArbeidsgiver);
+
     }
     @EventListener
     public void godkjenningerOpphevetAvArbeidsgiver(GodkjenningerOpphevetAvArbeidsgiver event) {
@@ -120,6 +127,10 @@ public class LagSmsFraAvtaleHendelse {
 
     private static Sms smsTilDeltaker(Avtale avtale, HendelseType hendelse) {
         return Sms.nyttVarsel(avtale.getGjeldendeInnhold().getDeltakerTlf(), avtale.getDeltakerFnr(), "Du har mottatt et nytt varsel på https://arbeidsgiver.nav.no/tiltaksgjennomforing", hendelse, avtale.getId());
+    }
+
+    private static Sms smsTilMentor(Avtale avtale, HendelseType hendelse) {
+        return Sms.nyttVarsel(avtale.getGjeldendeInnhold().getMentorTlf(), avtale.getMentorFnr(), "Du har mottatt et nytt varsel på https://arbeidsgiver.nav.no/tiltaksgjennomforing", hendelse, avtale.getId());
     }
 
     private static Sms smsTilArbeidsgiver(Avtale avtale, HendelseType hendelse) {

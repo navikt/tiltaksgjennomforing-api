@@ -514,6 +514,9 @@ public class TestData {
         return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of(), null, null,  null);
     }
 
+    public static Mentor enMentor(Avtale avtale){
+        return new Mentor(avtale.getMentorFnr());
+    }
     public static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
         return new Arbeidsgiver(
                 TestData.etFodselsnummer(),
