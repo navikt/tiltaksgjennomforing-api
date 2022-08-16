@@ -262,6 +262,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             case DELTAKER -> gjeldendeInnhold.getDeltakerTlf();
             case ARBEIDSGIVER -> gjeldendeInnhold.getArbeidsgiverTlf();
             case VEILEDER -> gjeldendeInnhold.getVeilederTlf();
+            case MENTOR -> gjeldendeInnhold.getMentorTlf();
             default -> throw new IllegalArgumentException();
         };
     }
