@@ -19,7 +19,7 @@ import java.util.Map;
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
 @Component
 @Slf4j
-public class TilskuddsperiodeUtbetaltKafkaConsumerConfig {
+public class RefusjonEndretBetalingsstatusKafkaConsumerConfig {
 
     @Value("${no.nav.gcp.kafka.aiven.bootstrap-servers}")
     private String gcpBootstrapServers;
@@ -34,7 +34,7 @@ public class TilskuddsperiodeUtbetaltKafkaConsumerConfig {
     @Value("${no.nav.gcp.kafka.aiven.security-protocol}")
     private String securityProtocol;
 
-    public ConsumerFactory<String, RefusjonGodkjentMelding> refusjonConsumerFactory() {
+    public ConsumerFactory<String, RefusjonEndretBetalingsstatusMelding> refusjonConsumerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, gcpBootstrapServers);
         props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, securityProtocol);
@@ -49,12 +49,12 @@ public class TilskuddsperiodeUtbetaltKafkaConsumerConfig {
         props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
         return new DefaultKafkaConsumerFactory<>(props,
                 new StringDeserializer(),
-                new JsonDeserializer<>(RefusjonGodkjentMelding.class, false));
+                new JsonDeserializer<>(RefusjonEndretBetalingsstatusMelding.class, false));
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, RefusjonGodkjentMelding> refusjonContainerFactory() {
-        var factory = new ConcurrentKafkaListenerContainerFactory<String, RefusjonGodkjentMelding>();
+    public ConcurrentKafkaListenerContainerFactory<String, RefusjonEndretBetalingsstatusMelding> refusjonContainerFactory() {
+        var factory = new ConcurrentKafkaListenerContainerFactory<String, RefusjonEndretBetalingsstatusMelding>();
         factory.setConsumerFactory(refusjonConsumerFactory());
         return factory;
     }
