@@ -177,6 +177,7 @@ public class TestData {
         Avtale avtale = enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentTaushetserklæringAvMentor(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent());

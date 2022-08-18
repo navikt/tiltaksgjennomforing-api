@@ -566,8 +566,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     public Status statusSomEnum() {
         if (getAnnullertTidspunkt() != null) {
             return Status.ANNULLERT;
-        }else if(Tiltakstype.MENTOR == tiltakstype && !erGodkjentTaushetserklæringAvMentor()){
-            return Status.MANGLER_SIGNATUR;
         } else if (isAvbrutt()) {
             return Status.AVBRUTT;
         } else if (erAvtaleInngått() && (gjeldendeInnhold.getSluttDato().isBefore(Now.localDate()))) {
