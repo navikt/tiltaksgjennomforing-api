@@ -68,6 +68,11 @@ public class DvhAvtalehendelseLytter {
         lagHendelse(event.getAvtale(), DvhHendelseType.ENDRET, event.getUtførtAv());
     }
 
+    @EventListener
+    public void omMentorEndret(OmMentorEndret event) {
+        lagHendelse(event.getAvtale(), DvhHendelseType.ENDRET, event.getUtførtAv());
+    }
+
     private void lagHendelse(Avtale avtale, DvhHendelseType endret, NavIdent utførtAv) {
         if (!dvhMeldingFilter.skalTilDatavarehus(avtale)) {
             return;

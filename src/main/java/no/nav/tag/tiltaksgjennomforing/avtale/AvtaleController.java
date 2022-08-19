@@ -330,6 +330,16 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
+    @PostMapping("/{avtaleId}/endre-om-mentor")
+    @Transactional
+    public void endreOmMentor(@PathVariable("avtaleId") UUID avtaleId,
+                                                 @RequestBody EndreOmMentor endreOmMentor) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        veileder.endreOmMentor(endreOmMentor, avtale);
+        avtaleRepository.save(avtale);
+    }
+
     @PostMapping("/{avtaleId}/endre-kontaktinfo")
     @Transactional
     public void endreKontaktinfo(@PathVariable("avtaleId") UUID avtaleId,

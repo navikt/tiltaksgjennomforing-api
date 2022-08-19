@@ -126,6 +126,12 @@ public class NotifikasjonHendelseLytter {
     }
 
     @EventListener
+    public void omMentorEndret(OmMentorEndret event) {
+        opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.OM_MENTOR_ENDRET,
+                NotifikasjonTekst.TILTAK_OM_MENTOR_ENDRET);
+    }
+
+    @EventListener
     public void endreStillingbeskrivelse(StillingsbeskrivelseEndret event) {
         opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.STILLINGSBESKRIVELSE_ENDRET,
                 NotifikasjonTekst.TILTAK_STILLINGSBESKRIVELSE_ENDRET);
