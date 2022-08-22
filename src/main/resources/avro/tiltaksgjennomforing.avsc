@@ -46,7 +46,9 @@
           "ARBEIDSTRENING",
           "MIDLERTIDIG_LONNSTILSKUDD",
           "VARIG_LONNSTILSKUDD",
-          "SOMMERJOBB"
+          "SOMMERJOBB",
+          "MENTOR",
+          "INKLUDERINGSTILSKUDD"
         ]
       }
     },
@@ -60,7 +62,9 @@
           "symbols": [
             "ARBTREN",
             "MIDLONTIL",
-            "VARLONTIL"
+            "VARLONTIL",
+            "MENTOR"
+            "INKLUTILS"
           ]
         }
       ]
@@ -109,7 +113,10 @@
     },
     {
       "name": "antallDagerPerUke",
-      "type": "int"
+      "type": [
+        "null",
+        "int"
+      ]
     },
     {
       "name": "maal",

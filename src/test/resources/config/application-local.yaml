@@ -109,6 +109,7 @@ tiltaksgjennomforing:
     feature-enabled: true
     gruppe-tilgang: 1a1d2745-952f-4a0f-839f-9530145b1d4a
     fixed-delay: 20000
+    tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, MENTOR
   tilskuddsperioder:
     tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD
     pilotvirksomheter: '999999999'
