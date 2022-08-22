@@ -254,6 +254,15 @@ public class AvtaleInnhold {
     public void endreSluttDato(LocalDate nySluttDato) {
         innholdStrategi().endreSluttDato(nySluttDato);
     }
+
+    public void endreOmMentor(EndreOmMentor endreOmMentor) {
+        setMentorFornavn(endreOmMentor.getMentorFornavn());
+        setMentorEtternavn(endreOmMentor.getMentorEtternavn());
+        setMentorTlf(endreOmMentor.getMentorTlf());
+        setMentorAntallTimer(endreOmMentor.getMentorAntallTimer());
+        setMentorTimelonn(endreOmMentor.getMentorTimelonn());
+        setMentorOppgaver(endreOmMentor.getMentorOppgaver());
+    }
 }
 
 

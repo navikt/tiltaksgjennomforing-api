@@ -186,6 +186,12 @@ public class LagVarselFraAvtaleHendelser {
     }
 
     @EventListener
+    public void omMentorEndret(OmMentorEndret event) {
+        VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, HendelseType.OM_MENTOR_ENDRET);
+        varselRepository.saveAll(factory.alleParter());
+    }
+
+    @EventListener
     public void endreTilskuddsberegning(TilskuddsberegningEndret event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.VEILEDER, HendelseType.TILSKUDDSBEREGNING_ENDRET);
         varselRepository.saveAll(factory.alleParter());
