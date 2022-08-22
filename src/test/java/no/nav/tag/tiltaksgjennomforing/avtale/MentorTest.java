@@ -1,13 +1,16 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
 import java.util.List;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import org.junit.jupiter.api.Test;
 
@@ -72,5 +75,44 @@ public class MentorTest {
         assertThat(avtaler.get(0).getGjeldendeInnhold().getArbeidsgiverKontonummer()).isNull();
     }
 
+    @Test
+    public void endreOmMentor__må_være_en_mentor_avtale() {
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
+        Veileder veileder = TestData.enVeileder(avtale);
+        arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
+        veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
+        EndreOmMentor endreOmMentor = new EndreOmMentor("Per", "Persen", "12345678", "litt mentorering", 5, 500);
+        assertFeilkode(Feilkode.KAN_IKKE_ENDRE_FEIL_TILTAKSTYPE, () -> veileder.endreOmMentor(endreOmMentor, avtale));
+    }
+
+    @Test
+    public void endreOmMentor__setter_riktige_felter() {
+        Avtale avtale = TestData.enMentorAvtaleSignert();
+        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
+        Veileder veileder = TestData.enVeileder(avtale);
+        arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
+        veileder.godkjennAvtale(Instant.now(), avtale);
+        assertThat(avtale.getGjeldendeInnhold().getInnholdType()).isEqualTo(AvtaleInnholdType.INNGÅ);
+        EndreOmMentor endreOmMentor = new EndreOmMentor("Per", "Persen", "12345678", "litt mentorering", 5, 500);
+        veileder.endreOmMentor(endreOmMentor, avtale);
+        assertThat(avtale.getGjeldendeInnhold().getMentorFornavn()).isEqualTo("Per");
+        assertThat(avtale.getGjeldendeInnhold().getMentorEtternavn()).isEqualTo("Persen");
+        assertThat(avtale.getGjeldendeInnhold().getMentorTlf()).isEqualTo("12345678");
+        assertThat(avtale.getGjeldendeInnhold().getMentorOppgaver()).isEqualTo("litt mentorering");
+        assertThat(avtale.getGjeldendeInnhold().getMentorAntallTimer()).isEqualTo(5);
+        assertThat(avtale.getGjeldendeInnhold().getMentorTimelonn()).isEqualTo(500);
+        assertThat(avtale.getGjeldendeInnhold().getInnholdType()).isEqualTo(AvtaleInnholdType.ENDRE_OM_MENTOR);
+    }
+
+    @Test
+    public void endreOmMentor__avtale_må_være_inngått() {
+        Avtale avtale = TestData.enMentorAvtaleSignert();
+        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
+        Veileder veileder = TestData.enVeileder(avtale);
+        arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
+        assertThat(avtale.erAvtaleInngått()).isFalse();
+        assertFeilkode(Feilkode.KAN_IKKE_ENDRE_OM_MENTOR_IKKE_INNGAATT_AVTALE, () -> veileder.endreOmMentor(new EndreOmMentor("Per", "Persen", "12345678", "litt mentorering", 5, 500), avtale));
+    }
 
 }
