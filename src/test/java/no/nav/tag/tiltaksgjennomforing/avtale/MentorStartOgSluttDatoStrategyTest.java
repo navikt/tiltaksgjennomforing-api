@@ -12,7 +12,7 @@ import java.util.List;
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.MENTOR;
 
-public class MentorStrategyTest {
+public class MentorStartOgSluttDatoStrategyTest {
 
     private Avtale avtale;
 
