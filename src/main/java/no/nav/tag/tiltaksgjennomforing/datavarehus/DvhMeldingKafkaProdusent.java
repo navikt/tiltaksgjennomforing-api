@@ -26,6 +26,7 @@ public class DvhMeldingKafkaProdusent {
     public void dvhMeldingOpprettet(DvhMeldingOpprettet event) {
         String meldingId = event.getAvroTiltakHendelse().getMeldingId();
         String topic = Topics.DVH_MELDING;
+        log.info("Skal sende melding til dvh");
         dvhMeldingKafkaTemplate.send(topic, meldingId, event.getAvroTiltakHendelse()).addCallback(new ListenableFutureCallback<>() {
             @Override
             public void onSuccess(SendResult<String, AvroTiltakHendelse> result) {
