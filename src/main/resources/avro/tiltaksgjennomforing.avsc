@@ -109,7 +109,10 @@
     },
     {
       "name": "stillingprosent",
-      "type": "int"
+      "type": [
+        "null",
+        "int"
+      ]
     },
     {
       "name": "antallDagerPerUke",
