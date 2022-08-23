@@ -144,15 +144,24 @@
     },
     {
       "name": "stillingstittel",
-      "type": "string"
+      "type": [
+        "null",
+        "string"
+      ]
     },
     {
       "name": "stillingStyrk08",
-      "type": "int"
+      "type": [
+        "null",
+        "int"
+      ]
     },
     {
       "name": "stillingKonseptId",
-      "type": "int"
+      "type": [
+        "null",
+        "int"
+      ]
     },
     {
       "name": "lonnstilskuddProsent",
