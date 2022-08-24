@@ -109,7 +109,8 @@ public class TestData {
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().plusWeeks(2).minusDays(1));
         avtale.getGjeldendeInnhold().setOppfolging("Oppfølging");
         avtale.getGjeldendeInnhold().setTilrettelegging("Tilrettelegging");
-         return avtale;
+        avtale.getGjeldendeInnhold().setHarFamilietilknytning(false);
+        return avtale;
     }
 
     public static Avtale enMentorAvtaleSignert() {
