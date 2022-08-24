@@ -9,6 +9,8 @@ import static org.mockito.Mockito.when;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
+
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
@@ -37,6 +39,24 @@ public class MentorTest {
         assertThat(avtaler.size()).isEqualTo(2);
         assertThat(avtaler.get(1)).isEqualTo(avtaleSignert);
         assertThat(avtaler.get(0)).isEqualTo(avtaleUsignert);
+        assertThat(avtaler.get(1).getDeltakerFnr()).isNull();
+        assertThat(avtaler.get(0).getDeltakerFnr()).isNull();
+    }
+
+    @Test
+    public void hentAvtalerUtenDeltakerFNR() {
+
+        // GITT
+        Avtale avtaleUsignert = TestData.enMentorAvtaleSignert();
+        avtaleUsignert.setMentorFnr(new Fnr("00000000000"));
+        Mentor mentor = new Mentor(new Fnr("00000000000"));
+        // NÅR
+        when(avtaleRepository.findById(any())).thenReturn(Optional.of(avtaleUsignert));
+
+        Avtale avtale = mentor.hentAvtale(avtaleRepository, avtaleUsignert.getId());
+
+        assertThat(avtale).isEqualTo(avtaleUsignert);
+        assertThat(avtale.getDeltakerFnr()).isNull();
     }
 
     @Test
