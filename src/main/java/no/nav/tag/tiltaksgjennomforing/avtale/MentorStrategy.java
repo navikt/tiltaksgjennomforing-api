@@ -18,6 +18,8 @@ public class MentorStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setMentorAntallTimer(nyAvtale.getMentorAntallTimer());
         avtaleInnhold.setMentorTlf(nyAvtale.getMentorTlf());
         avtaleInnhold.setMentorTimelonn(nyAvtale.getMentorTimelonn());
+        avtaleInnhold.setHarFamilietilknytning(nyAvtale.getHarFamilietilknytning());
+        avtaleInnhold.setFamilietilknytningForklaring(nyAvtale.getFamilietilknytningForklaring());
         super.endre(nyAvtale);
     }
 
@@ -31,6 +33,10 @@ public class MentorStrategy extends BaseAvtaleInnholdStrategy {
         alleFelter.put(AvtaleInnhold.Fields.mentorAntallTimer, avtaleInnhold.getMentorAntallTimer());
         alleFelter.put(AvtaleInnhold.Fields.mentorTimelonn, avtaleInnhold.getMentorTimelonn());
         alleFelter.put(Fields.mentorTlf, avtaleInnhold.getMentorTlf());
+        alleFelter.put(AvtaleInnhold.Fields.harFamilietilknytning, avtaleInnhold.getHarFamilietilknytning());
+        if (avtaleInnhold.getHarFamilietilknytning() != null && avtaleInnhold.getHarFamilietilknytning()) {
+            alleFelter.put(AvtaleInnhold.Fields.familietilknytningForklaring, avtaleInnhold.getFamilietilknytningForklaring());
+        }
 
         return alleFelter;
     }

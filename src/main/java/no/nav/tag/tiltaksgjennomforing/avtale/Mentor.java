@@ -23,13 +23,14 @@ public class Mentor extends Avtalepart<Fnr> {
     public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
         Avtale avtale = super.hentAvtale(avtaleRepository,avtaleId);
         if(!avtale.erGodkjentTaushetserklæringAvMentor()) throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_AVTALE);
-        return avtale;
+        return skjulDeltakerFødselsnummer(avtale);
     }
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
         return avtaleRepository.findAllByMentorFnr(getIdentifikator()).stream()
-                .map(this::gjemInnholdOmMentorIkkeHarSignertErklæring).toList();
+                .map(this::gjemInnholdOmMentorIkkeHarSignertErklæring)
+                .map(this::skjulDeltakerFødselsnummer).toList();
     }
 
     private Avtale gjemInnholdOmMentorIkkeHarSignertErklæring(Avtale avtale){
@@ -67,6 +68,11 @@ public class Mentor extends Avtalepart<Fnr> {
     @Override
     void opphevGodkjenningerSomAvtalepart(Avtale avtale) {
         throw new TilgangskontrollException("Deltaker kan ikke oppheve godkjenninger");
+    }
+
+    private Avtale skjulDeltakerFødselsnummer(Avtale avtale){
+        avtale.setDeltakerFnr(null);
+        return avtale;
     }
 
     @Override

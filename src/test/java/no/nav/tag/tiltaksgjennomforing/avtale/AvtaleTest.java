@@ -357,7 +357,8 @@ public class AvtaleTest {
                 AvtaleInnhold.Fields.mentorAntallTimer,
                 AvtaleInnhold.Fields.tilrettelegging,
                 AvtaleInnhold.Fields.oppfolging,
-                AvtaleInnhold.Fields.mentorTlf
+                AvtaleInnhold.Fields.mentorTlf,
+                AvtaleInnhold.Fields.harFamilietilknytning
         );
 
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), TestData.enNavIdent());
