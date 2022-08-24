@@ -46,7 +46,9 @@
           "ARBEIDSTRENING",
           "MIDLERTIDIG_LONNSTILSKUDD",
           "VARIG_LONNSTILSKUDD",
-          "SOMMERJOBB"
+          "SOMMERJOBB",
+          "MENTOR",
+          "INKLUDERINGSTILSKUDD"
         ]
       }
     },
@@ -60,7 +62,9 @@
           "symbols": [
             "ARBTREN",
             "MIDLONTIL",
-            "VARLONTIL"
+            "VARLONTIL",
+            "MENTOR",
+            "INKLUTILS"
           ]
         }
       ]
@@ -105,11 +109,17 @@
     },
     {
       "name": "stillingprosent",
-      "type": "int"
+      "type": [
+        "null",
+        "int"
+      ]
     },
     {
       "name": "antallDagerPerUke",
-      "type": "int"
+      "type": [
+        "null",
+        "int"
+      ]
     },
     {
       "name": "maal",
@@ -134,15 +144,24 @@
     },
     {
       "name": "stillingstittel",
-      "type": "string"
+      "type": [
+        "null",
+        "string"
+      ]
     },
     {
       "name": "stillingStyrk08",
-      "type": "int"
+      "type": [
+        "null",
+        "int"
+      ]
     },
     {
       "name": "stillingKonseptId",
-      "type": "int"
+      "type": [
+        "null",
+        "int"
+      ]
     },
     {
       "name": "lonnstilskuddProsent",

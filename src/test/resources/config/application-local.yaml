@@ -8,9 +8,9 @@ spring:
   jpa:
     properties:
       hibernate:
-        show_sql: true
-        use_sql_comments: true
-        format_sql: true
+        show_sql: false
+        use_sql_comments: false
+        format_sql: false
   h2:
     console:
       enabled: true
@@ -109,6 +109,7 @@ tiltaksgjennomforing:
     feature-enabled: true
     gruppe-tilgang: 1a1d2745-952f-4a0f-839f-9530145b1d4a
     fixed-delay: 20000
+    tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, MENTOR, INKLUDERINGSTILSKUDD
   tilskuddsperioder:
     tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD
     pilotvirksomheter: '999999999'
