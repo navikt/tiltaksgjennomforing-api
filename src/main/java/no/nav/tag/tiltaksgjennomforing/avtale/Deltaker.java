@@ -25,8 +25,14 @@ public class Deltaker extends Avtalepart<Fnr> {
 
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
-        return new ArrayList<Avtale>(avtaleRepository.findAllByDeltakerFnr(getIdentifikator()));
+        return avtaleRepository.findAllByDeltakerFnr(getIdentifikator()).stream().map(this::skjulMentorFødselsnummer).toList();
     }
+
+    private Avtale skjulMentorFødselsnummer(Avtale avtale){
+        if(avtale.getTiltakstype() == Tiltakstype.MENTOR) avtale.setMentorFnr(null);
+        return avtale;
+    }
+
 
     @Override
     public void godkjennForAvtalepart(Avtale avtale) {
