@@ -488,6 +488,33 @@ public class TestData {
         return endreAvtale;
     }
 
+    public static EndreAvtale endringPåAlleMentorFelter() {
+        EndreAvtale endreAvtale = new EndreAvtale();
+        endreAvtale.setDeltakerFornavn("Dagny");
+        endreAvtale.setDeltakerEtternavn("Deltaker");
+        endreAvtale.setDeltakerTlf("92334455");
+        endreAvtale.setBedriftNavn("Pers butikk");
+        endreAvtale.setArbeidsgiverFornavn("Per");
+        endreAvtale.setArbeidsgiverEtternavn("Kremmer");
+        endreAvtale.setArbeidsgiverTlf("43333333");
+        endreAvtale.setVeilederFornavn("Vera");
+        endreAvtale.setVeilederEtternavn("Veileder");
+        endreAvtale.setVeilederTlf("44444444");
+        endreAvtale.setOppfolging("Telefon hver uke");
+        endreAvtale.setTilrettelegging("Ingen");
+        endreAvtale.setStartDato(Now.localDate());
+        endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(6).minusDays(1));
+        endreAvtale.setMentorFornavn("Mentor");
+        endreAvtale.setMentorEtternavn("Mentorsen");
+        endreAvtale.setMentorOppgaver("Mentoroppgaver");
+        endreAvtale.setMentorAntallTimer(10);
+        endreAvtale.setMentorTlf("12348594837");
+        endreAvtale.setMentorTimelonn(1000);
+        endreAvtale.setHarFamilietilknytning(true);
+        endreAvtale.setFamilietilknytningForklaring("En middels god forklaring");
+        return endreAvtale;
+    }
+
     public static Deltaker enDeltaker(Avtale avtale) {
         return new Deltaker(avtale.getDeltakerFnr());
     }
@@ -684,6 +711,7 @@ public class TestData {
         avtale.getGjeldendeInnhold().setJournalpostId("1");
         return avtale;
     }
+
 
 
 }

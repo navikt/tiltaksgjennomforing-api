@@ -258,7 +258,7 @@ public class AvtaleTest {
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.ARBEIDSTRENING), TestData.enNavIdent());
 
         testAtAlleFelterMangler(avtale, arbeidstreningsfelter);
-        testAtHvertEnkeltFeltMangler(avtale, arbeidstreningsfelter);
+        testAtHvertEnkeltFeltMangler(avtale, arbeidstreningsfelter, avtale.getTiltakstype());
     }
 
     @Test
@@ -294,7 +294,7 @@ public class AvtaleTest {
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
 
         testAtAlleFelterMangler(avtale, lønnstilskuddfelter);
-        testAtHvertEnkeltFeltMangler(avtale, lønnstilskuddfelter);
+        testAtHvertEnkeltFeltMangler(avtale, lønnstilskuddfelter, avtale.getTiltakstype());
     }
 
     @Test
@@ -332,7 +332,7 @@ public class AvtaleTest {
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.VARIG_LONNSTILSKUDD), TestData.enNavIdent());
         avtale.getGjeldendeInnhold().setRefusjonKontaktperson(new RefusjonKontaktperson(null,"Duck","12345678",true));
         testAtAlleFelterMangler(avtale, lønnstilskuddfelter);
-        testAtHvertEnkeltFeltMangler(avtale, lønnstilskuddfelter);
+        testAtHvertEnkeltFeltMangler(avtale, lønnstilskuddfelter, avtale.getTiltakstype());
     }
 
     @Test
@@ -364,12 +364,12 @@ public class AvtaleTest {
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), TestData.enNavIdent());
 
         testAtAlleFelterMangler(avtale, mentorfelter);
-        testAtHvertEnkeltFeltMangler(avtale, mentorfelter);
+        testAtHvertEnkeltFeltMangler(avtale, mentorfelter, avtale.getTiltakstype());
     }
 
-    private static void testAtHvertEnkeltFeltMangler(Avtale avtale, Set<String> felterSomKrevesForTiltakstype) {
+    private static void testAtHvertEnkeltFeltMangler(Avtale avtale, Set<String> felterSomKrevesForTiltakstype, Tiltakstype tiltakstype) {
         for (String felt : felterSomKrevesForTiltakstype) {
-            EndreAvtale endreAvtale = endringPåAltUtenom(felt);
+            EndreAvtale endreAvtale = endringPåAltUtenom(felt, tiltakstype);
             avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
             assertThat(avtale.felterSomIkkeErFyltUt()).containsOnly(felt);
             assertFeilkode(Feilkode.ALT_MA_VAERE_FYLT_UT, () -> avtale.godkjennForArbeidsgiver(TestData.enIdentifikator()));
@@ -380,8 +380,8 @@ public class AvtaleTest {
         assertThat(avtale.felterSomIkkeErFyltUt()).containsExactlyInAnyOrderElementsOf(arbeidstreningsfelter);
     }
 
-    private static EndreAvtale endringPåAltUtenom(String felt) {
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+    private static EndreAvtale endringPåAltUtenom(String felt, Tiltakstype tiltakstype) {
+        EndreAvtale endreAvtale = Tiltakstype.MENTOR == tiltakstype ? TestData.endringPåAlleMentorFelter(): TestData.endringPåAlleFelter();
         Object field = ReflectionTestUtils.getField(endreAvtale, felt);
         if (field instanceof Collection) {
             ((Collection) field).clear();
