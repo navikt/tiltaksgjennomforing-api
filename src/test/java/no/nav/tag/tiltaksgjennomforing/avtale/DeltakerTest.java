@@ -4,6 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -21,7 +22,7 @@ public class DeltakerTest {
     }
 
     @Test
-    public void mentorAvtale__skjul_mentor_fnr_for_deltaker() {
+    public void mentor_Avtaler__skjul_mentor_fnr_for_deltaker() {
         Avtale avtale = TestData.enMentorAvtaleSignert();
         Deltaker deltaker = TestData.enDeltaker(avtale);
         AvtalePredicate avtalePredicate = new AvtalePredicate();
@@ -29,6 +30,18 @@ public class DeltakerTest {
 
         List<Avtale> avtaler = deltaker.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
         assertThat(avtaler.get(0).getMentorFnr()).isNull();
+
+    }
+
+    @Test
+    public void mentor_en_Avtale__skjul_mentor_fnr_for_deltaker() {
+        Avtale avtale = TestData.enMentorAvtaleSignert();
+        Deltaker deltaker = TestData.enDeltaker(avtale);
+        AvtalePredicate avtalePredicate = new AvtalePredicate();
+        when(avtaleRepository.findById(any())).thenReturn(Optional.of(avtale));
+
+        Avtale avtaler = deltaker.hentAvtale(avtaleRepository,avtale.getId());
+        assertThat(avtaler.getMentorFnr()).isNull();
 
     }
 }

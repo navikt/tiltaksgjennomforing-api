@@ -2,8 +2,12 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 
 public class Deltaker extends Avtalepart<Fnr> {
@@ -18,6 +22,11 @@ public class Deltaker extends Avtalepart<Fnr> {
     static String ekstraTekstAvtaleVenterPaaDinGodkjenning = "Hvis du er uenig i innholdet, eller har spørsmål til avtalen, må du kontakte veilederen din via Aktivitetsplanen før du godkjenner.";
     static String tekstTiltaketErAvsluttet = "Hvis du har spørsmål må du kontakte veilederen din.";
 
+    @Override
+    public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
+        Avtale avtale = super.hentAvtale(avtaleRepository,avtaleId);
+        return skjulMentorFødselsnummer(avtale);
+    }
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
         return avtale.getDeltakerFnr().equals(getIdentifikator());
