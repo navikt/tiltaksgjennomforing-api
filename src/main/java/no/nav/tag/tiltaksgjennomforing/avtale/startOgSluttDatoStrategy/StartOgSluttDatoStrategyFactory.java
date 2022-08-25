@@ -15,7 +15,7 @@ public class StartOgSluttDatoStrategyFactory {
             case VARIG_LONNSTILSKUDD:
                 return new VarigLonnstilskuddStartOgSluttDatoStrategy();
             case MENTOR:
-                return new MentorStartOgSluttDatoStrategy();
+                return new MentorStartOgSluttDatoStrategy(kvalifiseringsgruppe);
             case INKLUDERINGSTILSKUDD:
                 return new InkluderingstilskuddStartOgSluttDatoStrategy();
             case SOMMERJOBB:
