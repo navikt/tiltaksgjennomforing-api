@@ -2,15 +2,12 @@ package no.nav.tag.tiltaksgjennomforing.journalfoering;
 
 import java.util.ArrayList;
 import java.util.List;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
-import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
-import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
-import no.nav.tag.tiltaksgjennomforing.avtale.Maal;
+
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 
 public class AvtaleTilJournalfoeringMapper {
 
-    public static AvtaleTilJournalfoering tilJournalfoering(AvtaleInnhold avtaleInnhold) {
+    public static AvtaleTilJournalfoering tilJournalfoering(AvtaleInnhold avtaleInnhold, Avtalerolle avtalerolle) {
         Avtale avtale = avtaleInnhold.getAvtale();
 
         AvtaleTilJournalfoering avtaleTilJournalfoering = new AvtaleTilJournalfoering();
@@ -67,6 +64,10 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setStillingstype(avtaleInnhold.getStillingstype());
         avtaleTilJournalfoering.setManedslonn100pst(avtaleInnhold.getManedslonn100pst());
         avtaleTilJournalfoering.setRefusjonKontaktperson(avtaleInnhold.getRefusjonKontaktperson());
+
+        if(avtalerolle != null) {
+            avtaleTilJournalfoering.setAvtalerolle(avtalerolle) ;
+        }
         return avtaleTilJournalfoering;
     }
 

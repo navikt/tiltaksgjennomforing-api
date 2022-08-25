@@ -50,7 +50,7 @@ public class AvtaleTilJournalfoeringMapperTest {
         avtale.setOpprettetTidspunkt(Now.localDateTime());
         avtale.getGjeldendeInnhold().setStillingstype(Stillingstype.FAST);
 
-        tilJournalfoering = tilJournalfoering(avtaleInnhold);
+        tilJournalfoering = tilJournalfoering(avtaleInnhold, null);
 
         assertEquals(avtaleId.toString(), tilJournalfoering.getAvtaleId().toString());
         assertEquals(avtaleInnhold.getId().toString(), tilJournalfoering.getAvtaleVersjonId().toString());
@@ -96,7 +96,7 @@ public class AvtaleTilJournalfoeringMapperTest {
     public void paaVegneGrunnErIkkeBankId() {
         grunn.setIkkeBankId(true);
         avtale.getGjeldendeInnhold().setGodkjentPaVegneGrunn(grunn);
-        tilJournalfoering = tilJournalfoering(avtaleInnhold);
+        tilJournalfoering = tilJournalfoering(avtaleInnhold, null);
         assertTrue(tilJournalfoering.getGodkjentPaVegneGrunn().isIkkeBankId());
         assertFalse(tilJournalfoering.getGodkjentPaVegneGrunn().isDigitalKompetanse());
         assertFalse(tilJournalfoering.getGodkjentPaVegneGrunn().isReservert());
@@ -106,7 +106,7 @@ public class AvtaleTilJournalfoeringMapperTest {
     public void paaVegneGrunnErDigitalKompetanse() {
         grunn.setDigitalKompetanse(true);
         avtale.getGjeldendeInnhold().setGodkjentPaVegneGrunn(grunn);
-        tilJournalfoering = tilJournalfoering(avtaleInnhold);
+        tilJournalfoering = tilJournalfoering(avtaleInnhold, null);
         assertFalse(tilJournalfoering.getGodkjentPaVegneGrunn().isIkkeBankId());
         assertTrue(tilJournalfoering.getGodkjentPaVegneGrunn().isDigitalKompetanse());
         assertFalse(tilJournalfoering.getGodkjentPaVegneGrunn().isReservert());
@@ -116,20 +116,20 @@ public class AvtaleTilJournalfoeringMapperTest {
     public void paaVegneGrunnErReservert() {
         grunn.setReservert(true);
         avtale.getGjeldendeInnhold().setGodkjentPaVegneGrunn(grunn);
-        tilJournalfoering = tilJournalfoering(avtaleInnhold);
+        tilJournalfoering = tilJournalfoering(avtaleInnhold, null);
         assertFalse(tilJournalfoering.getGodkjentPaVegneGrunn().isIkkeBankId());
         assertFalse(tilJournalfoering.getGodkjentPaVegneGrunn().isDigitalKompetanse());
         assertTrue(tilJournalfoering.getGodkjentPaVegneGrunn().isReservert());
 
         avtale.getGjeldendeInnhold().setGodkjentPaVegneGrunn(null);
-        tilJournalfoering = tilJournalfoering(avtaleInnhold);
+        tilJournalfoering = tilJournalfoering(avtaleInnhold, null);
         assertNull(tilJournalfoering.getGodkjentPaVegneGrunn());
     }
 
     @Test
     public void ingenPaaVegneGrunn() {
         avtale.getGjeldendeInnhold().setGodkjentPaVegneGrunn(null);
-        tilJournalfoering = tilJournalfoering(avtaleInnhold);
+        tilJournalfoering = tilJournalfoering(avtaleInnhold, null);
         assertNull(tilJournalfoering.getGodkjentPaVegneGrunn());
     }
 
@@ -145,7 +145,7 @@ public class AvtaleTilJournalfoeringMapperTest {
 
         avtaleInnhold.setMaal(Arrays.asList(maal, maal2));
 
-        tilJournalfoering = tilJournalfoering(avtaleInnhold);
+        tilJournalfoering = tilJournalfoering(avtaleInnhold, null);
 
         tilJournalfoering.getMaal().forEach(maalet -> {
             if (maalet.getKategori().equals(MaalKategori.FÅ_JOBB_I_BEDRIFTEN.getVerdi())) {

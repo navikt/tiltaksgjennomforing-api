@@ -8,10 +8,7 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
-import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
-import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
-import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 
 @Data
 @NoArgsConstructor
@@ -84,5 +81,6 @@ public class AvtaleTilJournalfoering {
     private LocalDate godkjentAvVeileder;
     private List<TilskuddPeriode> tilskuddsPerioder;
     private boolean godkjentPaVegneAv;
+    private Avtalerolle avtalerolle;
 
 }
