@@ -30,6 +30,7 @@ public class DeltakerTest {
 
         List<Avtale> avtaler = deltaker.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
         assertThat(avtaler.get(0).getMentorFnr()).isNull();
+        assertThat(avtaler.get(0).getGjeldendeInnhold().getMentorTimelonn()).isNull();
 
     }
 
@@ -42,6 +43,7 @@ public class DeltakerTest {
 
         Avtale avtaler = deltaker.hentAvtale(avtaleRepository,avtale.getId());
         assertThat(avtaler.getMentorFnr()).isNull();
+        assertThat(avtaler.getGjeldendeInnhold().getMentorTimelonn()).isNull();
 
     }
 }

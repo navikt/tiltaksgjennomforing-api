@@ -38,7 +38,10 @@ public class Deltaker extends Avtalepart<Fnr> {
     }
 
     private Avtale skjulMentorFødselsnummer(Avtale avtale){
-        if(avtale.getTiltakstype() == Tiltakstype.MENTOR) avtale.setMentorFnr(null);
+        if(avtale.getTiltakstype() == Tiltakstype.MENTOR) {
+            avtale.setMentorFnr(null);
+            avtale.getGjeldendeInnhold().setMentorTimelonn(null);
+        }
         return avtale;
     }
 
