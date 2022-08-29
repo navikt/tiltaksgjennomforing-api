@@ -64,6 +64,10 @@ public class AvtaleTilJournalfoering {
     private Integer sumLonnstilskudd;
     private Integer manedslonn100pst;
 
+    // Inkluderingstilskudd
+    private List<Inkluderingstilskuddsutgift> inkluderingstilskuddsutgift = new ArrayList<>();
+    private String inkluderingstilskuddBegrunnelse;
+
     // mentor
     private String mentorFornavn;
     private String mentorEtternavn;
