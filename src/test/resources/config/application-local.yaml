@@ -100,7 +100,7 @@ tiltaksgjennomforing:
     enhet:
       url: http://localhost:8090/norg2/api/v1/enhet/
   dokgen:
-    uri: http://localhost:9000/template/tiltak-avtale/create-pdf
+    uri: http://localhost:5913/template/tiltak-avtale/create-pdf
   notifikasjoner:
     uri: http://localhost:8090/api/graphql
     lenke: http://localhost:3000/tiltaksgjennomforing/avtale/
