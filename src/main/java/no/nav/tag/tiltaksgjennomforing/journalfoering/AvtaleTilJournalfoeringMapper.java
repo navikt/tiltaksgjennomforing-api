@@ -64,6 +64,8 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setStillingstype(avtaleInnhold.getStillingstype());
         avtaleTilJournalfoering.setManedslonn100pst(avtaleInnhold.getManedslonn100pst());
         avtaleTilJournalfoering.setRefusjonKontaktperson(avtaleInnhold.getRefusjonKontaktperson());
+        avtaleTilJournalfoering.setInkluderingstilskuddsutgift(avtaleInnhold.getInkluderingstilskuddsutgift());
+        avtaleTilJournalfoering.setInkluderingstilskuddBegrunnelse(avtaleInnhold.getInkluderingstilskuddBegrunnelse());
 
         if(avtalerolle != null) {
             avtaleTilJournalfoering.setAvtalerolle(avtalerolle) ;
@@ -110,12 +112,10 @@ public class AvtaleTilJournalfoeringMapper {
         if (list == null) {
             return null;
         }
-
         List<MaalTilJournalfoering> list1 = new ArrayList<>(list.size());
         for (Maal maal : list) {
             list1.add(maalToMaalTilJournalfoering(maal));
         }
-
         return list1;
     }
 }
