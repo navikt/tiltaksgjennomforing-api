@@ -8,12 +8,8 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
@@ -54,7 +50,7 @@ public class TestData {
     public static Avtale enInkluderingstilskuddAvtale() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.INKLUDERINGSTILSKUDD), veilderNavIdent);
-        avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
+        avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleInkluderingstilskuddFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
 
         return avtale;
     }
@@ -418,6 +414,14 @@ public class TestData {
         return endreAvtale;
     }
 
+    public static EndreInkluderingstilskudd endringMedNyeInkluderingstilskudd(List<Inkluderingstilskuddsutgift> eksisterendeUtgifter) {
+        EndreInkluderingstilskudd endreInkluderingstilskudd = new EndreInkluderingstilskudd();
+        endreInkluderingstilskudd.getInkluderingstilskuddsutgift().addAll(eksisterendeUtgifter);
+        endreInkluderingstilskudd.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgiftUtenId(13337, InkluderingstilskuddsutgiftType.PROGRAMVARE));
+        //endreInkluderingstilskudd.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgiftUtenId(2112, InkluderingstilskuddsutgiftType.OPPLÆRING));
+        return endreInkluderingstilskudd;
+    }
+
     public static EndreAvtale endringPåAlleArbeidstreningFelter() {
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setDeltakerFornavn("Dagny");
@@ -589,6 +593,14 @@ public class TestData {
     }
 
     public static Inkluderingstilskuddsutgift enInkluderingstilskuddsutgift(Integer beløp, InkluderingstilskuddsutgiftType type) {
+        Inkluderingstilskuddsutgift i = new Inkluderingstilskuddsutgift();
+        i.setId(UUID.randomUUID());
+        i.setBeløp(beløp);
+        i.setType(type);
+        return i;
+    }
+
+    public static Inkluderingstilskuddsutgift enInkluderingstilskuddsutgiftUtenId(Integer beløp, InkluderingstilskuddsutgiftType type) {
         Inkluderingstilskuddsutgift i = new Inkluderingstilskuddsutgift();
         i.setBeløp(beløp);
         i.setType(type);
