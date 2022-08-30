@@ -70,7 +70,6 @@ public class AvtaleTilJournalfoeringMapper {
         if(avtalerolle != null) {
             avtaleTilJournalfoering.setAvtalerolle(avtalerolle) ;
         }
-
         if(avtaleInnhold.getGodkjentTaushetserklæringAvMentor() != null){
             avtaleTilJournalfoering.setGodkjentTaushetserklæringAvMentor(avtaleInnhold.getGodkjentTaushetserklæringAvMentor().toLocalDate());
         }
@@ -79,10 +78,7 @@ public class AvtaleTilJournalfoeringMapper {
     }
 
     private static String identifikatorAsString(Identifikator id) {
-        if(id == null){
-            return "";
-        }
-        return id.asString();
+        return id != null ? id.asString() : "";
     }
 
     private static GodkjentPaVegneGrunnTilJournalfoering godkjentPaVegneGrunn(GodkjentPaVegneGrunn grunn) {
