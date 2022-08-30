@@ -103,7 +103,7 @@ public class AvtaleController {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LASTE_NED_PDF);
         }
 
-        byte[] avtalePdf = dokgenService.avtalePdf(avtale);
+        byte[] avtalePdf = dokgenService.avtalePdf(avtale, innloggetPart);
 
         HttpHeaders header = new HttpHeaders();
         header.setContentType(MediaType.APPLICATION_PDF);

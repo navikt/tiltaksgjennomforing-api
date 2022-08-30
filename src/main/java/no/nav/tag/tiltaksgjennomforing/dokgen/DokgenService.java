@@ -9,6 +9,9 @@ import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalepart;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.journalfoering.AvtaleTilJournalfoering;
 import no.nav.tag.tiltaksgjennomforing.journalfoering.AvtaleTilJournalfoeringMapper;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
@@ -25,8 +28,8 @@ public class DokgenService {
     private final DokgenProperties dokgenProperties;
     private final MeterRegistry meterRegistry;
 
-    public byte[] avtalePdf(Avtale avtale) {
-        var avtaleTilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale.getGjeldendeInnhold());
+    public byte[] avtalePdf(Avtale avtale, Avtalerolle avtalerolle) {
+        var avtaleTilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtale.getGjeldendeInnhold(), avtalerolle);
         gangOppSatserMed100(avtaleTilJournalfoering);
         fjernGodkjentPåVegneAv(avtaleTilJournalfoering);
         try {

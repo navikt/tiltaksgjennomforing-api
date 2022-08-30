@@ -8,10 +8,7 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
-import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
-import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
-import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 
 @Data
 @NoArgsConstructor
@@ -67,6 +64,10 @@ public class AvtaleTilJournalfoering {
     private Integer sumLonnstilskudd;
     private Integer manedslonn100pst;
 
+    // Inkluderingstilskudd
+    private List<Inkluderingstilskuddsutgift> inkluderingstilskuddsutgift = new ArrayList<>();
+    private String inkluderingstilskuddBegrunnelse;
+
     // mentor
     private String mentorFornavn;
     private String mentorEtternavn;
@@ -82,7 +83,9 @@ public class AvtaleTilJournalfoering {
     private LocalDate godkjentAvDeltaker;
     private LocalDate godkjentAvArbeidsgiver;
     private LocalDate godkjentAvVeileder;
+    private LocalDate godkjentTaushetserklæringAvMentor;
     private List<TilskuddPeriode> tilskuddsPerioder;
     private boolean godkjentPaVegneAv;
+    private Avtalerolle avtalerolle;
 
 }
