@@ -79,6 +79,9 @@ public class AvtaleTilJournalfoeringMapper {
     }
 
     private static String identifikatorAsString(Identifikator id) {
+        if(id == null){
+            return "";
+        }
         return id.asString();
     }
 
