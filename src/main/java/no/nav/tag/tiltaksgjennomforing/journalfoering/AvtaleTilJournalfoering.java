@@ -79,6 +79,7 @@ public class AvtaleTilJournalfoering {
     private LocalDate godkjentAvDeltaker;
     private LocalDate godkjentAvArbeidsgiver;
     private LocalDate godkjentAvVeileder;
+    private LocalDate godkjentTaushetserklæringAvMentor;
     private List<TilskuddPeriode> tilskuddsPerioder;
     private boolean godkjentPaVegneAv;
     private Avtalerolle avtalerolle;

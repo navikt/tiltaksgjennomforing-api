@@ -68,6 +68,11 @@ public class AvtaleTilJournalfoeringMapper {
         if(avtalerolle != null) {
             avtaleTilJournalfoering.setAvtalerolle(avtalerolle) ;
         }
+
+        if(avtaleInnhold.getGodkjentTaushetserklæringAvMentor() != null){
+            avtaleTilJournalfoering.setGodkjentTaushetserklæringAvMentor(avtaleInnhold.getGodkjentTaushetserklæringAvMentor().toLocalDate());
+        }
+
         return avtaleTilJournalfoering;
     }
 
