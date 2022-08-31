@@ -229,7 +229,6 @@ public class AvtaleController {
         else if(opprettMentorAvtale.getAvtalerolle().equals(Avtalerolle.ARBEIDSGIVER)){
             Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
             avtale = arbeidsgiver.opprettMentorAvtale(opprettMentorAvtale);
-            arbeidsgiver.hentOgSettOppfølgingStatus(avtale);
             arbeidsgiver.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
         }
         if(avtale == null){
