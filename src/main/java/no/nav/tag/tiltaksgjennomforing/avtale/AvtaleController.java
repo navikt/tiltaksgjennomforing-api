@@ -199,6 +199,18 @@ public class AvtaleController {
 
     /** VEILEDER-OPERASJONER **/
 
+    @GetMapping("/deltaker-allerede-paa-tiltak")
+    @Transactional
+    public void sjekkOmDeltakerAlleredeErRegistrertPaaTiltak(
+            @RequestParam("deltakerFnr") Fnr deltakerFnr,
+            @RequestParam("tiltakstype") Tiltakstype tiltakstype,
+            @RequestParam("avtaleId") UUID avtaleId,
+            @RequestParam("alleredeOpprettetAvtale") boolean alleredeOpprettetAvtale
+    ) {
+        Veileder veileder = innloggingService.hentVeileder();
+        veileder.hentAvtaleDeltakerAlleredeErRegistrertPaa(deltakerFnr, tiltakstype, avtaleId, alleredeOpprettetAvtale);
+    }
+
     @PostMapping
     @Transactional
     public ResponseEntity<?> opprettAvtaleSomVeileder(@RequestBody OpprettAvtale opprettAvtale) {

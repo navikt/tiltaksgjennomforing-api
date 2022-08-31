@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
+
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
@@ -24,6 +26,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6E
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 public class Veileder extends Avtalepart<NavIdent> {
@@ -273,9 +276,17 @@ public class Veileder extends Avtalepart<NavIdent> {
         }
     }
 
+    protected void hentAvtaleDeltakerAlleredeErRegistrertPaa(
+            Fnr deltakerFnr,
+            Tiltakstype tiltakstype,
+            UUID avtaleId,
+            boolean alleredeOpprettetAvtale
+    ) {
+
+    }
+
     public Avtale opprettMentorAvtale(OpprettMentorAvtale opprettMentorAvtale) {
-        boolean harAbacTilgang = tilgangskontrollService.harSkrivetilgangTilKandidat(getIdentifikator(), opprettMentorAvtale.getDeltakerFnr());
-        if (!harAbacTilgang) {
+        if (!tilgangskontrollService.harSkrivetilgangTilKandidat(getIdentifikator(), opprettMentorAvtale.getDeltakerFnr())) {
             throw new IkkeTilgangTilDeltakerException();
         }
 

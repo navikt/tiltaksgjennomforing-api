@@ -59,6 +59,10 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     Avtale save(Avtale entity);
 
 
+    @Query(value = "SELECT AVTALE.* FROM AVTALE WHERE :deltakerFnr = AVTALE.deltakerFnr", nativeQuery = true)
+    List<Avtale> finnAvtalerForGittFnr(@Param("deltakerFnr") Fnr deltakerFnr);
+
+
 @Query(value =
         "SELECT distinct AVTALE.* FROM AVTALE " +
                 "LEFT JOIN AVTALE_INNHOLD " +
