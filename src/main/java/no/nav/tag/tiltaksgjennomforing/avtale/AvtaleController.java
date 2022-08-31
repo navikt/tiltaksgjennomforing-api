@@ -190,7 +190,6 @@ public class AvtaleController {
         Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
-        arbeidsgiver.hentOgSettOppfølgingStatus(avtale);
         arbeidsgiver.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
@@ -443,7 +442,6 @@ public class AvtaleController {
     public void settNyVeilederPåAvtale(@PathVariable("avtaleId") UUID avtaleId) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
         veileder.sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
         veileder.overtaAvtale(avtale);
         avtaleRepository.save(avtale);
