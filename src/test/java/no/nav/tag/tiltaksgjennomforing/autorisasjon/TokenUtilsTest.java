@@ -101,11 +101,11 @@ public class TokenUtilsTest {
     }
 
     private void vaerInnloggetSelvbetjening(InnloggetArbeidsgiver bruker) {
-        lagTokenValidationContext(ISSUER_SELVBETJENING, bruker.getIdentifikator().asString(), null, ACR_LEVEL_4, null);
+        lagTokenValidationContext(ISSUER_SELVBETJENING, "not_a_fnr", null, ACR_LEVEL_4, null, bruker.getIdentifikator().asString());
     }
 
     private void vaerInnloggetSelvbetjeningNiva3(InnloggetArbeidsgiver bruker) {
-        lagTokenValidationContext(ISSUER_SELVBETJENING, bruker.getIdentifikator().asString(), null, "Level3", null);
+        lagTokenValidationContext(ISSUER_SELVBETJENING, "not_a_fnr", null, "Level3", null, bruker.getIdentifikator().asString());
     }
 
     private void vaerInnloggetNavAnsatt(InnloggetVeileder innloggetBruker) {
@@ -118,6 +118,10 @@ public class TokenUtilsTest {
     }
 
     private void lagTokenValidationContext(Issuer issuer, String subject, String navIdent, String acrLevel, List groups) {
+        lagTokenValidationContext(issuer, subject, navIdent, acrLevel, groups, null);
+    }
+
+    private void lagTokenValidationContext(Issuer issuer, String subject, String navIdent, String acrLevel, List groups, String pid) {
         Date now = new Date();
         JWTClaimsSet claimsSet = new Builder()
             .subject(subject)
@@ -125,6 +129,7 @@ public class TokenUtilsTest {
             .issuer(issuer.issuerName)
             .audience("aud-aad")
             .jwtID(UUID.randomUUID().toString())
+            .claim("pid", pid)
             .claim("groups", groups)
             .claim("acr",acrLevel)
             .claim("ver", "1.0")

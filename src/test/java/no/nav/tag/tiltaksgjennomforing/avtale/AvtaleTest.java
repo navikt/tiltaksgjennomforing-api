@@ -1173,14 +1173,4 @@ public class AvtaleTest {
         // Implementer meg
     }
 
-    @Test
-    void kan_ikke_godkjenne_når_deltaker_er_67_år() {
-        NavIdent veilderNavIdent = new NavIdent("Z123456");
-        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("06015522834"), TestData.etBedriftNr(), Tiltakstype.VARIG_LONNSTILSKUDD), veilderNavIdent);
-        avtale.endreAvtale(avtale.getSistEndret(), TestData.endringPåAlleFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
-        avtale.godkjennForArbeidsgiver(TestData.etFodselsnummer());
-        assertFeilkode(Feilkode.DELTAKER_67_AAR, () -> avtale.godkjennForVeilederOgDeltaker(TestData.enNavIdent(), TestData.enGodkjentPaVegneGrunn(), List.of()));
-        avtale.godkjennForDeltaker(TestData.etFodselsnummer());
-        assertFeilkode(Feilkode.DELTAKER_67_AAR, () -> avtale.godkjennForVeileder(TestData.enNavIdent(), List.of()));
-    }
 }

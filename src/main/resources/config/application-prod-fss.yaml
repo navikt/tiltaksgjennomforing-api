@@ -20,7 +20,7 @@ no.nav.security.jwt:
       accepted_audience: ${TOKEN_X_CLIENT_ID}
     selvbetjening:
       discoveryurl: ${LOGINSERVICE_IDPORTEN_DISCOVERY_URL}
-      accepted_audience: 45104d6a-f5bc-4e8c-b352-4bbfc9381f25
+      accepted_audience: ${LOGINSERVICE_IDPORTEN_AUDIENCE}
       cookie_name: selvbetjening-idtoken
     isso:
       discoveryurl: https://login.microsoftonline.com/navno.onmicrosoft.com/.well-known/openid-configuration
