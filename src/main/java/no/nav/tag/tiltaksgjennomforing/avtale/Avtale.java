@@ -525,6 +525,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
                 Utils.erNoenTomme(gjeldendeInnhold.getSumLonnstilskudd(), gjeldendeInnhold.getLonnstilskuddProsent())) {
             throw new FeilkodeException(Feilkode.MANGLER_BEREGNING);
         }
+        if (List.of(Tiltakstype.ARBEIDSTRENING, Tiltakstype.INKLUDERINGSTILSKUDD, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
+                Tiltakstype.MENTOR, Tiltakstype.SOMMERJOBB, Tiltakstype.VARIG_LONNSTILSKUDD).contains(tiltakstype) && veilederNavIdent == null){
+            throw new FeilkodeException(Feilkode.MANGLER_VEILEDER_PÅ_AVTALE);
+        }
     }
 
     @JsonProperty

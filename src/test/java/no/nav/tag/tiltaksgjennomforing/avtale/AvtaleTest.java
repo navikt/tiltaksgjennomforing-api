@@ -667,25 +667,23 @@ public class AvtaleTest {
     }
 
     @Test
-    public void avtale_skal_kunne_godkjennes_når_den_erUfordelt() {
+    public void avtale_skal_ikke_kunne_godkjennes_uten_navident(){
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.endreAvtale(Now.instant(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()), List.of());
-        avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
-        avtale.godkjennForDeltaker(TestData.enIdentifikator());
-        assertThat(avtale.erGodkjentAvArbeidsgiver()).isTrue();
-        assertThat(avtale.erGodkjentAvDeltaker()).isTrue();
+        assertFeilkode(Feilkode.MANGLER_VEILEDER_PÅ_AVTALE, () -> avtale.sjekkOmAltErKlarTilGodkjenning());
     }
 
     @Test
-    public void ufordelt_avtale_må_tildeles_før_veileder_godkjenner() {
+    public void ufordelt_avtale_må_tildeles_veileder_før_den_kan_godkjennes() {
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(
                 new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.endreAvtale(Now.instant(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()), List.of());
+        assertFeilkode(Feilkode.MANGLER_VEILEDER_PÅ_AVTALE, () -> avtale.sjekkOmAltErKlarTilGodkjenning());
+        avtale.setVeilederNavIdent(TestData.enNavIdent());
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
-        avtale.godkjennForDeltaker(TestData.enIdentifikator());
-        assertThatThrownBy(() -> avtale.godkjennForVeileder(TestData.enNavIdent(), List.of())).isInstanceOf(AvtaleErIkkeFordeltException.class);
+        assertThat(avtale.erGodkjentAvArbeidsgiver()).isTrue();
     }
 
 
