@@ -1,12 +1,19 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
+import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -15,25 +22,14 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AvtaleErIkkeFordeltException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangArbeidstreningException;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
-import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
-import no.nav.tag.tiltaksgjennomforing.utils.Now;
-import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
+
+import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class AvtaleTest {
 
@@ -326,11 +322,11 @@ public class AvtaleTest {
                 AvtaleInnhold.Fields.oppfolging,
                 AvtaleInnhold.Fields.harFamilietilknytning,
                 AvtaleInnhold.Fields.lonnstilskuddProsent,
-             Fields.refusjonKontaktpersonFornavn
+                Fields.refusjonKontaktpersonFornavn
         );
 
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.VARIG_LONNSTILSKUDD), TestData.enNavIdent());
-        avtale.getGjeldendeInnhold().setRefusjonKontaktperson(new RefusjonKontaktperson(null,"Duck","12345678",true));
+        avtale.getGjeldendeInnhold().setRefusjonKontaktperson(new RefusjonKontaktperson(null, "Duck", "12345678", true));
         testAtAlleFelterMangler(avtale, lønnstilskuddfelter);
         testAtHvertEnkeltFeltMangler(avtale, lønnstilskuddfelter, avtale.getTiltakstype());
     }
@@ -381,7 +377,7 @@ public class AvtaleTest {
     }
 
     private static EndreAvtale endringPåAltUtenom(String felt, Tiltakstype tiltakstype) {
-        EndreAvtale endreAvtale = Tiltakstype.MENTOR == tiltakstype ? TestData.endringPåAlleMentorFelter(): TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = Tiltakstype.MENTOR == tiltakstype ? TestData.endringPåAlleMentorFelter() : TestData.endringPåAlleFelter();
         Object field = ReflectionTestUtils.getField(endreAvtale, felt);
         if (field instanceof Collection) {
             ((Collection) field).clear();
@@ -667,9 +663,17 @@ public class AvtaleTest {
     }
 
     @Test
-    public void avtale_skal_ikke_kunne_godkjennes_uten_navident(){
+    public void avtale_skal_ikke_kunne_godkjennes_uten_navident() {
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()), List.of());
+        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
+        assertFeilkode(Feilkode.MANGLER_VEILEDER_PÅ_AVTALE, () -> arbeidsgiver.godkjennAvtale(Instant.now(), avtale));
+    }
+
+    @Test
+    public void ufordelt_avtale_ikke_klar_for_godkjenning() {
+        Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.ARBEIDSTRENING));
         avtale.endreAvtale(Now.instant(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()), List.of());
         assertFeilkode(Feilkode.MANGLER_VEILEDER_PÅ_AVTALE, () -> avtale.sjekkOmAltErKlarTilGodkjenning());
     }
@@ -681,7 +685,8 @@ public class AvtaleTest {
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.endreAvtale(Now.instant(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()), List.of());
         assertFeilkode(Feilkode.MANGLER_VEILEDER_PÅ_AVTALE, () -> avtale.sjekkOmAltErKlarTilGodkjenning());
-        avtale.setVeilederNavIdent(TestData.enNavIdent());
+        Veileder veileder = TestData.enVeileder(new NavIdent("Z123456"));
+        veileder.overtaAvtale(avtale);
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
         assertThat(avtale.erGodkjentAvArbeidsgiver()).isTrue();
     }
