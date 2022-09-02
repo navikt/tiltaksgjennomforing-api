@@ -9,7 +9,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 @SpringBootTest
 @ActiveProfiles({Miljø.LOCAL})
@@ -23,8 +25,23 @@ public class DeltakerAlleredePaTiltakTest {
     public void skal_returnere_avtaler_deltaker_allerede_er_registrert_paa() {
         avtaleRepository.save(TestData.enArbeidstreningAvtale());
         avtaleRepository.save(TestData.enMentorAvtaleSignert());
-        List<Avtale> avtaleAlleredeRegistrertPaDeltaker = avtaleRepository.findAllByDeltakerFnr(new Fnr("00000000000"));
+        avtaleRepository.save(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
+        avtaleRepository.save(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
 
-        Assertions.assertEquals(2, avtaleAlleredeRegistrertPaDeltaker.size());
+        List<Avtale> avtaleAlleredeRegistrertPaDeltaker = avtaleRepository.finnAvtalerSomOverlapperForDeltaker(
+                "00000000000",
+                UUID.randomUUID().toString(),
+                LocalDate.now(),
+                null
+        );
+        Assertions.assertEquals(3, avtaleAlleredeRegistrertPaDeltaker.size());
+
+        List<Avtale> avtalePaDeltakerUtenNoenAvtaleId = avtaleRepository.finnAvtalerSomOverlapperForDeltaker(
+                "00000000000",
+                null,
+                LocalDate.now(),
+                null
+        );
+        Assertions.assertEquals(3, avtalePaDeltakerUtenNoenAvtaleId.size());
     }
 }

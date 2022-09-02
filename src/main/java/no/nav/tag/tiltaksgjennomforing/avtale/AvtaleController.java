@@ -5,6 +5,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
 import io.micrometer.core.annotation.Timed;
 import java.net.URI;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +21,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -201,14 +199,23 @@ public class AvtaleController {
 
     @GetMapping("/deltaker-allerede-paa-tiltak")
     @Transactional
-    public void sjekkOmDeltakerAlleredeErRegistrertPaaTiltak(
+    public ResponseEntity<List<Avtale>> sjekkOmDeltakerAlleredeErRegistrertPaaTiltak(
             @RequestParam("deltakerFnr") Fnr deltakerFnr,
             @RequestParam("tiltakstype") Tiltakstype tiltakstype,
             @RequestParam("avtaleId") UUID avtaleId,
-            @RequestParam("alleredeOpprettetAvtale") boolean alleredeOpprettetAvtale
+            @RequestParam("startDato") LocalDate startDato,
+            @RequestParam("sluttDato") LocalDate sluttDato
     ) {
         Veileder veileder = innloggingService.hentVeileder();
-        veileder.hentAvtaleDeltakerAlleredeErRegistrertPaa(deltakerFnr, tiltakstype, avtaleId, alleredeOpprettetAvtale);
+        List<Avtale> avtaler = veileder.hentAvtaleDeltakerAlleredeErRegistrertPaa(
+                deltakerFnr,
+                tiltakstype,
+                avtaleId,
+                startDato,
+                sluttDato,
+                avtaleRepository
+        );
+        return new ResponseEntity<List<Avtale>>(avtaler,HttpStatus.OK);
     }
 
     @PostMapping
