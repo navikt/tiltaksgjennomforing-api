@@ -180,6 +180,26 @@ public class VeilederTest {
     }
 
     @Test
+    public void overtarAvtale_uten_tilskuddsprosent__verifiser_blir_satt_og_beregnet() {
+        Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
+        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        endreAvtale.setLonnstilskuddProsent(null);
+        avtale.getGjeldendeInnhold().setSumLonnstilskudd(null);
+        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
+        arbeidsgiver.endreAvtale(Now.instant(), endreAvtale, avtale, EnumSet.of(avtale.getTiltakstype()), List.of());
+        Veileder nyVeileder = TestData.enVeileder(new NavIdent("J987654"));
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.setFormidlingsgruppe(Formidlingsgruppe.ARBEIDSSOKER);
+        avtale.getGjeldendeInnhold().setLonnstilskuddProsent(avtale.getKvalifiseringsgruppe()
+                .finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(40, 60));
+        assertThat(avtale.getGjeldendeInnhold().getSumLonnstilskudd()).isNull();
+
+        nyVeileder.overtaAvtale(avtale);
+
+        assertThat(avtale.getGjeldendeInnhold().getSumLonnstilskudd()).isNotNull();
+    }
+
+    @Test
     public void overtarAvtale__feil_hvis_samme_ident() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Veileder veileder = TestData.enVeileder(avtale);

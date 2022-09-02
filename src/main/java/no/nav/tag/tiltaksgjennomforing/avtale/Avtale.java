@@ -525,6 +525,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
                 Utils.erNoenTomme(gjeldendeInnhold.getSumLonnstilskudd(), gjeldendeInnhold.getLonnstilskuddProsent())) {
             throw new FeilkodeException(Feilkode.MANGLER_BEREGNING);
         }
+        if (veilederNavIdent == null) {
+            throw new FeilkodeException(Feilkode.MANGLER_VEILEDER_PÅ_AVTALE);
+        }
     }
 
     @JsonProperty
@@ -586,6 +589,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         NavIdent gammelNavIdent = this.getVeilederNavIdent();
         this.setVeilederNavIdent(nyNavIdent);
+        getGjeldendeInnhold().reberegnLønnstilskudd();
         sistEndretNå();
         if (gammelNavIdent == null) {
             this.registerEvent(new AvtaleOpprettetAvArbeidsgiverErFordelt(this));
