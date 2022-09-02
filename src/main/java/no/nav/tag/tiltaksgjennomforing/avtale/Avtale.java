@@ -525,6 +525,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
                 Utils.erNoenTomme(gjeldendeInnhold.getSumLonnstilskudd(), gjeldendeInnhold.getLonnstilskuddProsent())) {
             throw new FeilkodeException(Feilkode.MANGLER_BEREGNING);
         }
+        if (veilederNavIdent == null) {
+            throw new FeilkodeException(Feilkode.MANGLER_VEILEDER_PÅ_AVTALE);
+        }
     }
 
     @JsonProperty
