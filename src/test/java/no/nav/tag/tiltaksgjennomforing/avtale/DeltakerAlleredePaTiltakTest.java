@@ -1,14 +1,17 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.datavarehus.DvhMeldingEntitetRepository;
+import no.nav.tag.tiltaksgjennomforing.varsel.SmsRepository;
+import no.nav.tag.tiltaksgjennomforing.varsel.VarselRepository;
+import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.ArbeidsgiverNotifikasjonRepository;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -21,27 +24,156 @@ public class DeltakerAlleredePaTiltakTest {
     @Autowired
     private AvtaleRepository avtaleRepository;
 
+    @Autowired
+    VarselRepository varselRepository;
+
+    @Autowired
+    SmsRepository smsRepository;
+
+    @Autowired
+    AvtaleInnholdRepository avtaleInnholdRepository;
+
+    @Autowired
+    ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
+
+    @Autowired
+    DvhMeldingEntitetRepository dvhMeldingEntitetRepository;
+
+    @BeforeEach
+    public void init() {
+        slettInnholdDatabase();
+    }
+
+    private void slettInnholdDatabase() {
+        varselRepository.deleteAll();
+        smsRepository.deleteAll();
+        avtaleInnholdRepository.deleteAll();
+        arbeidsgiverNotifikasjonRepository.deleteAll();
+        dvhMeldingEntitetRepository.deleteAll();
+        avtaleRepository.deleteAll();
+    }
+
+    private void initAvtalerTilDBTest() {
+        settAvtaleInformasjon(
+                TestData.enArbeidstreningAvtale(),
+                new Fnr("00000000000"),
+                LocalDate.now(),
+                LocalDate.now().plusMonths(2)
+        );
+        settAvtaleInformasjon(
+                TestData.enMentorAvtaleUsignert(),
+                new Fnr("00000000000"),
+                LocalDate.now(),
+                LocalDate.now().plusMonths(2)
+        );
+        settAvtaleInformasjon(
+                TestData.enInkluderingstilskuddAvtale(),
+                new Fnr("00000000000"),
+                LocalDate.now(),
+                LocalDate.now().plusMonths(2)
+        );
+    }
+
+    private void settAvtaleInformasjon(Avtale avtale, Fnr deltakerFnr, LocalDate startDato, LocalDate sluttDato) {
+        avtale.setDeltakerFnr(deltakerFnr);
+        avtale.getGjeldendeInnhold().setStartDato(startDato);
+        avtale.getGjeldendeInnhold().setSluttDato(sluttDato);
+        avtaleRepository.save(avtale);
+    }
+
     @Test
     public void skal_returnere_avtaler_deltaker_allerede_er_registrert_paa() {
-        avtaleRepository.save(TestData.enArbeidstreningAvtale());
-        avtaleRepository.save(TestData.enMentorAvtaleSignert());
-        avtaleRepository.save(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
-        avtaleRepository.save(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
-
+        initAvtalerTilDBTest();
         List<Avtale> avtaleAlleredeRegistrertPaDeltaker = avtaleRepository.finnAvtalerSomOverlapperForDeltaker(
                 "00000000000",
                 UUID.randomUUID().toString(),
                 LocalDate.now(),
-                null
+                LocalDate.now().plusMonths(1)
         );
         Assertions.assertEquals(3, avtaleAlleredeRegistrertPaDeltaker.size());
+    }
 
-        List<Avtale> avtalePaDeltakerUtenNoenAvtaleId = avtaleRepository.finnAvtalerSomOverlapperForDeltaker(
+    @Test
+    public void avtalePaDeltakerUtenNoenAvtaleIdOgSluttdato() {
+        initAvtalerTilDBTest();
+        List<Avtale> avtalePaDeltakerUtenNoenAvtaleIdOgSluttdato = avtaleRepository.finnAvtalerSomOverlapperForDeltaker(
                 "00000000000",
                 null,
                 LocalDate.now(),
                 null
         );
-        Assertions.assertEquals(3, avtalePaDeltakerUtenNoenAvtaleId.size());
+        Assertions.assertEquals(3, avtalePaDeltakerUtenNoenAvtaleIdOgSluttdato.size());
+    }
+
+    @Test
+    public void avtalePaDeltakerMedKunOverlappendeStartdato() {
+        initAvtalerTilDBTest();
+        List<Avtale> avtalePaDeltakerMedKunOverlappendeStartdato = avtaleRepository.finnAvtalerSomOverlapperForDeltaker(
+                "00000000000",
+                null,
+                LocalDate.now(),
+                LocalDate.now().plusMonths(3)
+        );
+        Assertions.assertEquals(3, avtalePaDeltakerMedKunOverlappendeStartdato.size());
+    }
+
+    @Test
+    public void avtalePaDeltakerMedKunOverlappendeSluttdato() {
+        initAvtalerTilDBTest();
+        List<Avtale> avtalePaDeltakerMedKunOverlappendeSluttdato = avtaleRepository.finnAvtalerSomOverlapperForDeltaker(
+                "00000000000",
+                null,
+                LocalDate.now().minusMonths(1),
+                LocalDate.now().plusMonths(1)
+        );
+        Assertions.assertEquals(3, avtalePaDeltakerMedKunOverlappendeSluttdato.size());
+    }
+
+    @Test
+    public void sjekkAtRegistreringAvArbeidstreningHvorDetAlleredeFinnesEnITidsrommetReturnererEttTreff() {
+       initAvtalerTilDBTest();
+       Veileder veileder_z123456 = TestData.enVeileder(new NavIdent("Z123456"));
+
+        List<Avtale> treffPaAvtalerSomErUlovligMatch = veileder_z123456.hentAvtaleDeltakerAlleredeErRegistrertPaa(
+                new Fnr("00000000000"),
+                Tiltakstype.ARBEIDSTRENING,
+                null,
+                LocalDate.now(),
+                LocalDate.now().plusMonths(1),
+                avtaleRepository
+        );
+        Assertions.assertEquals(1, treffPaAvtalerSomErUlovligMatch.size());
+    }
+
+    @Test
+    public void sjekkAtDetIkkeFaarNoeTreffPaaArbeidstreningSomErUtenforStartOgSluttDato() {
+        Veileder veileder_z123456 = TestData.enVeileder(new NavIdent("Z123456"));
+        settAvtaleInformasjon(
+                TestData.enArbeidstreningAvtale(),
+                new Fnr("00000000000"),
+                LocalDate.now().plusMonths(1).plusDays(1),
+                LocalDate.now().plusMonths(3)
+        );
+        settAvtaleInformasjon(
+                TestData.enMentorAvtaleUsignert(),
+                new Fnr("00000000000"),
+                LocalDate.now(),
+                LocalDate.now().plusMonths(2)
+        );
+        settAvtaleInformasjon(
+                TestData.enInkluderingstilskuddAvtale(),
+                new Fnr("00000000000"),
+                LocalDate.now(),
+                LocalDate.now().plusMonths(2)
+        );
+        List<Avtale> treffPaAvtalerSomErUlovligMatch = veileder_z123456.hentAvtaleDeltakerAlleredeErRegistrertPaa(
+                new Fnr("00000000000"),
+                Tiltakstype.ARBEIDSTRENING,
+                null,
+                LocalDate.now(),
+                LocalDate.now().plusMonths(1),
+                avtaleRepository
+        );
+        Assertions.assertEquals(0, treffPaAvtalerSomErUlovligMatch.size());
     }
 }
