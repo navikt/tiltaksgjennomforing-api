@@ -141,7 +141,7 @@ public class DeltakerAlleredePaTiltakTest {
        initAvtalerTilDBTest();
        Veileder veileder_z123456 = TestData.enVeileder(new NavIdent("Z123456"));
 
-        List<Avtale> treffPaAvtalerSomErUlovligMatch = veileder_z123456.hentAvtaleDeltakerAlleredeErRegistrertPaa(
+        List<AlleredeRegistrertAvtale> treffPaAvtalerSomErUlovligMatch = veileder_z123456.hentAvtaleDeltakerAlleredeErRegistrertPaa(
                 new Fnr("00000000000"),
                 Tiltakstype.ARBEIDSTRENING,
                 null,
@@ -176,7 +176,7 @@ public class DeltakerAlleredePaTiltakTest {
                 LocalDate.now().plusMonths(2),
                 LocalDateTime.now()
         );
-        List<Avtale> treffPaAvtalerSomErUlovligMatch = veileder_z123456.hentAvtaleDeltakerAlleredeErRegistrertPaa(
+        List<AlleredeRegistrertAvtale> treffPaAvtalerSomErUlovligMatch = veileder_z123456.hentAvtaleDeltakerAlleredeErRegistrertPaa(
                 new Fnr("00000000000"),
                 Tiltakstype.ARBEIDSTRENING,
                 null,
@@ -211,7 +211,7 @@ public class DeltakerAlleredePaTiltakTest {
                 LocalDate.now().plusMonths(2),
                 LocalDateTime.now()
         );
-        List<Avtale> treffPaAvtalerSomErUlovligMatch = veileder_z123456.hentAvtaleDeltakerAlleredeErRegistrertPaa(
+        List<AlleredeRegistrertAvtale> treffPaAvtalerSomErUlovligMatch = veileder_z123456.hentAvtaleDeltakerAlleredeErRegistrertPaa(
                 new Fnr("00000000000"),
                 Tiltakstype.MENTOR,
                 null,
@@ -253,7 +253,7 @@ public class DeltakerAlleredePaTiltakTest {
                 LocalDate.now().plusMonths(2),
                 LocalDateTime.now()
         );
-        List<Avtale> treffPaAvtalerSomErUlovligMatch = veileder_z123456.hentAvtaleDeltakerAlleredeErRegistrertPaa(
+        List<AlleredeRegistrertAvtale> treffPaAvtalerSomErUlovligMatch = veileder_z123456.hentAvtaleDeltakerAlleredeErRegistrertPaa(
                 new Fnr("00000000000"),
                 Tiltakstype.ARBEIDSTRENING,
                 null,

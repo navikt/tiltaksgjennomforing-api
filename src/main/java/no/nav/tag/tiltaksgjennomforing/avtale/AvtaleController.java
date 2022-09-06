@@ -199,15 +199,15 @@ public class AvtaleController {
 
     @GetMapping("/deltaker-allerede-paa-tiltak")
     @Transactional
-    public ResponseEntity<List<Avtale>> sjekkOmDeltakerAlleredeErRegistrertPaaTiltak(
-            @RequestParam("deltakerFnr") Fnr deltakerFnr,
-            @RequestParam("tiltakstype") Tiltakstype tiltakstype,
-            @RequestParam("avtaleId") UUID avtaleId,
-            @RequestParam("startDato") LocalDate startDato,
-            @RequestParam("sluttDato") LocalDate sluttDato
+    public ResponseEntity<List<AlleredeRegistrertAvtale>> sjekkOmDeltakerAlleredeErRegistrertPaaTiltak(
+            @RequestParam(value = "deltakerFnr") Fnr deltakerFnr,
+            @RequestParam(value = "tiltakstype") Tiltakstype tiltakstype,
+            @RequestParam(value = "avtaleId", required = false) UUID avtaleId,
+            @RequestParam(value = "startDato", required = false) LocalDate startDato,
+            @RequestParam(value = "sluttDato", required = false) LocalDate sluttDato
     ) {
         Veileder veileder = innloggingService.hentVeileder();
-        List<Avtale> avtaler = veileder.hentAvtaleDeltakerAlleredeErRegistrertPaa(
+        List<AlleredeRegistrertAvtale> avtaler = veileder.hentAvtaleDeltakerAlleredeErRegistrertPaa(
                 deltakerFnr,
                 tiltakstype,
                 avtaleId,
@@ -215,7 +215,7 @@ public class AvtaleController {
                 sluttDato,
                 avtaleRepository
         );
-        return new ResponseEntity<List<Avtale>>(avtaler,HttpStatus.OK);
+        return new ResponseEntity<List<AlleredeRegistrertAvtale>>(avtaler,HttpStatus.OK);
     }
 
     @PostMapping

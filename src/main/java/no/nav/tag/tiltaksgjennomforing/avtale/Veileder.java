@@ -5,6 +5,7 @@ import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentN
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Stream;
 
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
@@ -295,7 +296,23 @@ public class Veileder extends Avtalepart<NavIdent> {
         return avtaleId != null ? avtaleId.toString() : null;
     }
 
-    protected List<Avtale> hentAvtaleDeltakerAlleredeErRegistrertPaa(
+    private List<AlleredeRegistrertAvtale> filtrerAvtaler(Stream<Avtale> avtaler) {
+        return avtaler.map(avtale -> new AlleredeRegistrertAvtale(
+                avtale.getId(),
+                avtale.getAvtaleNr(),
+                avtale.getTiltakstype(),
+                avtale.getDeltakerFnr(),
+                avtale.getBedriftNr(),
+                avtale.getVeilederNavIdent(),
+                avtale.getGjeldendeInnhold().getStartDato(),
+                avtale.getGjeldendeInnhold().getSluttDato(),
+                avtale.getGjeldendeInnhold().getGodkjentAvVeileder(),
+                avtale.getGjeldendeInnhold().getGodkjentAvBeslutter(),
+                avtale.getGjeldendeInnhold().getAvtaleInngått()
+        )).toList();
+    }
+
+    protected List<AlleredeRegistrertAvtale> hentAvtaleDeltakerAlleredeErRegistrertPaa(
             Fnr deltakerFnr,
             Tiltakstype tiltakstype,
             UUID avtaleId,
@@ -310,14 +327,14 @@ public class Veileder extends Avtalepart<NavIdent> {
                 sluttDato
         );
         if(List.of(Tiltakstype.INKLUDERINGSTILSKUDD, Tiltakstype.MENTOR).contains(tiltakstype)) {
-            return alleAvtalerPaaDeltaker.stream().filter(avtale -> avtale.getTiltakstype().equals(tiltakstype)).toList();
+            return this.filtrerAvtaler(alleAvtalerPaaDeltaker.stream().filter(avtale -> avtale.getTiltakstype().equals(tiltakstype)));
         }
-        return alleAvtalerPaaDeltaker.stream().filter(avtale -> List.of(
+        return this.filtrerAvtaler(alleAvtalerPaaDeltaker.stream().filter(avtale -> List.of(
                         Tiltakstype.SOMMERJOBB,
                         Tiltakstype.ARBEIDSTRENING,
                         Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
                         Tiltakstype.VARIG_LONNSTILSKUDD
-        ).contains(avtale.getTiltakstype())).toList();
+        ).contains(avtale.getTiltakstype())));
     }
 
     public Avtale opprettMentorAvtale(OpprettMentorAvtale opprettMentorAvtale) {
