@@ -65,11 +65,13 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
             "WHERE :deltakerFnr = AVTALE.deltaker_fnr and " +
             "(:avtaleId is null or :avtaleId != AVTALE.id) and " +
-            "(:startDato is not null and AVTALE_INNHOLD.start_dato is not null and AVTALE_INNHOLD.slutt_dato is not null and" +
+            "((:startDato is not null and AVTALE_INNHOLD.start_dato is not null and AVTALE_INNHOLD.slutt_dato is not null and" +
             " (:startDato >= AVTALE_INNHOLD.start_dato and :startDato <= AVTALE_INNHOLD.slutt_dato)) " +
             "or " +
             "(:sluttDato is not null and AVTALE_INNHOLD.start_dato is not null and AVTALE_INNHOLD.slutt_dato is not null and " +
-            "(:sluttDato >= AVTALE_INNHOLD.start_dato and :sluttDato <= AVTALE_INNHOLD.slutt_dato))"
+            "(:sluttDato >= AVTALE_INNHOLD.start_dato and :sluttDato <= AVTALE_INNHOLD.slutt_dato)) " +
+            "or " +
+            "AVTALE_INNHOLD.godkjent_av_veileder is null)"
             , nativeQuery = true)
     List<Avtale> finnAvtalerSomOverlapperForDeltaker(
             @Param("deltakerFnr") String deltakerFnr,

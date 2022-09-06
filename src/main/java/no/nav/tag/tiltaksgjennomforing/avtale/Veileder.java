@@ -324,14 +324,12 @@ public class Veileder extends Avtalepart<NavIdent> {
         if (!tilgangskontrollService.harSkrivetilgangTilKandidat(getIdentifikator(), opprettMentorAvtale.getDeltakerFnr())) {
             throw new IkkeTilgangTilDeltakerException();
         }
-
         final PdlRespons persondata = persondataService.hentPersondata(opprettMentorAvtale.getDeltakerFnr());
         boolean erKode6 = persondataService.erKode6(persondata);
 
         if (erKode6) {
             throw new KanIkkeOppretteAvtalePåKode6Exception();
         }
-
         Avtale avtale = Avtale.veilederOppretterAvtale(opprettMentorAvtale, getIdentifikator());
         avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(persondata));
         leggTilGeografiskEnhet(avtale, persondata, norg2Client);

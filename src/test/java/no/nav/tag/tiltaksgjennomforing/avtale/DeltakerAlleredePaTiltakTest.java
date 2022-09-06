@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -58,26 +59,32 @@ public class DeltakerAlleredePaTiltakTest {
                 TestData.enArbeidstreningAvtale(),
                 new Fnr("00000000000"),
                 LocalDate.now(),
-                LocalDate.now().plusMonths(2)
+                LocalDate.now().plusMonths(2),
+                LocalDateTime.now()
         );
         settAvtaleInformasjon(
                 TestData.enMentorAvtaleUsignert(),
                 new Fnr("00000000000"),
                 LocalDate.now(),
-                LocalDate.now().plusMonths(2)
+                LocalDate.now().plusMonths(2),
+                LocalDateTime.now()
         );
         settAvtaleInformasjon(
                 TestData.enInkluderingstilskuddAvtale(),
                 new Fnr("00000000000"),
                 LocalDate.now(),
-                LocalDate.now().plusMonths(2)
+                LocalDate.now().plusMonths(2),
+                LocalDateTime.now()
         );
     }
 
-    private void settAvtaleInformasjon(Avtale avtale, Fnr deltakerFnr, LocalDate startDato, LocalDate sluttDato) {
+    private void settAvtaleInformasjon(Avtale avtale, Fnr deltakerFnr, LocalDate startDato, LocalDate sluttDato, LocalDateTime godkjentAvVeileder) {
         avtale.setDeltakerFnr(deltakerFnr);
         avtale.getGjeldendeInnhold().setStartDato(startDato);
         avtale.getGjeldendeInnhold().setSluttDato(sluttDato);
+        if(godkjentAvVeileder != null) {
+            avtale.getGjeldendeInnhold().setGodkjentAvVeileder(godkjentAvVeileder);
+        }
         avtaleRepository.save(avtale);
     }
 
@@ -152,19 +159,22 @@ public class DeltakerAlleredePaTiltakTest {
                 TestData.enArbeidstreningAvtale(),
                 new Fnr("00000000000"),
                 LocalDate.now().plusMonths(1).plusDays(1),
-                LocalDate.now().plusMonths(3)
+                LocalDate.now().plusMonths(3),
+                LocalDateTime.now()
         );
         settAvtaleInformasjon(
                 TestData.enMentorAvtaleUsignert(),
                 new Fnr("00000000000"),
                 LocalDate.now(),
-                LocalDate.now().plusMonths(2)
+                LocalDate.now().plusMonths(2),
+                LocalDateTime.now()
         );
         settAvtaleInformasjon(
                 TestData.enInkluderingstilskuddAvtale(),
                 new Fnr("00000000000"),
                 LocalDate.now(),
-                LocalDate.now().plusMonths(2)
+                LocalDate.now().plusMonths(2),
+                LocalDateTime.now()
         );
         List<Avtale> treffPaAvtalerSomErUlovligMatch = veileder_z123456.hentAvtaleDeltakerAlleredeErRegistrertPaa(
                 new Fnr("00000000000"),
@@ -175,5 +185,82 @@ public class DeltakerAlleredePaTiltakTest {
                 avtaleRepository
         );
         Assertions.assertEquals(0, treffPaAvtalerSomErUlovligMatch.size());
+    }
+
+    @Test
+    public void sjekkAtDetReturneresEnTreffPaaMentorTilskuddNarDetAlleredeFinnesAvtaleSammeTidsrom() {
+        Veileder veileder_z123456 = TestData.enVeileder(new NavIdent("Z123456"));
+        settAvtaleInformasjon(
+                TestData.enArbeidstreningAvtale(),
+                new Fnr("00000000000"),
+                LocalDate.now().plusMonths(1).plusDays(1),
+                LocalDate.now().plusMonths(3),
+                LocalDateTime.now()
+        );
+        settAvtaleInformasjon(
+                TestData.enMentorAvtaleUsignert(),
+                new Fnr("00000000000"),
+                LocalDate.now(),
+                LocalDate.now().plusMonths(2),
+                LocalDateTime.now()
+        );
+        settAvtaleInformasjon(
+                TestData.enInkluderingstilskuddAvtale(),
+                new Fnr("00000000000"),
+                LocalDate.now(),
+                LocalDate.now().plusMonths(2),
+                LocalDateTime.now()
+        );
+        List<Avtale> treffPaAvtalerSomErUlovligMatch = veileder_z123456.hentAvtaleDeltakerAlleredeErRegistrertPaa(
+                new Fnr("00000000000"),
+                Tiltakstype.MENTOR,
+                null,
+                LocalDate.now(),
+                LocalDate.now().plusMonths(1),
+                avtaleRepository
+        );
+        Assertions.assertEquals(1, treffPaAvtalerSomErUlovligMatch.size());
+    }
+
+    @Test
+    public void sjekkAtDetReturneresAvtalerSomIkkeErFerdigUtfylt() {
+        Veileder veileder_z123456 = TestData.enVeileder(new NavIdent("Z123456"));
+        settAvtaleInformasjon(
+                TestData.enArbeidstreningAvtale(),
+                new Fnr("00000000000"),
+                LocalDate.now().plusMonths(1).plusDays(1),
+                LocalDate.now().plusMonths(3),
+                LocalDateTime.now()
+        );
+        settAvtaleInformasjon(
+                TestData.enArbeidstreningAvtale(),
+                new Fnr("00000000000"),
+                null,
+                null,
+                null
+        );
+        settAvtaleInformasjon(
+                TestData.enMentorAvtaleUsignert(),
+                new Fnr("00000000000"),
+                LocalDate.now(),
+                LocalDate.now().plusMonths(2),
+                LocalDateTime.now()
+        );
+        settAvtaleInformasjon(
+                TestData.enInkluderingstilskuddAvtale(),
+                new Fnr("00000000000"),
+                LocalDate.now(),
+                LocalDate.now().plusMonths(2),
+                LocalDateTime.now()
+        );
+        List<Avtale> treffPaAvtalerSomErUlovligMatch = veileder_z123456.hentAvtaleDeltakerAlleredeErRegistrertPaa(
+                new Fnr("00000000000"),
+                Tiltakstype.ARBEIDSTRENING,
+                null,
+                LocalDate.now(),
+                LocalDate.now().plusMonths(1),
+                avtaleRepository
+        );
+        Assertions.assertEquals(1, treffPaAvtalerSomErUlovligMatch.size());
     }
 }
