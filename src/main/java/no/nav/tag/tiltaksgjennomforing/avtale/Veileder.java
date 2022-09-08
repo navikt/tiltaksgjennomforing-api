@@ -273,43 +273,12 @@ public class Veileder extends Avtalepart<NavIdent> {
         }
     }
 
-
-
-
-    /**
-     * Ta imot Fnr, tiltakstype || avtaleId.
-     * Finn alle avtaler som er registrert på deltaker Fnr utennom gitt avtaleId og -
-     * ((sluttdato innenfor nåværendeDato || innsendtDato) || (avtaler Som ikke er oppstartet))
-     *
-     * sjekk om det finnes samme type tiltak lik nåværende type
-     * sjekk om det er lovlig sammensetning av tiltakstyper
-     * send tilbake svar på filtrert og mappet resultat.
-     * Vis resultat til veileder hvis listen ikke er tom.
-     *
-     * */
-
     private LocalDate settStartDato(LocalDate startdato) {
         return startdato != null ? startdato : LocalDate.now();
     }
 
     private String settAvtaleId(UUID avtaleId) {
         return avtaleId != null ? avtaleId.toString() : null;
-    }
-
-    private List<AlleredeRegistrertAvtale> filtrerAvtaler(Stream<Avtale> avtaler) {
-        return avtaler.map(avtale -> new AlleredeRegistrertAvtale(
-                avtale.getId(),
-                avtale.getAvtaleNr(),
-                avtale.getTiltakstype(),
-                avtale.getDeltakerFnr(),
-                avtale.getBedriftNr(),
-                avtale.getVeilederNavIdent(),
-                avtale.getGjeldendeInnhold().getStartDato(),
-                avtale.getGjeldendeInnhold().getSluttDato(),
-                avtale.getGjeldendeInnhold().getGodkjentAvVeileder(),
-                avtale.getGjeldendeInnhold().getGodkjentAvBeslutter(),
-                avtale.getGjeldendeInnhold().getAvtaleInngått()
-        )).toList();
     }
 
     protected List<AlleredeRegistrertAvtale> hentAvtaleDeltakerAlleredeErRegistrertPaa(
@@ -320,21 +289,15 @@ public class Veileder extends Avtalepart<NavIdent> {
             LocalDate sluttDato,
             AvtaleRepository avtaleRepository
     ) {
-        List<Avtale> alleAvtalerPaaDeltaker = avtaleRepository.finnAvtalerSomOverlapperForDeltaker(
-                deltakerFnr.asString(),
-                settAvtaleId(avtaleId),
-                settStartDato(startDato),
-                sluttDato
+        return AlleredeRegistrertAvtale.filtrerAvtaleDeltakerAlleredeErRegistrertPaa(
+                avtaleRepository.finnAvtalerSomOverlapperForDeltaker(
+                        deltakerFnr.asString(),
+                        settAvtaleId(avtaleId),
+                        settStartDato(startDato),
+                        sluttDato
+                ),
+                tiltakstype
         );
-        if(List.of(Tiltakstype.INKLUDERINGSTILSKUDD, Tiltakstype.MENTOR).contains(tiltakstype)) {
-            return this.filtrerAvtaler(alleAvtalerPaaDeltaker.stream().filter(avtale -> avtale.getTiltakstype().equals(tiltakstype)));
-        }
-        return this.filtrerAvtaler(alleAvtalerPaaDeltaker.stream().filter(avtale -> List.of(
-                        Tiltakstype.SOMMERJOBB,
-                        Tiltakstype.ARBEIDSTRENING,
-                        Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
-                        Tiltakstype.VARIG_LONNSTILSKUDD
-        ).contains(avtale.getTiltakstype())));
     }
 
     public Avtale opprettMentorAvtale(OpprettMentorAvtale opprettMentorAvtale) {
