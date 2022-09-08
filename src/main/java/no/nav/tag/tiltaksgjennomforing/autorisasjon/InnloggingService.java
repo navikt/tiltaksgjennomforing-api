@@ -56,22 +56,22 @@ public class InnloggingService {
         BrukerOgIssuer brukerOgIssuer = tokenUtils.hentBrukerOgIssuer().orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget."));
         Issuer issuer = brukerOgIssuer.getIssuer();
 
-        if ((issuer == Issuer.ISSUER_SELVBETJENING || issuer == Issuer.ISSUER_TOKENX) && (avtalerolle == Avtalerolle.DELTAKER || avtalerolle == Avtalerolle.MENTOR)) {
+        if (issuer == Issuer.ISSUER_TOKENX && (avtalerolle == Avtalerolle.DELTAKER || avtalerolle == Avtalerolle.MENTOR)) {
             if(avtalerolle == Avtalerolle.DELTAKER) return new Deltaker(new Fnr(brukerOgIssuer.getBrukerIdent()));
             else return new Mentor(new Fnr(brukerOgIssuer.getBrukerIdent()));
-        }else if ((issuer == Issuer.ISSUER_SELVBETJENING || issuer == Issuer.ISSUER_TOKENX) && avtalerolle == Avtalerolle.ARBEIDSGIVER) {
+        }else if (issuer == Issuer.ISSUER_TOKENX && avtalerolle == Avtalerolle.ARBEIDSGIVER) {
             HentArbeidsgiverToken hentArbeidsgiverToken = arbeidsgiverTokenStrategyFactory.create(issuer);
 
             Set<AltinnReportee> altinnOrganisasjoner = altinnTilgangsstyringService
                     .hentAltinnOrganisasjoner(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
             Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
             return new Arbeidsgiver(new Fnr(brukerOgIssuer.getBrukerIdent()), altinnOrganisasjoner, tilganger, persondataService, norg2Client, veilarbArenaClient);
-        } else if (issuer == Issuer.ISSUER_ISSO && avtalerolle == Avtalerolle.VEILEDER) {
+        } else if (issuer == Issuer.ISSUER_AAD && avtalerolle == Avtalerolle.VEILEDER) {
             NavIdent navIdent = new NavIdent(brukerOgIssuer.getBrukerIdent());
             Set<NavEnhet> navEnheter = hentNavEnheter(navIdent);
             boolean harAdGruppeForBeslutter = tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId());
             return new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, navEnheter, slettemerkeProperties, tilskuddsperiodeConfig, harAdGruppeForBeslutter, veilarbArenaClient);
-        } else if (issuer == Issuer.ISSUER_ISSO && avtalerolle == Avtalerolle.BESLUTTER) {
+        } else if (issuer == Issuer.ISSUER_AAD && avtalerolle == Avtalerolle.BESLUTTER) {
             boolean harAdGruppeForBeslutter = tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId());
             if (harAdGruppeForBeslutter) {
                 return new Beslutter(new NavIdent(brukerOgIssuer.getBrukerIdent()), tilgangskontrollService, axsysService);

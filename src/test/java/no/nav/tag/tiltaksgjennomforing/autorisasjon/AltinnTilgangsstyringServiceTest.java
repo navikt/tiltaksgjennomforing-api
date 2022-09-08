@@ -41,7 +41,7 @@ public class AltinnTilgangsstyringServiceTest {
 
     @BeforeEach
     public void setUp() {
-        when(tokenUtils.hentSelvbetjeningToken()).thenReturn("token");
+        // when(tokenUtils.hentSelvbetjeningToken()).thenReturn("token");
         when(featureToggleService.isEnabled(anyString())).thenReturn(false);
     }
 

@@ -74,7 +74,7 @@ public class InnloggingServiceTest {
         when(altinnTilgangsstyringService.hentAltinnOrganisasjoner(eq((Fnr) selvbetjeningBruker.getIdentifikator()), any())).thenReturn(Set.of());
         værInnloggetArbeidsgiver(selvbetjeningBruker);
 
-       when(arbeidsgiverTokenStrategyFactory.create(Issuer.ISSUER_SELVBETJENING)).thenReturn(() -> "");
+       when(arbeidsgiverTokenStrategyFactory.create(Issuer.ISSUER_TOKENX)).thenReturn(() -> "");
 
         assertThat(innloggingService.hentInnloggetBruker(Optional.of(Avtalerolle.ARBEIDSGIVER).get())).isEqualTo(selvbetjeningBruker);
         verify(altinnTilgangsstyringService).hentTilganger(eq((Fnr) selvbetjeningBruker.getIdentifikator()), any());
@@ -140,28 +140,28 @@ public class InnloggingServiceTest {
 
     private void værInnloggetDeltaker(InnloggetDeltaker bruker) {
         when(tokenUtils.hentBrukerOgIssuer())
-                .thenReturn(Optional.of(new TokenUtils.BrukerOgIssuer(Issuer.ISSUER_SELVBETJENING, bruker.getIdentifikator().asString())));
+                .thenReturn(Optional.of(new TokenUtils.BrukerOgIssuer(Issuer.ISSUER_TOKENX, bruker.getIdentifikator().asString())));
     }
 
     private void værInnloggetMentor(InnloggetMentor mentor) {
         when(tokenUtils.hentBrukerOgIssuer())
-                .thenReturn(Optional.of(new TokenUtils.BrukerOgIssuer(Issuer.ISSUER_SELVBETJENING, mentor.getIdentifikator().asString())));
+                .thenReturn(Optional.of(new TokenUtils.BrukerOgIssuer(Issuer.ISSUER_TOKENX, mentor.getIdentifikator().asString())));
     }
 
     private void værInnloggetArbeidsgiver(InnloggetArbeidsgiver bruker) {
         when(tokenUtils.hentBrukerOgIssuer())
-                .thenReturn(Optional.of(new TokenUtils.BrukerOgIssuer(Issuer.ISSUER_SELVBETJENING, bruker.getIdentifikator().asString())));
+                .thenReturn(Optional.of(new TokenUtils.BrukerOgIssuer(Issuer.ISSUER_TOKENX, bruker.getIdentifikator().asString())));
     }
 
     private void værInnloggetVeileder(InnloggetVeileder navAnsatt) {
         when(tokenUtils.hentBrukerOgIssuer())
-                .thenReturn(Optional.of(new TokenUtils.BrukerOgIssuer(Issuer.ISSUER_ISSO, navAnsatt.getIdentifikator().asString())));
+                .thenReturn(Optional.of(new TokenUtils.BrukerOgIssuer(Issuer.ISSUER_AAD, navAnsatt.getIdentifikator().asString())));
     }
 
     private void værInnloggetBeslutter(InnloggetBeslutter navAnsatt) {
         when(tokenUtils.harAdGruppe(any())).thenReturn(true);
         when(tokenUtils.hentBrukerOgIssuer())
-                .thenReturn(Optional.of(new TokenUtils.BrukerOgIssuer(Issuer.ISSUER_ISSO, navAnsatt.getIdentifikator().asString())));
+                .thenReturn(Optional.of(new TokenUtils.BrukerOgIssuer(Issuer.ISSUER_AAD, navAnsatt.getIdentifikator().asString())));
     }
 
 
