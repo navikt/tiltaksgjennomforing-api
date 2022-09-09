@@ -65,6 +65,9 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
             "WHERE :deltakerFnr = AVTALE.deltaker_fnr and " +
             "(:avtaleId is null or :avtaleId != AVTALE.id) and " +
+            "AVTALE.annullert_tidspunkt is null and " +
+            "AVTALE.avbrutt is false and " +
+            "AVTALE.slettemerket is false and " +
             "((:startDato is not null and AVTALE_INNHOLD.start_dato is not null and AVTALE_INNHOLD.slutt_dato is not null and" +
             " (:startDato >= AVTALE_INNHOLD.start_dato and :startDato <= AVTALE_INNHOLD.slutt_dato)) " +
             "or " +

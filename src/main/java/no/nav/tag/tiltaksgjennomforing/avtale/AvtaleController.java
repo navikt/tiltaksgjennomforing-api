@@ -60,8 +60,13 @@ public class AvtaleController {
 
     @GetMapping("/{avtaleId}/versjoner")
     public List<AvtaleInnhold> hentVersjoner(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
-        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        return avtalepart.hentAvtaleVersjoner(avtaleRepository, avtaleInnholdRepository, id);
+        return innloggingService
+                .hentAvtalepart(innloggetPart)
+                .hentAvtaleVersjoner(
+                        avtaleRepository,
+                        avtaleInnholdRepository,
+                        id
+                );
     }
 
     @GetMapping
@@ -73,9 +78,13 @@ public class AvtaleController {
             @RequestParam(value = "skip", required = false, defaultValue = "0") Integer skip,
             @RequestParam(value = "limit", required = false, defaultValue = "100000000") Integer limit
     ) {
-        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        List<Avtale> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre, sorteringskolonne, skip, limit);
-        return avtaler;
+        return innloggingService.hentAvtalepart(innloggetPart).hentAlleAvtalerMedLesetilgang(
+                avtaleRepository,
+                queryParametre,
+                sorteringskolonne,
+                skip,
+                limit
+        );
     }
 
     @GetMapping("/beslutter")

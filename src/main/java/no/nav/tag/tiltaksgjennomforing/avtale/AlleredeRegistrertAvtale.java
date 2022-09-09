@@ -22,6 +22,7 @@ public class AlleredeRegistrertAvtale {
     private Fnr deltakerFnr;
     private BedriftNr bedriftNr;
     private NavIdent veilederNavIdent;
+    private Status status;
 
     private LocalDate startDato;
     private LocalDate sluttDato;
@@ -40,6 +41,7 @@ public class AlleredeRegistrertAvtale {
         alleredeRegistrertAvtale.setTiltakstype(avtale.getTiltakstype());
         alleredeRegistrertAvtale.setDeltakerFnr(avtale.getDeltakerFnr());
         alleredeRegistrertAvtale.setBedriftNr(avtale.getBedriftNr());
+        alleredeRegistrertAvtale.setStatus(avtale.statusSomEnum());
         alleredeRegistrertAvtale.setVeilederNavIdent(avtale.getVeilederNavIdent());
         alleredeRegistrertAvtale.setStartDato(avtale.getGjeldendeInnhold().getStartDato());
         alleredeRegistrertAvtale.setSluttDato(avtale.getGjeldendeInnhold().getSluttDato());
