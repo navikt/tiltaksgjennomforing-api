@@ -22,7 +22,7 @@ public class LagSmsFraAvtaleHendelse {
         switch(event.getAvtalepart()){
             case ARBEIDSGIVER -> lagreOgSendKafkaMelding(smsTilArbeidsgiver(event.getAvtale(), HendelseType.DELT_MED_ARBEIDSGIVER));
             case DELTAKER -> lagreOgSendKafkaMelding(smsTilDeltaker(event.getAvtale(), HendelseType.DELT_MED_DELTAKER));
-            case MENTOR -> lagreOgSendKafkaMelding(smsTilMentor(event.getAvtale(), HendelseType.SIGNERT_AV_MENTOR));
+            case MENTOR -> lagreOgSendKafkaMelding(smsTilMentor(event.getAvtale(), HendelseType.DELT_MED_MENTOR));
         }
     }
     @EventListener

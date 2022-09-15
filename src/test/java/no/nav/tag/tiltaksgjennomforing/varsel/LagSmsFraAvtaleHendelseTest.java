@@ -51,7 +51,7 @@ class LagSmsFraAvtaleHendelseTest {
         assertSmsOpprettetOgSendt(HendelseType.DELT_MED_DELTAKER, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
         avtale.delMedAvtalepart(Avtalerolle.MENTOR);
         avtaleRepository.save(avtale);
-        assertSmsOpprettetOgSendt(HendelseType.SIGNERT_AV_MENTOR, avtale.getId(), avtale.getGjeldendeInnhold().getMentorTlf(), SELVBETJENINGSONE_VARSELTEKST);
+        assertSmsOpprettetOgSendt(HendelseType.DELT_MED_MENTOR, avtale.getId(), avtale.getGjeldendeInnhold().getMentorTlf(), SELVBETJENINGSONE_VARSELTEKST);
     }
 
     @Test
