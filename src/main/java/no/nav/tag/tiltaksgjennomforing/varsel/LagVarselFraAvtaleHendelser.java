@@ -35,7 +35,7 @@ public class LagVarselFraAvtaleHendelser {
             varselRepository.saveAll(List.of(factory.veileder(), factory.deltaker()));
         } else if (event.getAvtalepart() == Avtalerolle.MENTOR) {
             VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.MENTOR, HendelseType.DELT_MED_MENTOR);
-            varselRepository.saveAll(List.of(factory.veileder(), factory.deltaker()));
+            varselRepository.saveAll(List.of(factory.mentor(), factory.mentor()));
         }
     }
 
