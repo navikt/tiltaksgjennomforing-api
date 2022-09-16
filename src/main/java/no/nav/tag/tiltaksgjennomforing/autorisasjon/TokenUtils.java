@@ -41,7 +41,7 @@ public class TokenUtils {
 
     public Optional<BrukerOgIssuer> hentBrukerOgIssuer() {
         return hentClaim(ISSUER_SYSTEM, "sub").map(sub -> new BrukerOgIssuer(ISSUER_SYSTEM, sub))
-            .or(() -> hentClaim(ISSUER_AAD, "sub").map(sub -> new BrukerOgIssuer(ISSUER_AAD, sub)))
+            .or(() -> hentClaim(ISSUER_AAD, "NAVident").map(sub -> new BrukerOgIssuer(ISSUER_AAD, sub)))
             .or(() -> hentClaim(ISSUER_TOKENX, "pid").map(it -> new BrukerOgIssuer(ISSUER_TOKENX, it)));
     }
 
