@@ -367,7 +367,7 @@ public class AvtaleTest {
         for (String felt : felterSomKrevesForTiltakstype) {
             EndreAvtale endreAvtale = endringPåAltUtenom(felt, tiltakstype);
             avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
-            assertThat(avtale.felterSomIkkeErFyltUt()).containsOnly(felt);
+             assertThat(avtale.felterSomIkkeErFyltUt()).containsOnly(felt);
             assertFeilkode(Feilkode.ALT_MA_VAERE_FYLT_UT, () -> avtale.godkjennForArbeidsgiver(TestData.enIdentifikator()));
         }
     }
@@ -377,7 +377,13 @@ public class AvtaleTest {
     }
 
     private static EndreAvtale endringPåAltUtenom(String felt, Tiltakstype tiltakstype) {
-        EndreAvtale endreAvtale = Tiltakstype.MENTOR == tiltakstype ? TestData.endringPåAlleMentorFelter() : TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale =
+        switch(tiltakstype){
+            case ARBEIDSTRENING -> TestData.endringPåAlleArbeidstreningFelter();
+            case MENTOR -> TestData.endringPåAlleMentorFelter();
+            case INKLUDERINGSTILSKUDD -> TestData.endringPåAlleInkluderingstilskuddFelter();
+            case MIDLERTIDIG_LONNSTILSKUDD, SOMMERJOBB, VARIG_LONNSTILSKUDD -> TestData.endringPåAlleLønnstilskuddFelter();
+        };
         Object field = ReflectionTestUtils.getField(endreAvtale, felt);
         if (field instanceof Collection) {
             ((Collection) field).clear();
@@ -399,7 +405,7 @@ public class AvtaleTest {
         avtale.setEnhetOppfolging("0000");
         avtale.setEnhetsnavnOppfolging("0000");
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
-        avtale.endreAvtale(avtale.getSistEndret(), TestData.endringPåAlleFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
+        avtale.endreAvtale(avtale.getSistEndret(), TestData.endringPåAlleLønnstilskuddFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
 
         // Later som at det har skjedd noe mystisk med prosenten, kan skyldes feil ved innhenting fra Arena
         avtale.getGjeldendeInnhold().setLonnstilskuddProsent(null);
@@ -658,7 +664,7 @@ public class AvtaleTest {
     @Test
     public void avtale_kan_være_ufordelt_selv_om_alt_er_utfylt() {
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
-        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()), List.of());
+        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleLønnstilskuddFelter(), Avtalerolle.ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()), List.of());
         assertThat(avtale.erUfordelt()).isTrue();
     }
 
@@ -666,7 +672,7 @@ public class AvtaleTest {
     public void avtale_skal_ikke_kunne_godkjennes_uten_navident() {
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
-        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()), List.of());
+        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleLønnstilskuddFelter(), Avtalerolle.ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()), List.of());
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         assertFeilkode(Feilkode.MANGLER_VEILEDER_PÅ_AVTALE, () -> arbeidsgiver.godkjennAvtale(Instant.now(), avtale));
     }
@@ -674,7 +680,7 @@ public class AvtaleTest {
     @Test
     public void ufordelt_avtale_ikke_klar_for_godkjenning() {
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.ARBEIDSTRENING));
-        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()), List.of());
+        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleLønnstilskuddFelter(), Avtalerolle.ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()), List.of());
         assertFeilkode(Feilkode.MANGLER_VEILEDER_PÅ_AVTALE, () -> avtale.sjekkOmAltErKlarTilGodkjenning());
     }
 
@@ -683,7 +689,7 @@ public class AvtaleTest {
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(
                 new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
-        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleFelter(), Avtalerolle.ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()), List.of());
+        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleLønnstilskuddFelter(), Avtalerolle.ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()), List.of());
         assertFeilkode(Feilkode.MANGLER_VEILEDER_PÅ_AVTALE, () -> avtale.sjekkOmAltErKlarTilGodkjenning());
         Veileder veileder = TestData.enVeileder(new NavIdent("Z123456"));
         veileder.overtaAvtale(avtale);
@@ -698,7 +704,7 @@ public class AvtaleTest {
                 .veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD),
                         new NavIdent("Z123456"));
         avtale.setKvalifiseringsgruppe(null);
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setLonnstilskuddProsent(20);
         assertThatThrownBy(() -> avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of()))
                 .isInstanceOf(FeilLonnstilskuddsprosentException.class);
@@ -709,7 +715,7 @@ public class AvtaleTest {
         Avtale avtale = Avtale
                 .veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD),
                         new NavIdent("Z123456"));
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         avtale.setKvalifiseringsgruppe(null);
         endreAvtale.setLonnstilskuddProsent(67);
         assertThatThrownBy(() -> avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of()))
@@ -722,7 +728,7 @@ public class AvtaleTest {
         Avtale avtale = Avtale
                 .veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.VARIG_LONNSTILSKUDD),
                         new NavIdent("Z123456"));
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setLonnstilskuddProsent(-1);
         assertThatThrownBy(() -> avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of()))
                 .isInstanceOf(FeilLonnstilskuddsprosentException.class);
@@ -733,7 +739,7 @@ public class AvtaleTest {
         Avtale avtale = Avtale
                 .veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.VARIG_LONNSTILSKUDD),
                         new NavIdent("Z123456"));
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setLonnstilskuddProsent(100);
         assertThatThrownBy(() -> avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of()))
                 .isInstanceOf(FeilLonnstilskuddsprosentException.class);
@@ -900,7 +906,7 @@ public class AvtaleTest {
                 Set.of(new NavEnhet("4802", "Trysil")), mock(SlettemerkeProperties.class),
                 tilskuddsperiodeConfig, false, mock(VeilarbArenaClient.class));
 
-        veileder.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), avtale, tilskuddsperiodeConfig.getTiltakstyper(), tilskuddsperiodeConfig.getPilotvirksomheter());
+        veileder.endreAvtale(Instant.now(), TestData.endringPåAlleLønnstilskuddFelter(), avtale, tilskuddsperiodeConfig.getTiltakstyper(), tilskuddsperiodeConfig.getPilotvirksomheter());
 
         deltaker.godkjennAvtale(Instant.now(), avtale);
         arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
@@ -978,7 +984,7 @@ public class AvtaleTest {
         assertThat(avtale.getTilskuddPeriode()).isEmpty();
 
         Veileder veileder = TestData.enVeileder(avtale);
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         // Endring uten at bedriften ligger i pilotvirksomheter
         veileder.endreAvtale(Instant.now(), endreAvtale, avtale, EnumSet.of(Tiltakstype.SOMMERJOBB), List.of());
         assertThat(avtale.getTilskuddPeriode()).isEmpty();
@@ -1004,7 +1010,7 @@ public class AvtaleTest {
         Deltaker deltaker = TestData.enDeltaker(avtale);
 
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
-        veileder.endreAvtale(Instant.now(), TestData.endringPåAlleFelter(), avtale, EnumSet.of(Tiltakstype.SOMMERJOBB), List.of());
+        veileder.endreAvtale(Instant.now(), TestData.endringPåAlleLønnstilskuddFelter(), avtale, EnumSet.of(Tiltakstype.SOMMERJOBB), List.of());
         assertThat(avtale.getTilskuddPeriode()).isEmpty();
 
         arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
@@ -1054,7 +1060,7 @@ public class AvtaleTest {
     public void forleng_og_forkort_skal_redusere_prosent() {
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(Now.localDate());
         endreAvtale.setSluttDato(Now.localDate().plusMonths(12).minusDays(1));
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.noneOf(Tiltakstype.class), List.of());
@@ -1077,7 +1083,7 @@ public class AvtaleTest {
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.setGodkjentForEtterregistrering(true);
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.noneOf(Tiltakstype.class), List.of());
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(40);
     }
@@ -1087,7 +1093,7 @@ public class AvtaleTest {
     public void beregning_av_lønnstilskudd_ut_ifra_kvalifiseringsgruppe_SPESIELT_TILPASSET_INNSATS_og_MIDLERTIDIG_LONNSTILSKUDD() {
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS);
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.noneOf(Tiltakstype.class), List.of());
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(60);
     }
@@ -1098,7 +1104,7 @@ public class AvtaleTest {
     public void beregning_av_lønnstilskudd_ut_ifra_kvalifiseringsgruppe_SITUASJONSBESTEMT_INNSATS_og_SOMMERJOBB() {
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.SOMMERJOBB), TestData.enNavIdent());
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
         endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.noneOf(Tiltakstype.class), List.of());
@@ -1111,7 +1117,7 @@ public class AvtaleTest {
     public void beregning_av_lønnstilskudd_ut_ifra_kvalifiseringsgruppe_SPESIELT_TILPASSET_INNSATS_og_SOMMERJOBB() {
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.SOMMERJOBB), TestData.enNavIdent());
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS);
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
         endreAvtale.setSluttDato(LocalDate.of(2021, 6, 1).plusWeeks(4).minusDays(1));
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.noneOf(Tiltakstype.class), List.of());
@@ -1136,7 +1142,7 @@ public class AvtaleTest {
         Now.fixedDate(LocalDate.of(2021, 12, 20));
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
         avtale.togglegodkjennEtterregistrering(TestData.enNavIdent());
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(LocalDate.of(2021, 12, 12));
         endreAvtale.setSluttDato(LocalDate.of(2021, 12, 1).plusYears(1));
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
@@ -1150,7 +1156,7 @@ public class AvtaleTest {
     public void avtale_FORTIDLIG_STARTDATO() {
         Now.fixedDate(LocalDate.of(2021, 12, 20));
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(LocalDate.of(2021, 12, 12));
         endreAvtale.setSluttDato(LocalDate.of(2021, 12, 1).plusYears(1));
 

@@ -57,7 +57,7 @@ public class DeltakerTest {
     public void deltaker_alder_ikke_eldre_enn_72() {
         Now.fixedDate(LocalDate.of(2021, 01, 20));
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("30015521534"), TestData.etBedriftNr(), Tiltakstype.VARIG_LONNSTILSKUDD), TestData.enNavIdent());
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
         endreAvtale.setSluttDato(LocalDate.of(2027, 1, 30));
         avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.noneOf(Tiltakstype.class), List.of());
@@ -71,7 +71,7 @@ public class DeltakerTest {
     public void deltaker_alder_ikke_eldre_enn_67() {
         Now.fixedDate(LocalDate.of(2021, 01, 20));
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("30015521534"), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         avtale.getGjeldendeInnhold().setLonnstilskuddProsent(60);
         endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
         endreAvtale.setSluttDato(LocalDate.of(2022, 1, 30));

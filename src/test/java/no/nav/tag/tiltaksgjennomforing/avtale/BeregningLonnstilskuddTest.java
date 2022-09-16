@@ -103,7 +103,7 @@ class BeregningLonnstilskuddTest {
     @Test
     public void test_regn_ut_oblig_tjenstepensjon_til_null_om_Feriepengersats_er_null() {
         // GIVEN
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setFeriepengesats(null);
 
         // WHEN
@@ -117,7 +117,7 @@ class BeregningLonnstilskuddTest {
     @Test
     public void test_regn_ut_oblig_tjenstepensjon_til_null_om_manedslonn_er_null() {
         // GIVEN
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setManedslonn(null);
 
         // WHEN

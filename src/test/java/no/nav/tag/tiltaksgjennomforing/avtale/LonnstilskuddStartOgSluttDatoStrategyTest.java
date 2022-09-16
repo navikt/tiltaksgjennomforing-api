@@ -29,7 +29,7 @@ class LonnstilskuddStartOgSluttDatoStrategyTest {
 
     @Test
     public void endreMidlertidigLønnstilskudd__startdato_og_sluttdato_satt_24mnd() {
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(24).minusDays(1);
         endreAvtale.setStartDato(startDato);
@@ -41,7 +41,7 @@ class LonnstilskuddStartOgSluttDatoStrategyTest {
 
     @Test
     public void endreMidlertidigLønnstilskudd__startdato_og_sluttdato_satt_over_24mnd__SPESIELT_TILPASSET_INNSATS() {
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(24).plusDays(1);
         endreAvtale.setStartDato(startDato);
@@ -53,7 +53,7 @@ class LonnstilskuddStartOgSluttDatoStrategyTest {
 
     @Test
     public void endreMidlertidigLønnstilskudd__startdato_og_sluttdato_satt_over_24mnd__VARIG_TILPASSET_INNSATS() {
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(24).plusDays(1);
         endreAvtale.setStartDato(startDato);
@@ -65,7 +65,7 @@ class LonnstilskuddStartOgSluttDatoStrategyTest {
 
     @Test
     public void endreMidlertidigLønnstilskudd__startdato_og_sluttdato_satt_over_24mnd__SITUASJONSBESTEMT_INNSATS() {
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(12).plusDays(1);
         endreAvtale.setStartDato(startDato);
@@ -77,7 +77,7 @@ class LonnstilskuddStartOgSluttDatoStrategyTest {
 
     @Test
     public void endreMidlertidigLønnstilskudd__startdato_og_sluttdato_satt_over_12mnd__ikke_satt() {
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(12).plusDays(1);
         endreAvtale.setStartDato(startDato);
@@ -89,7 +89,7 @@ class LonnstilskuddStartOgSluttDatoStrategyTest {
 
     @Test
     public void endreVarigLønnstilskudd__startdato_og_sluttdato_satt_over_24mnd() {
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(24).plusDays(1);
         endreAvtale.setStartDato(startDato);
