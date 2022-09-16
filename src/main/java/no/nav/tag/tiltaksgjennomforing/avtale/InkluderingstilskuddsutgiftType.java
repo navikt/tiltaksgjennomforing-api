@@ -6,5 +6,6 @@ public enum InkluderingstilskuddsutgiftType {
     UTSTYR,
     PROGRAMVARE,
     ARBEIDSHJELPEMIDLER,
-    OPPLÆRING
+    OPPLÆRING,
+    FORSIKRING_LISENS_SERTIFISERING
 }

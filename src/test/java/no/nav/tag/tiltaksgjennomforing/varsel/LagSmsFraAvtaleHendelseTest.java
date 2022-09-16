@@ -42,12 +42,16 @@ class LagSmsFraAvtaleHendelseTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
         avtale.getGjeldendeInnhold().setDeltakerTlf("42234567");
+        avtale.getGjeldendeInnhold().setMentorTlf("42234200");
         avtale.delMedAvtalepart(Avtalerolle.ARBEIDSGIVER);
         avtaleRepository.save(avtale);
         assertSmsOpprettetOgSendt(HendelseType.DELT_MED_ARBEIDSGIVER, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
         avtale.delMedAvtalepart(Avtalerolle.DELTAKER);
         avtaleRepository.save(avtale);
         assertSmsOpprettetOgSendt(HendelseType.DELT_MED_DELTAKER, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
+        avtale.delMedAvtalepart(Avtalerolle.MENTOR);
+        avtaleRepository.save(avtale);
+        assertSmsOpprettetOgSendt(HendelseType.DELT_MED_MENTOR, avtale.getId(), avtale.getGjeldendeInnhold().getMentorTlf(), SELVBETJENINGSONE_VARSELTEKST);
     }
 
     @Test
