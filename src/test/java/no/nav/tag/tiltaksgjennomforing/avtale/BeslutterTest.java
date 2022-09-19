@@ -168,7 +168,7 @@ class BeslutterTest {
 
         //GITT
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(LocalDate.of(2021, 12, 12));
         endreAvtale.setSluttDato(LocalDate.of(2021, 12, 1).plusYears(1));
         Beslutter beslutter = TestData.enBeslutter(avtale);

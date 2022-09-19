@@ -24,7 +24,7 @@ public class MentorStartOgSluttDatoStrategyTest {
 
     @Test
     public void endreMentortilskudd__startdato_er_etter_sluttdato() {
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.minusDays(1);
         endreAvtale.setStartDato(startDato);
@@ -38,7 +38,7 @@ public class MentorStartOgSluttDatoStrategyTest {
 
     @Test
     public void endreMentortilskudd__startdato_og_sluttdato_satt_6mnd_hvis_ikke_spesiellt_tilpasset() {
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(6).minusDays(1);
         endreAvtale.setStartDato(startDato);
@@ -48,7 +48,7 @@ public class MentorStartOgSluttDatoStrategyTest {
 
     @Test
     public void endreMentortilskudd__startdato_og_sluttdato_satt_over_6mnd_hvis_ikke_spesiellt_tilpasset() {
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(6);
         endreAvtale.setStartDato(startDato);
@@ -58,7 +58,7 @@ public class MentorStartOgSluttDatoStrategyTest {
 
     @Test
     public void endreMentortilskudd__startdato_og_sluttdato_satt_over_6mnd_hvis_ikke_spesiellt() {
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(6);
         endreAvtale.setStartDato(startDato);
@@ -69,7 +69,7 @@ public class MentorStartOgSluttDatoStrategyTest {
 
     @Test
     public void endreMentortilskudd__startdato_og_sluttdato_satt_36mnd_spesiellt_tilpasset() {
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
 
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(36).minusDays(1);
@@ -81,7 +81,7 @@ public class MentorStartOgSluttDatoStrategyTest {
 
     @Test
     public void endreMentortilskudd__startdato_og_sluttdato_satt_over_36mnd_spesiellt_tilpasset() {
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
 
         LocalDate startDato = Now.localDate();
         LocalDate sluttDato = startDato.plusMonths(36);

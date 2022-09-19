@@ -212,8 +212,7 @@ public class AvtaleControllerTest {
     @Test
     public void mentorGodkjennTaushetserklæring_når_innlogget_er__Mentor(){
         Avtale enMentorAvtale = TestData.enMentorAvtaleUsignert();
-        Fnr fnr = new Fnr("00000000000");
-        Mentor mentor = new Mentor(fnr);
+        Mentor mentor = new Mentor(enMentorAvtale.getMentorFnr());
         værInnloggetSom(mentor);
 
         when(avtaleRepository.findById(enMentorAvtale.getId())).thenReturn(Optional.of(enMentorAvtale));

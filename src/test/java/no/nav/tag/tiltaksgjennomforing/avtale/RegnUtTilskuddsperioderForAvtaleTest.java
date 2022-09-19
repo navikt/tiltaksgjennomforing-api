@@ -22,7 +22,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         LocalDate til = LocalDate.of(2021, 3, 31);
 
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(fra);
         endreAvtale.setSluttDato(til);
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
@@ -41,7 +41,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         LocalDate til = LocalDate.of(2021, 1, 31);
 
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(fra);
         endreAvtale.setSluttDato(til);
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
@@ -60,7 +60,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
     public void reduksjon_etter_6_mnd__30_prosent_lonnstilskudd() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setLonnstilskuddProsent(40);
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
         TilskuddPeriode tilskuddpeirode6mndEtterStart = finnTilskuddsperiodeForDato(avtale.getGjeldendeInnhold().getStartDato().plusMonths(6), avtale);
@@ -85,7 +85,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
     public void finnTilskuddsperiodeForDato() {
         Now.fixedDate(LocalDate.of(2021, 1, 1));
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(LocalDate.of(2021, 1, 1));
         endreAvtale.setSluttDato(LocalDate.of(2021, 10, 1));
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
@@ -104,7 +104,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         final String ENHETS_NAVN = "NAV Ullensaker";
 
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(avtale.getGjeldendeInnhold().getStartDato());
         endreAvtale.setSluttDato(avtale.getGjeldendeInnhold().getSluttDato());
 
@@ -125,7 +125,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
     public void reduksjon_etter_12_mnd_60_prosent_lonnstilskudd() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS);
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setLonnstilskuddProsent(60);
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(13));
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
@@ -142,7 +142,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         LocalDate sluttDato = LocalDate.of(2021, 1, 2);
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
 
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setLonnstilskuddProsent(40);
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
@@ -160,7 +160,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         LocalDate sluttDato = LocalDate.of(2022, 1, 10);
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
 
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
         endreAvtale.setLonnstilskuddProsent(68);
@@ -181,7 +181,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         LocalDate sluttDato = LocalDate.of(2023, 12, 12);
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
         avtale.setGodkjentForEtterregistrering(true);
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
 
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
@@ -203,7 +203,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         LocalDate sluttDato = LocalDate.of(2023, 3, 10);
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
 
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
         endreAvtale.setLonnstilskuddProsent(40);
@@ -223,7 +223,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         LocalDate sluttDato = LocalDate.of(2021, 3, 1);
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
 
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
         endreAvtale.setLonnstilskuddProsent(69);
@@ -243,7 +243,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         LocalDate sluttDato = LocalDate.of(2021, 6, 1);
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
 
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
         endreAvtale.setLonnstilskuddProsent(35);
@@ -262,7 +262,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         LocalDate startDato = LocalDate.of(2021, 1, 1);
         LocalDate sluttDato = LocalDate.of(2021, 7, 1);
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
         endreAvtale.setLonnstilskuddProsent(40);
@@ -280,7 +280,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         LocalDate sluttDato = LocalDate.of(2022, 12, 31);
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS);
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
         endreAvtale.setLonnstilskuddProsent(60);
@@ -298,7 +298,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         LocalDate sluttDato = LocalDate.of(2021, 12, 31);
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(startDato);
         endreAvtale.setSluttDato(sluttDato);
         endreAvtale.setLonnstilskuddProsent(60);
@@ -313,7 +313,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
     public void sjekk_at_varig_lonnstilskudd_ikke_reduserses() {
         Now.fixedDate(LocalDate.of(2021, 1, 1));
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(LocalDate.of(2021, 1, 1));
         endreAvtale.setSluttDato(LocalDate.of(2031, 1, 1));
         endreAvtale.setLonnstilskuddProsent(60);
@@ -492,7 +492,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
     @Test
     public void splittVedMånedsskifte() {
-        Now.fixedDate(LocalDate.of(2021, 1, 01));
+        Now.fixedDate(LocalDate.of(2021, 1, 1));
         LocalDate avtaleStart = LocalDate.of(2021, 1, 20);
         LocalDate avtaleSlutt = LocalDate.of(2022, 3, 2);
         Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);

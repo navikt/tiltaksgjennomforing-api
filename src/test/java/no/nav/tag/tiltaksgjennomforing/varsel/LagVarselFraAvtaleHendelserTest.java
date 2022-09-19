@@ -101,7 +101,7 @@ class LagVarselFraAvtaleHendelserTest {
         assertHendelse(OPPRETTET, VEILEDER, ARBEIDSGIVER, true);
         assertHendelse(OPPRETTET, VEILEDER, DELTAKER, true);
 
-        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleFelter(), ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()), List.of());
+        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleLønnstilskuddFelter(), ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()), List.of());
         avtale = avtaleRepository.save(avtale);
         assertHendelse(ENDRET, ARBEIDSGIVER, VEILEDER, true);
         assertHendelse(ENDRET, ARBEIDSGIVER, ARBEIDSGIVER, false);

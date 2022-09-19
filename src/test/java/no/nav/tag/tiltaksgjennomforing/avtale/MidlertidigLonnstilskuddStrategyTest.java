@@ -22,7 +22,7 @@ class MidlertidigLonnstilskuddStrategyTest {
 
     @Test
     void test_at_feil_når_familietilknytning_ikke_er_fylt_ut() {
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setHarFamilietilknytning(true);
         endreAvtale.setFamilietilknytningForklaring(null);
         strategy.endre(endreAvtale);
@@ -32,7 +32,7 @@ class MidlertidigLonnstilskuddStrategyTest {
 
     @Test
     void test_at_ikke_feil_når_ikke_forklaring_og_nei_på_familietilknytning() {
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setHarFamilietilknytning(false);
         endreAvtale.setFamilietilknytningForklaring(null);
         strategy.endre(endreAvtale);
@@ -42,7 +42,7 @@ class MidlertidigLonnstilskuddStrategyTest {
 
     @Test
     void test_at_ikke_feil_når_alt_fylt_ut_og_har_familietilknytning() {
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setHarFamilietilknytning(true);
         endreAvtale.setFamilietilknytningForklaring("En god forklaring");
         strategy.endre(endreAvtale);
@@ -51,7 +51,7 @@ class MidlertidigLonnstilskuddStrategyTest {
     @Test
     public void sjekk_riktig_otp_sats() {
         strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, VARIG_LONNSTILSKUDD);
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setOtpSats(0.301);
         AssertFeilkode.assertFeilkode(Feilkode.FEIL_OTP_SATS, () -> strategy.endre(endreAvtale));
         endreAvtale.setOtpSats(-0.001);
@@ -69,7 +69,7 @@ class MidlertidigLonnstilskuddStrategyTest {
 
     @Test
     void lonnstilskuddsprosent_skal_ikke_fylles_ut() {
-        EndreAvtale endreAvtale = TestData.endringPåAlleFelter();
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setLonnstilskuddProsent(null);
         strategy.endre(endreAvtale);
         assertThat(strategy.alleFelterSomMåFyllesUt()).doesNotContainKey(AvtaleInnhold.Fields.lonnstilskuddProsent);
