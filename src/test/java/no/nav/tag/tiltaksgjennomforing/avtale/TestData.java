@@ -303,6 +303,7 @@ public class TestData {
         avtale.setMentorFnr(new Fnr("00000000000"));
         EndreAvtale endreAvtale = new EndreAvtale();
         endreMentorInfo(endreAvtale);
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
         avtale.getGjeldendeInnhold().setVersjon(1);
         avtale.getGjeldendeInnhold().setJournalpostId(null);
         return avtale;
@@ -346,6 +347,14 @@ public class TestData {
         return endreInkluderingstilskudd;
     }
 
+    public static EndreAvtale endreInkluderingstilskuddInfo(EndreAvtale endreAvtale){
+        endreAvtale.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgift(13337, InkluderingstilskuddsutgiftType.PROGRAMVARE));
+        endreAvtale.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgift(25697, InkluderingstilskuddsutgiftType.OPPLÆRING));
+        endreAvtale.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgift(7195, InkluderingstilskuddsutgiftType.UTSTYR));
+        endreAvtale.setInkluderingstilskuddBegrunnelse("Behov for tilskudd til dyre programvarelisenser og opplæring i disse.");
+        return endreAvtale;
+    }
+
     public static EndreAvtale endreKontaktInfo(EndreAvtale endreAvtale) {
         endreAvtale.setDeltakerFornavn("Dagny");
         endreAvtale.setDeltakerEtternavn("Deltaker");
@@ -362,6 +371,11 @@ public class TestData {
         return endreAvtale;
     }
 
+    public static EndreAvtale endreMaalInfo(EndreAvtale endreAvtale){
+        endreAvtale.getMaal().add(TestData.etMaal());
+        return endreAvtale;
+    }
+
     public static EndreAvtale endreMentorInfo(EndreAvtale endreAvtale) {
         endreAvtale.setMentorFornavn("Mentor");
         endreAvtale.setMentorEtternavn("Mentorsen");
@@ -371,6 +385,8 @@ public class TestData {
         endreAvtale.setMentorTimelonn(1000);
         return endreAvtale;
     }
+
+
 
     public static EndreAvtale endringPåAlleArbeidstreningFelter() {
         EndreAvtale endreAvtale = new EndreAvtale();
@@ -396,10 +412,7 @@ public class TestData {
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusWeeks(2));
-        endreAvtale.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgift(13337, InkluderingstilskuddsutgiftType.PROGRAMVARE));
-        endreAvtale.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgift(25697, InkluderingstilskuddsutgiftType.OPPLÆRING));
-        endreAvtale.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgift(7195, InkluderingstilskuddsutgiftType.UTSTYR));
-        endreAvtale.setInkluderingstilskuddBegrunnelse("Behov for tilskudd til dyre programvarelisenser og opplæring i disse.");
+        endreInkluderingstilskuddInfo(endreAvtale);
         return endreAvtale;
     }
 
@@ -411,7 +424,6 @@ public class TestData {
         endreAvtale.setStartDato(Now.localDate());
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(12).minusDays(1));
         endreAvtale.setStillingprosent(50);
-        endreAvtale.getMaal().add(TestData.etMaal());
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
         endreAvtale.setArbeidsgiverKontonummer("000111222");
         endreAvtale.setStillingstittel("Butikkbetjent");
