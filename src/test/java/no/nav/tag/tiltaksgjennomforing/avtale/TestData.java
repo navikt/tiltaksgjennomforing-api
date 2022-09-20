@@ -298,7 +298,7 @@ public class TestData {
     }
 
     public static Avtale enMentorAvtaleMedMedAltUtfylt() {
-        Avtale avtale = enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        Avtale avtale = enAvtaleMedAltUtfylt();
         avtale.setTiltakstype(Tiltakstype.MENTOR);
         avtale.setMentorFnr(new Fnr("00000000000"));
         EndreAvtale endreAvtale = new EndreAvtale();
