@@ -11,15 +11,14 @@ set varslbar_hendelse_type = (case varslbar_hendelse_type
                                   when '8' then 'ENDRET'
                                   when '9' then 'DELT_MED_DELTAKER'
                                   when '10' then 'DELT_MED_ARBEIDSGIVER'
-                                  when '11' then 'DELT_MED_MENTOR'
-                                  when '12' then 'AVBRUTT'
-                                  when '13' then 'LÅST_OPP'
-                                  when '14' then 'GJENOPPRETTET'
-                                  when '15' then 'OPPRETTET_AV_ARBEIDSGIVER'
-                                  when '16' then 'NY_VEILEDER'
-                                  when '17' then 'AVTALE_FORDELT'
-                                  when '18' then 'TILSKUDDSPERIODE_AVSLATT'
-                                  when '19' then 'TILSKUDDSPERIODE_GODKJENT'
+                                  when '11' then 'AVBRUTT'
+                                  when '12' then 'LÅST_OPP'
+                                  when '13' then 'GJENOPPRETTET'
+                                  when '14' then 'OPPRETTET_AV_ARBEIDSGIVER'
+                                  when '15' then 'NY_VEILEDER'
+                                  when '16' then 'AVTALE_FORDELT'
+                                  when '17' then 'TILSKUDDSPERIODE_AVSLATT'
+                                  when '18' then 'TILSKUDDSPERIODE_GODKJENT'
 
                                   else varslbar_hendelse_type end);
 
