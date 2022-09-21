@@ -130,6 +130,16 @@ SELECT uuid_in(md5(random()::text || clock_timestamp()::text)::cstring), true, (
 FROM varslbar_hendelse WHERE varslbar_hendelse_type = 'DELT_MED_ARBEIDSGIVER' and exists (select 1 from avtale where avtale.id = varslbar_hendelse.avtale_id);
 -------------------------------------------
 
+-- DELT_MED_MENTOR
+INSERT INTO varsel (id, lest, identifikator, tekst, avtale_id, hendelse_type, tidspunkt, bjelle, utført_av, mottaker)
+SELECT uuid_in(md5(random()::text || clock_timestamp()::text)::cstring), true, (select mentor_fnr from avtale where avtale.id = varslbar_hendelse.avtale_id), 'Avtale delt med mentor', avtale_id, varslbar_hendelse_type, tidspunkt, true, 'VEILEDER', 'MENTOR'
+FROM varslbar_hendelse WHERE varslbar_hendelse_type = 'DELT_MED_MENTOR' and exists (select 1 from avtale where avtale.id = varslbar_hendelse.avtale_id);
+
+INSERT INTO varsel (id, lest, identifikator, tekst, avtale_id, hendelse_type, tidspunkt, bjelle, utført_av, mottaker)
+SELECT uuid_in(md5(random()::text || clock_timestamp()::text)::cstring), true, (select veileder_nav_ident from avtale where avtale.id = varslbar_hendelse.avtale_id), 'Avtale delt med mentor', avtale_id, varslbar_hendelse_type, tidspunkt, false, 'VEILEDER', 'VEILEDER'
+FROM varslbar_hendelse WHERE varslbar_hendelse_type = 'DELT_MED_MENTOR' and exists (select 1 from avtale where avtale.id = varslbar_hendelse.avtale_id);
+--------------------------------------------
+
 -- AVBRUTT
 INSERT INTO varsel (id, lest, identifikator, tekst, avtale_id, hendelse_type, tidspunkt, bjelle, utført_av, mottaker)
 SELECT uuid_in(md5(random()::text || clock_timestamp()::text)::cstring), true, (select veileder_nav_ident from avtale where avtale.id = hendelselogg.avtale_id), 'Avtale avbrutt av veileder', avtale_id, hendelse, tidspunkt, false, 'VEILEDER', 'VEILEDER'
