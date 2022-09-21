@@ -381,7 +381,7 @@ public class TestData {
         endreAvtale.setMentorEtternavn("Mentorsen");
         endreAvtale.setMentorOppgaver("Mentoroppgaver");
         endreAvtale.setMentorAntallTimer(10);
-        endreAvtale.setMentorTlf("12348594837");
+        endreAvtale.setMentorTlf("44444444");
         endreAvtale.setMentorTimelonn(1000);
         return endreAvtale;
     }
