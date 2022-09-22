@@ -54,6 +54,9 @@ spec:
     type: RollingUpdate
   tokenx:
     enabled: true
+  azure:
+    application:
+      enabled: true
   {{/unless}}
   prometheus:
     enabled: true
@@ -63,6 +66,7 @@ spec:
     inbound:
       rules:
         - application: tiltaksgjennomforing
+        - application: tiltak-proxy
     outbound:
       rules:
         - application: tiltak-fakelogin
