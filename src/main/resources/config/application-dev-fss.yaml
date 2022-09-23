@@ -21,14 +21,6 @@ no.nav.security.jwt:
     tokenx:
       discoveryurl: ${TOKEN_X_WELL_KNOWN_URL}
       accepted_audience: ${TOKEN_X_CLIENT_ID}
-    selvbetjening:
-      discoveryurl: ${LOGINSERVICE_IDPORTEN_DISCOVERY_URL}
-      accepted_audience: ${LOGINSERVICE_IDPORTEN_AUDIENCE}
-      cookie_name: selvbetjening-idtoken
-    isso:
-      discoveryurl: https://login.microsoftonline.com/NAVQ.onmicrosoft.com/.well-known/openid-configuration
-      accepted_audience: 38e07d31-659d-4595-939a-f18dce3446c5
-      cookie_name: isso-idtoken
     system:
       discoveryurl: http://security-token-service.default.svc.nais.local/rest/v1/sts/.well-known/openid-configuration
       accepted_audience: ${tiltaksgjennomforing.audience.system}
