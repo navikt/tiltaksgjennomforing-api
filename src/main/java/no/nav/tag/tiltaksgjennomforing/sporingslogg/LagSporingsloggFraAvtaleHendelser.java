@@ -72,6 +72,8 @@ public class LagSporingsloggFraAvtaleHendelser {
             sporingsloggRepository.save(Sporingslogg.nyHendelse(event.getAvtale(), HendelseType.DELT_MED_ARBEIDSGIVER));
         } else if (event.getAvtalepart() == Avtalerolle.DELTAKER) {
             sporingsloggRepository.save(Sporingslogg.nyHendelse(event.getAvtale(), HendelseType.DELT_MED_DELTAKER));
+        } else if (event.getAvtalepart() == Avtalerolle.MENTOR) {
+            sporingsloggRepository.save(Sporingslogg.nyHendelse(event.getAvtale(), HendelseType.DELT_MED_MENTOR));
         }
     }
 

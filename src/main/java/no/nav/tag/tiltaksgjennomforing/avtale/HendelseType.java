@@ -18,6 +18,7 @@ public enum HendelseType {
     GODKJENNINGER_OPPHEVET_AV_VEILEDER("Avtalens godkjenninger er opphevet av veileder"),
     DELT_MED_DELTAKER("Avtale delt med deltaker"),
     DELT_MED_ARBEIDSGIVER("Avtale delt med arbeidsgiver"),
+    DELT_MED_MENTOR("Avtale delt med mentor"),
     ENDRET("Avtale endret"),
     AVBRUTT("Avtale avbrutt av veileder"),
     ANNULLERT("Avtale annullert av veileder"),

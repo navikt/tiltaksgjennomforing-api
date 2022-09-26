@@ -5,25 +5,7 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle.BESLUTTER;
 import static no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle.DELTAKER;
 import static no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle.MENTOR;
 import static no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle.VEILEDER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.AVTALE_FORDELT;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.AVTALE_FORLENGET;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.DELT_MED_ARBEIDSGIVER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.DELT_MED_DELTAKER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.ENDRET;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.FJERNET_ETTERREGISTRERING;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.GODKJENT_AV_ARBEIDSGIVER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.GODKJENT_AV_DELTAKER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.GODKJENT_FOR_ETTERREGISTRERING;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.GODKJENT_PAA_VEGNE_AV;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.NY_VEILEDER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.OPPRETTET;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.OPPRETTET_AV_ARBEIDSGIVER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.STILLINGSBESKRIVELSE_ENDRET;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.TILSKUDDSBEREGNING_ENDRET;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.TILSKUDDSPERIODE_AVSLATT;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.TILSKUDDSPERIODE_GODKJENT;
+import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.EnumSet;
@@ -101,7 +83,7 @@ class LagVarselFraAvtaleHendelserTest {
         assertHendelse(OPPRETTET, VEILEDER, ARBEIDSGIVER, true);
         assertHendelse(OPPRETTET, VEILEDER, DELTAKER, true);
 
-        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleFelter(), ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()), List.of());
+        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleLønnstilskuddFelter(), ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()), List.of());
         avtale = avtaleRepository.save(avtale);
         assertHendelse(ENDRET, ARBEIDSGIVER, VEILEDER, true);
         assertHendelse(ENDRET, ARBEIDSGIVER, ARBEIDSGIVER, false);
@@ -220,6 +202,27 @@ class LagVarselFraAvtaleHendelserTest {
         assertHendelse(AVTALE_FORDELT, VEILEDER, ARBEIDSGIVER, true);
         assertHendelse(AVTALE_FORDELT, VEILEDER, DELTAKER, true);
         assertHendelse(AVTALE_FORDELT, VEILEDER, MENTOR, true);
+    }
+
+    @Test
+    void test_for_delt_med_mentor() {
+        Avtale avtale = avtaleRepository.save(Avtale.veilederOppretterAvtale(new OpprettMentorAvtale(new Fnr("00000000000") , new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MENTOR, VEILEDER), TestData.enNavIdent()));
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleMentorFelter(), VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
+        avtale = avtaleRepository.save(avtale);
+
+        avtale.delMedAvtalepart(DELTAKER);
+        avtale = avtaleRepository.save(avtale);
+        assertHendelse(DELT_MED_DELTAKER, VEILEDER, VEILEDER, false);
+        assertHendelse(DELT_MED_DELTAKER, VEILEDER, DELTAKER, true);
+        assertIngenHendelse(DELT_MED_DELTAKER, ARBEIDSGIVER);
+
+        avtale.delMedAvtalepart(MENTOR);
+        avtale = avtaleRepository.save(avtale);
+        assertHendelse(DELT_MED_MENTOR, VEILEDER, VEILEDER, false);
+        assertHendelse(DELT_MED_MENTOR, VEILEDER, MENTOR, true);
+        assertIngenHendelse(DELT_MED_MENTOR, ARBEIDSGIVER);
+
     }
 
     @Test

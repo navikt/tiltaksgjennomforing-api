@@ -22,7 +22,7 @@ class ArbeidstreningStrategyTest {
 
     @Test
     void test_at_felter_relevante_i_arbeidstrening_kan_endres() {
-        strategy.endre(TestData.endringPåAlleFelter());
+        strategy.endre(TestData.endringPåAlleArbeidstreningFelter());
 
         // Test for collections
         assertThat(avtaleInnhold.getMaal()).isNotEmpty();
@@ -35,20 +35,20 @@ class ArbeidstreningStrategyTest {
                 bedriftNavn,
                 arbeidsgiverFornavn,
                 arbeidsgiverEtternavn,
-                deltakerEtternavn,
                 arbeidsgiverTlf,
                 veilederFornavn,
                 veilederEtternavn,
                 veilederTlf,
-                oppfolging,
-                tilrettelegging,
+                stillingstittel,
+                arbeidsoppgaver,
+                stillingprosent,
+                antallDagerPerUke,
                 startDato,
                 sluttDato,
-                stillingprosent,
-                stillingstittel,
+                tilrettelegging,
+                oppfolging,
                 stillingKonseptId,
-                stillingStyrk08,
-                arbeidsoppgaver
+                stillingStyrk08
         ).filteredOn(Objects::isNull).isEmpty();
     }
 }
