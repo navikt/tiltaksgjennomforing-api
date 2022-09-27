@@ -57,6 +57,9 @@ spec:
   azure:
     application:
       enabled: true
+      claims:
+        extra:
+          - "NAVident"
   {{/unless}}
   prometheus:
     enabled: true
