@@ -103,21 +103,15 @@ public class AvtaleController {
 
     @GetMapping("/{avtaleId}/pdf")
     public HttpEntity<?> hentAvtalePdf(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
-        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        Avtale avtale = avtalepart.hentAvtale(avtaleRepository, avtaleId);
-
+        Avtale avtale = innloggingService.hentAvtalepart(innloggetPart).hentAvtale(avtaleRepository, avtaleId);
         if (!avtale.erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LASTE_NED_PDF);
         }
-
         byte[] avtalePdf = dokgenService.avtalePdf(avtale, innloggetPart);
-
         HttpHeaders header = new HttpHeaders();
         header.setContentType(MediaType.APPLICATION_PDF);
-        header.set(HttpHeaders.CONTENT_DISPOSITION,
-                "inline; filename=Avtale om " + avtale.getTiltakstype().getBeskrivelse() + ".pdf");
+        header.set(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=Avtale om " + avtale.getTiltakstype().getBeskrivelse() + ".pdf");
         header.setContentLength(avtalePdf.length);
-
         return new HttpEntity<>(avtalePdf, header);
     }
 
@@ -203,25 +197,24 @@ public class AvtaleController {
         return ResponseEntity.created(uri).build();
     }
 
-
     /** VEILEDER-OPERASJONER **/
-
     @GetMapping("/deltaker-allerede-paa-tiltak")
     @Transactional
     public ResponseEntity<List<AlleredeRegistrertAvtale>> sjekkOmDeltakerAlleredeErRegistrertPaaTiltak(
             @RequestParam(value = "deltakerFnr") Fnr deltakerFnr,
             @RequestParam(value = "tiltakstype") Tiltakstype tiltakstype,
-            @RequestParam(value = "avtaleId", required = false) UUID avtaleId,
-            @RequestParam(value = "startDato", required = false) LocalDate startDato,
-            @RequestParam(value = "sluttDato", required = false) LocalDate sluttDato
+            @RequestParam(value = "startDato", required = false) String startDato,
+            @RequestParam(value = "sluttDato", required = false) String sluttDato,
+            @RequestParam(value = "avtaleId", required = false) String avtaleId
+
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         List<AlleredeRegistrertAvtale> avtaler = veileder.hentAvtaleDeltakerAlleredeErRegistrertPaa(
                 deltakerFnr,
                 tiltakstype,
-                avtaleId,
-                startDato,
-                sluttDato,
+                avtaleId != null ? UUID.fromString(avtaleId) : null,
+                startDato != null ? LocalDate.parse(startDato) : null,
+                sluttDato != null ? LocalDate.parse(sluttDato) : null,
                 avtaleRepository
         );
         return new ResponseEntity<List<AlleredeRegistrertAvtale>>(avtaler,HttpStatus.OK);

@@ -23,6 +23,7 @@ public class AlleredeRegistrertAvtale {
     private BedriftNr bedriftNr;
     private NavIdent veilederNavIdent;
     private Status status;
+    private boolean opprettetAvArbeidsgiver;
 
     private LocalDate startDato;
     private LocalDate sluttDato;
@@ -43,6 +44,7 @@ public class AlleredeRegistrertAvtale {
         alleredeRegistrertAvtale.setBedriftNr(avtale.getBedriftNr());
         alleredeRegistrertAvtale.setStatus(avtale.statusSomEnum());
         alleredeRegistrertAvtale.setVeilederNavIdent(avtale.getVeilederNavIdent());
+        alleredeRegistrertAvtale.setOpprettetAvArbeidsgiver(avtale.isOpprettetAvArbeidsgiver());
         alleredeRegistrertAvtale.setStartDato(avtale.getGjeldendeInnhold().getStartDato());
         alleredeRegistrertAvtale.setSluttDato(avtale.getGjeldendeInnhold().getSluttDato());
         alleredeRegistrertAvtale.setGodkjentAvVeileder(avtale.getGjeldendeInnhold().getGodkjentAvVeileder());
