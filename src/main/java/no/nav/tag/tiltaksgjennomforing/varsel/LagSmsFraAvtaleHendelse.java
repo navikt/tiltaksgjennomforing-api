@@ -19,12 +19,10 @@ public class LagSmsFraAvtaleHendelse {
 
     @EventListener
     public void avtaleDeltMedAvtalepart(AvtaleDeltMedAvtalepart event) {
-        if (event.getAvtalepart() == Avtalerolle.ARBEIDSGIVER) {
-            var sms = smsTilArbeidsgiver(event.getAvtale(), HendelseType.DELT_MED_ARBEIDSGIVER);
-            lagreOgSendKafkaMelding(sms);
-        } else if (event.getAvtalepart() == Avtalerolle.DELTAKER) {
-            var sms = smsTilDeltaker(event.getAvtale(), HendelseType.DELT_MED_DELTAKER);
-            lagreOgSendKafkaMelding(sms);
+        switch(event.getAvtalepart()){
+            case ARBEIDSGIVER -> lagreOgSendKafkaMelding(smsTilArbeidsgiver(event.getAvtale(), HendelseType.DELT_MED_ARBEIDSGIVER));
+            case DELTAKER -> lagreOgSendKafkaMelding(smsTilDeltaker(event.getAvtale(), HendelseType.DELT_MED_DELTAKER));
+            case MENTOR -> lagreOgSendKafkaMelding(smsTilMentor(event.getAvtale(), HendelseType.DELT_MED_MENTOR));
         }
     }
     @EventListener

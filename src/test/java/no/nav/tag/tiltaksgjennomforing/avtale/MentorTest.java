@@ -18,9 +18,7 @@ import org.junit.jupiter.api.Test;
 
 public class MentorTest {
 
-    private TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
     private AvtaleRepository avtaleRepository = mock(AvtaleRepository.class);
-    private AxsysService axsysService = mock(AxsysService.class);
 
     @Test
     public void hentAlleAvtalerMedMuligTilgang__mentor_en_avtale() {
@@ -28,45 +26,49 @@ public class MentorTest {
         // GITT
         Avtale avtaleUsignert = TestData.enMentorAvtaleUsignert();
         Avtale avtaleSignert = TestData.enMentorAvtaleSignert();
-        avtaleUsignert.setMentorFnr(new Fnr("00000000000"));
-        Mentor mentor = new Mentor(new Fnr("00000000000"));
+        Mentor mentor = TestData.enMentor(avtaleSignert);
         AvtalePredicate avtalePredicate = new AvtalePredicate();
         // NÅR
         when(avtaleRepository.findAllByMentorFnr(any())).thenReturn(List.of(avtaleUsignert,avtaleSignert));
-
         List<Avtale> avtaler = mentor.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
 
         assertThat(avtaler.size()).isEqualTo(2);
-        assertThat(avtaler.get(1)).isEqualTo(avtaleSignert);
         assertThat(avtaler.get(0)).isEqualTo(avtaleUsignert);
-        assertThat(avtaler.get(1).getDeltakerFnr()).isNull();
+        assertThat(avtaler.get(1)).isEqualTo(avtaleSignert);
         assertThat(avtaler.get(0).getDeltakerFnr()).isNull();
-    }
+        assertThat(avtaler.get(1).getDeltakerFnr()).isNull();
+     }
 
     @Test
-    public void hentAvtalerUtenDeltakerFNR() {
-
+    public void deltakerFNR_skal_være_null_selv_om_mentor_har_signert(){
         // GITT
-        Avtale avtaleUsignert = TestData.enMentorAvtaleSignert();
-        avtaleUsignert.setMentorFnr(new Fnr("00000000000"));
-        Mentor mentor = new Mentor(new Fnr("00000000000"));
+        Avtale avtaleSignert = TestData.enMentorAvtaleSignert();
+        Mentor mentor = TestData.enMentor(avtaleSignert);
         // NÅR
-        when(avtaleRepository.findById(any())).thenReturn(Optional.of(avtaleUsignert));
+        when(avtaleRepository.findById(any())).thenReturn(Optional.of(avtaleSignert));
+        Avtale avtale = mentor.hentAvtale(avtaleRepository, avtaleSignert.getId());
 
-        Avtale avtale = mentor.hentAvtale(avtaleRepository, avtaleUsignert.getId());
-
-        assertThat(avtale).isEqualTo(avtaleUsignert);
+        assertThat(avtale).isEqualTo(avtaleSignert);
         assertThat(avtale.getDeltakerFnr()).isNull();
     }
 
     @Test
-    public void harTilgangTilAvtale__mentor_en_avtale_annen_mentor() {
+    public void om_mentor_har_tilgang_til_en_annen_mentors_avtale() {
 
         // GITT
         Avtale avtale = TestData.enMentorAvtaleUsignert();
-        avtale.setMentorFnr(new Fnr("77665521872"));
-        Mentor mentor = new Mentor(new Fnr("00000000000"));
-        AvtalePredicate avtalePredicate = new AvtalePredicate();
+        Mentor mentor = new Mentor(new Fnr("77665521872"));
+        // NÅR
+        boolean hartilgang = mentor.harTilgangTilAvtale(avtale);
+        assertFalse(hartilgang);
+    }
+
+    @Test
+    public void om_mentor_har_tilgang_til_en_annen_mentors_avtale_TestDataTest() {
+
+        // GITT
+        Avtale avtale = TestData.enMentorAvtaleUsignert();
+        Mentor mentor = new Mentor(new Fnr("77665521872"));
         // NÅR
         boolean hartilgang = mentor.harTilgangTilAvtale(avtale);
         assertFalse(hartilgang);
@@ -77,13 +79,10 @@ public class MentorTest {
 
         // GITT
         Avtale avtale = TestData.enMentorAvtaleUsignert();
-        avtale.getGjeldendeInnhold().setGodkjentTaushetserklæringAvMentor(null);
-        avtale.setMentorFnr(new Fnr("00000000000"));
-        Mentor mentor = new Mentor(new Fnr("00000000000"));
+        Mentor mentor = TestData.enMentor(avtale);
         AvtalePredicate avtalePredicate = new AvtalePredicate();
         // NÅR
         when(avtaleRepository.findAllByMentorFnr(any())).thenReturn(List.of(avtale));
-
         List<Avtale> avtaler = mentor.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
 
         assertThat(avtaler).isNotEmpty();
@@ -93,6 +92,7 @@ public class MentorTest {
         assertThat(avtaler.get(0).getGjeldendeInnhold().getDeltakerEtternavn()).isNull();
         assertThat(avtaler.get(0).getGjeldendeInnhold().getVeilederTlf()).isNull();
         assertThat(avtaler.get(0).getGjeldendeInnhold().getArbeidsgiverKontonummer()).isNull();
+        assertThat(avtaler.get(0).getBedriftNr()).isNotNull();
     }
 
     @Test
@@ -112,7 +112,8 @@ public class MentorTest {
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         Veileder veileder = TestData.enVeileder(avtale);
         arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
-        veileder.godkjennAvtale(Instant.now(), avtale);
+        veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(),avtale);
+        //veileder.godkjennAvtale(Instant.now(), avtale);
         assertThat(avtale.getGjeldendeInnhold().getInnholdType()).isEqualTo(AvtaleInnholdType.INNGÅ);
         EndreOmMentor endreOmMentor = new EndreOmMentor("Per", "Persen", "12345678", "litt mentorering", 5, 500);
         veileder.endreOmMentor(endreOmMentor, avtale);

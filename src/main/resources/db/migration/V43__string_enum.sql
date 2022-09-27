@@ -19,6 +19,7 @@ set varslbar_hendelse_type = (case varslbar_hendelse_type
                                   when '16' then 'AVTALE_FORDELT'
                                   when '17' then 'TILSKUDDSPERIODE_AVSLATT'
                                   when '18' then 'TILSKUDDSPERIODE_GODKJENT'
+
                                   else varslbar_hendelse_type end);
 
 update sms_varsel
