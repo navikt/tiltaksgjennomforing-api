@@ -74,6 +74,7 @@ public class GjeldendeTilskuddsperiodeTest {
 
         avtale.avslåTilskuddsperiode(TestData.enNavIdent2(), EnumSet.of(Avslagsårsak.ANNET), "Forklaring");
         assertThat(avtale.tilskuddsperiode(0)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
+        Now.resetClock();
     }
 
     // 7
