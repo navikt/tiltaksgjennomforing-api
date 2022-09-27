@@ -1,8 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class NavIdent extends Identifikator {
     public NavIdent(String verdi) {
         super(verdi);
+        log.info("NAVident {}", verdi);
         if (!erNavIdent(verdi)) {
             throw new IllegalArgumentException("Er ikke en nav-ident");
         }
