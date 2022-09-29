@@ -11,6 +11,9 @@ spec:
     application:
       enabled: true
       tenant: {{tenant}}
+      claims:
+        extra:
+          - "NAVident"
   kafka:
     pool: {{kafka-pool}}
   {{/unless}}
@@ -54,12 +57,6 @@ spec:
     type: RollingUpdate
   tokenx:
     enabled: true
-  azure:
-    application:
-      enabled: true
-      claims:
-        extra:
-          - "NAVident"
   {{/unless}}
   prometheus:
     enabled: true
