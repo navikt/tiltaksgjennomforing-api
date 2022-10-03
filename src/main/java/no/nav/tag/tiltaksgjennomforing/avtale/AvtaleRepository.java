@@ -1,6 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import io.micrometer.core.annotation.Timed;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -57,6 +59,29 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Override
     Avtale save(Avtale entity);
+
+
+    @Query(value = "SELECT AVTALE.* FROM AVTALE LEFT JOIN AVTALE_INNHOLD " +
+            "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
+            "WHERE :deltakerFnr = AVTALE.deltaker_fnr and " +
+            "(:avtaleId is null or :avtaleId != AVTALE.id) and " +
+            "AVTALE.annullert_tidspunkt is null and " +
+            "AVTALE.avbrutt is false and " +
+            "AVTALE.slettemerket is false and " +
+            "((:startDato is not null and AVTALE_INNHOLD.start_dato is not null and AVTALE_INNHOLD.slutt_dato is not null and" +
+            " (:startDato >= AVTALE_INNHOLD.start_dato and :startDato <= AVTALE_INNHOLD.slutt_dato)) " +
+            "or " +
+            "(:sluttDato is not null and AVTALE_INNHOLD.start_dato is not null and AVTALE_INNHOLD.slutt_dato is not null and " +
+            "(:sluttDato >= AVTALE_INNHOLD.start_dato and :sluttDato <= AVTALE_INNHOLD.slutt_dato)) " +
+            "or " +
+            "AVTALE_INNHOLD.godkjent_av_veileder is null)"
+            , nativeQuery = true)
+    List<Avtale> finnAvtalerSomOverlapperForDeltaker(
+            @Param("deltakerFnr") String deltakerFnr,
+            @Param("avtaleId") String avtaleId,
+            @Param("startDato") LocalDate startDato,
+            @Param("sluttDato") LocalDate sluttDato
+    );
 
 
 @Query(value =

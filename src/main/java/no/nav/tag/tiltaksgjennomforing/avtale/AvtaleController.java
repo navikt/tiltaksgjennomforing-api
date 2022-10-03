@@ -5,6 +5,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
 import io.micrometer.core.annotation.Timed;
 import java.net.URI;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +21,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -62,8 +60,13 @@ public class AvtaleController {
 
     @GetMapping("/{avtaleId}/versjoner")
     public List<AvtaleInnhold> hentVersjoner(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
-        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        return avtalepart.hentAvtaleVersjoner(avtaleRepository, avtaleInnholdRepository, id);
+        return innloggingService
+                .hentAvtalepart(innloggetPart)
+                .hentAvtaleVersjoner(
+                        avtaleRepository,
+                        avtaleInnholdRepository,
+                        id
+                );
     }
 
     @GetMapping
@@ -75,9 +78,13 @@ public class AvtaleController {
             @RequestParam(value = "skip", required = false, defaultValue = "0") Integer skip,
             @RequestParam(value = "limit", required = false, defaultValue = "100000000") Integer limit
     ) {
-        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        List<Avtale> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre, sorteringskolonne, skip, limit);
-        return avtaler;
+        return innloggingService.hentAvtalepart(innloggetPart).hentAlleAvtalerMedLesetilgang(
+                avtaleRepository,
+                queryParametre,
+                sorteringskolonne,
+                skip,
+                limit
+        );
     }
 
     @GetMapping("/beslutter")
@@ -96,21 +103,15 @@ public class AvtaleController {
 
     @GetMapping("/{avtaleId}/pdf")
     public HttpEntity<?> hentAvtalePdf(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
-        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        Avtale avtale = avtalepart.hentAvtale(avtaleRepository, avtaleId);
-
+        Avtale avtale = innloggingService.hentAvtalepart(innloggetPart).hentAvtale(avtaleRepository, avtaleId);
         if (!avtale.erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LASTE_NED_PDF);
         }
-
         byte[] avtalePdf = dokgenService.avtalePdf(avtale, innloggetPart);
-
         HttpHeaders header = new HttpHeaders();
         header.setContentType(MediaType.APPLICATION_PDF);
-        header.set(HttpHeaders.CONTENT_DISPOSITION,
-                "inline; filename=Avtale om " + avtale.getTiltakstype().getBeskrivelse() + ".pdf");
+        header.set(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=Avtale om " + avtale.getTiltakstype().getBeskrivelse() + ".pdf");
         header.setContentLength(avtalePdf.length);
-
         return new HttpEntity<>(avtalePdf, header);
     }
 
@@ -196,8 +197,28 @@ public class AvtaleController {
         return ResponseEntity.created(uri).build();
     }
 
-
     /** VEILEDER-OPERASJONER **/
+    @GetMapping("/deltaker-allerede-paa-tiltak")
+    @Transactional
+    public ResponseEntity<List<AlleredeRegistrertAvtale>> sjekkOmDeltakerAlleredeErRegistrertPaaTiltak(
+            @RequestParam(value = "deltakerFnr") Fnr deltakerFnr,
+            @RequestParam(value = "tiltakstype") Tiltakstype tiltakstype,
+            @RequestParam(value = "startDato", required = false) String startDato,
+            @RequestParam(value = "sluttDato", required = false) String sluttDato,
+            @RequestParam(value = "avtaleId", required = false) String avtaleId
+
+    ) {
+        Veileder veileder = innloggingService.hentVeileder();
+        List<AlleredeRegistrertAvtale> avtaler = veileder.hentAvtaleDeltakerAlleredeErRegistrertPaa(
+                deltakerFnr,
+                tiltakstype,
+                avtaleId != null ? UUID.fromString(avtaleId) : null,
+                startDato != null ? LocalDate.parse(startDato) : null,
+                sluttDato != null ? LocalDate.parse(sluttDato) : null,
+                avtaleRepository
+        );
+        return new ResponseEntity<List<AlleredeRegistrertAvtale>>(avtaler,HttpStatus.OK);
+    }
 
     @PostMapping
     @Transactional
