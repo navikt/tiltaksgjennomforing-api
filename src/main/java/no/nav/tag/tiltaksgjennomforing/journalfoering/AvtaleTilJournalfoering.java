@@ -20,6 +20,7 @@ public class AvtaleTilJournalfoering {
     private LocalDate opprettet;
 
     private String deltakerFnr;
+    private String mentorFnr;
     private String bedriftNr;
     private String veilederNavIdent;
 
