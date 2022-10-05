@@ -29,6 +29,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttDatoStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
@@ -55,6 +56,7 @@ import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.SortNatural;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
+@Slf4j
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
@@ -583,6 +585,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     private void sjekkAtIkkeAvtalenInneholderUtbetaltTilskuddsperiode() {
         if(this.getTilskuddPeriode().stream().anyMatch(TilskuddPeriode::erUtbetalt)) throw new FeilkodeException(Feilkode.AVTALE_INNEHOLDER_UTBETALT_TILSKUDDSPERIODE);
+        if(this.getTilskuddPeriode().stream().anyMatch(TilskuddPeriode::erRefusjonGodkjent)) throw new FeilkodeException(Feilkode.AVTALE_INNEHOLDER_TILSKUDDSPERIODE_MED_GODKJENT_REFUSJON);
     }
 
     public void overtaAvtale(NavIdent nyNavIdent) {
@@ -618,8 +621,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     private void annullerTilskuddsperiode(TilskuddPeriode tilskuddsperiode) {
-        tilskuddsperiode.setStatus(TilskuddPeriodeStatus.ANNULLERT);
-        registerEvent(new TilskuddsperiodeAnnullert(this, tilskuddsperiode));
+        // Sjekk på refusjonens status
+        if(tilskuddsperiode.getRefusjonStatus() == RefusjonStatus.UTGÅTT) {
+            log.warn("Sender ikke annuleringsmelding for tilskuddsperiode {} med utgått refusjon.", tilskuddsperiode.getId());
+        } else {
+            tilskuddsperiode.setStatus(TilskuddPeriodeStatus.ANNULLERT);
+            registerEvent(new TilskuddsperiodeAnnullert(this, tilskuddsperiode));
+        }
     }
 
     @JsonProperty

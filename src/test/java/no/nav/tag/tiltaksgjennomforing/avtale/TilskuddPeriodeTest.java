@@ -62,7 +62,7 @@ class TilskuddPeriodeTest {
     @Test
     void sjekker_utbetalt_status() {
         TilskuddPeriode tilskuddPeriode = TestData.enTilskuddPeriode();
-        tilskuddPeriode.setStatus(TilskuddPeriodeStatus.UTBETALT);
+        tilskuddPeriode.setRefusjonStatus(RefusjonStatus.UTBETALT);
         assertThat(tilskuddPeriode.erUtbetalt()).isTrue();
     }
 }
