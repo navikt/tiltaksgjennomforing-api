@@ -20,8 +20,7 @@ public class TokenUtils {
     private static final String LEVEL4 = "Level4";
 
    public enum Issuer {
-        ISSUER_ISSO("isso"),
-        ISSUER_SELVBETJENING("selvbetjening"),
+        ISSUER_AAD("aad"),
         ISSUER_SYSTEM("system"),
         ISSUER_TOKENX("tokenx");
 
@@ -42,13 +41,12 @@ public class TokenUtils {
 
     public Optional<BrukerOgIssuer> hentBrukerOgIssuer() {
         return hentClaim(ISSUER_SYSTEM, "sub").map(sub -> new BrukerOgIssuer(ISSUER_SYSTEM, sub))
-            .or(() -> hentClaim(ISSUER_SELVBETJENING, "pid").map(sub -> new BrukerOgIssuer(ISSUER_SELVBETJENING, sub)))
-            .or(() -> hentClaim(ISSUER_ISSO, "NAVident").map(sub -> new BrukerOgIssuer(ISSUER_ISSO, sub)))
+            .or(() -> hentClaim(ISSUER_AAD, "NAVident").map(sub -> new BrukerOgIssuer(ISSUER_AAD, sub)))
             .or(() -> hentClaim(ISSUER_TOKENX, "pid").map(it -> new BrukerOgIssuer(ISSUER_TOKENX, it)));
     }
 
     public boolean harAdGruppe(UUID gruppeAD) {
-        Optional<List<String>> groupsClaim = hentClaims(ISSUER_ISSO, "groups");
+        Optional<List<String>> groupsClaim = hentClaims(ISSUER_AAD, "groups");
         if (!groupsClaim.isPresent()) {
             return false;
         }
@@ -67,7 +65,7 @@ public class TokenUtils {
 
     private boolean innloggingsNivaOK(Issuer issuer, JwtTokenClaims jwtClaimsSet) {
 
-        return issuer != ISSUER_SELVBETJENING || LEVEL4.equals(jwtClaimsSet.get(ACR));
+        return issuer != ISSUER_TOKENX || LEVEL4.equals(jwtClaimsSet.get(ACR));
     }
 
     private Optional<JwtTokenClaims> hentClaimSet(Issuer issuer) {
@@ -78,13 +76,11 @@ public class TokenUtils {
             // Er ikke i kontekst av en request
             return Optional.empty();
         }
-        return Optional.ofNullable(tokenValidationContext.getClaims(issuer.issuerName));
+        JwtTokenClaims claims = tokenValidationContext.getClaims(issuer.issuerName);
+        return Optional.ofNullable(claims);
 
     }
 
-    public String hentSelvbetjeningToken() {
-        return contextHolder.getTokenValidationContext().getJwtToken(ISSUER_SELVBETJENING.issuerName).getTokenAsString();
-    }
     public String hentTokenx() {
         return contextHolder.getTokenValidationContext().getJwtToken(ISSUER_TOKENX.issuerName).getTokenAsString();
     }
