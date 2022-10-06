@@ -14,7 +14,7 @@ spec:
       tenant: {{tenant}}
       claims:
         groups:
-          - id: fbfea82d-13da-43ad-a2f2-d7f21cb95f12 # HARDKODET DEV GROUP ID TIL BESLUTTER ROLLE
+          - id: {{besluttergruppe}}
         extra:
           - "NAVident"
   kafka:
