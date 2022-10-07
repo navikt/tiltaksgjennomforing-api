@@ -15,10 +15,10 @@ spring:
 no.nav.security.jwt:
   issuer:
     aad:
-      discoveryurl: https://tiltak-fakelogin/metadata?issuer=aad
+      discoveryurl: http://tiltak-fakelogin/metadata?issuer=aad
       accepted_audience: fake-aad
     tokenx:
-      discoveryurl: https://tiltak-fakelogin/metadata?issuer=tokenx
+      discoveryurl: http://tiltak-fakelogin/metadata?issuer=tokenx
       accepted_audience: fake-tokenx
 
 tiltaksgjennomforing:
