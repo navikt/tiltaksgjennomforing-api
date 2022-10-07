@@ -292,7 +292,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         return AlleredeRegistrertAvtale.filtrerAvtaleDeltakerAlleredeErRegistrertPaa(
                 avtaleRepository.finnAvtalerSomOverlapperForDeltaker(
                         deltakerFnr.asString(),
-                        settAvtaleId(avtaleId),
+                        avtaleId,
                         settStartDato(startDato),
                         sluttDato
                 ),
