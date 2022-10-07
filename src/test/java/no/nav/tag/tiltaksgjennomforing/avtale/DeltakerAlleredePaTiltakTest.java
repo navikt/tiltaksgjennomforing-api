@@ -93,7 +93,7 @@ public class DeltakerAlleredePaTiltakTest {
         initAvtalerTilDBTest();
         List<Avtale> avtaleAlleredeRegistrertPaDeltaker = avtaleRepository.finnAvtalerSomOverlapperForDeltaker(
                 "00000000000",
-                UUID.randomUUID(),
+                UUID.randomUUID().toString(),
                 LocalDate.now(),
                 LocalDate.now().plusMonths(1)
         );

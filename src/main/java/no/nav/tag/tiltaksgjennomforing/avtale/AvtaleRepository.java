@@ -64,7 +64,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     @Query(value = "SELECT AVTALE.* FROM AVTALE LEFT JOIN AVTALE_INNHOLD " +
             "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
             "WHERE :deltakerFnr = AVTALE.deltaker_fnr and " +
-            "(:avtaleId is null or :avtaleId != AVTALE.id) and " +
+            "(:avtaleId is null or :avtaleId NOT LIKE AVTALE.id) and " +
             "AVTALE.annullert_tidspunkt is null and " +
             "AVTALE.avbrutt is false and " +
             "AVTALE.slettemerket is false and " +
@@ -78,7 +78,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             , nativeQuery = true)
     List<Avtale> finnAvtalerSomOverlapperForDeltaker(
             @Param("deltakerFnr") String deltakerFnr,
-            @Param("avtaleId") UUID avtaleId,
+            @Param("avtaleId") String avtaleId,
             @Param("startDato") LocalDate startDato,
             @Param("sluttDato") LocalDate sluttDato
     );
