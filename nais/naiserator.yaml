@@ -10,7 +10,13 @@ spec:
   azure:
     application:
       enabled: true
+      allowAllUsers: true
       tenant: {{tenant}}
+      claims:
+        groups:
+          - id: {{besluttergruppe}}
+        extra:
+          - "NAVident"
   kafka:
     pool: {{kafka-pool}}
   {{/unless}}

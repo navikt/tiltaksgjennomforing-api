@@ -14,14 +14,12 @@ spring:
 
 no.nav.security.jwt:
   issuer:
-    selvbetjening:
-      discoveryurl: http://tiltak-fakelogin/metadata?issuer=selvbetjening
-      accepted_audience: aud-selvbetjening
-      cookie_name: selvbetjening-idtoken
-    isso:
-      discoveryurl: http://tiltak-fakelogin/metadata?issuer=isso
-      accepted_audience: aud-isso
-      cookie_name: isso-idtoken
+    aad:
+      discoveryurl: http://tiltak-fakelogin/metadata?issuer=aad
+      accepted_audience: fake-aad
+    tokenx:
+      discoveryurl: http://tiltak-fakelogin/metadata?issuer=tokenx
+      accepted_audience: fake-tokenx
 
 tiltaksgjennomforing:
   kontoregister:

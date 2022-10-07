@@ -19,8 +19,6 @@ public class ArbeidsgiverTokenStrategyFactoryImpl implements ArbeidsgiverTokenSt
 
     public HentArbeidsgiverToken create(Issuer issuer) {
         switch (issuer) {
-            case ISSUER_SELVBETJENING:
-                return new HentArbeidsgiverSelvbetjeningTokenImpl(tokenUtils);
             case ISSUER_TOKENX:
                 return new HentArbeidsgiverTokenxImpl(oAuth2AccessTokenService, clientConfigurationProperties);
             default:

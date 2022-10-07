@@ -37,14 +37,14 @@ public class TokenUtilsTest {
         InnloggetArbeidsgiver selvbetjeningBruker = TestData.enInnloggetArbeidsgiver();
         vaerInnloggetSelvbetjening(selvbetjeningBruker);
         assertThat(tokenUtils.hentBrukerOgIssuer().get())
-            .isEqualTo(new BrukerOgIssuer(ISSUER_SELVBETJENING, selvbetjeningBruker.getIdentifikator().asString()));
+            .isEqualTo(new BrukerOgIssuer(ISSUER_TOKENX, selvbetjeningBruker.getIdentifikator().asString()));
     }
 
     @Test
     public void hentBeslutter_fra_nav_ansatt_innloggetBruker_med_riktig_beslutter_gruppe() {
         InnloggetBeslutter navBeslutter = TestData.enInnloggetBeslutter();
         vaerInnloggetNavAnsatt(navBeslutter);
-        assertThat(tokenUtils.hentBrukerOgIssuer().get()).isEqualTo(new BrukerOgIssuer(ISSUER_ISSO, navBeslutter.getIdentifikator().asString()));
+        assertThat(tokenUtils.hentBrukerOgIssuer().get()).isEqualTo(new BrukerOgIssuer(ISSUER_AAD, navBeslutter.getIdentifikator().asString()));
         UUID beslutterAdGruppe = UUID.fromString("928636f4-fd0d-4149-978e-a6fb68bb19de");
         assertThat(tokenUtils.harAdGruppe(beslutterAdGruppe)).isTrue();
     }
@@ -53,7 +53,7 @@ public class TokenUtilsTest {
     public void hentBeslutter_fra_nav_ansatt_innloggetBruker_returnerer_false_naar_ad_gruppe_ikke_finnes_for_palogget_bruker() {
         InnloggetBeslutter navBeslutter = TestData.enInnloggetBeslutter();
         vaerInnloggetNavAnsatt(navBeslutter);
-        assertThat(tokenUtils.hentBrukerOgIssuer().get()).isEqualTo(new BrukerOgIssuer(ISSUER_ISSO, navBeslutter.getIdentifikator().asString()));
+        assertThat(tokenUtils.hentBrukerOgIssuer().get()).isEqualTo(new BrukerOgIssuer(ISSUER_AAD, navBeslutter.getIdentifikator().asString()));
         assertThat(tokenUtils.harAdGruppe(UUID.randomUUID())).isFalse();
     }
 
@@ -62,7 +62,7 @@ public class TokenUtilsTest {
         InnloggetArbeidsgiver selvbetjeningBruker = TestData.enInnloggetArbeidsgiver();
         vaerInnloggetSelvbetjening(selvbetjeningBruker);
         assertThat(tokenUtils.hentBrukerOgIssuer().get())
-            .isEqualTo(new BrukerOgIssuer(ISSUER_SELVBETJENING, selvbetjeningBruker.getIdentifikator().asString()));
+            .isEqualTo(new BrukerOgIssuer(ISSUER_TOKENX, selvbetjeningBruker.getIdentifikator().asString()));
         vaerInnloggetSelvbetjeningNiva3(selvbetjeningBruker);
         assertThat(tokenUtils.hentBrukerOgIssuer().isEmpty()).isTrue();
     }
@@ -71,7 +71,7 @@ public class TokenUtilsTest {
     public void hentInnloggetBruker__er_nav_ansatt() {
         InnloggetVeileder navAnsatt = TestData.enInnloggetVeileder();
         vaerInnloggetNavAnsatt(navAnsatt);
-        assertThat(tokenUtils.hentBrukerOgIssuer().get()).isEqualTo(new BrukerOgIssuer(ISSUER_ISSO, navAnsatt.getIdentifikator().asString()));
+        assertThat(tokenUtils.hentBrukerOgIssuer().get()).isEqualTo(new BrukerOgIssuer(ISSUER_AAD, navAnsatt.getIdentifikator().asString()));
     }
 
     @Test
@@ -101,19 +101,19 @@ public class TokenUtilsTest {
     }
 
     private void vaerInnloggetSelvbetjening(InnloggetArbeidsgiver bruker) {
-        lagTokenValidationContext(ISSUER_SELVBETJENING, "not_a_fnr", null, ACR_LEVEL_4, null, bruker.getIdentifikator().asString());
+        lagTokenValidationContext(ISSUER_TOKENX, "not_a_fnr", null, ACR_LEVEL_4, null, bruker.getIdentifikator().asString());
     }
 
     private void vaerInnloggetSelvbetjeningNiva3(InnloggetArbeidsgiver bruker) {
-        lagTokenValidationContext(ISSUER_SELVBETJENING, "not_a_fnr", null, "Level3", null, bruker.getIdentifikator().asString());
+        lagTokenValidationContext(ISSUER_TOKENX, "not_a_fnr", null, "Level3", null, bruker.getIdentifikator().asString());
     }
 
     private void vaerInnloggetNavAnsatt(InnloggetVeileder innloggetBruker) {
-        lagTokenValidationContext(ISSUER_ISSO, "blablabla",  innloggetBruker.getIdentifikator().asString(), null, null);
+        lagTokenValidationContext(ISSUER_AAD, "blablabla",  innloggetBruker.getIdentifikator().asString(), null, null);
     }
 
     private void vaerInnloggetNavAnsatt(InnloggetBeslutter innloggetBruker) {
-        lagTokenValidationContext(ISSUER_ISSO, "blablabla",  innloggetBruker.getIdentifikator().asString(), null,
+        lagTokenValidationContext(ISSUER_AAD, "blablabla",  innloggetBruker.getIdentifikator().asString(), null,
             Arrays.asList("928636f4-fd0d-4149-978e-a6fb68bb19de", "158234a2-fd1d-4445-578e-a6fb68bb11das"));
     }
 
