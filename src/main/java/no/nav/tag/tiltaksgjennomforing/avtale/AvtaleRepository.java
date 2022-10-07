@@ -64,7 +64,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     @Query(value = "SELECT AVTALE.* FROM AVTALE LEFT JOIN AVTALE_INNHOLD " +
             "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
             "WHERE :deltakerFnr = AVTALE.deltaker_fnr and " +
-            "(:avtaleId is null or :avtaleId != AVTALE.id) and " +
+            "(:avtaleId::uuid is null or :avtaleId != AVTALE.id) and " +
             "AVTALE.annullert_tidspunkt is null and " +
             "AVTALE.avbrutt is false and " +
             "AVTALE.slettemerket is false and " +
