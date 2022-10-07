@@ -218,7 +218,7 @@ public class AvtaleController {
                 sluttDato != null ? LocalDate.parse(sluttDato) : null,
                 avtaleRepository
         );
-        return new ResponseEntity<List<AlleredeRegistrertAvtale>>(Collections.emptyList(), HttpStatus.OK);
+        return new ResponseEntity<List<AlleredeRegistrertAvtale>>(avtaler, HttpStatus.OK);
     }
 
     @PostMapping
