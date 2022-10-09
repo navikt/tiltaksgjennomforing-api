@@ -2,11 +2,13 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
+import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Stream;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
@@ -25,7 +27,7 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 
-
+@Slf4j
 public class Veileder extends Avtalepart<NavIdent> {
     static String ekstraTekstAvtleErGodkjentAvAllePartner = "Du må fullføre registreringen i Arena. Avtalen journalføres automatisk i Gosys.";
     private final TilgangskontrollService tilgangskontrollService;
@@ -289,12 +291,22 @@ public class Veileder extends Avtalepart<NavIdent> {
             LocalDate sluttDato,
             AvtaleRepository avtaleRepository
     ) {
+        if(avtaleId != null && startDato != null && sluttDato != null) {
+            return AlleredeRegistrertAvtale.filtrerAvtaleDeltakerAlleredeErRegistrertPaa(
+                    avtaleRepository.finnAvtalerSomOverlapperForDeltakerVedGodkjenningAvAvtale(
+                            deltakerFnr.asString(),
+                            avtaleId.toString(),
+                            Date.valueOf(settStartDato(startDato)),
+                            Date.valueOf(sluttDato)
+                    ),
+                    tiltakstype
+            );
+        }
         return AlleredeRegistrertAvtale.filtrerAvtaleDeltakerAlleredeErRegistrertPaa(
-                avtaleRepository.finnAvtalerSomOverlapperForDeltaker(
+                avtaleRepository.finnAvtalerSomOverlapperForDeltakerVedOpprettelseAvAvtale(
                         deltakerFnr.asString(),
-                        settAvtaleId(avtaleId),
-                        settStartDato(startDato),
-                        sluttDato
+                        Date.valueOf(settStartDato(startDato))
+
                 ),
                 tiltakstype
         );

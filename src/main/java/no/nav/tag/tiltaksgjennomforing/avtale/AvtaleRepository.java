@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import io.micrometer.core.annotation.Timed;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -60,27 +61,42 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     @Override
     Avtale save(Avtale entity);
 
+    @Query(value = "SELECT AVTALE.* FROM AVTALE LEFT JOIN AVTALE_INNHOLD " +
+            "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
+            "WHERE :deltakerFnr = AVTALE.deltaker_fnr and " +
+            "AVTALE.annullert_tidspunkt is null and " +
+            "AVTALE.avbrutt is false and " +
+            "AVTALE.slettemerket is false and " +
+            "((CAST(:startDato as date) is not null and AVTALE_INNHOLD.start_dato is not null and AVTALE_INNHOLD.slutt_dato is not null and" +
+            " (CAST(:startDato as date) >= AVTALE_INNHOLD.start_dato and CAST(:startDato as date) <= AVTALE_INNHOLD.slutt_dato)) " +
+            "or " +
+            "AVTALE_INNHOLD.godkjent_av_veileder is null)"
+            , nativeQuery = true)
+    List<Avtale> finnAvtalerSomOverlapperForDeltakerVedOpprettelseAvAvtale(
+            @Param("deltakerFnr") String deltakerFnr,
+            @Param("startDato") Date startDato
+    );
 
     @Query(value = "SELECT AVTALE.* FROM AVTALE LEFT JOIN AVTALE_INNHOLD " +
             "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
             "WHERE :deltakerFnr = AVTALE.deltaker_fnr and " +
-            "(:avtaleId is null or :avtaleId NOT LIKE AVTALE.id) and " +
+            "(:avtaleId is not null and :avtaleId NOT LIKE CAST(AVTALE.id as text)) and " +
             "AVTALE.annullert_tidspunkt is null and " +
             "AVTALE.avbrutt is false and " +
             "AVTALE.slettemerket is false and " +
-            "((:startDato is not null and AVTALE_INNHOLD.start_dato is not null and AVTALE_INNHOLD.slutt_dato is not null and" +
-            " (:startDato >= AVTALE_INNHOLD.start_dato and :startDato <= AVTALE_INNHOLD.slutt_dato)) " +
+            "((CAST(:startDato as date) is not null and AVTALE_INNHOLD.start_dato is not null and AVTALE_INNHOLD.slutt_dato is not null and" +
+            " (CAST(:startDato as date) >= AVTALE_INNHOLD.start_dato and CAST(:startDato as date) <= AVTALE_INNHOLD.slutt_dato)) " +
             "or " +
-            "(:sluttDato is not null and AVTALE_INNHOLD.start_dato is not null and AVTALE_INNHOLD.slutt_dato is not null and " +
-            "(:sluttDato >= AVTALE_INNHOLD.start_dato and :sluttDato <= AVTALE_INNHOLD.slutt_dato)) " +
+            "(CAST(:sluttDato as date) is not null and AVTALE_INNHOLD.start_dato is not null and AVTALE_INNHOLD.slutt_dato is not null and " +
+            "(CAST(:sluttDato as date) >= AVTALE_INNHOLD.start_dato and CAST(:sluttDato as date) <= AVTALE_INNHOLD.slutt_dato)) " +
             "or " +
             "AVTALE_INNHOLD.godkjent_av_veileder is null)"
             , nativeQuery = true)
-    List<Avtale> finnAvtalerSomOverlapperForDeltaker(
+    List<Avtale> finnAvtalerSomOverlapperForDeltakerVedGodkjenningAvAvtale(
             @Param("deltakerFnr") String deltakerFnr,
             @Param("avtaleId") String avtaleId,
-            @Param("startDato") LocalDate startDato,
-            @Param("sluttDato") LocalDate sluttDato
+            @Param("startDato") Date startDato,
+            @Param("sluttDato") Date sluttDato
     );
 
 

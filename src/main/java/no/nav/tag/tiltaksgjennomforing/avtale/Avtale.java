@@ -48,11 +48,8 @@ import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
-import org.hibernate.annotations.SortNatural;
+import org.hibernate.annotations.*;
+import org.hibernate.type.PostgresUUIDType;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
 @Data
@@ -60,6 +57,9 @@ import org.springframework.data.domain.AbstractAggregateRoot;
 @Entity
 @NoArgsConstructor
 @FieldNameConstants
+@TypeDef(name="postgres-uuid",
+        defaultForType = UUID.class,
+        typeClass = PostgresUUIDType.class)
 public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     @Convert(converter = FnrConverter.class)
