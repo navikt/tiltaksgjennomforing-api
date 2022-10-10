@@ -15,7 +15,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 
-class RefusjonEndretBetalingsstatusTest {
+class RefusjonEndretStatusTest {
 
     @Test
     public void skal_kunne_finne_riktig_tilskuddsperiode_og_lagre_status_uten_å_kaste_en_feil() throws JsonProcessingException {
@@ -28,9 +28,9 @@ class RefusjonEndretBetalingsstatusTest {
         when(tilskuddPeriodeRepository.findById(any())).thenReturn(Optional.of(tilskuddPeriode));
 
         // NÅR
-        RefusjonEndretBetalingsstatusKafkaConsumer consumer = new RefusjonEndretBetalingsstatusKafkaConsumer(tilskuddPeriodeRepository, mapper);
+        RefusjonEndretStatusKafkaConsumer consumer = new RefusjonEndretStatusKafkaConsumer(tilskuddPeriodeRepository, mapper);
 
-        consumer.refusjonEndretBetalingsstatus(mapper.writeValueAsString(new RefusjonEndretBetalingsstatusMelding("1234", "1234", "1234", 10000, 1234, "1243", TilskuddsperiodeUtbetaltStatus.UTBETALT, Now.localDate(), tilskuddPeriode.getId().toString())));
+        consumer.refusjonEndretStatus(mapper.writeValueAsString(new RefusjonEndretStatusMelding("1234", "1234", "1234", RefusjonStatus.UTBETALT, tilskuddPeriode.getId().toString())));
 
         // SÅ
         verify(tilskuddPeriodeRepository).save(any());

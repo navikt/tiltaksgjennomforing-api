@@ -81,6 +81,9 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     @Enumerated(EnumType.STRING)
     private TilskuddPeriodeStatus status = TilskuddPeriodeStatus.UBEHANDLET;
 
+    @Enumerated(EnumType.STRING)
+    private RefusjonStatus refusjonStatus = null;
+
     private boolean aktiv = true;
 
     public TilskuddPeriode deaktiverOgLagNyUbehandlet() {
@@ -160,6 +163,11 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     }
 
     public boolean erUtbetalt() {
-        return status == TilskuddPeriodeStatus.UTBETALT;
+        return refusjonStatus == RefusjonStatus.UTBETALT;
     }
+
+    public boolean erRefusjonGodkjent() {
+        return refusjonStatus == RefusjonStatus.SENDT_KRAV;
+    }
+
 }

@@ -325,20 +325,27 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
     }
 
     @Test
-    public void sjekk_at_avtalen_annulleres_ikke_om_den_har_en_utbetalt_tilskuddsperiode() {
+    public void sjekk_at_avtalen_ikke_annulleres_om_den_har_en_utbetalt_tilskuddsperiode() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
-        avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.UTBETALT);
-        assertThrows(FeilkodeException.class, () ->   avtale.annuller(TestData.enVeileder(avtale), ""));
+        avtale.tilskuddsperiode(0).setRefusjonStatus(RefusjonStatus.UTBETALT);
+        assertThrows(FeilkodeException.class, () -> avtale.annuller(TestData.enVeileder(avtale), ""));
+    }
+
+    @Test
+    public void sjekk_at_avtalen_ikke_annulleres_om_den_har_en_godkjent_refusjon_på_tilskuddsperiode() {
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        avtale.tilskuddsperiode(0).setRefusjonStatus(RefusjonStatus.SENDT_KRAV);
+        assertThrows(FeilkodeException.class, () -> avtale.annuller(TestData.enVeileder(avtale), ""));
     }
 
     @Test
     public void sjekk_at_utbetalte_perioder_beholdes_ved_endring() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
-        avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.UTBETALT);
+        avtale.tilskuddsperiode(0).setRefusjonStatus(RefusjonStatus.UTBETALT);
         UUID idPåUtbetaltTilskuddsperiode = avtale.tilskuddsperiode(0).getId();
         Integer beløpPåUtbetaltTilskuddsperiode = avtale.tilskuddsperiode(0).getBeløp();
 
-        assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.UTBETALT);
+        assertThat(avtale.tilskuddsperiode(0).getRefusjonStatus()).isEqualTo(RefusjonStatus.UTBETALT);
         assertThat(avtale.tilskuddsperiode(0).getId()).isEqualTo(idPåUtbetaltTilskuddsperiode);
         assertThat(avtale.tilskuddsperiode(0).getBeløp()).isEqualTo(beløpPåUtbetaltTilskuddsperiode);
         harRiktigeEgenskaper(avtale);
@@ -349,13 +356,13 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         Now.fixedDate(LocalDate.of(2021, 1, 1));
         Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 4, 1));
 
-        avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.UTBETALT);
-        avtale.tilskuddsperiode(1).setStatus(TilskuddPeriodeStatus.UTBETALT);
+        avtale.tilskuddsperiode(0).setRefusjonStatus(RefusjonStatus.UTBETALT);
+        avtale.tilskuddsperiode(1).setRefusjonStatus(RefusjonStatus.UTBETALT);
 
         avtale.forlengAvtale(avtale.getGjeldendeInnhold().getSluttDato().plusMonths(3), TestData.enNavIdent());
 
-        assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.UTBETALT);
-        assertThat(avtale.tilskuddsperiode(1).getStatus()).isEqualTo(TilskuddPeriodeStatus.UTBETALT);
+        assertThat(avtale.tilskuddsperiode(0).getRefusjonStatus()).isEqualTo(RefusjonStatus.UTBETALT);
+        assertThat(avtale.tilskuddsperiode(1).getRefusjonStatus()).isEqualTo(RefusjonStatus.UTBETALT);
 
         assertThat(avtale.tilskuddsperiode(1).getStartDato()).isEqualTo(avtale.tilskuddsperiode(0).getSluttDato().plusDays(1));
         assertThat(avtale.tilskuddsperiode(2).getStatus()).isEqualTo(TilskuddPeriodeStatus.UBEHANDLET);
@@ -450,9 +457,11 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
 
 
-        avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.UTBETALT);
+        avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
+        avtale.tilskuddsperiode(0).setRefusjonStatus(RefusjonStatus.UTBETALT);
         avtale.tilskuddsperiode(1).setStatus(TilskuddPeriodeStatus.GODKJENT);
-        avtale.tilskuddsperiode(2).setStatus(TilskuddPeriodeStatus.UTBETALT);
+        avtale.tilskuddsperiode(2).setRefusjonStatus(RefusjonStatus.UTBETALT);
+        avtale.tilskuddsperiode(2).setStatus(TilskuddPeriodeStatus.GODKJENT);
 
         EndreTilskuddsberegning endreTilskuddsberegning = EndreTilskuddsberegning.builder()
                 .manedslonn(77777)
@@ -462,9 +471,11 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
                 .build();
         avtale.endreTilskuddsberegning(endreTilskuddsberegning, TestData.enNavIdent());
 
-        assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.UTBETALT);
-        assertThat(avtale.tilskuddsperiode(1).getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
-        assertThat(avtale.tilskuddsperiode(2).getStatus()).isEqualTo(TilskuddPeriodeStatus.UTBETALT);
+        avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
+        avtale.tilskuddsperiode(0).setRefusjonStatus(RefusjonStatus.UTBETALT);
+        avtale.tilskuddsperiode(1).setStatus(TilskuddPeriodeStatus.GODKJENT);
+        avtale.tilskuddsperiode(2).setRefusjonStatus(RefusjonStatus.UTBETALT);
+        avtale.tilskuddsperiode(2).setStatus(TilskuddPeriodeStatus.GODKJENT);
 
         harRiktigeEgenskaper(avtale);
         Now.resetClock();

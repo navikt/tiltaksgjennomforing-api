@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.config.SslConfigs;
@@ -8,18 +7,20 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
-import org.springframework.stereotype.Component;
+
 import java.util.HashMap;
 import java.util.Map;
 
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
-@Component
-@Slf4j
-public class RefusjonEndretBetalingsstatusKafkaConsumerConfig {
+@Configuration
+@EnableKafka
+public class RefusjonEndretStatusKafkaConsumerConfig {
 
     @Value("${no.nav.gcp.kafka.aiven.bootstrap-servers}")
     private String gcpBootstrapServers;
@@ -34,7 +35,7 @@ public class RefusjonEndretBetalingsstatusKafkaConsumerConfig {
     @Value("${no.nav.gcp.kafka.aiven.security-protocol}")
     private String securityProtocol;
 
-    public ConsumerFactory<String, RefusjonEndretBetalingsstatusMelding> refusjonConsumerFactory() {
+    public ConsumerFactory<String, RefusjonEndretStatusMelding> refusjonConsumerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, gcpBootstrapServers);
         props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, securityProtocol);
@@ -49,12 +50,12 @@ public class RefusjonEndretBetalingsstatusKafkaConsumerConfig {
         props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
         return new DefaultKafkaConsumerFactory<>(props,
                 new StringDeserializer(),
-                new JsonDeserializer<>(RefusjonEndretBetalingsstatusMelding.class, false));
+                new JsonDeserializer<>(RefusjonEndretStatusMelding.class, false));
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, RefusjonEndretBetalingsstatusMelding> refusjonContainerFactory() {
-        var factory = new ConcurrentKafkaListenerContainerFactory<String, RefusjonEndretBetalingsstatusMelding>();
+    public ConcurrentKafkaListenerContainerFactory<String, RefusjonEndretStatusMelding> refusjonEndretStatusContainerFactory() {
+        var factory = new ConcurrentKafkaListenerContainerFactory<String, RefusjonEndretStatusMelding>();
         factory.setConsumerFactory(refusjonConsumerFactory());
         return factory;
     }
