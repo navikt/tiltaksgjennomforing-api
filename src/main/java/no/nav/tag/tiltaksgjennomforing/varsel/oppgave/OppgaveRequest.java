@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class OppgaveRequest {
 
-    private final static String BESKRIVELSE = "Avtale er opprettet av arbeidsgiver på tiltak %s. Se avtalen under filteret 'Ufordelte' i https://arbeidsgiver.nais.adeo.no/tiltaksgjennomforing";
+    private final static String BESKRIVELSE = "Avtale er opprettet av arbeidsgiver på tiltak %s. Se avtalen under filteret 'Ufordelte' i https://tiltaksgjennomforing.intern.nav.no/tiltaksgjennomforing";
     private final static String TEMA = "TIL";
     private final static String HOY_PRI = "NORM";
     private final static String OPPG_TYPE = "VURD_HENV";

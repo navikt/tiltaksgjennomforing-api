@@ -136,6 +136,6 @@ public class LagSmsFraAvtaleHendelse {
     }
 
     private static Sms smsTilVeileder(Avtale avtale, HendelseType hendelse) {
-        return Sms.nyttVarsel(avtale.getGjeldendeInnhold().getVeilederTlf(), NAV_ORGNR, "Du har mottatt et nytt varsel på https://arbeidsgiver.nais.adeo.no/tiltaksgjennomforing", hendelse, avtale.getId());
+        return Sms.nyttVarsel(avtale.getGjeldendeInnhold().getVeilederTlf(), NAV_ORGNR, "Du har mottatt et nytt varsel på https://tiltaksgjennomforing.intern.nav.no/tiltaksgjennomforing", hendelse, avtale.getId());
     }
 }

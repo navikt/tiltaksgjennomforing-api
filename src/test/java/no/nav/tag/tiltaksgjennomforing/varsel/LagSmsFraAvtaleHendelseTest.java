@@ -33,9 +33,7 @@ class LagSmsFraAvtaleHendelseTest {
     SmsProducer smsProducer;
 
     private static final String SELVBETJENINGSONE_VARSELTEKST = "Du har mottatt et nytt varsel på https://arbeidsgiver.nav.no/tiltaksgjennomforing";
-    private static final String FAGSYSTEMSONE_VARSELTEKST = "Du har mottatt et nytt varsel på https://arbeidsgiver.nais.adeo.no/tiltaksgjennomforing";
-
-
+    private static final String FAGSYSTEMSONE_VARSELTEKST = "Du har mottatt et nytt varsel på https://tiltaksgjennomforing.intern.nav.no/tiltaksgjennomforing";
 
     @Test
     void avtaleDeltMedAvtalepart__skal_opprette_sms_til_riktig_mottaker() {
