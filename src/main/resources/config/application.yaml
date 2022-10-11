@@ -5,6 +5,10 @@ management.endpoints.web:
   base-path: /internal/actuator
 
 spring:
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL9Dialect
   application:
     name: tiltaksgjennomforing-api
   main:

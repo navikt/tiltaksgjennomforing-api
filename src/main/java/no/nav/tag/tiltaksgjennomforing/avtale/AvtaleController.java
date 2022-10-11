@@ -209,17 +209,16 @@ public class AvtaleController {
             @RequestParam(value = "avtaleId", required = false) String avtaleId
 
     ) {
-//        Veileder veileder = innloggingService.hentVeileder();
-//        List<AlleredeRegistrertAvtale> avtaler = veileder.hentAvtaleDeltakerAlleredeErRegistrertPaa(
-//                deltakerFnr,
-//                tiltakstype,
-//                avtaleId != null ? UUID.fromString(avtaleId) : null,
-//                startDato != null ? LocalDate.parse(startDato) : null,
-//                sluttDato != null ? LocalDate.parse(sluttDato) : null,
-//                avtaleRepository
-//        );
-
-        return new ResponseEntity<List<AlleredeRegistrertAvtale>>(Collections.emptyList(), HttpStatus.OK);
+        Veileder veileder = innloggingService.hentVeileder();
+        List<AlleredeRegistrertAvtale> avtaler = veileder.hentAvtaleDeltakerAlleredeErRegistrertPaa(
+                deltakerFnr,
+                tiltakstype,
+                avtaleId != null ? UUID.fromString(avtaleId) : null,
+                startDato != null ? LocalDate.parse(startDato) : null,
+                sluttDato != null ? LocalDate.parse(sluttDato) : null,
+                avtaleRepository
+        );
+        return new ResponseEntity<List<AlleredeRegistrertAvtale>>(avtaler, HttpStatus.OK);
     }
 
     @PostMapping
