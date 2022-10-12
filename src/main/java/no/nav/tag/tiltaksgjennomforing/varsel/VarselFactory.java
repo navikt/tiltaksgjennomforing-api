@@ -24,6 +24,8 @@ public class VarselFactory {
         return Varsel.nyttVarsel(avtale.getBedriftNr(), utførtAv != Avtalerolle.ARBEIDSGIVER, avtale, Avtalerolle.ARBEIDSGIVER, utførtAv, hendelseType, avtale.getId());
     }
 
+
+    //TODO: Hent IDENTEN til beslutter her og ikke bare veileder
     public Varsel veileder() {
         return Varsel.nyttVarsel(avtale.getVeilederNavIdent(), utførtAv != Avtalerolle.VEILEDER, avtale, Avtalerolle.VEILEDER, utførtAv, hendelseType, avtale.getId());
     }
