@@ -4,5 +4,6 @@ create table avtale_melding
     avtale_id     uuid references avtale (id),
     tidspunkt     timestamp,
     hendelse_type varchar,
-    json          varchar
+    json          varchar,
+    sendt         boolean not null default false
 );
