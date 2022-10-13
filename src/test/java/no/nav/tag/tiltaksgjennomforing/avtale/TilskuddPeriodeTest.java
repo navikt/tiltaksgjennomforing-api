@@ -3,8 +3,10 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
 import java.util.EnumSet;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 
 class TilskuddPeriodeTest {
@@ -64,5 +66,24 @@ class TilskuddPeriodeTest {
         TilskuddPeriode tilskuddPeriode = TestData.enTilskuddPeriode();
         tilskuddPeriode.setRefusjonStatus(RefusjonStatus.UTBETALT);
         assertThat(tilskuddPeriode.erUtbetalt()).isTrue();
+    }
+
+    @Test
+    void godkjenn__skal_ikke_kunne_godkjenne_neste_års_tilskuddsperiode() {
+        //TODO: Dette er en test av en midlertidig sperre.
+        Now.fixedDate(LocalDate.of(2022, 10, 15));
+        TilskuddPeriode tilskuddPeriode = TestData.enTilskuddPeriode();
+        tilskuddPeriode.setStartDato(LocalDate.of(2023, 1, 1));
+        tilskuddPeriode.setSluttDato(LocalDate.of(2023, 1, 31));
+
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_BEHANDLE_FOR_TIDLIG, () -> tilskuddPeriode.godkjenn(TestData.enNavIdent(), TestData.ENHET_GEOGRAFISK.getVerdi()));
+
+        Now.fixedDate(LocalDate.of(2022, 12, 15));
+        assertFeilkode(Feilkode.TILSKUDDSPERIODE_BEHANDLE_FOR_TIDLIG, () -> tilskuddPeriode.godkjenn(TestData.enNavIdent(), TestData.ENHET_GEOGRAFISK.getVerdi()));
+
+        Now.fixedDate(LocalDate.of(2023, 1, 1));
+        tilskuddPeriode.godkjenn(TestData.enNavIdent(), TestData.ENHET_GEOGRAFISK.getVerdi());
+
+        Now.resetClock();
     }
 }
