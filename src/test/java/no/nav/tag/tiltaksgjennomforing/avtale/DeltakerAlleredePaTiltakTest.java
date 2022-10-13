@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.datavarehus.DvhMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.varsel.SmsRepository;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarselRepository;
@@ -41,6 +42,8 @@ public class DeltakerAlleredePaTiltakTest {
 
     @Autowired
     DvhMeldingEntitetRepository dvhMeldingEntitetRepository;
+    @Autowired
+    AvtaleMeldingEntitetRepository avtaleMeldingEntitetRepository;
 
     @BeforeEach
     public void init() {
@@ -53,6 +56,7 @@ public class DeltakerAlleredePaTiltakTest {
         avtaleInnholdRepository.deleteAll();
         arbeidsgiverNotifikasjonRepository.deleteAll();
         dvhMeldingEntitetRepository.deleteAll();
+        avtaleMeldingEntitetRepository.deleteAll();
         avtaleRepository.deleteAll();
     }
 

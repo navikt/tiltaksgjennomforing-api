@@ -29,6 +29,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.OpprettMentorAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
+import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.datavarehus.DvhMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
@@ -57,6 +58,8 @@ class LagVarselFraAvtaleHendelserTest {
     ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
     @Autowired
     DvhMeldingEntitetRepository dvhMeldingEntitetRepository;
+    @Autowired
+    AvtaleMeldingEntitetRepository avtaleMeldingEntitetRepository;
     @MockBean
     LagGosysVarselLytter lagGosysVarselLytter;
     @Autowired
@@ -71,6 +74,7 @@ class LagVarselFraAvtaleHendelserTest {
         arbeidsgiverNotifikasjonRepository.deleteAll();
         avtaleInnholdRepository.deleteAll();
         dvhMeldingEntitetRepository.deleteAll();
+        avtaleMeldingEntitetRepository.deleteAll();
         avtaleRepository.deleteAll();
     }
 

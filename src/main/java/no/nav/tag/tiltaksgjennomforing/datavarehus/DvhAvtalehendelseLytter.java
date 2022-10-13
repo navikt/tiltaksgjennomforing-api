@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.datavarehus;
 
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -73,7 +74,7 @@ public class DvhAvtalehendelseLytter {
         lagHendelse(event.getAvtale(), DvhHendelseType.ENDRET, event.getUtførtAv());
     }
 
-    private void lagHendelse(Avtale avtale, DvhHendelseType endret, NavIdent utførtAv) {
+    private void lagHendelse(Avtale avtale, DvhHendelseType endret, Identifikator utførtAv) {
         if (!dvhMeldingFilter.skalTilDatavarehus(avtale)) {
             return;
         }
