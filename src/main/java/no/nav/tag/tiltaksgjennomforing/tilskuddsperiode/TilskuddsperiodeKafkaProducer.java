@@ -9,6 +9,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAnnullert;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeForkortet;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeGodkjent;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;

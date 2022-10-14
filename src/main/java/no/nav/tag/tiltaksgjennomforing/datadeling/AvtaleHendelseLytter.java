@@ -95,10 +95,15 @@ public class AvtaleHendelseLytter {
         lagHendelse(event.getAvtale(), HendelseType.OM_MENTOR_ENDRET, event.getUtførtAv());
     }
 
+    @EventListener
+    public void nyVeilederPåAvtale(AvtaleNyVeileder event) {
+        lagHendelse(event.getAvtale(), HendelseType.NY_VEILEDER, event.getAvtale().getVeilederNavIdent());
+    }
+
     private void lagHendelse(Avtale avtale, HendelseType hendelseType, Identifikator utførtAv) {
         LocalDateTime tidspunkt = Now.localDateTime();
         UUID meldingId = UUID.randomUUID();
-        var melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), utførtAv);
+        var melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), utførtAv, hendelseType);
         try {
             String meldingSomString = objectMapper.writeValueAsString(melding);
             AvtaleMeldingEntitet entitet = new AvtaleMeldingEntitet(meldingId, avtale.getId(), tidspunkt, hendelseType, meldingSomString);

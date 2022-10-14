@@ -1,15 +1,18 @@
-package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
+package no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.Miljø;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.HashMap;
 import java.util.Map;

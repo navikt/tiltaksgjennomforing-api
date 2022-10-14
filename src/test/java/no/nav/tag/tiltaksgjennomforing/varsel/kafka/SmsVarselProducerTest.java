@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import no.nav.tag.tiltaksgjennomforing.varsel.Sms;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;

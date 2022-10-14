@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

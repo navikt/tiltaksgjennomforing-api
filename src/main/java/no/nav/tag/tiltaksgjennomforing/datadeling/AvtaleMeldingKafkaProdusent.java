@@ -1,12 +1,18 @@
 package no.nav.tag.tiltaksgjennomforing.datadeling;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.datavarehus.AvroTiltakHendelse;
+import no.nav.tag.tiltaksgjennomforing.datavarehus.DvhMeldingEntitet;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
+import org.apache.kafka.common.internals.Topic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
+import org.springframework.util.concurrent.ListenableFutureCallback;
 
 @Component
 @Slf4j
@@ -23,7 +29,21 @@ public class AvtaleMeldingKafkaProdusent {
 
     @TransactionalEventListener
     public void avtaleMeldingOpprettet(AvtaleMeldingOpprettet event) {
-        //String topic =;
-        //aivenKafkaTemplate.send();
+        String meldingId = event.getEntitet().getMeldingId().toString();
+
+        aivenKafkaTemplate.send(Topics.AVTALE_HENDELSE, meldingId, event.getEntitet().getJson()).addCallback(new ListenableFutureCallback<>() {
+            @Override
+            public void onSuccess(SendResult<String, String> result) {
+                log.info("AvtaleHendelse melding med id {} sendt til Kafka topic {}", meldingId, Topics.AVTALE_HENDELSE);
+                AvtaleMeldingEntitet entitet = event.getEntitet();
+                entitet.setSendt(true);
+                repository.save(entitet);
+            }
+            @Override
+            public void onFailure(Throwable ex) {
+                log.warn("AvtaleHendelse med id {} kunne ikke sendes til Kafka topic {}", meldingId, Topics.AVTALE_HENDELSE);
+            }
+        });
+
     }
 }

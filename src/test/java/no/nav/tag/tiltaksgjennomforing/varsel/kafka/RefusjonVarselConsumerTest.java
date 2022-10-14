@@ -4,6 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;

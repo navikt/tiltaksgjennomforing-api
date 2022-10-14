@@ -7,6 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonStatus;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;

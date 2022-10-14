@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
+package no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.varsel.Sms;

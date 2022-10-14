@@ -5,6 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 
+import javax.persistence.Enumerated;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Value
 public class AvtaleMelding {
+    HendelseType hendelseType;
 
     Identifikator deltakerFnr;
     Identifikator mentorFnr;
@@ -122,9 +124,10 @@ public class AvtaleMelding {
     AvtaleInnholdType innholdType;
     Identifikator utførtAv;
 
-    public static AvtaleMelding create(Avtale avtale, AvtaleInnhold avtaleInnhold, Identifikator utførtAv) {
+    public static AvtaleMelding create(Avtale avtale, AvtaleInnhold avtaleInnhold, Identifikator utførtAv, HendelseType hendelseType) {
 
         return new AvtaleMelding(
+                hendelseType,
                 avtale.getDeltakerFnr(),
                 avtale.getMentorFnr(),
                 avtale.getBedriftNr(),
