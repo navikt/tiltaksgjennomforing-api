@@ -67,4 +67,5 @@ public class DvhMeldingKafkaConfiguration {
     public KafkaTemplate<String, AvroTiltakHendelse> dvhMeldingKafkaTemplate() {
         return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs()));
     }
+
 }

@@ -34,7 +34,6 @@ public class AivenKafkaConfiguration {
     @Bean
     public KafkaTemplate<String, String> aivenKafkaTemplate() {
         KafkaTemplate<String, String> kafkaTemplate = new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs()));
-//        kafkaTemplate.setMessageConverter(new StringJsonMessageConverter());
         return kafkaTemplate;
     }
 }
