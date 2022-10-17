@@ -82,14 +82,12 @@ no.nav.gcp.kafka.aiven:
 
 no.nav.security.jwt:
   issuer:
-    selvbetjening:
-      discoveryurl: https://tiltak-fakelogin.labs.nais.io/metadata?issuer=selvbetjening
-      accepted_audience: aud-selvbetjening
-      cookie_name: selvbetjening-idtoken
-    isso:
-      discoveryurl: https://tiltak-fakelogin.labs.nais.io/metadata?issuer=isso
-      accepted_audience: aud-isso
-      cookie_name: isso-idtoken
+    aad:
+      discoveryurl: https://tiltak-fakelogin.labs.nais.io/metadata?issuer=aad
+      accepted_audience: fake-aad
+    tokenx:
+      discoveryurl: https://tiltak-fakelogin.labs.nais.io/metadata?issuer=tokenx
+      accepted_audience: fake-tokenx
   client: null
 
 ELECTOR_PATH: null
