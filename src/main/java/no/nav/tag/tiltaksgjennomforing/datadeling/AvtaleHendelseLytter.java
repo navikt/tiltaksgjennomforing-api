@@ -100,6 +100,35 @@ public class AvtaleHendelseLytter {
         lagHendelse(event.getAvtale(), HendelseType.NY_VEILEDER, event.getAvtale().getVeilederNavIdent());
     }
 
+    @EventListener
+    public void godkjentAvArbeidsgiver(GodkjentAvArbeidsgiver event) {
+        lagHendelse(event.getAvtale(), HendelseType.GODKJENT_AV_ARBEIDSGIVER, event.getUtfortAv());
+    }
+    @EventListener
+    public void godkjentAvVeileder(GodkjentAvVeileder event) {
+        lagHendelse(event.getAvtale(), HendelseType.GODKJENT_AV_VEILEDER, event.getUtfortAv());
+    }
+    @EventListener
+    public void godkjentAvDeltaker(GodkjentAvDeltaker event) {
+        lagHendelse(event.getAvtale(), HendelseType.GODKJENT_AV_DELTAKER, event.getUtfortAv());
+    }
+    @EventListener
+    public void godkjentPåVegneAvDeltaker(GodkjentPaVegneAvDeltaker event) {
+        lagHendelse(event.getAvtale(), HendelseType.GODKJENT_PAA_VEGNE_AV, event.getUtfortAv());
+    }
+    @EventListener
+    public void godkjentPåVegneAvArbeidsgiver(GodkjentPaVegneAvArbeidsgiver event) {
+        lagHendelse(event.getAvtale(), HendelseType.GODKJENT_PAA_VEGNE_AV_ARBEIDSGIVER, event.getUtfortAv());
+    }
+    @EventListener
+    public void godkjentPåVegneAvDeltakerOgArbeidsgiver(GodkjentPaVegneAvDeltakerOgArbeidsgiver event) {
+        lagHendelse(event.getAvtale(), HendelseType.GODKJENT_PAA_VEGNE_AV_DELTAKER_OG_ARBEIDSGIVER, event.getUtfortAv());
+    }
+    @EventListener
+    public void signertAvMentor(SignertAvMentor event) {
+        lagHendelse(event.getAvtale(), HendelseType.SIGNERT_AV_MENTOR, event.getUtfortAv());
+    }
+
     private void lagHendelse(Avtale avtale, HendelseType hendelseType, Identifikator utførtAv) {
         LocalDateTime tidspunkt = Now.localDateTime();
         UUID meldingId = UUID.randomUUID();
