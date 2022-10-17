@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 @Value
 public class AvtaleMelding {
     HendelseType hendelseType;
+    Status avtaleStatus;
 
     Identifikator deltakerFnr;
     Identifikator mentorFnr;
@@ -128,6 +129,7 @@ public class AvtaleMelding {
 
         return new AvtaleMelding(
                 hendelseType,
+                avtale.statusSomEnum(),
                 avtale.getDeltakerFnr(),
                 avtale.getMentorFnr(),
                 avtale.getBedriftNr(),
