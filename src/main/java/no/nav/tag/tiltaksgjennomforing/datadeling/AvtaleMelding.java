@@ -1,11 +1,11 @@
 package no.nav.tag.tiltaksgjennomforing.datadeling;
 
+import lombok.Data;
 import lombok.Value;
+import lombok.experimental.UtilityClass;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
-
-import javax.persistence.Enumerated;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Value
+@Data
 public class AvtaleMelding {
     HendelseType hendelseType;
     Status avtaleStatus;
@@ -97,12 +97,7 @@ public class AvtaleMelding {
     // Inkluderingstilskudd
     List<Inkluderingstilskuddsutgift> inkluderingstilskuddsutgift = new ArrayList<>();
     String inkluderingstilskuddBegrunnelse;
-
-    Integer inkluderingstilscskuddTotalBeløp() {
-        return inkluderingstilskuddsutgift.stream().map(inkluderingstilskuddsutgift -> inkluderingstilskuddsutgift.getBeløp())
-                .collect(Collectors.toList()).stream()
-                .reduce(0, Integer::sum);
-    }
+    Integer inkluderingstilskuddTotalBeløp;
 
     // Godkjenning
     LocalDateTime godkjentAvDeltaker;
@@ -127,94 +122,102 @@ public class AvtaleMelding {
 
     public static AvtaleMelding create(Avtale avtale, AvtaleInnhold avtaleInnhold, Identifikator utførtAv, HendelseType hendelseType) {
 
-        return new AvtaleMelding(
-                hendelseType,
-                avtale.statusSomEnum(),
-                avtale.getDeltakerFnr(),
-                avtale.getMentorFnr(),
-                avtale.getBedriftNr(),
-                avtale.getVeilederNavIdent(),
-                avtale.getTiltakstype(),
-                avtale.getOpprettetTidspunkt(),
-                avtale.getId(),
-                avtale.getAvtaleNr(),
-                avtale.getSistEndret(),
-                avtale.getAnnullertTidspunkt(),
-                avtale.getAnnullertGrunn(),
-                avtale.isSlettemerket(),
-                avtale.isOpprettetAvArbeidsgiver(),
-                avtale.getEnhetGeografisk(),
-                avtale.getEnhetsnavnGeografisk(),
-                avtale.getEnhetOppfolging(),
-                avtale.getEnhetsnavnOppfolging(),
-                avtale.isGodkjentForEtterregistrering(),
-                avtale.getKvalifiseringsgruppe(),
-                avtale.getFormidlingsgruppe(),
-                avtale.isFeilregistrert(),
-                avtaleInnhold.getVersjon(),
-                avtaleInnhold.getDeltakerFornavn(),
-                avtaleInnhold.getDeltakerEtternavn(),
-                avtaleInnhold.getDeltakerTlf(),
-                avtaleInnhold.getBedriftNavn(),
-                avtaleInnhold.getArbeidsgiverFornavn(),
-                avtaleInnhold.getArbeidsgiverEtternavn(),
-                avtaleInnhold.getArbeidsgiverTlf(),
-                avtaleInnhold.getVeilederFornavn(),
-                avtaleInnhold.getVeilederEtternavn(),
-                avtaleInnhold.getVeilederTlf(),
-                avtaleInnhold.getOppfolging(),
-                avtaleInnhold.getTilrettelegging(),
-                avtaleInnhold.getStartDato(),
-                avtaleInnhold.getSluttDato(),
-                avtaleInnhold.getStillingprosent(),
-                avtaleInnhold.getJournalpostId(),
-                avtaleInnhold.getArbeidsoppgaver(),
-                avtaleInnhold.getStillingstittel(),
-                avtaleInnhold.getStillingStyrk08(),
-                avtaleInnhold.getStillingKonseptId(),
-                avtaleInnhold.getAntallDagerPerUke(),
-                avtaleInnhold.getRefusjonKontaktperson(),
-                avtaleInnhold.getMentorFornavn(),
-                avtaleInnhold.getMentorEtternavn(),
-                avtaleInnhold.getMentorOppgaver(),
-                avtaleInnhold.getMentorAntallTimer(),
-                avtaleInnhold.getMentorTimelonn(),
-                avtaleInnhold.getMentorTlf(),
-                avtaleInnhold.getArbeidsgiverKontonummer(),
-                avtaleInnhold.getLonnstilskuddProsent(),
-                avtaleInnhold.getManedslonn(),
-                avtaleInnhold.getFeriepengesats(),
-                avtaleInnhold.getArbeidsgiveravgift(),
-                avtaleInnhold.getHarFamilietilknytning(),
-                avtaleInnhold.getFamilietilknytningForklaring(),
-                avtaleInnhold.getFeriepengerBelop(),
-                avtaleInnhold.getOtpSats(),
-                avtaleInnhold.getOtpBelop(),
-                avtaleInnhold.getArbeidsgiveravgiftBelop(),
-                avtaleInnhold.getSumLonnsutgifter(),
-                avtaleInnhold.getSumLonnstilskudd(),
-                avtaleInnhold.getManedslonn100pst(),
-                avtaleInnhold.getSumLønnstilskuddRedusert(),
-                avtaleInnhold.getDatoForRedusertProsent(),
-                avtaleInnhold.getStillingstype(),
-                avtaleInnhold.getInkluderingstilskuddBegrunnelse(),
-                avtaleInnhold.getGodkjentAvDeltaker(),
-                avtaleInnhold.getGodkjentTaushetserklæringAvMentor(),
-                avtaleInnhold.getGodkjentAvArbeidsgiver(),
-                avtaleInnhold.getGodkjentAvVeileder(),
-                avtaleInnhold.getGodkjentAvBeslutter(),
-                avtaleInnhold.getAvtaleInngått(),
-                avtaleInnhold.getIkrafttredelsestidspunkt(),
-                avtaleInnhold.getGodkjentAvNavIdent(),
-                avtaleInnhold.getGodkjentAvBeslutterNavIdent(),
-                avtaleInnhold.getEnhetKostnadssted(),
-                avtaleInnhold.getEnhetsnavnKostnadssted(),
-                avtaleInnhold.getGodkjentPaVegneGrunn(),
-                avtaleInnhold.isGodkjentPaVegneAv(),
-                avtaleInnhold.getGodkjentPaVegneAvArbeidsgiverGrunn(),
-                avtaleInnhold.isGodkjentPaVegneAvArbeidsgiver(),
-                avtaleInnhold.getInnholdType(),
-                utførtAv
-        );
+        AvtaleMelding avtaleMelding = new AvtaleMelding();
+        avtaleMelding.setHendelseType(hendelseType);
+        avtaleMelding.setAvtaleStatus(avtale.statusSomEnum());
+        avtaleMelding.setDeltakerFnr(avtale.getDeltakerFnr());
+        avtaleMelding.setMentorFnr(avtale.getMentorFnr());
+        avtaleMelding.setBedriftNr(avtale.getBedriftNr());
+        avtaleMelding.setVeilederNavIdent(avtale.getVeilederNavIdent());
+        avtaleMelding.setTiltakstype(avtale.getTiltakstype());
+        avtaleMelding.setOpprettetTidspunkt(avtale.getOpprettetTidspunkt());
+        avtaleMelding.setId(avtale.getId());
+        avtaleMelding.setAvtaleNr(avtale.getAvtaleNr());
+        avtaleMelding.setSistEndret(avtale.getSistEndret());
+        avtaleMelding.setAnnullertTidspunkt(avtale.getAnnullertTidspunkt());
+        avtaleMelding.setAnnullertGrunn(avtale.getAnnullertGrunn());
+        avtaleMelding.setSlettemerket(avtale.isSlettemerket());
+        avtaleMelding.setOpprettetAvArbeidsgiver(avtale.isOpprettetAvArbeidsgiver());
+        avtaleMelding.setEnhetGeografisk(avtale.getEnhetGeografisk());
+        avtaleMelding.setEnhetsnavnGeografisk(avtale.getEnhetsnavnGeografisk());
+        avtaleMelding.setEnhetOppfolging(avtale.getEnhetOppfolging());
+        avtaleMelding.setEnhetsnavnOppfolging(avtale.getEnhetsnavnOppfolging());
+        avtaleMelding.setGodkjentForEtterregistrering(avtale.isGodkjentForEtterregistrering());
+        avtaleMelding.setKvalifiseringsgruppe(avtale.getKvalifiseringsgruppe());
+        avtaleMelding.setFormidlingsgruppe(avtale.getFormidlingsgruppe());
+        avtaleMelding.setFeilregistrert(avtale.isFeilregistrert());
+        avtaleMelding.setVersjon(avtaleInnhold.getVersjon());
+        avtaleMelding.setDeltakerFornavn(avtaleInnhold.getDeltakerFornavn());
+        avtaleMelding.setDeltakerEtternavn(avtaleInnhold.getDeltakerEtternavn());
+        avtaleMelding.setDeltakerTlf(avtaleInnhold.getDeltakerTlf());
+        avtaleMelding.setBedriftNavn(avtaleInnhold.getBedriftNavn());
+        avtaleMelding.setArbeidsgiverFornavn(avtaleInnhold.getArbeidsgiverFornavn());
+        avtaleMelding.setArbeidsgiverEtternavn(avtaleInnhold.getArbeidsgiverEtternavn());
+        avtaleMelding.setArbeidsgiverTlf(avtaleInnhold.getArbeidsgiverTlf());
+        avtaleMelding.setVeilederFornavn(avtaleInnhold.getVeilederFornavn());
+        avtaleMelding.setVeilederEtternavn(avtaleInnhold.getVeilederEtternavn());
+        avtaleMelding.setVeilederTlf(avtaleInnhold.getVeilederTlf());
+        avtaleMelding.setOppfolging(avtaleInnhold.getOppfolging());
+        avtaleMelding.setTilrettelegging(avtaleInnhold.getTilrettelegging());
+        avtaleMelding.setStartDato(avtaleInnhold.getStartDato());
+        avtaleMelding.setSluttDato(avtaleInnhold.getSluttDato());
+        avtaleMelding.setStillingprosent(avtaleInnhold.getStillingprosent());
+        avtaleMelding.setJournalpostId(avtaleInnhold.getJournalpostId());
+        avtaleMelding.setArbeidsoppgaver(avtaleInnhold.getArbeidsoppgaver());
+        avtaleMelding.setStillingstittel(avtaleInnhold.getStillingstittel());
+        avtaleMelding.setStillingStyrk08(avtaleInnhold.getStillingStyrk08());
+        avtaleMelding.setStillingKonseptId(avtaleInnhold.getStillingKonseptId());
+        avtaleMelding.setAntallDagerPerUke(avtaleInnhold.getAntallDagerPerUke());
+        avtaleMelding.setRefusjonKontaktperson(avtaleInnhold.getRefusjonKontaktperson());
+        avtaleMelding.setMentorFornavn(avtaleInnhold.getMentorFornavn());
+        avtaleMelding.setMentorEtternavn(avtaleInnhold.getMentorEtternavn());
+        avtaleMelding.setMentorOppgaver(avtaleInnhold.getMentorOppgaver());
+        avtaleMelding.setMentorAntallTimer(avtaleInnhold.getMentorAntallTimer());
+        avtaleMelding.setMentorTimelonn(avtaleInnhold.getMentorTimelonn());
+        avtaleMelding.setMentorTlf(avtaleInnhold.getMentorTlf());
+        avtaleMelding.setArbeidsgiverKontonummer(avtaleInnhold.getArbeidsgiverKontonummer());
+        avtaleMelding.setLonnstilskuddProsent(avtaleInnhold.getLonnstilskuddProsent());
+        avtaleMelding.setManedslonn(avtaleInnhold.getManedslonn());
+        avtaleMelding.setFeriepengesats(avtaleInnhold.getFeriepengesats());
+        avtaleMelding.setArbeidsgiveravgift(avtaleInnhold.getArbeidsgiveravgift());
+        avtaleMelding.setHarFamilietilknytning(avtaleInnhold.getHarFamilietilknytning());
+        avtaleMelding.setFamilietilknytningForklaring(avtaleInnhold.getFamilietilknytningForklaring());
+        avtaleMelding.setFeriepengerBelop(avtaleInnhold.getFeriepengerBelop());
+        avtaleMelding.setOtpSats(avtaleInnhold.getOtpSats());
+        avtaleMelding.setOtpBelop(avtaleInnhold.getOtpBelop());
+        avtaleMelding.setArbeidsgiveravgiftBelop(avtaleInnhold.getArbeidsgiveravgiftBelop());
+        avtaleMelding.setSumLonnsutgifter(avtaleInnhold.getSumLonnsutgifter());
+        avtaleMelding.setSumLonnstilskudd(avtaleInnhold.getSumLonnstilskudd());
+        avtaleMelding.setManedslonn100pst(avtaleInnhold.getManedslonn100pst());
+        avtaleMelding.setSumLønnstilskuddRedusert(avtaleInnhold.getSumLønnstilskuddRedusert());
+        avtaleMelding.setDatoForRedusertProsent(avtaleInnhold.getDatoForRedusertProsent());
+        avtaleMelding.setStillingstype(avtaleInnhold.getStillingstype());
+        avtaleMelding.setInkluderingstilskuddBegrunnelse(avtaleInnhold.getInkluderingstilskuddBegrunnelse());
+        avtaleMelding.setInkluderingstilskuddTotalBeløp(avtaleInnhold.inkluderingstilskuddTotalBeløp());
+        avtaleMelding.setGodkjentAvDeltaker(avtaleInnhold.getGodkjentAvDeltaker());
+        avtaleMelding.setGodkjentTaushetserklæringAvMentor(avtaleInnhold.getGodkjentTaushetserklæringAvMentor());
+        avtaleMelding.setGodkjentAvArbeidsgiver(avtaleInnhold.getGodkjentAvArbeidsgiver());
+        avtaleMelding.setGodkjentAvVeileder(avtaleInnhold.getGodkjentAvVeileder());
+        avtaleMelding.setGodkjentAvBeslutter(avtaleInnhold.getGodkjentAvBeslutter());
+        avtaleMelding.setAvtaleInngått(avtaleInnhold.getAvtaleInngått());
+        avtaleMelding.setIkrafttredelsestidspunkt(avtaleInnhold.getIkrafttredelsestidspunkt());
+        avtaleMelding.setGodkjentAvNavIdent(avtaleInnhold.getGodkjentAvNavIdent());
+        avtaleMelding.setGodkjentAvBeslutterNavIdent(avtaleInnhold.getGodkjentAvBeslutterNavIdent());
+        avtaleMelding.setEnhetKostnadssted(avtaleInnhold.getEnhetKostnadssted());
+        avtaleMelding.setEnhetsnavnKostnadssted(avtaleInnhold.getEnhetsnavnKostnadssted());
+        avtaleMelding.setGodkjentPaVegneGrunn(avtaleInnhold.getGodkjentPaVegneGrunn());
+        avtaleMelding.setGodkjentPaVegneAv(avtaleInnhold.isGodkjentPaVegneAv());
+        avtaleMelding.setGodkjentPaVegneAvArbeidsgiverGrunn(avtaleInnhold.getGodkjentPaVegneAvArbeidsgiverGrunn());
+        avtaleMelding.setGodkjentPaVegneAvArbeidsgiver(avtaleInnhold.isGodkjentPaVegneAvArbeidsgiver());
+        avtaleMelding.setInnholdType(avtaleInnhold.getInnholdType());
+        avtaleMelding.setUtførtAv(utførtAv);
+
+        //Lister
+        avtaleMelding.setTilskuddPeriode(avtale.getTilskuddPeriode());
+        avtaleMelding.setMaal(avtaleInnhold.getMaal());
+        avtaleMelding.setInkluderingstilskuddsutgift(avtaleInnhold.getInkluderingstilskuddsutgift());
+
+        return avtaleMelding;
     }
+
 }
