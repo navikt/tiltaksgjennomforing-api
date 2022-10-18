@@ -81,12 +81,6 @@ services:
 #      - ./dbdata:/var/lib/postgresql/data
     ports:
       - 6432:5432
-  wiremock:
-    image: rodolpheche/wiremock
-    volumes:
-      - "./src/test/resources/mappings:/home/wiremock/mappings"
-    ports:
-      - 8090:8080
   tiltak-dokgen:
     build:
       context: ../tiltak-dokgen
