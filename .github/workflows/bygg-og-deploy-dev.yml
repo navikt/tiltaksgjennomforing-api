@@ -1,9 +1,8 @@
-name: Bygg og deploy master
+name: Bygg og deploy dev
 
 on:
-  push:
-    branches:
-      - 'master'
+  workflow_dispatch:
+
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -56,23 +55,6 @@ jobs:
           RESOURCE: nais/naiserator.yaml
           PRINT_PAYLOAD: true
           VAR: ingress=https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api/,kafka-pool=nav-dev,tenant=trygdeetaten.no,besluttergruppe=fbfea82d-13da-43ad-a2f2-d7f21cb95f12
-
-  deploy-prod:
-    name: Deploy til prod
-    runs-on: ubuntu-latest
-    needs: bygg
-    steps:
-      - name: Sjekk ut kode
-        uses: actions/checkout@v3
-
-      - name: Deploy til prod-fss
-        uses: nais/deploy/actions/deploy@v1
-        env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: prod-fss
-          RESOURCE: nais/naiserator.yaml,nais/alerterator.yaml
-          PRINT_PAYLOAD: true
-          VAR: ingress=https://arbeidsgiver.nais.adeo.no/tiltaksgjennomforing-api/,kafka-pool=nav-prod,tenant=nav.no,besluttergruppe=156f4f79-6909-4be1-8045-323f55590898
 
   deploy-labs:
     name: Deploy til labs
