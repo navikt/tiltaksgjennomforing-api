@@ -58,6 +58,8 @@ tiltaksgjennomforing:
   dvh-melding:
     feature-enabled: false
     fixed-delay: 600000
+  avtale-hendelse-melding:
+    fixed-delay: 600000
   tilskuddsperioder:
     tiltakstyper: SOMMERJOBB
     pilotvirksomheter: ${tiltaksgjennomforing.pilot.pilotvirksomheter}
