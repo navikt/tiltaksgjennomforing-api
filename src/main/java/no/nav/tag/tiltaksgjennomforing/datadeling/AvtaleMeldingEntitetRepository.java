@@ -9,7 +9,7 @@ import java.util.UUID;
 public interface AvtaleMeldingEntitetRepository extends JpaRepository<AvtaleMeldingEntitet, UUID> {
 
     @Query(nativeQuery = true, value =
-            "select * from avtale_melding where (avtale_id, tidspunkt) in (select avtale_id, max(tidspunkt) from avtale_melding group by avtale_id) and tiltak_status in ('KLAR_FOR_OPPSTART', 'GJENNOMFØRES');")
+            "select * from avtale_melding where (avtale_id, tidspunkt) in (select avtale_id, max(tidspunkt) from avtale_melding group by avtale_id) and avtale_status in ('KLAR_FOR_OPPSTART', 'GJENNOMFØRES');")
     List<AvtaleMeldingEntitet> findNyesteAvtaleHendelseMeldingForAvtaleSomKanEndreStatus();
 
 }

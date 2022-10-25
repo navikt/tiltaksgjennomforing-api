@@ -195,6 +195,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new AvtaleEndret(this, utfortAv));
     }
 
+
+
     public void delMedAvtalepart(Avtalerolle avtalerolle) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
 

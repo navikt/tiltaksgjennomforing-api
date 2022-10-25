@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -23,7 +22,6 @@ import java.util.UUID;
 public class AvtaleHendelseLytter {
 
     private final AvtaleMeldingEntitetRepository avtaleMeldingEntitetRepository;
-    private final InnloggingService innloggingService;
     private final ObjectMapper objectMapper;
 
     @EventListener
@@ -41,11 +39,7 @@ public class AvtaleHendelseLytter {
     @EventListener
     public void avtaleEndret(AvtaleEndret event) {
         Avtale avtale = event.getAvtale();
-        if (event.getUtfortAv() == Avtalerolle.VEILEDER) {
-            lagHendelse(avtale, HendelseType.ENDRET, innloggingService.hentInnloggetVeileder().getIdentifikator());
-        } else if (event.getUtfortAv() == Avtalerolle.ARBEIDSGIVER) {
-            lagHendelse(avtale, HendelseType.ENDRET, avtale.getBedriftNr());
-        }
+        lagHendelse(avtale, HendelseType.ENDRET, null);
     }
 
     @EventListener
