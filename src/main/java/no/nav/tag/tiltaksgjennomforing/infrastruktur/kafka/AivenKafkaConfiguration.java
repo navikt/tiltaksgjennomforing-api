@@ -1,7 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.varsel.Sms;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SslConfigs;
