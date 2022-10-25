@@ -41,7 +41,7 @@ public class AvtaleMeldingKafkaProdusent {
             }
             @Override
             public void onFailure(Throwable ex) {
-                log.warn("AvtaleHendelse med id {} kunne ikke sendes til Kafka topic {}", meldingId, Topics.AVTALE_HENDELSE);
+                log.error("AvtaleHendelse med id {} kunne ikke sendes til Kafka topic {}", meldingId, Topics.AVTALE_HENDELSE);
             }
         });
 

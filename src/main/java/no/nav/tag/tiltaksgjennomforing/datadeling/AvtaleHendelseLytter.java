@@ -4,11 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
-import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -18,9 +19,11 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 @Slf4j
+@Profile({Miljø.DEV_FSS, Miljø.LOCAL})
 public class AvtaleHendelseLytter {
 
     private final AvtaleMeldingEntitetRepository avtaleMeldingEntitetRepository;
+    private final InnloggingService innloggingService;
     private final ObjectMapper objectMapper;
 
     @EventListener
@@ -38,7 +41,11 @@ public class AvtaleHendelseLytter {
     @EventListener
     public void avtaleEndret(AvtaleEndret event) {
         Avtale avtale = event.getAvtale();
-        lagHendelse(avtale, HendelseType.ENDRET, null);
+        if (event.getUtfortAv() == Avtalerolle.VEILEDER) {
+            lagHendelse(avtale, HendelseType.ENDRET, innloggingService.hentInnloggetVeileder().getIdentifikator());
+        } else if (event.getUtfortAv() == Avtalerolle.ARBEIDSGIVER) {
+            lagHendelse(avtale, HendelseType.ENDRET, avtale.getBedriftNr());
+        }
     }
 
     @EventListener
