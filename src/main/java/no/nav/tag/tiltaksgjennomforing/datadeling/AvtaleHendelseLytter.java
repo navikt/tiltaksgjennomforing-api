@@ -39,7 +39,7 @@ public class AvtaleHendelseLytter {
     @EventListener
     public void avtaleEndret(AvtaleEndret event) {
         Avtale avtale = event.getAvtale();
-        lagHendelse(avtale, HendelseType.ENDRET, null);
+        lagHendelse(avtale, HendelseType.ENDRET, event.getUtfortAv());
     }
 
     @EventListener

@@ -57,8 +57,8 @@ public class MetrikkRegistrering {
     @EventListener
     public void avtaleEndret(AvtaleEndret event) {
         Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
-        log.info("Avtale endret, avtaleId={}, avtalepart={}, tiltakstype={}", event.getAvtale().getId(), event.getUtfortAv(), tiltakstype);
-        counter("avtale.endret", event.getUtfortAv(), tiltakstype).increment();
+        log.info("Avtale endret, avtaleId={}, avtalepart={}, tiltakstype={}", event.getAvtale().getId(), event.getUtfortAvRolle(), tiltakstype);
+        counter("avtale.endret", event.getUtfortAvRolle(), tiltakstype).increment();
     }
 
     @EventListener
