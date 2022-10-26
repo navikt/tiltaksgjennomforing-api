@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.ArbeidsgiverTokenStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.datavarehus.DvhMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.metrikker.MetrikkRegistrering;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -51,6 +52,8 @@ public class AvtaleRepositoryTest {
 
     @Autowired
     private DvhMeldingEntitetRepository dvhMeldingEntitetRepository;
+    @Autowired
+    private AvtaleMeldingEntitetRepository avtaleMeldingEntitetRepository;
 
     @Autowired
     private ArbeidsgiverNotifikasjonRepository arbeidsgiverNotifikasjonRepository;
@@ -71,6 +74,7 @@ public class AvtaleRepositoryTest {
         avtaleInnholdRepository.deleteAll();
         arbeidsgiverNotifikasjonRepository.deleteAll();
         dvhMeldingEntitetRepository.deleteAll();
+        avtaleMeldingEntitetRepository.deleteAll();
         avtaleRepository.deleteAll();
     }
 

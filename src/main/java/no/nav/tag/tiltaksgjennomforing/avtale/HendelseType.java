@@ -46,7 +46,8 @@ public enum HendelseType {
     VARSLER_SETT("Varsler lest"),
     AVTALE_SLETTET("Avtale slettet av veileder"),
     GODKJENT_FOR_ETTERREGISTRERING("Avtale er godkjent for etterregistrering"),
-    FJERNET_ETTERREGISTRERING("Fjernet etterregistrering på avtale");
+    FJERNET_ETTERREGISTRERING("Fjernet etterregistrering på avtale"),
+    STATUSENDRING("Statusendring");
 
     private final String tekst;
 }
