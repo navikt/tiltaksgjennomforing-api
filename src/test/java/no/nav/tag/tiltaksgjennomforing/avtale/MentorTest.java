@@ -102,7 +102,7 @@ public class MentorTest {
         Veileder veileder = TestData.enVeileder(avtale);
         arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
-        EndreOmMentor endreOmMentor = new EndreOmMentor("Per", "Persen", "12345678", "litt mentorering", 5, 500);
+        EndreOmMentor endreOmMentor = new EndreOmMentor("Per", "Persen", "12345678", "litt mentorering", 5.0, 500);
         assertFeilkode(Feilkode.KAN_IKKE_ENDRE_FEIL_TILTAKSTYPE, () -> veileder.endreOmMentor(endreOmMentor, avtale));
     }
 
@@ -115,7 +115,7 @@ public class MentorTest {
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(),avtale);
         //veileder.godkjennAvtale(Instant.now(), avtale);
         assertThat(avtale.getGjeldendeInnhold().getInnholdType()).isEqualTo(AvtaleInnholdType.INNGÅ);
-        EndreOmMentor endreOmMentor = new EndreOmMentor("Per", "Persen", "12345678", "litt mentorering", 5, 500);
+        EndreOmMentor endreOmMentor = new EndreOmMentor("Per", "Persen", "12345678", "litt mentorering", 5.0, 500);
         veileder.endreOmMentor(endreOmMentor, avtale);
         assertThat(avtale.getGjeldendeInnhold().getMentorFornavn()).isEqualTo("Per");
         assertThat(avtale.getGjeldendeInnhold().getMentorEtternavn()).isEqualTo("Persen");
@@ -133,7 +133,10 @@ public class MentorTest {
         Veileder veileder = TestData.enVeileder(avtale);
         arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
         assertThat(avtale.erAvtaleInngått()).isFalse();
-        assertFeilkode(Feilkode.KAN_IKKE_ENDRE_OM_MENTOR_IKKE_INNGAATT_AVTALE, () -> veileder.endreOmMentor(new EndreOmMentor("Per", "Persen", "12345678", "litt mentorering", 5, 500), avtale));
+        assertFeilkode(
+                Feilkode.KAN_IKKE_ENDRE_OM_MENTOR_IKKE_INNGAATT_AVTALE,
+                () -> veileder.endreOmMentor(new EndreOmMentor("Per", "Persen", "12345678", "litt mentorering", 5.0, 500), avtale)
+        );
     }
 
 }

@@ -10,6 +10,6 @@ public class EndreOmMentor {
     String mentorEtternavn;
     String mentorTlf;
     String mentorOppgaver;
-    Integer mentorAntallTimer;
+    Double mentorAntallTimer;
     Integer mentorTimelonn;
 }
