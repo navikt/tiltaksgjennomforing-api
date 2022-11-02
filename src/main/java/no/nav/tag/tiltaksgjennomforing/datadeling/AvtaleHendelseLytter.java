@@ -141,7 +141,7 @@ public class AvtaleHendelseLytter {
             AvtaleMeldingEntitet entitet = new AvtaleMeldingEntitet(meldingId, avtale.getId(), tidspunkt, hendelseType, avtale.statusSomEnum(), meldingSomString);
             avtaleMeldingEntitetRepository.save(entitet);
         } catch (JsonProcessingException e) {
-            log.error("Feil ved parsing av AvtaleHendelseMelding til json for hendelse med id {}", meldingId);
+            log.error("Feil ved parsing av AvtaleHendelseMelding til json for avtale med id: {}", avtale.getId());
             throw new RuntimeException(e);
         }
     }
