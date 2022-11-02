@@ -55,7 +55,7 @@ public class AvtaleHendelseStatusendringJobb {
                             avtale.getId(), avtale.statusSomEnum(), entitet.getAvtaleStatus(), Topics.AVTALE_HENDELSE);
                     antallNyeMeldinger++;
                 } catch (JsonProcessingException e) {
-                    log.error("Feil ved parsing av AvtaleHendelseMelding til json for hendelse med id {}", avtaleMelding.getId());
+                    log.error("Feil ved parsing av AvtaleHendelseMelding i statusendringjobb til json for hendelse med avtaleId {}", avtaleMelding.getAvtaleId());
                     throw new RuntimeException(e);
                 }
             }
