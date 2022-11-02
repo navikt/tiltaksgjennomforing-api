@@ -1,8 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.datadeling;
 
 import lombok.Data;
-import lombok.Value;
-import lombok.experimental.UtilityClass;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
@@ -11,7 +9,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Data
 public class AvtaleMelding {
@@ -24,7 +21,7 @@ public class AvtaleMelding {
     Identifikator veilederNavIdent;
     Tiltakstype tiltakstype;
     LocalDateTime opprettetTidspunkt;
-    UUID id;
+    UUID avtaleId;
     Integer avtaleNr;
     Instant sistEndret;
     Instant annullertTidspunkt;
@@ -131,7 +128,7 @@ public class AvtaleMelding {
         avtaleMelding.setVeilederNavIdent(avtale.getVeilederNavIdent());
         avtaleMelding.setTiltakstype(avtale.getTiltakstype());
         avtaleMelding.setOpprettetTidspunkt(avtale.getOpprettetTidspunkt());
-        avtaleMelding.setId(avtale.getId());
+        avtaleMelding.setAvtaleId(avtale.getId());
         avtaleMelding.setAvtaleNr(avtale.getAvtaleNr());
         avtaleMelding.setSistEndret(avtale.getSistEndret());
         avtaleMelding.setAnnullertTidspunkt(avtale.getAnnullertTidspunkt());
