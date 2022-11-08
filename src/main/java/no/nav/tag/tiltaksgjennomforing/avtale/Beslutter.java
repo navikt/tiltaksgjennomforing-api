@@ -67,6 +67,13 @@ public class Beslutter extends Avtalepart<NavIdent> {
         return avtaleRepository.findAllByAvtaleNr(queryParametre.getAvtaleNr());
     }
 
+    private Integer getPlussdato() {
+        if(LocalDate.now().getYear() != LocalDate.now().plusMonths(3).getYear()) {
+            return 0;
+        }
+        return ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
+    }
+
     List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
             AvtaleRepository avtaleRepository,
             AvtalePredicate queryParametre,
@@ -79,8 +86,7 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
         TilskuddPeriodeStatus status = queryParametre.getTilskuddPeriodeStatus();
         Tiltakstype tiltakstype = queryParametre.getTiltakstype();
-        Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
-
+        Integer plussDato = getPlussdato();
 
         if (status == null) {
             status = TilskuddPeriodeStatus.UBEHANDLET;

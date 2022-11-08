@@ -64,7 +64,9 @@ class BeslutterTest {
         tilskuddPeriode.setStartDato(LocalDate.now().minusMonths(3));
         avtale.setTilskuddPeriode(new TreeSet<>(List.of(tilskuddPeriode)));
 
-        Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
+        Integer plussDato = LocalDate.now().getYear() != LocalDate.now().plusMonths(3).getYear() ?
+                0 :
+                ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
 
         Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService);
 
@@ -91,7 +93,6 @@ class BeslutterTest {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         TilskuddPeriode tilskuddPeriode = new TilskuddPeriode();
         tilskuddPeriode.setBeløp(1200);
-        tilskuddPeriode.setStartDato(LocalDate.now().plusDays(14));
         tilskuddPeriode.setLøpenummer(1);
         tilskuddPeriode.setStatus(TilskuddPeriodeStatus.UBEHANDLET);
         tilskuddPeriode.setAvtale(avtale);
@@ -99,7 +100,6 @@ class BeslutterTest {
 
         TilskuddPeriode tilskuddPeriode2 = new TilskuddPeriode();
         tilskuddPeriode2.setBeløp(1250);
-        tilskuddPeriode2.setStartDato(LocalDate.now().plusDays(14).plusMonths(1));
         tilskuddPeriode2.setLøpenummer(2);
         tilskuddPeriode2.setStatus(TilskuddPeriodeStatus.UBEHANDLET);
         tilskuddPeriode2.setAvtale(avtale);
@@ -108,7 +108,9 @@ class BeslutterTest {
         avtale.setTilskuddPeriode(new TreeSet<>(List.of(tilskuddPeriode, tilskuddPeriode2)));
 
         Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService);
-        Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
+        Integer plussDato = LocalDate.now().getYear() != LocalDate.now().plusMonths(3).getYear() ?
+                0 :
+                ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
         AvtalePredicate avtalePredicate = new AvtalePredicate();
         avtalePredicate.setTilskuddPeriodeStatus(null);
 
