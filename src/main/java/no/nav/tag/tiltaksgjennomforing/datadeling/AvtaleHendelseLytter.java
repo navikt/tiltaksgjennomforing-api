@@ -135,7 +135,8 @@ public class AvtaleHendelseLytter {
     private void lagHendelse(Avtale avtale, HendelseType hendelseType, Identifikator utførtAv) {
         LocalDateTime tidspunkt = Now.localDateTime();
         UUID meldingId = UUID.randomUUID();
-        var melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), utførtAv, hendelseType);
+         AvtaleHendelseUtførtAvRolle utførtAvAvtaleRolle = finnRolle(utførtAv, hendelseType, avtale);
+        var melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), utførtAv, utførtAvAvtaleRolle, hendelseType);
         try {
             String meldingSomString = objectMapper.writeValueAsString(melding);
             AvtaleMeldingEntitet entitet = new AvtaleMeldingEntitet(meldingId, avtale.getId(), tidspunkt, hendelseType, avtale.statusSomEnum(), meldingSomString);
@@ -143,6 +144,17 @@ public class AvtaleHendelseLytter {
         } catch (JsonProcessingException e) {
             log.error("Feil ved parsing av AvtaleHendelseMelding til json for avtale med id: {}", avtale.getId());
             throw new RuntimeException(e);
+        }
+    }
+
+    private AvtaleHendelseUtførtAvRolle finnRolle(Identifikator identifikator, HendelseType hendelseType, Avtale avtale) {
+        if (identifikator instanceof NavIdent) {
+            return AvtaleHendelseUtførtAvRolle.VEILEDER;
+        } else if (identifikator instanceof BedriftNr) {
+            return AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER;
+        } else {
+            log.error("Fant ikke rolle for avtalehendelse, utført av: {}, med hendelsetype:  {} for avtale: {}. Setter rolle til SYSTEM.", identifikator, hendelseType, avtale.getId());
+            return AvtaleHendelseUtførtAvRolle.SYSTEM;
         }
     }
 

@@ -116,8 +116,9 @@ public class AvtaleMelding {
     boolean godkjentPaVegneAvArbeidsgiver;
     AvtaleInnholdType innholdType;
     Identifikator utførtAv;
+    AvtaleHendelseUtførtAvRolle utførtAvRolle;
 
-    public static AvtaleMelding create(Avtale avtale, AvtaleInnhold avtaleInnhold, Identifikator utførtAv, HendelseType hendelseType) {
+    public static AvtaleMelding create(Avtale avtale, AvtaleInnhold avtaleInnhold, Identifikator utførtAv, AvtaleHendelseUtførtAvRolle utførtAvAvtaleRolle, HendelseType hendelseType) {
 
         AvtaleMelding avtaleMelding = new AvtaleMelding();
         avtaleMelding.setHendelseType(hendelseType);
@@ -208,6 +209,7 @@ public class AvtaleMelding {
         avtaleMelding.setGodkjentPaVegneAvArbeidsgiver(avtaleInnhold.isGodkjentPaVegneAvArbeidsgiver());
         avtaleMelding.setInnholdType(avtaleInnhold.getInnholdType());
         avtaleMelding.setUtførtAv(utførtAv);
+        avtaleMelding.setUtførtAvRolle(utførtAvAvtaleRolle);
 
         //Lister
         avtaleMelding.setTilskuddPeriode(avtale.getTilskuddPeriode());
