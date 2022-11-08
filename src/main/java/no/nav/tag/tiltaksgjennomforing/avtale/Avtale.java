@@ -182,7 +182,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         return avtale;
     }
 
-    public void endreAvtale(Instant sistEndret, EndreAvtale nyAvtale, Avtalerolle utfortAv, EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder, List<BedriftNr> pilotvirksomheter) {
+    public void endreAvtale(Instant sistEndret, EndreAvtale nyAvtale, Avtalerolle utfortAvRolle, EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder, List<BedriftNr> pilotvirksomheter, Identifikator identifikator) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAvtalenKanEndres();
         sjekkSistEndret(sistEndret);
@@ -192,7 +192,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             nyeTilskuddsperioder();
         }
         sistEndretNå();
-        registerEvent(new AvtaleEndret(this, utfortAv));
+        registerEvent(new AvtaleEndret(this, utfortAvRolle, identifikator));
+    }
+
+    public void endreAvtale(Instant sistEndret, EndreAvtale nyAvtale, Avtalerolle utfortAv, EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder, List<BedriftNr> pilotvirksomheter) {
+        endreAvtale(sistEndret, nyAvtale, utfortAv, tiltakstyperMedTilskuddsperioder, pilotvirksomheter, null);
     }
 
     public void delMedAvtalepart(Avtalerolle avtalerolle) {

@@ -55,7 +55,7 @@ public class LagVarselFraAvtaleHendelser {
 
     @EventListener
     public void avtaleEndret(AvtaleEndret event) {
-        VarselFactory factory = new VarselFactory(event.getAvtale(), event.getUtfortAv(), HendelseType.ENDRET);
+        VarselFactory factory = new VarselFactory(event.getAvtale(), event.getUtfortAvRolle(), HendelseType.ENDRET);
         varselRepository.saveAll(factory.alleParter());
     }
 

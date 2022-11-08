@@ -52,9 +52,8 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-fss
-          RESOURCE: nais/naiserator.yaml
+          RESOURCE: nais/dev-fss.yaml
           PRINT_PAYLOAD: true
-          VAR: ingress=https://arbeidsgiver.nais.preprod.local/tiltaksgjennomforing-api/,kafka-pool=nav-dev,tenant=trygdeetaten.no,besluttergruppe=fbfea82d-13da-43ad-a2f2-d7f21cb95f12
 
   deploy-labs:
     name: Deploy til labs
@@ -76,6 +75,6 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: labs-gcp
-          RESOURCE: nais/naiserator.yaml,nais/wiremock.yaml,nais/wiremock-mappings.yaml
+          RESOURCE: nais/labs-gcp.yaml,nais/wiremock.yaml,nais/wiremock-mappings.yaml
           PRINT_PAYLOAD: true
-          VAR: deploytrigger=${{ github.run_number }},labs=true
+          VAR: deploytrigger=${{ github.run_number }}

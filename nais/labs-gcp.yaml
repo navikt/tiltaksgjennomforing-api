@@ -6,28 +6,12 @@ metadata:
   labels:
     team: arbeidsgiver
 spec:
-  {{#unless labs}}
-  azure:
-    application:
-      enabled: true
-      allowAllUsers: true
-      tenant: {{tenant}}
-      claims:
-        groups:
-          - id: {{besluttergruppe}}
-        extra:
-          - "NAVident"
-  kafka:
-    pool: {{kafka-pool}}
-  {{/unless}}
   image: {{image}}
   team: arbeidsgiver
   port: 8080
-  {{#if labs }}
   replicas:
     min: 1
     max: 1
-  {{/if}}
   liveness:
     path: /tiltaksgjennomforing-api/internal/healthcheck
     initialDelay: 30
@@ -47,24 +31,9 @@ spec:
     requests:
       cpu: 500m
       memory: 600Mi
-  {{#if ingress}}
-  ingresses:
-    - {{ingress}}
-  {{/if}}
-  {{#unless labs}}
-  leaderElection: true
-  vault:
-    enabled: true
-  webproxy: true
-  strategy:
-    type: RollingUpdate
-  tokenx:
-    enabled: true
-  {{/unless}}
   prometheus:
     enabled: true
     path: /tiltaksgjennomforing-api/internal/actuator/prometheus
-  {{#if labs}}
   accessPolicy:
     inbound:
       rules:
@@ -75,12 +44,5 @@ spec:
         - application: tiltaksgjennomforing-wiremock
         - application: tiltak-refusjon-api
         - application: tiltak-dokgen
-  {{/if}}
-  {{#unless labs}}
-  accessPolicy:
-    inbound:
-      rules:
-        - application: tiltak-proxy
-  {{/unless}}
   envFrom:
     - configmap: loginservice-idporten

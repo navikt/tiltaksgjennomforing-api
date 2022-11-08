@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
+package no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.CommonClientConfigs;
@@ -56,4 +56,5 @@ public class AivenKafkaConfiguration {
     public KafkaTemplate<String, String> aivenKafkaTemplate() {
         return new KafkaTemplate<>(new DefaultKafkaProducerFactory<>(producerConfigs()));
     }
+
 }
