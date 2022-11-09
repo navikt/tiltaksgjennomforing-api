@@ -63,7 +63,7 @@ public class EndreAvtale {
     private String mentorFornavn;
     private String mentorEtternavn;
     private String mentorOppgaver;
-    private Integer mentorAntallTimer;
+    private Double mentorAntallTimer;
     private String mentorTlf;
     private Integer mentorTimelonn;
 

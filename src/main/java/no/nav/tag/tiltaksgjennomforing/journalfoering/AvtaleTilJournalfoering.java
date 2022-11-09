@@ -73,7 +73,7 @@ public class AvtaleTilJournalfoering {
     private String mentorFornavn;
     private String mentorEtternavn;
     private String mentorOppgaver;
-    private Integer mentorAntallTimer;
+    private Double mentorAntallTimer;
     private Integer mentorTimelonn;
 
     private List<MaalTilJournalfoering> maal = new ArrayList<>();
