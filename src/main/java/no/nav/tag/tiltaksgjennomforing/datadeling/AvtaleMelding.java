@@ -66,7 +66,7 @@ public class AvtaleMelding {
     String mentorFornavn;
     String mentorEtternavn;
     String mentorOppgaver;
-    Integer mentorAntallTimer;
+    Double mentorAntallTimer;
     Integer mentorTimelonn;
     String mentorTlf;
 
