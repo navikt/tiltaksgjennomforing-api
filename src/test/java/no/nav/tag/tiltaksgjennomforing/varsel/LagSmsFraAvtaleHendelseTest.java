@@ -233,7 +233,7 @@ class LagSmsFraAvtaleHendelseTest {
         avtale.refusjonRevarsel(fristForGodkjenning);
         avtaleRepository.save(avtale);
         String meldingstekst = String.format("Fristen nærmer seg for å søke om refusjon for tilskudd til mentor for avtale med nr: %s. Frist for å søke er %s. Søk om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr(), fristForGodkjenning);
-        assertSmsIkkeOpprettetEllerSendt(HendelseType.REFUSJON_KLAR_REVARSEL, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+        assertSmsOpprettetOgSendt(HendelseType.REFUSJON_KLAR_REVARSEL, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
     }
 
     @Test
@@ -290,7 +290,7 @@ class LagSmsFraAvtaleHendelseTest {
         avtale.refusjonFristForlenget();
         avtaleRepository.save(avtale);
         String meldingstekst = String.format("Fristen for å godkjenne refusjon for avtale med nr: %s har blitt forlenget. Du kan sjekke fristen og søke om refusjon her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
-        assertSmsIkkeOpprettetEllerSendt(HendelseType.REFUSJON_FRIST_FORLENGET, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+        assertSmsOpprettetOgSendt(HendelseType.REFUSJON_FRIST_FORLENGET, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
     }
 
     @Test
@@ -345,7 +345,7 @@ class LagSmsFraAvtaleHendelseTest {
         avtale.refusjonKorrigert();
         avtaleRepository.save(avtale);
         String meldingstekst = String.format("Tidligere innsendt refusjon på avtale med nr %d er korrigert. Se detaljer her: https://tiltak-refusjon.nav.no. Hilsen NAV.", avtale.getAvtaleNr());
-        assertSmsIkkeOpprettetEllerSendt(HendelseType.REFUSJON_KORRIGERT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
+        assertSmsOpprettetOgSendt(HendelseType.REFUSJON_KORRIGERT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), meldingstekst);
     }
 
     @Test
