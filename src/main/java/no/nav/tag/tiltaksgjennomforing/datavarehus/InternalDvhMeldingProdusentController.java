@@ -21,7 +21,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/internal/dvh-melding")
 @RequiredArgsConstructor
-@ProtectedWithClaims(issuer = "isso")
+@ProtectedWithClaims(issuer = "aad")
 @Slf4j
 public class InternalDvhMeldingProdusentController {
     private final AvtaleRepository avtaleRepository;

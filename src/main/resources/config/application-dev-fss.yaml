@@ -125,6 +125,7 @@ tiltaksgjennomforing:
     lenke: https://tiltaksgjennomforing.dev.nav.no/tiltaksgjennomforing/avtale/
     enabled: true
   dvh-melding:
+    gruppe-tilgang: ${beslutter.ad.gruppe}
     feature-enabled: true
     tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, MENTOR, INKLUDERINGSTILSKUDD, ARBEIDSTRENING
   tilskuddsperioder:
