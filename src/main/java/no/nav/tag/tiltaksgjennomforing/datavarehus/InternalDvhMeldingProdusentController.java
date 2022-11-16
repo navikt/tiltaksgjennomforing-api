@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/internal/dvh-melding")
+@RequestMapping("/utvikler-admin/dvh-melding")
 @RequiredArgsConstructor
 @ProtectedWithClaims(issuer = "aad")
 @Slf4j
@@ -32,6 +32,7 @@ public class InternalDvhMeldingProdusentController {
 
     @PostMapping("/patch")
     public void patcheAvtale(@RequestBody PatchRequest request) {
+        log.info("Patcher avtaler til dvh");
         if (!tokenUtils.harAdGruppe(dvhMeldingProperties.getGruppeTilgang())) {
             throw new HttpClientErrorException(HttpStatus.FORBIDDEN);
         }
