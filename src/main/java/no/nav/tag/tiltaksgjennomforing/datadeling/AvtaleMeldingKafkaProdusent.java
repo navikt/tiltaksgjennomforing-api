@@ -16,7 +16,7 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 @Component
 @Slf4j
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
-@Profile({Miljø.DEV_FSS, Miljø.LOCAL})
+@Profile({Miljø.DEV_FSS, Miljø.LOCAL, "dockercompose"})
 public class AvtaleMeldingKafkaProdusent {
 
     private final KafkaTemplate<String, String> aivenKafkaTemplate;

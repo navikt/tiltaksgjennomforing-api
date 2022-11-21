@@ -18,7 +18,7 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-@Profile({Miljø.DEV_FSS, Miljø.LOCAL})
+@Profile({Miljø.DEV_FSS, Miljø.LOCAL, "dockercompose"})
 public class AvtaleHendelseLytter {
 
     private final AvtaleMeldingEntitetRepository avtaleMeldingEntitetRepository;
