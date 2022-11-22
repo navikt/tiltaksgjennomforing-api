@@ -181,6 +181,7 @@ public class TestData {
         EndreAvtale endring = TestData.endringPåAlleLønnstilskuddFelter();
         endring.setStartDato(startDato);
         endring.setSluttDato(sluttDato);
+        avtale.setGodkjentForEtterregistrering(true);
         avtale.endreAvtale(Now.instant(), endring, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
         avtale.godkjennForDeltaker(TestData.enIdentifikator());

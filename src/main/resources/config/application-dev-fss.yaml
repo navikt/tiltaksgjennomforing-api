@@ -130,6 +130,8 @@ tiltaksgjennomforing:
     tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, MENTOR, INKLUDERINGSTILSKUDD, ARBEIDSTRENING
   tilskuddsperioder:
     tiltakstyper: SOMMERJOBB
+  utvikler-tilgang:
+    gruppe-tilgang: ${beslutter.ad.gruppe}
 
 http:
   proxy:
