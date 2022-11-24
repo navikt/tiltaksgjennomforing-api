@@ -42,39 +42,6 @@ public class InternalTilskuddsperiodeController {
         }
     }
 
-    @PostMapping("/lag-tilskuddsperioder-arena")
-    @Transactional
-    public void lagTilskuddsperioderPåArenaAvtaler() {
-        sjekkTilgang();
-        // Finn alle lønnstilskuddavtaler (varig og midlertidlig)
-        AtomicInteger antallMigrert = new AtomicInteger();
-        List<Avtale> midlertidigLønnstilskuddAvtaler = avtaleRepository.findAllByTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
-
-        log.info("Oppdaterer tilskuddsperioder på (sånn ca, før filtrering på piloter) {} avtaler for midlertidig lønnstilskudd", midlertidigLønnstilskuddAvtaler.size());
-
-        midlertidigLønnstilskuddAvtaler.forEach(avtale -> {
-            avtale.nyeTilskuddsperioderPåAvtalerFraArena(LocalDate.of(2023, 02, 01));
-            antallMigrert.getAndIncrement();
-            if(antallMigrert.get() % 100 == 0) {
-                log.info("Migrert {} antall avtaler", antallMigrert.get());
-            }
-        });
-
-        List<Avtale> varigLønnstilskuddAvtaler = avtaleRepository.findAllByTiltakstype(Tiltakstype.VARIG_LONNSTILSKUDD);
-
-        log.info("Oppdaterer tilskuddsperioder på (sånn ca, før filtrering på piloter) {} avtaler for varig lønnstilskudd", midlertidigLønnstilskuddAvtaler.size());
-
-        varigLønnstilskuddAvtaler.forEach(avtale -> {
-            avtale.nyeTilskuddsperioderPåAvtalerFraArena(LocalDate.of(2023, 02, 01));
-            antallMigrert.getAndIncrement();
-            if(antallMigrert.get() % 100 == 0) {
-                log.info("Migrert {} antall avtaler", antallMigrert.get());
-            }
-        });
-
-        log.info("Migrering av tilskuddsperioder for gamle avtaler i arena fullført. {}", antallMigrert.get());
-    }
-
     @PostMapping("/send-godkjenn-melding")
     @Transactional
     public void sendTilskuddsperiodeGodkjent(@RequestBody SendTilskuddsperiodeGodkjentRequest request) {

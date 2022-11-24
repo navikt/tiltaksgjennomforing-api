@@ -879,6 +879,18 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
     }
 
+    private boolean sjekkArenaMigrering() {
+        if(!tilskuddPeriode.isEmpty()) {
+            return false;
+        }
+        // Statuser som skal få tilskuddsperioder
+        Status status = statusSomEnum();
+        if(status == Status.ANNULLERT || status == Status.MANGLER_GODKJENNING || status == Status.AVSLUTTET || status == Status.AVBRUTT) {
+            return false;
+        }
+
+        return true;
+    }
     /**
      * Avtaler (lønnstilskudd) som avsluttes i Arena må få tilskuddsperioder her.
      *
@@ -888,8 +900,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
      * - Tar ikke høyde for perioder med lengde tre måneder som i arena
      * -
      */
-    public void nyeTilskuddsperioderPåAvtalerFraArena(LocalDate migreringsDato) {
-        if(tilskuddPeriode.isEmpty()) {
+    public boolean nyeTilskuddsperioderPåAvtalerFraArena(LocalDate migreringsDato) {
+        if(sjekkArenaMigrering()) {
             List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioder(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
             tilskuddsperioder.forEach(periode -> {
                 // Set status BEHANDLET_I_ARENA på tilskuddsperioder før migreringsdato
@@ -899,8 +911,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
                 }
             });
             tilskuddPeriode.addAll(tilskuddsperioder);
+            return true;
         } else {
             log.info("Avtale {} har allerede tilskuddsperioder, genererer ikke nye", id);
+            return false;
         }
     }
 
