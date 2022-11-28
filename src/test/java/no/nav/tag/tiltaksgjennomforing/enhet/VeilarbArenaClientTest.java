@@ -78,13 +78,13 @@ class VeilarbArenaClientTest {
         avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
         avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
         avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
-        avtale.endreAvtale(Instant.now(),new EndreAvtale(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
+        avtale.endreAvtale(Instant.now(),new EndreAvtale(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of(), List.of());
 
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isNotNull();
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(60);
 
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
-        avtale.endreAvtale(Instant.now(),new EndreAvtale(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
+        avtale.endreAvtale(Instant.now(),new EndreAvtale(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of(), List.of());
 
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(40);
     }

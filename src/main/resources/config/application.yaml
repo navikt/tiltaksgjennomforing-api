@@ -63,6 +63,7 @@ tiltaksgjennomforing:
   tilskuddsperioder:
     tiltakstyper: SOMMERJOBB
     pilotvirksomheter: ${tiltaksgjennomforing.pilot.pilotvirksomheter}
+    pilotenheter: ${tiltaksgjennomforing.pilot.pilotenheter}
 
 no.nav.security.jwt:
   client:
