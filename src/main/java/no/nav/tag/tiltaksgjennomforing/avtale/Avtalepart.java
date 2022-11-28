@@ -83,13 +83,13 @@ public abstract class Avtalepart<T extends Identifikator> {
         }
     }
 
-    public void endreAvtale(Instant sistEndret, EndreAvtale endreAvtale, Avtale avtale, EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder, List<BedriftNr> pilotvirksomheter) {
+    public void endreAvtale(Instant sistEndret, EndreAvtale endreAvtale, Avtale avtale, EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder, List<BedriftNr> pilotvirksomheter, List<String> pilotEnheter) {
         sjekkTilgang(avtale);
         if (!kanEndreAvtale()) {
             throw new KanIkkeEndreException();
         }
         avvisDatoerTilbakeITid(avtale, endreAvtale.getStartDato(), endreAvtale.getSluttDato());
-        avtale.endreAvtale(sistEndret, endreAvtale, rolle(), tiltakstyperMedTilskuddsperioder, pilotvirksomheter, identifikator);
+        avtale.endreAvtale(sistEndret, endreAvtale, rolle(), tiltakstyperMedTilskuddsperioder, pilotvirksomheter, identifikator, pilotEnheter);
     }
 
     protected void avvisDatoerTilbakeITid(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {

@@ -87,7 +87,7 @@ class LagVarselFraAvtaleHendelserTest {
         assertHendelse(OPPRETTET, VEILEDER, ARBEIDSGIVER, true);
         assertHendelse(OPPRETTET, VEILEDER, DELTAKER, true);
 
-        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleLønnstilskuddFelter(), ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()), List.of());
+        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleLønnstilskuddFelter(), ARBEIDSGIVER, EnumSet.of(avtale.getTiltakstype()), List.of(), List.of());
         avtale = avtaleRepository.save(avtale);
         assertHendelse(ENDRET, ARBEIDSGIVER, VEILEDER, true);
         assertHendelse(ENDRET, ARBEIDSGIVER, ARBEIDSGIVER, false);
@@ -212,7 +212,7 @@ class LagVarselFraAvtaleHendelserTest {
     void test_for_delt_med_mentor() {
         Avtale avtale = avtaleRepository.save(Avtale.veilederOppretterAvtale(new OpprettMentorAvtale(new Fnr("00000000000") , new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MENTOR, VEILEDER), TestData.enNavIdent()));
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
-        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleMentorFelter(), VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of());
+        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleMentorFelter(), VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of(), List.of());
         avtale = avtaleRepository.save(avtale);
 
         avtale.delMedAvtalepart(DELTAKER);
