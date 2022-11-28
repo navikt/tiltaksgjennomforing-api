@@ -47,6 +47,7 @@ public class InternalArenaMigreringController {
     @Transactional
     public void lagTilskuddsperioderPåEnAvtale(@PathVariable("avtaleId") UUID id, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate migreringsDato) {
         sjekkTilgang();
+        log.info("Lager tilskuddsperioder på en enkelt avtale {} fra dato {}", id, migreringsDato);
         Avtale avtale = avtaleRepository.findById(id)
                 .orElseThrow(RessursFinnesIkkeException::new);
         avtale.nyeTilskuddsperioderPåAvtalerFraArena(migreringsDato);

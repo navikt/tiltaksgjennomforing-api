@@ -885,7 +885,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         // Statuser som skal få tilskuddsperioder
         Status status = statusSomEnum();
-        if(status == Status.ANNULLERT || status == Status.MANGLER_GODKJENNING || status == Status.AVSLUTTET || status == Status.AVBRUTT) {
+        if(status == Status.ANNULLERT || status == Status.AVSLUTTET || status == Status.AVBRUTT) {
             return false;
         }
 
@@ -910,6 +910,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
                     periode.setStatus(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
                 }
             });
+            fikseLøpenumre(tilskuddsperioder, 1);
             tilskuddPeriode.addAll(tilskuddsperioder);
             return true;
         } else {

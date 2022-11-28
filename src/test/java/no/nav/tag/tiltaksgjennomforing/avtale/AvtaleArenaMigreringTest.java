@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.EnumSet;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,6 +32,7 @@ public class AvtaleArenaMigreringTest {
         System.out.println("Antall " + avtale.getTilskuddPeriode().size());
         avtale.getTilskuddPeriode().forEach(periode -> System.out.println(periode.getStatus() + " " + periode.getStartDato() + " " + periode.getSluttDato() + " " + periode.getLonnstilskuddProsent()));
         assertThat(avtale.getTilskuddPeriode()).isNotEmpty();
+        Now.resetClock();
     }
 
     @Test
@@ -50,5 +53,25 @@ public class AvtaleArenaMigreringTest {
 
         assertThat(sisteBehandletIArena.getStartDato()).isEqualTo(LocalDate.of(2023,01,01));
         assertThat(sisteBehandletIArena.getStatus()).isEqualTo(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
+        Now.resetClock();
+    }
+
+    @Test
+    public void tilskuddsperioder_lager_nye_på_ikke_pilot_avtale() {
+        Now.fixedDate(LocalDate.of(2022, 11, 15));
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
+        avtale.getGjeldendeInnhold().setLonnstilskuddProsent(60);
+        assertThat(avtale.getTilskuddPeriode()).isEmpty();
+
+        Veileder veileder = TestData.enVeileder(avtale);
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
+        // Endring uten at bedriften ligger i pilotvirksomheter
+        veileder.endreAvtale(Instant.now(), endreAvtale, avtale, EnumSet.noneOf(Tiltakstype.class), List.of());
+        assertThat(avtale.getTilskuddPeriode()).isEmpty();
+
+        avtale.nyeTilskuddsperioderPåAvtalerFraArena(LocalDate.of(2023, 02, 01));
+        avtale.getTilskuddPeriode().forEach(periode -> System.out.println(periode.getStatus() + " " + periode.getStartDato() + " " + periode.getSluttDato() + " " + periode.getLonnstilskuddProsent()));
+        assertThat(avtale.getTilskuddPeriode()).isNotEmpty();
+        Now.resetClock();
     }
 }
