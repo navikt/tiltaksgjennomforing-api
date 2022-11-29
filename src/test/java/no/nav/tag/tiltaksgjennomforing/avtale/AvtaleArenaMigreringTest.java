@@ -66,7 +66,7 @@ public class AvtaleArenaMigreringTest {
         Veileder veileder = TestData.enVeileder(avtale);
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         // Endring uten at bedriften ligger i pilotvirksomheter
-        veileder.endreAvtale(Instant.now(), endreAvtale, avtale, EnumSet.noneOf(Tiltakstype.class), List.of());
+        veileder.endreAvtale(Instant.now(), endreAvtale, avtale, EnumSet.noneOf(Tiltakstype.class), List.of(), List.of());
         assertThat(avtale.getTilskuddPeriode()).isEmpty();
 
         avtale.nyeTilskuddsperioderVedMigreringFraArena(LocalDate.of(2023, 02, 01));
