@@ -3,14 +3,12 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
-import no.nav.security.token.support.core.api.Unprotected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.UtviklerTilgangProperties;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +20,6 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -50,7 +47,7 @@ public class InternalArenaMigreringController {
         log.info("Lager tilskuddsperioder på en enkelt avtale {} fra dato {}", id, migreringsDato);
         Avtale avtale = avtaleRepository.findById(id)
                 .orElseThrow(RessursFinnesIkkeException::new);
-        avtale.nyeTilskuddsperioderPåAvtalerFraArena(migreringsDato);
+        avtale.nyeTilskuddsperioderVedMigreringFraArena(migreringsDato);
     }
 
     @PostMapping("/lag-tilskuddsperioder-arena")
@@ -64,7 +61,7 @@ public class InternalArenaMigreringController {
         log.info("Oppdaterer tilskuddsperioder på (sånn ca, før filtrering på piloter) {} avtaler for midlertidig lønnstilskudd", midlertidigLønnstilskuddAvtaler.size());
 
         midlertidigLønnstilskuddAvtaler.forEach(avtale -> {
-            if(avtale.nyeTilskuddsperioderPåAvtalerFraArena(LocalDate.of(2023, 02, 01))) {
+            if(avtale.nyeTilskuddsperioderVedMigreringFraArena(LocalDate.of(2023, 02, 01))) {
                 antallMigrert.getAndIncrement();
             }
             if(antallMigrert.get() % 100 == 0) {
@@ -77,7 +74,7 @@ public class InternalArenaMigreringController {
         log.info("Oppdaterer tilskuddsperioder på (sånn ca, før filtrering på piloter) {} avtaler for varig lønnstilskudd", varigLønnstilskuddAvtaler.size());
 
         varigLønnstilskuddAvtaler.forEach(avtale -> {
-            if(avtale.nyeTilskuddsperioderPåAvtalerFraArena(LocalDate.of(2023, 02, 01))) {
+            if(avtale.nyeTilskuddsperioderVedMigreringFraArena(LocalDate.of(2023, 02, 01))) {
                 antallMigrert.getAndIncrement();
             }
             if(antallMigrert.get() % 100 == 0) {

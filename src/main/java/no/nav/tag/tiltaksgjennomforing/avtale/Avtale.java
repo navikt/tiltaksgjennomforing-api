@@ -900,7 +900,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
      * - Tar ikke høyde for perioder med lengde tre måneder som i arena
      * -
      */
-    public boolean nyeTilskuddsperioderPåAvtalerFraArena(LocalDate migreringsDato) {
+    public boolean nyeTilskuddsperioderVedMigreringFraArena(LocalDate migreringsDato) {
         if(sjekkArenaMigrering()) {
             List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioder(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
             tilskuddsperioder.forEach(periode -> {
