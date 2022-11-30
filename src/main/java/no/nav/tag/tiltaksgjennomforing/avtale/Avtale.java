@@ -921,7 +921,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             tilskuddPeriode.addAll(tilskuddsperioder);
             return true;
         } else {
-            log.info("Avtale {} har allerede tilskuddsperioder, genererer ikke nye", id);
+            log.info("Avtale {} har allerede tilskuddsperioder eller en status som ikke skal ha perioder, genererer ikke nye", id);
             return false;
         }
     }

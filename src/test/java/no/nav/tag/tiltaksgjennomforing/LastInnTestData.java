@@ -24,7 +24,7 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         if (avtaleRepository.count() > 0) return;
 
         log.info("Laster testdata");
-        //for(int i = 0; i < 10000; i++) {
+        //for(int i = 0; i < 10; i++) {
             avtaleRepository.save(TestData.enLonnstilskuddAvtaleGodkjentAvVeilederUtenTilskuddsperioder());
         //}
         avtaleRepository.save(TestData.enArbeidstreningAvtale());
