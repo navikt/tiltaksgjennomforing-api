@@ -886,6 +886,46 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
     }
 
+    private boolean sjekkArenaMigrering() {
+        if(!tilskuddPeriode.isEmpty()) {
+            return false;
+        }
+        // Statuser som skal få tilskuddsperioder
+        Status status = statusSomEnum();
+        if(status == Status.ANNULLERT || status == Status.AVSLUTTET || status == Status.AVBRUTT) {
+            return false;
+        }
+
+        return true;
+    }
+    /**
+     * Avtaler (lønnstilskudd) som avsluttes i Arena må få tilskuddsperioder her.
+     *
+     * - Sjekk at avtalen ikke allerede har perioder (altså en pilotavtale)
+     * - Tilskuddsperioder lages fra startdato til sluttdato, de som er før dato for migrering settes til en ny status, f eks. BEHANDLET_I_ARENA
+     * - Sjekk logikk som skjer ved godkjenning av første perioden
+     * - Tar ikke høyde for perioder med lengde tre måneder som i arena
+     * -
+     */
+    public boolean nyeTilskuddsperioderVedMigreringFraArena(LocalDate migreringsDato) {
+        if(sjekkArenaMigrering()) {
+            List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioder(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
+            tilskuddsperioder.forEach(periode -> {
+                // Set status BEHANDLET_I_ARENA på tilskuddsperioder før migreringsdato
+                // Eller skal det være startdato? Er jo den samme datoen som migreringsdato. hmm...
+                if(periode.getSluttDato().minusDays(1).isBefore(migreringsDato)) {
+                    periode.setStatus(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
+                }
+            });
+            fikseLøpenumre(tilskuddsperioder, 1);
+            tilskuddPeriode.addAll(tilskuddsperioder);
+            return true;
+        } else {
+            log.info("Avtale {} har allerede tilskuddsperioder eller en status som ikke skal ha perioder, genererer ikke nye", id);
+            return false;
+        }
+    }
+
     public void forkortAvtale(LocalDate nySluttDato, String grunn, String annetGrunn, NavIdent utførtAv) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
 

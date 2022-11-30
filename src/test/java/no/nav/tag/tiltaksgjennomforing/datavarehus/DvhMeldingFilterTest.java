@@ -19,7 +19,7 @@ public class DvhMeldingFilterTest {
         DvhMeldingFilter dvhMeldingFilter = new DvhMeldingFilter(dvhMeldingProperties);
 
         Avtale midlertidigLonnstilskuddAvtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
-        Avtale varigLonnstilskuddAvtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        Avtale varigLonnstilskuddAvtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD, true);
         Avtale arbeidstreningAvtale = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
 
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(varigLonnstilskuddAvtale);

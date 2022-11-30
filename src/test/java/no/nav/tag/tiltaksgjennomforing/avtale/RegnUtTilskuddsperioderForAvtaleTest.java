@@ -158,7 +158,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         Now.fixedDate(LocalDate.of(2021, 1, 1));
         LocalDate startDato = LocalDate.of(2021, 1, 1);
         LocalDate sluttDato = LocalDate.of(2022, 1, 10);
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD, true);
 
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(startDato);
@@ -179,7 +179,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         Now.fixedDate(LocalDate.of(2023, 1, 2));
         LocalDate startDato = LocalDate.of(2022, 1, 1);
         LocalDate sluttDato = LocalDate.of(2023, 12, 12);
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD, true);
         avtale.setGodkjentForEtterregistrering(true);
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
 
@@ -201,7 +201,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         Now.fixedDate(LocalDate.of(2021, 1, 1));
         LocalDate startDato = LocalDate.of(2021, 2, 1);
         LocalDate sluttDato = LocalDate.of(2023, 3, 10);
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD, true);
 
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(startDato);
@@ -221,7 +221,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         Now.fixedDate(LocalDate.of(2021, 1, 1));
         LocalDate startDato = LocalDate.of(2021, 2, 1);
         LocalDate sluttDato = LocalDate.of(2021, 3, 1);
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD, true);
 
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(startDato);
@@ -241,7 +241,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         Now.fixedDate(LocalDate.of(2021, 1, 1));
         LocalDate startDato = LocalDate.of(2021, 2, 1);
         LocalDate sluttDato = LocalDate.of(2021, 6, 1);
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD, true);
 
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(startDato);
@@ -312,7 +312,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
     @Test
     public void sjekk_at_varig_lonnstilskudd_ikke_reduserses() {
         Now.fixedDate(LocalDate.of(2021, 1, 1));
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD, true);
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(LocalDate.of(2021, 1, 1));
         endreAvtale.setSluttDato(LocalDate.of(2031, 1, 1));
@@ -326,21 +326,21 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
     @Test
     public void sjekk_at_avtalen_ikke_annulleres_om_den_har_en_utbetalt_tilskuddsperiode() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD, true);
         avtale.tilskuddsperiode(0).setRefusjonStatus(RefusjonStatus.UTBETALT);
         assertThrows(FeilkodeException.class, () -> avtale.annuller(TestData.enVeileder(avtale), ""));
     }
 
     @Test
     public void sjekk_at_avtalen_ikke_annulleres_om_den_har_en_godkjent_refusjon_på_tilskuddsperiode() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD, true);
         avtale.tilskuddsperiode(0).setRefusjonStatus(RefusjonStatus.SENDT_KRAV);
         assertThrows(FeilkodeException.class, () -> avtale.annuller(TestData.enVeileder(avtale), ""));
     }
 
     @Test
     public void sjekk_at_utbetalte_perioder_beholdes_ved_endring() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD, true);
         avtale.tilskuddsperiode(0).setRefusjonStatus(RefusjonStatus.UTBETALT);
         UUID idPåUtbetaltTilskuddsperiode = avtale.tilskuddsperiode(0).getId();
         Integer beløpPåUtbetaltTilskuddsperiode = avtale.tilskuddsperiode(0).getBeløp();
@@ -405,7 +405,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
     @Test
     public void sjekk_at_godkjent_periode_annulleres() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD, true);
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
         UUID idPåGodkjentTilskuddsperiode = avtale.tilskuddsperiode(0).getId();
 
@@ -417,7 +417,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
     @Test
     public void sjekk_at_ubehandlet_periode_slettes() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD, true);
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.UBEHANDLET);
 
         avtale.annuller(TestData.enVeileder(avtale), "");

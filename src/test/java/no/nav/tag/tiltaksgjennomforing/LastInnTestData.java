@@ -24,6 +24,9 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         if (avtaleRepository.count() > 0) return;
 
         log.info("Laster testdata");
+        //for(int i = 0; i < 10; i++) {
+            avtaleRepository.save(TestData.enLonnstilskuddAvtaleGodkjentAvVeilederUtenTilskuddsperioder());
+        //}
         avtaleRepository.save(TestData.enArbeidstreningAvtale());
         avtaleRepository.save(TestData.enMentorAvtaleSignert());
         avtaleRepository.save(TestData.enMentorAvtaleUsignert());
@@ -37,6 +40,7 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         lilly.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         avtaleRepository.save(lilly);
         avtaleRepository.save(TestData.enLonnstilskuddAvtaleGodkjentAvVeileder());
+
         avtaleRepository.save(TestData.enLonnstilskuddAvtaleGodkjentAvVeilederTilbakeITid());
         Now.fixedDate(LocalDate.of(2021, 6, 1));
         avtaleRepository.save(TestData.enSommerjobbAvtaleGodkjentAvVeileder());
