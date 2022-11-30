@@ -68,8 +68,12 @@ public class Beslutter extends Avtalepart<NavIdent> {
     }
 
     private Integer getPlussdato() {
+
+        // TODO: DENNE KODEN MÅ FJERNES NÅR VI FÅR BESKJED OM AT DET ER OK Å HOLDE AV PENGER FOR NESTE ÅR
         if(LocalDate.now().getYear() != LocalDate.now().plusMonths(3).getYear()) {
-            return 0;
+            long antallDagerTilSisteDagIÅr = ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.of(LocalDate.now().getYear(), 12, 31));
+            return (int) antallDagerTilSisteDagIÅr;
+          //  return 0;
         }
         return ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
     }
