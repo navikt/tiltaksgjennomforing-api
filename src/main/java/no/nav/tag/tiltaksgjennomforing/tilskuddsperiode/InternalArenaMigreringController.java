@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.security.token.support.core.api.Unprotected;
+import no.nav.tag.tiltaksgjennomforing.arenamigrering.ArenaMigreringService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.UtviklerTilgangProperties;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -32,6 +33,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class InternalArenaMigreringController {
 
     private final AvtaleRepository avtaleRepository;
+
+    private final ArenaMigreringService arenaMigreringService;
     private final UtviklerTilgangProperties utviklerTilgangProperties;
     private final TokenUtils tokenUtils;
 
@@ -56,33 +59,7 @@ public class InternalArenaMigreringController {
     public void lagTilskuddsperioderPåArenaAvtaler(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate migreringsDato) {
         sjekkTilgang();
         // Finn alle lønnstilskuddavtaler (varig og midlertidlig)
-        AtomicInteger antallMigrert = new AtomicInteger();
-        List<Avtale> midlertidigLønnstilskuddAvtaler = avtaleRepository.findAllByTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
-
-        log.info("Oppdaterer tilskuddsperioder på (sånn ca, før filtrering på piloter) {} avtaler for midlertidig lønnstilskudd", midlertidigLønnstilskuddAvtaler.size());
-
-        midlertidigLønnstilskuddAvtaler.forEach(avtale -> {
-            if(avtale.nyeTilskuddsperioderVedMigreringFraArena(migreringsDato)) {
-                antallMigrert.getAndIncrement();
-            }
-            if(antallMigrert.get() % 100 == 0) {
-                log.info("Migrert {} antall avtaler", antallMigrert.get());
-            }
-        });
-
-        List<Avtale> varigLønnstilskuddAvtaler = avtaleRepository.findAllByTiltakstype(Tiltakstype.VARIG_LONNSTILSKUDD);
-
-        log.info("Oppdaterer tilskuddsperioder på (sånn ca, før filtrering på piloter) {} avtaler for varig lønnstilskudd", varigLønnstilskuddAvtaler.size());
-
-        varigLønnstilskuddAvtaler.forEach(avtale -> {
-            if(avtale.nyeTilskuddsperioderVedMigreringFraArena(migreringsDato)) {
-                antallMigrert.getAndIncrement();
-            }
-            if(antallMigrert.get() % 100 == 0) {
-                log.info("Migrert {} antall avtaler", antallMigrert.get());
-            }
-        });
-
-        log.info("Migrering av tilskuddsperioder for gamle avtaler i arena fullført. {}", antallMigrert.get());
+        arenaMigreringService.lagTilskuddsperioderPåArenaAvtaler(migreringsDato);
+        log.info("Startet migrering av tilskuddsperioder");
     }
 }
