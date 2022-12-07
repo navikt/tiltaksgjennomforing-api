@@ -913,7 +913,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             tilskuddsperioder.forEach(periode -> {
                 // Set status BEHANDLET_I_ARENA på tilskuddsperioder før migreringsdato
                 // Eller skal det være startdato? Er jo den samme datoen som migreringsdato. hmm...
-                if(periode.getSluttDato().minusDays(1).isBefore(migreringsDato)) {
+                if(erAvtaleInngått() && periode.getSluttDato().minusDays(1).isBefore(migreringsDato)) {
                     periode.setStatus(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
                 }
             });

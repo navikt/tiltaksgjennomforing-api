@@ -174,6 +174,18 @@ public class TestData {
         return avtale;
     }
 
+    public static Avtale enLønnstilskuddsAvtaleMedStartOgSluttEtterregistrering(LocalDate startDato, LocalDate sluttDato) {
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        setOppfølgingOgGeografiskPåAvtale(avtale);
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        EndreAvtale endring = TestData.endringPåAlleLønnstilskuddFelter();
+        avtale.setGodkjentForEtterregistrering(true);
+        endring.setStartDato(startDato);
+        endring.setSluttDato(sluttDato);
+        avtale.endreAvtale(Now.instant(), endring, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of(), List.of());
+        return avtale;
+    }
+
     public static Avtale enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate startDato, LocalDate sluttDato) {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         setOppfølgingOgGeografiskPåAvtale(avtale);

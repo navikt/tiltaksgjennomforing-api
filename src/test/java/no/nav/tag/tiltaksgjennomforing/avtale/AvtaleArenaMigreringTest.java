@@ -74,4 +74,20 @@ public class AvtaleArenaMigreringTest {
         assertThat(avtale.getTilskuddPeriode()).isNotEmpty();
         Now.resetClock();
     }
+
+    @Test
+    public void tilskuddsperioder_etter_migrering_ikke_godkjent_avtale_gir_ubehandlede_perioder() {
+        Now.fixedDate(LocalDate.of(2022, 11, 15));
+        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttEtterregistrering(Now.localDate().minusMonths(6), Now.localDate().plusMonths(12));
+
+        avtale.getTilskuddPeriode().clear();
+        avtale.nyeTilskuddsperioderVedMigreringFraArena(LocalDate.of(2023, 02, 01));
+
+        // Alle perioder skal være ubehandlet
+        avtale.getTilskuddPeriode()
+                .stream()
+                .forEach(tilskuddPeriode -> assertThat(tilskuddPeriode.getStatus()).isEqualTo(TilskuddPeriodeStatus.UBEHANDLET));
+
+        Now.resetClock();
+    }
 }
