@@ -59,6 +59,7 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setOpprettetAvArbeidsgiver(avtale.isOpprettetAvArbeidsgiver());
         hendelse.setAnnullertTidspunkt(avtale.getAnnullertTidspunkt());
         hendelse.setAnnullertGrunn(avtale.getAnnullertGrunn());
+        hendelse.setMaster(avtale.godkjentAvBeslutter() != null);
         return hendelse;
     }
 

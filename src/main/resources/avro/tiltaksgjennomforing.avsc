@@ -338,6 +338,13 @@
         "null",
         "string"
       ]
+    },
+    {
+      "name": "master",
+      "type": [
+        "null",
+        "boolean"
+      ]
     }
   ]
 }
