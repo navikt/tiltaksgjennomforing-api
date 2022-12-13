@@ -97,15 +97,6 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
 
     @JsonProperty
     private LocalDate kanBesluttesFom() {
-
-        // TODO: DENNE KODEN MÅ FJERNES NÅR VI FÅR BESKJED OM AT DET ER OK Å HOLDE AV PENGER FOR NESTE ÅR
-        if (LocalDate.now().getYear() == 2022 && startDato.getYear() == 2023) {
-            if (startDato.minusMonths(3).getYear() != 2023) {
-                // Setter kun 01-01-2023 hvis den opprinnelig hadde blitt satt til 2022.
-                return LocalDate.of(2023, 01, 1);
-            }
-        }
-
         if (løpenummer == 1) {
             return LocalDate.MIN;
         }
