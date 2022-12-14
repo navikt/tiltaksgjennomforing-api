@@ -341,10 +341,8 @@
     },
     {
       "name": "master",
-      "type": [
-        "null",
-        "boolean"
-      ]
+      "type": "boolean",
+      "default" : false
     }
   ]
 }
