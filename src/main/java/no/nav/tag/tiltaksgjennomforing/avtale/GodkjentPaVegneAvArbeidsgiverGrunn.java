@@ -12,9 +12,10 @@ public class GodkjentPaVegneAvArbeidsgiverGrunn {
     boolean klarerIkkeGiFaTilgang;
     boolean vetIkkeHvemSomKanGiTilgang;
     boolean farIkkeTilgangPersonvern;
+    boolean arenaMigreringArbeidsgiver;
 
     public void valgtMinstEnGrunn() {
-        if (!klarerIkkeGiFaTilgang && !vetIkkeHvemSomKanGiTilgang && !farIkkeTilgangPersonvern) {
+        if (!klarerIkkeGiFaTilgang && !vetIkkeHvemSomKanGiTilgang && !farIkkeTilgangPersonvern && !arenaMigreringArbeidsgiver) {
             throw new FeilkodeException(Feilkode.GODKJENT_PAA_VEGNE_GRUNN_MAA_VELGES);
         }
     }

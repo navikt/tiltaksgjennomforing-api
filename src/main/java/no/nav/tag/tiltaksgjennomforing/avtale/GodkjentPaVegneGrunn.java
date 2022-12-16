@@ -13,9 +13,10 @@ public class GodkjentPaVegneGrunn {
     private boolean ikkeBankId;
     private boolean reservert;
     private boolean digitalKompetanse;
+    boolean arenaMigreringDeltaker;
 
     public void valgtMinstEnGrunn() {
-        if (!ikkeBankId && !reservert && !digitalKompetanse) {
+        if (!ikkeBankId && !reservert && !digitalKompetanse && !arenaMigreringDeltaker) {
             throw new FeilkodeException(Feilkode.GODKJENT_PAA_VEGNE_GRUNN_MAA_VELGES);
         }
     }
