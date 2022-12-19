@@ -59,7 +59,15 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setOpprettetAvArbeidsgiver(avtale.isOpprettetAvArbeidsgiver());
         hendelse.setAnnullertTidspunkt(avtale.getAnnullertTidspunkt());
         hendelse.setAnnullertGrunn(avtale.getAnnullertGrunn());
+        hendelse.setMaster(erMaster(avtale));
         return hendelse;
+    }
+
+    private Boolean erMaster(Avtale avtale) {
+        if(avtale.godkjentAvBeslutter() != null) {
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
     }
 
     private static Instant toInstant(LocalDateTime tidspunkt) {
