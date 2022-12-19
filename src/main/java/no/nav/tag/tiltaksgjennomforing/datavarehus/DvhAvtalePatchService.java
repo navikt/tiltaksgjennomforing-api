@@ -25,7 +25,7 @@ public class DvhAvtalePatchService {
     @Async
     public void lagDvhPatchMeldingForAlleAvtaler() {
         AtomicInteger antallPatchet = new AtomicInteger();
-        List<Avtale> alleAvtaler = avtaleRepository.findAll();
+        List<Avtale> alleAvtaler = avtaleRepository.findAllByGjeldendeInnhold_AvtaleInngåttNotNull();
 
         alleAvtaler.forEach(avtale -> {
             if(skalPatches(avtale)) {
@@ -51,8 +51,13 @@ public class DvhAvtalePatchService {
 
     private boolean skalPatches(Avtale avtale) {
         if(avtale.erAvtaleInngått()) {
+            if(!avtale.erGodkjentAvVeileder()) {
+                log.warn("Avtale {} er inngått men ikke godkjent av veileder", avtale.getId());
+                return false;
+            }
             return true;
+        } else {
+            return false;
         }
-        return false;
     }
 }
