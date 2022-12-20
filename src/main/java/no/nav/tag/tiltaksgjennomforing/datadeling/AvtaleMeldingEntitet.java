@@ -27,6 +27,7 @@ public class AvtaleMeldingEntitet extends AbstractAggregateRoot<AvtaleMeldingEnt
     private LocalDateTime tidspunkt;
     private String json;
     private boolean sendt;
+    private boolean sendtCompacted;
 
     public AvtaleMeldingEntitet(UUID meldingId, UUID avtaleId, LocalDateTime tidspunkt, HendelseType hendelseType, Status avtaleStatus, String meldingAsJson) {
         this.meldingId = meldingId;
