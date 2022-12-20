@@ -13,4 +13,5 @@ public class Topics {
     public static final String DVH_MELDING = "arbeidsgiver.tiltak-dvh-melding";
 
     public static final String AVTALE_HENDELSE = "arbeidsgiver.tiltak-avtale-hendelse";
+    public static final String AVTALE_HENDELSE_COMPACT = "arbeidsgiver.tiltak-avtale-hendelse-compact";
 }
