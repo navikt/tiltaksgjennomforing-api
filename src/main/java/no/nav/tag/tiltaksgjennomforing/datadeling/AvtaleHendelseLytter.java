@@ -134,7 +134,7 @@ public class AvtaleHendelseLytter {
     private void lagHendelse(Avtale avtale, HendelseType hendelseType, Identifikator utførtAv) {
         LocalDateTime tidspunkt = Now.localDateTime();
         UUID meldingId = UUID.randomUUID();
-         AvtaleHendelseUtførtAvRolle utførtAvAvtaleRolle = finnRolle(utførtAv, hendelseType, avtale);
+        AvtaleHendelseUtførtAvRolle utførtAvAvtaleRolle = finnRolle(utførtAv, hendelseType, avtale);
         var melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), utførtAv, utførtAvAvtaleRolle, hendelseType);
         try {
             String meldingSomString = objectMapper.writeValueAsString(melding);
@@ -152,7 +152,7 @@ public class AvtaleHendelseLytter {
         } else if (identifikator instanceof BedriftNr) {
             return AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER;
         } else {
-            log.error("Fant ikke rolle for avtalehendelse, utført av: {}, med hendelsetype:  {} for avtale: {}. Setter rolle til SYSTEM.", identifikator, hendelseType, avtale.getId());
+            log.error("Fant ikke rolle for avtalehendelse med hendelsetype: {} for avtale: {}. Setter rolle til SYSTEM.", hendelseType, avtale.getId());
             return AvtaleHendelseUtførtAvRolle.SYSTEM;
         }
     }
