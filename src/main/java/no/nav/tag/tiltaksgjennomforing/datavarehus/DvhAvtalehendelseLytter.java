@@ -73,11 +73,13 @@ public class DvhAvtalehendelseLytter {
     }
 
     private void lagHendelse(Avtale avtale, DvhHendelseType endret, NavIdent utførtAv) {
-        LocalDateTime tidspunkt = Now.localDateTime();
-        UUID meldingId = UUID.randomUUID();
-        DvhHendelseType hendelseType = endret;
-        var melding = AvroTiltakHendelseFabrikk.konstruer(avtale, tidspunkt, meldingId, hendelseType, utførtAv.asString());
-        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, avtale.getId(), tidspunkt, avtale.statusSomEnum(), melding);
-        repository.save(entitet);
+        if(avtale.erAvtaleInngått()) {
+            LocalDateTime tidspunkt = Now.localDateTime();
+            UUID meldingId = UUID.randomUUID();
+            DvhHendelseType hendelseType = endret;
+            var melding = AvroTiltakHendelseFabrikk.konstruer(avtale, tidspunkt, meldingId, hendelseType, utførtAv.asString());
+            DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, avtale.getId(), tidspunkt, avtale.statusSomEnum(), melding);
+            repository.save(entitet);
+        }
     }
 }
