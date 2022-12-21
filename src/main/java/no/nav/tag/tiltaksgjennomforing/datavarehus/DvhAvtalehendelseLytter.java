@@ -15,7 +15,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class DvhAvtalehendelseLytter {
     private final DvhMeldingEntitetRepository repository;
-    private final DvhMeldingFilter dvhMeldingFilter;
 
     @EventListener
     public void avtaleInngått(AvtaleInngått event) {
@@ -74,9 +73,6 @@ public class DvhAvtalehendelseLytter {
     }
 
     private void lagHendelse(Avtale avtale, DvhHendelseType endret, NavIdent utførtAv) {
-        if (!dvhMeldingFilter.skalTilDatavarehus(avtale)) {
-            return;
-        }
         LocalDateTime tidspunkt = Now.localDateTime();
         UUID meldingId = UUID.randomUUID();
         DvhHendelseType hendelseType = endret;

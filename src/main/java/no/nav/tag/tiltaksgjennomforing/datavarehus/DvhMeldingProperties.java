@@ -12,7 +12,6 @@ import java.util.UUID;
 @Component
 @ConfigurationProperties(prefix = "tiltaksgjennomforing.dvh-melding")
 public class DvhMeldingProperties {
-    private boolean featureEnabled;
     private UUID gruppeTilgang;
     private EnumSet<Tiltakstype> tiltakstyper = EnumSet.noneOf(Tiltakstype.class);
 }
