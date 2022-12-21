@@ -13,7 +13,7 @@ public class GodkjentPaVegneGrunn {
     private boolean ikkeBankId;
     private boolean reservert;
     private boolean digitalKompetanse;
-    boolean arenaMigreringDeltaker;
+    private boolean arenaMigreringDeltaker;
 
     public void valgtMinstEnGrunn() {
         if (!ikkeBankId && !reservert && !digitalKompetanse && !arenaMigreringDeltaker) {
