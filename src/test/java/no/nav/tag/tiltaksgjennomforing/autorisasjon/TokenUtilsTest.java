@@ -81,6 +81,12 @@ public class TokenUtilsTest {
     }
 
     @Test
+    public void hentInnloggetBruker__er_aad_clientcredentials() {
+        vaerInnloggetAadClientCredentials();
+        assertThat(tokenUtils.harAdRolle("access_as_application"));
+    }
+
+    @Test
     public void hentInnloggetBruker__er_uinnlogget() {
         vaerUinnlogget();
         assertThat(tokenUtils.hentBrukerOgIssuer().isEmpty()).isTrue();
@@ -96,6 +102,9 @@ public class TokenUtilsTest {
         when(contextHolder.getTokenValidationContext()).thenReturn(context);
     }
 
+    private void vaerInnloggetAadClientCredentials() {
+        lagM2MValidationContext(ISSUER_AAD, List.of("access_as_application"));
+    }
     private void vaerInnloggetSystem(String systemId) {
         lagTokenValidationContext(ISSUER_SYSTEM, systemId, null, null, null);
     }
@@ -138,6 +147,30 @@ public class TokenUtilsTest {
             .notBeforeTime(now)
             .issueTime(now)
             .expirationTime(new Date(now.getTime() + 1000000)).build();
+
+        String tokenAsString = JwtTokenGenerator.createSignedJWT(JwkGenerator.getDefaultRSAKey(), claimsSet).serialize();
+        Map<String, JwtToken> tokenMap = new HashMap<>();
+        JwtToken token = new JwtToken(tokenAsString);
+        tokenMap.put(token.getIssuer(), token);
+        TokenValidationContext context = new TokenValidationContext(tokenMap);
+
+        when(contextHolder.getTokenValidationContext()).thenReturn(context);
+    }
+
+    private void lagM2MValidationContext(Issuer issuer, List<String> roles) {
+        Date now = new Date();
+        JWTClaimsSet claimsSet = new Builder()
+                .subject("machine")
+                .issuer(issuer.issuerName)
+                .audience("aud-aad")
+                .jwtID(UUID.randomUUID().toString())
+                .claim("roles", roles)
+                .claim("ver", "1.0")
+                .claim("auth_time", now)
+                .claim("nonce", "myNonce")
+                .notBeforeTime(now)
+                .issueTime(now)
+                .expirationTime(new Date(now.getTime() + 1000000)).build();
 
         String tokenAsString = JwtTokenGenerator.createSignedJWT(JwkGenerator.getDefaultRSAKey(), claimsSet).serialize();
         Map<String, JwtToken> tokenMap = new HashMap<>();
