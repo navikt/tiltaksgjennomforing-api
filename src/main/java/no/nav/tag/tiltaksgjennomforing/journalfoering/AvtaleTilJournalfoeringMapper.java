@@ -91,7 +91,8 @@ public class AvtaleTilJournalfoeringMapper {
         return new GodkjentPaVegneGrunnTilJournalfoering(
                 grunn.isIkkeBankId(),
                 grunn.isDigitalKompetanse(),
-                grunn.isReservert()
+                grunn.isReservert(),
+                grunn.isArenaMigreringDeltaker()
         );
     }
 

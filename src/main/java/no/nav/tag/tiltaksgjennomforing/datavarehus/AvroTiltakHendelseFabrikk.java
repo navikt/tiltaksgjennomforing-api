@@ -47,6 +47,7 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setIkkeBankId(avtale.getGjeldendeInnhold().getGodkjentPaVegneGrunn() != null && avtale.getGjeldendeInnhold().getGodkjentPaVegneGrunn().isIkkeBankId());
         hendelse.setReservert(avtale.getGjeldendeInnhold().getGodkjentPaVegneGrunn() != null && avtale.getGjeldendeInnhold().getGodkjentPaVegneGrunn().isReservert());
         hendelse.setDigitalKompetanse(avtale.getGjeldendeInnhold().getGodkjentPaVegneGrunn() != null && avtale.getGjeldendeInnhold().getGodkjentPaVegneGrunn().isDigitalKompetanse());
+        hendelse.setArenaMigreringDeltaker(avtale.getGjeldendeInnhold().getGodkjentPaVegneGrunn() != null && avtale.getGjeldendeInnhold().getGodkjentPaVegneGrunn().isArenaMigreringDeltaker());
         hendelse.setGodkjentAvDeltaker(toInstant(avtale.getGjeldendeInnhold().getGodkjentAvDeltaker()));
         hendelse.setGodkjentAvArbeidsgiver(toInstant(avtale.getGjeldendeInnhold().getGodkjentAvArbeidsgiver()));
         hendelse.setGodkjentAvArbeidsgiver(toInstant(avtale.getGjeldendeInnhold().getGodkjentAvArbeidsgiver()));
