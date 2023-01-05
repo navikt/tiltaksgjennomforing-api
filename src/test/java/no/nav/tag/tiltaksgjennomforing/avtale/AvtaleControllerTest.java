@@ -236,7 +236,7 @@ public class AvtaleControllerTest {
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
         when(eregService.hentVirksomhet(avtale.getBedriftNr())).thenReturn(new Organisasjon(avtale.getBedriftNr(), avtale.getGjeldendeInnhold().getBedriftNavn()));
         lenient().when(veilarbArenaClient.sjekkOgHentOppfølgingStatus(any())).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
-        ResponseEntity svar = avtaleController.opprettAvtaleSomVeileder(opprettAvtale);
+        ResponseEntity svar = avtaleController.opprettAvtaleSomVeileder(opprettAvtale, null);
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(svar.getHeaders().getLocation().getPath()).isEqualTo("/avtaler/" + avtale.getId());
     }
@@ -294,7 +294,7 @@ public class AvtaleControllerTest {
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = new Fnr("11111100000");
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(enNavAnsatt.getIdentifikator(), deltakerFnr)).thenReturn(false);
-        assertThatThrownBy(() -> avtaleController.opprettAvtaleSomVeileder(new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING))).isInstanceOf(IkkeTilgangTilDeltakerException.class);
+        assertThatThrownBy(() -> avtaleController.opprettAvtaleSomVeileder(new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), null)).isInstanceOf(IkkeTilgangTilDeltakerException.class);
     }
 
     @Test
@@ -308,7 +308,7 @@ public class AvtaleControllerTest {
         PdlRespons pdlRespons = TestData.enPdlrespons(true);
         when(persondataServiceIMetode.hentPersondata(deltakerFnr)).thenReturn(pdlRespons);
         when(persondataServiceIMetode.erKode6(pdlRespons)).thenCallRealMethod();
-        assertThatThrownBy(() -> avtaleController.opprettAvtaleSomVeileder(new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING))).isInstanceOf(KanIkkeOppretteAvtalePåKode6Exception.class);
+        assertThatThrownBy(() -> avtaleController.opprettAvtaleSomVeileder(new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), null)).isInstanceOf(KanIkkeOppretteAvtalePåKode6Exception.class);
     }
 
     @Test

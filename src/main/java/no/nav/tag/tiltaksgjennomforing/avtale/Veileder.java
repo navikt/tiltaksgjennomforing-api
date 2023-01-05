@@ -326,4 +326,23 @@ public class Veileder extends Avtalepart<NavIdent> {
         leggTilGeografiskEnhet(avtale, persondata, norg2Client);
         return avtale;
     }
+
+    public boolean sjekkOmPilot(SjekkOmPilotRequest sjekkOmPilotRequest) {
+        boolean erPilot = false;
+        String enhetOppfolging = veilarbArenaClient.hentOppfølgingsEnhet(sjekkOmPilotRequest.getDeltakerFnr().asString());
+        BedriftNr bedriftNr = sjekkOmPilotRequest.getBedriftNr();
+        Tiltakstype tiltakstype = sjekkOmPilotRequest.getTiltakstype();
+        List<BedriftNr> pilotvirksomheter = tilskuddsperiodeConfig.getPilotvirksomheter();
+        List<String> pilotEnheter = tilskuddsperiodeConfig.getPilotenheter();
+
+        if(pilotvirksomheter.contains(bedriftNr) && (tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD)) {
+            erPilot = true;
+        }
+        if(enhetOppfolging != null && pilotEnheter.contains(enhetOppfolging) && (tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD)) {
+            erPilot = true;
+        }
+        return erPilot;
+    }
+
+
 }
