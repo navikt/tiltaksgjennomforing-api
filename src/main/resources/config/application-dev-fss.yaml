@@ -126,8 +126,6 @@ tiltaksgjennomforing:
     enabled: true
   dvh-melding:
     gruppe-tilgang: ${beslutter.ad.gruppe}
-    feature-enabled: true
-    tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, MENTOR, INKLUDERINGSTILSKUDD, ARBEIDSTRENING
   tilskuddsperioder:
     tiltakstyper: SOMMERJOBB
   utvikler-tilgang:

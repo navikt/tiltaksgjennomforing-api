@@ -449,7 +449,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     void godkjennForVeilederOgArbeidsgiver(NavIdent utfortAv, GodkjentPaVegneAvArbeidsgiverGrunn godkjentPaVegneAvArbeidsgiverGrunn, List<BedriftNr> pilotvirksomheter, List<String> pilotEnheter) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErKlarTilGodkjenning();
-        if (tiltakstype != Tiltakstype.SOMMERJOBB) {
+        if (tiltakstype != Tiltakstype.SOMMERJOBB && tiltakstype != Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD && tiltakstype != Tiltakstype.VARIG_LONNSTILSKUDD) {
             throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_TILTAKSTYPE);
         }
         if (erGodkjentAvArbeidsgiver()) {
@@ -461,7 +461,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_VEILEDER_HAR_ALLEREDE_GODKJENT);
         }
-        if (this.getDeltakerFnr().erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
+        if (tiltakstype == Tiltakstype.SOMMERJOBB && this.getDeltakerFnr().erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
             throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_GAMMEL_FRA_OPPSTARTDATO);
         }
         godkjentPaVegneAvArbeidsgiverGrunn.valgtMinstEnGrunn();
@@ -482,7 +482,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     public void godkjennForVeilederOgDeltakerOgArbeidsgiver(NavIdent utfortAv, GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn paVegneAvDeltakerOgArbeidsgiverGrunn, List<BedriftNr> pilotvirksomheter, List<String> pilotEnheter) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErKlarTilGodkjenning();
-        if (tiltakstype != Tiltakstype.SOMMERJOBB) {
+        if (tiltakstype != Tiltakstype.SOMMERJOBB && tiltakstype != Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD && tiltakstype != Tiltakstype.VARIG_LONNSTILSKUDD) {
             throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_TILTAKSTYPE);
         }
         if (erGodkjentAvDeltaker()) {
@@ -494,9 +494,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_VEILEDER_HAR_ALLEREDE_GODKJENT);
         }
-        if (this.getDeltakerFnr().erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
+        if (tiltakstype == Tiltakstype.SOMMERJOBB && this.getDeltakerFnr().erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
             throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_GAMMEL_FRA_OPPSTARTDATO);
         }
+
 
         paVegneAvDeltakerOgArbeidsgiverGrunn.valgtMinstEnGrunn();
         LocalDateTime tidspunkt = Now.localDateTime();
