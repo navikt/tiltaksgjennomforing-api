@@ -238,7 +238,7 @@ public class AvtaleController {
         veileder.sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
         veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
-        if (pilottype != null && pilottype.equals("ARENARYDDING")) {
+        if (pilottype != null && pilottype.equals("ARENARYDDING") && opprettAvtale.erLønnstilskudd()) {
             ArenaRyddeAvtale arenaRyddeAvtale = new ArenaRyddeAvtale();
             arenaRyddeAvtale.setAvtale(avtale);
             arenaRyddeAvtaleRepository.save(arenaRyddeAvtale);
