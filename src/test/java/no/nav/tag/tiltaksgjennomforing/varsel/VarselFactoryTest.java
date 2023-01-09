@@ -11,13 +11,13 @@ class VarselFactoryTest {
 
   @Test
   public void skal_returnere_4_parter_Mentor_Deltaker_Arbeidsgiver_Veileder_Ventor_I_VarselListe(){
-    VarselFactory factory = new VarselFactory(TestData.enMentorAvtaleUsignert(), Avtalerolle.MENTOR, HendelseType.OPPRETTET);
+    VarselFactory factory = new VarselFactory(TestData.enMentorAvtaleUsignert(), Avtalerolle.MENTOR, TestData.enNavIdent() , HendelseType.OPPRETTET);
     assertEquals(4,factory.alleParter().toArray().length);
   }
 
   @Test
   public void skal_returnere_3_parter_Deltaker_Arbeidsgiver_Veileder_Ventor_I_VarselListe(){
-    VarselFactory factory = new VarselFactory(TestData.enArbeidstreningAvtale(), Avtalerolle.ARBEIDSGIVER, HendelseType.OPPRETTET);
+    VarselFactory factory = new VarselFactory(TestData.enArbeidstreningAvtale(), Avtalerolle.ARBEIDSGIVER, TestData.enNavIdent(), HendelseType.OPPRETTET);
     assertEquals(3,factory.alleParter().toArray().length);
   }
 
