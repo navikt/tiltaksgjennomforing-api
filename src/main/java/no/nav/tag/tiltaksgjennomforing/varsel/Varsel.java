@@ -25,6 +25,8 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
     private boolean lest;
     @Convert(converter = IdentifikatorConverter.class)
     private Identifikator identifikator;
+    @Convert(converter = IdentifikatorConverter.class)
+    private Identifikator utførtAvIdentifikator;
     private String tekst;
     @Enumerated(EnumType.STRING)
     private HendelseType hendelseType;
@@ -61,11 +63,12 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
         }
     }
 
-    public static Varsel nyttVarsel(Identifikator identifikator, boolean bjelle, Avtale avtale, Avtalerolle mottaker, Avtalerolle utførtAv, HendelseType hendelseType, UUID avtaleId) {
+    public static Varsel nyttVarsel(Identifikator identifikator, boolean bjelle, Avtale avtale, Avtalerolle mottaker, Avtalerolle utførtAv, Identifikator utførtAvIdentifikator, HendelseType hendelseType, UUID avtaleId) {
         Varsel varsel = new Varsel();
         varsel.id = UUID.randomUUID();
         varsel.tidspunkt = Now.localDateTime();
         varsel.identifikator = identifikator;
+        varsel.utførtAvIdentifikator = utførtAvIdentifikator;
         varsel.tekst = lagVarselTekst(avtale, hendelseType);
         varsel.hendelseType = hendelseType;
         varsel.avtaleId = avtaleId;

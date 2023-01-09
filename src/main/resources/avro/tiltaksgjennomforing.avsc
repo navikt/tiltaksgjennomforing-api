@@ -267,6 +267,11 @@
       "type": "boolean"
     },
     {
+      "name": "arenaMigreringDeltaker",
+      "type": "boolean",
+      "default" : false
+    },
+    {
       "name": "godkjentAvDeltaker",
       "type": {
         "type": "long",

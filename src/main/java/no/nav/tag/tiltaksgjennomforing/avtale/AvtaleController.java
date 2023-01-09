@@ -44,6 +44,7 @@ public class AvtaleController {
 
     private final AvtaleRepository avtaleRepository;
     private final AvtaleInnholdRepository avtaleInnholdRepository;
+    private final ArenaRyddeAvtaleRepository arenaRyddeAvtaleRepository;
     private final InnloggingService innloggingService;
     private final EregService eregService;
     private final Norg2Client norg2Client;
@@ -220,15 +221,28 @@ public class AvtaleController {
         return new ResponseEntity<List<AlleredeRegistrertAvtale>>(avtaler, HttpStatus.OK);
     }
 
+    @PostMapping("/sjekk-om-vil-bli-pilot")
+    @Transactional
+    public boolean sjekkOmAvtaleKanVærePilot(@RequestBody SjekkOmPilotRequest sjekkOmPilotRequest) {
+        Veileder veileder = innloggingService.hentVeileder();
+        boolean erPilot = veileder.sjekkOmPilot(sjekkOmPilotRequest);
+        return erPilot;
+    }
+
     @PostMapping
     @Transactional
-    public ResponseEntity<?> opprettAvtaleSomVeileder(@RequestBody OpprettAvtale opprettAvtale) {
+    public ResponseEntity<?> opprettAvtaleSomVeileder(@RequestBody OpprettAvtale opprettAvtale, @RequestParam(value = "pilotType", required = false) String pilottype) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
         veileder.sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
         veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
+        if (pilottype != null && pilottype.equals("ARENARYDDING") && opprettAvtale.erLønnstilskudd()) {
+            ArenaRyddeAvtale arenaRyddeAvtale = new ArenaRyddeAvtale();
+            arenaRyddeAvtale.setAvtale(avtale);
+            arenaRyddeAvtaleRepository.save(arenaRyddeAvtale);
+        }
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
     }
