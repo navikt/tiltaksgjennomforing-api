@@ -1,20 +1,21 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
+import no.nav.security.token.support.core.api.Unprotected;
+import no.nav.tag.tiltaksgjennomforing.arenamigrering.ArenaMigreringService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.UtviklerTilgangProperties;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
@@ -25,14 +26,15 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
-@RequestMapping("/utvikler-admin/tilskuddsperioder")
+@RequestMapping("/utvikler-admin/arena")
 @RequiredArgsConstructor
 @ProtectedWithClaims(issuer = "aad")
-@ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
 @Slf4j
-public class InternalTilskuddsperiodeController {
-    private final TilskuddsperiodeKafkaProducer tilskuddsperiodeKafkaProducer;
+public class InternalArenaMigreringController {
+
     private final AvtaleRepository avtaleRepository;
+
+    private final ArenaMigreringService arenaMigreringService;
     private final UtviklerTilgangProperties utviklerTilgangProperties;
     private final TokenUtils tokenUtils;
 
@@ -42,20 +44,22 @@ public class InternalTilskuddsperiodeController {
         }
     }
 
-    @PostMapping("/send-godkjenn-melding")
+    @PostMapping("/lag-tilskuddsperioder-for-en-avtale/{avtaleId}/{migreringsDato}")
     @Transactional
-    public void sendTilskuddsperiodeGodkjent(@RequestBody SendTilskuddsperiodeGodkjentRequest request) {
+    public void lagTilskuddsperioderPåEnAvtale(@PathVariable("avtaleId") UUID id, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate migreringsDato) {
         sjekkTilgang();
-        // Endepunkt for å sende melding til Kafka om en tilskuddsperiode som ikke ble sendt pga. toggle som feilaktig var avskrudd
-        Avtale avtale = avtaleRepository.findById(request.getAvtaleId()).orElseThrow();
-        TilskuddPeriode tilskuddPeriode = avtale.getTilskuddPeriode().stream().filter(tp -> tp.getId().equals(request.getTilskuddsperiodeId())).findFirst().orElseThrow();
-        TilskuddsperiodeGodkjentMelding melding = TilskuddsperiodeGodkjentMelding.create(avtale, tilskuddPeriode);
-        tilskuddsperiodeKafkaProducer.publiserTilskuddsperiodeGodkjentMelding(melding);
+        log.info("Lager tilskuddsperioder på en enkelt avtale {} fra dato {}", id, migreringsDato);
+        Avtale avtale = avtaleRepository.findById(id)
+                .orElseThrow(RessursFinnesIkkeException::new);
+        avtale.nyeTilskuddsperioderVedMigreringFraArena(migreringsDato);
     }
 
-    @Value
-    private static class SendTilskuddsperiodeGodkjentRequest {
-        UUID tilskuddsperiodeId;
-        UUID avtaleId;
+    @PostMapping("/lag-tilskuddsperioder-arena/{migreringsDato}")
+    @Transactional
+    public void lagTilskuddsperioderPåArenaAvtaler(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate migreringsDato) {
+        sjekkTilgang();
+        // Finn alle lønnstilskuddavtaler (varig og midlertidlig)
+        arenaMigreringService.lagTilskuddsperioderPåArenaAvtaler(migreringsDato);
+        log.info("Startet migrering av tilskuddsperioder");
     }
 }

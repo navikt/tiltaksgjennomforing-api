@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.EnumSet;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class TilskuddPeriodeTest {
@@ -69,6 +70,7 @@ class TilskuddPeriodeTest {
     }
 
     @Test
+    @Disabled("Tester kun midlertidig sperre for å ikke kunne godkjenne tilskudd for neste år.")
     void godkjenn__skal_ikke_kunne_godkjenne_neste_års_tilskuddsperiode() {
         //TODO: Dette er en test av en midlertidig sperre.
         Now.fixedDate(LocalDate.of(2022, 10, 15));

@@ -60,9 +60,9 @@ public class DeltakerTest {
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
         endreAvtale.setSluttDato(LocalDate.of(2027, 1, 30));
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.noneOf(Tiltakstype.class), List.of());
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.noneOf(Tiltakstype.class), List.of(), List.of());
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
-        assertFeilkode(Feilkode.DELTAKER_72_AAR, () ->  avtale.godkjennForVeilederOgDeltaker(TestData.enNavIdent(), TestData.enGodkjentPaVegneGrunn(), List.of()));
+        assertFeilkode(Feilkode.DELTAKER_72_AAR, () ->  avtale.godkjennForVeilederOgDeltaker(TestData.enNavIdent(), TestData.enGodkjentPaVegneGrunn(), List.of(), List.of()));
 
         Now.resetClock();
     }
@@ -75,9 +75,9 @@ public class DeltakerTest {
         avtale.getGjeldendeInnhold().setLonnstilskuddProsent(60);
         endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
         endreAvtale.setSluttDato(LocalDate.of(2022, 1, 30));
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.noneOf(Tiltakstype.class), List.of());
+        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.noneOf(Tiltakstype.class), List.of(), List.of());
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
-        assertFeilkode(Feilkode.DELTAKER_67_AAR, () ->  avtale.godkjennForVeilederOgDeltaker(TestData.enNavIdent(), TestData.enGodkjentPaVegneGrunn(), List.of()));
+        assertFeilkode(Feilkode.DELTAKER_67_AAR, () ->  avtale.godkjennForVeilederOgDeltaker(TestData.enNavIdent(), TestData.enGodkjentPaVegneGrunn(), List.of(), List.of()));
 
         Now.resetClock();
     }

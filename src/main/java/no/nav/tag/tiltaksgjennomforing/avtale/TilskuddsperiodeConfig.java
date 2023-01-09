@@ -14,4 +14,5 @@ import java.util.List;
 public class TilskuddsperiodeConfig {
     private EnumSet<Tiltakstype> tiltakstyper = EnumSet.allOf(Tiltakstype.class);
     private List<BedriftNr> pilotvirksomheter = new ArrayList<>();
+    private List<String> pilotenheter = new ArrayList<>();
 }

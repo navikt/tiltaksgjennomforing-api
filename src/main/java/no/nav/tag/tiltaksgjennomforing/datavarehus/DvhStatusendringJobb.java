@@ -22,15 +22,10 @@ import java.util.UUID;
 public class DvhStatusendringJobb {
     private final DvhMeldingEntitetRepository dvhMeldingRepository;
     private final AvtaleRepository avtaleRepository;
-    private final DvhMeldingFilter dvhMeldingFilter;
     private final LeaderPodCheck leaderPodCheck;
 
     @Scheduled(fixedDelayString = "${tiltaksgjennomforing.dvh-melding.fixed-delay}")
     public void sjekkOmStatusendring() {
-        if (!dvhMeldingFilter.erFeatureSkruddPå()) {
-            log.info("Feature for å sende meldinger til datavarehus er ikke på, så kjører ikke jobb for å finne avtaler med statusendring");
-            return;
-        }
 
         if (!leaderPodCheck.isLeaderPod()) {
             log.info("Pod er ikke leader, så kjører ikke jobb for å finne avtaler med statusendring");
@@ -41,9 +36,7 @@ public class DvhStatusendringJobb {
         for (DvhMeldingEntitet dvhMeldingEntitet : dvhMeldingRepository.findNyesteDvhMeldingForAvtaleSomKanEndreStatus()) {
             UUID avtaleId = dvhMeldingEntitet.getAvtaleId();
             Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow();
-            if (!dvhMeldingFilter.skalTilDatavarehus(avtale)) {
-                continue;
-            }
+
             if (avtale.statusSomEnum() != dvhMeldingEntitet.getTiltakStatus()) {
                 LocalDateTime tidspunkt = Now.localDateTime();
                 AvroTiltakHendelse avroTiltakHendelse = AvroTiltakHendelseFabrikk.konstruer(avtale, tidspunkt, UUID.randomUUID(), DvhHendelseType.STATUSENDRING, "system");

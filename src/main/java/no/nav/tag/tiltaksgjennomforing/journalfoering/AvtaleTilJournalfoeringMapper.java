@@ -34,6 +34,7 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setMentorFnr(identifikatorAsString(avtale.getMentorFnr()));
         avtaleTilJournalfoering.setBedriftNr(identifikatorAsString(avtale.getBedriftNr()));
         avtaleTilJournalfoering.setVeilederNavIdent(identifikatorAsString(avtale.getVeilederNavIdent()));
+        avtaleTilJournalfoering.setEnhetOppfolging(avtale.getEnhetOppfolging());
         avtaleTilJournalfoering.setDeltakerFornavn(avtaleInnhold.getDeltakerFornavn());
         avtaleTilJournalfoering.setDeltakerEtternavn(avtaleInnhold.getDeltakerEtternavn());
         avtaleTilJournalfoering.setDeltakerTlf(avtaleInnhold.getDeltakerTlf());
@@ -90,7 +91,8 @@ public class AvtaleTilJournalfoeringMapper {
         return new GodkjentPaVegneGrunnTilJournalfoering(
                 grunn.isIkkeBankId(),
                 grunn.isDigitalKompetanse(),
-                grunn.isReservert()
+                grunn.isReservert(),
+                grunn.isArenaMigreringDeltaker()
         );
     }
 

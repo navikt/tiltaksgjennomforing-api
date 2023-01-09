@@ -64,9 +64,7 @@ class BeslutterTest {
         tilskuddPeriode.setStartDato(LocalDate.now().minusMonths(3));
         avtale.setTilskuddPeriode(new TreeSet<>(List.of(tilskuddPeriode)));
 
-        Integer plussDato = LocalDate.now().getYear() != LocalDate.now().plusMonths(3).getYear() ?
-                0 :
-                ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
+        Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
 
         Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService);
 
@@ -108,9 +106,8 @@ class BeslutterTest {
         avtale.setTilskuddPeriode(new TreeSet<>(List.of(tilskuddPeriode, tilskuddPeriode2)));
 
         Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService);
-        Integer plussDato = LocalDate.now().getYear() != LocalDate.now().plusMonths(3).getYear() ?
-                0 :
-                ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
+
+        Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
         AvtalePredicate avtalePredicate = new AvtalePredicate();
         avtalePredicate.setTilskuddPeriodeStatus(null);
 

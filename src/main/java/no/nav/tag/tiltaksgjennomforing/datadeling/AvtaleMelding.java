@@ -212,7 +212,7 @@ public class AvtaleMelding {
         avtaleMelding.setUtførtAvRolle(utførtAvAvtaleRolle);
 
         //Lister
-        avtaleMelding.setTilskuddPeriode(avtale.getTilskuddPeriode());
+        avtaleMelding.setTilskuddPeriode(Collections.emptySortedSet());
         avtaleMelding.setMaal(avtaleInnhold.getMaal());
         avtaleMelding.setInkluderingstilskuddsutgift(avtaleInnhold.getInkluderingstilskuddsutgift());
 

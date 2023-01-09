@@ -2,34 +2,19 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.EnumSet;
-import java.util.Set;
-import java.util.UUID;
-import javax.persistence.Convert;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.jetbrains.annotations.NotNull;
+
+import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.EnumSet;
+import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -112,12 +97,6 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
 
     @JsonProperty
     private LocalDate kanBesluttesFom() {
-
-        // TODO: DENNE KODEN MÅ FJERNES NÅR VI FÅR BESKJED OM AT DET ER OK Å HOLDE AV PENGER FOR NESTE ÅR
-        if (LocalDate.now().getYear() == 2022 && startDato.getYear() == 2023) {
-            return LocalDate.of(2023, 01, 1);
-        }
-
         if (løpenummer == 1) {
             return LocalDate.MIN;
         }

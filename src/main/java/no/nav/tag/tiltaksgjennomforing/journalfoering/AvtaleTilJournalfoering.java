@@ -46,6 +46,7 @@ public class AvtaleTilJournalfoering {
     private Stillingstype stillingstype;
     private String arbeidsoppgaver;
     private Integer antallDagerPerUke;
+    private String enhetOppfolging;
 
     private RefusjonKontaktperson refusjonKontaktperson;
 

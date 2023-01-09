@@ -267,6 +267,11 @@
       "type": "boolean"
     },
     {
+      "name": "arenaMigreringDeltaker",
+      "type": "boolean",
+      "default" : false
+    },
+    {
       "name": "godkjentAvDeltaker",
       "type": {
         "type": "long",
@@ -338,6 +343,11 @@
         "null",
         "string"
       ]
+    },
+    {
+      "name": "master",
+      "type": "boolean",
+      "default" : false
     }
   ]
 }

@@ -56,13 +56,13 @@ tiltaksgjennomforing:
     uri: https://ag-notifikasjon-produsent-api.dev.intern.nav.no/api/graphql
     lenke: https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/
   dvh-melding:
-    feature-enabled: false
     fixed-delay: 600000
   avtale-hendelse-melding:
     fixed-delay: 600000
   tilskuddsperioder:
     tiltakstyper: SOMMERJOBB
     pilotvirksomheter: ${tiltaksgjennomforing.pilot.pilotvirksomheter}
+    pilotenheter: ${tiltaksgjennomforing.pilot.pilotenheter}
 
 no.nav.security.jwt:
   client:

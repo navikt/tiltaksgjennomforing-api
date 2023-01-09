@@ -24,7 +24,7 @@ class LonnstilskuddStartOgSluttDatoStrategyTest {
     }
 
     private void endreAvtale(Avtale avtale, EndreAvtale endreAvtale) {
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.noneOf(Tiltakstype.class), List.of());
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.noneOf(Tiltakstype.class), List.of(), List.of());
     }
 
     @Test

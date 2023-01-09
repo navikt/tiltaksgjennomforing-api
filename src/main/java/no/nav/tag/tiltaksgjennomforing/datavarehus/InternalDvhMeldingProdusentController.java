@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,22 +18,21 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/internal/dvh-melding")
+@RequestMapping("/utvikler-admin/dvh-melding")
 @RequiredArgsConstructor
-@ProtectedWithClaims(issuer = "isso")
+@ProtectedWithClaims(issuer = "aad")
 @Slf4j
 public class InternalDvhMeldingProdusentController {
     private final AvtaleRepository avtaleRepository;
     private final DvhMeldingEntitetRepository dvhMeldingRepository;
     private final TokenUtils tokenUtils;
     private final DvhMeldingProperties dvhMeldingProperties;
-    private final DvhMeldingFilter dvhMeldingFilter;
+    private final DvhAvtalePatchService dvhAvtalePatchService;
 
     @PostMapping("/patch")
     public void patcheAvtale(@RequestBody PatchRequest request) {
-        if (!tokenUtils.harAdGruppe(dvhMeldingProperties.getGruppeTilgang())) {
-            throw new HttpClientErrorException(HttpStatus.FORBIDDEN);
-        }
+        log.info("Patcher avtaler til dvh");
+        sjekkTilgang();
         avtaleRepository.findAllById(request.getAvtaleIder()).forEach(avtale -> {
             UUID meldingId = UUID.randomUUID();
             String utførtAv = tokenUtils.hentBrukerOgIssuer().map(TokenUtils.BrukerOgIssuer::getBrukerIdent).orElse("patch");
@@ -44,13 +42,22 @@ public class InternalDvhMeldingProdusentController {
         });
     }
 
-    @Value
-    private static class PatchRequest {
-        List<UUID> avtaleIder;
+    @PostMapping("patchalleavtaler")
+    public void patchAlleAvtaler() {
+        log.info("Patcher alle avtaler til dvh");
+        sjekkTilgang();
+        dvhAvtalePatchService.lagDvhPatchMeldingForAlleAvtaler();
+    }
+
+    private void sjekkTilgang() {
+        if (!tokenUtils.harAdGruppe(dvhMeldingProperties.getGruppeTilgang())) {
+            throw new HttpClientErrorException(HttpStatus.FORBIDDEN);
+        }
     }
 
     @Value
-    private static class MigrerRequest {
-        Tiltakstype tiltakstype;
+    private class PatchRequest {
+        List<UUID> avtaleIder;
     }
+
 }

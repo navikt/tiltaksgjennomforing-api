@@ -68,9 +68,6 @@ public class Beslutter extends Avtalepart<NavIdent> {
     }
 
     private Integer getPlussdato() {
-        if(LocalDate.now().getYear() != LocalDate.now().plusMonths(3).getYear()) {
-            return 0;
-        }
         return ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
     }
 

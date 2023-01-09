@@ -12,4 +12,5 @@ public class GodkjentPaVegneGrunnTilJournalfoering {
     private boolean ikkeBankId;
     private boolean digitalKompetanse;
     private boolean reservert;
+    private boolean arenaMigreringDeltaker;
 }
