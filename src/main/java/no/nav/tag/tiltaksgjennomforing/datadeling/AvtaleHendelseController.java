@@ -14,7 +14,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
@@ -32,7 +32,7 @@ public class AvtaleHendelseController {
 
     private void sjekkTilgang() {
         if (!tokenUtils.harAdRolle("access_as_application")) {
-            throw new HttpClientErrorException(HttpStatus.FORBIDDEN);
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
     }
 
