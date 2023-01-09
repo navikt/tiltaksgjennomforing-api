@@ -83,7 +83,11 @@ public class TokenUtilsTest {
     @Test
     public void hentInnloggetBruker__er_aad_clientcredentials() {
         vaerInnloggetAadClientCredentials();
-        assertThat(tokenUtils.harAdRolle("access_as_application"));
+        assertThat(tokenUtils.harAdRolle("access_as_application")).isTrue();
+
+        InnloggetVeileder navAnsatt = TestData.enInnloggetVeileder();
+        vaerInnloggetNavAnsatt(navAnsatt);
+        assertThat(tokenUtils.harAdRolle("access_as_application")).isFalse();
     }
 
     @Test

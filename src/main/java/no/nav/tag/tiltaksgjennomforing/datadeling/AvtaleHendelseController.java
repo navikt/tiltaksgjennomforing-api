@@ -22,7 +22,6 @@ import java.util.*;
 @RequestMapping("/internal/avtale-hendelse")
 @RequiredArgsConstructor
 @ProtectedWithClaims(issuer = "aad")
-@Unprotected
 @Slf4j
 public class AvtaleHendelseController {
 
