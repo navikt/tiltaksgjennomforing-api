@@ -3,13 +3,11 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
-import no.nav.security.token.support.core.api.Unprotected;
 import no.nav.tag.tiltaksgjennomforing.arenamigrering.ArenaMigreringService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.UtviklerTilgangProperties;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -21,9 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
 @RequestMapping("/utvikler-admin/arena")

@@ -167,6 +167,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.github.victools</groupId>
+            <artifactId>jsonschema-generator</artifactId>
+            <version>4.28.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
             <version>4.1.0</version>

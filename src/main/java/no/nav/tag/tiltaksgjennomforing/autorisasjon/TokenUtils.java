@@ -53,6 +53,14 @@ public class TokenUtils {
         return groupsClaim.get().contains(gruppeAD.toString());
     }
 
+    public boolean harAdRolle(String rolle) {
+        Optional<List<String>> roller = hentClaims(ISSUER_AAD, "roles");
+        if (!roller.isPresent()) {
+            return false;
+        }
+        return roller.get().contains(rolle.toString());
+    }
+
     private Optional<List<String>> hentClaims(Issuer issuer, String claim) {
         return hentClaimSet(issuer).filter(jwtClaimsSet -> innloggingsNivaOK(issuer, jwtClaimsSet))
                 .map(jwtClaimsSet -> (List<String>) jwtClaimsSet.get(claim));
