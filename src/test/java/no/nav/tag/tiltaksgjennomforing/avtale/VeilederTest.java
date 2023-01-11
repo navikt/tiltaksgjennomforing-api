@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
@@ -102,7 +103,7 @@ public class VeilederTest {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         Veileder veileder = TestData.enVeileder(avtale);
-        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of(), List.of());
+        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
         arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
 
@@ -118,16 +119,14 @@ public class VeilederTest {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(avtale.getVeilederNavIdent()), any(Fnr.class))).thenReturn(true);
 
-        // Avtalens bedriftnummer i miljøvariabel med pilotbedrifter
         TilskuddsperiodeConfig tilskuddsperiodeConfig = new TilskuddsperiodeConfig();
-        tilskuddsperiodeConfig.setPilotvirksomheter(List.of(avtale.getBedriftNr()));
-        // Veileder med injecta pilotbedrift
+
         Veileder veileder = new Veileder(avtale.getVeilederNavIdent(),
                 tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")), mock(SlettemerkeProperties.class),
                 tilskuddsperiodeConfig, false, mock(VeilarbArenaClient.class));
 
-        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleLønnstilskuddFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()), List.of(), List.of());
+        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleLønnstilskuddFelter(), Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
         arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
 
@@ -186,7 +185,7 @@ public class VeilederTest {
         endreAvtale.setLonnstilskuddProsent(null);
         avtale.getGjeldendeInnhold().setSumLonnstilskudd(null);
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.endreAvtale(Now.instant(), endreAvtale, avtale, EnumSet.of(avtale.getTiltakstype()), List.of(), List.of());
+        arbeidsgiver.endreAvtale(Now.instant(), endreAvtale, avtale, EnumSet.of(avtale.getTiltakstype()));
         Veileder nyVeileder = TestData.enVeileder(new NavIdent("J987654"));
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.setFormidlingsgruppe(Formidlingsgruppe.ARBEIDSSOKER);
