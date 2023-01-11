@@ -192,7 +192,6 @@ public class AvtaleController {
         Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
-        arbeidsgiver.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
@@ -236,7 +235,6 @@ public class AvtaleController {
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
         veileder.sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
-        veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         if (pilottype != null && pilottype.equals("ARENARYDDING") && opprettAvtale.erLønnstilskudd()) {
             ArenaRyddeAvtale arenaRyddeAvtale = new ArenaRyddeAvtale();
@@ -259,12 +257,10 @@ public class AvtaleController {
             Veileder veileder = innloggingService.hentVeileder();;
             avtale = veileder.opprettMentorAvtale(opprettMentorAvtale);
             veileder.sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
-            veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
         }
         else if(opprettMentorAvtale.getAvtalerolle().equals(Avtalerolle.ARBEIDSGIVER)){
             Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
             avtale = arbeidsgiver.opprettMentorAvtale(opprettMentorAvtale);
-            arbeidsgiver.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
         }
         if(avtale == null){
             throw new RuntimeException("Opprett Mentor fant ingen avtale å behandle.");

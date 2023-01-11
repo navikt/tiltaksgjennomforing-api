@@ -197,6 +197,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         Avtale avtale = Avtale.veilederOppretterAvtale(opprettAvtale, getIdentifikator());
         avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(persondata));
         leggTilGeografiskEnhet(avtale, persondata, norg2Client);
+        leggTilOppfølgingsenhet(avtale, norg2Client, veilarbArenaClient);
         return avtale;
     }
 
@@ -324,6 +325,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         Avtale avtale = Avtale.veilederOppretterAvtale(opprettMentorAvtale, getIdentifikator());
         avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(persondata));
         leggTilGeografiskEnhet(avtale, persondata, norg2Client);
+        leggTilOppfølgingsenhet(avtale, norg2Client, veilarbArenaClient);
         return avtale;
     }
 

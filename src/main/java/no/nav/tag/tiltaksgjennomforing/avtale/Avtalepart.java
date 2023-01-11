@@ -127,15 +127,18 @@ public abstract class Avtalepart<T extends Identifikator> {
         }
     }
 
-    protected void leggTilOppfølingEnhetsnavn(Avtale avtale, Norg2Client norg2Client) {
-        if (avtale.getEnhetOppfolging() != null) {
-            if (avtale.getEnhetOppfolging().equals(avtale.getEnhetGeografisk())) {
-                avtale.setEnhetsnavnOppfolging(avtale.getEnhetsnavnGeografisk());
-            } else {
-                final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetsnavn(avtale.getEnhetOppfolging());
-                if (response != null && response.getNavn() != null) {
-                    avtale.setEnhetsnavnOppfolging(response.getNavn());
-                }
+    protected void leggTilOppfølgingsenhet(Avtale avtale, Norg2Client norg2Client, VeilarbArenaClient veilarbArenaClient) {
+        // Enhetsnummer
+        String oppfølgingsEnhet = veilarbArenaClient.hentOppfølgingsEnhet(avtale.getDeltakerFnr().asString());
+        avtale.setEnhetOppfolging(oppfølgingsEnhet);
+        //Enhetsnavn
+        boolean sammeEnhetOppfølgingSomEnhetGeografisk = avtale.getEnhetOppfolging().equals(avtale.getEnhetGeografisk());
+        if (sammeEnhetOppfølgingSomEnhetGeografisk) {
+            avtale.setEnhetsnavnOppfolging(avtale.getEnhetsnavnGeografisk());
+        } else {
+            final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetsnavn(avtale.getEnhetOppfolging());
+            if (response != null && response.getNavn() != null) {
+                avtale.setEnhetsnavnOppfolging(response.getNavn());
             }
         }
     }
@@ -178,4 +181,5 @@ public abstract class Avtalepart<T extends Identifikator> {
                     .finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(40, 60));
         }
     }
+
 }

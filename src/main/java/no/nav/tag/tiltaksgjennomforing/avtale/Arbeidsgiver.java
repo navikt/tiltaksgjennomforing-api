@@ -1,25 +1,16 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
-import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
-import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class Arbeidsgiver extends Avtalepart<Fnr> {
@@ -28,17 +19,11 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     static String tekstTiltaketErAvsluttet = "Hvis du har spørsmål må du kontakte NAV.";
     private final Map<BedriftNr, Collection<Tiltakstype>> tilganger;
     private final Set<AltinnReportee> altinnOrganisasjoner;
-    private final PersondataService persondataService;
-    private final Norg2Client norg2Client;
-    private final VeilarbArenaClient veilarbArenaClient;
 
-    public Arbeidsgiver(Fnr identifikator, Set<AltinnReportee> altinnOrganisasjoner, Map<BedriftNr, Collection<Tiltakstype>> tilganger, PersondataService persondataService, Norg2Client norg2Client, VeilarbArenaClient veilarbArenaClient) {
+    public Arbeidsgiver(Fnr identifikator, Set<AltinnReportee> altinnOrganisasjoner, Map<BedriftNr, Collection<Tiltakstype>> tilganger) {
         super(identifikator);
         this.altinnOrganisasjoner = altinnOrganisasjoner;
         this.tilganger = tilganger;
-        this.persondataService = persondataService;
-        this.norg2Client = norg2Client;
-        this.veilarbArenaClient = veilarbArenaClient;
     }
 
     private static boolean avbruttForMerEnn12UkerSiden(Avtale avtale) {
@@ -161,22 +146,11 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
                 .collect(Collectors.toList());
     }
 
-    public void hentOgSettOppfølgingStatus(Avtale avtale) {
-        Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.hentOppfølgingStatus(avtale.getDeltakerFnr().asString());
-        if(oppfølgingsstatus != null) {
-            avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
-            avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
-            avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
-        }
-    }
-
     public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
         if (!harTilgangPåTiltakIBedrift(opprettAvtale.getBedriftNr(), opprettAvtale.getTiltakstype())) {
             throw new TilgangskontrollException("Har ikke tilgang på tiltak i valgt bedrift");
         }
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(opprettAvtale);
-        final PdlRespons persondata = persondataService.hentPersondata(opprettAvtale.getDeltakerFnr());
-        leggTilGeografiskEnhet(avtale, persondata, norg2Client);
         return avtale;
     }
 
@@ -194,8 +168,6 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
             throw new TilgangskontrollException("Har ikke tilgang på tiltak i valgt bedrift");
         }
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(opprettMentorAvtale);
-        final PdlRespons persondata = persondataService.hentPersondata(opprettMentorAvtale.getDeltakerFnr());
-        leggTilGeografiskEnhet(avtale, persondata, norg2Client);
         return avtale;
     }
 }
