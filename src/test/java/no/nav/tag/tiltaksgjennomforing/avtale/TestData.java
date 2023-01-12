@@ -506,7 +506,7 @@ public class TestData {
     }
 
     public static Arbeidsgiver enArbeidsgiver() {
-        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of(), null, null, null);
+        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of());
     }
 
     public static Mentor enMentor(Avtale avtale) {
@@ -518,10 +518,7 @@ public class TestData {
                 TestData.etFodselsnummer(),
                 Set.of(new AltinnReportee("Bedriftnavn", "", null, avtale.getBedriftNr().asString(), "", ""))
                 , Map.of(avtale.getBedriftNr(),
-                List.of(Tiltakstype.values())),
-                null,
-                null,
-                null);
+                List.of(Tiltakstype.values())));
     }
 
     public static Fnr etFodselsnummer() {

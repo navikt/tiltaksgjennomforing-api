@@ -88,7 +88,7 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__arbeidsgiver_skal_ikke_ha_tilgang_til_avtale() {
-        assertThat(new Arbeidsgiver(TestData.etFodselsnummer(), Set.of(), Map.of(), null, null, null).harTilgang(avtale)).isFalse();
+        assertThat(new Arbeidsgiver(TestData.etFodselsnummer(), Set.of(), Map.of()).harTilgang(avtale)).isFalse();
     }
 
     @Test
@@ -107,20 +107,20 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__ikkepart_selvbetjeningsbruker_skal_ikke_ha_tilgang() {
-        assertThat(new Arbeidsgiver(new Fnr("00000000001"), Set.of(), Map.of(), null, null, null).harTilgang(avtale)).isFalse();
+        assertThat(new Arbeidsgiver(new Fnr("00000000001"), Set.of(), Map.of()).harTilgang(avtale)).isFalse();
     }
 
     @Test
     public void harTilgang__arbeidsgiver_skal_kunne_representere_bedrift_uten_Fnr() {
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(this.bedriftNr, Set.of(Tiltakstype.values()));
-        Arbeidsgiver Arbeidsgiver = new Arbeidsgiver(new Fnr("00000000009"), Set.of(), tilganger, null, null, null);
+        Arbeidsgiver Arbeidsgiver = new Arbeidsgiver(new Fnr("00000000009"), Set.of(), tilganger);
         assertThat(Arbeidsgiver.harTilgang(avtale)).isTrue();
     }
 
     @Test
     public void harTilgang__arbeidsgiver_skal_ikke_ha_tilgang_til_avbrutt_avtale_eldre_enn_12_uker() {
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(this.bedriftNr, Set.of(Tiltakstype.values()));
-        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(new Fnr("00000000009"), Set.of(), tilganger, null, null, null);
+        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(new Fnr("00000000009"), Set.of(), tilganger);
         avtale.setAvbrutt(true);
         avtale.setSistEndret(Now.instant().minus(84, ChronoUnit.DAYS).minusMillis(100));
         assertThat(arbeidsgiver.harTilgang(avtale)).isFalse();
@@ -131,7 +131,7 @@ public class InnloggetBrukerTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusDays(85));
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.values()));
-        Arbeidsgiver Arbeidsgiver = new Arbeidsgiver(new Fnr("00000000009"), Set.of(), tilganger, null, null, null);
+        Arbeidsgiver Arbeidsgiver = new Arbeidsgiver(new Fnr("00000000009"), Set.of(), tilganger);
         assertThat(Arbeidsgiver.harTilgang(avtale)).isFalse();
     }
 
@@ -140,7 +140,7 @@ public class InnloggetBrukerTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusDays(85));
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.values()));
-        Arbeidsgiver Arbeidsgiver = new Arbeidsgiver(new Fnr("00000000009"), Set.of(), tilganger, null, null, null);
+        Arbeidsgiver Arbeidsgiver = new Arbeidsgiver(new Fnr("00000000009"), Set.of(), tilganger);
         assertThat(Arbeidsgiver.harTilgang(avtale)).isTrue();
     }
 
@@ -148,7 +148,7 @@ public class InnloggetBrukerTest {
     public void harTilgang__arbeidsgiver_med_arbeidsgivertilgang_skal_ikke_ha_lonnstilskuddtilgang() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING));
-        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(new Fnr("00000000009"), Set.of(), tilganger, null, null, null);
+        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(new Fnr("00000000009"), Set.of(), tilganger);
         assertThat(arbeidsgiver.harTilgang(avtale)).isFalse();
     }
 }

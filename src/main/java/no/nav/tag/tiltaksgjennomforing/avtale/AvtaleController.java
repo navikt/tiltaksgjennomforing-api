@@ -234,7 +234,7 @@ public class AvtaleController {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
-        veileder.sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
+
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         if (pilottype != null && pilottype.equals("ARENARYDDING") && opprettAvtale.erLønnstilskudd()) {
             ArenaRyddeAvtale arenaRyddeAvtale = new ArenaRyddeAvtale();
@@ -252,20 +252,18 @@ public class AvtaleController {
         if(opprettMentorAvtale.getDeltakerFnr().equals(opprettMentorAvtale.getMentorFnr())){
             throw new FeilkodeException(Feilkode.DELTAGER_OG_MENTOR_KAN_IKKE_HA_SAMME_FØDSELSNUMMER);
         }
-        String bedriftNavn = eregService.hentVirksomhet(opprettMentorAvtale.getBedriftNr()).getBedriftNavn();
+
         if(opprettMentorAvtale.getAvtalerolle().equals(Avtalerolle.VEILEDER)){
-            Veileder veileder = innloggingService.hentVeileder();;
-            avtale = veileder.opprettMentorAvtale(opprettMentorAvtale);
-            veileder.sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
+            avtale = innloggingService.hentVeileder().opprettMentorAvtale(opprettMentorAvtale);
+
         }
         else if(opprettMentorAvtale.getAvtalerolle().equals(Avtalerolle.ARBEIDSGIVER)){
-            Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
-            avtale = arbeidsgiver.opprettMentorAvtale(opprettMentorAvtale);
+            avtale = innloggingService.hentArbeidsgiver().opprettMentorAvtale(opprettMentorAvtale);
         }
         if(avtale == null){
             throw new RuntimeException("Opprett Mentor fant ingen avtale å behandle.");
         }
-        avtale.leggTilBedriftNavn(bedriftNavn);
+        avtale.leggTilBedriftNavn(eregService.hentVirksomhet(opprettMentorAvtale.getBedriftNr()).getBedriftNavn());
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();

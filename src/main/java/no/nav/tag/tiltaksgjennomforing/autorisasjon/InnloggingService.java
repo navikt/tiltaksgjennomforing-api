@@ -59,29 +59,54 @@ public class InnloggingService {
         if (issuer == Issuer.ISSUER_TOKENX && (avtalerolle == Avtalerolle.DELTAKER || avtalerolle == Avtalerolle.MENTOR)) {
             if(avtalerolle == Avtalerolle.DELTAKER) return new Deltaker(new Fnr(brukerOgIssuer.getBrukerIdent()));
             else return new Mentor(new Fnr(brukerOgIssuer.getBrukerIdent()));
-        }else if (issuer == Issuer.ISSUER_TOKENX && avtalerolle == Avtalerolle.ARBEIDSGIVER) {
-            HentArbeidsgiverToken hentArbeidsgiverToken = arbeidsgiverTokenStrategyFactory.create(issuer);
 
-            Set<AltinnReportee> altinnOrganisasjoner = altinnTilgangsstyringService
-                    .hentAltinnOrganisasjoner(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
-            Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
-            return new Arbeidsgiver(new Fnr(brukerOgIssuer.getBrukerIdent()), altinnOrganisasjoner, tilganger, persondataService, norg2Client, veilarbArenaClient);
+        }else if (issuer == Issuer.ISSUER_TOKENX && avtalerolle == Avtalerolle.ARBEIDSGIVER) {
+            return this.hentArbeidsgiver(issuer, brukerOgIssuer.getBrukerIdent());
+
         } else if (issuer == Issuer.ISSUER_AAD && avtalerolle == Avtalerolle.VEILEDER) {
-            NavIdent navIdent = new NavIdent(brukerOgIssuer.getBrukerIdent());
-            Set<NavEnhet> navEnheter = hentNavEnheter(navIdent);
-            boolean harAdGruppeForBeslutter = tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId());
-            return new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, navEnheter, slettemerkeProperties, tilskuddsperiodeConfig, harAdGruppeForBeslutter, veilarbArenaClient);
+            return this.hentVeileder(brukerOgIssuer.getBrukerIdent());
+
         } else if (issuer == Issuer.ISSUER_AAD && avtalerolle == Avtalerolle.BESLUTTER) {
-            boolean harAdGruppeForBeslutter = tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId());
-            if (harAdGruppeForBeslutter) {
-                return new Beslutter(new NavIdent(brukerOgIssuer.getBrukerIdent()), tilgangskontrollService, axsysService);
-            } else {
-                throw new FeilkodeException(Feilkode.MANGLER_AD_GRUPPE_BESLUTTER);
-            }
+            return this.hentBeslutter(brukerOgIssuer.getBrukerIdent());
+
         } else {
             log.warn("Ugyldig kombinasjon av issuer={} og rolle={}", issuer, avtalerolle);
             throw new FeilkodeException(Feilkode.UGYLDIG_KOMBINASJON_AV_ISSUER_OG_ROLLE);
         }
+    }
+
+    private Beslutter hentBeslutter(String brukerIdent) {
+        boolean harAdGruppeForBeslutter = tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId());
+        if (harAdGruppeForBeslutter) {
+            return new Beslutter(new NavIdent(brukerIdent), tilgangskontrollService, axsysService);
+        } else {
+            throw new FeilkodeException(Feilkode.MANGLER_AD_GRUPPE_BESLUTTER);
+        }
+    }
+
+    private Veileder hentVeileder(String brukerIdent) {
+        NavIdent navIdent = new NavIdent(brukerIdent);
+        Set<NavEnhet> navEnheter = hentNavEnheter(navIdent);
+        boolean harAdGruppeForBeslutter = tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId());
+        return new Veileder(
+                navIdent,
+                tilgangskontrollService,
+                persondataService,
+                norg2Client,
+                navEnheter,
+                slettemerkeProperties,
+                tilskuddsperiodeConfig,
+                harAdGruppeForBeslutter,
+                veilarbArenaClient);
+    }
+
+    private Arbeidsgiver hentArbeidsgiver(Issuer issuer, String brukerIdent) {
+        HentArbeidsgiverToken hentArbeidsgiverToken = arbeidsgiverTokenStrategyFactory.create(issuer);
+        Set<AltinnReportee> altinnOrganisasjoner = altinnTilgangsstyringService
+                .hentAltinnOrganisasjoner(new Fnr(brukerIdent), hentArbeidsgiverToken);
+        Map<BedriftNr, Collection<Tiltakstype>> tilganger =
+                altinnTilgangsstyringService.hentTilganger(new Fnr(brukerIdent), hentArbeidsgiverToken);
+        return new Arbeidsgiver(new Fnr(brukerIdent), altinnOrganisasjoner, tilganger);
     }
 
     private Set<NavEnhet> hentNavEnheter(NavIdent navIdent) {

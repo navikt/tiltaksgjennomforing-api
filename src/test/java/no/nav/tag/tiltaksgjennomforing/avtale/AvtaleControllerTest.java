@@ -223,7 +223,7 @@ public class AvtaleControllerTest {
     @Test
     public void hentSkalKastTilgangskontrollExceptionHvisInnloggetSelvbetjeningBrukerIkkeHarTilgang() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        værInnloggetSom(new Arbeidsgiver(new Fnr("55555566666"), Set.of(), Map.of(), null, null, null));
+        værInnloggetSom(new Arbeidsgiver(new Fnr("55555566666"), Set.of(), Map.of()));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         assertThatThrownBy(() -> avtaleController.hent(avtale.getId(), Avtalerolle.ARBEIDSGIVER)).isExactlyInstanceOf(TilgangskontrollException.class);
     }
@@ -313,7 +313,7 @@ public class AvtaleControllerTest {
 
     @Test
     public void opprettAvtaleSomArbeidsgiver__skal_feile_hvis_ag_ikke_har_tilgang_til_bedrift() {
-        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(TestData.etFodselsnummer(), Set.of(), Map.of(), null, null, null);
+        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(TestData.etFodselsnummer(), Set.of(), Map.of());
         værInnloggetSom(arbeidsgiver);
         assertThatThrownBy(() -> avtaleController.opprettAvtaleSomArbeidsgiver(new OpprettAvtale(new Fnr("99887765432"), new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING))).isInstanceOf(TilgangskontrollException.class);
     }

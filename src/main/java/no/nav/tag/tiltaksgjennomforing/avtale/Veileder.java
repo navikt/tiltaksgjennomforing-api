@@ -15,13 +15,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
-import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeAdminTilgangException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6Exception;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
@@ -181,23 +175,49 @@ public class Veileder extends Avtalepart<NavIdent> {
         avtale.overtaAvtale(this.getIdentifikator());
     }
 
-    public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
-        boolean harAbacTilgang = tilgangskontrollService.harSkrivetilgangTilKandidat(getIdentifikator(), opprettAvtale.getDeltakerFnr());
-        if (!harAbacTilgang) {
-            throw new IkkeTilgangTilDeltakerException();
-        }
-
-        final PdlRespons persondata = persondataService.hentPersondata(opprettAvtale.getDeltakerFnr());
+    private PdlRespons hentPersondata(Fnr deltakerFnr) {
+        final PdlRespons persondata = persondataService.hentPersondata(deltakerFnr);
         boolean erKode6 = persondataService.erKode6(persondata);
 
         if (erKode6) {
             throw new KanIkkeOppretteAvtalePåKode6Exception();
         }
+        return persondata;
+    }
 
+    private void sjekkTilgangskontroll(NavIdent identifikator, Fnr deltakerFnr) {
+        if(!tilgangskontrollService.harSkrivetilgangTilKandidat(identifikator, deltakerFnr)) {
+            throw new IkkeTilgangTilDeltakerException();
+        }
+    }
+
+    private <T> Avtale finnOgopprettAvtaletype(T nyAvtale) {
+        if(nyAvtale instanceof OpprettAvtale) {
+            return this.opprettAvtale((OpprettAvtale) nyAvtale);
+
+        } else if (nyAvtale instanceof OpprettMentorAvtale) {
+            return this.opprettMentorAvtale((OpprettMentorAvtale) nyAvtale);
+        }
+        throw new UkjentAvtaleTypeException();
+    }
+
+    public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
+        sjekkTilgangskontroll(getIdentifikator(), opprettAvtale.getDeltakerFnr());
+        final PdlRespons persondata = this.hentPersondata(opprettAvtale.getDeltakerFnr());
         Avtale avtale = Avtale.veilederOppretterAvtale(opprettAvtale, getIdentifikator());
         avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(persondata));
-        leggTilGeografiskEnhet(avtale, persondata, norg2Client);
-        leggTilOppfølgingsenhet(avtale, norg2Client, veilarbArenaClient);
+        leggTilGeografiskOgOppfølgingsenhet(avtale, persondata, norg2Client, veilarbArenaClient);
+        sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
+        return avtale;
+    }
+
+    public Avtale opprettMentorAvtale(OpprettMentorAvtale opprettMentorAvtale) {
+        sjekkTilgangskontroll(getIdentifikator(), opprettMentorAvtale.getDeltakerFnr());
+        final PdlRespons persondata = hentPersondata(opprettMentorAvtale.getDeltakerFnr());
+        Avtale avtale = Avtale.veilederOppretterAvtale(opprettMentorAvtale, getIdentifikator());
+        avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(persondata));
+        leggTilGeografiskOgOppfølgingsenhet(avtale, persondata, norg2Client, veilarbArenaClient);
+        sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
         return avtale;
     }
 
@@ -312,22 +332,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         );
     }
 
-    public Avtale opprettMentorAvtale(OpprettMentorAvtale opprettMentorAvtale) {
-        if (!tilgangskontrollService.harSkrivetilgangTilKandidat(getIdentifikator(), opprettMentorAvtale.getDeltakerFnr())) {
-            throw new IkkeTilgangTilDeltakerException();
-        }
-        final PdlRespons persondata = persondataService.hentPersondata(opprettMentorAvtale.getDeltakerFnr());
-        boolean erKode6 = persondataService.erKode6(persondata);
 
-        if (erKode6) {
-            throw new KanIkkeOppretteAvtalePåKode6Exception();
-        }
-        Avtale avtale = Avtale.veilederOppretterAvtale(opprettMentorAvtale, getIdentifikator());
-        avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(persondata));
-        leggTilGeografiskEnhet(avtale, persondata, norg2Client);
-        leggTilOppfølgingsenhet(avtale, norg2Client, veilarbArenaClient);
-        return avtale;
-    }
 
     public boolean sjekkOmPilot(SjekkOmPilotRequest sjekkOmPilotRequest) {
         boolean erPilot = false;

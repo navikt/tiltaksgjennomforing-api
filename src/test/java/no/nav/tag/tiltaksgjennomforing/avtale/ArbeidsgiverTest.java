@@ -53,10 +53,7 @@ public class ArbeidsgiverTest {
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
                 TestData.etFodselsnummer(),
                 Set.of(new AltinnReportee("", "", null, TestData.etBedriftNr().asString(), null, null)),
-                Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-                persondataService,
-                norg2Client,
-                veilarbArenaClient);
+                Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)));
 
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
         assertThat(avtale.isOpprettetAvArbeidsgiver()).isTrue();
@@ -68,14 +65,14 @@ public class ArbeidsgiverTest {
     @Test
     public void endreAvtale_validererFraDato() {
         Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
-        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(null, null, null, null, null, null);
+        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(null, null, null);
         assertThatThrownBy(() -> arbeidsgiver.avvisDatoerTilbakeITid(avtale, Now.localDate().minusDays(1), null)).isInstanceOf(VarighetDatoErTilbakeITidException.class);
     }
 
     @Test
     public void endreAvtale_validererTilDato() {
         Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
-        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(null, null, null, null, null, null);
+        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(null, null, null);
         assertThatThrownBy(() -> arbeidsgiver.avvisDatoerTilbakeITid(avtale, Now.localDate(), Now.localDate().minusDays(1))).isInstanceOf(VarighetDatoErTilbakeITidException.class);
     }
 }

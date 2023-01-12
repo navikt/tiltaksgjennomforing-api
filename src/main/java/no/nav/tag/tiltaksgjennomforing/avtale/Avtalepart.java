@@ -117,6 +117,18 @@ public abstract class Avtalepart<T extends Identifikator> {
         return List.of(getIdentifikator());
     }
 
+
+
+    protected void leggTilGeografiskOgOppfølgingsenhet(
+            Avtale avtale,
+            PdlRespons pdlRespons,
+            Norg2Client norg2Client,
+            VeilarbArenaClient veilarbArenaClient
+    ){
+        this.leggTilGeografiskEnhet(avtale, pdlRespons, norg2Client);
+        this.leggTilOppfølgingsenhet(avtale, norg2Client, veilarbArenaClient);
+    }
+
     protected void leggTilGeografiskEnhet(Avtale avtale, PdlRespons pdlRespons, Norg2Client norg2Client) {
         Norg2GeoResponse enhet = hentGeoLokasjonFraPdlRespons(pdlRespons)
                 .map(norg2Client::hentGeografiskEnhet)
@@ -128,18 +140,19 @@ public abstract class Avtalepart<T extends Identifikator> {
     }
 
     protected void leggTilOppfølgingsenhet(Avtale avtale, Norg2Client norg2Client, VeilarbArenaClient veilarbArenaClient) {
-        // Enhetsnummer
         String oppfølgingsEnhet = veilarbArenaClient.hentOppfølgingsEnhet(avtale.getDeltakerFnr().asString());
         avtale.setEnhetOppfolging(oppfølgingsEnhet);
-        //Enhetsnavn
-        boolean sammeEnhetOppfølgingSomEnhetGeografisk = avtale.getEnhetOppfolging().equals(avtale.getEnhetGeografisk());
-        if (sammeEnhetOppfølgingSomEnhetGeografisk) {
+        if (avtale.getEnhetOppfolging().equals(avtale.getEnhetGeografisk())) {
             avtale.setEnhetsnavnOppfolging(avtale.getEnhetsnavnGeografisk());
-        } else {
-            final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetsnavn(avtale.getEnhetOppfolging());
-            if (response != null && response.getNavn() != null) {
-                avtale.setEnhetsnavnOppfolging(response.getNavn());
-            }
+            return;
+        }
+        setOppfolgingEnhetsnavnFraNorg(avtale, norg2Client);
+    }
+
+    public void setOppfolgingEnhetsnavnFraNorg(Avtale avtale, Norg2Client norg2Client) {
+        final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetsnavn(avtale.getEnhetOppfolging());
+        if (response != null && response.getNavn() != null) {
+            avtale.setEnhetsnavnOppfolging(response.getNavn());
         }
     }
 
