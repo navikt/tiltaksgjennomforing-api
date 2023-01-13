@@ -873,14 +873,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LAGE_NYE_TILSKUDDSPRIODER_INNGAATT_AVTALE);
         }
-        tilskuddPeriode.removeIf(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET);
+        tilskuddPeriode.removeIf(t -> (t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) || (t.getStatus() == TilskuddPeriodeStatus.BEHANDLET_I_ARENA));
         if (Utils.erIkkeTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato(), gjeldendeInnhold.getSumLonnstilskudd())) {
             List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioder(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
             if(arenaRyddeAvtale != null) {
                 tilskuddsperioder.forEach(periode -> {
                     // Set status BEHANDLET_I_ARENA på tilskuddsperioder før migreringsdato
                     // Eller skal det være startdato? Er jo den samme datoen som migreringsdato. hmm...
-                    if(erAvtaleInngått() && periode.getSluttDato().minusDays(1).isBefore(LocalDate.of(2023, 02, 01))) {
+                    if(periode.getSluttDato().minusDays(1).isBefore(LocalDate.of(2023, 02, 01))) {
                         periode.setStatus(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
                     }
                 });
