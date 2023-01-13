@@ -223,14 +223,14 @@ public class AvtaleController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<?> opprettAvtaleSomVeileder(@RequestBody OpprettAvtale opprettAvtale, @RequestParam(value = "ryddetype", required = false) String ryddetype) {
+    public ResponseEntity<?> opprettAvtaleSomVeileder(@RequestBody OpprettAvtale opprettAvtale, @RequestParam(value = "ryddeavtale", required = false) Boolean ryddeavtale) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
         veileder.sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
         veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
-        if (ryddetype != null && ryddetype.equals("ARENARYDDING") && opprettAvtale.erLønnstilskudd()) {
+        if (ryddeavtale != null && ryddeavtale) {
             ArenaRyddeAvtale arenaRyddeAvtale = new ArenaRyddeAvtale();
             arenaRyddeAvtale.setAvtale(avtale);
             arenaRyddeAvtaleRepository.save(arenaRyddeAvtale);
