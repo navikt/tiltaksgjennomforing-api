@@ -8,9 +8,6 @@ import static org.mockito.Mockito.when;
 import java.util.Map;
 import java.util.Set;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
@@ -40,12 +37,9 @@ public class ArbeidsgiverTest {
     @Test
     public void oprettAvtale__setter_startverdier_på_avtale() {
         final PdlRespons pdlRespons = TestData.enPdlrespons(false);
-        final Norg2GeoResponse navEnhet = new Norg2GeoResponse("Nav Grorud", "0411");
         final OpprettAvtale opprettAvtale = new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.ARBEIDSTRENING);
 
         PersondataService persondataService = mock(PersondataService.class);
-        Norg2Client norg2Client = mock(Norg2Client.class);
-        VeilarbArenaClient veilarbArenaClient = mock(VeilarbArenaClient.class);
 
         when(persondataService.hentPersondata(TestData.etFodselsnummer())).thenReturn(pdlRespons);
 

@@ -257,6 +257,7 @@ public class AvtaleControllerTest {
                 .thenReturn(new Norg2GeoResponse(TestData.ENHET_GEOGRAFISK.getNavn(), TestData.ENHET_GEOGRAFISK.getVerdi()));
         when(veilarbArenaClient.sjekkOgHentOppfølgingStatus(any()))
                 .thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
+
         ResponseEntity svar = avtaleController.opprettAvtaleSomVeileder(opprettAvtale, null);
 
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.CREATED);

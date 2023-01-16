@@ -528,8 +528,6 @@ public class TestData {
     public static Veileder enVeileder(Avtale avtale) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         VeilarbArenaClient veilarbArenaClient = mock(VeilarbArenaClient.class);
-        KontoregisterService kontoregisterService = mock(KontoregisterService.class);
-        AvtaleRepository avtaleRepository = mock(AvtaleRepository.class);
         lenient().when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(avtale.getVeilederNavIdent()), eq(avtale.getDeltakerFnr()))).thenReturn(true);
         lenient().when(veilarbArenaClient.sjekkOgHentOppfølgingStatus(any()))
                 .thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
