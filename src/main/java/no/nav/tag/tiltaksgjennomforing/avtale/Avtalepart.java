@@ -83,7 +83,14 @@ public abstract class Avtalepart<T extends Identifikator> {
         }
     }
 
-    public void endreAvtale(Instant sistEndret, EndreAvtale endreAvtale, Avtale avtale, EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder, List<BedriftNr> pilotvirksomheter, List<String> pilotEnheter) {
+    public void endreAvtale(
+            Instant sistEndret,
+            EndreAvtale endreAvtale,
+            Avtale avtale,
+            EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder,
+            List<BedriftNr> pilotvirksomheter,
+            List<String> pilotEnheter
+    ) {
         sjekkTilgang(avtale);
         if (!kanEndreAvtale()) {
             throw new KanIkkeEndreException();
@@ -92,8 +99,7 @@ public abstract class Avtalepart<T extends Identifikator> {
         avtale.endreAvtale(sistEndret, endreAvtale, rolle(), tiltakstyperMedTilskuddsperioder, pilotvirksomheter, identifikator, pilotEnheter);
     }
 
-    protected void avvisDatoerTilbakeITid(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
-    }
+    protected void avvisDatoerTilbakeITid(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {}
 
     protected abstract Avtalerolle rolle();
 
@@ -131,8 +137,7 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     protected void leggTilGeografiskEnhet(Avtale avtale, PdlRespons pdlRespons, Norg2Client norg2Client) {
         Norg2GeoResponse enhet = hentGeoLokasjonFraPdlRespons(pdlRespons)
-                .map(norg2Client::hentGeografiskEnhet)
-                .orElse(null);
+                .map(norg2Client::hentGeografiskEnhet).orElse(null);
         if (enhet != null) {
             avtale.setEnhetGeografisk(enhet.getEnhetNr());
             avtale.setEnhetsnavnGeografisk(enhet.getNavn());
@@ -172,11 +177,9 @@ public abstract class Avtalepart<T extends Identifikator> {
     public void hentOppfølgingStatus(Avtale avtale, VeilarbArenaClient veilarbArenaClient) {
         if(avtale.getVeilederNavIdent() != null) {
             Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.hentOppfølgingStatus(avtale.getDeltakerFnr().asString());
-            if (
-                    oppfølgingsstatus != null &&
-                            (oppfølgingsstatus.getKvalifiseringsgruppe() != avtale.getKvalifiseringsgruppe() ||
-                                    oppfølgingsstatus.getFormidlingsgruppe() != avtale.getFormidlingsgruppe())
-            ) {
+            if (oppfølgingsstatus != null &&
+                    (oppfølgingsstatus.getKvalifiseringsgruppe() != avtale.getKvalifiseringsgruppe() ||
+                            oppfølgingsstatus.getFormidlingsgruppe() != avtale.getFormidlingsgruppe())) {
                 this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
             }
         }

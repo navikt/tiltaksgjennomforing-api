@@ -191,16 +191,6 @@ public class Veileder extends Avtalepart<NavIdent> {
         }
     }
 
-    private <T> Avtale finnOgopprettAvtaletype(T nyAvtale) {
-        if(nyAvtale instanceof OpprettAvtale) {
-            return this.opprettAvtale((OpprettAvtale) nyAvtale);
-
-        } else if (nyAvtale instanceof OpprettMentorAvtale) {
-            return this.opprettMentorAvtale((OpprettMentorAvtale) nyAvtale);
-        }
-        throw new UkjentAvtaleTypeException();
-    }
-
     public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
         sjekkTilgangskontroll(getIdentifikator(), opprettAvtale.getDeltakerFnr());
         final PdlRespons persondata = this.hentPersondata(opprettAvtale.getDeltakerFnr());
@@ -283,16 +273,15 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     protected void oppdatereKostnadssted(Avtale avtale, Norg2Client norg2Client, String enhet) {
         final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetsnavn(enhet);
-        if (response != null) {
-            NyttKostnadssted nyttKostnadssted = new NyttKostnadssted(enhet, response.getNavn());
-            TreeSet<TilskuddPeriode> tilskuddPerioder = avtale.finnTilskuddsperioderIkkeLukketForEndring();
-            if (tilskuddPerioder == null) {
-                throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_IKKE_SATT);
-            }
-            avtale.oppdatereKostnadsstedForTilskuddsperioder(nyttKostnadssted);
-        } else {
+        if (response == null) {
             throw new FeilkodeException(Feilkode.ENHET_FINNES_IKKE);
         }
+        NyttKostnadssted nyttKostnadssted = new NyttKostnadssted(enhet, response.getNavn());
+        TreeSet<TilskuddPeriode> tilskuddPerioder = avtale.finnTilskuddsperioderIkkeLukketForEndring();
+        if (tilskuddPerioder == null) {
+            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_IKKE_SATT);
+        }
+        avtale.oppdatereKostnadsstedForTilskuddsperioder(nyttKostnadssted);
     }
 
     private LocalDate settStartDato(LocalDate startdato) {

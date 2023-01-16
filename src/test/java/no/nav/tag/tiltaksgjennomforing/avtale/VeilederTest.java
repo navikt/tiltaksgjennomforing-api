@@ -1,11 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -28,10 +27,13 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeAdminTilgangException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
+import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 public class VeilederTest {
@@ -232,8 +234,29 @@ public class VeilederTest {
 
     @Test
     public void opprettAvtale__skal_ikke_slettemerkes() {
-        OpprettAvtale opprettAvtale = new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
-        Veileder veileder = TestData.enVeileder(new NavIdent("Z123456"));
+        final Fnr fnr = TestData.etFodselsnummer();
+        final NavIdent navIdent = new NavIdent("Z123456");
+        final PdlRespons pdlRespons = TestData.enPdlrespons(false);
+        final NavEnhet navEnhet = TestData.ENHET_OPPFØLGING;
+        final OpprettAvtale opprettAvtale = new OpprettAvtale(fnr, TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+
+        VeilarbArenaClient veilarbArenaClient = mock(VeilarbArenaClient.class);
+        Norg2Client norg2Client = mock(Norg2Client.class);
+        PersondataService persondataService = mock(PersondataService.class);
+        MockedStatic<Utils> utilities = Mockito.mockStatic(Utils.class);
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+
+        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client,
+                Set.of(navEnhet), new SlettemerkeProperties(), new TilskuddsperiodeConfig(), false, veilarbArenaClient);
+
+
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any())).thenReturn(true);
+        when(persondataService.hentPersondata(fnr)).thenReturn(pdlRespons);
+        when(veilarbArenaClient.hentOppfølgingsEnhet(fnr.asString())).thenReturn(new NavEnhet("0904", "Vinstra").getVerdi());
+        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
+                .thenReturn(new Norg2GeoResponse(TestData.ENHET_GEOGRAFISK.getNavn(), TestData.ENHET_GEOGRAFISK.getVerdi()));
+       // utilities.when(Utils.sjekkAtIkkeNull(any(), any())).thenReturn(navIdent);
+
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
         assertThat(avtale.isSlettemerket()).isFalse();
     }
