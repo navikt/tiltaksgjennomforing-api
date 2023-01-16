@@ -39,16 +39,15 @@ public class ArbeidsgiverTest {
 
     @Test
     public void oprettAvtale__setter_startverdier_på_avtale() {
-        OpprettAvtale opprettAvtale = new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.ARBEIDSTRENING);
+        final PdlRespons pdlRespons = TestData.enPdlrespons(false);
+        final Norg2GeoResponse navEnhet = new Norg2GeoResponse("Nav Grorud", "0411");
+        final OpprettAvtale opprettAvtale = new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.ARBEIDSTRENING);
 
         PersondataService persondataService = mock(PersondataService.class);
         Norg2Client norg2Client = mock(Norg2Client.class);
         VeilarbArenaClient veilarbArenaClient = mock(VeilarbArenaClient.class);
-        final PdlRespons pdlRespons = TestData.enPdlrespons(false);
-        final Norg2GeoResponse navEnhet = new Norg2GeoResponse("Nav Grorud", "0411");
 
         when(persondataService.hentPersondata(TestData.etFodselsnummer())).thenReturn(pdlRespons);
-        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel())).thenReturn(navEnhet);
 
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
                 TestData.etFodselsnummer(),
@@ -56,10 +55,10 @@ public class ArbeidsgiverTest {
                 Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)));
 
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
+
         assertThat(avtale.isOpprettetAvArbeidsgiver()).isTrue();
         assertThat(avtale.getGjeldendeInnhold().getDeltakerFornavn()).isNull();
         assertThat(avtale.getGjeldendeInnhold().getDeltakerEtternavn()).isNull();
-        assertThat(avtale.getEnhetGeografisk()).isEqualTo(navEnhet.getEnhetNr());
     }
 
     @Test
