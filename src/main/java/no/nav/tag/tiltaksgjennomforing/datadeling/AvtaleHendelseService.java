@@ -75,7 +75,6 @@ public class AvtaleHendelseService {
             avtaleMeldingEntitetRepository.save(entitet);
         } catch (JsonProcessingException e) {
             log.error("Feil ved parsing av AvtaleHendelseMelding til json for avtale med id: {}", avtale.getId());
-            throw new RuntimeException(e);
         }
     }
 
@@ -88,7 +87,6 @@ public class AvtaleHendelseService {
             }
         } catch (JsonProcessingException e) {
             log.error("Feil ved parsing av AvtaleHendelseMelding til json for avtale med id: {}", avtale.getId());
-            throw new RuntimeException(e);
         }
     }
 }
