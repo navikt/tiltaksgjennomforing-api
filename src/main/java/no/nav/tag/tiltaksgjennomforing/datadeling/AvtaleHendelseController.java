@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.datadeling;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
-import no.nav.security.token.support.core.api.Unprotected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.UtviklerTilgangProperties;
 import org.springframework.http.HttpStatus;
