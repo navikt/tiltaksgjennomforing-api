@@ -22,7 +22,8 @@ import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 
 @Slf4j
 public class Veileder extends Avtalepart<NavIdent> {
-    static String ekstraTekstAvtleErGodkjentAvAllePartner = "Du må fullføre registreringen i Arena. Avtalen journalføres automatisk i Gosys.";
+    static String ekstraTekstAvtleErGodkjentAvAllePartner =
+            "Du må fullføre registreringen i Arena. Avtalen journalføres automatisk i Gosys.";
     private final TilgangskontrollService tilgangskontrollService;
 
     private final PersondataService persondataService;
@@ -70,8 +71,11 @@ public class Veileder extends Avtalepart<NavIdent> {
         } else if (queryParametre.getBedriftNr() != null) {
             return avtaleRepository.findAllByBedriftNrIn(Set.of(queryParametre.getBedriftNr()));
 
-        } else if (queryParametre.getNavEnhet() != null && queryParametre.getErUfordelt() != null && queryParametre.getErUfordelt()) {
-
+        } else if (
+                queryParametre.getNavEnhet() != null &&
+                        queryParametre.getErUfordelt() != null &&
+                        queryParametre.getErUfordelt()
+        ) {
             return avtaleRepository.findAllUfordelteByEnhet(queryParametre.getNavEnhet());
 
         } else if (queryParametre.getNavEnhet() != null) {
@@ -102,7 +106,11 @@ public class Veileder extends Avtalepart<NavIdent> {
         if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
             veilarbArenaClient.sjekkOppfølingStatus(avtale);
         }
-        avtale.godkjennForVeileder(getIdentifikator(), tilskuddsperiodeConfig.getPilotvirksomheter(), tilskuddsperiodeConfig.getPilotenheter());
+        avtale.godkjennForVeileder(
+                getIdentifikator(),
+                tilskuddsperiodeConfig.getPilotvirksomheter(),
+                tilskuddsperiodeConfig.getPilotenheter()
+        );
     }
 
     @Override
@@ -123,10 +131,18 @@ public class Veileder extends Avtalepart<NavIdent> {
         if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
             veilarbArenaClient.sjekkOppfølingStatus(avtale);
         }
-        avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn, tilskuddsperiodeConfig.getPilotvirksomheter(), tilskuddsperiodeConfig.getPilotenheter());
+        avtale.godkjennForVeilederOgDeltaker(
+                getIdentifikator(),
+                paVegneAvGrunn,
+                tilskuddsperiodeConfig.getPilotvirksomheter(),
+                tilskuddsperiodeConfig.getPilotenheter()
+        );
     }
 
-    public void godkjennForVeilederOgArbeidsgiver(GodkjentPaVegneAvArbeidsgiverGrunn paVegneAvArbeidsgiverGrunn, Avtale avtale) {
+    public void godkjennForVeilederOgArbeidsgiver(
+            GodkjentPaVegneAvArbeidsgiverGrunn paVegneAvArbeidsgiverGrunn,
+            Avtale avtale
+    ) {
         sjekkTilgang(avtale);
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
@@ -134,10 +150,18 @@ public class Veileder extends Avtalepart<NavIdent> {
         if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
             veilarbArenaClient.sjekkOppfølingStatus(avtale);
         }
-        avtale.godkjennForVeilederOgArbeidsgiver(getIdentifikator(), paVegneAvArbeidsgiverGrunn, tilskuddsperiodeConfig.getPilotvirksomheter(), tilskuddsperiodeConfig.getPilotenheter());
+        avtale.godkjennForVeilederOgArbeidsgiver(
+                getIdentifikator(),
+                paVegneAvArbeidsgiverGrunn,
+                tilskuddsperiodeConfig.getPilotvirksomheter(),
+                tilskuddsperiodeConfig.getPilotenheter()
+        );
     }
 
-    public void godkjennForVeilederOgDeltakerOgArbeidsgiver(GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn paVegneAvDeltakerOgArbeidsgiverGrunn, Avtale avtale) {
+    public void godkjennForVeilederOgDeltakerOgArbeidsgiver(
+            GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn paVegneAvDeltakerOgArbeidsgiverGrunn,
+            Avtale avtale
+    ) {
         sjekkTilgang(avtale);
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
@@ -145,7 +169,12 @@ public class Veileder extends Avtalepart<NavIdent> {
         if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
             veilarbArenaClient.sjekkOppfølingStatus(avtale);
         }
-        avtale.godkjennForVeilederOgDeltakerOgArbeidsgiver(getIdentifikator(), paVegneAvDeltakerOgArbeidsgiverGrunn, tilskuddsperiodeConfig.getPilotvirksomheter(), tilskuddsperiodeConfig.getPilotenheter());
+        avtale.godkjennForVeilederOgDeltakerOgArbeidsgiver(
+                getIdentifikator(),
+                paVegneAvDeltakerOgArbeidsgiverGrunn,
+                tilskuddsperiodeConfig.getPilotvirksomheter(),
+                tilskuddsperiodeConfig.getPilotenheter()
+        );
     }
 
     @Override
@@ -246,7 +275,10 @@ public class Veileder extends Avtalepart<NavIdent> {
         avtale.endreStillingsbeskrivelse(endreStillingsbeskrivelse, getIdentifikator());
     }
 
-    public void endreOppfølgingOgTilrettelegging(EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging, Avtale avtale) {
+    public void endreOppfølgingOgTilrettelegging(
+            EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging,
+            Avtale avtale
+    ) {
         sjekkTilgang(avtale);
         avtale.endreOppfølgingOgTilrettelegging(endreOppfølgingOgTilrettelegging, getIdentifikator());
     }
@@ -325,16 +357,26 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     public boolean sjekkOmPilot(SjekkOmPilotRequest sjekkOmPilotRequest) {
         boolean erPilot = false;
-        String enhetOppfolging = veilarbArenaClient.hentOppfølgingsEnhet(sjekkOmPilotRequest.getDeltakerFnr().asString());
+        String enhetOppfolging =
+                veilarbArenaClient.hentOppfølgingsEnhet(sjekkOmPilotRequest.getDeltakerFnr().asString());
         BedriftNr bedriftNr = sjekkOmPilotRequest.getBedriftNr();
         Tiltakstype tiltakstype = sjekkOmPilotRequest.getTiltakstype();
         List<BedriftNr> pilotvirksomheter = tilskuddsperiodeConfig.getPilotvirksomheter();
         List<String> pilotEnheter = tilskuddsperiodeConfig.getPilotenheter();
 
-        if(pilotvirksomheter.contains(bedriftNr) && (tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD)) {
+        if(
+                pilotvirksomheter.contains(bedriftNr) &&
+                        (tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD ||
+                                tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD)
+        ) {
             erPilot = true;
         }
-        if(enhetOppfolging != null && pilotEnheter.contains(enhetOppfolging) && (tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD)) {
+        if(
+                enhetOppfolging != null &&
+                        pilotEnheter.contains(enhetOppfolging) &&
+                        (tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD ||
+                                tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD)
+        ) {
             erPilot = true;
         }
         return erPilot;

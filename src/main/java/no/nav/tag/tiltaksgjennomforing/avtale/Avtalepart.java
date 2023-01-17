@@ -35,9 +35,18 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     abstract boolean harTilgangTilAvtale(Avtale avtale);
 
-    abstract List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre);
+    abstract List<Avtale> hentAlleAvtalerMedMuligTilgang(
+            AvtaleRepository avtaleRepository,
+            AvtalePredicate queryParametre
+    );
 
-    public List<Avtale> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, String sorteringskolonne, int skip, int limit) {
+    public List<Avtale> hentAlleAvtalerMedLesetilgang(
+            AvtaleRepository avtaleRepository,
+            AvtalePredicate queryParametre,
+            String sorteringskolonne,
+            int skip,
+            int limit
+    ) {
         return hentAlleAvtalerMedMuligTilgang(avtaleRepository, queryParametre).stream()
                 .filter(queryParametre).filter(avtale -> !avtale.isFeilregistrert())
                 .sorted(AvtaleSorterer.comparatorForAvtale(sorteringskolonne))
@@ -54,7 +63,11 @@ public abstract class Avtalepart<T extends Identifikator> {
         return avtale;
     }
 
-    public List<AvtaleInnhold> hentAvtaleVersjoner(AvtaleRepository avtaleRepository, AvtaleInnholdRepository avtaleInnholdRepository, UUID avtaleId) {
+    public List<AvtaleInnhold> hentAvtaleVersjoner(
+            AvtaleRepository avtaleRepository,
+            AvtaleInnholdRepository avtaleInnholdRepository,
+            UUID avtaleId
+    ) {
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
         sjekkTilgang(avtale);
@@ -96,7 +109,14 @@ public abstract class Avtalepart<T extends Identifikator> {
             throw new KanIkkeEndreException();
         }
         avvisDatoerTilbakeITid(avtale, endreAvtale.getStartDato(), endreAvtale.getSluttDato());
-        avtale.endreAvtale(sistEndret, endreAvtale, rolle(), tiltakstyperMedTilskuddsperioder, pilotvirksomheter, identifikator, pilotEnheter);
+        avtale.endreAvtale(
+                sistEndret,
+                endreAvtale,
+                rolle(),
+                tiltakstyperMedTilskuddsperioder,
+                pilotvirksomheter,
+                identifikator, pilotEnheter
+        );
     }
 
     protected void avvisDatoerTilbakeITid(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {}
@@ -107,7 +127,8 @@ public abstract class Avtalepart<T extends Identifikator> {
         if (!kanOppheveGodkjenninger(avtale)) {
             throw new KanIkkeOppheveException();
         }
-        boolean ingenParterHarGodkjent = !avtale.erGodkjentAvVeileder() && !avtale.erGodkjentAvArbeidsgiver() && !avtale.erGodkjentAvDeltaker();
+        boolean ingenParterHarGodkjent =
+                !avtale.erGodkjentAvVeileder() && !avtale.erGodkjentAvArbeidsgiver() && !avtale.erGodkjentAvDeltaker();
         if (ingenParterHarGodkjent) {
             throw new KanIkkeOppheveException();
         }
@@ -144,7 +165,11 @@ public abstract class Avtalepart<T extends Identifikator> {
         }
     }
 
-    protected void leggTilOppfølgingsenhet(Avtale avtale, Norg2Client norg2Client, VeilarbArenaClient veilarbArenaClient) {
+    protected void leggTilOppfølgingsenhet(
+            Avtale avtale,
+            Norg2Client norg2Client,
+            VeilarbArenaClient veilarbArenaClient
+    ) {
         String oppfølgingsEnhet = veilarbArenaClient.hentOppfølgingsEnhet(avtale.getDeltakerFnr().asString());
         avtale.setEnhetOppfolging(oppfølgingsEnhet);
         if (avtale.getEnhetOppfolging().equals(avtale.getEnhetGeografisk())) {
@@ -161,7 +186,10 @@ public abstract class Avtalepart<T extends Identifikator> {
         }
     }
 
-    public void sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(Avtale avtale, VeilarbArenaClient veilarbArenaClient) {
+    public void sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(
+            Avtale avtale,
+            VeilarbArenaClient veilarbArenaClient
+    ) {
         Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
         if (oppfølgingsstatus == null) return;
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
@@ -175,7 +203,8 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     public void hentOppfølgingStatus(Avtale avtale, VeilarbArenaClient veilarbArenaClient) {
         if(avtale.getVeilederNavIdent() == null) return;
-        Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.hentOppfølgingStatus(avtale.getDeltakerFnr().asString());
+        Oppfølgingsstatus oppfølgingsstatus =
+                veilarbArenaClient.hentOppfølgingStatus(avtale.getDeltakerFnr().asString());
         if (oppfølgingsstatus != null && (oppfølgingsstatus.getKvalifiseringsgruppe() != avtale.getKvalifiseringsgruppe() ||
                 oppfølgingsstatus.getFormidlingsgruppe() != avtale.getFormidlingsgruppe())) {
                 this.settOppfølgingsStatus(avtale, oppfølgingsstatus);

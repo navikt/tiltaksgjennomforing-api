@@ -204,7 +204,9 @@ public class AvtaleController {
             @CookieValue("innlogget-part") Avtalerolle innloggetPart
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        if(!avtalepart.rolle().equals(Avtalerolle.MENTOR)) throw new TiltaksgjennomforingException("Du må være mentor for å signere her");
+        if(!avtalepart.rolle().equals(Avtalerolle.MENTOR)){
+            throw new TiltaksgjennomforingException("Du må være mentor for å signere her");
+        }
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         avtalepart.godkjennAvtale(sistEndret, avtale);
         avtaleRepository.save(avtale);
@@ -361,9 +363,11 @@ public class AvtaleController {
     }
 
     @PostMapping("/{avtaleId}/forleng-dry-run")
-    public Avtale forlengAvtaleDryRun(@PathVariable("avtaleId") UUID avtaleId,
-                                      @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
-                                      @RequestBody ForlengAvtale forlengAvtale) {
+    public Avtale forlengAvtaleDryRun(
+            @PathVariable("avtaleId") UUID avtaleId,
+            @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
+            @RequestBody ForlengAvtale forlengAvtale
+    ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
@@ -373,8 +377,7 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/endre-maal")
     @Transactional
-    public void endreMål(@PathVariable("avtaleId") UUID avtaleId,
-                         @RequestBody EndreMål endreMål) {
+    public void endreMål(@PathVariable("avtaleId") UUID avtaleId, @RequestBody EndreMål endreMål) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         veileder.endreMål(endreMål, avtale);
@@ -383,8 +386,10 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/endre-inkluderingstilskudd")
     @Transactional
-    public void endreInkluderingstilskudd(@PathVariable("avtaleId") UUID avtaleId,
-                         @RequestBody EndreInkluderingstilskudd endreInkluderingstilskudd) {
+    public void endreInkluderingstilskudd(
+            @PathVariable("avtaleId") UUID avtaleId,
+            @RequestBody EndreInkluderingstilskudd endreInkluderingstilskudd
+    ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         veileder.endreInkluderingstilskudd(endreInkluderingstilskudd, avtale);
@@ -415,8 +420,7 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/endre-om-mentor")
     @Transactional
-    public void endreOmMentor(@PathVariable("avtaleId") UUID avtaleId,
-                                                 @RequestBody EndreOmMentor endreOmMentor) {
+    public void endreOmMentor(@PathVariable("avtaleId") UUID avtaleId, @RequestBody EndreOmMentor endreOmMentor) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         veileder.endreOmMentor(endreOmMentor, avtale);
@@ -580,7 +584,10 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/avslag-tilskuddsperiode")
     @Transactional
-    public void avslåTilskuddsperiode(@PathVariable("avtaleId") UUID avtaleId, @RequestBody AvslagRequest avslagRequest) {
+    public void avslåTilskuddsperiode(
+            @PathVariable("avtaleId") UUID avtaleId,
+            @RequestBody AvslagRequest avslagRequest
+    ) {
         Beslutter beslutter = innloggingService.hentBeslutter();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         beslutter.avslåTilskuddsperiode(avtale, avslagRequest.getAvslagsårsaker(), avslagRequest.getAvslagsforklaring());
