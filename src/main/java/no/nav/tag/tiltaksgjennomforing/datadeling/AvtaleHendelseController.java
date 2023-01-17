@@ -16,8 +16,7 @@ import org.springframework.web.client.HttpClientErrorException;
 @RestController
 @RequestMapping("/utvikler-admin/avtale-hendelse")
 @RequiredArgsConstructor
-//@ProtectedWithClaims(issuer = "aad")
-@Unprotected
+@ProtectedWithClaims(issuer = "aad")
 @Slf4j
 public class AvtaleHendelseController {
 
@@ -26,7 +25,7 @@ public class AvtaleHendelseController {
     private final AvtaleHendelseService avtaleHendelseService;
     private void sjekkTilgang() {
         if (!tokenUtils.harAdGruppe(utviklerTilgangProperties.getGruppeTilgang())) {
-            //throw new HttpClientErrorException(HttpStatus.FORBIDDEN);
+            throw new HttpClientErrorException(HttpStatus.FORBIDDEN);
         }
     }
 
