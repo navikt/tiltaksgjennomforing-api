@@ -141,6 +141,7 @@ public class AvtaleController {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         avtalepart.hentOppfølgingStatus(avtale, veilarbArenaClient);
+
         avtalepart.endreAvtale(
                 sistEndret,
                 endreAvtale,

@@ -56,6 +56,8 @@ public abstract class Avtalepart<T extends Identifikator> {
                 .collect(Collectors.toList());
     }
 
+
+
     public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
@@ -96,7 +98,13 @@ public abstract class Avtalepart<T extends Identifikator> {
         }
     }
 
-    public void endreAvtale(
+    protected void avtalePartKanEndreAvtale() {
+        if (!kanEndreAvtale()) {
+            throw new KanIkkeEndreException();
+        }
+    }
+
+    protected void sjekkTilgangOgEndreAvtale(
             Instant sistEndret,
             EndreAvtale endreAvtale,
             Avtale avtale,
@@ -105,9 +113,7 @@ public abstract class Avtalepart<T extends Identifikator> {
             List<String> pilotEnheter
     ) {
         sjekkTilgang(avtale);
-        if (!kanEndreAvtale()) {
-            throw new KanIkkeEndreException();
-        }
+        avtalePartKanEndreAvtale();
         avvisDatoerTilbakeITid(avtale, endreAvtale.getStartDato(), endreAvtale.getSluttDato());
         avtale.endreAvtale(
                 sistEndret,
@@ -118,6 +124,26 @@ public abstract class Avtalepart<T extends Identifikator> {
                 identifikator, pilotEnheter
         );
     }
+
+    public void endreAvtale(
+            Instant sistEndret,
+            EndreAvtale endreAvtale,
+            Avtale avtale,
+            EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder,
+            List<BedriftNr> pilotvirksomheter,
+            List<String> pilotEnheter
+    ) {
+        sjekkTilgangOgEndreAvtale(
+                sistEndret,
+                endreAvtale,
+                avtale,
+                tiltakstyperMedTilskuddsperioder,
+                pilotvirksomheter,
+                pilotEnheter
+        );
+
+    }
+
 
     protected void avvisDatoerTilbakeITid(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {}
 

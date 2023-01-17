@@ -204,6 +204,31 @@ public class Veileder extends Avtalepart<NavIdent> {
         avtale.overtaAvtale(this.getIdentifikator());
     }
 
+    @Override
+    public void endreAvtale(
+            Instant sistEndret,
+            EndreAvtale endreAvtale,
+            Avtale avtale,
+            EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder,
+            List<BedriftNr> pilotvirksomheter,
+            List<String> pilotEnheter
+    ) {
+        sjekkTilgangOgEndreAvtale(
+                sistEndret,
+                endreAvtale,
+                avtale,
+                tiltakstyperMedTilskuddsperioder,
+                pilotvirksomheter,
+                pilotEnheter
+        );
+        leggTilGeografiskOgOppfølgingsenhet(
+                avtale,
+                hentPersondata(avtale.getDeltakerFnr()),
+                norg2Client,
+                veilarbArenaClient
+        );
+    }
+
     private PdlRespons hentPersondata(Fnr deltakerFnr) {
         final PdlRespons persondata = persondataService.hentPersondata(deltakerFnr);
         boolean erKode6 = persondataService.erKode6(persondata);
