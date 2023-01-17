@@ -163,10 +163,9 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     public void sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(Avtale avtale, VeilarbArenaClient veilarbArenaClient) {
         Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
-        if (oppfølgingsstatus != null) {
-            this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
-            this.settLonntilskuddProsentsats(avtale);
-        }
+        if (oppfølgingsstatus == null) return;
+        this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
+        this.settLonntilskuddProsentsats(avtale);
     }
 
     public void sjekkOgHentOppfølgingStatus(Avtale avtale, VeilarbArenaClient veilarbArenaClient) {
@@ -175,14 +174,13 @@ public abstract class Avtalepart<T extends Identifikator> {
     }
 
     public void hentOppfølgingStatus(Avtale avtale, VeilarbArenaClient veilarbArenaClient) {
-        if(avtale.getVeilederNavIdent() != null) {
-            Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.hentOppfølgingStatus(avtale.getDeltakerFnr().asString());
-            if (oppfølgingsstatus != null &&
-                    (oppfølgingsstatus.getKvalifiseringsgruppe() != avtale.getKvalifiseringsgruppe() ||
-                            oppfølgingsstatus.getFormidlingsgruppe() != avtale.getFormidlingsgruppe())) {
+        if(avtale.getVeilederNavIdent() == null) return;
+        Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.hentOppfølgingStatus(avtale.getDeltakerFnr().asString());
+        if (oppfølgingsstatus != null && (oppfølgingsstatus.getKvalifiseringsgruppe() != avtale.getKvalifiseringsgruppe() ||
+                oppfølgingsstatus.getFormidlingsgruppe() != avtale.getFormidlingsgruppe())) {
                 this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
             }
-        }
+
     }
 
     private void settOppfølgingsStatus(Avtale avtale, Oppfølgingsstatus oppfølgingsstatus) {
