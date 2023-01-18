@@ -25,12 +25,18 @@ public class AvtaleArenaMigreringTest {
     @Test
     public void avtale_uten_tilskuddsperioder_får_generert_nye_ved_migrering() {
         Now.fixedDate(LocalDate.of(2022, 11, 15));
-        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate().minusMonths(6), Now.localDate().plusMonths(12));
+        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate()
+                .minusMonths(6), Now.localDate().plusMonths(12));
         avtale.getTilskuddPeriode().clear();
         assertThat(avtale.getTilskuddPeriode()).isEmpty();
         avtale.nyeTilskuddsperioderVedMigreringFraArena(LocalDate.of(2023, 02, 01));
         System.out.println("Antall " + avtale.getTilskuddPeriode().size());
-        avtale.getTilskuddPeriode().forEach(periode -> System.out.println(periode.getStatus() + " " + periode.getStartDato() + " " + periode.getSluttDato() + " " + periode.getLonnstilskuddProsent()));
+        avtale.getTilskuddPeriode().forEach(periode -> System.out.println(
+                periode.getStatus() + " " +
+                        periode.getStartDato() + " " +
+                        periode.getSluttDato() + " " +
+                        periode.getLonnstilskuddProsent()
+        ));
         assertThat(avtale.getTilskuddPeriode()).isNotEmpty();
         Now.resetClock();
     }
@@ -38,11 +44,14 @@ public class AvtaleArenaMigreringTest {
     @Test
     public void tilskuddsperioder_etter_migrering_med_status_behandlet_i_arena() {
         Now.fixedDate(LocalDate.of(2022, 11, 15));
-        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate().minusMonths(6), Now.localDate().plusMonths(12));
+        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate()
+                .minusMonths(6), Now.localDate().plusMonths(12));
         avtale.getTilskuddPeriode().clear();
         avtale.nyeTilskuddsperioderVedMigreringFraArena(LocalDate.of(2023, 02, 01));
 
-        TilskuddPeriode førsteUbehandlet = avtale.getTilskuddPeriode().stream().filter(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET).findFirst().get();
+        TilskuddPeriode førsteUbehandlet = avtale.getTilskuddPeriode().stream()
+                .filter(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET)
+                .findFirst().get();
         assertThat(førsteUbehandlet.getStartDato()).isEqualTo(LocalDate.of(2023,02,01));
         assertThat(førsteUbehandlet.getStatus()).isEqualTo(TilskuddPeriodeStatus.UBEHANDLET);
 
@@ -70,7 +79,12 @@ public class AvtaleArenaMigreringTest {
         assertThat(avtale.getTilskuddPeriode()).isEmpty();
 
         avtale.nyeTilskuddsperioderVedMigreringFraArena(LocalDate.of(2023, 02, 01));
-        avtale.getTilskuddPeriode().forEach(periode -> System.out.println(periode.getStatus() + " " + periode.getStartDato() + " " + periode.getSluttDato() + " " + periode.getLonnstilskuddProsent()));
+        avtale.getTilskuddPeriode().forEach(periode -> System.out.println(
+                periode.getStatus() + " " +
+                        periode.getStartDato() + " " +
+                        periode.getSluttDato() + " " +
+                        periode.getLonnstilskuddProsent()
+        ));
         assertThat(avtale.getTilskuddPeriode()).isNotEmpty();
         Now.resetClock();
     }
@@ -78,7 +92,8 @@ public class AvtaleArenaMigreringTest {
     @Test
     public void tilskuddsperioder_etter_migrering_ikke_godkjent_avtale_gir_ubehandlede_perioder() {
         Now.fixedDate(LocalDate.of(2022, 11, 15));
-        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttEtterregistrering(Now.localDate().minusMonths(6), Now.localDate().plusMonths(12));
+        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttEtterregistrering(Now.localDate()
+                .minusMonths(6), Now.localDate().plusMonths(12));
 
         avtale.getTilskuddPeriode().clear();
         avtale.nyeTilskuddsperioderVedMigreringFraArena(LocalDate.of(2023, 02, 01));
@@ -86,7 +101,8 @@ public class AvtaleArenaMigreringTest {
         // Alle perioder skal være ubehandlet
         avtale.getTilskuddPeriode()
                 .stream()
-                .forEach(tilskuddPeriode -> assertThat(tilskuddPeriode.getStatus()).isEqualTo(TilskuddPeriodeStatus.UBEHANDLET));
+                .forEach(tilskuddPeriode -> assertThat(tilskuddPeriode.getStatus())
+                        .isEqualTo(TilskuddPeriodeStatus.UBEHANDLET));
 
         Now.resetClock();
     }

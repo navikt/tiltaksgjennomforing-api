@@ -353,9 +353,11 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/forleng")
     @Transactional
-    public void forlengAvtale(@PathVariable("avtaleId") UUID avtaleId,
-                              @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
-                              @RequestBody ForlengAvtale forlengAvtale) {
+    public void forlengAvtale(
+            @PathVariable("avtaleId") UUID avtaleId,
+            @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
+            @RequestBody ForlengAvtale forlengAvtale
+    ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
@@ -543,7 +545,7 @@ public class AvtaleController {
     public void settNyVeilederPåAvtale(@PathVariable("avtaleId") UUID avtaleId) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        veileder.sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
+        veileder.hentOppfølgingFraArenaclient(avtale, veilarbArenaClient);
         veileder.overtaAvtale(avtale);
         avtaleRepository.save(avtale);
     }

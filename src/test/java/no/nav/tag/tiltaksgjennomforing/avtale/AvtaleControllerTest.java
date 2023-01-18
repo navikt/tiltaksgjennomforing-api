@@ -275,12 +275,27 @@ public class AvtaleControllerTest {
     @Test
     public void endreAvtaleSkalReturnereOkHvisInnloggetPersonErVeileder() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        Veileder veileder = new Veileder(enNavIdent(), tilgangskontrollService, persondataService, norg2Client, Collections.emptySet(), new SlettemerkeProperties(), new TilskuddsperiodeConfig(), false, veilarbArenaClient);
+        Veileder veileder = new Veileder(
+                enNavIdent(),
+                tilgangskontrollService,
+                persondataService,
+                norg2Client,
+                Collections.emptySet(),
+                new SlettemerkeProperties(),
+                new TilskuddsperiodeConfig(),
+                false,
+                veilarbArenaClient
+        );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(any(NavIdent.class), any(Fnr.class))).thenReturn(true);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         when(avtaleRepository.save(avtale)).thenReturn(avtale);
-        ResponseEntity svar = avtaleController.endreAvtale(avtale.getId(), avtale.getSistEndret(), TestData.ingenEndring(), Avtalerolle.VEILEDER);
+        ResponseEntity svar = avtaleController.endreAvtale(
+                avtale.getId(),
+                avtale.getSistEndret(),
+                TestData.ingenEndring(),
+                Avtalerolle.VEILEDER
+        );
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -289,7 +304,12 @@ public class AvtaleControllerTest {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         værInnloggetSom(TestData.enArbeidsgiver());
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        assertThatThrownBy(() -> avtaleController.endreAvtale(avtale.getId(), avtale.getSistEndret(), TestData.ingenEndring(), Avtalerolle.ARBEIDSGIVER)).isInstanceOf(TilgangskontrollException.class);
+        assertThatThrownBy(() -> avtaleController.endreAvtale(
+                avtale.getId(),
+                avtale.getSistEndret(),
+                TestData.ingenEndring(),
+                Avtalerolle.ARBEIDSGIVER)
+        ).isInstanceOf(TilgangskontrollException.class);
     }
 
     @Test

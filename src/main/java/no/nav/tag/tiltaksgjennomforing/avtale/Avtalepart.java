@@ -7,6 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.enhet.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -179,7 +180,8 @@ public abstract class Avtalepart<T extends Identifikator> {
             VeilarbArenaClient veilarbArenaClient
     ){
         this.leggTilGeografiskEnhet(avtale, pdlRespons, norg2Client);
-        this.leggTilOppfølgingsenhet(avtale, norg2Client, veilarbArenaClient);
+        this.leggTilOppfølgingsenhet(avtale, veilarbArenaClient);
+        this.setOppfolgingEnhetsnavnFraNorg(avtale, norg2Client);
     }
 
     protected void leggTilGeografiskEnhet(Avtale avtale, PdlRespons pdlRespons, Norg2Client norg2Client) {
@@ -191,18 +193,16 @@ public abstract class Avtalepart<T extends Identifikator> {
         }
     }
 
-    protected void leggTilOppfølgingsenhet(
-            Avtale avtale,
-            Norg2Client norg2Client,
-            VeilarbArenaClient veilarbArenaClient
-    ) {
+    protected void leggTilOppfølgingsenhet(Avtale avtale, VeilarbArenaClient veilarbArenaClient) {
         String oppfølgingsEnhet = veilarbArenaClient.hentOppfølgingsEnhet(avtale.getDeltakerFnr().asString());
+        setEnhetOppfolging(avtale, oppfølgingsEnhet);
+    }
+
+    protected void setEnhetOppfolging(Avtale avtale, String oppfølgingsEnhet) {
         avtale.setEnhetOppfolging(oppfølgingsEnhet);
         if (avtale.getEnhetOppfolging().equals(avtale.getEnhetGeografisk())) {
             avtale.setEnhetsnavnOppfolging(avtale.getEnhetsnavnGeografisk());
-            return;
         }
-        setOppfolgingEnhetsnavnFraNorg(avtale, norg2Client);
     }
 
     public void setOppfolgingEnhetsnavnFraNorg(Avtale avtale, Norg2Client norg2Client) {
@@ -212,7 +212,7 @@ public abstract class Avtalepart<T extends Identifikator> {
         }
     }
 
-    public void sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(
+    public void hentOppfølgingFraArenaclient(
             Avtale avtale,
             VeilarbArenaClient veilarbArenaClient
     ) {

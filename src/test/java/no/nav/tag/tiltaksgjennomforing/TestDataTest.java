@@ -10,9 +10,11 @@ class TestDataTest {
   @Test
   void endring_på_alle_TestData_endre_felter_så_ingen_er_Null_felter() {
     EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
+
     TestData.endreMaalInfo(endreAvtale);
     TestData.endreMentorInfo(endreAvtale);
     TestData.endreInkluderingstilskuddInfo(endreAvtale);
+
     assertThat(endreAvtale.getMaal()).isNotEmpty();
     assertThat(endreAvtale.getInkluderingstilskuddsutgift()).isNotEmpty();
     assertThat(endreAvtale).hasNoNullFieldsOrProperties();

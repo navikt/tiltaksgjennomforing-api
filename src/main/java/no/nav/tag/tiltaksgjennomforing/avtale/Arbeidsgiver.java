@@ -18,16 +18,29 @@ import java.util.stream.Collectors;
 
 
 public class Arbeidsgiver extends Avtalepart<Fnr> {
+    private final PersondataService persondataService;
+    private final Norg2Client norg2Client;
+    private final VeilarbArenaClient veilarbArenaClient;
     static String tekstAvtaleVenterPaaDinGodkjenning = "Deltakeren trenger ikke å godkjenne avtalen før du gjør det. ";
     static String ekstraTekstAvtaleVenterPaaDinGodkjenning = "Veilederen skal godkjenne til slutt.";
     static String tekstTiltaketErAvsluttet = "Hvis du har spørsmål må du kontakte NAV.";
     private final Map<BedriftNr, Collection<Tiltakstype>> tilganger;
     private final Set<AltinnReportee> altinnOrganisasjoner;
 
-    public Arbeidsgiver(Fnr identifikator, Set<AltinnReportee> altinnOrganisasjoner, Map<BedriftNr, Collection<Tiltakstype>> tilganger) {
+    public Arbeidsgiver(
+            Fnr identifikator,
+            Set<AltinnReportee> altinnOrganisasjoner,
+            Map<BedriftNr, Collection<Tiltakstype>> tilganger,
+            PersondataService persondataService,
+            Norg2Client norg2Client,
+            VeilarbArenaClient veilarbArenaClient
+    ) {
         super(identifikator);
         this.altinnOrganisasjoner = altinnOrganisasjoner;
         this.tilganger = tilganger;
+        this.persondataService = persondataService;
+        this.norg2Client = norg2Client;
+        this.veilarbArenaClient = veilarbArenaClient;
     }
 
     private static boolean avbruttForMerEnn12UkerSiden(Avtale avtale) {
@@ -138,8 +151,15 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     @Override
-    public List<Avtale> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, String sorteringskolonne, int skip, int limit) {
-        return super.hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre, sorteringskolonne, skip, limit).stream().map(Arbeidsgiver::fjernAvbruttGrunn).collect(Collectors.toList());
+    public List<Avtale> hentAlleAvtalerMedLesetilgang(
+            AvtaleRepository avtaleRepository,
+            AvtalePredicate queryParametre,
+            String sorteringskolonne,
+            int skip,
+            int limit
+    ) {
+        return super.hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre, sorteringskolonne, skip, limit)
+                .stream().map(Arbeidsgiver::fjernAvbruttGrunn).collect(Collectors.toList());
     }
 
     public List<Avtale> hentAvtalerForMinsideArbeidsgiver(AvtaleRepository avtaleRepository, BedriftNr bedriftNr) {
@@ -155,6 +175,12 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
             throw new TilgangskontrollException("Har ikke tilgang på tiltak i valgt bedrift");
         }
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(opprettAvtale);
+        leggTilGeografiskOgOppfølgingsenhet(
+                avtale,
+                persondataService.hentPersondata(avtale.getDeltakerFnr()),
+                norg2Client,
+                veilarbArenaClient
+        );
         return avtale;
     }
 
@@ -170,8 +196,15 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     public Avtale opprettMentorAvtale(OpprettMentorAvtale opprettMentorAvtale) {
         if (!harTilgangPåTiltakIBedrift(opprettMentorAvtale.getBedriftNr(), opprettMentorAvtale.getTiltakstype())) {
             throw new TilgangskontrollException("Har ikke tilgang på tiltak i valgt bedrift");
-        }
+        };
+
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(opprettMentorAvtale);
+        leggTilGeografiskOgOppfølgingsenhet(
+                avtale,
+                persondataService.hentPersondata(avtale.getDeltakerFnr()),
+                norg2Client,
+                veilarbArenaClient
+        );
         return avtale;
     }
 }

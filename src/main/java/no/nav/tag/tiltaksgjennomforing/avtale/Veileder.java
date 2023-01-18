@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentGeoLokasjonFraPdlRespons;
 import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
 import java.sql.Date;
@@ -13,12 +14,14 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import org.springframework.cache.annotation.Cacheable;
 
 @Slf4j
 public class Veileder extends Avtalepart<NavIdent> {
@@ -221,12 +224,64 @@ public class Veileder extends Avtalepart<NavIdent> {
                 pilotvirksomheter,
                 pilotEnheter
         );
+        PdlRespons pdlRespons = hentPersondataFraPdl(avtale.getDeltakerFnr());
         leggTilGeografiskOgOppfølgingsenhet(
                 avtale,
-                hentPersondata(avtale.getDeltakerFnr()),
+                pdlRespons,
                 norg2Client,
                 veilarbArenaClient
         );
+        hentGeoOgOppfølgingsenhet(avtale, pdlRespons);
+    }
+
+    private void hentGeoOgOppfølgingsenhet(Avtale avtale, PdlRespons pdlRespons) {
+        this.leggTilGeoEnhet(avtale, pdlRespons);
+        this.leggTilOppfølgingEnhet(avtale);
+        this.leggTilOppfølgingEnhetsnavnFraNorg2(avtale);
+    }
+
+    private void leggTilGeoEnhet(Avtale avtale, PdlRespons pdlRespons) {
+        Norg2GeoResponse norg2GeoResponse = hentGeoLokasjonFraPdlRespons(pdlRespons)
+                .map(enhet -> hentGeoEnhetFraNorg2(enhet, avtale.getDeltakerFnr())).orElse(null);
+        if (norg2GeoResponse != null) {
+            avtale.setEnhetGeografisk(norg2GeoResponse.getEnhetNr());
+            avtale.setEnhetsnavnGeografisk(norg2GeoResponse.getNavn());
+        }
+    }
+
+    private void leggTilOppfølgingEnhet(Avtale avtale) {
+        String oppfølgingsEnhet = this.hentOppfølgingsenhet(avtale.getDeltakerFnr());
+        setEnhetOppfolging(avtale, oppfølgingsEnhet);
+    }
+
+    private void leggTilOppfølgingEnhetsnavnFraNorg2(Avtale avtale) {
+        final Norg2OppfølgingResponse response = hentOppfølgingsEnhetsnavn(
+                avtale.getEnhetOppfolging(),
+                avtale.getDeltakerFnr()
+        );
+        if (response != null) {
+            avtale.setEnhetsnavnOppfolging(response.getNavn());
+        }
+    }
+
+    @Cacheable(value = "oppfolgingsenhet", key = "deltakerFnr.asString()")
+    public String hentOppfølgingsenhet(Fnr deltakerFnr) {
+        return veilarbArenaClient.hentOppfølgingsEnhet(deltakerFnr.asString());
+    }
+
+    @Cacheable(value = "oppfolgingnavn", key = "deltakerFnr.asString()")
+    public Norg2OppfølgingResponse hentOppfølgingsEnhetsnavn(String enhetOppfolging, Fnr deltakerFnr) {
+        return norg2Client.hentOppfølgingsEnhetsnavn(enhetOppfolging);
+    }
+
+    @Cacheable(value = "geoenhet", key = "deltakerFnr.asString()")
+    public Norg2GeoResponse hentGeoEnhetFraNorg2(String geoTilknytning, Fnr deltakerFnr) {
+        return norg2Client.hentGeografiskEnhet(geoTilknytning);
+    }
+
+    @Cacheable(value = "pdlResponse", key = "deltakerFnr.asString()")
+    public PdlRespons hentPersondataFraPdl(Fnr deltakerFnr) {
+        return hentPersondata(deltakerFnr);
     }
 
     private PdlRespons hentPersondata(Fnr deltakerFnr) {
@@ -251,7 +306,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         Avtale avtale = Avtale.veilederOppretterAvtale(opprettAvtale, getIdentifikator());
         avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(persondata));
         leggTilGeografiskOgOppfølgingsenhet(avtale, persondata, norg2Client, veilarbArenaClient);
-        sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
+        hentOppfølgingFraArenaclient(avtale, veilarbArenaClient);
         return avtale;
     }
 
@@ -261,7 +316,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         Avtale avtale = Avtale.veilederOppretterAvtale(opprettMentorAvtale, getIdentifikator());
         avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(persondata));
         leggTilGeografiskOgOppfølgingsenhet(avtale, persondata, norg2Client, veilarbArenaClient);
-        sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
+        hentOppfølgingFraArenaclient(avtale, veilarbArenaClient);
         return avtale;
     }
 
