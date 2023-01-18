@@ -42,6 +42,9 @@ public class AvtaleHendelseService {
                 lagMelding(avtale);
                 antallSendt.getAndIncrement();
             }
+            if(antallSendt.get() % 100 == 0) {
+                log.info("Gått igjennom {} antall avtaler", antallSendt.get());
+            }
         });
         log.info("Sendt totalt {} antall hendelsemeldinger", antallSendt.get());
     }
@@ -58,6 +61,9 @@ public class AvtaleHendelseService {
             if(skalSendes(avtale)) {
                 lagMeldingDRYRun(avtale);
                 antallSendt.getAndIncrement();
+            }
+            if(antallSendt.get() % 100 == 0) {
+                log.info("Gått igjennom {} antall avtaler", antallSendt.get());
             }
         });
         log.info("DRY RUN - Sendt totalt {} antall hendelsemeldinger", antallSendt.get());
