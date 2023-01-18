@@ -7,7 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
+import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import no.nav.tag.tiltaksgjennomforing.varsel.VarselRepository;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,7 @@ public class AvtaleHendelseService {
 
     private final AvtaleRepository avtaleRepository;
     private final AvtaleMeldingEntitetRepository avtaleMeldingEntitetRepository;
+    private final VarselRepository varselRepository;
 
     private final ObjectMapper objectMapper;
 
@@ -32,7 +35,7 @@ public class AvtaleHendelseService {
 
         log.info("Henter ALLE avtaler for å lage patchehendelsemeldinger");
         List<Avtale> alleAvtaler = avtaleRepository.findAll(); // /o\ \o/
-        log.info("Alle avtaler er hentet, looper og sender hendelsemeldinger");
+        log.info("Alle avtaler er hentet, totalt {} antall avtaler, looper og sender hendelsemeldinger", alleAvtaler.size());
 
         alleAvtaler.forEach(avtale -> {
             if(skalSendes(avtale)) {
@@ -49,7 +52,7 @@ public class AvtaleHendelseService {
 
         log.info("DRY RUN - Henter ALLE avtaler for å lage patchehendelsemeldinger");
         List<Avtale> alleAvtaler = avtaleRepository.findAll(); // /o\ \o/
-        log.info("DRY RUN - Alle avtaler er hentet, looper og sender hendelsemeldinger");
+        log.info("DRY RUN - Alle avtaler er hentet, det ble hele {} avtaler. looper og sender hendelsemeldinger", alleAvtaler.size());
 
         alleAvtaler.forEach(avtale -> {
             if(skalSendes(avtale)) {
@@ -66,7 +69,7 @@ public class AvtaleHendelseService {
     }
 
     private void lagMelding(Avtale avtale) {
-        var melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), null, AvtaleHendelseUtførtAvRolle.SYSTEM, HendelseType.STATUSENDRING);
+        var melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), new Identifikator("system"), AvtaleHendelseUtførtAvRolle.SYSTEM, HendelseType.STATUSENDRING);
         UUID meldingId = UUID.randomUUID();
         LocalDateTime tidspunkt = Now.localDateTime();
         try {
@@ -79,11 +82,11 @@ public class AvtaleHendelseService {
     }
 
     private void lagMeldingDRYRun(Avtale avtale) {
-        var melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), null, AvtaleHendelseUtførtAvRolle.SYSTEM, HendelseType.STATUSENDRING);
+        var melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), new Identifikator("system"), AvtaleHendelseUtførtAvRolle.SYSTEM, HendelseType.STATUSENDRING);
         try {
             String meldingSomString = objectMapper.writeValueAsString(melding);
-            if(meldingSomString.length() != 0) {
-                log.info("Melding ble generert");
+            if(meldingSomString == null ) {
+                log.info("Melding ble ikke generert");
             }
         } catch (JsonProcessingException e) {
             log.error("Feil ved parsing av AvtaleHendelseMelding til json for avtale med id: {}", avtale.getId());
