@@ -29,7 +29,6 @@ public class AvtaleHendelseController {
     }
 
     @PostMapping("dry-send-melding-alle-avtaler")
-    @Transactional
     public void drySendMeldingAlleAvtaler() {
         log.info("DRY - Sender alle avtaler som hendelsemeldinger på topic");
         sjekkTilgang();
