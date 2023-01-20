@@ -898,6 +898,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if(!tilskuddPeriode.isEmpty()) {
             return false;
         }
+        if (Utils.erNoenTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato(), gjeldendeInnhold.getSumLonnstilskudd())) {
+            log.info("Avtale {} er ikke fylt ut med nødvendige felter for generering av tilskuddsperioder", id);
+            return false;
+        }
         // Statuser som skal få tilskuddsperioder
         Status status = statusSomEnum();
         if(status == Status.ANNULLERT || status == Status.AVSLUTTET || status == Status.AVBRUTT) {
