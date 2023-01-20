@@ -915,7 +915,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
      * - Tar ikke høyde for perioder med lengde tre måneder som i arena
      * -
      */
-    public boolean nyeTilskuddsperioderVedMigreringFraArena(LocalDate migreringsDato) {
+    public boolean nyeTilskuddsperioderVedMigreringFraArena(LocalDate migreringsDato, boolean dryRun) {
         if(sjekkArenaMigrering()) {
             List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioder(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
             tilskuddsperioder.forEach(periode -> {
@@ -926,7 +926,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
                 }
             });
             fikseLøpenumre(tilskuddsperioder, 1);
-            tilskuddPeriode.addAll(tilskuddsperioder);
+            if(!dryRun) {
+                tilskuddPeriode.addAll(tilskuddsperioder);
+            }
             return true;
         } else {
             log.info("Avtale {} har allerede tilskuddsperioder eller en status som ikke skal ha perioder, genererer ikke nye", id);

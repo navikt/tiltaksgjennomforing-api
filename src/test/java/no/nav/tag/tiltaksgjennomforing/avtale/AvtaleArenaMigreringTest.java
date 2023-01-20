@@ -16,7 +16,7 @@ public class AvtaleArenaMigreringTest {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
 
         int antallPerioderFørKall = avtale.getTilskuddPeriode().size();
-        avtale.nyeTilskuddsperioderVedMigreringFraArena(Now.localDate());
+        avtale.nyeTilskuddsperioderVedMigreringFraArena(Now.localDate(), false);
         int antallPerioderEtterKall = avtale.getTilskuddPeriode().size();
 
         assertThat(antallPerioderFørKall).isEqualTo(antallPerioderEtterKall);
@@ -28,7 +28,7 @@ public class AvtaleArenaMigreringTest {
         Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate().minusMonths(6), Now.localDate().plusMonths(12));
         avtale.getTilskuddPeriode().clear();
         assertThat(avtale.getTilskuddPeriode()).isEmpty();
-        avtale.nyeTilskuddsperioderVedMigreringFraArena(LocalDate.of(2023, 02, 01));
+        avtale.nyeTilskuddsperioderVedMigreringFraArena(LocalDate.of(2023, 02, 01), false);
         System.out.println("Antall " + avtale.getTilskuddPeriode().size());
         avtale.getTilskuddPeriode().forEach(periode -> System.out.println(periode.getStatus() + " " + periode.getStartDato() + " " + periode.getSluttDato() + " " + periode.getLonnstilskuddProsent()));
         assertThat(avtale.getTilskuddPeriode()).isNotEmpty();
@@ -40,7 +40,7 @@ public class AvtaleArenaMigreringTest {
         Now.fixedDate(LocalDate.of(2022, 11, 15));
         Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate().minusMonths(6), Now.localDate().plusMonths(12));
         avtale.getTilskuddPeriode().clear();
-        avtale.nyeTilskuddsperioderVedMigreringFraArena(LocalDate.of(2023, 02, 01));
+        avtale.nyeTilskuddsperioderVedMigreringFraArena(LocalDate.of(2023, 02, 01), false);
 
         TilskuddPeriode førsteUbehandlet = avtale.getTilskuddPeriode().stream().filter(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET).findFirst().get();
         assertThat(førsteUbehandlet.getStartDato()).isEqualTo(LocalDate.of(2023,02,01));
@@ -69,7 +69,7 @@ public class AvtaleArenaMigreringTest {
         veileder.endreAvtale(Instant.now(), endreAvtale, avtale, EnumSet.noneOf(Tiltakstype.class), List.of(), List.of());
         assertThat(avtale.getTilskuddPeriode()).isEmpty();
 
-        avtale.nyeTilskuddsperioderVedMigreringFraArena(LocalDate.of(2023, 02, 01));
+        avtale.nyeTilskuddsperioderVedMigreringFraArena(LocalDate.of(2023, 02, 01), false);
         avtale.getTilskuddPeriode().forEach(periode -> System.out.println(periode.getStatus() + " " + periode.getStartDato() + " " + periode.getSluttDato() + " " + periode.getLonnstilskuddProsent()));
         assertThat(avtale.getTilskuddPeriode()).isNotEmpty();
         Now.resetClock();
@@ -81,7 +81,7 @@ public class AvtaleArenaMigreringTest {
         Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttEtterregistrering(Now.localDate().minusMonths(6), Now.localDate().plusMonths(12));
 
         avtale.getTilskuddPeriode().clear();
-        avtale.nyeTilskuddsperioderVedMigreringFraArena(LocalDate.of(2023, 02, 01));
+        avtale.nyeTilskuddsperioderVedMigreringFraArena(LocalDate.of(2023, 02, 01), false);
 
         // Alle perioder skal være ubehandlet
         avtale.getTilskuddPeriode()
