@@ -899,7 +899,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             return false;
         }
         if (Utils.erNoenTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato(), gjeldendeInnhold.getSumLonnstilskudd())) {
-            log.info("Avtale {} er ikke fylt ut med nødvendige felter for generering av tilskuddsperioder", id);
             return false;
         }
         // Statuser som skal få tilskuddsperioder
@@ -935,7 +934,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             }
             return true;
         } else {
-            log.info("Avtale {} har allerede tilskuddsperioder eller en status som ikke skal ha perioder, genererer ikke nye", id);
+            log.info("Avtale {} har allerede tilskuddsperioder eller en status som ikke skal ha perioder, eller er ikke tilstrekkelig fylt ut, genererer ikke nye", id);
             return false;
         }
     }
