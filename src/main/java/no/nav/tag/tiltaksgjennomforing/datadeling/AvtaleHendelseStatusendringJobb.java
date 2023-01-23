@@ -46,7 +46,7 @@ public class AvtaleHendelseStatusendringJobb {
 
             if (avtale.statusSomEnum() != avtaleMeldingEntitet.getAvtaleStatus()) {
                 LocalDateTime tidspunkt = Now.localDateTime();
-                AvtaleMelding avtaleMelding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), new Identifikator("system"), AvtaleHendelseUtførtAvRolle.SYSTEM, HendelseType.STATUSENDRING);
+                AvtaleMelding avtaleMelding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), new Identifikator("tiltaksgjennomforing-api"), AvtaleHendelseUtførtAvRolle.SYSTEM, HendelseType.STATUSENDRING);
                 try {
                     String meldingSomString = objectMapper.writeValueAsString(avtaleMelding);
                     AvtaleMeldingEntitet entitet = new AvtaleMeldingEntitet(UUID.randomUUID(), avtaleId, tidspunkt, HendelseType.STATUSENDRING, avtale.statusSomEnum(), meldingSomString);

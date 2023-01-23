@@ -75,7 +75,7 @@ public class AvtaleHendelseService {
     }
 
     private void lagMelding(Avtale avtale) {
-        var melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), new Identifikator("system"), AvtaleHendelseUtførtAvRolle.SYSTEM, HendelseType.STATUSENDRING);
+        var melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), new Identifikator("tiltaksgjennomforing-api"), AvtaleHendelseUtførtAvRolle.SYSTEM, HendelseType.STATUSENDRING);
         UUID meldingId = UUID.randomUUID();
         LocalDateTime tidspunkt = Now.localDateTime();
         try {
