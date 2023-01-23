@@ -898,7 +898,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if(!tilskuddPeriode.isEmpty()) {
             return false;
         }
-        if (Utils.erNoenTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato(), gjeldendeInnhold.getSumLonnstilskudd())) {
+        if (Utils.erNoenTomme(
+                gjeldendeInnhold.getStartDato(),
+                gjeldendeInnhold.getSluttDato(),
+                gjeldendeInnhold.getSumLonnstilskudd(),
+                gjeldendeInnhold.getLonnstilskuddProsent(),
+                gjeldendeInnhold.getArbeidsgiveravgift(),
+                gjeldendeInnhold.getManedslonn(),
+                gjeldendeInnhold.getOtpSats())) {
             return false;
         }
         // Statuser som skal få tilskuddsperioder
