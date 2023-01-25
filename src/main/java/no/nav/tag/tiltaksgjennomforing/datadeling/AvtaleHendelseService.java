@@ -29,6 +29,11 @@ public class AvtaleHendelseService {
 
     private final ObjectMapper objectMapper;
 
+    public void sendAvtaleHendelseMeldingPåEnAvtale(Avtale avtale) {
+        lagMelding(avtale);
+        log.info("Send melding om avtale {}", avtale.getId());
+    }
+
     @Async
     public void sendAvtaleHendelseMeldingPåAlleAvtaler() {
         AtomicInteger antallSendt = new AtomicInteger();
