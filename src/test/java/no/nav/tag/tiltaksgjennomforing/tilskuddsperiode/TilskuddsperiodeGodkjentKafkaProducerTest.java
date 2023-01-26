@@ -77,6 +77,9 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
         final String deltakerFornavn = "Donald";
         final String deltakerEtternavn = "Duck";
         final Identifikator deltakerFnr = new Fnr("12345678901");
+        final String arbeidsgiverFornavn = "Arne";
+        final String arbeidsgiverEtternavn = "Arbeidsgiver";
+        final String arbeidsgiverTlf = "41111111";
         final NavIdent veilederNavIdent = new NavIdent("X123456");
         final String bedriftNavn = "Donald Delivery";
         final BedriftNr bedriftnummer = new BedriftNr("99999999");
@@ -89,7 +92,7 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
 
         final TilskuddsperiodeGodkjentMelding tilskuddMelding = new TilskuddsperiodeGodkjentMelding(avtaleId,
                 tilskuddPeriodeId, avtaleInnholdId, tiltakstype, deltakerFornavn, deltakerEtternavn,
-                deltakerFnr, veilederNavIdent, bedriftNavn, bedriftnummer, tilskuddBeløp, tilskuddFraDato, tilskuddTilDato, 10.6, 0.02, 14.1, 60, avtaleNr, løpenummer,
+                deltakerFnr, arbeidsgiverFornavn, arbeidsgiverEtternavn, arbeidsgiverTlf, veilederNavIdent, bedriftNavn, bedriftnummer, tilskuddBeløp, tilskuddFraDato, tilskuddTilDato, 10.6, 0.02, 14.1, 60, avtaleNr, løpenummer,
             "4808", beslutterNavIdent, LocalDateTime.now());
 
         //NÅR
@@ -105,6 +108,9 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
         assertThat(jsonRefusjonRecord.get("deltakerFornavn")).isNotNull();
         assertThat(jsonRefusjonRecord.get("deltakerEtternavn")).isNotNull();
         assertThat(jsonRefusjonRecord.get("deltakerFnr")).isNotNull();
+        assertThat(jsonRefusjonRecord.get("arbeidsgiverFornavn")).isNotNull();
+        assertThat(jsonRefusjonRecord.get("arbeidsgiverEtternavn")).isNotNull();
+        assertThat(jsonRefusjonRecord.get("arbeidsgiverTlf")).isNotNull();
         assertThat(jsonRefusjonRecord.get("veilederNavIdent")).isNotNull();
         assertThat(jsonRefusjonRecord.get("bedriftNavn")).isNotNull();
         assertThat(jsonRefusjonRecord.get("bedriftNr")).isNotNull();

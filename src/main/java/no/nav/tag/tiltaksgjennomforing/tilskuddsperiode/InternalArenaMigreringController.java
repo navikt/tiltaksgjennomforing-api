@@ -47,15 +47,23 @@ public class InternalArenaMigreringController {
         log.info("Lager tilskuddsperioder på en enkelt avtale {} fra dato {}", id, migreringsDato);
         Avtale avtale = avtaleRepository.findById(id)
                 .orElseThrow(RessursFinnesIkkeException::new);
-        avtale.nyeTilskuddsperioderVedMigreringFraArena(migreringsDato);
+        avtale.nyeTilskuddsperioderVedMigreringFraArena(migreringsDato, false);
+        avtaleRepository.save(avtale);
     }
 
     @PostMapping("/lag-tilskuddsperioder-arena/{migreringsDato}")
-    @Transactional
     public void lagTilskuddsperioderPåArenaAvtaler(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate migreringsDato) {
         sjekkTilgang();
         // Finn alle lønnstilskuddavtaler (varig og midlertidlig)
         arenaMigreringService.lagTilskuddsperioderPåArenaAvtaler(migreringsDato);
+        log.info("Startet migrering av tilskuddsperioder");
+    }
+
+    @PostMapping("/dry-lag-tilskuddsperioder-arena/{migreringsDato}")
+    public void dryLagTilskuddsperioderPåArenaAvtaler(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate migreringsDato) {
+        sjekkTilgang();
+        // Finn alle lønnstilskuddavtaler (varig og midlertidlig)
+        arenaMigreringService.lagTilskuddsperioderPåArenaAvtalerDryRun(migreringsDato);
         log.info("Startet migrering av tilskuddsperioder");
     }
 }

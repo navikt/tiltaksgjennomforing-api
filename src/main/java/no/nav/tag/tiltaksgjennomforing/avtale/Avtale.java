@@ -894,6 +894,16 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if(!tilskuddPeriode.isEmpty()) {
             return false;
         }
+        if (Utils.erNoenTomme(
+                gjeldendeInnhold.getStartDato(),
+                gjeldendeInnhold.getSluttDato(),
+                gjeldendeInnhold.getSumLonnstilskudd(),
+                gjeldendeInnhold.getLonnstilskuddProsent(),
+                gjeldendeInnhold.getArbeidsgiveravgift(),
+                gjeldendeInnhold.getManedslonn(),
+                gjeldendeInnhold.getOtpSats())) {
+            return false;
+        }
         // Statuser som skal få tilskuddsperioder
         Status status = statusSomEnum();
         if(status == Status.ANNULLERT || status == Status.AVSLUTTET || status == Status.AVBRUTT) {
@@ -911,7 +921,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
      * - Tar ikke høyde for perioder med lengde tre måneder som i arena
      * -
      */
-    public boolean nyeTilskuddsperioderVedMigreringFraArena(LocalDate migreringsDato) {
+    public boolean nyeTilskuddsperioderVedMigreringFraArena(LocalDate migreringsDato, boolean dryRun) {
         if(sjekkArenaMigrering()) {
             List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioder(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
             tilskuddsperioder.forEach(periode -> {
@@ -922,10 +932,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
                 }
             });
             fikseLøpenumre(tilskuddsperioder, 1);
-            tilskuddPeriode.addAll(tilskuddsperioder);
+            if(!dryRun) {
+                tilskuddPeriode.addAll(tilskuddsperioder);
+            }
             return true;
         } else {
-            log.info("Avtale {} har allerede tilskuddsperioder eller en status som ikke skal ha perioder, genererer ikke nye", id);
+            log.info("Avtale {} har allerede tilskuddsperioder eller en status som ikke skal ha perioder, eller er ikke tilstrekkelig fylt ut, genererer ikke nye", id);
             return false;
         }
     }

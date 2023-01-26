@@ -23,6 +23,9 @@ public class TilskuddsperiodeGodkjentMelding {
     String deltakerFornavn;
     String deltakerEtternavn;
     Identifikator deltakerFnr;
+    String arbeidsgiverFornavn;
+    String arbeidsgiverEtternavn;
+    String arbeidsgiverTlf;
     NavIdent veilederNavIdent;
     String bedriftNavn;
     BedriftNr bedriftNr;
@@ -50,6 +53,9 @@ public class TilskuddsperiodeGodkjentMelding {
                 avtale.getGjeldendeInnhold().getDeltakerFornavn(),
                 avtale.getGjeldendeInnhold().getDeltakerEtternavn(),
                 avtale.getDeltakerFnr(),
+                avtale.getGjeldendeInnhold().getArbeidsgiverFornavn(),
+                avtale.getGjeldendeInnhold().getArbeidsgiverEtternavn(),
+                avtale.getGjeldendeInnhold().getArbeidsgiverTlf(),
                 avtale.getVeilederNavIdent(),
                 avtale.getGjeldendeInnhold().getBedriftNavn(),
                 avtale.getBedriftNr(),
