@@ -15,5 +15,8 @@ public interface StartOgSluttDatoStrategy {
         if (startDato != null && sluttDato != null && !erGodkjentForEtterregistrering && startDato.plusDays(7).isBefore(Now.localDate()) && !erAvtaleInngått){
             throw new FeilkodeException(Feilkode.FORTIDLIG_STARTDATO);
         }
+        if (startDato != null && sluttDato != null && sluttDato.isAfter(LocalDate.of(2089, 12, 31))) {
+            throw new FeilkodeException(Feilkode.SLUTTDATO_GRENSE_NÅDD);
+        }
     }
 }
