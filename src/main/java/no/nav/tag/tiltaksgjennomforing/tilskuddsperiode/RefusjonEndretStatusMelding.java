@@ -10,6 +10,6 @@ public class RefusjonEndretStatusMelding {
     String refusjonId;
     String bedriftNr;
     String avtaleId;
-    RefusjonStatus refusjonStatus;
+    RefusjonStatus status;
     String tilskuddsperiodeId;
 }
