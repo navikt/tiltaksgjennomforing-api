@@ -18,6 +18,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetMentor;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltaker;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
@@ -574,6 +575,15 @@ public class TestData {
         GodkjentPaVegneGrunn paVegneGrunn = new GodkjentPaVegneGrunn();
         paVegneGrunn.setIkkeBankId(true);
         return paVegneGrunn;
+    }
+
+    public static GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn enGodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn() {
+        GodkjentPaVegneAvArbeidsgiverGrunn arbeidsgiverGrunn = new GodkjentPaVegneAvArbeidsgiverGrunn();
+        arbeidsgiverGrunn.setArenaMigreringArbeidsgiver(true);
+        GodkjentPaVegneGrunn paVegneGrunn = new GodkjentPaVegneGrunn();
+        paVegneGrunn.setIkkeBankId(true);
+        GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn paVegneAvDeltakerOgArbeidsgiverGrunn = new GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn(arbeidsgiverGrunn, paVegneGrunn);
+        return paVegneAvDeltakerOgArbeidsgiverGrunn;
     }
 
     public static InnloggetArbeidsgiver innloggetArbeidsgiver(Avtalepart<Fnr> avtalepartMedFnr, BedriftNr bedriftNr) {

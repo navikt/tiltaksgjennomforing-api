@@ -71,6 +71,9 @@ public class AvtaleArenaMigreringTest {
 
         avtale.nyeTilskuddsperioderVedMigreringFraArena(LocalDate.of(2023, 02, 01), false);
         avtale.getTilskuddPeriode().forEach(periode -> System.out.println(periode.getStatus() + " " + periode.getStartDato() + " " + periode.getSluttDato() + " " + periode.getLonnstilskuddProsent()));
+        assertThat(avtale.getTilskuddPeriode()).isEmpty();
+        veileder.godkjennForVeilederOgDeltakerOgArbeidsgiver(TestData.enGodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn(), avtale);
+        avtale.nyeTilskuddsperioderVedMigreringFraArena(LocalDate.of(2023, 02, 01), false);
         assertThat(avtale.getTilskuddPeriode()).isNotEmpty();
         Now.resetClock();
     }
