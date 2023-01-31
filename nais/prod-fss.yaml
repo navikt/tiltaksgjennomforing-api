@@ -39,10 +39,10 @@ spec:
   resources:
     limits:
       cpu: 2000m
-      memory: 7000Mi
+      memory: 12000Mi
     requests:
       cpu: 500m
-      memory: 3000Mi
+      memory: 6000Mi
   ingresses:
     - https://arbeidsgiver.nais.adeo.no/tiltaksgjennomforing-api/
   leaderElection: true
