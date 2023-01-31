@@ -11,7 +11,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AvtaleArenaMigreringTest {
-
     @Test
     public void lonnstilskudd_tilskuddsperioder_skal_ha_status_ubehandlet_hvis_ikke_ryddeavtale() {
         Now.fixedDate(LocalDate.of(2023, 02, 15));
@@ -41,5 +40,4 @@ public class AvtaleArenaMigreringTest {
 
         Now.resetClock();
     }
-
 }

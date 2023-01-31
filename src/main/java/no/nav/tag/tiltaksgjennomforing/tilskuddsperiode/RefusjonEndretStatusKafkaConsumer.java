@@ -35,8 +35,8 @@ public class RefusjonEndretStatusKafkaConsumer {
         if(tilskuddPeriode.getStatus() != TilskuddPeriodeStatus.GODKJENT) {
             log.error("En tilskuddsperiode {} som ikke er godkjent av beslutter har fått statusendring fra refusjon-api", melding.getTilskuddsperiodeId());
         }
-        tilskuddPeriode.setRefusjonStatus(melding.getRefusjonStatus());
-        log.info("Setter refusjonstatus til {} på tilskuddsperiode {}", melding.getRefusjonStatus(), melding.getTilskuddsperiodeId());
+        tilskuddPeriode.setRefusjonStatus(melding.getStatus());
+        log.info("Setter refusjonstatus til {} på tilskuddsperiode {}", melding.getStatus(), melding.getTilskuddsperiodeId());
 
         tilskuddPeriodeRepository.save(tilskuddPeriode);
 
