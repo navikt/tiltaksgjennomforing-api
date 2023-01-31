@@ -60,9 +60,7 @@ tiltaksgjennomforing:
   avtale-hendelse-melding:
     fixed-delay: 600000
   tilskuddsperioder:
-    tiltakstyper: SOMMERJOBB
-    pilotvirksomheter: ${tiltaksgjennomforing.pilot.pilotvirksomheter}
-    pilotenheter: ${tiltaksgjennomforing.pilot.pilotenheter}
+    tiltakstyper: SOMMERJOBB,MIDLERTIDIG_LONNSTILSKUDD,VARIG_LONNSTILSKUDD
 
 no.nav.security.jwt:
   client:

@@ -33,7 +33,7 @@ public class AxsysServiceTest {
     }
 
     @Test
-    public void pilotEnheter__inneholder_hentetEnheter() {
+    public void enheter__inneholder_hentetEnheter() {
         List<NavEnhet> enheter = axsysService.hentEnheterNavAnsattHarTilgangTil(new NavIdent("X123456"));
         List<NavEnhet> pilotEnheter = Collections.singletonList(new NavEnhet("0906", "NAV Storebyen"));
         assertThat(pilotEnheter).containsAnyElementsOf(enheter);

@@ -11,6 +11,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
 import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.MENTOR;
 
 public class MentorStartOgSluttDatoStrategyTest {
@@ -33,7 +34,7 @@ public class MentorStartOgSluttDatoStrategyTest {
     }
 
     private void endreAvtale(EndreAvtale endreAvtale) {
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.noneOf(Tiltakstype.class), List.of(), List.of());
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
     }
 
     @Test

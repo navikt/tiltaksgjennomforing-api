@@ -127,7 +127,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
         avtalepart.hentOppfølgingStatus(avtale, veilarbArenaClient);
-        avtalepart.endreAvtale(sistEndret, endreAvtale, avtale, tilskuddsperiodeConfig.getTiltakstyper(), tilskuddsperiodeConfig.getPilotvirksomheter(), tilskuddsperiodeConfig.getPilotenheter());
+        avtalepart.endreAvtale(sistEndret, endreAvtale, avtale, tilskuddsperiodeConfig.getTiltakstyper());
         Avtale lagretAvtale = avtaleRepository.save(avtale);
         return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
     }
@@ -139,7 +139,7 @@ public class AvtaleController {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
-        avtalepart.endreAvtale(sistEndret, endreAvtale, avtale, tilskuddsperiodeConfig.getTiltakstyper(), tilskuddsperiodeConfig.getPilotvirksomheter(), tilskuddsperiodeConfig.getPilotenheter());
+        avtalepart.endreAvtale(sistEndret, endreAvtale, avtale, tilskuddsperiodeConfig.getTiltakstyper());
         return avtale;
     }
 
@@ -221,24 +221,16 @@ public class AvtaleController {
         return new ResponseEntity<List<AlleredeRegistrertAvtale>>(avtaler, HttpStatus.OK);
     }
 
-    @PostMapping("/sjekk-om-vil-bli-pilot")
-    @Transactional
-    public boolean sjekkOmAvtaleKanVærePilot(@RequestBody SjekkOmPilotRequest sjekkOmPilotRequest) {
-        Veileder veileder = innloggingService.hentVeileder();
-        boolean erPilot = veileder.sjekkOmPilot(sjekkOmPilotRequest);
-        return erPilot;
-    }
-
     @PostMapping
     @Transactional
-    public ResponseEntity<?> opprettAvtaleSomVeileder(@RequestBody OpprettAvtale opprettAvtale, @RequestParam(value = "pilotType", required = false) String pilottype) {
+    public ResponseEntity<?> opprettAvtaleSomVeileder(@RequestBody OpprettAvtale opprettAvtale, @RequestParam(value = "ryddeavtale", required = false) Boolean ryddeavtale) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
         veileder.sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
         veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
-        if (pilottype != null && pilottype.equals("ARENARYDDING") && opprettAvtale.erLønnstilskudd()) {
+        if (ryddeavtale != null && ryddeavtale) {
             ArenaRyddeAvtale arenaRyddeAvtale = new ArenaRyddeAvtale();
             arenaRyddeAvtale.setAvtale(avtale);
             arenaRyddeAvtaleRepository.save(arenaRyddeAvtale);
@@ -517,13 +509,6 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         beslutter.avslåTilskuddsperiode(avtale, avslagRequest.getAvslagsårsaker(), avslagRequest.getAvslagsforklaring());
         avtaleRepository.save(avtale);
-    }
-
-    @GetMapping("/{avtaleId}/er-pilot")
-    public Boolean sjekkOmAvtaleErPilot(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
-        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        Avtale avtale = avtalepart.hentAvtale(avtaleRepository, id);
-        return tilskuddsperiodeConfig.getPilotvirksomheter().contains(avtale.getBedriftNr());
     }
 
     @PostMapping("/{avtaleId}/oppdaterOppfølgingsEnhet")
