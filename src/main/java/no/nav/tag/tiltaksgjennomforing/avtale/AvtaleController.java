@@ -526,4 +526,16 @@ public class AvtaleController {
         return tilskuddsperiodeConfig.getPilotvirksomheter().contains(avtale.getBedriftNr());
     }
 
+    @PostMapping("/{avtaleId}/oppdaterOppfølgingsEnhet")
+    public Avtale oppdaterOppfølgingsEnhet(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Avtalerolle innloggetPart){
+        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
+        Avtale avtale = avtalepart.hentAvtale(avtaleRepository, avtaleId);
+        avtalepart.sjekkOgHentOppfølgingStatus(avtale,veilarbArenaClient);
+        avtalepart.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
+        Avtale oppdatertAvtale = avtaleRepository.save(avtale);
+
+        return oppdatertAvtale;
+    };
+
+
 }
