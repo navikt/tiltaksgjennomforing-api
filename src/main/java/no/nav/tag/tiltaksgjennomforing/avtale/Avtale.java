@@ -895,9 +895,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     private boolean sjekkArenaMigrering() {
-        if(!erAvtaleInngått()) {
-            return false;
-        }
         if(!tilskuddPeriode.isEmpty()) {
             return false;
         }
