@@ -8,6 +8,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.Protected;
@@ -113,10 +115,10 @@ public class AvtaleController {
                 avtaleRepository,
                 queryParametre,
                 sorteringskolonne);
-        avtaler.forEach(avtale -> {
-            log.info("Id {}", avtale.getId());
-        });
-        return avtaler;
+
+        List<AvtaleMinimal> avtalerMedTilgang = avtaler.stream().filter(avtaleMinimal -> beslutter.harTilgangTilFnr(new Fnr(avtaleMinimal.getDeltakerFnr()))).collect(Collectors.toList());
+
+        return avtalerMedTilgang;
     }
 
     @GetMapping("/{avtaleId}/pdf")

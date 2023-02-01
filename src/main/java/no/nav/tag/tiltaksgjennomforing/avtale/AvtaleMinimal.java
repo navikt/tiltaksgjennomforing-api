@@ -5,6 +5,7 @@ public interface AvtaleMinimal {
     String getVeilederNavIdent();
     String getDeltakerFornavn();
     String getDeltakerEtternavn();
-    String startDatoPeriode();
-    String antallUbehandlet();
+    String getStartDatoPeriode();
+    String getAntallUbehandlet();
+    String getDeltakerFnr();
 }

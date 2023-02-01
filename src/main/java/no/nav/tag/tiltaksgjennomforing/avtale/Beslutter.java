@@ -62,6 +62,10 @@ public class Beslutter extends Avtalepart<NavIdent> {
         return tilgangskontrollService.harSkrivetilgangTilKandidat(getIdentifikator(), avtale.getDeltakerFnr());
     }
 
+    public boolean harTilgangTilFnr(Fnr fnr) {
+        return tilgangskontrollService.harSkrivetilgangTilKandidat(getIdentifikator(), fnr);
+    }
+
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
         return avtaleRepository.findAllByAvtaleNr(queryParametre.getAvtaleNr());
