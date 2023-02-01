@@ -6,6 +6,7 @@ import io.micrometer.core.annotation.Timed;
 import java.net.URI;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -96,12 +97,14 @@ public class AvtaleController {
             AvtalePredicate queryParametre,
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = "startDato") String sorteringskolonne
     ) {
-        Beslutter beslutter = innloggingService.hentBeslutter();
+        /*Beslutter beslutter = innloggingService.hentBeslutter();
         List<Avtale> avtaler = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
                 avtaleRepository,
                 queryParametre,
-                sorteringskolonne);
-        return avtaler;
+                sorteringskolonne);*
+
+         */
+        return Collections.emptyList();
     }
 
     @GetMapping("/beslutter-liste")
