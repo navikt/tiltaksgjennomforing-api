@@ -129,7 +129,7 @@ List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet
                     "(:tilskuddsperiodestatus LIKE status AND :tilskuddsperiodestatus = status AND " +
                     "((start_dato <= current_date + CAST(:plussDato as INTEGER )) OR (løpenummer = 1 AND status LIKE status)))) " +
                     "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter)) " +
-                    "GROUP BY AVTALE.ID, AVTALE_INNHOLD.DELTAKER_FORNAVN, AVTALE_INNHOLD.DELTAKER_ETTERNAVN, AVTALE.VEILEDER_NAV_IDENT", nativeQuery = true)
+                    "GROUP BY AVTALE.ID, AVTALE_INNHOLD.DELTAKER_FORNAVN, AVTALE_INNHOLD.DELTAKER_ETTERNAVN, AVTALE.VEILEDER_NAV_IDENT, AVTALE_INNHOLD.BEDRIFT_NAVN", nativeQuery = true)
     List<AvtaleMinimal> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandletMinimal(
             @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
             @Param("navEnheter") Set<String> navEnheter,
