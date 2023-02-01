@@ -30,7 +30,7 @@ class RefusjonEndretStatusTest {
         // NÅR
         RefusjonEndretStatusKafkaConsumer consumer = new RefusjonEndretStatusKafkaConsumer(tilskuddPeriodeRepository, mapper);
 
-        consumer.refusjonEndretStatus(mapper.writeValueAsString(new RefusjonEndretStatusMelding("1234", "1234", "1234", RefusjonStatus.UTBETALT, tilskuddPeriode.getId().toString())));
+        consumer.refusjonEndretStatus(new RefusjonEndretStatusMelding("1234", "1234", "1234", RefusjonStatus.UTBETALT, tilskuddPeriode.getId().toString()));
 
         // SÅ
         verify(tilskuddPeriodeRepository).save(any());
