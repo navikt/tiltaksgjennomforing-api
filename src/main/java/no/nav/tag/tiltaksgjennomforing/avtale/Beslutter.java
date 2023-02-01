@@ -136,10 +136,20 @@ public class Beslutter extends Avtalepart<NavIdent> {
             status = TilskuddPeriodeStatus.UBEHANDLET;
         }
 
+        Set<String> tiltakstyper = new HashSet<>();
+        if(tiltakstype != null) {
+            tiltakstyper.add(tiltakstype.name());
+        } else {
+            tiltakstyper.add(Tiltakstype.SOMMERJOBB.name());
+            tiltakstyper.add(Tiltakstype.VARIG_LONNSTILSKUDD.name());
+            tiltakstyper.add(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD.name());
+        }
+
         return avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandletMinimal(
             status.name(),
             navEnheter,
-            plussDato);
+            plussDato,
+            tiltakstyper);
     }
 
     private Set<String> hentNavEnheter() {
