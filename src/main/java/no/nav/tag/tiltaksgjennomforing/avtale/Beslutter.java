@@ -114,6 +114,30 @@ public class Beslutter extends Avtalepart<NavIdent> {
         };
     }
 
+    List<AvtaleMinimal> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
+            AvtaleRepository avtaleRepository,
+            AvtalePredicate queryParametre,
+            String sorteringskolonne) {
+
+        Set<String> navEnheter = hentNavEnheter();
+        if (navEnheter.isEmpty()) {
+            throw new NavEnhetIkkeFunnetException();
+        }
+
+        TilskuddPeriodeStatus status = queryParametre.getTilskuddPeriodeStatus();
+        Tiltakstype tiltakstype = queryParametre.getTiltakstype();
+        Integer plussDato = getPlussdato();
+
+        if (status == null) {
+            status = TilskuddPeriodeStatus.UBEHANDLET;
+        }
+
+        return avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandletMinimal(
+            status.name(),
+            navEnheter,
+            plussDato);
+    }
+
     private Set<String> hentNavEnheter() {
         return axsysService.hentEnheterNavAnsattHarTilgangTil(getIdentifikator())
                 .stream()

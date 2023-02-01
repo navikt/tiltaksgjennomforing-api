@@ -102,6 +102,23 @@ public class AvtaleController {
         return avtaler;
     }
 
+    @GetMapping("/beslutter-liste")
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    public List<AvtaleMinimal> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
+            AvtalePredicate queryParametre,
+            @RequestParam(value = "sorteringskolonne", required = false, defaultValue = "startDato") String sorteringskolonne
+    ) {
+        Beslutter beslutter = innloggingService.hentBeslutter();
+        List<AvtaleMinimal> avtaler = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
+                avtaleRepository,
+                queryParametre,
+                sorteringskolonne);
+        avtaler.forEach(avtale -> {
+            log.info("Id {}", avtale.getId());
+        });
+        return avtaler;
+    }
+
     @GetMapping("/{avtaleId}/pdf")
     public HttpEntity<?> hentAvtalePdf(@PathVariable("avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtale avtale = innloggingService.hentAvtalepart(innloggetPart).hentAvtale(avtaleRepository, avtaleId);

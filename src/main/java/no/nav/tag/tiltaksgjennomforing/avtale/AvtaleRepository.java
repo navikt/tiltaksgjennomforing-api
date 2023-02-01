@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import io.micrometer.core.annotation.Timed;
 
 import java.sql.Date;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -118,6 +117,21 @@ List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet
         @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
         @Param("navEnheter") Set<String> navEnheter,
         @Param("plussDato") int plussDato);
+
+    @Query(value =
+            "SELECT distinct cast(AVTALE.ID as varchar) as id, AVTALE.VEILEDER_NAV_IDENT as veilederNavIdent, AVTALE_INNHOLD.DELTAKER_FORNAVN as deltakerFornavn," +
+                    "AVTALE_INNHOLD.DELTAKER_ETTERNAVN as deltakerEtternavn FROM AVTALE " +
+                    "LEFT JOIN AVTALE_INNHOLD " +
+                    "ON AVTALE_INNHOLD.ID = AVTALE.GJELDENDE_INNHOLD_ID " +
+                    "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
+                    "AND EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
+                    "(:tilskuddsperiodestatus LIKE 'UBEHANDLET' AND :tilskuddsperiodestatus = status AND " +
+                    "((start_dato <= current_date + CAST(:plussDato as INTEGER )) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET')))) " +
+                    "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter))", nativeQuery = true)
+    List<AvtaleMinimal> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandletMinimal(
+            @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
+            @Param("navEnheter") Set<String> navEnheter,
+            @Param("plussDato") int plussDato);
 
     @Query(value =
             "SELECT distinct AVTALE.* FROM AVTALE " +
