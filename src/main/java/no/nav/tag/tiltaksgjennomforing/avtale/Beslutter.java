@@ -62,6 +62,10 @@ public class Beslutter extends Avtalepart<NavIdent> {
         return tilgangskontrollService.harSkrivetilgangTilKandidat(getIdentifikator(), avtale.getDeltakerFnr());
     }
 
+    public boolean harTilgangTilFnr(Fnr fnr) {
+        return tilgangskontrollService.harSkrivetilgangTilKandidat(getIdentifikator(), fnr);
+    }
+
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
         return avtaleRepository.findAllByAvtaleNr(queryParametre.getAvtaleNr());
@@ -112,6 +116,40 @@ public class Beslutter extends Avtalepart<NavIdent> {
                     tiltakstype,
                     sorteringskolonne);
         };
+    }
+
+    List<AvtaleMinimal> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
+            AvtaleRepository avtaleRepository,
+            AvtalePredicate queryParametre,
+            String sorteringskolonne) {
+
+        Set<String> navEnheter = hentNavEnheter();
+        if (navEnheter.isEmpty()) {
+            throw new NavEnhetIkkeFunnetException();
+        }
+
+        TilskuddPeriodeStatus status = queryParametre.getTilskuddPeriodeStatus();
+        Tiltakstype tiltakstype = queryParametre.getTiltakstype();
+        Integer plussDato = getPlussdato();
+
+        if (status == null) {
+            status = TilskuddPeriodeStatus.UBEHANDLET;
+        }
+
+        Set<String> tiltakstyper = new HashSet<>();
+        if(tiltakstype != null) {
+            tiltakstyper.add(tiltakstype.name());
+        } else {
+            tiltakstyper.add(Tiltakstype.SOMMERJOBB.name());
+            tiltakstyper.add(Tiltakstype.VARIG_LONNSTILSKUDD.name());
+            tiltakstyper.add(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD.name());
+        }
+
+        return avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandletMinimal(
+            status.name(),
+            navEnheter,
+            plussDato,
+            tiltakstyper);
     }
 
     private Set<String> hentNavEnheter() {

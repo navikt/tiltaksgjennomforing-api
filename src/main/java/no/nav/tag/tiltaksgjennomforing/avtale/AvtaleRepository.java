@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import io.micrometer.core.annotation.Timed;
 
 import java.sql.Date;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -118,6 +117,24 @@ List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet
         @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
         @Param("navEnheter") Set<String> navEnheter,
         @Param("plussDato") int plussDato);
+
+    @Query(value =
+            "SELECT cast(AVTALE.ID as varchar) as id, AVTALE.VEILEDER_NAV_IDENT as veilederNavIdent, AVTALE_INNHOLD.DELTAKER_FORNAVN as deltakerFornavn, " +
+                    "AVTALE_INNHOLD.DELTAKER_ETTERNAVN as deltakerEtternavn, COUNT(TILSKUDD_PERIODE.ID) as antallUbehandlet, AVTALE.DELTAKER_FNR as deltakerFnr, AVTALE_INNHOLD.BEDRIFT_NAVN as bedriftNavn FROM AVTALE " +
+                    "LEFT JOIN AVTALE_INNHOLD ON AVTALE_INNHOLD.ID = AVTALE.GJELDENDE_INNHOLD_ID " +
+                    "LEFT JOIN TILSKUDD_PERIODE ON (TILSKUDD_PERIODE.AVTALE_ID = AVTALE.ID AND TILSKUDD_PERIODE.STATUS = status AND TILSKUDD_PERIODE.START_DATO <= current_date + CAST(:plussDato as INTEGER )) " +
+                    "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
+                    "AND AVTALE.TILTAKSTYPE in (:tiltakstype) " +
+                    "AND EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
+                    "(:tilskuddsperiodestatus LIKE status AND :tilskuddsperiodestatus = status AND " +
+                    "((start_dato <= current_date + CAST(:plussDato as INTEGER )) OR (løpenummer = 1 AND status LIKE status)))) " +
+                    "AND AVTALE.ENHET_OPPFOLGING IN (:navEnheter) " +
+                    "GROUP BY AVTALE.ID, AVTALE_INNHOLD.DELTAKER_FORNAVN, AVTALE_INNHOLD.DELTAKER_ETTERNAVN, AVTALE.VEILEDER_NAV_IDENT, AVTALE_INNHOLD.BEDRIFT_NAVN", nativeQuery = true)
+    List<AvtaleMinimal> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandletMinimal(
+            @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
+            @Param("navEnheter") Set<String> navEnheter,
+            @Param("plussDato") int plussDato,
+            @Param("tiltakstype") Set<String> tiltakstype);
 
     @Query(value =
             "SELECT distinct AVTALE.* FROM AVTALE " +
