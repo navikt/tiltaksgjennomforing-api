@@ -27,4 +27,22 @@ public class AdminController {
             avtaleRepository.save(avtale);
         }
     }
+
+    @PostMapping("/reberegn-mangler-dato-for-redusert-prosent")
+    public void reberegnLønnstilskuddSomIkkeHarRedusertDato() {
+        // 1. Generer dato for redusert prosent
+        List<Avtale> varigeLønnstilskudd = avtaleRepository.findAllByGjeldendeInnhold_SumLønnstilskuddRedusertNullAndGjeldendeInnhold_AvtaleInngåttNotNullAndTiltakstype(Tiltakstype.VARIG_LONNSTILSKUDD);
+        varigeLønnstilskudd.forEach(avtale -> {
+            avtale.reberegnLønnstilskudd();
+            avtaleRepository.save(avtale);
+        });
+
+        List<Avtale> midlertidige = avtaleRepository.findAllByGjeldendeInnhold_SumLønnstilskuddRedusertNullAndGjeldendeInnhold_AvtaleInngåttNotNullAndTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+        midlertidige.forEach(avtale -> {
+            avtale.reberegnLønnstilskudd();
+            avtaleRepository.save(avtale);
+        });
+
+        // 2. Lag tilskuddsperioder på nytt. Må sjekke at ingen er godkjent osv. Sørge for at redusert sats blir brukt.
+    }
 }
