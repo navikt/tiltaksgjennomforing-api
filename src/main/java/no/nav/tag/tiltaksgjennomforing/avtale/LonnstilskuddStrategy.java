@@ -62,7 +62,7 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
     }
 
     private Integer getLønnVedFullStilling(Integer sumUtgifter, Integer stillingsProsent) {
-        if (sumUtgifter == null || stillingsProsent == null) {
+        if (sumUtgifter == null || stillingsProsent == null || stillingsProsent == 0) {
             return null;
         }
         return (sumUtgifter * 100) / stillingsProsent;
