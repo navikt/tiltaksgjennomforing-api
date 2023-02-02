@@ -37,12 +37,6 @@ public class AdminController {
             avtaleRepository.save(avtale);
         });
 
-        List<Avtale> midlertidige = avtaleRepository.findAllByGjeldendeInnhold_SumLønnstilskuddRedusertNullAndGjeldendeInnhold_AvtaleInngåttNotNullAndTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
-        midlertidige.forEach(avtale -> {
-            avtale.reberegnLønnstilskudd();
-            avtaleRepository.save(avtale);
-        });
-
         // 2. Lag tilskuddsperioder på nytt. Må sjekke at ingen er godkjent osv. Sørge for at redusert sats blir brukt.
     }
 }
