@@ -891,9 +891,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     private boolean sjekkArenaMigrering() {
-        if(!tilskuddPeriode.isEmpty()) {
-            return false;
-        }
         if (Utils.erNoenTomme(
                 gjeldendeInnhold.getStartDato(),
                 gjeldendeInnhold.getSluttDato(),
@@ -921,8 +918,20 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
      * - Tar ikke høyde for perioder med lengde tre måneder som i arena
      * -
      */
-    public boolean nyeTilskuddsperioderVedMigreringFraArena(LocalDate migreringsDato, boolean dryRun) {
+    public boolean nyeTilskuddsperioderEtterMigreringFraArena(LocalDate migreringsDato, boolean dryRun) {
         if(sjekkArenaMigrering()) {
+
+            for (TilskuddPeriode tilskuddsperiode : Set.copyOf(tilskuddPeriode)) {
+                TilskuddPeriodeStatus status = tilskuddsperiode.getStatus();
+                if (status == TilskuddPeriodeStatus.UBEHANDLET) {
+                    tilskuddPeriode.remove(tilskuddsperiode);
+                } else if (status == TilskuddPeriodeStatus.GODKJENT) {
+                    annullerTilskuddsperiode(tilskuddsperiode);
+                } else {
+                    log.error("Prøver rydde tilskuddsperioder for en avtale, men statusen er ikke UBEHANDLET, eller GODKJENT (som blir annullert) på periode {}", tilskuddsperiode.getId());
+                }
+            }
+
             List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioder(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
             tilskuddsperioder.forEach(periode -> {
                 // Set status BEHANDLET_I_ARENA på tilskuddsperioder før migreringsdato
