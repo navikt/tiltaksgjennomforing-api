@@ -45,7 +45,6 @@ public class AdminController {
     }
 
     @PostMapping("/reberegn-mangler-dato-for-redusert-prosent-dry-run/{migreringsDato}")
-    @Transactional
     public void reberegnVarigLønnstilskuddSomIkkeHarRedusertDatoDryRun(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate migreringsDato) {
         // 1. Generer dato for redusert prosent og sumRedusert
         List<Avtale> varigeLønnstilskudd = avtaleRepository.findAllByTiltakstypeAndGjeldendeInnhold_DatoForRedusertProsentNullAndGjeldendeInnhold_AvtaleInngåttNotNull(Tiltakstype.VARIG_LONNSTILSKUDD);
