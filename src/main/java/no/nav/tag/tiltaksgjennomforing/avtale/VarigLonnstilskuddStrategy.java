@@ -40,6 +40,12 @@ public class VarigLonnstilskuddStrategy extends LonnstilskuddStrategy {
         super.regnUtTotalLonnstilskudd();
         regnUtDatoOgSumRedusert();
     }
+
+    @Override
+    public void reUtregnRedusertProsentOgSum() {
+        regnUtDatoOgSumRedusert();
+    }
+
     private LocalDate getDatoForRedusertProsent(LocalDate startDato, LocalDate sluttDato, Integer lonnstilskuddprosent) {
         if (startDato == null || sluttDato == null || lonnstilskuddprosent == null) {
             return null;
