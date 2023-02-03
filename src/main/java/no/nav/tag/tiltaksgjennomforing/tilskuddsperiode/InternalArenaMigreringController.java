@@ -3,7 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
-import no.nav.tag.tiltaksgjennomforing.arenamigrering.ArenaMigreringService;
+import no.nav.security.token.support.core.api.Unprotected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.UtviklerTilgangProperties;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -25,12 +25,12 @@ import java.util.UUID;
 @RequestMapping("/utvikler-admin/arena")
 @RequiredArgsConstructor
 @ProtectedWithClaims(issuer = "aad")
+@Unprotected
 @Slf4j
 public class InternalArenaMigreringController {
 
     private final AvtaleRepository avtaleRepository;
 
-    private final ArenaMigreringService arenaMigreringService;
     private final UtviklerTilgangProperties utviklerTilgangProperties;
     private final TokenUtils tokenUtils;
 
@@ -47,23 +47,8 @@ public class InternalArenaMigreringController {
         log.info("Lager tilskuddsperioder på en enkelt avtale {} fra dato {}", id, migreringsDato);
         Avtale avtale = avtaleRepository.findById(id)
                 .orElseThrow(RessursFinnesIkkeException::new);
-        avtale.nyeTilskuddsperioderVedMigreringFraArena(migreringsDato, false);
+        avtale.nyeTilskuddsperioderEtterMigreringFraArena(migreringsDato, false);
         avtaleRepository.save(avtale);
     }
 
-    @PostMapping("/lag-tilskuddsperioder-arena/{migreringsDato}")
-    public void lagTilskuddsperioderPåArenaAvtaler(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate migreringsDato) {
-        sjekkTilgang();
-        // Finn alle lønnstilskuddavtaler (varig og midlertidlig)
-        arenaMigreringService.lagTilskuddsperioderPåArenaAvtaler(migreringsDato);
-        log.info("Startet migrering av tilskuddsperioder");
-    }
-
-    @PostMapping("/dry-lag-tilskuddsperioder-arena/{migreringsDato}")
-    public void dryLagTilskuddsperioderPåArenaAvtaler(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate migreringsDato) {
-        sjekkTilgang();
-        // Finn alle lønnstilskuddavtaler (varig og midlertidlig)
-        arenaMigreringService.lagTilskuddsperioderPåArenaAvtalerDryRun(migreringsDato);
-        log.info("Startet migrering av tilskuddsperioder");
-    }
 }
