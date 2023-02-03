@@ -56,7 +56,8 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     List<Avtale> findAllByTiltakstype(Tiltakstype tiltakstype);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    List<Avtale> findAllByGjeldendeInnhold_SumLønnstilskuddRedusertNullAndGjeldendeInnhold_AvtaleInngåttNotNullAndTiltakstype(Tiltakstype tiltakstype);
+    List<Avtale> findAllByTiltakstypeVarigLonnstilskuddAndGjeldendeInnhold_DatoForRedusertProsentNullAAndGjeldendeInnhold_AvtaleInngåttNotNull();
+    //List<Avtale> findAllByGjeldendeInnhold_SumLønnstilskuddRedusertNullAndGjeldendeInnhold_AvtaleInngåttNotNullAndTiltakstype(Tiltakstype tiltakstype);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Override
