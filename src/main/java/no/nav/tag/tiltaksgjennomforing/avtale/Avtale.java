@@ -928,7 +928,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
             for (TilskuddPeriode tilskuddsperiode : Set.copyOf(tilskuddPeriode)) {
                 TilskuddPeriodeStatus status = tilskuddsperiode.getStatus();
-                if (status == TilskuddPeriodeStatus.UBEHANDLET) {
+                if (status == TilskuddPeriodeStatus.UBEHANDLET || status == TilskuddPeriodeStatus.BEHANDLET_I_ARENA) {
                     tilskuddPeriode.remove(tilskuddsperiode);
                 } else if (status == TilskuddPeriodeStatus.GODKJENT) {
                     annullerTilskuddsperiode(tilskuddsperiode);
