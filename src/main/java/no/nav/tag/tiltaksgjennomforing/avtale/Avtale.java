@@ -1069,6 +1069,25 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         throw new FeilkodeException(Feilkode.KAN_IKKE_REBEREGNE);
     }
 
+    public void reUtregnRedusert() {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
+        krevEnAvTiltakstyper(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
+        if (Utils.erIkkeTomme(
+                gjeldendeInnhold.getStartDato(),
+                gjeldendeInnhold.getSluttDato(),
+                gjeldendeInnhold.getSumLonnstilskudd(),
+                gjeldendeInnhold.getLonnstilskuddProsent(),
+                gjeldendeInnhold.getArbeidsgiveravgift(),
+                gjeldendeInnhold.getFeriepengesats(),
+                gjeldendeInnhold.getManedslonn(),
+                gjeldendeInnhold.getOtpSats())) {
+
+            getGjeldendeInnhold().reberegnRedusertProsentOgRedusertLonnstilskudd();
+            return;
+        }
+        throw new FeilkodeException(Feilkode.KAN_IKKE_REBEREGNE);
+    }
+
     private void krevEnAvTiltakstyper(Tiltakstype... tiltakstyper) {
         if (Stream.of(tiltakstyper).noneMatch(t -> t == tiltakstype)) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_FEIL_TILTAKSTYPE);

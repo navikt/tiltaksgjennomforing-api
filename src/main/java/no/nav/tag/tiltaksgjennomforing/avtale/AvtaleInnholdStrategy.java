@@ -12,6 +12,8 @@ public interface AvtaleInnholdStrategy {
     }
     default void endreAvtaleInnholdMedKvalifiseringsgruppe(EndreAvtale endreAvtale, Kvalifiseringsgruppe kvalifiseringsgruppe) {}
     default void regnUtTotalLonnstilskudd() {}
+
+    default void reUtregnRedusertProsentOgSum() {}
     Map<String, Object> alleFelterSomMåFyllesUt();
 
     void endreSluttDato(LocalDate nySluttDato);
