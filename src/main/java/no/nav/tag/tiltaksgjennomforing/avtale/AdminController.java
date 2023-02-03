@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.Unprotected;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,15 +30,31 @@ public class AdminController {
     }
 
     @PostMapping("/reberegn-mangler-dato-for-redusert-prosent")
+    @Transactional
     public void reberegnVarigLønnstilskuddSomIkkeHarRedusertDato() {
         // 1. Generer dato for redusert prosent og sumRedusert
         List<Avtale> varigeLønnstilskudd = avtaleRepository.findAllByTiltakstypeVarigLonnstilskuddAndGjeldendeInnhold_DatoForRedusertProsentNullAAndGjeldendeInnhold_AvtaleInngåttNotNull();
         varigeLønnstilskudd.forEach(avtale -> {
-            avtale.reberegnLønnstilskudd();
-            avtaleRepository.save(avtale);
+            if (avtale.getGjeldendeInnhold().getLonnstilskuddProsent() > 67) {
+                avtale.reberegnLønnstilskudd();
+                avtaleRepository.save(avtale);
+            }
         });
-
         // 2. Lag tilskuddsperioder på nytt. Må sjekke at ingen er godkjent osv. Sørge for at redusert sats blir brukt.
+        // SLETTE UBEHANDLET
+        // ANNULLERE GODKJENTE
+        // GENERERE PÅ NYTT
+
+
+
+
+        // IKKE EN CASE PT.
+        varigeLønnstilskudd.forEach(avtale -> {
+            if (avtale.getTilskuddPeriode().stream().anyMatch(t -> t.getRefusjonStatus() == RefusjonStatus.UTBETALT | t.getRefusjonStatus() == RefusjonStatus.SENDT_KRAV)) {
+                // Refusjon er allerde sendt inn.....
+                log.error("Refusjon er allerde sendt inn..");
+            }
+        });
 
     }
 }
