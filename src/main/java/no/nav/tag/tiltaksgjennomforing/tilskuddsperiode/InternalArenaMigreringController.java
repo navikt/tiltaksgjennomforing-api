@@ -24,7 +24,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/utvikler-admin/arena")
 @RequiredArgsConstructor
-//@ProtectedWithClaims(issuer = "aad")
+@ProtectedWithClaims(issuer = "aad")
 @Unprotected
 @Slf4j
 public class InternalArenaMigreringController {
@@ -43,7 +43,7 @@ public class InternalArenaMigreringController {
     @PostMapping("/lag-tilskuddsperioder-for-en-avtale/{avtaleId}/{migreringsDato}")
     @Transactional
     public void lagTilskuddsperioderPåEnAvtale(@PathVariable("avtaleId") UUID id, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate migreringsDato) {
-        //sjekkTilgang();
+        sjekkTilgang();
         log.info("Lager tilskuddsperioder på en enkelt avtale {} fra dato {}", id, migreringsDato);
         Avtale avtale = avtaleRepository.findById(id)
                 .orElseThrow(RessursFinnesIkkeException::new);
