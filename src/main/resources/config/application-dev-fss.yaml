@@ -126,8 +126,6 @@ tiltaksgjennomforing:
     enabled: true
   dvh-melding:
     gruppe-tilgang: ${beslutter.ad.gruppe}
-  tilskuddsperioder:
-    tiltakstyper: SOMMERJOBB
   utvikler-tilgang:
     gruppe-tilgang: ${beslutter.ad.gruppe}
 
