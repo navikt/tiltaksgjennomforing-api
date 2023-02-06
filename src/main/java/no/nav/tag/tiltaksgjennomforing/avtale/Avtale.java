@@ -667,11 +667,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     public void godkjennTilskuddsperiode(NavIdent beslutter, String enhet) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
 
-        // TODO: MIDLERTIDIG! FJERNE DENNE ASAP NÅR FEIL VEDR. REDUSERT PROSENT ER FIKSET!
-        if (tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD) {
-            throw new FeilkodeException(Feilkode.VARIG_LONNSTILSKUDD_TILSKUDDSPERIODE_MIDLERTIDIG_AVSKURDD);
-        }
-
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_KAN_KUN_BEHANDLES_VED_INNGAATT_AVTALE);
         }
