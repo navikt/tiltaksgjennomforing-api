@@ -624,6 +624,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         getGjeldendeInnhold().reberegnLønnstilskudd();
         sistEndretNå();
         if (gammelNavIdent == null) {
+            nyeTilskuddsperioder();
             this.registerEvent(new AvtaleOpprettetAvArbeidsgiverErFordelt(this));
         } else {
             registerEvent(new AvtaleNyVeileder(this, gammelNavIdent));

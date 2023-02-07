@@ -87,6 +87,10 @@ public class TestData {
         return Avtale.arbeidsgiverOppretterAvtale(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING));
     }
 
+    public static Avtale enAvtaleOpprettetAvArbeidsgiver(Tiltakstype tiltakstype) {
+        return Avtale.arbeidsgiverOppretterAvtale(lagOpprettAvtale(tiltakstype));
+    }
+
     public static Avtale setOppfølgingPåAvtale(Avtale avtale) {
         avtale.setEnhetOppfolging(ENHET_OPPFØLGING.getVerdi());
         avtale.setEnhetsnavnOppfolging(ENHET_OPPFØLGING.getNavn());
