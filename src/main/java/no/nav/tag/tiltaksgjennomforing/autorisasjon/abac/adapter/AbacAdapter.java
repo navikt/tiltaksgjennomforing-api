@@ -8,6 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -29,6 +30,7 @@ public class AbacAdapter {
 
     private final AbacProperties abacProperties;
 
+    @Cacheable(CacheConfiguration.ABAC_CACHE)
     public boolean harLeseTilgang(NavIdent navIdent, Fnr deltakerFnr) {
         try {
             AbacResponse response = restTemplate.postForObject(abacProperties.getUri(), getHttpEntity(tilAbacRequestBody(navIdent.asString(), deltakerFnr.asString())), AbacResponse.class);

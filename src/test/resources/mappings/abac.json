@@ -10,6 +10,11 @@
             "matchesJsonPath": "$[?(@.Request.Resource[0].Attribute[2].Value == \"01118023456\")]",
             "ignoreArrayOrder": true,
             "ignoreExtraElements": true
+          },
+          {
+            "matchesJsonPath": "$[?(@.Request.AccessSubject.Attribute[0].Value == \"F142226\")]",
+            "ignoreArrayOrder": true,
+            "ignoreExtraElements": true
           }
         ]
       },
