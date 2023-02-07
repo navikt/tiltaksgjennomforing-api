@@ -206,6 +206,28 @@ public class VeilederTest {
     }
 
     @Test
+    public void overtaAvtale__skal_genere_tilskuddsperioder_hvis_ufordelt() {
+        Avtale avtale = TestData.enAvtaleOpprettetAvArbeidsgiver(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
+        arbeidsgiver.endreAvtale(Instant.now(), TestData.endringPåAlleLønnstilskuddFelter(), avtale, EnumSet.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
+
+        assertThat(avtale.getTilskuddPeriode()).isEmpty();
+
+        Veileder veileder = TestData.enVeileder(new NavIdent("Z123456"));
+
+        //Tilsvarende operasjon som gjøres fra endepunketet overta avtalecontrolleren
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.getGjeldendeInnhold().setLonnstilskuddProsent(60);
+        veileder.overtaAvtale(avtale);
+
+        assertThat(avtale.getTilskuddPeriode()).isNotEmpty();
+
+
+
+
+    }
+
+    @Test
     public void oprettAvtale__setter_startverdier_på_avtale() {
         OpprettAvtale opprettAvtale = new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
