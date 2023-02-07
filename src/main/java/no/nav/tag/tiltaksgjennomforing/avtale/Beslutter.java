@@ -144,12 +144,19 @@ public class Beslutter extends Avtalepart<NavIdent> {
             tiltakstyper.add(Tiltakstype.VARIG_LONNSTILSKUDD.name());
             tiltakstyper.add(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD.name());
         }
+        if(status == TilskuddPeriodeStatus.GODKJENT || status == TilskuddPeriodeStatus.AVSLÅTT) {
+            return avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjentEllerAvslåttMinimal(
+                    status.name(),
+                    navEnheter,
+                    tiltakstyper);
+        } else {
+            return avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandletMinimal(
+                    status.name(),
+                    navEnheter,
+                    plussDato,
+                    tiltakstyper);
+        }
 
-        return avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandletMinimal(
-            status.name(),
-            navEnheter,
-            plussDato,
-            tiltakstyper);
     }
 
     private Set<String> hentNavEnheter() {
