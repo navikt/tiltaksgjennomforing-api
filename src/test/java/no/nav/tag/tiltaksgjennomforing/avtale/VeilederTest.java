@@ -11,6 +11,9 @@ import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+
+import lombok.RequiredArgsConstructor;
+import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
@@ -30,9 +33,24 @@ import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@ActiveProfiles({Miljø.LOCAL})
+@RequiredArgsConstructor
+@EnableCaching
+@Configuration
+@ContextConfiguration
 public class VeilederTest {
+
     @Test
     public void godkjennAvtale__kan_ikke_godkjenne_foerst() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
@@ -146,6 +164,7 @@ public class VeilederTest {
         // Avtalens bedriftnummer i miljøvariabel med pilotbedrifter
         TilskuddsperiodeConfig tilskuddsperiodeConfig = new TilskuddsperiodeConfig();
         tilskuddsperiodeConfig.setPilotvirksomheter(List.of(avtale.getBedriftNr()));
+
         // Veileder med injecta pilotbedrift
         Veileder veileder = new Veileder(avtale.getVeilederNavIdent(),
                 tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
@@ -423,5 +442,10 @@ public class VeilederTest {
         assertThatThrownBy(() -> veilarbArenaClient.sjekkOppfølingStatus(avtale))
                 .isExactlyInstanceOf(FeilkodeException.class)
                 .hasMessage(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET.name());
+    }
+
+    @Test
+    public void veileder_endreAvtale_skal_bare_kalles_en_gang() {
+
     }
 }

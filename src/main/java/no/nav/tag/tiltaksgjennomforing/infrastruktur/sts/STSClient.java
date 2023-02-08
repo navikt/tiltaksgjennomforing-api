@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.restservicecache.CacheConfiguration;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.caching.CacheConfiguration;
 
 @Component
 public class STSClient {
@@ -27,7 +27,7 @@ public class STSClient {
         this.stsUri = stsProperties.getRestUri();
     }
 
-    @Cacheable(CacheConfiguration.STS_CACHE)
+    // @Cacheable(CacheConfiguration.STS_CACHE)
     public STSToken hentSTSToken() {
         String uriString = UriComponentsBuilder.fromUri(stsUri)
                 .queryParam("grant_type", "client_credentials")
@@ -49,7 +49,7 @@ public class STSClient {
         return new HttpEntity<>(headers);
     }
 
-    @CacheEvict(CacheConfiguration.STS_CACHE)
+    // @CacheEvict(CacheConfiguration.STS_CACHE)
     public void evictToken() {
     }
 

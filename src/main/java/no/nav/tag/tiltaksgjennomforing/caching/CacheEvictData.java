@@ -6,7 +6,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-@Service
+//@Service
 @Slf4j
 public class CacheEvictData {
 
@@ -14,9 +14,9 @@ public class CacheEvictData {
             @CacheEvict(value = "pdlResponse", allEntries = true),
             @CacheEvict(value = "geoenhet", allEntries = true),
             @CacheEvict(value = "oppfolgingnavn", allEntries = true),
-            @CacheEvict(value = "oppfolgingsenhet", allEntries = true)
+            @CacheEvict(value = "oppfolgingenhet", allEntries = true)
     })
-    @Scheduled(fixedRateString = "${caching.spring.evict-rate}")
+   // @Scheduled(fixedRateString = "${caching.spring.evict-rate}")
     public void emptyCaching() {
       log.info("tømmer cache for geo- og oppfølingsenhet i avtaleløsningen");
     }

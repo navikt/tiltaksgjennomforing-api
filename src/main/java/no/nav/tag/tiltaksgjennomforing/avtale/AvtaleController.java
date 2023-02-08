@@ -54,7 +54,7 @@ public class AvtaleController {
     private final VeilarbArenaClient veilarbArenaClient;
 
     @GetMapping("/{avtaleId}")
-    public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+    public Avtale   hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         return avtalepart.hentAvtale(avtaleRepository, id);
     }

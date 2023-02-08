@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.infrastruktur.restservicecache;
+package no.nav.tag.tiltaksgjennomforing.infrastruktur.caching;
 
 import org.ehcache.event.CacheEvent;
 import org.ehcache.event.CacheEventListener;

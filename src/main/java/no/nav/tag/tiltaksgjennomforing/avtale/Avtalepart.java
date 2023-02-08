@@ -142,7 +142,6 @@ public abstract class Avtalepart<T extends Identifikator> {
                 pilotvirksomheter,
                 pilotEnheter
         );
-
     }
 
 

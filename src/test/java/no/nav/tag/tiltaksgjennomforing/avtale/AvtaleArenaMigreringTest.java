@@ -72,7 +72,7 @@ public class AvtaleArenaMigreringTest {
         avtale.getGjeldendeInnhold().setLonnstilskuddProsent(60);
         assertThat(avtale.getTilskuddPeriode()).isEmpty();
 
-        Veileder veileder = TestData.enVeileder(avtale);
+        Veileder veileder = TestData.enVeilederMedMocketEndepunkt(avtale);
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         // Endring uten at bedriften ligger i pilotvirksomheter
         veileder.endreAvtale(Instant.now(), endreAvtale, avtale, EnumSet.noneOf(Tiltakstype.class), List.of(), List.of());

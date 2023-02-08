@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.caching;
+package no.nav.tag.tiltaksgjennomforing.infrastruktur.caching;
 
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -8,19 +8,14 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
-/*@Configuration
-@EnableCaching*/
+@Configuration
+@EnableCaching
 public class CachingConfig {
 
-    //@Bean
+    @Bean
     public CacheManager cacheManager() {
         ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager();
-        cacheManager.setCacheNames(List.of(
-                "pdlResponse",
-                "geoenhet",
-                "oppfolgingnavn",
-                "oppfolgingenhet"
-        ));
+        cacheManager.setCacheNames(List.of("pdlResponse", "geoenhet", "oppfolgingnavn", "oppfolgingsenhet"));
         return cacheManager;
     }
 }

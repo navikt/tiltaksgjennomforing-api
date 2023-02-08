@@ -72,8 +72,15 @@ public class AvtalepartTest {
     @Test
     public void endreAvtale__skal_fungere_for_veileder() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        Veileder veileder = TestData.enVeileder(avtale);
-        veileder.endreAvtale(Now.instant(), TestData.ingenEndring(), avtale, EnumSet.of(avtale.getTiltakstype()), List.of(), List.of());
+        Veileder veileder = TestData.enVeilederMedMocketEndepunkt(avtale);
+        veileder.endreAvtale(
+                Now.instant(),
+                TestData.ingenEndring(),
+                avtale,
+                EnumSet.of(avtale.getTiltakstype()),
+                List.of(),
+                List.of()
+        );
     }
 
     @Test

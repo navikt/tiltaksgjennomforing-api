@@ -220,7 +220,7 @@ public class AvtaleControllerTest {
     @Test
     public void hentSkalKastTilgangskontrollExceptionHvisInnloggetSelvbetjeningBrukerIkkeHarTilgang() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        værInnloggetSom(new Arbeidsgiver(new Fnr("55555566666"), Set.of(), Map.of()));
+        værInnloggetSom(new Arbeidsgiver(new Fnr("55555566666"), Set.of(), Map.of(), null, null, null));
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         assertThatThrownBy(() -> avtaleController.hent(avtale.getId(), Avtalerolle.ARBEIDSGIVER)).isExactlyInstanceOf(TilgangskontrollException.class);
     }
@@ -275,19 +275,8 @@ public class AvtaleControllerTest {
     @Test
     public void endreAvtaleSkalReturnereOkHvisInnloggetPersonErVeileder() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        Veileder veileder = new Veileder(
-                enNavIdent(),
-                tilgangskontrollService,
-                persondataService,
-                norg2Client,
-                Collections.emptySet(),
-                new SlettemerkeProperties(),
-                new TilskuddsperiodeConfig(),
-                false,
-                veilarbArenaClient
-        );
+        Veileder veileder = TestData.enVeilederMedMocketEndepunkt(avtale);
         værInnloggetSom(veileder);
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(any(NavIdent.class), any(Fnr.class))).thenReturn(true);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         when(avtaleRepository.save(avtale)).thenReturn(avtale);
         ResponseEntity svar = avtaleController.endreAvtale(
@@ -356,7 +345,7 @@ public class AvtaleControllerTest {
 
     @Test
     public void opprettAvtaleSomArbeidsgiver__skal_feile_hvis_ag_ikke_har_tilgang_til_bedrift() {
-        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(TestData.etFodselsnummer(), Set.of(), Map.of());
+        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(TestData.etFodselsnummer(), Set.of(), Map.of(), null, null, null);
         værInnloggetSom(arbeidsgiver);
         assertThatThrownBy(() -> avtaleController.opprettAvtaleSomArbeidsgiver(new OpprettAvtale(new Fnr("99887765432"), new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING))).isInstanceOf(TilgangskontrollException.class);
     }

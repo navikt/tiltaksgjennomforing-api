@@ -224,13 +224,7 @@ public class Veileder extends Avtalepart<NavIdent> {
                 pilotvirksomheter,
                 pilotEnheter
         );
-        PdlRespons pdlRespons = hentPersondataFraPdl(avtale.getDeltakerFnr());
-        leggTilGeografiskOgOppfølgingsenhet(
-                avtale,
-                pdlRespons,
-                norg2Client,
-                veilarbArenaClient
-        );
+        PdlRespons pdlRespons = hentPersondataFraPdl(avtale.getDeltakerFnr().asString());
         hentGeoOgOppfølgingsenhet(avtale, pdlRespons);
     }
 
@@ -242,7 +236,7 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     private void leggTilGeoEnhet(Avtale avtale, PdlRespons pdlRespons) {
         Norg2GeoResponse norg2GeoResponse = hentGeoLokasjonFraPdlRespons(pdlRespons)
-                .map(enhet -> hentGeoEnhetFraNorg2(enhet, avtale.getDeltakerFnr())).orElse(null);
+                .map(enhet -> hentGeoEnhetFraNorg2(enhet, avtale.getDeltakerFnr().asString())).orElse(null);
         if (norg2GeoResponse != null) {
             avtale.setEnhetGeografisk(norg2GeoResponse.getEnhetNr());
             avtale.setEnhetsnavnGeografisk(norg2GeoResponse.getNavn());
@@ -250,38 +244,38 @@ public class Veileder extends Avtalepart<NavIdent> {
     }
 
     private void leggTilOppfølgingEnhet(Avtale avtale) {
-        String oppfølgingsEnhet = this.hentOppfølgingsenhet(avtale.getDeltakerFnr());
+        String oppfølgingsEnhet = this.hentOppfølgingsenhet(avtale.getDeltakerFnr().asString());
         setEnhetOppfolging(avtale, oppfølgingsEnhet);
     }
 
     private void leggTilOppfølgingEnhetsnavnFraNorg2(Avtale avtale) {
         final Norg2OppfølgingResponse response = hentOppfølgingsEnhetsnavn(
                 avtale.getEnhetOppfolging(),
-                avtale.getDeltakerFnr()
+                avtale.getDeltakerFnr().asString()
         );
         if (response != null) {
             avtale.setEnhetsnavnOppfolging(response.getNavn());
         }
     }
 
-    @Cacheable(value = "oppfolgingsenhet", key = "deltakerFnr.asString()")
-    public String hentOppfølgingsenhet(Fnr deltakerFnr) {
-        return veilarbArenaClient.hentOppfølgingsEnhet(deltakerFnr.asString());
+    @Cacheable(value = "oppfolgingenhet", key = "deltakerFnr")
+    public String hentOppfølgingsenhet(String deltakerFnr) {
+        return veilarbArenaClient.hentOppfølgingsEnhet(deltakerFnr);
     }
 
-    @Cacheable(value = "oppfolgingnavn", key = "deltakerFnr.asString()")
-    public Norg2OppfølgingResponse hentOppfølgingsEnhetsnavn(String enhetOppfolging, Fnr deltakerFnr) {
+    @Cacheable(value = "oppfolgingnavn", key = "deltakerFnr")
+    public Norg2OppfølgingResponse hentOppfølgingsEnhetsnavn(String enhetOppfolging, String deltakerFnr) {
         return norg2Client.hentOppfølgingsEnhetsnavn(enhetOppfolging);
     }
 
-    @Cacheable(value = "geoenhet", key = "deltakerFnr.asString()")
-    public Norg2GeoResponse hentGeoEnhetFraNorg2(String geoTilknytning, Fnr deltakerFnr) {
+    @Cacheable(value = "geoenhet", key = "deltakerFnr")
+    public Norg2GeoResponse hentGeoEnhetFraNorg2(String geoTilknytning, String deltakerFnr) {
         return norg2Client.hentGeografiskEnhet(geoTilknytning);
     }
 
-    @Cacheable(value = "pdlResponse", key = "deltakerFnr.asString()")
-    public PdlRespons hentPersondataFraPdl(Fnr deltakerFnr) {
-        return hentPersondata(deltakerFnr);
+    @Cacheable(value = "pdlResponse", key = "deltakerFnr")
+    public PdlRespons hentPersondataFraPdl(String deltakerFnr) {
+        return hentPersondata(new Fnr(deltakerFnr));
     }
 
     private PdlRespons hentPersondata(Fnr deltakerFnr) {
@@ -294,7 +288,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         return persondata;
     }
 
-    private void sjekkTilgangskontroll(NavIdent identifikator, Fnr deltakerFnr) {
+    public void sjekkTilgangskontroll(NavIdent identifikator, Fnr deltakerFnr) {
         if(!tilgangskontrollService.harSkrivetilgangTilKandidat(identifikator, deltakerFnr)) {
             throw new IkkeTilgangTilDeltakerException();
         }

@@ -53,7 +53,8 @@ public class InnloggingService {
     private final ArbeidsgiverTokenStrategyFactory arbeidsgiverTokenStrategyFactory;
 
     public Avtalepart hentAvtalepart(Avtalerolle avtalerolle) {
-        BrukerOgIssuer brukerOgIssuer = tokenUtils.hentBrukerOgIssuer().orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget."));
+        BrukerOgIssuer brukerOgIssuer = tokenUtils.hentBrukerOgIssuer()
+                .orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget."));
         Issuer issuer = brukerOgIssuer.getIssuer();
 
         if (issuer == Issuer.ISSUER_TOKENX && (avtalerolle == Avtalerolle.DELTAKER || avtalerolle == Avtalerolle.MENTOR)) {
@@ -106,7 +107,14 @@ public class InnloggingService {
                 .hentAltinnOrganisasjoner(new Fnr(brukerIdent), hentArbeidsgiverToken);
         Map<BedriftNr, Collection<Tiltakstype>> tilganger =
                 altinnTilgangsstyringService.hentTilganger(new Fnr(brukerIdent), hentArbeidsgiverToken);
-        return new Arbeidsgiver(new Fnr(brukerIdent), altinnOrganisasjoner, tilganger);
+        return new Arbeidsgiver(
+                new Fnr(brukerIdent),
+                altinnOrganisasjoner,
+                tilganger,
+                persondataService,
+                norg2Client,
+                veilarbArenaClient
+        );
     }
 
     private Set<NavEnhet> hentNavEnheter(NavIdent navIdent) {
@@ -135,7 +143,8 @@ public class InnloggingService {
 
     public void validerSystembruker() {
         tokenUtils.hentBrukerOgIssuer()
-                .filter(t -> (Issuer.ISSUER_SYSTEM == t.getIssuer() && systembrukerProperties.getId().equals(t.getBrukerIdent())))
+                .filter(t -> (Issuer.ISSUER_SYSTEM == t.getIssuer() && systembrukerProperties.getId()
+                        .equals(t.getBrukerIdent())))
                 .orElseThrow(() -> new TilgangskontrollException("Systemet har ikke tilgang til tjenesten"));
     }
 

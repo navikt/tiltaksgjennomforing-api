@@ -19,28 +19,61 @@ public class RegnUtTilskuddsperioderForAvtale {
     private final static int ANTALL_MÅNEDER_I_EN_PERIODE = 1;
 
     /**
-        TODO: TODO: Kalkulering av redusert prosent og redusert dato bør kun skje i {@link no.nav.tag.tiltaksgjennomforing.avtale.VarigLonnstilskuddStrategy} og heller ikke i frontend
+        TODO: Kalkulering av redusert prosent og redusert dato bør kun skje i
+     {@link no.nav.tag.tiltaksgjennomforing.avtale.VarigLonnstilskuddStrategy} og heller ikke i frontend
      */
-    public static List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(Tiltakstype tiltakstype,Integer sumLønnstilskuddPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed, Integer lonnstilskuddprosent, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMånedRedusert) {
+    public static List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(
+            Tiltakstype tiltakstype,
+            Integer sumLønnstilskuddPerMåned,
+            LocalDate datoFraOgMed,
+            LocalDate datoTilOgMed,
+            Integer lonnstilskuddprosent,
+            LocalDate datoForRedusertProsent,
+            Integer sumLønnstilskuddPerMånedRedusert
+    ) {
         if (datoForRedusertProsent == null) {
-            return lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
-                Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMåned);
-                return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), lonnstilskuddprosent);
-            }).collect(Collectors.toList());
+            return lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar ->
+                new TilskuddPeriode(
+                        beløpForPeriode(
+                                datoPar.getStart(),
+                                datoPar.getSlutt(),
+                                sumLønnstilskuddPerMåned
+                        ),
+                        datoPar.getStart(),
+                        datoPar.getSlutt(),
+                        lonnstilskuddprosent
+                )).collect(Collectors.toList());
         } else {
-            List<TilskuddPeriode> tilskuddperioderFørRedusering = lagPeriode(datoFraOgMed, datoForRedusertProsent.minusDays(1)).stream().map(datoPar -> {
-                Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMåned);
-                return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), lonnstilskuddprosent);
-            }).collect(Collectors.toList());
+            List<TilskuddPeriode> tilskuddperioderFørRedusering =
+                    lagPeriode(datoFraOgMed, datoForRedusertProsent.minusDays(1)).stream().map(datoPar ->
+                            new TilskuddPeriode(
+                                    beløpForPeriode(
+                                            datoPar.getStart(),
+                                            datoPar.getSlutt(),
+                                            sumLønnstilskuddPerMåned
+                                    ),
+                                    datoPar.getStart(),
+                                    datoPar.getSlutt(),
+                                    lonnstilskuddprosent
+                            )).toList();
 
-            List<TilskuddPeriode> tilskuddperioderEtterRedusering = lagPeriode(datoForRedusertProsent, datoTilOgMed).stream().map(datoPar -> {
-                Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMånedRedusert);
-                return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), getLonnstilskuddProsent(tiltakstype, lonnstilskuddprosent));
-            }).collect(Collectors.toList());
+            List<TilskuddPeriode> tilskuddperioderEtterRedusering =
+                    lagPeriode(datoForRedusertProsent, datoTilOgMed).stream().map(datoPar ->
+                            new TilskuddPeriode(
+                                    beløpForPeriode(
+                                            datoPar.getStart(),
+                                            datoPar.getSlutt(),
+                                            sumLønnstilskuddPerMånedRedusert
+                                    ),
+                                    datoPar.getStart(),
+                                    datoPar.getSlutt(),
+                                    getLonnstilskuddProsent(tiltakstype, lonnstilskuddprosent)
+                            )).toList();
 
             ArrayList<TilskuddPeriode> tilskuddsperioder = new ArrayList<>();
             tilskuddsperioder.addAll(tilskuddperioderFørRedusering);
             tilskuddsperioder.addAll(tilskuddperioderEtterRedusering);
+
             return tilskuddsperioder;
         }
 
@@ -54,19 +87,29 @@ public class RegnUtTilskuddsperioderForAvtale {
         return lonnstilskuddprosent - 10;
     }
 
-    public static Integer beløpForPeriode(LocalDate datoFraOgMed, LocalDate datoTilOgMed, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMåned, Integer sumLønnstilskuddPerMånedRedusert) {
+    public static Integer beløpForPeriode(
+            LocalDate datoFraOgMed,
+            LocalDate datoTilOgMed,
+            LocalDate datoForRedusertProsent,
+            Integer sumLønnstilskuddPerMåned,
+            Integer sumLønnstilskuddPerMånedRedusert
+    ) {
         if (datoForRedusertProsent == null || datoTilOgMed.isBefore(datoForRedusertProsent)) {
             return beløpForPeriode(datoFraOgMed, datoTilOgMed, sumLønnstilskuddPerMåned);
-        } else {
-            return beløpForPeriode(datoFraOgMed, datoTilOgMed, sumLønnstilskuddPerMånedRedusert);
         }
+        return beløpForPeriode(datoFraOgMed, datoTilOgMed, sumLønnstilskuddPerMånedRedusert);
     }
 
     public static Integer beløpForPeriode(LocalDate fra, LocalDate til, Integer sumLønnstilskuddPerMåned) {
         Period period = Period.between(fra, til.plusDays(1));
         Integer sumHeleMåneder = period.getMonths() * sumLønnstilskuddPerMåned;
-        BigDecimal dagsats = new BigDecimal(sumLønnstilskuddPerMåned).divide(DAGER_I_MÅNED, 10, RoundingMode.HALF_UP);
-        Integer sumEnkeltdager = dagsats.multiply(BigDecimal.valueOf(period.getDays()), MathContext.UNLIMITED).setScale(0, RoundingMode.HALF_UP).intValue();
+        BigDecimal dagsats = new BigDecimal(sumLønnstilskuddPerMåned)
+                .divide(DAGER_I_MÅNED, 10, RoundingMode.HALF_UP);
+        Integer sumEnkeltdager = dagsats.multiply(
+                BigDecimal.valueOf(period.getDays()),
+                MathContext.UNLIMITED
+        ).setScale(0, RoundingMode.HALF_UP).intValue();
+
         return sumHeleMåneder + sumEnkeltdager;
     }
 
@@ -74,13 +117,23 @@ public class RegnUtTilskuddsperioderForAvtale {
         if (datoFraOgMed.isAfter(datoTilOgMed)) {
             return List.of();
         }
-        List<LocalDate> startDatoer = datoFraOgMed.datesUntil(datoTilOgMed.plusDays(1), Period.ofMonths(ANTALL_MÅNEDER_I_EN_PERIODE)).collect(Collectors.toList());
+        List<LocalDate> startDatoer = datoFraOgMed.datesUntil(
+                datoTilOgMed.plusDays(1),
+                Period.ofMonths(ANTALL_MÅNEDER_I_EN_PERIODE)
+        ).toList();
+
         ArrayList<Periode> datoPar = new ArrayList<>();
         for (int i = 0; i < startDatoer.size(); i++) {
+
             // fra: Hvis startdato er lik datoFraOgMed, bruk denne, hvis ikke, bruk første datoen i mnd.
-            LocalDate fra = startDatoer.get(i).equals(datoFraOgMed) ? startDatoer.get(i) : førsteDatoIMnd(startDatoer.get(i));
+            LocalDate fra = startDatoer.get(i).equals(datoFraOgMed) ?
+                    startDatoer.get(i) :
+                    førsteDatoIMnd(startDatoer.get(i));
+
             // til: Hvis siste dag i mnd. er mindre enn datoTilOgMed, bruk siste dag i mnd, ellers bruk datoTilOgMed
-            LocalDate til = sisteDatoIMnd(startDatoer.get(i)).isBefore(datoTilOgMed) ? sisteDatoIMnd(startDatoer.get(i)) : datoTilOgMed;
+            LocalDate til = sisteDatoIMnd(startDatoer.get(i)).isBefore(datoTilOgMed) ?
+                    sisteDatoIMnd(startDatoer.get(i)) :
+                    datoTilOgMed;
 
             datoPar.addAll(splittHvisNyttÅr(fra, til));
         }
@@ -103,8 +156,7 @@ public class RegnUtTilskuddsperioderForAvtale {
             Periode datoPar1 = new Periode(fraDato, fraDato.withMonth(12).withDayOfMonth(31));
             Periode datoPar2 = new Periode(tilDato.withMonth(1).withDayOfMonth(1), tilDato);
             return List.of(datoPar1, datoPar2);
-        } else {
-            return List.of(new Periode(fraDato, tilDato));
         }
+        return List.of(new Periode(fraDato, tilDato));
     }
 }

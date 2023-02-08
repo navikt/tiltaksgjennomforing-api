@@ -3,7 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.CorrelationIdSupplier;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.restservicecache.CacheConfiguration;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.caching.CacheConfiguration;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
@@ -28,7 +28,7 @@ public class AxsysService {
         this.restTemplate = restTemplate;
     }
 
-    @Cacheable(CacheConfiguration.AXSYS_CACHE)
+     // @Cacheable(CacheConfiguration.AXSYS_CACHE)
     public List<NavEnhet> hentEnheterNavAnsattHarTilgangTil(NavIdent ident) {
         URI uri = UriComponentsBuilder.fromUri(axsysProperties.getUri())
                 .pathSegment(ident.asString())
@@ -49,7 +49,7 @@ public class AxsysService {
         }
     }
     
-    @CacheEvict(cacheNames=CacheConfiguration.AXSYS_CACHE, allEntries=true)
+    // @CacheEvict(cacheNames=CacheConfiguration.AXSYS_CACHE, allEntries=true)
     public void cacheEvict() {
     }
 
