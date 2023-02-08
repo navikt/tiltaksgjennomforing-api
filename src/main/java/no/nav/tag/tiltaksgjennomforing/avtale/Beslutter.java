@@ -130,6 +130,7 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
         TilskuddPeriodeStatus status = queryParametre.getTilskuddPeriodeStatus();
         Tiltakstype tiltakstype = queryParametre.getTiltakstype();
+        BedriftNr bedriftNr = queryParametre.getBedriftNr();
         Integer plussDato = getPlussdato();
 
         if (status == null) {
@@ -144,19 +145,31 @@ public class Beslutter extends Avtalepart<NavIdent> {
             tiltakstyper.add(Tiltakstype.VARIG_LONNSTILSKUDD.name());
             tiltakstyper.add(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD.name());
         }
+        List<AvtaleMinimal> resultat = new ArrayList<>();
         if(status == TilskuddPeriodeStatus.GODKJENT || status == TilskuddPeriodeStatus.AVSLÅTT) {
-            return avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjentEllerAvslåttMinimal(
+            resultat = avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjentEllerAvslåttMinimal(
                     status.name(),
                     navEnheter,
                     tiltakstyper);
         } else {
-            return avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandletMinimal(
+            resultat = avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandletMinimal(
                     status.name(),
                     navEnheter,
                     plussDato,
                     tiltakstyper);
         }
 
+        if(bedriftNr != null) {
+            resultat = resultat.stream().filter(avtaleMinimal -> {
+                log.info("AHAHAHAHAH", avtaleMinimal.getBedriftNr());
+                if(avtaleMinimal.getBedriftNr().equals(bedriftNr.asString())) {
+                    return true;
+                }
+                return false;
+            }).collect(Collectors.toList());
+        }
+
+        return resultat;
     }
 
     private Set<String> hentNavEnheter() {

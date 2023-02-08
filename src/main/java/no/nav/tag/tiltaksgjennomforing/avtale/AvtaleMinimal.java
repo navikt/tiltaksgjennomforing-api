@@ -9,5 +9,6 @@ public interface AvtaleMinimal {
     String getStartDatoPeriode();
     String getAntallUbehandlet();
     String getDeltakerFnr();
+    String getBedriftNr();
     String getTilskuddsperiodestatus();
 }
