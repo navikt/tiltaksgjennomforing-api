@@ -4,6 +4,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
 
 import io.micrometer.core.annotation.Timed;
 import java.net.URI;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Collections;
@@ -36,6 +37,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.persistence.criteria.CriteriaBuilder;
 
 @Protected
 @RestController
@@ -114,12 +117,27 @@ public class AvtaleController {
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = "startDato") String sorteringskolonne
     ) {
         Beslutter beslutter = innloggingService.hentBeslutter();
+        Instant start = Instant.now();
         List<AvtaleMinimal> avtaler = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
                 avtaleRepository,
                 queryParametre,
                 sorteringskolonne);
+        Instant end = Instant.now();
+        Duration hentMinimalListeTid = Duration.between(start, end);
+        if(hentMinimalListeTid.getSeconds() > 1) {
+            log.info("Brukte over et sekund for å hente beslutterliste. {} sekunder, {} antall avtaler", hentMinimalListeTid.getSeconds(), avtaler.size());
+        }
 
+        start = Instant.now();
         List<AvtaleMinimal> avtalerMedTilgang = avtaler.stream().filter(avtaleMinimal -> beslutter.harTilgangTilFnr(new Fnr(avtaleMinimal.getDeltakerFnr()))).collect(Collectors.toList());
+        end = Instant.now();
+        Duration abacFiltreringTid = Duration.between(start, end);
+        if(abacFiltreringTid.getSeconds() > 1) {
+            log.info("Brukte over et sekund for abac-filtrering. {} sekunder, {} antall avtaler", abacFiltreringTid.getSeconds(), avtalerMedTilgang.size());
+        }
+        if(hentMinimalListeTid.getSeconds() + abacFiltreringTid.getSeconds() > 1) {
+            log.info("Total tid for å hente list større en et sekund {}", hentMinimalListeTid.getSeconds() + abacFiltreringTid.getSeconds());
+        }
 
         return avtalerMedTilgang;
     }
