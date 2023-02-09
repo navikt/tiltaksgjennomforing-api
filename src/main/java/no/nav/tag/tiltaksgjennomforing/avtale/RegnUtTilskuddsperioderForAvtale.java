@@ -22,7 +22,7 @@ public class RegnUtTilskuddsperioderForAvtale {
         TODO: TODO: Kalkulering av redusert prosent og redusert dato bør kun skje i {@link no.nav.tag.tiltaksgjennomforing.avtale.VarigLonnstilskuddStrategy} og heller ikke i frontend
      */
     public static List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(Tiltakstype tiltakstype,Integer sumLønnstilskuddPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed, Integer lonnstilskuddprosent, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMånedRedusert) {
-        if (datoForRedusertProsent == null) {
+        if (datoForRedusertProsent == null || datoForRedusertProsent.isBefore(datoFraOgMed)) {
             return lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
                 Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMåned);
                 return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), lonnstilskuddprosent);
