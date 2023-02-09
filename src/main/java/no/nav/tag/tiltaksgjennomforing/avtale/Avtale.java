@@ -228,6 +228,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     }
 
     @JsonProperty
+    public boolean erRyddeAvtale() {
+        if (arenaRyddeAvtale != null) {
+            return true;
+        }
+        return false;
+    }
+
+    @JsonProperty
     public boolean erLaast() {
         return erGodkjentAvVeileder() && erGodkjentAvArbeidsgiver() && erGodkjentAvDeltaker();
     }
