@@ -114,7 +114,10 @@ public class AvtaleController {
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public List<AvtaleMinimal> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
             AvtalePredicate queryParametre,
-            @RequestParam(value = "sorteringskolonne", required = false, defaultValue = "startDato") String sorteringskolonne
+            @RequestParam(value = "sorteringskolonne", required = false, defaultValue = "startDato") String sorteringskolonne,
+            @RequestParam(value = "skip", required = false, defaultValue = "0") Integer skip,
+            @RequestParam(value = "limit", required = false, defaultValue = "100000000") Integer limit
+
     ) {
         Beslutter beslutter = innloggingService.hentBeslutter();
         Instant start = Instant.now();
@@ -129,7 +132,10 @@ public class AvtaleController {
         }
 
         start = Instant.now();
-        List<AvtaleMinimal> avtalerMedTilgang = avtaler.stream().filter(avtaleMinimal -> beslutter.harTilgangTilFnr(new Fnr(avtaleMinimal.getDeltakerFnr()))).collect(Collectors.toList());
+        List<AvtaleMinimal> avtalerMedTilgang = avtaler.stream()
+                .skip(skip)
+                .limit(limit)
+                .filter(avtaleMinimal -> beslutter.harTilgangTilFnr(new Fnr(avtaleMinimal.getDeltakerFnr()))).collect(Collectors.toList());
         end = Instant.now();
         Duration abacFiltreringTid = Duration.between(start, end);
         if(abacFiltreringTid.getSeconds() > 1) {
