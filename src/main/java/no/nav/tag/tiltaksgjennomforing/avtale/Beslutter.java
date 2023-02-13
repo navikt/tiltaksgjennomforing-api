@@ -161,7 +161,6 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
         if(bedriftNr != null) {
             resultat = resultat.stream().filter(avtaleMinimal -> {
-                log.info("AHAHAHAHAH", avtaleMinimal.getBedriftNr());
                 if(avtaleMinimal.getBedriftNr().equals(bedriftNr.asString())) {
                     return true;
                 }
