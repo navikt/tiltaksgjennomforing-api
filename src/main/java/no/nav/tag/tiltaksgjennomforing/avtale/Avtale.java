@@ -992,10 +992,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
     }
 
-    private boolean periodeErFørMigreringsdato(TilskuddPeriode tilskuddsperiode, LocalDate migreringsdato) {
-        return tilskuddsperiode.getStartDato().minusDays(1).isBefore(migreringsdato);
-    }
-
     public void forkortAvtale(LocalDate nySluttDato, String grunn, String annetGrunn, NavIdent utførtAv) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
 
