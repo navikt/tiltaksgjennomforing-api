@@ -950,7 +950,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
      * - Tar ikke høyde for perioder med lengde tre måneder som i arena
      * -
      */
-    public boolean nyeTilskuddsperioderEtterMigreringFraArena(LocalDate migreringsDato, boolean dryRun) {
+    public boolean nyeTilskuddsperioderEtterMigreringFraArena(LocalDate migreringsDato, boolean dryRun, boolean nyeTilskuddsperioderKunFremTilMigreringsdato) {
         if (sjekkArenaMigrering()) {
 
             for (TilskuddPeriode tilskuddsperiode : Set.copyOf(tilskuddPeriode)) {
@@ -958,11 +958,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
                 if (status == TilskuddPeriodeStatus.UBEHANDLET || status == TilskuddPeriodeStatus.BEHANDLET_I_ARENA) {
                     tilskuddPeriode.remove(tilskuddsperiode);
                 } else if (status == TilskuddPeriodeStatus.GODKJENT) {
-
                     if (tilskuddsperiode.getRefusjonStatus() == RefusjonStatus.SENDT_KRAV || tilskuddsperiode.getRefusjonStatus() == RefusjonStatus.UTBETALT) {
                         log.error("Prøver å rydde tilskuddsperiode {} som har status: {}", tilskuddsperiode.getId(), tilskuddsperiode.getRefusjonStatus());
                     } else {
-                        annullerTilskuddsperiode(tilskuddsperiode);
+                        if (tilskuddsperiode.getSluttDato().minusDays(1).isBefore(migreringsDato)) {
+                            annullerTilskuddsperiode(tilskuddsperiode);
+                        } else {
+                            log.info("Annullerer ikke godkjent tilskuddsperiode - perioden er etter migreringsdato");
+                        }
                     }
 
                 } else {
@@ -970,7 +973,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
                 }
             }
 
-            List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioder(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
+            List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioder(gjeldendeInnhold.getStartDato(), nyeTilskuddsperioderKunFremTilMigreringsdato ? migreringsDato : gjeldendeInnhold.getSluttDato());
             tilskuddsperioder.forEach(periode -> {
                 // Set status BEHANDLET_I_ARENA på tilskuddsperioder før migreringsdato
                 // Eller skal det være startdato? Er jo den samme datoen som migreringsdato. hmm...
@@ -987,6 +990,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             log.info("Avtale {} har allerede tilskuddsperioder eller en status som ikke skal ha perioder, eller er ikke tilstrekkelig fylt ut, genererer ikke nye", id);
             return false;
         }
+    }
+
+    private boolean periodeErFørMigreringsdato(TilskuddPeriode tilskuddsperiode, LocalDate migreringsdato) {
+        return tilskuddsperiode.getStartDato().minusDays(1).isBefore(migreringsdato);
     }
 
     public void forkortAvtale(LocalDate nySluttDato, String grunn, String annetGrunn, NavIdent utførtAv) {

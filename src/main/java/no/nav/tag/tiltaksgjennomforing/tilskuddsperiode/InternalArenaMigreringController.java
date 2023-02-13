@@ -12,10 +12,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
@@ -42,12 +39,15 @@ public class InternalArenaMigreringController {
 
     @PostMapping("/lag-tilskuddsperioder-for-en-avtale/{avtaleId}/{migreringsDato}")
     @Transactional
-    public void lagTilskuddsperioderPåEnAvtale(@PathVariable("avtaleId") UUID id, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate migreringsDato) {
+    public void lagTilskuddsperioderPåEnAvtale(
+            @PathVariable("avtaleId") UUID id,
+            @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate migreringsDato,
+            @RequestParam(value = "nyeTilskuddsperioderKunFremTilMigreringsdato", required = false, defaultValue = "false") boolean nyeTilskuddsperioderKunFremTilMigreringsdato) {
         sjekkTilgang();
         log.info("Lager tilskuddsperioder på en enkelt avtale {} fra dato {}", id, migreringsDato);
         Avtale avtale = avtaleRepository.findById(id)
                 .orElseThrow(RessursFinnesIkkeException::new);
-        avtale.nyeTilskuddsperioderEtterMigreringFraArena(migreringsDato, false);
+        avtale.nyeTilskuddsperioderEtterMigreringFraArena(migreringsDato, false, nyeTilskuddsperioderKunFremTilMigreringsdato);
         avtaleRepository.save(avtale);
     }
 
