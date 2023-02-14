@@ -921,7 +921,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
     }
 
-    private boolean sjekkArenaMigrering() {
+    private boolean sjekkRyddingAvTilskuddsperioder() {
         if (Utils.erNoenTomme(
                 gjeldendeInnhold.getStartDato(),
                 gjeldendeInnhold.getSluttDato(),
@@ -934,7 +934,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         // Statuser som skal få tilskuddsperioder
         Status status = statusSomEnum();
-        if (status == Status.ANNULLERT || status == Status.AVSLUTTET || status == Status.AVBRUTT) {
+        if (status == Status.ANNULLERT || status == Status.AVBRUTT) {
             return false;
         }
 
@@ -951,7 +951,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
      * -
      */
     public boolean nyeTilskuddsperioderEtterMigreringFraArena(LocalDate migreringsDato, boolean dryRun) {
-        if (sjekkArenaMigrering()) {
+        if (sjekkRyddingAvTilskuddsperioder()) {
 
             for (TilskuddPeriode tilskuddsperiode : Set.copyOf(tilskuddPeriode)) {
                 TilskuddPeriodeStatus status = tilskuddsperiode.getStatus();
