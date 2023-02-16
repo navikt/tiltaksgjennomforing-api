@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Profile({Miljø.DEV_FSS, Miljø.LOCAL})
+@Profile({Miljø.DEV_FSS, Miljø.PROD_FSS, Miljø.LOCAL})
 @Component
 @RequiredArgsConstructor
 @EnableScheduling
