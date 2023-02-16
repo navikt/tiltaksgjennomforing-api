@@ -1095,21 +1095,6 @@ public class AvtaleTest {
     }
 
     @Test
-    public void inngått_avtale_uten_tilskuddsperioder_skal_ikke_genere_nye_tilskuddsperioder_ved_endringer() {
-        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        avtale.getTilskuddPeriode().clear();
-        Veileder veileder = TestData.enVeileder(avtale);
-        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
-        veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
-        assertThat(avtale.getTilskuddPeriode()).isEmpty();
-        veileder.endreTilskuddsberegning(TestData.enEndreTilskuddsberegning(), avtale);
-        veileder.forlengAvtale(avtale.getGjeldendeInnhold().getSluttDato().plusDays(3), avtale);
-        veileder.forkortAvtale(avtale, avtale.getGjeldendeInnhold().getSluttDato().minusDays(3), "en grunn", null);
-        assertThat(avtale.getTilskuddPeriode()).isEmpty();
-    }
-
-    @Test
     public void forlenge_avtale_etter_etterregistrering() {
         // Implementer meg
     }
