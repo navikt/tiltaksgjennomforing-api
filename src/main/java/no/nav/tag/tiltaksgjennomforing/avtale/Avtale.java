@@ -559,7 +559,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             throw new AltMåVæreFyltUtException();
         }
         if (List.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB).contains(tiltakstype) &&
-                Utils.erNoenTomme(gjeldendeInnhold.getSumLonnstilskudd(), gjeldendeInnhold.getLonnstilskuddProsent())) {
+                Utils.erNoenTomme(gjeldendeInnhold.getSumLonnstilskudd(), gjeldendeInnhold.getLonnstilskuddProsent(), tilskuddPeriode)) {
             throw new FeilkodeException(Feilkode.MANGLER_BEREGNING);
         }
         if (veilederNavIdent == null) {
