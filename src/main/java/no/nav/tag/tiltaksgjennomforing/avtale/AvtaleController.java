@@ -519,6 +519,30 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
+    @PostMapping("/{avtaleId}/juster-arena-migreringsdato")
+    public void justerArenaMigreringsdato(@PathVariable("avtaleId") UUID avtaleId, @RequestBody JusterArenaMigreringsdato justerArenaMigreringsdato) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        if (!avtale.erAvtaleInngått()) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_ARENA_MIGRERINGSDATO_IKKE_INNGAATT_AVTALE);
+        }
+        veileder.sjekkTilgang(avtale);
+        avtale.nyeTilskuddsperioderEtterMigreringFraArena(justerArenaMigreringsdato.getMigreringsdato(), false);
+        ArenaRyddeAvtale arenaRyddeAvtale = new ArenaRyddeAvtale();
+        arenaRyddeAvtale.setAvtale(avtale);
+        arenaRyddeAvtaleRepository.save(arenaRyddeAvtale);
+        avtaleRepository.save(avtale);
+    }
+
+    @PostMapping("/{avtaleId}/juster-arena-migreringsdato/dry-run")
+    public Avtale justerArenaMigreringsdatoDryRun(@PathVariable("avtaleId") UUID avtaleId, @RequestBody JusterArenaMigreringsdato justerArenaMigreringsdato) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        veileder.sjekkTilgang(avtale);
+        avtale.nyeTilskuddsperioderEtterMigreringFraArena(justerArenaMigreringsdato.getMigreringsdato(), false);
+        return avtale;
+    }
+
     @PostMapping("/{avtaleId}/godkjenn-tilskuddsperiode")
     @Transactional
     public void godkjennTilskuddsperiode(@PathVariable("avtaleId") UUID avtaleId, @RequestBody GodkjennTilskuddsperiodeRequest godkjennTilskuddsperiodeRequest) {
