@@ -53,7 +53,7 @@ public class AvtaleHendelseStatusendringJobb {
                     AvtaleMeldingEntitet entitet = new AvtaleMeldingEntitet(UUID.randomUUID(), avtaleId, tidspunkt, HendelseType.STATUSENDRING, avtale.statusSomEnum(), meldingSomString);
                     avtaleMeldingEntitetRepository.save(entitet);
                     log.info("Avtale med id {} har byttet status til {}, siste melding har status {}, så sender melding med den nye statusen på topic {}",
-                            avtale.getId(), avtale.statusSomEnum(), entitet.getAvtaleStatus(), Topics.AVTALE_HENDELSE);
+                            avtale.getId(), avtale.statusSomEnum(), avtaleMeldingEntitet.getAvtaleStatus(), Topics.AVTALE_HENDELSE);
                     antallNyeMeldinger++;
                 } catch (JsonProcessingException e) {
                     log.error("Feil ved parsing av AvtaleHendelseMelding i statusendringjobb til json for hendelse med avtaleId {}", avtaleMelding.getAvtaleId());
