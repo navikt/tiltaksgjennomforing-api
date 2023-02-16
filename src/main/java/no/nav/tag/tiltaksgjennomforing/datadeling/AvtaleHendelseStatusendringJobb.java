@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Profile({Miljø.DEV_FSS, Miljø.PROD_FSS, Miljø.LOCAL})
 @Component
@@ -32,7 +33,7 @@ public class AvtaleHendelseStatusendringJobb {
 
     private final ObjectMapper objectMapper;
 
-    @Scheduled(fixedDelayString = "${tiltaksgjennomforing.avtale-hendelse-melding.fixed-delay}")
+    @Scheduled(fixedDelayString = "${tiltaksgjennomforing.avtale-hendelse-melding.fixed-delay}", timeUnit = TimeUnit.MINUTES)
     public void sjekkOmStatusendring() {
         if (!leaderPodCheck.isLeaderPod()) {
             log.info("Pod er ikke leader, så kjører ikke jobb for å finne avtaler med statusendring");

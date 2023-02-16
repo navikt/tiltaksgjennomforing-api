@@ -58,7 +58,7 @@ tiltaksgjennomforing:
   dvh-melding:
     fixed-delay: 600000
   avtale-hendelse-melding:
-    fixed-delay: 600000
+    fixed-delay: 120
   tilskuddsperioder:
     tiltakstyper: SOMMERJOBB,MIDLERTIDIG_LONNSTILSKUDD,VARIG_LONNSTILSKUDD
 
