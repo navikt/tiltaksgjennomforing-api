@@ -1,6 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 
 import java.math.BigDecimal;
@@ -12,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @UtilityClass
 public class RegnUtTilskuddsperioderForAvtale {
 
@@ -22,26 +26,44 @@ public class RegnUtTilskuddsperioderForAvtale {
         TODO: TODO: Kalkulering av redusert prosent og redusert dato bør kun skje i {@link no.nav.tag.tiltaksgjennomforing.avtale.VarigLonnstilskuddStrategy} og heller ikke i frontend
      */
     public static List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(Tiltakstype tiltakstype,Integer sumLønnstilskuddPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed, Integer lonnstilskuddprosent, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMånedRedusert) {
-        if (datoForRedusertProsent == null || datoForRedusertProsent.isBefore(datoFraOgMed)) {
+        if (datoForRedusertProsent == null) {
+            // Ingen reduserte peridoder   -----60-----60------60------ |
             return lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
                 Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMåned);
                 return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), lonnstilskuddprosent);
             }).collect(Collectors.toList());
         } else {
-            List<TilskuddPeriode> tilskuddperioderFørRedusering = lagPeriode(datoFraOgMed, datoForRedusertProsent.minusDays(1)).stream().map(datoPar -> {
-                Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMåned);
-                return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), lonnstilskuddprosent);
-            }).collect(Collectors.toList());
 
-            List<TilskuddPeriode> tilskuddperioderEtterRedusering = lagPeriode(datoForRedusertProsent, datoTilOgMed).stream().map(datoPar -> {
-                Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMånedRedusert);
-                return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), getLonnstilskuddProsent(tiltakstype, lonnstilskuddprosent));
-            }).collect(Collectors.toList());
 
-            ArrayList<TilskuddPeriode> tilskuddsperioder = new ArrayList<>();
-            tilskuddsperioder.addAll(tilskuddperioderFørRedusering);
-            tilskuddsperioder.addAll(tilskuddperioderEtterRedusering);
-            return tilskuddsperioder;
+            if (datoFraOgMed.isBefore(datoForRedusertProsent) && datoTilOgMed.isAfter(datoForRedusertProsent.minusDays(1))) {
+                // Både ikke reduserte og reduserte   ---60---60-----50----|--50----50-----
+                List<TilskuddPeriode> tilskuddperioderFørRedusering = lagPeriode(datoFraOgMed, datoForRedusertProsent.minusDays(1)).stream().map(datoPar -> {
+                    Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMåned);
+                    return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), lonnstilskuddprosent);
+                }).collect(Collectors.toList());
+
+                List<TilskuddPeriode> tilskuddperioderEtterRedusering = lagPeriode(datoForRedusertProsent, datoTilOgMed).stream().map(datoPar -> {
+                    Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMånedRedusert);
+                    return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), getLonnstilskuddProsent(tiltakstype, lonnstilskuddprosent));
+                }).collect(Collectors.toList());
+
+                ArrayList<TilskuddPeriode> tilskuddsperioder = new ArrayList<>();
+                tilskuddsperioder.addAll(tilskuddperioderFørRedusering);
+                tilskuddsperioder.addAll(tilskuddperioderEtterRedusering);
+                return tilskuddsperioder;
+            } else if (datoFraOgMed.isAfter(datoForRedusertProsent)) {
+                // Kun redusete peridoer      ---60----60----60---50---|--50----50---50--50--
+                List<TilskuddPeriode> tilskuddperioderEtterRedusering = lagPeriode(datoForRedusertProsent, datoTilOgMed).stream().map(datoPar -> {
+                    Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMånedRedusert);
+                    return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), getLonnstilskuddProsent(tiltakstype, lonnstilskuddprosent));
+                }).collect(Collectors.toList());
+                ArrayList<TilskuddPeriode> tilskuddsperioder = new ArrayList<>();
+                tilskuddsperioder.addAll(tilskuddperioderEtterRedusering);
+                return tilskuddsperioder;
+            } else {
+                log.error("Uventet feil i utregning av tilskuddsperioder med startdato: {}, sluttdato: {}, datoForRedusertProsent: {}", datoFraOgMed, datoTilOgMed, datoForRedusertProsent);
+                throw new FeilkodeException(Feilkode.FORLENG_MIDLERTIDIG_IKKE_TILGJENGELIG);
+            }
         }
 
     }
