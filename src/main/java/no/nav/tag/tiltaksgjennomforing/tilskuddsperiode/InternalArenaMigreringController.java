@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -48,6 +49,16 @@ public class InternalArenaMigreringController {
         Avtale avtale = avtaleRepository.findById(id)
                 .orElseThrow(RessursFinnesIkkeException::new);
         avtale.nyeTilskuddsperioderEtterMigreringFraArena(migreringsDato, false);
+        avtaleRepository.save(avtale);
+    }
+
+    @PostMapping("/reberegn-ubehandlede-tilskuddsperioder/{avtaleId}")
+    @Transactional
+    public void reberegnUbehandledeTilskuddsperioder(@PathVariable("avtaleId") UUID avtaleId) {
+        sjekkTilgang();
+        log.info("Reberegner ubehandlede tilskuddsperioder for avtale: {}", avtaleId);
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        avtale.reberegnUbehandledeTilskuddsperioder();
         avtaleRepository.save(avtale);
     }
 
