@@ -40,11 +40,12 @@ public class TilskuddsperiodeGodkjentMelding {
     Integer lønnstilskuddsprosent;
     Integer avtaleNr;
     Integer løpenummer;
+    Integer resendingsNummer;
     String enhet;
     NavIdent beslutterNavIdent;
     LocalDateTime godkjentTidspunkt;
 
-    public static TilskuddsperiodeGodkjentMelding create(Avtale avtale, TilskuddPeriode tilskuddsperiode) {
+    public static TilskuddsperiodeGodkjentMelding create(Avtale avtale, TilskuddPeriode tilskuddsperiode, int resendingsNummer) {
         return new TilskuddsperiodeGodkjentMelding
                 (avtale.getId(),
                 tilskuddsperiode.getId(),
@@ -68,6 +69,7 @@ public class TilskuddsperiodeGodkjentMelding {
                 tilskuddsperiode.getLonnstilskuddProsent(),
                 avtale.getAvtaleNr(),
                 tilskuddsperiode.getLøpenummer(),
+                resendingsNummer,
                 tilskuddsperiode.getEnhet(),
                 tilskuddsperiode.getGodkjentAvNavIdent(),
                 tilskuddsperiode.getGodkjentTidspunkt()
