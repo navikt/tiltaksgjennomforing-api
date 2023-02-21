@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 @Profile({Miljø.DEV_FSS, Miljø.LOCAL})
 @Component
