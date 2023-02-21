@@ -989,6 +989,24 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
     }
 
+    public void reberegnUbehandledeTilskuddsperioder() {
+        krevEnAvTiltakstyper(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
+
+        // Finn første ubehandlede periode
+        Optional<TilskuddPeriode> førsteUbehandledeTilskuddsperiode = tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET).findFirst();
+        // Fjern ubehandlede
+        for (TilskuddPeriode tilskuddsperiode : Set.copyOf(tilskuddPeriode)) {
+            TilskuddPeriodeStatus status = tilskuddsperiode.getStatus();
+            if (status == TilskuddPeriodeStatus.UBEHANDLET) {
+                tilskuddPeriode.remove(tilskuddsperiode);
+            }
+            // Lag nye fra og med den første ubehandlede
+            List<TilskuddPeriode> nyetilskuddsperioder = beregnTilskuddsperioder(førsteUbehandledeTilskuddsperiode.get().getStartDato(), gjeldendeInnhold.getSluttDato());
+            fikseLøpenumre(nyetilskuddsperioder, førsteUbehandledeTilskuddsperiode.get().getLøpenummer());
+            tilskuddPeriode.addAll(nyetilskuddsperioder);
+        }
+    }
+
     public void forkortAvtale(LocalDate nySluttDato, String grunn, String annetGrunn, NavIdent utførtAv) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
 
