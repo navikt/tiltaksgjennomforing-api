@@ -659,6 +659,7 @@ public class TestData {
         final Norg2Client norg2Client = mock(Norg2Client.class);
         final PdlRespons pdlRespons = TestData.enPdlrespons(false);
         final VeilarbArenaClient veilarbArenaClient = mock(VeilarbArenaClient.class);
+        final VeilarbArenaCache veilarbArenaCache = mock(VeilarbArenaCache.class);
 
         setupVeilederMock(
                 avtale,
@@ -669,22 +670,26 @@ public class TestData {
                 norg2Client
         );
 
-        return spy(new Veileder(
-                avtale.getVeilederNavIdent(),
-                tilgangskontrollService,
-                persondataService,
-                norg2Client,
-                Set.of(new NavEnhet(avtale.getEnhetOppfolging(), avtale.getEnhetsnavnOppfolging())),
-                new SlettemerkeProperties(),
-                new TilskuddsperiodeConfig(),
-                false,
-                veilarbArenaClient
-        ));
+        return spy(
+                new Veileder(
+                        avtale.getVeilederNavIdent(),
+                        tilgangskontrollService,
+                        persondataService,
+                        norg2Client,
+                        Set.of(new NavEnhet(avtale.getEnhetOppfolging(), avtale.getEnhetsnavnOppfolging())),
+                        new SlettemerkeProperties(),
+                        new TilskuddsperiodeConfig(),
+                        false,
+                        veilarbArenaClient,
+                        veilarbArenaCache
+                )
+        );
     }
 
     public static Veileder enVeileder(Avtale avtale) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         VeilarbArenaClient veilarbArenaClient = mock(VeilarbArenaClient.class);
+        VeilarbArenaCache veilarbArenaCache = mock(VeilarbArenaCache.class);
 
         lenient().when(
                 tilgangskontrollService.harSkrivetilgangTilKandidat(
@@ -711,7 +716,8 @@ public class TestData {
                 new SlettemerkeProperties(),
                 new TilskuddsperiodeConfig(),
                 false,
-                veilarbArenaClient
+                veilarbArenaClient,
+                veilarbArenaCache
         );
     }
 
@@ -846,7 +852,8 @@ public class TestData {
                 new SlettemerkeProperties(),
                 new TilskuddsperiodeConfig(),
                 false,
-                mock(VeilarbArenaClient.class)
+                mock(VeilarbArenaClient.class),
+                mock(VeilarbArenaCache.class)
         );
     }
 
@@ -865,7 +872,8 @@ public class TestData {
                 new SlettemerkeProperties(),
                 new TilskuddsperiodeConfig(),
                 false,
-                mock(VeilarbArenaClient.class)
+                mock(VeilarbArenaClient.class),
+                mock(VeilarbArenaCache.class)
         );
     }
 

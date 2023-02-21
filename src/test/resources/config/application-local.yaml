@@ -21,6 +21,10 @@ spring:
   sql:
     init:
       platform: postgres
+  cache:
+    cache-names: arena
+    caffeine:
+      spec: maximumSize=100,expireAfterAccess=60s
 no.nav.gcp.kafka.aiven:
   bootstrap-servers: ${spring.embedded.kafka.brokers}
   truststore-path: null

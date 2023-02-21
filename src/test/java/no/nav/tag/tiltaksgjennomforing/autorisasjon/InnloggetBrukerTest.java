@@ -13,6 +13,7 @@ import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaCache;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
@@ -33,6 +34,8 @@ public class InnloggetBrukerTest {
     private VeilarbArenaClient veilarbArenaClient;
     private AvtaleRepository avtaleRepository;
 
+    private VeilarbArenaCache veilarbArenaCache;
+
     @BeforeEach
     public void setup() {
         deltaker = new Fnr("00000000000");
@@ -47,6 +50,7 @@ public class InnloggetBrukerTest {
         kontoregisterService = mock(KontoregisterService.class);
         veilarbArenaClient = mock(VeilarbArenaClient.class);
         avtaleRepository = mock(AvtaleRepository.class);
+        veilarbArenaCache = mock(VeilarbArenaCache.class);
     }
 
     @Test
@@ -65,7 +69,8 @@ public class InnloggetBrukerTest {
                 new SlettemerkeProperties(),
                 new TilskuddsperiodeConfig(),
         false,
-                veilarbArenaClient
+                veilarbArenaClient,
+                veilarbArenaCache
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(veileder.getIdentifikator(), avtale.getDeltakerFnr()))
                 .thenReturn(true);
@@ -85,7 +90,8 @@ public class InnloggetBrukerTest {
                 new SlettemerkeProperties(),
                 new TilskuddsperiodeConfig(),
                 false,
-                veilarbArenaClient
+                veilarbArenaClient,
+                veilarbArenaCache
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(veileder.getIdentifikator(), avtale.getDeltakerFnr()))
                 .thenReturn(false);
@@ -104,7 +110,8 @@ public class InnloggetBrukerTest {
                 new SlettemerkeProperties(),
                 new TilskuddsperiodeConfig(),
                 false,
-                veilarbArenaClient
+                veilarbArenaClient,
+                veilarbArenaCache
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(veileder.getIdentifikator(), avtale.getDeltakerFnr()))
                 .thenReturn(true);
@@ -124,7 +131,8 @@ public class InnloggetBrukerTest {
                 new SlettemerkeProperties(),
                 new TilskuddsperiodeConfig(),
                 false,
-                veilarbArenaClient
+                veilarbArenaClient,
+                veilarbArenaCache
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 veileder.getIdentifikator(),
@@ -159,7 +167,9 @@ public class InnloggetBrukerTest {
                         Collections.emptySet(),
                         new SlettemerkeProperties(),
                         new TilskuddsperiodeConfig(),
-                        false, veilarbArenaClient
+                        false,
+                        veilarbArenaClient,
+                        veilarbArenaCache
                 ).harTilgang(avtale)
         ).isFalse();
     }
@@ -176,7 +186,8 @@ public class InnloggetBrukerTest {
                         new SlettemerkeProperties(),
                         new TilskuddsperiodeConfig(),
                         false,
-                        veilarbArenaClient
+                        veilarbArenaClient,
+                        veilarbArenaCache
                 ).harTilgang(avtale)
         ).isFalse();
     }

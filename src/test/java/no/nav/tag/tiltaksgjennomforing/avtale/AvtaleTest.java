@@ -3,10 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
+import no.nav.tag.tiltaksgjennomforing.enhet.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
@@ -1337,10 +1334,18 @@ public class AvtaleTest {
         tilskuddsperiodeConfig.setPilotvirksomheter(List.of(avtale.getBedriftNr()));
 
         // Veileder med injecta pilotbedrift
-        Veileder veileder = new Veileder(avtale.getVeilederNavIdent(),
-                tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
-                Set.of(new NavEnhet("4802", "Trysil")), mock(SlettemerkeProperties.class),
-                tilskuddsperiodeConfig, false, mock(VeilarbArenaClient.class));
+        Veileder veileder = new Veileder(
+                avtale.getVeilederNavIdent(),
+                tilgangskontrollService,
+                mock(PersondataService.class),
+                mock(Norg2Client.class),
+                Set.of(new NavEnhet("4802", "Trysil")),
+                mock(SlettemerkeProperties.class),
+                tilskuddsperiodeConfig,
+                false,
+                mock(VeilarbArenaClient.class),
+                mock(VeilarbArenaCache.class)
+        );
 
 
         deltaker.godkjennAvtale(Instant.now(), avtale);

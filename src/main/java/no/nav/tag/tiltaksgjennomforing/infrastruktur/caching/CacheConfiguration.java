@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.infrastruktur.caching;
 
+/*
 import static java.util.Arrays.asList;
 
 import java.time.Duration;
@@ -17,21 +18,22 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+
 // @Configuration
-//@EnableCaching
+// @EnableCaching
 public class CacheConfiguration {
 
     public final static String STS_CACHE = "sts_cache";
     public final static String ABAC_CACHE = "abac_cache";
     public static final String AXSYS_CACHE = "axsys_cache";
-    public static final String PDL_RESPONSE = "pdlResponse";
-    public static final String GEO_ENHET = "geoenhet";
-    public static final String OPPFOLGINGNAVN = "oppfolgingnavn";
-    public static final String OPPFOLGINGENHET = "oppfolgingenhet";
+    public static final String PDL_RESPONSE = "PDL_RESPONSE_CACHE";
+    public static final String GEO_ENHET = "GEO_ENHET_CACHE";
+    public static final String OPPFOLGINGNAVN = "OPPFOLGING_NAVN_CACHE";
+    public static final String OPPFOLGINGENHET = "OPPFOLGING_ENHET_CACHE";
 
     // @Bean
-    public JCacheManagerCustomizer cacheConfigurationCustomizer() {
-        return cacheManager -> {
+    /*  public JCacheManagerCustomizer cacheConfigurationCustomizer() {
+      return cacheManager -> {
             EventAndKeyHashEventLogger eventAndKeyHashEventLogger = new EventAndKeyHashEventLogger();
             cacheManager.createCache(
                     ABAC_CACHE,
@@ -62,9 +64,9 @@ public class CacheConfiguration {
                     cacheConfiguration(eventAndKeyHashEventLogger, 1000, Duration.ofMinutes(60))
             );
         };
-    }
+    }*/
 
-    private javax.cache.configuration.Configuration<Object, Object> cacheConfiguration(
+/*    private javax.cache.configuration.Configuration<Object, Object> cacheConfiguration(
             CacheEventListener<?, ?> eventListener,
             long size,
             Duration duration
@@ -81,5 +83,5 @@ public class CacheConfiguration {
                 ).withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(duration)).build();
 
         return Eh107Configuration.fromEhcacheCacheConfiguration(config);
-    }
+    }*/
 }

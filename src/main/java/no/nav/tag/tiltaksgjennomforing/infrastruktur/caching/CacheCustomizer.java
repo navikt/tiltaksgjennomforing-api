@@ -7,11 +7,17 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 
-@Component
+// @Component
 public class CacheCustomizer implements CacheManagerCustomizer<ConcurrentMapCacheManager> {
 
     @Override
     public void customize(ConcurrentMapCacheManager cacheManager) {
-        cacheManager.setCacheNames(List.of("pdlResponse", "geoenhet", "oppfolgingnavn", "oppfolgingsenhet"));
+        cacheManager.setCacheNames(List.of(
+                "PDL_RESPONSE_CACHE",
+                "GEO_ENHET_CACHE",
+                "OPPFOLGING_NAVN_CACHE",
+                "OPPFOLGING_ENHET_CACHE"
+        ));
     }
 }
+

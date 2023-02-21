@@ -13,17 +13,17 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
+import no.nav.tag.tiltaksgjennomforing.enhet.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 
+
 @Slf4j
+@CacheConfig(cacheNames = { "arena", "norgnavn", "norggeoenhet", "pdl" })
 public class Veileder extends Avtalepart<NavIdent> {
     static String ekstraTekstAvtleErGodkjentAvAllePartner =
             "Du må fullføre registreringen i Arena. Avtalen journalføres automatisk i Gosys.";
@@ -37,15 +37,21 @@ public class Veileder extends Avtalepart<NavIdent> {
     private final Set<NavEnhet> navEnheter;
     private final VeilarbArenaClient veilarbArenaClient;
 
-    public Veileder(NavIdent identifikator,
-                    TilgangskontrollService tilgangskontrollService,
-                    PersondataService persondataService,
-                    Norg2Client norg2Client,
-                    Set<NavEnhet> navEnheter,
-                    SlettemerkeProperties slettemerkeProperties,
-                    TilskuddsperiodeConfig tilskuddsperiodeConfig,
-                    boolean harAdGruppeForBeslutter,
-                    VeilarbArenaClient veilarbArenaClient) {
+    private final VeilarbArenaCache veilarbArenaCache;
+
+
+    public Veileder(
+            NavIdent identifikator,
+            TilgangskontrollService tilgangskontrollService,
+            PersondataService persondataService,
+            Norg2Client norg2Client,
+            Set<NavEnhet> navEnheter,
+            SlettemerkeProperties slettemerkeProperties,
+            TilskuddsperiodeConfig tilskuddsperiodeConfig,
+            boolean harAdGruppeForBeslutter,
+            VeilarbArenaClient veilarbArenaClient,
+            VeilarbArenaCache veilarbArenaCache
+    ) {
 
         super(identifikator);
         this.tilgangskontrollService = tilgangskontrollService;
@@ -56,6 +62,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         this.harAdGruppeForBeslutter = harAdGruppeForBeslutter;
         this.veilarbArenaClient = veilarbArenaClient;
         this.tilskuddsperiodeConfig = tilskuddsperiodeConfig;
+        this.veilarbArenaCache = veilarbArenaCache;
     }
 
     @Override
@@ -224,7 +231,7 @@ public class Veileder extends Avtalepart<NavIdent> {
                 pilotvirksomheter,
                 pilotEnheter
         );
-        PdlRespons pdlRespons = hentPersondataFraPdl(avtale.getDeltakerFnr().asString());
+        PdlRespons pdlRespons = hentPersondataFraPdl(avtale);
         hentGeoOgOppfølgingsenhet(avtale, pdlRespons);
     }
 
@@ -236,7 +243,7 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     private void leggTilGeoEnhet(Avtale avtale, PdlRespons pdlRespons) {
         Norg2GeoResponse norg2GeoResponse = hentGeoLokasjonFraPdlRespons(pdlRespons)
-                .map(enhet -> hentGeoEnhetFraNorg2(enhet, avtale.getDeltakerFnr().asString())).orElse(null);
+                .map(enhet -> hentGeoEnhetFraNorg2(enhet, avtale)).orElse(null);
         if (norg2GeoResponse != null) {
             avtale.setEnhetGeografisk(norg2GeoResponse.getEnhetNr());
             avtale.setEnhetsnavnGeografisk(norg2GeoResponse.getNavn());
@@ -244,38 +251,33 @@ public class Veileder extends Avtalepart<NavIdent> {
     }
 
     private void leggTilOppfølgingEnhet(Avtale avtale) {
-        String oppfølgingsEnhet = this.hentOppfølgingsenhet(avtale.getDeltakerFnr().asString());
+        String oppfølgingsEnhet = veilarbArenaCache.hentOppfølgingsenhet(avtale);
         setEnhetOppfolging(avtale, oppfølgingsEnhet);
     }
 
     private void leggTilOppfølgingEnhetsnavnFraNorg2(Avtale avtale) {
         final Norg2OppfølgingResponse response = hentOppfølgingsEnhetsnavn(
                 avtale.getEnhetOppfolging(),
-                avtale.getDeltakerFnr().asString()
+                avtale
         );
         if (response != null) {
             avtale.setEnhetsnavnOppfolging(response.getNavn());
         }
     }
 
-    @Cacheable(value = "oppfolgingenhet", key = "deltakerFnr")
-    public String hentOppfølgingsenhet(String deltakerFnr) {
-        return veilarbArenaClient.hentOppfølgingsEnhet(deltakerFnr);
-    }
-
-    @Cacheable(value = "oppfolgingnavn", key = "deltakerFnr")
-    public Norg2OppfølgingResponse hentOppfølgingsEnhetsnavn(String enhetOppfolging, String deltakerFnr) {
+    @Cacheable(value = "norgnavn", key = "#avtale.deltakerFnr")
+    public Norg2OppfølgingResponse hentOppfølgingsEnhetsnavn(String enhetOppfolging, Avtale avtale) {
         return norg2Client.hentOppfølgingsEnhetsnavn(enhetOppfolging);
     }
 
-    @Cacheable(value = "geoenhet", key = "deltakerFnr")
-    public Norg2GeoResponse hentGeoEnhetFraNorg2(String geoTilknytning, String deltakerFnr) {
+    @Cacheable(value = "norggeoenhet", key = "#avtale.deltakerFnr")
+    public Norg2GeoResponse hentGeoEnhetFraNorg2(String geoTilknytning, Avtale avtale) {
         return norg2Client.hentGeografiskEnhet(geoTilknytning);
     }
 
-    @Cacheable(value = "pdlResponse", key = "deltakerFnr")
-    public PdlRespons hentPersondataFraPdl(String deltakerFnr) {
-        return hentPersondata(new Fnr(deltakerFnr));
+    @Cacheable(value = "pdl", key = "#avtale.deltakerFnr")
+    public PdlRespons hentPersondataFraPdl(Avtale avtale) {
+        return hentPersondata(avtale.getDeltakerFnr());
     }
 
     private PdlRespons hentPersondata(Fnr deltakerFnr) {

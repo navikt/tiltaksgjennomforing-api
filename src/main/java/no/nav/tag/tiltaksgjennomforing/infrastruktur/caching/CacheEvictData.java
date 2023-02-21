@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.caching;
+package no.nav.tag.tiltaksgjennomforing.infrastruktur.caching;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;

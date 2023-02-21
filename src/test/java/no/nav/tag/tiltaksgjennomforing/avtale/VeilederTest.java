@@ -16,12 +16,7 @@ import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
-import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
+import no.nav.tag.tiltaksgjennomforing.enhet.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
@@ -33,22 +28,13 @@ import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
+
+
 @ActiveProfiles({Miljø.LOCAL})
 @RequiredArgsConstructor
-@EnableCaching
-@Configuration
-@ContextConfiguration
 public class VeilederTest {
 
     @Test
@@ -166,10 +152,18 @@ public class VeilederTest {
         tilskuddsperiodeConfig.setPilotvirksomheter(List.of(avtale.getBedriftNr()));
 
         // Veileder med injecta pilotbedrift
-        Veileder veileder = new Veileder(avtale.getVeilederNavIdent(),
-                tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
-                Set.of(new NavEnhet("4802", "Trysil")), mock(SlettemerkeProperties.class),
-                tilskuddsperiodeConfig, false, mock(VeilarbArenaClient.class));
+        Veileder veileder = new Veileder(
+                avtale.getVeilederNavIdent(),
+                tilgangskontrollService,
+                mock(PersondataService.class),
+                mock(Norg2Client.class),
+                Set.of(new NavEnhet("4802", "Trysil")),
+                mock(SlettemerkeProperties.class),
+                tilskuddsperiodeConfig,
+                false,
+                mock(VeilarbArenaClient.class),
+                mock(VeilarbArenaCache.class)
+        );
 
         avtale.endreAvtale(
                 Instant.now(),
@@ -289,6 +283,7 @@ public class VeilederTest {
         final Norg2Client norg2Client = mock(Norg2Client.class);
         final PdlRespons pdlRespons = TestData.enPdlrespons(false);
         final VeilarbArenaClient veilarbArenaClient = mock(VeilarbArenaClient.class);
+        final VeilarbArenaCache veilarbArenaCache = mock(VeilarbArenaCache.class);
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any())).thenReturn(true);
         when(persondataService.hentPersondata(fnr)).thenReturn(pdlRespons);
@@ -313,7 +308,8 @@ public class VeilederTest {
                 new SlettemerkeProperties(),
                 new TilskuddsperiodeConfig(),
                 false,
-                veilarbArenaClient
+                veilarbArenaClient,
+                veilarbArenaCache
         );
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
 
@@ -336,6 +332,7 @@ public class VeilederTest {
         );
 
         final VeilarbArenaClient veilarbArenaClient = mock(VeilarbArenaClient.class);
+        final VeilarbArenaCache veilarbArenaCache = mock(VeilarbArenaCache.class);
         final Norg2Client norg2Client = mock(Norg2Client.class);
         final PersondataService persondataService = mock(PersondataService.class);
         final TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
@@ -349,7 +346,8 @@ public class VeilederTest {
                 new SlettemerkeProperties(),
                 new TilskuddsperiodeConfig(),
                 false,
-                veilarbArenaClient
+                veilarbArenaClient,
+                veilarbArenaCache
         );
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any())).thenReturn(true);
@@ -387,7 +385,8 @@ public class VeilederTest {
                 slettemerkeProperties,
                 new TilskuddsperiodeConfig(),
                 false,
-                mock(VeilarbArenaClient.class)
+                mock(VeilarbArenaClient.class),
+                mock(VeilarbArenaCache.class)
         );
         veileder.slettemerk(avtale);
         assertThat(avtale.isSlettemerket()).isTrue();
@@ -414,7 +413,8 @@ public class VeilederTest {
                 slettemerkeProperties,
                 new TilskuddsperiodeConfig(),
                 false,
-                mock(VeilarbArenaClient.class)
+                mock(VeilarbArenaClient.class),
+                mock(VeilarbArenaCache.class)
         );
         assertThatThrownBy(() -> veileder.slettemerk(avtale)).isExactlyInstanceOf(IkkeAdminTilgangException.class);
     }
@@ -442,10 +442,5 @@ public class VeilederTest {
         assertThatThrownBy(() -> veilarbArenaClient.sjekkOppfølingStatus(avtale))
                 .isExactlyInstanceOf(FeilkodeException.class)
                 .hasMessage(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET.name());
-    }
-
-    @Test
-    public void veileder_endreAvtale_skal_bare_kalles_en_gang() {
-
     }
 }

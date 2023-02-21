@@ -26,6 +26,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddsperiodeConfig;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaCache;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
@@ -51,6 +52,8 @@ public class InnloggingService {
     private final TilskuddsperiodeConfig tilskuddsperiodeConfig;
     private final VeilarbArenaClient veilarbArenaClient;
     private final ArbeidsgiverTokenStrategyFactory arbeidsgiverTokenStrategyFactory;
+
+    private final VeilarbArenaCache veilarbArenaCache;
 
     public Avtalepart hentAvtalepart(Avtalerolle avtalerolle) {
         BrukerOgIssuer brukerOgIssuer = tokenUtils.hentBrukerOgIssuer()
@@ -98,7 +101,9 @@ public class InnloggingService {
                 slettemerkeProperties,
                 tilskuddsperiodeConfig,
                 harAdGruppeForBeslutter,
-                veilarbArenaClient);
+                veilarbArenaClient,
+                veilarbArenaCache
+        );
     }
 
     private Arbeidsgiver hentArbeidsgiver(Issuer issuer, String brukerIdent) {

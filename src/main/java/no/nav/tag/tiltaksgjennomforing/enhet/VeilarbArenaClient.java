@@ -7,13 +7,13 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.*;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
-@Component
+@Service
 public class VeilarbArenaClient {
 
     private final RestTemplate restTemplate;

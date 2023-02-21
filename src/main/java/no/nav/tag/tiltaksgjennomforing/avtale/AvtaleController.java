@@ -158,7 +158,8 @@ public class AvtaleController {
     public Avtale endreAvtaleDryRun(
             @PathVariable("avtaleId") UUID avtaleId,
             @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
-            @RequestBody EndreAvtale endreAvtale, @CookieValue("innlogget-part") Avtalerolle innloggetPart
+            @RequestBody EndreAvtale endreAvtale,
+            @CookieValue("innlogget-part") Avtalerolle innloggetPart
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
