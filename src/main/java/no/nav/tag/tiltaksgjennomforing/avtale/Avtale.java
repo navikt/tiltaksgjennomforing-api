@@ -687,14 +687,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         TilskuddPeriode gjeldendePeriode = gjeldendeTilskuddsperiode();
 
-        // Sjekk om samme løpenummer allerede er godkjent og annullert. Trenger da en "ekstra" resendingsNummer
-        Integer resendingsNummer = null;
+        // Sjekk om samme løpenummer allerede er godkjent og annullert. Trenger da en "ekstra" resendingsnummer
+        Integer resendingsnummer = null;
         for (TilskuddPeriode periode : tilskuddPeriode) {
             if(periode.getStatus() == TilskuddPeriodeStatus.ANNULLERT && periode.getLøpenummer().equals(gjeldendePeriode.getLøpenummer())) {
-                if(resendingsNummer == null) {
-                    resendingsNummer = 0;
+                if(resendingsnummer == null) {
+                    resendingsnummer = 0;
                 }
-                resendingsNummer++;
+                resendingsnummer++;
             }
         }
         gjeldendePeriode.godkjenn(beslutter, enhet);
@@ -704,7 +704,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             avtaleInngått(tidspunkt, Avtalerolle.BESLUTTER, beslutter);
         }
         sistEndretNå();
-        registerEvent(new TilskuddsperiodeGodkjent(this, gjeldendePeriode, beslutter, resendingsNummer));
+        registerEvent(new TilskuddsperiodeGodkjent(this, gjeldendePeriode, beslutter, resendingsnummer));
     }
 
     private void godkjennForBeslutter(LocalDateTime tidspunkt, NavIdent beslutter) {

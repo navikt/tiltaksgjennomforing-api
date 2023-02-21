@@ -60,10 +60,10 @@ public class TilskuddsperiodeResendingTest {
         LocalDate avtaleStart = LocalDate.of(2022, 10, 20);
         LocalDate avtaleSlutt = LocalDate.of(2024, 3, 2);
         Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
-        // Godkjenner første gang. Denne skal ikke ha noen resendingsNummer
+        // Godkjenner første gang. Denne skal ikke ha noen resendingsnummer
         avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), "4321");
         avtale.nyeTilskuddsperioderEtterMigreringFraArena(LocalDate.of(2022, 10, 20), false);
-        // Nå er perioden annullert en gang, godkjenner igjen. Da den nå har den samme løpenr må den få resendingsNummer = 1
+        // Nå er perioden annullert en gang, godkjenner igjen. Da den nå har den samme løpenr må den få resendingsnummer = 1
         avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), "1234");
         avtale.getTilskuddPeriode().forEach(periode -> System.out.println(periode.getStartDato() + " " + periode.getLøpenummer() + " " + periode.getStatus()));
         avtaleRepository.save(avtale);
@@ -75,10 +75,10 @@ public class TilskuddsperiodeResendingTest {
                 JSONObject jsonRefusjonRecord = new JSONObject(record.value());
                 String enhet = (String)jsonRefusjonRecord.get("enhet");
                 if("4321".equals(enhet)) {
-                    assertThat(jsonRefusjonRecord.get("resendingsNummer")).isNull();
+                    assertThat(jsonRefusjonRecord.get("resendingsnummer")).isNull();
                 }
                 if("1234".equals(enhet)) {
-                    assertThat((int)jsonRefusjonRecord.get("resendingsNummer")).isEqualTo(1);
+                    assertThat((int)jsonRefusjonRecord.get("resendingsnummer")).isEqualTo(1);
                 }
                 assertThat(jsonRefusjonRecord.get("avtaleId")).isNotNull();
             } catch (JSONException e) {

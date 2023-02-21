@@ -10,5 +10,5 @@ public class TilskuddsperiodeGodkjent {
     Avtale avtale;
     TilskuddPeriode tilskuddsperiode;
     Identifikator utfortAv;
-    Integer resendingsNummer;
+    Integer resendingsnummer;
 }
