@@ -1000,11 +1000,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             if (status == TilskuddPeriodeStatus.UBEHANDLET) {
                 tilskuddPeriode.remove(tilskuddsperiode);
             }
-            // Lag nye fra og med den første ubehandlede
-            List<TilskuddPeriode> nyetilskuddsperioder = beregnTilskuddsperioder(førsteUbehandledeTilskuddsperiode.get().getStartDato(), gjeldendeInnhold.getSluttDato());
-            fikseLøpenumre(nyetilskuddsperioder, førsteUbehandledeTilskuddsperiode.get().getLøpenummer());
-            tilskuddPeriode.addAll(nyetilskuddsperioder);
         }
+        // Lag nye fra og med den første ubehandlede
+        List<TilskuddPeriode> nyetilskuddsperioder = beregnTilskuddsperioder(førsteUbehandledeTilskuddsperiode.get().getStartDato(), gjeldendeInnhold.getSluttDato());
+        fikseLøpenumre(nyetilskuddsperioder, førsteUbehandledeTilskuddsperiode.get().getLøpenummer());
+        tilskuddPeriode.addAll(nyetilskuddsperioder);
     }
 
     public void forkortAvtale(LocalDate nySluttDato, String grunn, String annetGrunn, NavIdent utførtAv) {
