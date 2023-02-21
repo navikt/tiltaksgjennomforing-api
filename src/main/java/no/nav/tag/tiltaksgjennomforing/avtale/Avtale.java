@@ -887,6 +887,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     private List<TilskuddPeriode> beregnTilskuddsperioder(LocalDate startDato, LocalDate sluttDato) {
         List<TilskuddPeriode> tilskuddsperioder = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForAvtale(
+                id,
                 tiltakstype,
                 gjeldendeInnhold.getSumLonnstilskudd(),
                 startDato,

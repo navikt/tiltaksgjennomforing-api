@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -25,7 +26,7 @@ public class RegnUtTilskuddsperioderForAvtale {
     /**
         TODO: TODO: Kalkulering av redusert prosent og redusert dato bør kun skje i {@link no.nav.tag.tiltaksgjennomforing.avtale.VarigLonnstilskuddStrategy} og heller ikke i frontend
      */
-    public static List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(Tiltakstype tiltakstype,Integer sumLønnstilskuddPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed, Integer lonnstilskuddprosent, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMånedRedusert) {
+    public static List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(UUID id, Tiltakstype tiltakstype, Integer sumLønnstilskuddPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed, Integer lonnstilskuddprosent, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMånedRedusert) {
         if (datoForRedusertProsent == null) {
             // Ingen reduserte peridoder   -----60-----60------60------ |
             return lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
@@ -61,7 +62,7 @@ public class RegnUtTilskuddsperioderForAvtale {
                 tilskuddsperioder.addAll(tilskuddperioderEtterRedusering);
                 return tilskuddsperioder;
             } else {
-                log.error("Uventet feil i utregning av tilskuddsperioder med startdato: {}, sluttdato: {}, datoForRedusertProsent: {}", datoFraOgMed, datoTilOgMed, datoForRedusertProsent);
+                log.error("Uventet feil i utregning av tilskuddsperioder med startdato: {}, sluttdato: {}, datoForRedusertProsent: {}, avtaleId: {}", datoFraOgMed, datoTilOgMed, datoForRedusertProsent, id);
                 throw new FeilkodeException(Feilkode.FORLENG_MIDLERTIDIG_IKKE_TILGJENGELIG);
             }
         }
