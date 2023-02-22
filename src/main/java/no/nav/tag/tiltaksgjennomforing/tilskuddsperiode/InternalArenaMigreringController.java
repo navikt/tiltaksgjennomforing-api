@@ -25,7 +25,6 @@ import java.util.UUID;
 @RequestMapping("/utvikler-admin/arena")
 @RequiredArgsConstructor
 @ProtectedWithClaims(issuer = "aad")
-@Unprotected
 @Slf4j
 public class InternalArenaMigreringController {
 

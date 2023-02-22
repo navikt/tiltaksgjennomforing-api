@@ -45,7 +45,7 @@ public class TilskuddsperiodeGodkjentMelding {
     NavIdent beslutterNavIdent;
     LocalDateTime godkjentTidspunkt;
 
-    public static TilskuddsperiodeGodkjentMelding create(Avtale avtale, TilskuddPeriode tilskuddsperiode, int resendingsnummer) {
+    public static TilskuddsperiodeGodkjentMelding create(Avtale avtale, TilskuddPeriode tilskuddsperiode, Integer resendingsnummer) {
         return new TilskuddsperiodeGodkjentMelding
                 (avtale.getId(),
                 tilskuddsperiode.getId(),
