@@ -590,4 +590,5 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         TilskuddPeriode tilskuddPeriode2 = new TilskuddPeriode(1000, LocalDate.of(2021, 4, 1), LocalDate.of(2021, 5, 25), 60);
         assertThatThrownBy(() -> harAlleDageneIAvtalenperioden(List.of(tilskuddPeriode1, tilskuddPeriode2), LocalDate.of(2021, 1, 1), LocalDate.of(2021, 5, 26))).isInstanceOf(AssertionError.class);
     }
+
 }

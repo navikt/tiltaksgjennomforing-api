@@ -37,7 +37,7 @@ public class TilskuddsperiodeKafkaProducer {
 
     @TransactionalEventListener
     public void tilskuddsperiodeGodkjent(TilskuddsperiodeGodkjent event) {
-        TilskuddsperiodeGodkjentMelding melding = TilskuddsperiodeGodkjentMelding.create(event.getAvtale(), event.getTilskuddsperiode());
+        TilskuddsperiodeGodkjentMelding melding = TilskuddsperiodeGodkjentMelding.create(event.getAvtale(), event.getTilskuddsperiode(), event.getResendingsnummer());
         publiserTilskuddsperiodeGodkjentMelding(melding);
     }
 
@@ -78,11 +78,7 @@ public class TilskuddsperiodeKafkaProducer {
             log.error("Kunne ikke lage JSON for melding med id {} til topic {}", meldingId, topic);
             return;
         }
-        boolean enableSendingAvMelding = featureToggleService.isEnabled("arbeidsgiver.tiltaksgjennomforing-api.refusjon");
-        if (!enableSendingAvMelding) {
-            log.warn("Feature arbeidsgiver.tiltaksgjennomforing-api.refusjon er ikke aktivert. Sender derfor ikke melding til topic {} til Kafka topic", topic);
-            return;
-        }
+
         aivenKafkaTemplate.send(topic, meldingId, meldingSomString)
                 .addCallback(new ListenableFutureCallback<>() {
                     @Override
