@@ -34,9 +34,7 @@ public class RegnUtTilskuddsperioderForAvtale {
                 return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), lonnstilskuddprosent);
             }).collect(Collectors.toList());
         } else {
-
-
-            if (datoFraOgMed.isBefore(datoForRedusertProsent) && datoTilOgMed.isAfter(datoForRedusertProsent.minusDays(1))) {
+            if (datoFraOgMed.isBefore(datoForRedusertProsent.plusDays(1)) && datoTilOgMed.isAfter(datoForRedusertProsent.minusDays(1))) {
                 // Både ikke reduserte og reduserte   ---60---60-----50----|--50----50-----
                 List<TilskuddPeriode> tilskuddperioderFørRedusering = lagPeriode(datoFraOgMed, datoForRedusertProsent.minusDays(1)).stream().map(datoPar -> {
                     Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMåned);
