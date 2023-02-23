@@ -9,7 +9,6 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.UtviklerTilgangProperties;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
-import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,10 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.time.LocalDate;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @RestController
 @RequestMapping("/utvikler-admin/tilskuddsperioder")
@@ -49,7 +45,7 @@ public class InternalTilskuddsperiodeController {
         // Endepunkt for å sende melding til Kafka om en tilskuddsperiode som ikke ble sendt pga. toggle som feilaktig var avskrudd
         Avtale avtale = avtaleRepository.findById(request.getAvtaleId()).orElseThrow();
         TilskuddPeriode tilskuddPeriode = avtale.getTilskuddPeriode().stream().filter(tp -> tp.getId().equals(request.getTilskuddsperiodeId())).findFirst().orElseThrow();
-        TilskuddsperiodeGodkjentMelding melding = TilskuddsperiodeGodkjentMelding.create(avtale, tilskuddPeriode);
+        TilskuddsperiodeGodkjentMelding melding = TilskuddsperiodeGodkjentMelding.create(avtale, tilskuddPeriode, 0);
         tilskuddsperiodeKafkaProducer.publiserTilskuddsperiodeGodkjentMelding(melding);
     }
 

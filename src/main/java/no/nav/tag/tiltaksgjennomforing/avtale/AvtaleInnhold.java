@@ -225,6 +225,10 @@ public class AvtaleInnhold {
         innholdStrategi().regnUtTotalLonnstilskudd();
     }
 
+    public void reberegnRedusertProsentOgRedusertLonnstilskudd() {
+        innholdStrategi().reUtregnRedusertProsentOgSum();
+    }
+
     public void endreKontaktInfo(EndreKontaktInformasjon endreKontaktInformasjon) {
         setDeltakerFornavn(endreKontaktInformasjon.getDeltakerFornavn());
         setDeltakerEtternavn(endreKontaktInformasjon.getDeltakerEtternavn());

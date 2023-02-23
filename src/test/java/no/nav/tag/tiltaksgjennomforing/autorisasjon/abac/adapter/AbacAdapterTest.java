@@ -46,8 +46,23 @@ public class AbacAdapterTest {
         Fnr deltakerFnr = new Fnr("07098142678");
 
         boolean verdic = abacAdapter.harLeseTilgang(veilederIdent, deltakerFnr);
-
         assertTrue(verdic);
+    }
+
+    @Test
+    public void skal_teste_at_Abac_ikke_gir_tilgang_til_feil_person_fra_cache() {
+        NavIdent veilederIdent = new NavIdent("F142226");
+        Fnr deltakerFnr = new Fnr("01118023456");
+
+        boolean harIkkeTilgang = abacAdapter.harLeseTilgang(veilederIdent, deltakerFnr);
+
+        assertFalse(harIkkeTilgang);
+
+        NavIdent veilederSkalHaTilgang = new NavIdent("X142226");
+        boolean harTilgang = abacAdapter.harLeseTilgang(veilederSkalHaTilgang, deltakerFnr);
+
+        assertTrue(harTilgang);
+
     }
 
 }

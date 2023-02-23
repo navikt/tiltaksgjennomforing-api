@@ -3,7 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
-import no.nav.tag.tiltaksgjennomforing.arenamigrering.ArenaMigreringService;
+import no.nav.security.token.support.core.api.Unprotected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.UtviklerTilgangProperties;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -30,7 +31,6 @@ public class InternalArenaMigreringController {
 
     private final AvtaleRepository avtaleRepository;
 
-    private final ArenaMigreringService arenaMigreringService;
     private final UtviklerTilgangProperties utviklerTilgangProperties;
     private final TokenUtils tokenUtils;
 
@@ -47,15 +47,18 @@ public class InternalArenaMigreringController {
         log.info("Lager tilskuddsperioder på en enkelt avtale {} fra dato {}", id, migreringsDato);
         Avtale avtale = avtaleRepository.findById(id)
                 .orElseThrow(RessursFinnesIkkeException::new);
-        avtale.nyeTilskuddsperioderVedMigreringFraArena(migreringsDato);
+        avtale.nyeTilskuddsperioderEtterMigreringFraArena(migreringsDato, false);
+        avtaleRepository.save(avtale);
     }
 
-    @PostMapping("/lag-tilskuddsperioder-arena/{migreringsDato}")
+    @PostMapping("/reberegn-ubehandlede-tilskuddsperioder/{avtaleId}")
     @Transactional
-    public void lagTilskuddsperioderPåArenaAvtaler(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate migreringsDato) {
+    public void reberegnUbehandledeTilskuddsperioder(@PathVariable("avtaleId") UUID avtaleId) {
         sjekkTilgang();
-        // Finn alle lønnstilskuddavtaler (varig og midlertidlig)
-        arenaMigreringService.lagTilskuddsperioderPåArenaAvtaler(migreringsDato);
-        log.info("Startet migrering av tilskuddsperioder");
+        log.info("Reberegner ubehandlede tilskuddsperioder for avtale: {}", avtaleId);
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        avtale.reberegnUbehandledeTilskuddsperioder();
+        avtaleRepository.save(avtale);
     }
+
 }

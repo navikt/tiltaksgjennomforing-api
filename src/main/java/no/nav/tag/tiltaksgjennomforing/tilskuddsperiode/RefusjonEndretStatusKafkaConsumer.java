@@ -28,15 +28,13 @@ public class RefusjonEndretStatusKafkaConsumer {
     }
 
     @KafkaListener(topics = Topics.REFUSJON_ENDRET_STATUS, containerFactory = "refusjonEndretStatusContainerFactory")
-    public void refusjonEndretStatus(String jsonMelding) throws JsonProcessingException {
-        RefusjonEndretStatusMelding melding = objectMapper.readValue(jsonMelding, RefusjonEndretStatusMelding.class);
-
+    public void refusjonEndretStatus(RefusjonEndretStatusMelding melding) {
         TilskuddPeriode tilskuddPeriode = tilskuddPeriodeRepository.findById(UUID.fromString(melding.getTilskuddsperiodeId())).orElseThrow();
-        if(tilskuddPeriode.getStatus() != TilskuddPeriodeStatus.GODKJENT) {
-            log.error("En tilskuddsperiode {} som ikke er godkjent av beslutter har fått statusendring fra refusjon-api", melding.getTilskuddsperiodeId());
+        if(tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) {
+            log.error("En tilskuddsperiode {} som er ubehandlet har fått statusendring fra refusjon-api", melding.getTilskuddsperiodeId());
         }
-        tilskuddPeriode.setRefusjonStatus(melding.getRefusjonStatus());
-        log.info("Setter refusjonstatus til {} på tilskuddsperiode {}", melding.getRefusjonStatus(), melding.getTilskuddsperiodeId());
+        tilskuddPeriode.setRefusjonStatus(melding.getStatus());
+        log.info("Setter refusjonstatus til {} på tilskuddsperiode {}", melding.getStatus(), melding.getTilskuddsperiodeId());
 
         tilskuddPeriodeRepository.save(tilskuddPeriode);
 

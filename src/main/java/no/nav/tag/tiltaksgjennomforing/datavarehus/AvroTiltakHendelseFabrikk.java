@@ -6,6 +6,7 @@ import java.time.ZoneId;
 import java.util.UUID;
 import lombok.experimental.UtilityClass;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 
 @UtilityClass
 public class AvroTiltakHendelseFabrikk {
@@ -65,7 +66,7 @@ public class AvroTiltakHendelseFabrikk {
     }
 
     private Boolean erMaster(Avtale avtale) {
-        if(avtale.godkjentAvBeslutter() != null) {
+        if(avtale.getTiltakstype() == Tiltakstype.SOMMERJOBB || avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || avtale.getTiltakstype() == Tiltakstype.VARIG_LONNSTILSKUDD) {
             return Boolean.TRUE;
         }
         return Boolean.FALSE;

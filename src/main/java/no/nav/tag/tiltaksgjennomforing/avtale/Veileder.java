@@ -116,11 +116,15 @@ public class Veileder extends Avtalepart<NavIdent> {
         if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
             veilarbArenaClient.sjekkOppfølingStatus(avtale);
         }
+<<<<<<< HEAD
         avtale.godkjennForVeileder(
                 getIdentifikator(),
                 tilskuddsperiodeConfig.getPilotvirksomheter(),
                 tilskuddsperiodeConfig.getPilotenheter()
         );
+=======
+        avtale.godkjennForVeileder(getIdentifikator());
+>>>>>>> master
     }
 
     @Override
@@ -141,12 +145,16 @@ public class Veileder extends Avtalepart<NavIdent> {
         if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
             veilarbArenaClient.sjekkOppfølingStatus(avtale);
         }
+<<<<<<< HEAD
         avtale.godkjennForVeilederOgDeltaker(
                 getIdentifikator(),
                 paVegneAvGrunn,
                 tilskuddsperiodeConfig.getPilotvirksomheter(),
                 tilskuddsperiodeConfig.getPilotenheter()
         );
+=======
+        avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
+>>>>>>> master
     }
 
     public void godkjennForVeilederOgArbeidsgiver(
@@ -160,12 +168,16 @@ public class Veileder extends Avtalepart<NavIdent> {
         if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
             veilarbArenaClient.sjekkOppfølingStatus(avtale);
         }
+<<<<<<< HEAD
         avtale.godkjennForVeilederOgArbeidsgiver(
                 getIdentifikator(),
                 paVegneAvArbeidsgiverGrunn,
                 tilskuddsperiodeConfig.getPilotvirksomheter(),
                 tilskuddsperiodeConfig.getPilotenheter()
         );
+=======
+        avtale.godkjennForVeilederOgArbeidsgiver(getIdentifikator(), paVegneAvArbeidsgiverGrunn);
+>>>>>>> master
     }
 
     public void godkjennForVeilederOgDeltakerOgArbeidsgiver(
@@ -179,12 +191,16 @@ public class Veileder extends Avtalepart<NavIdent> {
         if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
             veilarbArenaClient.sjekkOppfølingStatus(avtale);
         }
+<<<<<<< HEAD
         avtale.godkjennForVeilederOgDeltakerOgArbeidsgiver(
                 getIdentifikator(),
                 paVegneAvDeltakerOgArbeidsgiverGrunn,
                 tilskuddsperiodeConfig.getPilotvirksomheter(),
                 tilskuddsperiodeConfig.getPilotenheter()
         );
+=======
+        avtale.godkjennForVeilederOgDeltakerOgArbeidsgiver(getIdentifikator(), paVegneAvDeltakerOgArbeidsgiverGrunn);
+>>>>>>> master
     }
 
     @Override
@@ -431,6 +447,7 @@ public class Veileder extends Avtalepart<NavIdent> {
 
 
 
+<<<<<<< HEAD
     public boolean sjekkOmPilot(SjekkOmPilotRequest sjekkOmPilotRequest) {
         boolean erPilot = false;
         String enhetOppfolging =
@@ -459,4 +476,6 @@ public class Veileder extends Avtalepart<NavIdent> {
     }
 
 
+=======
+>>>>>>> master
 }

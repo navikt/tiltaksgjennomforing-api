@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -118,6 +119,7 @@ public class VeilederTest {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         Veileder veileder = TestData.enVeileder(avtale);
+<<<<<<< HEAD
         avtale.endreAvtale(
                 Instant.now(),
                 TestData.endringPåAlleArbeidstreningFelter(),
@@ -126,6 +128,9 @@ public class VeilederTest {
                 List.of(),
                 List.of()
         );
+=======
+        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+>>>>>>> master
         arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
 
@@ -147,8 +152,8 @@ public class VeilederTest {
                 any(Fnr.class)
         )).thenReturn(true);
 
-        // Avtalens bedriftnummer i miljøvariabel med pilotbedrifter
         TilskuddsperiodeConfig tilskuddsperiodeConfig = new TilskuddsperiodeConfig();
+<<<<<<< HEAD
         tilskuddsperiodeConfig.setPilotvirksomheter(List.of(avtale.getBedriftNr()));
 
         // Veileder med injecta pilotbedrift
@@ -173,6 +178,15 @@ public class VeilederTest {
                 List.of(),
                 List.of()
         );
+=======
+
+        Veileder veileder = new Veileder(avtale.getVeilederNavIdent(),
+                tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
+                Set.of(new NavEnhet("4802", "Trysil")), mock(SlettemerkeProperties.class),
+                tilskuddsperiodeConfig, false, mock(VeilarbArenaClient.class));
+
+        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleLønnstilskuddFelter(), Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+>>>>>>> master
         arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
 
@@ -240,6 +254,7 @@ public class VeilederTest {
         endreAvtale.setLonnstilskuddProsent(null);
         avtale.getGjeldendeInnhold().setSumLonnstilskudd(null);
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
+<<<<<<< HEAD
         arbeidsgiver.endreAvtale(
                 Now.instant(),
                 endreAvtale,
@@ -248,6 +263,9 @@ public class VeilederTest {
                 List.of(),
                 List.of()
         );
+=======
+        arbeidsgiver.endreAvtale(Now.instant(), endreAvtale, avtale, EnumSet.of(avtale.getTiltakstype()));
+>>>>>>> master
         Veileder nyVeileder = TestData.enVeileder(new NavIdent("J987654"));
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.setFormidlingsgruppe(Formidlingsgruppe.ARBEIDSSOKER);
@@ -265,6 +283,28 @@ public class VeilederTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Veileder veileder = TestData.enVeileder(avtale);
         assertThatThrownBy(() -> veileder.overtaAvtale(avtale)).isExactlyInstanceOf(ErAlleredeVeilederException.class);
+    }
+
+    @Test
+    public void overtaAvtale__skal_genere_tilskuddsperioder_hvis_ufordelt() {
+        Avtale avtale = TestData.enAvtaleOpprettetAvArbeidsgiver(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
+        arbeidsgiver.endreAvtale(Instant.now(), TestData.endringPåAlleLønnstilskuddFelter(), avtale, EnumSet.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
+
+        assertThat(avtale.getTilskuddPeriode()).isEmpty();
+
+        Veileder veileder = TestData.enVeileder(new NavIdent("Z123456"));
+
+        //Tilsvarende operasjon som gjøres fra endepunketet overta avtalecontrolleren
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.getGjeldendeInnhold().setLonnstilskuddProsent(60);
+        veileder.overtaAvtale(avtale);
+
+        assertThat(avtale.getTilskuddPeriode()).isNotEmpty();
+
+
+
+
     }
 
     @Test

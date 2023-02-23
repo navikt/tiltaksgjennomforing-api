@@ -2,29 +2,24 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
-import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
-import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
-import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -54,6 +49,8 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
 
     @Autowired
     private EmbeddedKafkaBroker embeddedKafka;
+    @Autowired
+    private AvtaleRepository avtaleRepository;
 
     @MockBean
     private FeatureToggleService featureToggleService;
@@ -77,6 +74,9 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
         final String deltakerFornavn = "Donald";
         final String deltakerEtternavn = "Duck";
         final Identifikator deltakerFnr = new Fnr("12345678901");
+        final String arbeidsgiverFornavn = "Arne";
+        final String arbeidsgiverEtternavn = "Arbeidsgiver";
+        final String arbeidsgiverTlf = "41111111";
         final NavIdent veilederNavIdent = new NavIdent("X123456");
         final String bedriftNavn = "Donald Delivery";
         final BedriftNr bedriftnummer = new BedriftNr("99999999");
@@ -89,7 +89,7 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
 
         final TilskuddsperiodeGodkjentMelding tilskuddMelding = new TilskuddsperiodeGodkjentMelding(avtaleId,
                 tilskuddPeriodeId, avtaleInnholdId, tiltakstype, deltakerFornavn, deltakerEtternavn,
-                deltakerFnr, veilederNavIdent, bedriftNavn, bedriftnummer, tilskuddBeløp, tilskuddFraDato, tilskuddTilDato, 10.6, 0.02, 14.1, 60, avtaleNr, løpenummer,
+                deltakerFnr, arbeidsgiverFornavn, arbeidsgiverEtternavn, arbeidsgiverTlf, veilederNavIdent, bedriftNavn, bedriftnummer, tilskuddBeløp, tilskuddFraDato, tilskuddTilDato, 10.6, 0.02, 14.1, 60, avtaleNr, løpenummer, 0,
             "4808", beslutterNavIdent, LocalDateTime.now());
 
         //NÅR
@@ -105,6 +105,9 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
         assertThat(jsonRefusjonRecord.get("deltakerFornavn")).isNotNull();
         assertThat(jsonRefusjonRecord.get("deltakerEtternavn")).isNotNull();
         assertThat(jsonRefusjonRecord.get("deltakerFnr")).isNotNull();
+        assertThat(jsonRefusjonRecord.get("arbeidsgiverFornavn")).isNotNull();
+        assertThat(jsonRefusjonRecord.get("arbeidsgiverEtternavn")).isNotNull();
+        assertThat(jsonRefusjonRecord.get("arbeidsgiverTlf")).isNotNull();
         assertThat(jsonRefusjonRecord.get("veilederNavIdent")).isNotNull();
         assertThat(jsonRefusjonRecord.get("bedriftNavn")).isNotNull();
         assertThat(jsonRefusjonRecord.get("bedriftNr")).isNotNull();
@@ -120,4 +123,5 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
         assertThat(jsonRefusjonRecord.get("beslutterNavIdent")).isNotNull();
         assertThat(jsonRefusjonRecord.get("godkjentTidspunkt")).isNotNull();
     }
+
 }

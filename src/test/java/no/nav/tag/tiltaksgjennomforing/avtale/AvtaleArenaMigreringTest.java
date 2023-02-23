@@ -12,6 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class AvtaleArenaMigreringTest {
     @Test
+<<<<<<< HEAD
     public void avtale_med_tilskuddsperioder_skal_ikke_generere_nye_eller_endre() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
 
@@ -37,11 +38,21 @@ public class AvtaleArenaMigreringTest {
                         periode.getSluttDato() + " " +
                         periode.getLonnstilskuddProsent()
         ));
+=======
+    public void lonnstilskudd_tilskuddsperioder_skal_ha_status_ubehandlet_hvis_ikke_ryddeavtale() {
+        Now.fixedDate(LocalDate.of(2023, 02, 15));
+        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.of(2022, 05, 01), LocalDate.of(2023, 04,30));
+>>>>>>> master
         assertThat(avtale.getTilskuddPeriode()).isNotEmpty();
+
+        avtale.getTilskuddPeriode().forEach(tilskuddPeriode -> {
+            assertThat(tilskuddPeriode.getStatus()).isEqualTo(TilskuddPeriodeStatus.UBEHANDLET);
+        });
         Now.resetClock();
     }
 
     @Test
+<<<<<<< HEAD
     public void tilskuddsperioder_etter_migrering_med_status_behandlet_i_arena() {
         Now.fixedDate(LocalDate.of(2022, 11, 15));
         Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate()
@@ -54,14 +65,20 @@ public class AvtaleArenaMigreringTest {
                 .findFirst().get();
         assertThat(førsteUbehandlet.getStartDato()).isEqualTo(LocalDate.of(2023,02,01));
         assertThat(førsteUbehandlet.getStatus()).isEqualTo(TilskuddPeriodeStatus.UBEHANDLET);
+=======
+    public void lonnstilskudd_skal_generere_tilskuddsperioder_med_behandlet_status_om_ryddeavtale() {
+        Now.fixedDate(LocalDate.of(2023, 02, 15));
+        Avtale avtale = TestData.enLønnstilskuddsRyddeAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.of(2022, 05, 01), LocalDate.of(2023, 04,30));
+        assertThat(avtale.getTilskuddPeriode()).isNotEmpty();
 
-        TilskuddPeriode sisteBehandletIArena = avtale.getTilskuddPeriode()
-                .stream()
-                .filter(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.BEHANDLET_I_ARENA)
-                .reduce((first, second) -> second).orElse(null);
+        avtale.getTilskuddPeriode().forEach(tilskuddPeriode -> {
+>>>>>>> master
 
-        assertThat(sisteBehandletIArena.getStartDato()).isEqualTo(LocalDate.of(2023,01,01));
+        });
+
+        TilskuddPeriode sisteBehandletIArena = avtale.getTilskuddPeriode().stream().filter(tilskuddPeriode -> tilskuddPeriode.getStartDato().isAfter(LocalDate.of(2011, 12, 31))).findFirst().get();
         assertThat(sisteBehandletIArena.getStatus()).isEqualTo(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
+<<<<<<< HEAD
         Now.resetClock();
     }
 
@@ -103,6 +120,10 @@ public class AvtaleArenaMigreringTest {
                 .stream()
                 .forEach(tilskuddPeriode -> assertThat(tilskuddPeriode.getStatus())
                         .isEqualTo(TilskuddPeriodeStatus.UBEHANDLET));
+=======
+        TilskuddPeriode førsteUbehandlet = avtale.getTilskuddPeriode().stream().filter(tilskuddPeriode -> tilskuddPeriode.getStartDato().isAfter(LocalDate.of(2023, 01, 01))).findFirst().get();
+        assertThat(førsteUbehandlet.getStatus()).isEqualTo(TilskuddPeriodeStatus.UBEHANDLET);
+>>>>>>> master
 
         Now.resetClock();
     }

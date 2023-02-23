@@ -99,10 +99,20 @@ public abstract class Avtalepart<T extends Identifikator> {
         }
     }
 
+<<<<<<< HEAD
     protected void avtalePartKanEndreAvtale() {
         if (!kanEndreAvtale()) {
             throw new KanIkkeEndreException();
         }
+=======
+    public void endreAvtale(Instant sistEndret, EndreAvtale endreAvtale, Avtale avtale, EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder) {
+        sjekkTilgang(avtale);
+        if (!kanEndreAvtale()) {
+            throw new KanIkkeEndreException();
+        }
+        avvisDatoerTilbakeITid(avtale, endreAvtale.getStartDato(), endreAvtale.getSluttDato());
+        avtale.endreAvtale(sistEndret, endreAvtale, rolle(), tiltakstyperMedTilskuddsperioder, identifikator);
+>>>>>>> master
     }
 
     protected void sjekkTilgangOgEndreAvtale(

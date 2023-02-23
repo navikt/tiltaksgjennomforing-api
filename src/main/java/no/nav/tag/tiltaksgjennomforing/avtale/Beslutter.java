@@ -62,6 +62,10 @@ public class Beslutter extends Avtalepart<NavIdent> {
         return tilgangskontrollService.harSkrivetilgangTilKandidat(getIdentifikator(), avtale.getDeltakerFnr());
     }
 
+    public boolean harTilgangTilFnr(Fnr fnr) {
+        return tilgangskontrollService.harSkrivetilgangTilKandidat(getIdentifikator(), fnr);
+    }
+
     @Override
     List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
         return avtaleRepository.findAllByAvtaleNr(queryParametre.getAvtaleNr());
@@ -112,6 +116,59 @@ public class Beslutter extends Avtalepart<NavIdent> {
                     tiltakstype,
                     sorteringskolonne);
         };
+    }
+
+    List<AvtaleMinimal> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
+            AvtaleRepository avtaleRepository,
+            AvtalePredicate queryParametre,
+            String sorteringskolonne) {
+
+        Set<String> navEnheter = hentNavEnheter();
+        if (navEnheter.isEmpty()) {
+            throw new NavEnhetIkkeFunnetException();
+        }
+
+        TilskuddPeriodeStatus status = queryParametre.getTilskuddPeriodeStatus();
+        Tiltakstype tiltakstype = queryParametre.getTiltakstype();
+        BedriftNr bedriftNr = queryParametre.getBedriftNr();
+        Integer plussDato = getPlussdato();
+
+        if (status == null) {
+            status = TilskuddPeriodeStatus.UBEHANDLET;
+        }
+
+        Set<String> tiltakstyper = new HashSet<>();
+        if(tiltakstype != null) {
+            tiltakstyper.add(tiltakstype.name());
+        } else {
+            tiltakstyper.add(Tiltakstype.SOMMERJOBB.name());
+            tiltakstyper.add(Tiltakstype.VARIG_LONNSTILSKUDD.name());
+            tiltakstyper.add(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD.name());
+        }
+        List<AvtaleMinimal> resultat = new ArrayList<>();
+        if(status == TilskuddPeriodeStatus.GODKJENT || status == TilskuddPeriodeStatus.AVSLÅTT) {
+            resultat = avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjentEllerAvslåttMinimal(
+                    status.name(),
+                    navEnheter,
+                    tiltakstyper);
+        } else {
+            resultat = avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandletMinimal(
+                    status.name(),
+                    navEnheter,
+                    plussDato,
+                    tiltakstyper);
+        }
+
+        if(bedriftNr != null) {
+            resultat = resultat.stream().filter(avtaleMinimal -> {
+                if(avtaleMinimal.getBedriftNr().equals(bedriftNr.asString())) {
+                    return true;
+                }
+                return false;
+            }).collect(Collectors.toList());
+        }
+
+        return resultat;
     }
 
     private Set<String> hentNavEnheter() {

@@ -23,6 +23,9 @@ public class TilskuddsperiodeGodkjentMelding {
     String deltakerFornavn;
     String deltakerEtternavn;
     Identifikator deltakerFnr;
+    String arbeidsgiverFornavn;
+    String arbeidsgiverEtternavn;
+    String arbeidsgiverTlf;
     NavIdent veilederNavIdent;
     String bedriftNavn;
     BedriftNr bedriftNr;
@@ -37,11 +40,12 @@ public class TilskuddsperiodeGodkjentMelding {
     Integer lønnstilskuddsprosent;
     Integer avtaleNr;
     Integer løpenummer;
+    Integer resendingsnummer;
     String enhet;
     NavIdent beslutterNavIdent;
     LocalDateTime godkjentTidspunkt;
 
-    public static TilskuddsperiodeGodkjentMelding create(Avtale avtale, TilskuddPeriode tilskuddsperiode) {
+    public static TilskuddsperiodeGodkjentMelding create(Avtale avtale, TilskuddPeriode tilskuddsperiode, Integer resendingsnummer) {
         return new TilskuddsperiodeGodkjentMelding
                 (avtale.getId(),
                 tilskuddsperiode.getId(),
@@ -50,6 +54,9 @@ public class TilskuddsperiodeGodkjentMelding {
                 avtale.getGjeldendeInnhold().getDeltakerFornavn(),
                 avtale.getGjeldendeInnhold().getDeltakerEtternavn(),
                 avtale.getDeltakerFnr(),
+                avtale.getGjeldendeInnhold().getArbeidsgiverFornavn(),
+                avtale.getGjeldendeInnhold().getArbeidsgiverEtternavn(),
+                avtale.getGjeldendeInnhold().getArbeidsgiverTlf(),
                 avtale.getVeilederNavIdent(),
                 avtale.getGjeldendeInnhold().getBedriftNavn(),
                 avtale.getBedriftNr(),
@@ -62,6 +69,7 @@ public class TilskuddsperiodeGodkjentMelding {
                 tilskuddsperiode.getLonnstilskuddProsent(),
                 avtale.getAvtaleNr(),
                 tilskuddsperiode.getLøpenummer(),
+                resendingsnummer,
                 tilskuddsperiode.getEnhet(),
                 tilskuddsperiode.getGodkjentAvNavIdent(),
                 tilskuddsperiode.getGodkjentTidspunkt()
