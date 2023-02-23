@@ -52,7 +52,7 @@ public class RegnUtTilskuddsperioderForAvtale {
                 return tilskuddsperioder;
             } else if (datoFraOgMed.isAfter(datoForRedusertProsent)) {
                 // Kun redusete peridoer      ---60----60----60---50---|--50----50---50--50--
-                List<TilskuddPeriode> tilskuddperioderEtterRedusering = lagPeriode(datoForRedusertProsent, datoTilOgMed).stream().map(datoPar -> {
+                List<TilskuddPeriode> tilskuddperioderEtterRedusering = lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
                     Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMånedRedusert);
                     return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), getLonnstilskuddProsent(tiltakstype, lonnstilskuddprosent));
                 }).collect(Collectors.toList());

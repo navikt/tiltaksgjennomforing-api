@@ -343,13 +343,12 @@ public class AvtaleController {
     public void forlengAvtale(@PathVariable("avtaleId") UUID avtaleId,
                               @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
                               @RequestBody ForlengAvtale forlengAvtale) {
-        throw new FeilkodeException(Feilkode.FORLENG_MIDLERTIDIG_IKKE_TILGJENGELIG);
-        /*
+        // throw new FeilkodeException(Feilkode.FORLENG_MIDLERTIDIG_IKKE_TILGJENGELIG);
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
         veileder.forlengAvtale(forlengAvtale.getSluttDato(), avtale);
-        avtaleRepository.save(avtale);*/
+        avtaleRepository.save(avtale);
     }
 
     @PostMapping("/{avtaleId}/forleng-dry-run")
