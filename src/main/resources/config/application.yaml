@@ -90,16 +90,16 @@ no.nav.security.jwt:
 
 caches:
   caffeines:
-    - name: pdl
+    - name: pdl_cache
       expiryInMinutes: 60
       maximumSize: 1000
-    - name: norgnavn
+    - name: norgnavn_cache
       expiryInMinutes: 60
       maximumSize: 1000
-    - name: norggeoenhet
+    - name: norggeoenhet_cache
       expiryInMinutes: 60
       maximumSize: 1000
-    - name: arena
+    - name: arena_cache
       expiryInMinutes: 60
       maximumSize: 1000
     - name: sts_cache

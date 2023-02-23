@@ -24,13 +24,13 @@ public class EhCacheConfig extends CachingConfigurerSupport {
     public final static String ABAC_CACHE = "abac_cache";
     public static final String AXSYS_CACHE = "axsys_cache";
 
-    public static final String PDL_CACHE = "pdl";
+    public static final String PDL_CACHE = "pdl_cache";
 
-    public static final String NORGNAVN_CACHE = "norgnavn";
+    public static final String NORGNAVN_CACHE = "norgnavn_cache";
 
-    public static final String NORG_GEO_ENHET = "norggeoenhet";
+    public static final String NORG_GEO_ENHET = "norggeoenhet_cache";
 
-    public static final String ARENA_CACHCE = "arena";
+    public static final String ARENA_CACHCE = "arena_cache";
 
     @Autowired
     private CacheDto cacheDto;

@@ -5,6 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
@@ -74,7 +75,7 @@ public class VeilarbArenaClient {
         }
     }
 
-    @Cacheable(value = "arena")
+    @Cacheable(EhCacheConfig.ARENA_CACHCE)
     public String finnOppfølgingsenhet(String fnr) {
         return this.hentOppfølgingsEnhet(fnr);
     }

@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
@@ -124,7 +125,7 @@ public class PersondataService {
         return "STRENGT_FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG_UTLAND".equals(gradering);
     }
 
-    @Cacheable(value = "pdl")
+    @Cacheable(EhCacheConfig.PDL_CACHE)
     public PdlRespons hentPersondataFraPdl(Fnr fnr) {
         PdlRequest pdlRequest = new PdlRequest(resourceAsString(persondataQueryResource), new Variables(fnr.asString()));
         return utførKallTilPdl(pdlRequest);
