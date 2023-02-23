@@ -21,7 +21,9 @@ import static net.sf.ehcache.store.MemoryStoreEvictionPolicy.LRU;
 public class EhCacheConfig extends CachingConfigurerSupport {
 
     public final static String STS_CACHE = "sts_cache";
+
     public final static String ABAC_CACHE = "abac_cache";
+
     public static final String AXSYS_CACHE = "axsys_cache";
 
     public static final String PDL_CACHE = "pdl_cache";
