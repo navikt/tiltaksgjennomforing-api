@@ -55,6 +55,9 @@ public class CachingConfigTest {
     @Autowired
     VeilarbArenaCache veilarbArenaCache;
 
+    @Autowired
+    VeilarbArenaClient veilarbArenaClient;
+
 
 
     @Test
@@ -69,7 +72,6 @@ public class CachingConfigTest {
         final PersondataService persondataService = mock(PersondataService.class);
         final Norg2Client norg2Client = mock(Norg2Client.class);
         final PdlRespons pdlRespons = TestData.enPdlrespons(false);
-        final VeilarbArenaClient veilarbArenaClient = mock(VeilarbArenaClient.class);
 
         lenient().when(veilarbArenaClient.sjekkOgHentOppfølgingStatus(any()))
                 .thenReturn(
@@ -104,8 +106,8 @@ public class CachingConfigTest {
         );
 
 
-        veilarbArenaCache.hentOppfølgingsenhet(avtale);
-        veilarbArenaCache.hentOppfølgingsenhet(avtale);
+        veilarbArenaClient.hentOppfølgingsenhet(avtale);
+        veilarbArenaClient.hentOppfølgingsenhet(avtale);
 
         /*Cache cache = cacheManager.getCache("arena");
         cache.put("00000000000", "0906");

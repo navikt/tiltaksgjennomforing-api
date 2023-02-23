@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
@@ -70,6 +71,11 @@ public class VeilarbArenaClient {
                 !Kvalifiseringsgruppe.kvalifisererTilVariglonnstilskudd(oppfølgingStatus.getKvalifiseringsgruppe())) {
             throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_VARIG_LONNTILSKUDD_FEIL);
         }
+    }
+
+    @Cacheable(value = "arena")
+    public String hentOppfølgingsenhet(Avtale avtale) {
+        return this.hentOppfølgingsEnhet(avtale.getDeltakerFnr().asString());
     }
 
     public String hentOppfølgingsEnhet(String fnr) {

@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.infrastruktur.caching;
 
-/*
 import static java.util.Arrays.asList;
 
 import java.time.Duration;
@@ -32,7 +31,7 @@ public class CacheConfiguration {
     public static final String OPPFOLGINGENHET = "OPPFOLGING_ENHET_CACHE";
 
     // @Bean
-    /*  public JCacheManagerCustomizer cacheConfigurationCustomizer() {
+      public JCacheManagerCustomizer cacheConfigurationCustomizer() {
       return cacheManager -> {
             EventAndKeyHashEventLogger eventAndKeyHashEventLogger = new EventAndKeyHashEventLogger();
             cacheManager.createCache(
@@ -64,24 +63,24 @@ public class CacheConfiguration {
                     cacheConfiguration(eventAndKeyHashEventLogger, 1000, Duration.ofMinutes(60))
             );
         };
-    }*/
+    }
 
-/*    private javax.cache.configuration.Configuration<Object, Object> cacheConfiguration(
+   private javax.cache.configuration.Configuration<Object, Object> cacheConfiguration(
             CacheEventListener<?, ?> eventListener,
             long size,
             Duration duration
     ) {
-      org.ehcache.config.CacheConfiguration<Object, Object> config =
-              CacheConfigurationBuilder.newCacheConfigurationBuilder(
-                      Object.class,
-                              Object.class,
-                              ResourcePoolsBuilder.heap(size)
-                      )
-                .withService(CacheEventListenerConfigurationBuilder.newEventListenerConfiguration(
-                        eventListener,
-                        new HashSet<EventType>(asList(EventType.values())))
-                ).withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(duration)).build();
+       org.ehcache.config.CacheConfiguration<Object, Object> config =
+               CacheConfigurationBuilder.newCacheConfigurationBuilder(
+                               Object.class,
+                               Object.class,
+                               ResourcePoolsBuilder.heap(size)
+                       )
+                       .withService(CacheEventListenerConfigurationBuilder.newEventListenerConfiguration(
+                               eventListener,
+                               new HashSet<EventType>(asList(EventType.values())))
+                       ).withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(duration)).build();
 
-        return Eh107Configuration.fromEhcacheCacheConfiguration(config);
-    }*/
+       return Eh107Configuration.fromEhcacheCacheConfiguration(config);
+   }
 }
