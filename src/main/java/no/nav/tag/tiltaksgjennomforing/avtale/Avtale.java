@@ -1013,8 +1013,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
                 tilskuddPeriode.remove(tilskuddsperiode);
             }
         }
-        // Lag nye fra og med den første ubehandlede
-        List<TilskuddPeriode> nyetilskuddsperioder = beregnTilskuddsperioder(førsteUbehandledeTilskuddsperiode.get().getStartDato(), gjeldendeInnhold.getSluttDato());
+        // Lag nye fra og med siste ikke ubehandlet + en dag
+        LocalDate startDato = tilskuddPeriode.last().getSluttDato().plusDays(1);
+        List<TilskuddPeriode> nyetilskuddsperioder = beregnTilskuddsperioder(startDato, gjeldendeInnhold.getSluttDato());
         fikseLøpenumre(nyetilskuddsperioder, førsteUbehandledeTilskuddsperiode.get().getLøpenummer());
         tilskuddPeriode.addAll(nyetilskuddsperioder);
     }
