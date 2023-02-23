@@ -30,7 +30,8 @@ public class VeilederTest {
     public void godkjennAvtale__kan_ikke_godkjenne_foerst() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Veileder veileder = TestData.enVeileder(avtale);
-        assertThatThrownBy(() -> veileder.godkjennAvtale(avtale.getSistEndret(), avtale)).isExactlyInstanceOf(VeilederSkalGodkjenneSistException.class);
+        assertThatThrownBy(() -> veileder.godkjennAvtale(avtale.getSistEndret(), avtale))
+                .isExactlyInstanceOf(VeilederSkalGodkjenneSistException.class);
     }
 
     @Test
@@ -51,7 +52,8 @@ public class VeilederTest {
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.erKode6(avtale.getDeltakerFnr())).thenReturn(true);
         Veileder veileder = TestData.enVeileder(avtale, persondataService);
-        assertThatThrownBy(() -> veileder.godkjennAvtale(avtale.getSistEndret(), avtale)).isExactlyInstanceOf(KanIkkeGodkjenneAvtalePåKode6Exception.class);
+        assertThatThrownBy(() -> veileder.godkjennAvtale(avtale.getSistEndret(), avtale))
+                .isExactlyInstanceOf(KanIkkeGodkjenneAvtalePåKode6Exception.class);
     }
 
     @Test
@@ -62,7 +64,8 @@ public class VeilederTest {
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.erKode6(avtale.getDeltakerFnr())).thenReturn(true);
         Veileder veileder = TestData.enVeileder(avtale, persondataService);
-        assertThatThrownBy(() -> veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale)).isExactlyInstanceOf(KanIkkeGodkjenneAvtalePåKode6Exception.class);
+        assertThatThrownBy(() -> veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale))
+                .isExactlyInstanceOf(KanIkkeGodkjenneAvtalePåKode6Exception.class);
     }
 
     @Test
@@ -73,7 +76,10 @@ public class VeilederTest {
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         avtale.getGjeldendeInnhold().setAvtaleInngått(LocalDateTime.now());
         Veileder veileder = TestData.enVeileder(avtale);
-        assertFeilkode(Feilkode.KAN_IKKE_OPPHEVE_GODKJENNINGER_VED_INNGAATT_AVTALE, () -> veileder.opphevGodkjenninger(avtale));
+        assertFeilkode(
+                Feilkode.KAN_IKKE_OPPHEVE_GODKJENNINGER_VED_INNGAATT_AVTALE,
+                () -> veileder.opphevGodkjenninger(avtale)
+        );
     }
 
     @Test
@@ -81,10 +87,19 @@ public class VeilederTest {
         Now.fixedDate(LocalDate.of(2021, 6, 1));
         Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();
         Veileder veileder = TestData.enVeileder(avtale);
-        assertThat(avtale.godkjentAvArbeidsgiver() != null && avtale.godkjentAvDeltaker() != null && avtale.godkjentAvVeileder() != null).isTrue();
+        assertThat(
+                avtale.godkjentAvArbeidsgiver() != null &&
+                        avtale.godkjentAvDeltaker() != null &&
+                        avtale.godkjentAvVeileder() != null
+        ).isTrue();
         assertThat(avtale.erAvtaleInngått()).isFalse();
+
         veileder.opphevGodkjenninger(avtale);
-        assertThat(avtale.godkjentAvArbeidsgiver() == null && avtale.godkjentAvDeltaker() == null && avtale.godkjentAvVeileder() == null).isTrue();
+        assertThat(
+                avtale.godkjentAvArbeidsgiver() == null &&
+                        avtale.godkjentAvDeltaker() == null &&
+                        avtale.godkjentAvVeileder() == null
+        ).isTrue();
         Now.resetClock();
     }
 
@@ -93,11 +108,19 @@ public class VeilederTest {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         Veileder veileder = TestData.enVeileder(avtale);
-        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+        avtale.endreAvtale(
+                Instant.now(),
+                TestData.endringPåAlleArbeidstreningFelter(),
+                Avtalerolle.VEILEDER,
+                avtalerMedTilskuddsperioder
+        );
         arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
 
-        assertFeilkode(Feilkode.KAN_IKKE_OPPHEVE_GODKJENNINGER_VED_INNGAATT_AVTALE, () -> veileder.opphevGodkjenninger(avtale));
+        assertFeilkode(
+                Feilkode.KAN_IKKE_OPPHEVE_GODKJENNINGER_VED_INNGAATT_AVTALE,
+                () -> veileder.opphevGodkjenninger(avtale)
+        );
     }
 
     @Test
@@ -107,7 +130,8 @@ public class VeilederTest {
 
         // Gi veileder tilgang til deltaker
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(avtale.getVeilederNavIdent()), any(Fnr.class))).thenReturn(true);
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(avtale.getVeilederNavIdent()), any(Fnr.class)))
+                .thenReturn(true);
 
         TilskuddsperiodeConfig tilskuddsperiodeConfig = new TilskuddsperiodeConfig();
 
@@ -116,7 +140,12 @@ public class VeilederTest {
                 Set.of(new NavEnhet("4802", "Trysil")), mock(SlettemerkeProperties.class),
                 tilskuddsperiodeConfig, false, mock(VeilarbArenaClient.class));
 
-        avtale.endreAvtale(Instant.now(), TestData.endringPåAlleLønnstilskuddFelter(), Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+        avtale.endreAvtale(
+                Instant.now(),
+                TestData.endringPåAlleLønnstilskuddFelter(),
+                Avtalerolle.VEILEDER,
+                avtalerMedTilskuddsperioder
+        );
         arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
 
@@ -130,7 +159,10 @@ public class VeilederTest {
         beslutter.godkjennTilskuddsperiode(avtale, "0000");
 
         assertThat(avtale.erAvtaleInngått()).isTrue();
-        assertFeilkode(Feilkode.KAN_IKKE_OPPHEVE_GODKJENNINGER_VED_INNGAATT_AVTALE, () -> veileder.opphevGodkjenninger(avtale));
+        assertFeilkode(
+                Feilkode.KAN_IKKE_OPPHEVE_GODKJENNINGER_VED_INNGAATT_AVTALE,
+                () -> veileder.opphevGodkjenninger(avtale)
+        );
     }
 
 
@@ -170,7 +202,13 @@ public class VeilederTest {
 
     @Test
     public void overtarAvtale_uten_tilskuddsprosent__verifiser_blir_satt_og_beregnet() {
-        Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
+        Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(
+                new OpprettAvtale(
+                        TestData.etFodselsnummer(),
+                        TestData.etBedriftNr(),
+                        Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD
+                )
+        );
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setLonnstilskuddProsent(null);
         avtale.getGjeldendeInnhold().setSumLonnstilskudd(null);
@@ -199,7 +237,12 @@ public class VeilederTest {
     public void overtaAvtale__skal_genere_tilskuddsperioder_hvis_ufordelt() {
         Avtale avtale = TestData.enAvtaleOpprettetAvArbeidsgiver(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.endreAvtale(Instant.now(), TestData.endringPåAlleLønnstilskuddFelter(), avtale, EnumSet.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
+        arbeidsgiver.endreAvtale(
+                Instant.now(),
+                TestData.endringPåAlleLønnstilskuddFelter(),
+                avtale,
+                EnumSet.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD)
+        );
 
         assertThat(avtale.getTilskuddPeriode()).isEmpty();
 
@@ -320,11 +363,22 @@ public class VeilederTest {
         NavIdent navIdent = new NavIdent("Z123456");
 
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), eq(avtale.getDeltakerFnr()))).thenReturn(true);
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), eq(avtale.getDeltakerFnr())))
+                .thenReturn(true);
 
         SlettemerkeProperties slettemerkeProperties = new SlettemerkeProperties();
         slettemerkeProperties.setIdent(List.of(navIdent));
-        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class), Set.of(new NavEnhet("4802", "Trysil")), slettemerkeProperties, new TilskuddsperiodeConfig(), false, mock(VeilarbArenaClient.class));
+        Veileder veileder = new Veileder(
+                navIdent,
+                tilgangskontrollService,
+                mock(PersondataService.class),
+                mock(Norg2Client.class),
+                Set.of(new NavEnhet("4802", "Trysil")),
+                slettemerkeProperties,
+                new TilskuddsperiodeConfig(),
+                false,
+                mock(VeilarbArenaClient.class)
+        );
         veileder.slettemerk(avtale);
         assertThat(avtale.isSlettemerket()).isTrue();
     }
@@ -340,7 +394,17 @@ public class VeilederTest {
 
         SlettemerkeProperties slettemerkeProperties = new SlettemerkeProperties();
         slettemerkeProperties.setIdent(List.of(new NavIdent("Z123456")));
-        Veileder veileder = new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class), Set.of(new NavEnhet("4802", "Trysil")), slettemerkeProperties, new TilskuddsperiodeConfig(), false, mock(VeilarbArenaClient.class));
+        Veileder veileder = new Veileder(
+                navIdent,
+                tilgangskontrollService,
+                mock(PersondataService.class),
+                mock(Norg2Client.class),
+                Set.of(new NavEnhet("4802", "Trysil")),
+                slettemerkeProperties,
+                new TilskuddsperiodeConfig(),
+                false,
+                mock(VeilarbArenaClient.class)
+        );
         assertThatThrownBy(() -> veileder.slettemerk(avtale)).isExactlyInstanceOf(IkkeAdminTilgangException.class);
     }
 
@@ -355,10 +419,16 @@ public class VeilederTest {
     @Test
     public void opprettelse_av_tiltak_med_forskjellige_kvalifiseringskoder(){
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        Oppfølgingsstatus oppfølgingsstatus = new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.IKKE_VURDERT, "0906");
+        Oppfølgingsstatus oppfølgingsstatus = new Oppfølgingsstatus(
+                Formidlingsgruppe.ARBEIDSSOKER,
+                Kvalifiseringsgruppe.IKKE_VURDERT,
+                "0906"
+        );
         VeilarbArenaClient veilarbArenaClient = Mockito.spy(new VeilarbArenaClient(null, null));
         Mockito.doReturn(oppfølgingsstatus).when(veilarbArenaClient).hentOppfølgingStatus(Mockito.anyString());
 
-        assertThatThrownBy(() -> veilarbArenaClient.sjekkOppfølingStatus(avtale)).isExactlyInstanceOf(FeilkodeException.class).hasMessage(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET.name());
+        assertThatThrownBy(() -> veilarbArenaClient.sjekkOppfølingStatus(avtale))
+                .isExactlyInstanceOf(FeilkodeException.class)
+                .hasMessage(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET.name());
     }
 }
