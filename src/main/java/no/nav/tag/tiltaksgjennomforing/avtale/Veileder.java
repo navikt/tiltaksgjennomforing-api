@@ -13,7 +13,6 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
-import org.springframework.cache.annotation.CacheConfig;
 
 import java.sql.Date;
 import java.time.Instant;
@@ -24,7 +23,6 @@ import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentG
 import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
 @Slf4j
-@CacheConfig(cacheNames = { "arena", "norgnavn", "norggeoenhet", "pdl" })
 public class Veileder extends Avtalepart<NavIdent> {
     private final TilgangskontrollService tilgangskontrollService;
 
