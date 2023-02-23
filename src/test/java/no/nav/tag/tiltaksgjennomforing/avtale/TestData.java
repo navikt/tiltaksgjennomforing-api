@@ -617,7 +617,7 @@ public class TestData {
         final Norg2Client norg2Client = mock(Norg2Client.class);
         final PdlRespons pdlRespons = TestData.enPdlrespons(false);
         final VeilarbArenaClient veilarbArenaClient = mock(VeilarbArenaClient.class);
-        final VeilarbArenaCache veilarbArenaCache = mock(VeilarbArenaCache.class);
+
 
 
         setupVeilederMock(

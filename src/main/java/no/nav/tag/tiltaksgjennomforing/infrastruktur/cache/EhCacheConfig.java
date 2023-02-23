@@ -1,21 +1,20 @@
 package no.nav.tag.tiltaksgjennomforing.infrastruktur.cache;
 
 
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.config.CacheConfiguration;
+import net.sf.ehcache.config.PersistenceConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.config.CacheConfiguration;
-import net.sf.ehcache.config.PersistenceConfiguration;
+
+import java.time.Duration;
 
 import static net.sf.ehcache.config.PersistenceConfiguration.Strategy.NONE;
 import static net.sf.ehcache.store.MemoryStoreEvictionPolicy.LRU;
-
-
-import java.time.Duration;
 
 @Configuration
 @EnableCaching

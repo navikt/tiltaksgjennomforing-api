@@ -1,13 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentGeoLokasjonFraPdlRespons;
-import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
-
-import java.sql.Date;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.*;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
@@ -17,24 +9,23 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
-import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeAdminTilgangException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6Exception;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.cache.annotation.CacheConfig;
-import org.springframework.cache.annotation.Cacheable;
+
+import java.sql.Date;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.*;
+
+import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentGeoLokasjonFraPdlRespons;
+import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
 @Slf4j
 @CacheConfig(cacheNames = { "arena", "norgnavn", "norggeoenhet", "pdl" })
 public class Veileder extends Avtalepart<NavIdent> {
-    static String ekstraTekstAvtleErGodkjentAvAllePartner =
-            "Du må fullføre registreringen i Arena. Avtalen journalføres automatisk i Gosys.";
     private final TilgangskontrollService tilgangskontrollService;
 
     private final PersondataService persondataService;
@@ -367,10 +358,6 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     private LocalDate settStartDato(LocalDate startdato) {
         return startdato != null ? startdato : LocalDate.now();
-    }
-
-    private String settAvtaleId(UUID avtaleId) {
-        return avtaleId != null ? avtaleId.toString() : null;
     }
 
     protected List<AlleredeRegistrertAvtale> hentAvtaleDeltakerAlleredeErRegistrertPaa(
