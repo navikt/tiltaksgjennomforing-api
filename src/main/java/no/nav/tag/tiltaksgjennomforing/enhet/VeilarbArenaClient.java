@@ -6,14 +6,18 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.http.*;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
-@Component
+@Service
+// @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class VeilarbArenaClient {
 
     private final RestTemplate restTemplate;
@@ -70,6 +74,11 @@ public class VeilarbArenaClient {
                 !Kvalifiseringsgruppe.kvalifisererTilVariglonnstilskudd(oppfølgingStatus.getKvalifiseringsgruppe())) {
             throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_VARIG_LONNTILSKUDD_FEIL);
         }
+    }
+
+    @Cacheable(value = "arena")
+    public String finnOppfølgingsenhet(String fnr) {
+        return this.hentOppfølgingsEnhet(fnr);
     }
 
     public String hentOppfølgingsEnhet(String fnr) {

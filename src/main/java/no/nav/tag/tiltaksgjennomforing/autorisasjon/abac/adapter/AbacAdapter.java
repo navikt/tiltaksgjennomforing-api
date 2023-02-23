@@ -3,7 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter;
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.restservicecache.CacheConfiguration;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ public class AbacAdapter {
 
     private final AbacProperties abacProperties;
 
-    @Cacheable(CacheConfiguration.ABAC_CACHE)
+    @Cacheable(EhCacheConfig.ABAC_CACHE)
     public boolean harLeseTilgang(NavIdent navIdent, Fnr deltakerFnr) {
         try {
             AbacResponse response = restTemplate.postForObject(abacProperties.getUri(), getHttpEntity(tilAbacRequestBody(navIdent.asString(), deltakerFnr.asString())), AbacResponse.class);
@@ -51,8 +51,9 @@ public class AbacAdapter {
         return new HttpEntity<>(body, headers);
     }
 
-    @CacheEvict(cacheNames = CacheConfiguration.ABAC_CACHE, allEntries = true)
+    @CacheEvict(cacheNames = EhCacheConfig.ABAC_CACHE, allEntries = true)
     public void cacheEvict() {
+        log.info("Tømmer abac cache for data");
     }
 
 }

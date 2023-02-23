@@ -22,17 +22,14 @@ import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
+import no.nav.tag.tiltaksgjennomforing.enhet.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6Exception;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KontoregisterFeilException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
@@ -231,11 +228,45 @@ public class AvtaleControllerTest {
     @Test
     public void opprettAvtaleSkalReturnereCreatedOgOpprettetLokasjon() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        final OpprettAvtale opprettAvtale = new OpprettAvtale(avtale.getDeltakerFnr(), avtale.getBedriftNr(), Tiltakstype.ARBEIDSTRENING);
-        værInnloggetSom(TestData.enVeileder(avtale));
+        Fnr fnr = avtale.getDeltakerFnr();
+
+        final NavIdent navIdent = new NavIdent("Z123456");
+        final NavEnhet navEnhet = TestData.ENHET_OPPFØLGING;
+        final PdlRespons pdlRespons = TestData.enPdlrespons(false);
+        final OpprettAvtale opprettAvtale = new OpprettAvtale(
+                avtale.getDeltakerFnr(),
+                avtale.getBedriftNr(),
+                Tiltakstype.ARBEIDSTRENING
+        );
+        værInnloggetSom(new Veileder(
+                navIdent,
+                tilgangskontrollService,
+                persondataService,
+                norg2Client,
+                Set.of(navEnhet),
+                new SlettemerkeProperties(),
+                new TilskuddsperiodeConfig(),
+                false,
+                veilarbArenaClient
+        ));
+
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
-        when(eregService.hentVirksomhet(avtale.getBedriftNr())).thenReturn(new Organisasjon(avtale.getBedriftNr(), avtale.getGjeldendeInnhold().getBedriftNavn()));
-        lenient().when(veilarbArenaClient.sjekkOgHentOppfølgingStatus(any())).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS, "0906"));
+        when(eregService.hentVirksomhet(avtale.getBedriftNr()))
+                .thenReturn(new Organisasjon(avtale.getBedriftNr(), avtale.getGjeldendeInnhold().getBedriftNavn()));
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any())).thenReturn(true);
+        when(persondataService.hentPersondata(fnr)).thenReturn(pdlRespons);
+        when(veilarbArenaClient.hentOppfølgingsEnhet(fnr.asString())).thenReturn(navEnhet.getVerdi());
+        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
+                .thenReturn(new Norg2GeoResponse(TestData.ENHET_GEOGRAFISK.getNavn(), TestData.ENHET_GEOGRAFISK.getVerdi()));
+        when(veilarbArenaClient.sjekkOgHentOppfølgingStatus(any()))
+                .thenReturn(
+                        new Oppfølgingsstatus(
+                                Formidlingsgruppe.ARBEIDSSOKER,
+                                Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS,
+                                "0906"
+                        )
+                );
+
         ResponseEntity svar = avtaleController.opprettAvtaleSomVeileder(opprettAvtale, null);
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(svar.getHeaders().getLocation().getPath()).isEqualTo("/avtaler/" + avtale.getId());

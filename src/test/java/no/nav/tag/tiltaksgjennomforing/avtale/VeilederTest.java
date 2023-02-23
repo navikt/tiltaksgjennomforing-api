@@ -16,12 +16,7 @@ import java.util.List;
 import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
-import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
+import no.nav.tag.tiltaksgjennomforing.enhet.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
@@ -229,20 +224,48 @@ public class VeilederTest {
 
     @Test
     public void oprettAvtale__setter_startverdier_på_avtale() {
-        OpprettAvtale opprettAvtale = new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
-        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        PersondataService persondataService = mock(PersondataService.class);
-        Norg2Client norg2Client = mock(Norg2Client.class);
+        final Fnr fnr = TestData.etFodselsnummer();
+        final NavIdent navIdent = new NavIdent("Q987654");
+        final NavEnhet navEnhet = TestData.ENHET_GEOGRAFISK;
+        OpprettAvtale opprettAvtale = new OpprettAvtale(
+                TestData.etFodselsnummer(),
+                TestData.etBedriftNr(),
+                Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD
+        );
+
+        final TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        final PersondataService persondataService = mock(PersondataService.class);
+        final Norg2Client norg2Client = mock(Norg2Client.class);
         final PdlRespons pdlRespons = TestData.enPdlrespons(false);
-        VeilarbArenaClient veilarbArenaClient = mock(VeilarbArenaClient.class);
+        final VeilarbArenaClient veilarbArenaClient = mock(VeilarbArenaClient.class);
+        final VeilarbArenaCache veilarbArenaCache = mock(VeilarbArenaCache.class);
 
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(TestData.enNavIdent()), eq(TestData.etFodselsnummer()))).thenReturn(true);
-        when(persondataService.hentPersondata(TestData.etFodselsnummer())).thenReturn(pdlRespons);
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any())).thenReturn(true);
+        when(persondataService.hentPersondata(fnr)).thenReturn(pdlRespons);
         when(persondataService.erKode6(pdlRespons)).thenCallRealMethod();
-        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel())).thenReturn(new Norg2GeoResponse(TestData.ENHET_GEOGRAFISK.getNavn(), TestData.ENHET_GEOGRAFISK.getVerdi()));
+        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
+                .thenReturn(new Norg2GeoResponse(
+                        TestData.ENHET_GEOGRAFISK.getNavn(),
+                        TestData.ENHET_GEOGRAFISK.getVerdi()
+                ));
+        when(veilarbArenaClient.hentOppfølgingsEnhet(fnr.asString())).thenReturn(navEnhet.getVerdi());
+        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
+                .thenReturn(new Norg2GeoResponse(
+                        TestData.ENHET_GEOGRAFISK.getNavn(),
+                        TestData.ENHET_GEOGRAFISK.getVerdi()
+                ));
 
-        Veileder veileder = new Veileder(TestData.enNavIdent(), tilgangskontrollService, persondataService, norg2Client,
-                Set.of(TestData.ENHET_GEOGRAFISK), new SlettemerkeProperties(), new TilskuddsperiodeConfig(), false, veilarbArenaClient);
+        Veileder veileder = new Veileder(
+                navIdent,
+                tilgangskontrollService,
+                persondataService,
+                norg2Client,
+                Set.of(navEnhet),
+                new SlettemerkeProperties(),
+                new TilskuddsperiodeConfig(),
+                false,
+                veilarbArenaClient
+        );
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
 
         assertThat(avtale.getVeilederNavIdent()).isEqualTo(TestData.enNavIdent());
@@ -253,8 +276,46 @@ public class VeilederTest {
 
     @Test
     public void opprettAvtale__skal_ikke_slettemerkes() {
-        OpprettAvtale opprettAvtale = new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
-        Veileder veileder = TestData.enVeileder(new NavIdent("Z123456"));
+        final Fnr fnr = TestData.etFodselsnummer();
+        final NavIdent navIdent = new NavIdent("Z123456");
+        final PdlRespons pdlRespons = TestData.enPdlrespons(false);
+        final NavEnhet navEnhet = TestData.ENHET_OPPFØLGING;
+
+        OpprettAvtale opprettAvtale = new OpprettAvtale(
+                TestData.etFodselsnummer(),
+                TestData.etBedriftNr(),
+                Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD
+        );
+
+        final VeilarbArenaClient veilarbArenaClient = mock(VeilarbArenaClient.class);
+        final VeilarbArenaCache veilarbArenaCache = mock(VeilarbArenaCache.class);
+        final Norg2Client norg2Client = mock(Norg2Client.class);
+        final PersondataService persondataService = mock(PersondataService.class);
+        final TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+
+        Veileder veileder = new Veileder(
+                navIdent,
+                tilgangskontrollService,
+                persondataService,
+                norg2Client,
+                Set.of(navEnhet),
+                new SlettemerkeProperties(),
+                new TilskuddsperiodeConfig(),
+                false,
+                veilarbArenaClient
+        );
+
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any())).thenReturn(true);
+        when(persondataService.hentPersondata(fnr)).thenReturn(pdlRespons);
+        when(veilarbArenaClient.hentOppfølgingsEnhet(fnr.asString())).thenReturn(navEnhet.getVerdi());
+        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
+                .thenReturn(
+                        new Norg2GeoResponse(TestData.ENHET_GEOGRAFISK.getNavn(),
+                                TestData.ENHET_GEOGRAFISK.getVerdi())
+                );
+
+
+
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
         assertThat(avtale.isSlettemerket()).isFalse();
     }

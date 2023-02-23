@@ -87,3 +87,27 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
+
+caches:
+  caffeines:
+    - name: pdl
+      expiryInMinutes: 60
+      maximumSize: 1000
+    - name: norgnavn
+      expiryInMinutes: 60
+      maximumSize: 1000
+    - name: norggeoenhet
+      expiryInMinutes: 60
+      maximumSize: 1000
+    - name: arena
+      expiryInMinutes: 60
+      maximumSize: 1000
+    - name: sts_cache
+      expiryInMinutes: 59
+      maximumSize: 100
+    - name: abac_cache
+      expiryInMinutes: 30
+      maximumSize: 1000
+    - name: axsys_cache
+      expiryInMinutes: 60
+      maximumSize: 1000

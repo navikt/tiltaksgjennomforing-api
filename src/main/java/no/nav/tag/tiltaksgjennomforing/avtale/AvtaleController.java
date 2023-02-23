@@ -269,12 +269,15 @@ public class AvtaleController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<?> opprettAvtaleSomVeileder(@RequestBody OpprettAvtale opprettAvtale, @RequestParam(value = "ryddeavtale", required = false) Boolean ryddeavtale) {
+    public ResponseEntity<?> opprettAvtaleSomVeileder(
+            @RequestBody OpprettAvtale opprettAvtale,
+            @RequestParam(value = "ryddeavtale", required = false)
+            Boolean ryddeavtale
+    ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
-        veileder.sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
-        veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
+
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         if (ryddeavtale != null && ryddeavtale) {
             ArenaRyddeAvtale arenaRyddeAvtale = new ArenaRyddeAvtale();
@@ -292,22 +295,18 @@ public class AvtaleController {
         if(opprettMentorAvtale.getDeltakerFnr().equals(opprettMentorAvtale.getMentorFnr())){
             throw new FeilkodeException(Feilkode.DELTAGER_OG_MENTOR_KAN_IKKE_HA_SAMME_FØDSELSNUMMER);
         }
-        String bedriftNavn = eregService.hentVirksomhet(opprettMentorAvtale.getBedriftNr()).getBedriftNavn();
+
         if(opprettMentorAvtale.getAvtalerolle().equals(Avtalerolle.VEILEDER)){
-            Veileder veileder = innloggingService.hentVeileder();;
-            avtale = veileder.opprettMentorAvtale(opprettMentorAvtale);
-            veileder.sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
-            veileder.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
+            avtale = innloggingService.hentVeileder().opprettMentorAvtale(opprettMentorAvtale);
+
         }
         else if(opprettMentorAvtale.getAvtalerolle().equals(Avtalerolle.ARBEIDSGIVER)){
-            Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
-            avtale = arbeidsgiver.opprettMentorAvtale(opprettMentorAvtale);
-            arbeidsgiver.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
+            avtale = innloggingService.hentArbeidsgiver().opprettMentorAvtale(opprettMentorAvtale);
         }
         if(avtale == null){
             throw new RuntimeException("Opprett Mentor fant ingen avtale å behandle.");
         }
-        avtale.leggTilBedriftNavn(bedriftNavn);
+        avtale.leggTilBedriftNavn(eregService.hentVirksomhet(opprettMentorAvtale.getBedriftNr()).getBedriftNavn());
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
@@ -514,7 +513,7 @@ public class AvtaleController {
     public void settNyVeilederPåAvtale(@PathVariable("avtaleId") UUID avtaleId) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        veileder.sjekkOppfølgingStatusOgSettLønnstilskuddsprosentsats(avtale, veilarbArenaClient);
+        veileder.hentOppfølgingFraArenaclient(avtale, veilarbArenaClient);
         veileder.overtaAvtale(avtale);
         avtaleRepository.save(avtale);
     }

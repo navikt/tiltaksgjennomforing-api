@@ -2,6 +2,8 @@ package no.nav.tag.tiltaksgjennomforing.infrastruktur.sts;
 
 import java.net.URI;
 
+import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -13,8 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.restservicecache.CacheConfiguration;
-
+@Slf4j
 @Component
 public class STSClient {
 
@@ -27,7 +28,7 @@ public class STSClient {
         this.stsUri = stsProperties.getRestUri();
     }
 
-    @Cacheable(CacheConfiguration.STS_CACHE)
+    @Cacheable(EhCacheConfig.STS_CACHE)
     public STSToken hentSTSToken() {
         String uriString = UriComponentsBuilder.fromUri(stsUri)
                 .queryParam("grant_type", "client_credentials")
@@ -49,8 +50,9 @@ public class STSClient {
         return new HttpEntity<>(headers);
     }
 
-    @CacheEvict(CacheConfiguration.STS_CACHE)
+    @CacheEvict(EhCacheConfig.STS_CACHE)
     public void evictToken() {
+        log.info("Tømmer sts cache for data");
     }
 
 }
