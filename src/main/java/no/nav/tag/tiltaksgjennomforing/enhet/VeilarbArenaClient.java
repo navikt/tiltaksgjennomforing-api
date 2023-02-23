@@ -76,7 +76,7 @@ public class VeilarbArenaClient {
     }
 
     @Cacheable(EhCacheConfig.ARENA_CACHCE)
-    public String finnOppfølgingsenhet(String fnr) {
+    public String HentOppfølgingsenhetFraArena(String fnr) {
         return this.hentOppfølgingsEnhet(fnr);
     }
 

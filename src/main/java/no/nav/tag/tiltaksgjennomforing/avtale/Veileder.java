@@ -191,9 +191,7 @@ public class Veileder extends Avtalepart<NavIdent> {
             Instant sistEndret,
             EndreAvtale endreAvtale,
             Avtale avtale,
-            EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder,
-            List<BedriftNr> pilotvirksomheter,
-            List<String> pilotEnheter
+            EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder
     ) {
         sjekkTilgangOgEndreAvtale(
                 sistEndret,
@@ -221,7 +219,7 @@ public class Veileder extends Avtalepart<NavIdent> {
     }
 
     private void leggTilOppfølgingEnhet(Avtale avtale) {
-        String oppfølgingsEnhet = veilarbArenaClient.hentOppfølgingsEnhet(avtale.getDeltakerFnr().asString());
+        String oppfølgingsEnhet = veilarbArenaClient.HentOppfølgingsenhetFraArena(avtale.getDeltakerFnr().asString());
         setEnhetOppfolging(avtale, oppfølgingsEnhet);
     }
 

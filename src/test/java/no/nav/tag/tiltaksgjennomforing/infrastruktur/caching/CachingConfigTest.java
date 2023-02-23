@@ -3,9 +3,9 @@ package no.nav.tag.tiltaksgjennomforing.infrastruktur.caching;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
@@ -23,10 +23,15 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import static no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 
 
 @Slf4j
@@ -69,11 +74,11 @@ public class CachingConfigTest {
         TestData.setGeoNavEnhet(avtale, oppfolgingNavEnhet);
         TestData.setOppfolgingNavEnhet(avtale, oppfolgingNavEnhet);
 
-        veilarbArenaClient.finnOppfølgingsenhet(avtale.getDeltakerFnr().asString());
-        veilarbArenaClient.finnOppfølgingsenhet(ETT_FNR_NR2);
-        veilarbArenaClient.finnOppfølgingsenhet(ETT_FNR_NR2);
-        veilarbArenaClient.finnOppfølgingsenhet(ETT_FNR_NR3);
-        veilarbArenaClient.finnOppfølgingsenhet(ETT_FNR_NR2);
+        veilarbArenaClient.HentOppfølgingsenhetFraArena(avtale.getDeltakerFnr().asString());
+        veilarbArenaClient.HentOppfølgingsenhetFraArena(ETT_FNR_NR2);
+        veilarbArenaClient.HentOppfølgingsenhetFraArena(ETT_FNR_NR2);
+        veilarbArenaClient.HentOppfølgingsenhetFraArena(ETT_FNR_NR3);
+        veilarbArenaClient.HentOppfølgingsenhetFraArena(ETT_FNR_NR2);
 
         Assertions.assertEquals("0906", getCacheValue(ARENA_CACHCE, ETT_FNR_NR, String.class));
         Assertions.assertEquals("0904", getCacheValue(ARENA_CACHCE, ETT_FNR_NR2, String.class));
@@ -148,8 +153,69 @@ public class CachingConfigTest {
 
     @Test
     public void vertifisere_at_caching_fungerer_for_endreAvtale_av_veileder() {
+        final NavEnhet oppfolgingNavEnhet = TestData.ENHET_OPPFØLGING;
+        final String GEO_LOKASJON_FRA_PDL_MAPPING = "030104";
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
+        TestData.setGeoNavEnhet(avtale, oppfolgingNavEnhet);
+        TestData.setOppfolgingNavEnhet(avtale, oppfolgingNavEnhet);
 
+        final TilgangskontrollService mockTilgangskontrollService = mock(TilgangskontrollService.class);
+
+        lenient().when(mockTilgangskontrollService.harSkrivetilgangTilKandidat(
+                eq(avtale.getVeilederNavIdent()),
+                eq(avtale.getDeltakerFnr())
+        )).thenReturn(true, true, true);
+
+        Veileder veileder = new Veileder(
+                avtale.getVeilederNavIdent(),
+                mockTilgangskontrollService,
+                persondataService,
+                norg2Client,
+                Set.of(new NavEnhet(avtale.getEnhetOppfolging(), avtale.getEnhetsnavnOppfolging())),
+                new SlettemerkeProperties(),
+                new TilskuddsperiodeConfig(),
+                false,
+                veilarbArenaClient
+        );
+
+        veileder.endreAvtale(
+                Instant.now(),
+                TestData.endringPåAlleLønnstilskuddFelter(),
+                avtale,
+                TestData.avtalerMedTilskuddsperioder
+        );
+
+        veileder.endreAvtale(
+                Instant.now(),
+                TestData.endringPåAlleLønnstilskuddFelter(),
+                avtale,
+                TestData.avtalerMedTilskuddsperioder
+        );
+
+        Norg2OppfølgingResponse norgnavnCacheForEnhet = getCacheValue(
+                NORGNAVN_CACHE,
+                avtale.getEnhetOppfolging(),
+                Norg2OppfølgingResponse.class
+        );
+        Norg2GeoResponse norggeoenhetCacheForGeoEnhet = getCacheValue(
+                NORG_GEO_ENHET,
+                GEO_LOKASJON_FRA_PDL_MAPPING,
+                Norg2GeoResponse.class
+        );
+        PdlRespons pdlCache = getCacheValue(PDL_CACHE, avtale.getDeltakerFnr(), PdlRespons.class);
+        String arenaCache = getCacheValue(ARENA_CACHCE, avtale.getDeltakerFnr().asString(), String.class);
+
+        Assertions.assertEquals("NAV St. Hanshaugen", norggeoenhetCacheForGeoEnhet.getNavn());
+        Assertions.assertEquals("0313", norggeoenhetCacheForGeoEnhet.getEnhetNr());
+
+        Assertions.assertEquals("NAV Agder", norgnavnCacheForEnhet.getNavn());
+        Assertions.assertEquals("1000", norgnavnCacheForEnhet.getEnhetNr());
+
+        Assertions.assertEquals("030104", persondataService.hentGeoLokasjonFraPdlRespons(pdlCache).get());
+        Assertions.assertEquals("3", pdlCache.getData().getHentGeografiskTilknytning().getRegel());
+        Assertions.assertEquals("Donald", persondataService.hentNavnFraPdlRespons(pdlCache).getFornavn());
+        Assertions.assertEquals("Duck", persondataService.hentNavnFraPdlRespons(pdlCache).getEtternavn());
+
+        Assertions.assertEquals("0906", arenaCache);
     }
-
-
 }

@@ -865,7 +865,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     void endreBeløpITilskuddsperioder() {
         sendTilbakeTilBeslutter();
-        tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET).forEach(t -> t.setBeløp(beregnTilskuddsbeløp(t.getStartDato(), t.getSluttDato())));
+        tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET)
+                .forEach(t -> t.setBeløp(beregnTilskuddsbeløp(t.getStartDato(), t.getSluttDato())));
     }
 
     public void sendTilbakeTilBeslutter() {
