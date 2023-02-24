@@ -78,8 +78,8 @@ public class InternalArenaMigreringController {
         midlertidige.forEach(avtale -> {
             avtale.getTilskuddPeriode().forEach(tp -> {
                 if (tp.getLøpenummer() > 1) {
-                    TilskuddPeriode tilskuddPeriode = avtale.getTilskuddPeriode().stream().filter(t -> t.getLøpenummer() == tp.getLøpenummer() - 1).collect(Collectors.toList()).stream().findFirst().orElseThrow();
-                    if (tp.getStartDato().isBefore(tilskuddPeriode.getStartDato())) {
+                    TilskuddPeriode forrigePeriode = avtale.getTilskuddPeriode().stream().filter(t -> t.getLøpenummer() == tp.getLøpenummer() - 1).collect(Collectors.toList()).stream().findFirst().orElseThrow();
+                    if (tp.getStartDato().isBefore(forrigePeriode.getStartDato())) {
                         log.warn("Tilskuddsperiode med id {} har startDato før startDatoen til forrige løpenummer!", tp.getId());
                     }
                 }
