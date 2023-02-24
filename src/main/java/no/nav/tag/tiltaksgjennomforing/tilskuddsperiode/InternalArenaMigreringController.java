@@ -67,7 +67,6 @@ public class InternalArenaMigreringController {
     }
 
     @PostMapping("/finn-avtaler-med-tilskuddsperioder-feil-datoer")
-    @Transactional
     public void finnTilskuddsperioderMedFeilDatoer() {
         sjekkTilgang();
         log.info("Finner avtaler som har tilskuddsperioder med mindre startdato enn en periode med lavere løpenummer");
