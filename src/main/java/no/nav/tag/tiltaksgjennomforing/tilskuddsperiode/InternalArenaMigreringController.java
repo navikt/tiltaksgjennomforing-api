@@ -8,6 +8,8 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.UtviklerTilgangProperties;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -19,8 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/utvikler-admin/arena")
@@ -60,5 +65,28 @@ public class InternalArenaMigreringController {
         avtale.reberegnUbehandledeTilskuddsperioder();
         avtaleRepository.save(avtale);
     }
+
+    @PostMapping("/finn-avtaler-med-tilskuddsperioder-feil-datoer")
+    public void finnTilskuddsperioderMedFeilDatoer() {
+        sjekkTilgang();
+        log.info("Finner avtaler som har tilskuddsperioder med mindre startdato enn en periode med lavere løpenummer");
+        List<Avtale> midlertidige = avtaleRepository.findAllByTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+        midlertidige.removeIf(a -> a.getGjeldendeInnhold().getAvtaleInngått() == null);
+        midlertidige.removeIf(a -> a.getTilskuddPeriode().size() == 0);
+
+        midlertidige.forEach(avtale -> {
+            avtale.getTilskuddPeriode().forEach(tp -> {
+                if (tp.getLøpenummer() > 1) {
+                    TilskuddPeriode forrigePeriode = avtale.getTilskuddPeriode().stream().filter(t -> t.getLøpenummer() == tp.getLøpenummer() - 1).collect(Collectors.toList()).stream().findFirst().orElseThrow();
+                    if (tp.getStartDato().isBefore(forrigePeriode.getStartDato())) {
+                        log.warn("Tilskuddsperiode med id {} har startDato før startDatoen til forrige løpenummer!", tp.getId());
+                    }
+                }
+            });
+        });
+    }
+
+
+
 
 }
