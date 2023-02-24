@@ -1005,7 +1005,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         krevEnAvTiltakstyper(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
 
         // Finn første ubehandlede periode
-        Optional<TilskuddPeriode> førsteUbehandledeTilskuddsperiode = tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET).findFirst();
+        //Optional<TilskuddPeriode> førsteUbehandledeTilskuddsperiode = tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET).findFirst();
         // Fjern ubehandlede
         for (TilskuddPeriode tilskuddsperiode : Set.copyOf(tilskuddPeriode)) {
             TilskuddPeriodeStatus status = tilskuddsperiode.getStatus();
@@ -1013,11 +1013,20 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
                 tilskuddPeriode.remove(tilskuddsperiode);
             }
         }
+
         // Lag nye fra og med siste ikke ubehandlet + en dag
-        LocalDate startDato = tilskuddPeriode.last().getSluttDato().plusDays(1);
+        LocalDate startDato;
+        List<TilskuddPeriode> godkjentePerioder = tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.GODKJENT).sorted(Comparator.comparing(t -> t.getLøpenummer())).toList();
+
+        if (godkjentePerioder.size() != 0) {
+            startDato = godkjentePerioder.get(godkjentePerioder.size()).getSluttDato().plusDays(1);
+        } else {
+            startDato = tilskuddPeriode.first().getStartDato();
+        }
+
         List<TilskuddPeriode> nyetilskuddsperioder = beregnTilskuddsperioder(startDato, gjeldendeInnhold.getSluttDato());
-        fikseLøpenumre(nyetilskuddsperioder, førsteUbehandledeTilskuddsperiode.get().getLøpenummer());
         tilskuddPeriode.addAll(nyetilskuddsperioder);
+        fikseLøpenumre(tilskuddPeriode.stream().toList(), 1);
     }
 
     public void forkortAvtale(LocalDate nySluttDato, String grunn, String annetGrunn, NavIdent utførtAv) {
