@@ -869,6 +869,35 @@ public class AvtaleTest {
     }
 
     @Test
+    public void forlengAvtale_forleng_etter_reduksjon_edge_case_alle_perioder_godkjent() {
+        Now.fixedDate(LocalDate.of(2023, 03, 15));
+        LocalDate startDato = LocalDate.of(2022, 03, 01);
+        LocalDate sluttDato = LocalDate.of(2023, 02, 28);
+        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(startDato, sluttDato);
+        // Alle perioder er godkjent
+        avtale.getTilskuddPeriode().forEach(t -> {
+            t.godkjenn(TestData.enNavIdent2(), "1234");
+        });
+        LocalDate nySluttDato = sluttDato.plusMonths(6);
+        avtale.forlengAvtale(nySluttDato, TestData.enNavIdent());
+        assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(nySluttDato);
+        Now.resetClock();
+    }
+
+    @Test
+    public void forlengAvtale_forleng_etter_reduksjon_edge_case_alle_perioder_ubehandlet() {
+        Now.fixedDate(LocalDate.of(2023, 03, 15));
+        LocalDate startDato = LocalDate.of(2022, 03, 01);
+        LocalDate sluttDato = LocalDate.of(2023, 02, 28);
+        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(startDato, sluttDato);
+        LocalDate nySluttDato = sluttDato.plusMonths(6);
+        avtale.forlengAvtale(nySluttDato, TestData.enNavIdent());
+        assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(nySluttDato);
+        Now.resetClock();
+    }
+
+
+    @Test
     public void sommerjobb_må_være_godkjent_av_beslutter() {
         Now.fixedDate(LocalDate.of(2021, 6, 1));
         Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();

@@ -697,6 +697,17 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE);
         }
         TilskuddPeriode gjeldendePeriode = gjeldendeTilskuddsperiode();
+
+        // Sjekk om samme løpenummer allerede er godkjent og annullert. Trenger da en "ekstra" resendingsnummer
+        Integer resendingsnummer = null;
+        for (TilskuddPeriode periode : tilskuddPeriode) {
+            if(periode.getStatus() == TilskuddPeriodeStatus.ANNULLERT && periode.getLøpenummer().equals(gjeldendePeriode.getLøpenummer())) {
+                if(resendingsnummer == null) {
+                    resendingsnummer = 0;
+                }
+                resendingsnummer++;
+            }
+        }
         gjeldendePeriode.godkjenn(beslutter, enhet);
         if (!erAvtaleInngått()) {
             LocalDateTime tidspunkt = Now.localDateTime();
@@ -704,7 +715,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             avtaleInngått(tidspunkt, Avtalerolle.BESLUTTER, beslutter);
         }
         sistEndretNå();
-        registerEvent(new TilskuddsperiodeGodkjent(this, gjeldendePeriode, beslutter));
+        registerEvent(new TilskuddsperiodeGodkjent(this, gjeldendePeriode, beslutter, resendingsnummer));
     }
 
     private void godkjennForBeslutter(LocalDateTime tidspunkt, NavIdent beslutter) {
@@ -899,6 +910,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     private List<TilskuddPeriode> beregnTilskuddsperioder(LocalDate startDato, LocalDate sluttDato) {
         List<TilskuddPeriode> tilskuddsperioder = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForAvtale(
+                id,
                 tiltakstype,
                 gjeldendeInnhold.getSumLonnstilskudd(),
                 startDato,
@@ -999,6 +1011,34 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
             log.info("Avtale {} har allerede tilskuddsperioder eller en status som ikke skal ha perioder, eller er ikke tilstrekkelig fylt ut, genererer ikke nye", id);
             return false;
         }
+    }
+
+    public void reberegnUbehandledeTilskuddsperioder() {
+        krevEnAvTiltakstyper(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
+
+        // Finn første ubehandlede periode
+        //Optional<TilskuddPeriode> førsteUbehandledeTilskuddsperiode = tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET).findFirst();
+        // Fjern ubehandlede
+        for (TilskuddPeriode tilskuddsperiode : Set.copyOf(tilskuddPeriode)) {
+            TilskuddPeriodeStatus status = tilskuddsperiode.getStatus();
+            if (status == TilskuddPeriodeStatus.UBEHANDLET) {
+                tilskuddPeriode.remove(tilskuddsperiode);
+            }
+        }
+
+        // Lag nye fra og med siste ikke ubehandlet + en dag
+        LocalDate startDato;
+        List<TilskuddPeriode> godkjentePerioder = tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.GODKJENT).sorted(Comparator.comparing(t -> t.getLøpenummer())).toList();
+
+        if (godkjentePerioder.size() != 0) {
+            startDato = godkjentePerioder.get(godkjentePerioder.size() - 1).getSluttDato().plusDays(1);
+        } else {
+            startDato = tilskuddPeriode.first().getStartDato();
+        }
+
+        List<TilskuddPeriode> nyetilskuddsperioder = beregnTilskuddsperioder(startDato, gjeldendeInnhold.getSluttDato());
+        tilskuddPeriode.addAll(nyetilskuddsperioder);
+        fikseLøpenumre(tilskuddPeriode.stream().toList(), 1);
     }
 
     public void forkortAvtale(LocalDate nySluttDato, String grunn, String annetGrunn, NavIdent utførtAv) {
