@@ -20,8 +20,6 @@ import static net.sf.ehcache.store.MemoryStoreEvictionPolicy.LRU;
 @EnableCaching
 public class EhCacheConfig extends CachingConfigurerSupport {
 
-    public final static String STS_CACHE = "sts_cache";
-
     public final static String ABAC_CACHE = "abac_cache";
 
     public static final String AXSYS_CACHE = "axsys_cache";
@@ -40,7 +38,7 @@ public class EhCacheConfig extends CachingConfigurerSupport {
     @Bean
     public CacheManager ehCacheManager() {
         net.sf.ehcache.config.Configuration config = new net.sf.ehcache.config.Configuration();
-        cacheDto.getCaffeines().stream().forEach(cache -> {
+        cacheDto.getEhcaches().stream().forEach(cache -> {
             config.addCache(
                     setupCache(
                             cache.getName(),
@@ -58,7 +56,6 @@ public class EhCacheConfig extends CachingConfigurerSupport {
     }
 
     private static CacheConfiguration setupCache(String name, int maxEntriesLocalHeap, Duration duration) {
-
         return new CacheConfiguration(name, maxEntriesLocalHeap)
                 .memoryStoreEvictionPolicy(LRU)
                 .timeToIdleSeconds(duration.getSeconds())

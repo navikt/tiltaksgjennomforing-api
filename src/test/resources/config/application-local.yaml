@@ -112,6 +112,3 @@ tiltaksgjennomforing:
     tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD
 
 ELECTOR_PATH: null
-logging:
-  level:
-    sql: trace

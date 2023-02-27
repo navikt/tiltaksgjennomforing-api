@@ -14,7 +14,7 @@ public class TilgangskontrollServiceImpl implements TilgangskontrollService {
   private final AbacAdapter abacAdapter;
 
   public boolean harSkrivetilgangTilKandidat(NavIdent navIdent, Fnr fnr) {
-    return abacAdapter.harLeseTilgang(navIdent, fnr);
+    return abacAdapter.harLeseTilgang(navIdent.asString(), fnr.asString());
   }
 
   private void harTilgang(NavIdent navIdent, Fnr fnr) {

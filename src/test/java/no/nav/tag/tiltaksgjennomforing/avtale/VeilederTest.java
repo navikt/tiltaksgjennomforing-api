@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class VeilederTest {
+
     @Test
     public void godkjennAvtale__kan_ikke_godkjenne_foerst() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
@@ -133,12 +134,16 @@ public class VeilederTest {
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(avtale.getVeilederNavIdent()), any(Fnr.class)))
                 .thenReturn(true);
 
-        TilskuddsperiodeConfig tilskuddsperiodeConfig = new TilskuddsperiodeConfig();
+        Veileder veileder = new Veileder(
+                avtale.getVeilederNavIdent(),
+                tilgangskontrollService,
+                mock(PersondataService.class),
+                mock(Norg2Client.class),
+                Set.of(new NavEnhet("4802", "Trysil")),
+                mock(SlettemerkeProperties.class),
 
-        Veileder veileder = new Veileder(avtale.getVeilederNavIdent(),
-                tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
-                Set.of(new NavEnhet("4802", "Trysil")), mock(SlettemerkeProperties.class),
-                tilskuddsperiodeConfig, false, mock(VeilarbArenaClient.class));
+                false,
+                mock(VeilarbArenaClient.class));
 
         avtale.endreAvtale(
                 Instant.now(),
@@ -300,7 +305,6 @@ public class VeilederTest {
                 norg2Client,
                 Set.of(navEnhet),
                 new SlettemerkeProperties(),
-                new TilskuddsperiodeConfig(),
                 false,
                 veilarbArenaClient
         );
@@ -337,7 +341,6 @@ public class VeilederTest {
                 norg2Client,
                 Set.of(navEnhet),
                 new SlettemerkeProperties(),
-                new TilskuddsperiodeConfig(),
                 false,
                 veilarbArenaClient
         );
@@ -375,7 +378,6 @@ public class VeilederTest {
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
                 slettemerkeProperties,
-                new TilskuddsperiodeConfig(),
                 false,
                 mock(VeilarbArenaClient.class)
         );
@@ -401,7 +403,6 @@ public class VeilederTest {
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
                 slettemerkeProperties,
-                new TilskuddsperiodeConfig(),
                 false,
                 mock(VeilarbArenaClient.class)
         );

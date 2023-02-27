@@ -95,7 +95,6 @@ public class PersondataService {
         try {
             return restTemplate.postForObject(persondataProperties.getUri(), createRequestEntity(pdlRequest), PdlRespons.class);
         } catch (RestClientException exception) {
-            stsClient.evictToken();
             log.error("Feil fra PDL med request-url: " + persondataProperties.getUri(), exception);
             throw exception;
         }
@@ -127,6 +126,7 @@ public class PersondataService {
 
     @Cacheable(EhCacheConfig.PDL_CACHE)
     public PdlRespons hentPersondataFraPdl(Fnr fnr) {
+        log.info("TREFFER IKKE PDL_CACHE for fnr: {}. Kontakter endepunktet.", fnr.asString());
         PdlRequest pdlRequest = new PdlRequest(resourceAsString(persondataQueryResource), new Variables(fnr.asString()));
         return utførKallTilPdl(pdlRequest);
     }

@@ -89,7 +89,7 @@ no.nav.security.jwt:
           client-auth-method: client_secret_basic
 
 caches:
-  caffeines:
+  ehcaches:
     - name: pdl_cache
       expiryInMinutes: 60
       maximumSize: 1000
@@ -102,9 +102,6 @@ caches:
     - name: arena_cache
       expiryInMinutes: 60
       maximumSize: 1000
-    - name: sts_cache
-      expiryInMinutes: 59
-      maximumSize: 100
     - name: abac_cache
       expiryInMinutes: 30
       maximumSize: 1000

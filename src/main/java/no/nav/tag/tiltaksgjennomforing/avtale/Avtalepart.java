@@ -7,6 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.enhet.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -16,8 +17,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentGeoLokasjonFraPdlRespons;
 
 @AllArgsConstructor
 @Slf4j
@@ -121,22 +120,6 @@ public abstract class Avtalepart<T extends Identifikator> {
         );
     }
 
-    public void endreAvtale(
-            Instant sistEndret,
-            EndreAvtale endreAvtale,
-            Avtale avtale,
-            EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder,
-            List<BedriftNr> pilotvirksomheter,
-            List<String> pilotEnheter
-    ) {
-        sjekkTilgangOgEndreAvtale(
-                sistEndret,
-                endreAvtale,
-                avtale,
-                tiltakstyperMedTilskuddsperioder
-        );
-    }
-
     protected void avvisDatoerTilbakeITid(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
     }
 
@@ -146,8 +129,11 @@ public abstract class Avtalepart<T extends Identifikator> {
         if (!kanOppheveGodkjenninger(avtale)) {
             throw new KanIkkeOppheveException();
         }
-        boolean ingenParterHarGodkjent = !avtale.erGodkjentAvVeileder() && !avtale.erGodkjentAvArbeidsgiver() && !avtale.erGodkjentAvDeltaker();
-        if (ingenParterHarGodkjent) {
+        boolean AlleParterHarIkkeGodkjentAvtale = !avtale.erGodkjentAvVeileder() &&
+                !avtale.erGodkjentAvArbeidsgiver() &&
+                !avtale.erGodkjentAvDeltaker();
+
+        if (AlleParterHarIkkeGodkjentAvtale) {
             throw new KanIkkeOppheveException();
         }
         if (avtale.erAvtaleInngått()) {
@@ -162,93 +148,33 @@ public abstract class Avtalepart<T extends Identifikator> {
         return List.of(getIdentifikator());
     }
 
-    protected void leggTilGeografiskOgOppfølgingsenhet(
-            Avtale avtale,
-            PdlRespons pdlRespons,
-            Norg2Client norg2Client,
-            VeilarbArenaClient veilarbArenaClient
-    ){
-        this.leggTilGeografiskEnhet(avtale, pdlRespons, norg2Client);
-        this.leggTilOppfølgingsenhet(avtale, veilarbArenaClient);
-        this.setOppfolgingEnhetsnavnFraNorg(avtale, norg2Client);
+    protected void hentGeoEnhetFraNorg2(Avtale avtale, PdlRespons pdlRespons, Norg2Client norg2Client) {
+        Norg2GeoResponse enhet = PersondataService.hentGeoLokasjonFraPdlRespons(pdlRespons)
+                .map(norg2Client::hentGeografiskEnhet).orElse(null);
+        if (enhet == null) return;
+        avtale.setEnhetGeografisk(enhet.getEnhetNr());
+        avtale.setEnhetsnavnGeografisk(enhet.getNavn());
     }
 
-    protected void leggTilGeografiskEnhet(Avtale avtale, PdlRespons pdlRespons, Norg2Client norg2Client) {
-        Norg2GeoResponse enhet = hentGeoLokasjonFraPdlRespons(pdlRespons)
-                .map(norg2Client::hentGeografiskEnhet)
-                .orElse(null);
-        if (enhet != null) {
-            avtale.setEnhetGeografisk(enhet.getEnhetNr());
-            avtale.setEnhetsnavnGeografisk(enhet.getNavn());
-        }
-    }
-
-    protected void leggTilOppfølgingsenhet(Avtale avtale, VeilarbArenaClient veilarbArenaClient) {
-        String oppfølgingsEnhet = veilarbArenaClient.hentOppfølgingsEnhet(avtale.getDeltakerFnr().asString());
-        setEnhetOppfolging(avtale, oppfølgingsEnhet);
-    }
-
-    protected void setEnhetOppfolging(Avtale avtale, String oppfølgingsEnhet) {
-        avtale.setEnhetOppfolging(oppfølgingsEnhet);
+    protected void hentOppfølingenhetNavnFraNorg2(Avtale avtale, Norg2Client norg2Client) {
+        if (avtale.getEnhetOppfolging() == null) return;
         if (avtale.getEnhetOppfolging().equals(avtale.getEnhetGeografisk())) {
             avtale.setEnhetsnavnOppfolging(avtale.getEnhetsnavnGeografisk());
-        }
-    }
-
-    public void setOppfolgingEnhetsnavnFraNorg(Avtale avtale, Norg2Client norg2Client) {
-        final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetsnavn(avtale.getEnhetOppfolging());
-        if (response != null && response.getNavn() != null) {
+        } else {
+            final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetsnavn(avtale.getEnhetOppfolging());
+            if (response == null) return;
             avtale.setEnhetsnavnOppfolging(response.getNavn());
         }
     }
 
-    public void hentOppfølgingFraArenaclient(
-            Avtale avtale,
-            VeilarbArenaClient veilarbArenaClient
-    ) {
-        Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
-        if (oppfølgingsstatus == null) return;
-        this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
-        this.settLonntilskuddProsentsats(avtale);
-    }
-
-    public void sjekkOgHentOppfølgingStatus(Avtale avtale, VeilarbArenaClient veilarbArenaClient) {
-        Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
-        this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
-    }
-
-    protected void leggTilOppfølingEnhetsnavn(Avtale avtale, Norg2Client norg2Client) {
-        if (avtale.getEnhetOppfolging() != null) {
-            if (avtale.getEnhetOppfolging().equals(avtale.getEnhetGeografisk())) {
-                avtale.setEnhetsnavnOppfolging(avtale.getEnhetsnavnGeografisk());
-            } else {
-                final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetsnavn(avtale.getEnhetOppfolging());
-                if (response != null && response.getNavn() != null) {
-                    avtale.setEnhetsnavnOppfolging(response.getNavn());
-                }
-            }
-        }
-    }
-
-    public void hentOppfølgingStatus(Avtale avtale, VeilarbArenaClient veilarbArenaClient) {
-        if(avtale.getVeilederNavIdent() == null) return;
-        Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.hentOppfølgingStatus(avtale.getDeltakerFnr().asString());
-        if (oppfølgingsstatus != null && (oppfølgingsstatus.getKvalifiseringsgruppe() != avtale.getKvalifiseringsgruppe() ||
-                oppfølgingsstatus.getFormidlingsgruppe() != avtale.getFormidlingsgruppe())) {
-            this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
-        }
-    }
-
-    private void settOppfølgingsStatus(Avtale avtale, Oppfølgingsstatus oppfølgingsstatus) {
-        avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
-        avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
-        avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
-    }
-
     public void settLonntilskuddProsentsats(Avtale avtale) {
         if (avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD) {
-            avtale.getGjeldendeInnhold().setLonnstilskuddProsent(avtale.getKvalifiseringsgruppe()
-                    .finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(40, 60));
+            avtale.getGjeldendeInnhold().setLonnstilskuddProsent(
+                    avtale.getKvalifiseringsgruppe().finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(
+                            40,
+                            60
+                    )
+            );
         }
     }
 }

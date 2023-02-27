@@ -27,8 +27,6 @@ public class STSClient {
                 .build();
         this.stsUri = stsProperties.getRestUri();
     }
-
-    @Cacheable(EhCacheConfig.STS_CACHE)
     public STSToken hentSTSToken() {
         String uriString = UriComponentsBuilder.fromUri(stsUri)
                 .queryParam("grant_type", "client_credentials")
@@ -48,11 +46,6 @@ public class STSClient {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         return new HttpEntity<>(headers);
-    }
-
-    @CacheEvict(EhCacheConfig.STS_CACHE)
-    public void evictToken() {
-        log.info("Tømmer sts cache for data");
     }
 
 }

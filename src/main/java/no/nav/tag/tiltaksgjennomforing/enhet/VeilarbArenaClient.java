@@ -16,14 +16,15 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 @Service
-// @Scope(proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class VeilarbArenaClient {
 
     private final RestTemplate restTemplate;
     private final VeilarbArenaProperties veilarbArenaProperties;
 
-    public VeilarbArenaClient(@Qualifier("veilarbarenaRestTemplate") RestTemplate restTemplate,
-                              VeilarbArenaProperties veilarbArenaProperties) {
+    public VeilarbArenaClient(
+            @Qualifier("veilarbarenaRestTemplate") RestTemplate restTemplate,
+            VeilarbArenaProperties veilarbArenaProperties
+    ) {
         this.restTemplate = restTemplate;
         this.veilarbArenaProperties = veilarbArenaProperties;
     }
@@ -76,8 +77,9 @@ public class VeilarbArenaClient {
     }
 
     @Cacheable(EhCacheConfig.ARENA_CACHCE)
-    public String HentOppfølgingsenhetFraArena(String fnr) {
-        return this.hentOppfølgingsEnhet(fnr);
+    public Oppfølgingsstatus HentOppfølgingsenhetFraCacheEllerArena(String fnr) {
+        log.info("TREFFER IKKE ARENA_CACHCE for fnr: {}. Kontakter endepunktet.", fnr);
+        return this.hentOppfølgingStatus(fnr);
     }
 
     public String hentOppfølgingsEnhet(String fnr) {

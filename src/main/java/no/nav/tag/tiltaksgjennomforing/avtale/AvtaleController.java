@@ -22,7 +22,6 @@ import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -164,7 +163,7 @@ public class AvtaleController {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
-        avtalepart.hentOppfølgingStatus(avtale, veilarbArenaClient);
+
         avtalepart.endreAvtale(sistEndret, endreAvtale, avtale, tilskuddsperiodeConfig.getTiltakstyper());
         Avtale lagretAvtale = avtaleRepository.save(avtale);
         return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
@@ -245,8 +244,6 @@ public class AvtaleController {
     public ResponseEntity<?> opprettAvtaleSomArbeidsgiver(@RequestBody OpprettAvtale opprettAvtale) {
         Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
-        avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
-        arbeidsgiver.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
@@ -323,9 +320,11 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/forkort")
     @Transactional
-    public void forkortAvtale(@PathVariable("avtaleId") UUID avtaleId,
-                              @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
-                              @RequestBody ForkortAvtale forkortAvtale) {
+    public void forkortAvtale(
+            @PathVariable("avtaleId") UUID avtaleId,
+            @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
+            @RequestBody ForkortAvtale forkortAvtale
+    ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
@@ -334,9 +333,11 @@ public class AvtaleController {
     }
 
     @PostMapping("/{avtaleId}/forkort-dry-run")
-    public Avtale forkortAvtaleDryRun(@PathVariable("avtaleId") UUID avtaleId,
-                                      @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
-                                      @RequestBody ForkortAvtale forkortAvtale) {
+    public Avtale forkortAvtaleDryRun(
+            @PathVariable("avtaleId") UUID avtaleId,
+            @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
+            @RequestBody ForkortAvtale forkortAvtale
+    ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
@@ -347,9 +348,11 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/forleng")
     @Transactional
-    public void forlengAvtale(@PathVariable("avtaleId") UUID avtaleId,
-                              @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
-                              @RequestBody ForlengAvtale forlengAvtale) {
+    public void forlengAvtale(
+            @PathVariable("avtaleId") UUID avtaleId,
+            @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
+            @RequestBody ForlengAvtale forlengAvtale
+    ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
@@ -358,9 +361,11 @@ public class AvtaleController {
     }
 
     @PostMapping("/{avtaleId}/forleng-dry-run")
-    public Avtale forlengAvtaleDryRun(@PathVariable("avtaleId") UUID avtaleId,
-                                      @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
-                                      @RequestBody ForlengAvtale forlengAvtale) {
+    public Avtale forlengAvtaleDryRun(
+            @PathVariable("avtaleId") UUID avtaleId,
+            @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
+            @RequestBody ForlengAvtale forlengAvtale
+    ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
@@ -370,8 +375,10 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/endre-maal")
     @Transactional
-    public void endreMål(@PathVariable("avtaleId") UUID avtaleId,
-                         @RequestBody EndreMål endreMål) {
+    public void endreMål(
+            @PathVariable("avtaleId") UUID avtaleId,
+            @RequestBody EndreMål endreMål
+    ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         veileder.endreMål(endreMål, avtale);
@@ -541,7 +548,7 @@ public class AvtaleController {
     public void settNyVeilederPåAvtale(@PathVariable("avtaleId") UUID avtaleId) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        veileder.hentOppfølgingFraArenaclient(avtale, veilarbArenaClient);
+        veileder.hentOppfølgingFraArena(avtale, veilarbArenaClient);
         veileder.overtaAvtale(avtale);
         avtaleRepository.save(avtale);
     }
@@ -592,13 +599,12 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/oppdaterOppfølgingsEnhet")
     public Avtale oppdaterOppfølgingsEnhet(
-            @PathVariable("avtaleId") UUID avtaleId,
-            @CookieValue("innlogget-part") Avtalerolle innloggetPart
+            @PathVariable("avtaleId") UUID avtaleId
     ){
-        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        Avtale avtale = avtalepart.hentAvtale(avtaleRepository, avtaleId);
-        avtalepart.sjekkOgHentOppfølgingStatus(avtale,veilarbArenaClient);
-        avtalepart.leggTilOppfølingEnhetsnavn(avtale, norg2Client);
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = veileder.hentAvtale(avtaleRepository, avtaleId);
+        veileder.sjekkOgHentOppfølgingStatus(avtale,veilarbArenaClient);
+        veileder.hentOppfølingenhetNavnFraNorg2(avtale, norg2Client);
         Avtale oppdatertAvtale = avtaleRepository.save(avtale);
 
         return oppdatertAvtale;

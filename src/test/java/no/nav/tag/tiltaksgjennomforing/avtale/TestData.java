@@ -637,7 +637,6 @@ public class TestData {
                         norg2Client,
                         Set.of(new NavEnhet(avtale.getEnhetOppfolging(), avtale.getEnhetsnavnOppfolging())),
                         new SlettemerkeProperties(),
-                        new TilskuddsperiodeConfig(),
                         false,
                         veilarbArenaClient
                 )
@@ -671,7 +670,6 @@ public class TestData {
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Oslo gamlebyen")),
                 new SlettemerkeProperties(),
-                new TilskuddsperiodeConfig(),
                 false,
                 veilarbArenaClient
         );
@@ -787,16 +785,34 @@ public class TestData {
         KontoregisterService kontoregisterService = mock(KontoregisterService.class);
         AvtaleRepository avtaleRepository = mock(AvtaleRepository.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any())).thenReturn(true);
-        return new Veileder(navIdent, tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
-                Set.of(ENHET_OPPFØLGING), new SlettemerkeProperties(), new TilskuddsperiodeConfig(), false, mock(VeilarbArenaClient.class));
+        return new Veileder(
+                navIdent,
+                tilgangskontrollService,
+                mock(PersondataService.class),
+                mock(Norg2Client.class),
+                Set.of(ENHET_OPPFØLGING),
+                new SlettemerkeProperties(),
+                false,
+                mock(VeilarbArenaClient.class)
+        );
     }
 
     public static Veileder enVeileder(Avtale avtale, PersondataService persondataService) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        KontoregisterService kontoregisterService = mock(KontoregisterService.class);
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(avtale.getVeilederNavIdent(), avtale.getDeltakerFnr())).thenReturn(true);
-        return new Veileder(avtale.getVeilederNavIdent(), tilgangskontrollService, persondataService, mock(Norg2Client.class),
-                Set.of(ENHET_OPPFØLGING), new SlettemerkeProperties(), new TilskuddsperiodeConfig(), false, mock(VeilarbArenaClient.class));
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(
+                avtale.getVeilederNavIdent(),
+                avtale.getDeltakerFnr())
+        ).thenReturn(true);
+        return new Veileder(
+                avtale.getVeilederNavIdent(),
+                tilgangskontrollService,
+                persondataService,
+                mock(Norg2Client.class),
+                Set.of(ENHET_OPPFØLGING),
+                new SlettemerkeProperties(),
+                false,
+                mock(VeilarbArenaClient.class)
+        );
     }
 
     public static PdlRespons enPdlrespons(boolean harKode6) {

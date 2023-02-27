@@ -3,14 +3,9 @@ package no.nav.tag.tiltaksgjennomforing.infrastruktur.caching;
 
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
-import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddsperiodeConfig;
-import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter.AbacAdapter;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.enhet.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig;
 import no.nav.tag.tiltaksgjennomforing.persondata.*;
@@ -23,6 +18,8 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -35,6 +32,7 @@ import java.util.Set;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
+@ActiveProfiles("cache-test")
 @ContextConfiguration
 @ExtendWith(SpringExtension.class)
 public class CachingConfigMockTest {
@@ -43,6 +41,7 @@ public class CachingConfigMockTest {
     private PersondataService mockPersondataService;
     private Norg2Client mockNorg2Client;
     private VeilarbArenaClient mockVeilarbArenaClient;
+    private AbacAdapter mockAbacAdapter;
 
     @Autowired
     private TilgangskontrollService tilgangskontrollService;
@@ -52,6 +51,8 @@ public class CachingConfigMockTest {
     private Norg2Client norg2Client;
     @Autowired
     private VeilarbArenaClient veilarbArenaClient;
+    @Autowired
+    AbacAdapter abacAdapter;
 
     private Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
     private final PdlRespons FØRSTE_PDL_RESPONSE = TestData.enPdlrespons(false);
@@ -80,12 +81,23 @@ public class CachingConfigMockTest {
             "NAV St. Hanshaugen2",
             "0314"
     );
-    private final String FØRSTE_OPPFØLGNING_ENHET_ARENA = "0906";
-    private final String ANDRE_OPPFØLGNING_ENHET_ARENA = "0904";
+    private final Oppfølgingsstatus FØRSTE_OPPFØLGNING_ENHET_ARENA = new Oppfølgingsstatus(
+            Formidlingsgruppe.ARBEIDSSOKER,
+            Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS,
+            "0906"
+    );
+    private final Oppfølgingsstatus ANDRE_OPPFØLGNING_ENHET_ARENA = new Oppfølgingsstatus(
+            Formidlingsgruppe.ARBEIDSSOKER,
+            Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
+            "0904"
+    );
+    private final boolean FØRSTE_ABAC_VERDIC_FOR_F142226_07098142678 = true;
+    private final boolean ANDRE_ABAC_VERDIC_FOR_F142226_11111111111 = false;
 
 
     @EnableCaching
     @Configuration
+    @Profile("cache-test")
     public static class CachingTestConfig {
 
         @Bean
@@ -109,13 +121,15 @@ public class CachingConfigMockTest {
         }
 
         @Bean
+        public AbacAdapter abacAdapterMockImplementation() { return  mock(AbacAdapter.class); }
+
+        @Bean
         public CacheManager cacheManager() {
             return new ConcurrentMapCacheManager(
                     EhCacheConfig.ARENA_CACHCE,
                     EhCacheConfig.PDL_CACHE,
                     EhCacheConfig.NORGNAVN_CACHE,
                     EhCacheConfig.NORG_GEO_ENHET,
-                    EhCacheConfig.STS_CACHE,
                     EhCacheConfig.AXSYS_CACHE,
                     EhCacheConfig.ABAC_CACHE
             );
@@ -133,6 +147,7 @@ public class CachingConfigMockTest {
         mockPersondataService = AopTestUtils.getTargetObject(persondataService);
         mockNorg2Client = AopTestUtils.getTargetObject(norg2Client);
         mockVeilarbArenaClient = AopTestUtils.getTargetObject(veilarbArenaClient);
+        mockAbacAdapter = AopTestUtils.getTargetObject(abacAdapter);
 
         lenient().when(mockTilgangskontrollService.harSkrivetilgangTilKandidat(
                 eq(avtale.getVeilederNavIdent()),
@@ -140,23 +155,31 @@ public class CachingConfigMockTest {
         )).thenReturn(true, true, true);
 
         when(mockPersondataService.hentPersondataFraPdl(avtale.getDeltakerFnr())).thenReturn(FØRSTE_PDL_RESPONSE, ANDRE_PDL_RESPONSE);
-        when(mockNorg2Client.hentOppfølgingsEnhetsnavnFraNorg2(any())).thenReturn(
+        when(mockNorg2Client.hentOppfølgingsEnhetsnavnFraCacheNorg2(any())).thenReturn(
                 FØRSTE_NORG2_OPPFØLGNING_RESPONSE,
                 ANDRE_NORG2_OPPFØLGNING_RESPONSE
         );
-        when(mockNorg2Client.hentGeoEnhetFraNorg2(any())).thenReturn(FØRSTE_NORG2_GEO_RESPONSE, ANDRE_NORG2_GEO_RESPONSE);
-        when(mockVeilarbArenaClient.HentOppfølgingsenhetFraArena(avtale.getDeltakerFnr().asString())).thenReturn(
+        when(mockNorg2Client.hentGeoEnhetFraCacheEllerNorg2(any())).thenReturn(FØRSTE_NORG2_GEO_RESPONSE, ANDRE_NORG2_GEO_RESPONSE);
+        when(mockVeilarbArenaClient.HentOppfølgingsenhetFraCacheEllerArena(avtale.getDeltakerFnr().asString())).thenReturn(
                 FØRSTE_OPPFØLGNING_ENHET_ARENA,
                 ANDRE_OPPFØLGNING_ENHET_ARENA
+        );
+        when(mockAbacAdapter.harLeseTilgang("F142226", "07098142678")).thenReturn(
+                FØRSTE_ABAC_VERDIC_FOR_F142226_07098142678,
+                FØRSTE_ABAC_VERDIC_FOR_F142226_07098142678
+        );
+        when(mockAbacAdapter.harLeseTilgang("F142226", "11111111111")).thenReturn(
+                ANDRE_ABAC_VERDIC_FOR_F142226_11111111111,
+                ANDRE_ABAC_VERDIC_FOR_F142226_11111111111
         );
     }
 
     @Test
     public void bekreft_antall_ganger_Cacheable_endepunkter_blir_kalt_ved_norg2Client_oppfølgingsEnhetsnavn() {
-        Norg2OppfølgingResponse norg2OppfølgingResponse = norg2Client.hentOppfølgingsEnhetsnavnFraNorg2(
+        Norg2OppfølgingResponse norg2OppfølgingResponse = norg2Client.hentOppfølgingsEnhetsnavnFraCacheNorg2(
                 avtale.getEnhetOppfolging()
         );
-        Norg2OppfølgingResponse norg2OppfølgingResponse2 = norg2Client.hentOppfølgingsEnhetsnavnFraNorg2(
+        Norg2OppfølgingResponse norg2OppfølgingResponse2 = norg2Client.hentOppfølgingsEnhetsnavnFraCacheNorg2(
                 avtale.getEnhetOppfolging()
         );
 
@@ -169,7 +192,7 @@ public class CachingConfigMockTest {
         Assertions.assertEquals(FØRSTE_NORG2_OPPFØLGNING_RESPONSE.getNavn(), norg2OppfølgingResponse2.getNavn());
 
         /** Blir kalt 2 ganger. Andre iterasjon så treffer vi cache response istedenfor endepunkt */
-        verify(mockNorg2Client, times(1)).hentOppfølgingsEnhetsnavnFraNorg2(avtale.getEnhetOppfolging());
+        verify(mockNorg2Client, times(1)).hentOppfølgingsEnhetsnavnFraCacheNorg2(avtale.getEnhetOppfolging());
     }
 
     @Test
@@ -177,8 +200,8 @@ public class CachingConfigMockTest {
         Optional<String> optionalGeoEnhet = PersondataService.hentGeoLokasjonFraPdlRespons(FØRSTE_PDL_RESPONSE);
         String geoEnhet = optionalGeoEnhet.get();
 
-        Norg2GeoResponse norg2GeoResponse = norg2Client.hentGeoEnhetFraNorg2(geoEnhet);
-        Norg2GeoResponse norg2GeoResponse2 = norg2Client.hentGeoEnhetFraNorg2(geoEnhet);
+        Norg2GeoResponse norg2GeoResponse = norg2Client.hentGeoEnhetFraCacheEllerNorg2(geoEnhet);
+        Norg2GeoResponse norg2GeoResponse2 = norg2Client.hentGeoEnhetFraCacheEllerNorg2(geoEnhet);
 
         Assertions.assertEquals(FØRSTE_NORG2_GEO_RESPONSE.getNavn(), norg2GeoResponse.getNavn());
         Assertions.assertEquals(FØRSTE_NORG2_GEO_RESPONSE.getEnhetNr(), norg2GeoResponse.getEnhetNr());
@@ -187,19 +210,44 @@ public class CachingConfigMockTest {
         Assertions.assertEquals(FØRSTE_NORG2_GEO_RESPONSE.getEnhetNr(), norg2GeoResponse2.getEnhetNr());
 
         /** Blir kalt 2 ganger. Andre iterasjon så treffer vi cache response istedenfor endepunkt */
-        verify(mockNorg2Client, times(1)).hentGeoEnhetFraNorg2(geoEnhet);
+        verify(mockNorg2Client, times(1)).hentGeoEnhetFraCacheEllerNorg2(geoEnhet);
+    }
+
+    @Test
+    public void bekreft_antall_ganger_Cacheable_endepunkter_blir_kalt_ved_abac() {
+        NavIdent veilederIdent = new NavIdent("F142226");
+
+        Fnr første_deltakerFnr = new Fnr("07098142678");
+        Fnr andre_deltakerFnr = new Fnr("11111111111");
+
+        boolean tilgang_navId_F142226_og_fnr_07098142678 = abacAdapter.harLeseTilgang(veilederIdent.asString(), første_deltakerFnr.asString());
+        boolean tilgang_navId_F142226_og_fnr_07098142678_response2 = abacAdapter.harLeseTilgang(veilederIdent.asString(), første_deltakerFnr.asString());
+
+        verify(mockAbacAdapter, times(1)).harLeseTilgang(veilederIdent.asString(), første_deltakerFnr.asString());
+
+
+        boolean tilgang_navId_F142226_og_fnr_11111111111 = abacAdapter.harLeseTilgang(veilederIdent.asString(), andre_deltakerFnr.asString());
+        boolean tilgang_navId_F142226_og_fnr_11111111111_response2 = abacAdapter.harLeseTilgang(veilederIdent.asString(), andre_deltakerFnr.asString());
+
+       verify(mockAbacAdapter, times(1)).harLeseTilgang(veilederIdent.asString(), andre_deltakerFnr.asString());
+
+        Assertions.assertEquals(FØRSTE_ABAC_VERDIC_FOR_F142226_07098142678, tilgang_navId_F142226_og_fnr_07098142678);
+        Assertions.assertEquals(FØRSTE_ABAC_VERDIC_FOR_F142226_07098142678, tilgang_navId_F142226_og_fnr_07098142678_response2);
+
+        Assertions.assertEquals(ANDRE_ABAC_VERDIC_FOR_F142226_11111111111, tilgang_navId_F142226_og_fnr_11111111111);
+        Assertions.assertEquals(ANDRE_ABAC_VERDIC_FOR_F142226_11111111111, tilgang_navId_F142226_og_fnr_11111111111_response2);
     }
 
     @Test
     public void bekreft_antall_ganger_Cacheable_endepunkter_blir_kalt_ved_arena() {
-        String arenaResponse = veilarbArenaClient.HentOppfølgingsenhetFraArena(avtale.getDeltakerFnr().asString());
-        String arenaResponse2 = veilarbArenaClient.HentOppfølgingsenhetFraArena(avtale.getDeltakerFnr().asString());
+        Oppfølgingsstatus arenaResponse = veilarbArenaClient.HentOppfølgingsenhetFraCacheEllerArena(avtale.getDeltakerFnr().asString());
+        Oppfølgingsstatus arenaResponse2 = veilarbArenaClient.HentOppfølgingsenhetFraCacheEllerArena(avtale.getDeltakerFnr().asString());
 
         Assertions.assertEquals(FØRSTE_OPPFØLGNING_ENHET_ARENA, arenaResponse);
         Assertions.assertEquals(FØRSTE_OPPFØLGNING_ENHET_ARENA, arenaResponse2);
 
         /** Blir kalt 2 ganger. Andre iterasjon så treffer vi cache response istedenfor endepunkt */
-        verify(mockVeilarbArenaClient, times(1)).HentOppfølgingsenhetFraArena(avtale.getDeltakerFnr().asString());
+        verify(mockVeilarbArenaClient, times(1)).HentOppfølgingsenhetFraCacheEllerArena(avtale.getDeltakerFnr().asString());
     }
 
     @Test
@@ -260,7 +308,6 @@ public class CachingConfigMockTest {
                 norg2Client,
                 Set.of(new NavEnhet(avtale.getEnhetOppfolging(), avtale.getEnhetsnavnOppfolging())),
                 new SlettemerkeProperties(),
-                new TilskuddsperiodeConfig(),
                 false,
                 veilarbArenaClient
         );
@@ -279,9 +326,9 @@ public class CachingConfigMockTest {
         );
 
         /** Blir kalt 2 ganger. Andre iterasjon så treffer vi cache response istedenfor endepunkt */
-        verify(mockNorg2Client, times(1)).hentOppfølgingsEnhetsnavnFraNorg2(avtale.getEnhetOppfolging());
-        verify(mockNorg2Client, times(1)).hentGeoEnhetFraNorg2(geoEnhet);
+        verify(mockNorg2Client, times(1)).hentOppfølgingsEnhetsnavnFraCacheNorg2(avtale.getEnhetOppfolging());
+        verify(mockNorg2Client, times(1)).hentGeoEnhetFraCacheEllerNorg2(geoEnhet);
         verify(mockPersondataService, times(1)).hentPersondataFraPdl(avtale.getDeltakerFnr());
-        verify(mockVeilarbArenaClient, times(1)).HentOppfølgingsenhetFraArena(avtale.getDeltakerFnr().asString());
+        verify(mockVeilarbArenaClient, times(1)).HentOppfølgingsenhetFraCacheEllerArena(avtale.getDeltakerFnr().asString());
     }
 }

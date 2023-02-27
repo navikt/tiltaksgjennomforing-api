@@ -5,11 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter.AbacAdapter;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
+import no.nav.tag.tiltaksgjennomforing.enhet.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
@@ -18,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -45,17 +44,20 @@ public class CachingConfigTest {
     private final VeilarbArenaClient veilarbArenaClient;
     private final Norg2Client norg2Client;
     private final PersondataService persondataService;
+    private final AbacAdapter abacAdapter;
 
     public CachingConfigTest(
             @Autowired CacheManager cacheManager,
             @Autowired VeilarbArenaClient veilarbArenaClient,
             @Autowired Norg2Client norg2Client,
-            @Autowired PersondataService persondataService
+            @Autowired PersondataService persondataService,
+            @Autowired AbacAdapter abacAdapter
     ){
         this.cacheManager = cacheManager;
         this.veilarbArenaClient = veilarbArenaClient;
         this.norg2Client = norg2Client;
         this.persondataService = persondataService;
+        this.abacAdapter = abacAdapter;
     }
 
     private  <T,K> T getCacheValue(String cacheName, K cacheKey, Class<T> clazz) {
@@ -74,15 +76,15 @@ public class CachingConfigTest {
         TestData.setGeoNavEnhet(avtale, oppfolgingNavEnhet);
         TestData.setOppfolgingNavEnhet(avtale, oppfolgingNavEnhet);
 
-        veilarbArenaClient.HentOppfølgingsenhetFraArena(avtale.getDeltakerFnr().asString());
-        veilarbArenaClient.HentOppfølgingsenhetFraArena(ETT_FNR_NR2);
-        veilarbArenaClient.HentOppfølgingsenhetFraArena(ETT_FNR_NR2);
-        veilarbArenaClient.HentOppfølgingsenhetFraArena(ETT_FNR_NR3);
-        veilarbArenaClient.HentOppfølgingsenhetFraArena(ETT_FNR_NR2);
+        veilarbArenaClient.HentOppfølgingsenhetFraCacheEllerArena(avtale.getDeltakerFnr().asString());
+        veilarbArenaClient.HentOppfølgingsenhetFraCacheEllerArena(ETT_FNR_NR2);
+        veilarbArenaClient.HentOppfølgingsenhetFraCacheEllerArena(ETT_FNR_NR2);
+        veilarbArenaClient.HentOppfølgingsenhetFraCacheEllerArena(ETT_FNR_NR3);
+        veilarbArenaClient.HentOppfølgingsenhetFraCacheEllerArena(ETT_FNR_NR2);
 
-        Assertions.assertEquals("0906", getCacheValue(ARENA_CACHCE, ETT_FNR_NR, String.class));
-        Assertions.assertEquals("0904", getCacheValue(ARENA_CACHCE, ETT_FNR_NR2, String.class));
-        Assertions.assertEquals("0906", getCacheValue(ARENA_CACHCE, ETT_FNR_NR3, String.class));
+        Assertions.assertEquals("0906", getCacheValue(ARENA_CACHCE, ETT_FNR_NR, Oppfølgingsstatus.class).getOppfolgingsenhet());
+        Assertions.assertEquals("0904", getCacheValue(ARENA_CACHCE, ETT_FNR_NR2, Oppfølgingsstatus.class).getOppfolgingsenhet());
+        Assertions.assertEquals("0906", getCacheValue(ARENA_CACHCE, ETT_FNR_NR3, Oppfølgingsstatus.class).getOppfolgingsenhet());
     }
 
     @Test
@@ -92,7 +94,7 @@ public class CachingConfigTest {
 
         TestData.setOppfolgingNavEnhet(avtale, oppfolgingNavEnhet);
 
-        Norg2OppfølgingResponse norg2OppfølgingResponse = norg2Client.hentOppfølgingsEnhetsnavnFraNorg2(
+        Norg2OppfølgingResponse norg2OppfølgingResponse = norg2Client.hentOppfølgingsEnhetsnavnFraCacheNorg2(
                 avtale.getEnhetOppfolging()
         );
         Norg2OppfølgingResponse norgnavnCacheForEnhet = getCacheValue(
@@ -113,7 +115,7 @@ public class CachingConfigTest {
         Optional<String> optionalGeoEnhet = PersondataService.hentGeoLokasjonFraPdlRespons(pdlRespons);
         String geoEnhet = optionalGeoEnhet.get();
 
-        Norg2GeoResponse norg2GeoResponse = norg2Client.hentGeoEnhetFraNorg2(geoEnhet);
+        Norg2GeoResponse norg2GeoResponse = norg2Client.hentGeoEnhetFraCacheEllerNorg2(geoEnhet);
         Norg2GeoResponse norggeoenhetCacheForGeoEnhet = getCacheValue(NORG_GEO_ENHET, geoEnhet, Norg2GeoResponse.class);
 
         Assertions.assertEquals("NAV St. Hanshaugen", norggeoenhetCacheForGeoEnhet.getNavn());
@@ -152,6 +154,39 @@ public class CachingConfigTest {
     }
 
     @Test
+    public void sjekk_at_caching_fanger_opp_data_fra_abac_cache() {
+        NavIdent veilederIdent = new NavIdent("F142226");
+        Fnr deltakerFnr = new Fnr("07098142678");
+
+        NavIdent veilederIdent2 = new NavIdent("F142226");
+        Fnr deltakerFnr2 = new Fnr("11111111111");
+
+        Fnr brukerFnr = new Fnr("00000000000");
+
+        boolean tilgang_navId_F142226_og_fnr_07098142678 = abacAdapter.harLeseTilgang(veilederIdent.asString(), deltakerFnr.asString());
+        boolean tilgang_navId_F142226_og_fnr_11111111111 = abacAdapter.harLeseTilgang(veilederIdent2.asString(), deltakerFnr2.asString());
+
+        Assertions.assertTrue(getCacheValue(ABAC_CACHE, veilederIdent.asString() + deltakerFnr.asString(), boolean.class));
+        Assertions.assertEquals(
+                tilgang_navId_F142226_og_fnr_07098142678,
+                getCacheValue(ABAC_CACHE, veilederIdent.asString() + deltakerFnr.asString(), boolean.class)
+        );
+        Assertions.assertFalse(getCacheValue(ABAC_CACHE, veilederIdent2.asString() + deltakerFnr2.asString(), boolean.class));
+        Assertions.assertEquals(
+                tilgang_navId_F142226_og_fnr_11111111111,
+                getCacheValue(ABAC_CACHE, veilederIdent2.asString() + deltakerFnr2.asString(), boolean.class)
+        );
+        Assertions.assertNotEquals(
+                getCacheValue(ABAC_CACHE, veilederIdent.asString() + deltakerFnr.asString(), boolean.class),
+                (getCacheValue(ABAC_CACHE, veilederIdent2.asString() + deltakerFnr2.asString(), boolean.class))
+        );
+
+        Assertions.assertThrows(Exception.class, () -> {
+            getCacheValue(ABAC_CACHE, veilederIdent.asString() + brukerFnr.asString(), boolean.class);
+        });
+    }
+
+    @Test
     public void vertifisere_at_caching_fungerer_for_endreAvtale_av_veileder() {
         final NavEnhet oppfolgingNavEnhet = TestData.ENHET_OPPFØLGING;
         final String GEO_LOKASJON_FRA_PDL_MAPPING = "030104";
@@ -173,7 +208,6 @@ public class CachingConfigTest {
                 norg2Client,
                 Set.of(new NavEnhet(avtale.getEnhetOppfolging(), avtale.getEnhetsnavnOppfolging())),
                 new SlettemerkeProperties(),
-                new TilskuddsperiodeConfig(),
                 false,
                 veilarbArenaClient
         );
@@ -203,7 +237,7 @@ public class CachingConfigTest {
                 Norg2GeoResponse.class
         );
         PdlRespons pdlCache = getCacheValue(PDL_CACHE, avtale.getDeltakerFnr(), PdlRespons.class);
-        String arenaCache = getCacheValue(ARENA_CACHCE, avtale.getDeltakerFnr().asString(), String.class);
+        Oppfølgingsstatus arenaCache = getCacheValue(ARENA_CACHCE, avtale.getDeltakerFnr().asString(), Oppfølgingsstatus.class);
 
         Assertions.assertEquals("NAV St. Hanshaugen", norggeoenhetCacheForGeoEnhet.getNavn());
         Assertions.assertEquals("0313", norggeoenhetCacheForGeoEnhet.getEnhetNr());
@@ -216,6 +250,6 @@ public class CachingConfigTest {
         Assertions.assertEquals("Donald", persondataService.hentNavnFraPdlRespons(pdlCache).getFornavn());
         Assertions.assertEquals("Duck", persondataService.hentNavnFraPdlRespons(pdlCache).getEtternavn());
 
-        Assertions.assertEquals("0906", arenaCache);
+        Assertions.assertEquals("0906", arenaCache.getOppfolgingsenhet());
     }
 }
