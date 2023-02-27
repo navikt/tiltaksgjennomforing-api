@@ -1,6 +1,5 @@
 spring:
   datasource:
-    platform: postgres
     driverClassName: org.postgresql.Driver
   kafka:
     bootstrap-servers: b27apvl00045.preprod.local:8443, b27apvl00046.preprod.local:8443, b27apvl00047.preprod.local:8443
@@ -12,6 +11,9 @@ spring:
       ssl.truststore:
         location: ${javax.net.ssl.trustStore}
         password: ${javax.net.ssl.trustStorePassword}
+  sql:
+    init:
+      platform: postgres
 
 no.nav.security.jwt:
   issuer:

@@ -3,14 +3,12 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.util.EnumSet;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AvtaleArenaMigreringTest {
+
     @Test
     public void lonnstilskudd_tilskuddsperioder_skal_ha_status_ubehandlet_hvis_ikke_ryddeavtale() {
         Now.fixedDate(LocalDate.of(2023, 02, 15));

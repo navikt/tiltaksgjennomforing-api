@@ -2,11 +2,12 @@ package no.nav.tag.tiltaksgjennomforing.enhet;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Objects;
-import java.util.Optional;
 
 @Slf4j
 @Component
@@ -16,6 +17,17 @@ public class Norg2Client {
     private final Norg2GeografiskProperties norg2GeografiskProperties;
     private final Norg2OppfølgingProperties norg2OppfølgingProperties;
     private final RestTemplate restTemplate;
+
+    @Cacheable(EhCacheConfig.NORGNAVN_CACHE)
+    public Norg2OppfølgingResponse hentOppfølgingsEnhetsnavnFraCacheNorg2(String enhet) {
+        return this.hentOppfølgingsEnhetsnavn(enhet);
+    }
+
+    @Cacheable(EhCacheConfig.NORG_GEO_ENHET)
+    public Norg2GeoResponse hentGeoEnhetFraCacheEllerNorg2(String geoTilknytning) {
+        return this.hentGeografiskEnhet(geoTilknytning);
+    }
+
 
     public Norg2GeoResponse hentGeografiskEnhet(String geoOmråde) {
         Norg2GeoResponse norg2GeoResponse;

@@ -13,7 +13,7 @@ import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
+
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
@@ -21,18 +21,24 @@ import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
+import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
+
 
 public class Arbeidsgiver extends Avtalepart<Fnr> {
-    static String tekstAvtaleVenterPaaDinGodkjenning = "Deltakeren trenger ikke å godkjenne avtalen før du gjør det. ";
-    static String ekstraTekstAvtaleVenterPaaDinGodkjenning = "Veilederen skal godkjenne til slutt.";
-    static String tekstTiltaketErAvsluttet = "Hvis du har spørsmål må du kontakte NAV.";
     private final Map<BedriftNr, Collection<Tiltakstype>> tilganger;
     private final Set<AltinnReportee> altinnOrganisasjoner;
     private final PersondataService persondataService;
     private final Norg2Client norg2Client;
     private final VeilarbArenaClient veilarbArenaClient;
 
-    public Arbeidsgiver(Fnr identifikator, Set<AltinnReportee> altinnOrganisasjoner, Map<BedriftNr, Collection<Tiltakstype>> tilganger, PersondataService persondataService, Norg2Client norg2Client, VeilarbArenaClient veilarbArenaClient) {
+    public Arbeidsgiver(
+            Fnr identifikator,
+            Set<AltinnReportee> altinnOrganisasjoner,
+            Map<BedriftNr, Collection<Tiltakstype>> tilganger,
+            PersondataService persondataService,
+            Norg2Client norg2Client,
+            VeilarbArenaClient veilarbArenaClient
+    ) {
         super(identifikator);
         this.altinnOrganisasjoner = altinnOrganisasjoner;
         this.tilganger = tilganger;
@@ -42,11 +48,15 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     private static boolean avbruttForMerEnn12UkerSiden(Avtale avtale) {
-        return avtale.isAvbrutt() && avtale.getSistEndret().plus(84, ChronoUnit.DAYS).isBefore(Now.instant());
+        return avtale.isAvbrutt() && avtale.getSistEndret()
+                .plus(84, ChronoUnit.DAYS)
+                .isBefore(Now.instant());
     }
 
     private static boolean sluttdatoPassertMedMerEnn12Uker(Avtale avtale) {
-        return avtale.erGodkjentAvVeileder() && avtale.getGjeldendeInnhold().getSluttDato().plusWeeks(12).isBefore(Now.localDate());
+        return avtale.erGodkjentAvVeileder() && avtale.getGjeldendeInnhold()
+                .getSluttDato().plusWeeks(12)
+                .isBefore(Now.localDate());
     }
 
     private static Avtale fjernAvbruttGrunn(Avtale avtale) {
@@ -149,8 +159,20 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     @Override
-    public List<Avtale> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, String sorteringskolonne, int skip, int limit) {
-        return super.hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre, sorteringskolonne, skip, limit).stream().map(Arbeidsgiver::fjernAvbruttGrunn).collect(Collectors.toList());
+    public List<Avtale> hentAlleAvtalerMedLesetilgang(
+            AvtaleRepository avtaleRepository,
+            AvtalePredicate queryParametre,
+            String sorteringskolonne,
+            int skip,
+            int limit
+    ) {
+        return super.hentAlleAvtalerMedLesetilgang(
+                avtaleRepository,
+                queryParametre,
+                sorteringskolonne,
+                skip,
+                limit
+        ).stream().map(Arbeidsgiver::fjernAvbruttGrunn).collect(Collectors.toList());
     }
 
     public List<Avtale> hentAvtalerForMinsideArbeidsgiver(AvtaleRepository avtaleRepository, BedriftNr bedriftNr) {
@@ -161,23 +183,41 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
                 .collect(Collectors.toList());
     }
 
-    public void hentOgSettOppfølgingStatus(Avtale avtale) {
-        Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.hentOppfølgingStatus(avtale.getDeltakerFnr().asString());
-        if(oppfølgingsstatus != null) {
-            avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
-            avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
-            avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
+    private void tilgangTilBedriftVedOpprettelseAvAvtale(BedriftNr bedriftNr, Tiltakstype tiltakstype) {
+        if (!harTilgangPåTiltakIBedrift(bedriftNr, tiltakstype)) {
+            throw new TilgangskontrollException("Har ikke tilgang på tiltak i valgt bedrift");
         }
     }
 
     public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
-        if (!harTilgangPåTiltakIBedrift(opprettAvtale.getBedriftNr(), opprettAvtale.getTiltakstype())) {
-            throw new TilgangskontrollException("Har ikke tilgang på tiltak i valgt bedrift");
-        }
+        this.tilgangTilBedriftVedOpprettelseAvAvtale(opprettAvtale.getBedriftNr(), opprettAvtale.getTiltakstype());
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(opprettAvtale);
-        final PdlRespons persondata = persondataService.hentPersondata(opprettAvtale.getDeltakerFnr());
-        leggTilGeografiskEnhet(avtale, persondata, norg2Client);
+        leggEnheterVedOpprettelseAvAvtale(avtale);
+
         return avtale;
+    }
+
+    public Avtale opprettMentorAvtale(OpprettMentorAvtale opprettMentorAvtale) {
+        this.tilgangTilBedriftVedOpprettelseAvAvtale(
+                opprettMentorAvtale.getBedriftNr(),
+                opprettMentorAvtale.getTiltakstype()
+        );
+        Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(opprettMentorAvtale);
+        leggEnheterVedOpprettelseAvAvtale(avtale);
+
+        return avtale;
+    }
+
+    protected void leggEnheterVedOpprettelseAvAvtale(Avtale avtale) {
+        final PdlRespons persondata = this.hentPersonDataForOpprettelseAvAvtale(avtale);
+        super.hentGeoEnhetFraNorg2(avtale, persondata, norg2Client);
+        super.hentOppfølingenhetNavnFraNorg2(avtale, norg2Client);
+    }
+
+    private PdlRespons hentPersonDataForOpprettelseAvAvtale(Avtale avtale) {
+        final PdlRespons persondata = persondataService.hentPersondata(avtale.getDeltakerFnr());
+        avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(persondata));
+        return persondata;
     }
 
     @Override
@@ -189,13 +229,5 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         return avtale;
     }
 
-    public Avtale opprettMentorAvtale(OpprettMentorAvtale opprettMentorAvtale) {
-        if (!harTilgangPåTiltakIBedrift(opprettMentorAvtale.getBedriftNr(), opprettMentorAvtale.getTiltakstype())) {
-            throw new TilgangskontrollException("Har ikke tilgang på tiltak i valgt bedrift");
-        }
-        Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(opprettMentorAvtale);
-        final PdlRespons persondata = persondataService.hentPersondata(opprettMentorAvtale.getDeltakerFnr());
-        leggTilGeografiskEnhet(avtale, persondata, norg2Client);
-        return avtale;
-    }
+
 }

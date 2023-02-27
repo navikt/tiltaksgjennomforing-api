@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 
 public class ArbeidsgiverTest {
+
     @Test
     public void opphevGodkjenninger__kan_oppheve_ved_deltakergodkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
@@ -44,6 +45,7 @@ public class ArbeidsgiverTest {
         PersondataService persondataService = mock(PersondataService.class);
         Norg2Client norg2Client = mock(Norg2Client.class);
         VeilarbArenaClient veilarbArenaClient = mock(VeilarbArenaClient.class);
+
         final PdlRespons pdlRespons = TestData.enPdlrespons(false);
         final Norg2GeoResponse navEnhet = new Norg2GeoResponse("Nav Grorud", "0411");
 
@@ -52,7 +54,16 @@ public class ArbeidsgiverTest {
 
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
                 TestData.etFodselsnummer(),
-                Set.of(new AltinnReportee("", "", null, TestData.etBedriftNr().asString(), null, null)),
+                Set.of(
+                        new AltinnReportee(
+                                "",
+                                "",
+                                null,
+                                TestData.etBedriftNr().asString(),
+                                null,
+                                null
+                        )
+                ),
                 Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
                 persondataService,
                 norg2Client,
@@ -60,22 +71,40 @@ public class ArbeidsgiverTest {
 
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
         assertThat(avtale.isOpprettetAvArbeidsgiver()).isTrue();
-        assertThat(avtale.getGjeldendeInnhold().getDeltakerFornavn()).isNull();
-        assertThat(avtale.getGjeldendeInnhold().getDeltakerEtternavn()).isNull();
+        assertThat(avtale.getGjeldendeInnhold().getDeltakerFornavn()).isNotNull();
+        assertThat(avtale.getGjeldendeInnhold().getDeltakerEtternavn()).isNotNull();
         assertThat(avtale.getEnhetGeografisk()).isEqualTo(navEnhet.getEnhetNr());
     }
 
     @Test
     public void endreAvtale_validererFraDato() {
         Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
-        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(null, null, null, null, null, null);
-        assertThatThrownBy(() -> arbeidsgiver.avvisDatoerTilbakeITid(avtale, Now.localDate().minusDays(1), null)).isInstanceOf(VarighetDatoErTilbakeITidException.class);
+        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        assertThatThrownBy(
+                () -> arbeidsgiver.avvisDatoerTilbakeITid(avtale, Now.localDate().minusDays(1), null)
+        ).isInstanceOf(VarighetDatoErTilbakeITidException.class);
     }
 
     @Test
     public void endreAvtale_validererTilDato() {
         Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
-        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(null, null, null, null, null, null);
-        assertThatThrownBy(() -> arbeidsgiver.avvisDatoerTilbakeITid(avtale, Now.localDate(), Now.localDate().minusDays(1))).isInstanceOf(VarighetDatoErTilbakeITidException.class);
+        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        assertThatThrownBy(
+                () -> arbeidsgiver.avvisDatoerTilbakeITid(avtale, Now.localDate(), Now.localDate().minusDays(1))
+        ).isInstanceOf(VarighetDatoErTilbakeITidException.class);
     }
 }

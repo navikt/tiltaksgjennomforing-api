@@ -918,16 +918,29 @@ public class AvtaleTest {
 
         // Gi veileder tilgang til deltaker
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(avtale.getVeilederNavIdent()), any(Fnr.class))).thenReturn(true);
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(
+                eq(avtale.getVeilederNavIdent()),
+                any(Fnr.class)
+        )).thenReturn(true);
 
         TilskuddsperiodeConfig tilskuddsperiodeConfig = new TilskuddsperiodeConfig();
 
-        Veileder veileder = new Veileder(avtale.getVeilederNavIdent(),
-                tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
-                Set.of(new NavEnhet("4802", "Trysil")), mock(SlettemerkeProperties.class),
-                tilskuddsperiodeConfig, false, mock(VeilarbArenaClient.class));
-
-        veileder.endreAvtale(Instant.now(), TestData.endringPåAlleArbeidstreningFelter(), avtale, tilskuddsperiodeConfig.getTiltakstyper());
+        Veileder veileder = new Veileder(
+                avtale.getVeilederNavIdent(),
+                tilgangskontrollService,
+                mock(PersondataService.class),
+                mock(Norg2Client.class),
+                Set.of(new NavEnhet("4802", "Trysil")),
+                mock(SlettemerkeProperties.class),
+                false,
+                mock(VeilarbArenaClient.class)
+        );
+        veileder.endreAvtale(
+                Instant.now(),
+                TestData.endringPåAlleArbeidstreningFelter(),
+                avtale,
+                tilskuddsperiodeConfig.getTiltakstyper()
+        );
         arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
         deltaker.godkjennAvtale(Instant.now(), avtale);
 
@@ -948,10 +961,16 @@ public class AvtaleTest {
 
         TilskuddsperiodeConfig tilskuddsperiodeConfig = new TilskuddsperiodeConfig();
 
-        Veileder veileder = new Veileder(avtale.getVeilederNavIdent(),
-                tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
-                Set.of(new NavEnhet("4802", "Trysil")), mock(SlettemerkeProperties.class),
-                tilskuddsperiodeConfig, false, mock(VeilarbArenaClient.class));
+        Veileder veileder = new Veileder(
+                avtale.getVeilederNavIdent(),
+                tilgangskontrollService,
+                mock(PersondataService.class),
+                mock(Norg2Client.class),
+                Set.of(new NavEnhet("4802", "Trysil")),
+                mock(SlettemerkeProperties.class),
+                false,
+                mock(VeilarbArenaClient.class)
+        );
 
         deltaker.godkjennAvtale(Instant.now(), avtale);
         arbeidsgiver.godkjennAvtale(Instant.now(), avtale);

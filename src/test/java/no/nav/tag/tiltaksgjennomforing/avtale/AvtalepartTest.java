@@ -14,6 +14,7 @@ import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 
 public class AvtalepartTest {
+
     @Test
     public void endreAvtale__skal_feile_for_deltaker() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();

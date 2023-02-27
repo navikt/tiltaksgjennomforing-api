@@ -170,7 +170,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         return avtale;
     }
 
-    public void endreAvtale(Instant sistEndret, EndreAvtale nyAvtale, Avtalerolle utfortAvRolle, EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder, Identifikator identifikator) {
+    public void endreAvtale(
+            Instant sistEndret,
+            EndreAvtale nyAvtale,
+            Avtalerolle utfortAvRolle,
+            EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder,
+            Identifikator identifikator
+    ) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAvtalenKanEndres();
         sjekkSistEndret(sistEndret);
@@ -183,7 +189,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new AvtaleEndret(this, utfortAvRolle, identifikator));
     }
 
-    public void endreAvtale(Instant sistEndret, EndreAvtale nyAvtale, Avtalerolle utfortAv, EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder) {
+    public void endreAvtale(
+            Instant sistEndret,
+            EndreAvtale nyAvtale,
+            Avtalerolle utfortAv,
+            EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder
+    ) {
         endreAvtale(sistEndret, nyAvtale, utfortAv, tiltakstyperMedTilskuddsperioder, null);
     }
 
@@ -865,7 +876,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     void endreBeløpITilskuddsperioder() {
         sendTilbakeTilBeslutter();
-        tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET).forEach(t -> t.setBeløp(beregnTilskuddsbeløp(t.getStartDato(), t.getSluttDato())));
+        tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET)
+                .forEach(t -> t.setBeløp(beregnTilskuddsbeløp(t.getStartDato(), t.getSluttDato())));
     }
 
     public void sendTilbakeTilBeslutter() {
