@@ -603,8 +603,7 @@ public class AvtaleController {
     ){
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = veileder.hentAvtale(avtaleRepository, avtaleId);
-        veileder.sjekkOgHentOppfølgingStatus(avtale,veilarbArenaClient);
-        veileder.hentOppfølingenhetNavnFraNorg2(avtale, norg2Client);
+        veileder.leggTilEnheter(avtale);
         Avtale oppdatertAvtale = avtaleRepository.save(avtale);
 
         return oppdatertAvtale;

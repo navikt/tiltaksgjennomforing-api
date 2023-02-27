@@ -202,7 +202,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         this.oppdatereEnheterVedEndreAvtale(avtale);
     }
 
-    private void oppdatereEnheterVedEndreAvtale(Avtale avtale) {
+    protected void oppdatereEnheterVedEndreAvtale(Avtale avtale) {
         PdlRespons pdlRespons = this.oppdaterePersondataFraPdlVedEndreAvtale(avtale.getDeltakerFnr());
         this.oppdatereOppfølgingStatusVedEndreAvtale(avtale);
         this.oppdatereGeoEnhetVedEndreAvtale(avtale, pdlRespons);
@@ -250,14 +250,14 @@ public class Veileder extends Avtalepart<NavIdent> {
     public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
         this.sjekkTilgangskontroll(getIdentifikator(), opprettAvtale.getDeltakerFnr());
         Avtale avtale = Avtale.veilederOppretterAvtale(opprettAvtale, getIdentifikator());
-        leggEnheterVedOpprettelseAvAvtale(avtale, norg2Client, veilarbArenaClient);
+        leggTilEnheter(avtale);
         return avtale;
     }
 
     public Avtale opprettMentorAvtale(OpprettMentorAvtale opprettMentorAvtale) {
         this.sjekkTilgangskontroll(getIdentifikator(), opprettMentorAvtale.getDeltakerFnr());
         Avtale avtale = Avtale.veilederOppretterAvtale(opprettMentorAvtale, getIdentifikator());
-        leggEnheterVedOpprettelseAvAvtale(avtale, norg2Client, veilarbArenaClient);
+        leggTilEnheter(avtale);
         return avtale;
     }
 
@@ -267,11 +267,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         }
     }
 
-    protected void leggEnheterVedOpprettelseAvAvtale(
-            Avtale avtale,
-            Norg2Client norg2Client,
-            VeilarbArenaClient veilarbArenaClient
-    ){
+    protected void leggTilEnheter(Avtale avtale){
         final PdlRespons persondata = this.hentPersonDataForOpprettelseAvAvtale(avtale);
         this.hentOppfølgingFraArena(avtale, veilarbArenaClient);
         super.hentGeoEnhetFraNorg2(avtale, persondata, norg2Client);

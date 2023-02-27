@@ -33,7 +33,6 @@ public class AbacAdapter {
 
     @Cacheable(value = EhCacheConfig.ABAC_CACHE, key = "#navIdent + #deltakerFnr")
     public boolean harLeseTilgang(String navIdent, String deltakerFnr) {
-        log.info("TREFFER IKKE ABAC_CACHE for nav-ident: {} og deltaker-fnr: {} . Kontakter endepunktet.", navIdent, deltakerFnr);
         try {
             AbacResponse response = restTemplate.postForObject(
                     abacProperties.getUri(),

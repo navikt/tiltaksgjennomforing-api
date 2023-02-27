@@ -20,13 +20,11 @@ public class Norg2Client {
 
     @Cacheable(EhCacheConfig.NORGNAVN_CACHE)
     public Norg2OppfølgingResponse hentOppfølgingsEnhetsnavnFraCacheNorg2(String enhet) {
-        log.info("TREFFER IKKE NORGNAVN_CACHE for enhet: {}. Kontakter endepunktet.", enhet);
         return this.hentOppfølgingsEnhetsnavn(enhet);
     }
 
     @Cacheable(EhCacheConfig.NORG_GEO_ENHET)
     public Norg2GeoResponse hentGeoEnhetFraCacheEllerNorg2(String geoTilknytning) {
-        log.info("TREFFER IKKE NORG_GEO_ENHET for geo-tilknytning: {}. Kontakter endepunktet.", geoTilknytning);
         return this.hentGeografiskEnhet(geoTilknytning);
     }
 

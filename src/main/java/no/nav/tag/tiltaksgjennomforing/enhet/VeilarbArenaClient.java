@@ -78,7 +78,6 @@ public class VeilarbArenaClient {
 
     @Cacheable(EhCacheConfig.ARENA_CACHCE)
     public Oppfølgingsstatus HentOppfølgingsenhetFraCacheEllerArena(String fnr) {
-        log.info("TREFFER IKKE ARENA_CACHCE for fnr: {}. Kontakter endepunktet.", fnr);
         return this.hentOppfølgingStatus(fnr);
     }
 

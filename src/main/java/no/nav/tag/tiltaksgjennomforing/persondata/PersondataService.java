@@ -126,7 +126,6 @@ public class PersondataService {
 
     @Cacheable(EhCacheConfig.PDL_CACHE)
     public PdlRespons hentPersondataFraPdl(Fnr fnr) {
-        log.info("TREFFER IKKE PDL_CACHE for fnr: {}. Kontakter endepunktet.", fnr.asString());
         PdlRequest pdlRequest = new PdlRequest(resourceAsString(persondataQueryResource), new Variables(fnr.asString()));
         return utførKallTilPdl(pdlRequest);
     }
