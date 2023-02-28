@@ -614,7 +614,7 @@ public class AvtaleController {
     ){
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = veileder.hentAvtale(avtaleRepository, avtaleId);
-        veileder.leggTilEnheter(avtale);
+        veileder.oppdatereEnheterEtterForespørsel(avtale);
         Avtale oppdatertAvtale = avtaleRepository.save(avtale);
 
         return oppdatertAvtale;
