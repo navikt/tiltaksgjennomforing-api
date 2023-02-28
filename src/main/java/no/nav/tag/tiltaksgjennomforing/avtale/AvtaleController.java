@@ -615,6 +615,7 @@ public class AvtaleController {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = veileder.hentAvtale(avtaleRepository, avtaleId);
         veileder.leggTilEnheter(avtale);
+        veileder.oppdatereTilskuddsperioderForAvtaleMedNyEnhetsInformasjon(avtale, tilskuddsperiodeConfig.getTiltakstyper());
         Avtale oppdatertAvtale = avtaleRepository.save(avtale);
 
         return oppdatertAvtale;

@@ -924,6 +924,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         return tilskuddsperioder;
     }
 
+    protected void oppdatereTilskuddsperioder() {
+        this.nyeTilskuddsperioder();
+    }
+
     private void nyeTilskuddsperioder() {
         if (erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LAGE_NYE_TILSKUDDSPRIODER_INNGAATT_AVTALE);

@@ -391,6 +391,15 @@ public class Veileder extends Avtalepart<NavIdent> {
         avtale.oppdatereKostnadsstedForTilskuddsperioder(nyttKostnadssted);
     }
 
+    protected void oppdatereTilskuddsperioderForAvtaleMedNyEnhetsInformasjon(
+            Avtale avtale,
+            EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder
+    ) {
+        if (tiltakstyperMedTilskuddsperioder.contains(avtale.getTiltakstype())) {
+            avtale.oppdatereTilskuddsperioder();
+        }
+    }
+
     private LocalDate settStartDato(LocalDate startdato) {
         return startdato != null ? startdato : LocalDate.now();
     }
