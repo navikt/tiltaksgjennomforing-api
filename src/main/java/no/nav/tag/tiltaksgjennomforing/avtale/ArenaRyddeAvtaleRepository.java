@@ -11,4 +11,5 @@ public interface ArenaRyddeAvtaleRepository extends JpaRepository<ArenaRyddeAvta
     @Override
     Optional<ArenaRyddeAvtale> findById(UUID id);
 
+    Optional<ArenaRyddeAvtale> findByAvtale(Avtale avtale);
 }

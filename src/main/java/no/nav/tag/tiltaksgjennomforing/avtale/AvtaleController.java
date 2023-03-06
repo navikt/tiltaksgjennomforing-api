@@ -514,6 +514,7 @@ public class AvtaleController {
     }
 
     @PostMapping("/{avtaleId}/juster-arena-migreringsdato")
+    @Transactional
     public void justerArenaMigreringsdato(@PathVariable("avtaleId") UUID avtaleId, @RequestBody JusterArenaMigreringsdato justerArenaMigreringsdato) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
@@ -522,11 +523,17 @@ public class AvtaleController {
         }
         veileder.sjekkTilgang(avtale);
         avtale.nyeTilskuddsperioderEtterMigreringFraArena(justerArenaMigreringsdato.getMigreringsdato(), false);
-        Optional<ArenaRyddeAvtale> lagretAvtaleSomRyddeAvtale = arenaRyddeAvtaleRepository.findById(avtaleId);
-        if (lagretAvtaleSomRyddeAvtale == null) {
+        Optional<ArenaRyddeAvtale> lagretAvtaleSomRyddeAvtale = arenaRyddeAvtaleRepository.findByAvtale(avtale);
+
+        if (!lagretAvtaleSomRyddeAvtale.isPresent()) {
             ArenaRyddeAvtale arenaRyddeAvtale = new ArenaRyddeAvtale();
             arenaRyddeAvtale.setAvtale(avtale);
+            arenaRyddeAvtale.setMigreringsdato(justerArenaMigreringsdato.getMigreringsdato());
             arenaRyddeAvtaleRepository.save(arenaRyddeAvtale);
+        } else {
+            ArenaRyddeAvtale oppdatertRyddeAvtale = lagretAvtaleSomRyddeAvtale.get();
+            oppdatertRyddeAvtale.setMigreringsdato(justerArenaMigreringsdato.getMigreringsdato());
+            arenaRyddeAvtaleRepository.save(oppdatertRyddeAvtale);
         }
         avtaleRepository.save(avtale);
     }
