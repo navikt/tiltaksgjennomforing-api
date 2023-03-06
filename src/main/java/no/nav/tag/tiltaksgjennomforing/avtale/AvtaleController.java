@@ -596,7 +596,4 @@ public class AvtaleController {
         return oppdatertAvtale;
     }
 
-    ;
-
-
 }
