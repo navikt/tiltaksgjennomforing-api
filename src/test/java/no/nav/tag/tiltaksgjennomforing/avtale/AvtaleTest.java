@@ -869,6 +869,35 @@ public class AvtaleTest {
     }
 
     @Test
+    public void forlengAvtale_forleng_etter_reduksjon_edge_case_alle_perioder_godkjent() {
+        Now.fixedDate(LocalDate.of(2023, 03, 15));
+        LocalDate startDato = LocalDate.of(2022, 03, 01);
+        LocalDate sluttDato = LocalDate.of(2023, 02, 28);
+        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(startDato, sluttDato);
+        // Alle perioder er godkjent
+        avtale.getTilskuddPeriode().forEach(t -> {
+            t.godkjenn(TestData.enNavIdent2(), "1234");
+        });
+        LocalDate nySluttDato = sluttDato.plusMonths(6);
+        avtale.forlengAvtale(nySluttDato, TestData.enNavIdent());
+        assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(nySluttDato);
+        Now.resetClock();
+    }
+
+    @Test
+    public void forlengAvtale_forleng_etter_reduksjon_edge_case_alle_perioder_ubehandlet() {
+        Now.fixedDate(LocalDate.of(2023, 03, 15));
+        LocalDate startDato = LocalDate.of(2022, 03, 01);
+        LocalDate sluttDato = LocalDate.of(2023, 02, 28);
+        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(startDato, sluttDato);
+        LocalDate nySluttDato = sluttDato.plusMonths(6);
+        avtale.forlengAvtale(nySluttDato, TestData.enNavIdent());
+        assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(nySluttDato);
+        Now.resetClock();
+    }
+
+
+    @Test
     public void sommerjobb_må_være_godkjent_av_beslutter() {
         Now.fixedDate(LocalDate.of(2021, 6, 1));
         Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();
@@ -889,16 +918,29 @@ public class AvtaleTest {
 
         // Gi veileder tilgang til deltaker
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(avtale.getVeilederNavIdent()), any(Fnr.class))).thenReturn(true);
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(
+                eq(avtale.getVeilederNavIdent()),
+                any(Fnr.class)
+        )).thenReturn(true);
 
         TilskuddsperiodeConfig tilskuddsperiodeConfig = new TilskuddsperiodeConfig();
 
-        Veileder veileder = new Veileder(avtale.getVeilederNavIdent(),
-                tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
-                Set.of(new NavEnhet("4802", "Trysil")), mock(SlettemerkeProperties.class),
-                tilskuddsperiodeConfig, false, mock(VeilarbArenaClient.class));
-
-        veileder.endreAvtale(Instant.now(), TestData.endringPåAlleArbeidstreningFelter(), avtale, tilskuddsperiodeConfig.getTiltakstyper());
+        Veileder veileder = new Veileder(
+                avtale.getVeilederNavIdent(),
+                tilgangskontrollService,
+                mock(PersondataService.class),
+                mock(Norg2Client.class),
+                Set.of(new NavEnhet("4802", "Trysil")),
+                mock(SlettemerkeProperties.class),
+                false,
+                mock(VeilarbArenaClient.class)
+        );
+        veileder.endreAvtale(
+                Instant.now(),
+                TestData.endringPåAlleArbeidstreningFelter(),
+                avtale,
+                tilskuddsperiodeConfig.getTiltakstyper()
+        );
         arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
         deltaker.godkjennAvtale(Instant.now(), avtale);
 
@@ -919,10 +961,16 @@ public class AvtaleTest {
 
         TilskuddsperiodeConfig tilskuddsperiodeConfig = new TilskuddsperiodeConfig();
 
-        Veileder veileder = new Veileder(avtale.getVeilederNavIdent(),
-                tilgangskontrollService, mock(PersondataService.class), mock(Norg2Client.class),
-                Set.of(new NavEnhet("4802", "Trysil")), mock(SlettemerkeProperties.class),
-                tilskuddsperiodeConfig, false, mock(VeilarbArenaClient.class));
+        Veileder veileder = new Veileder(
+                avtale.getVeilederNavIdent(),
+                tilgangskontrollService,
+                mock(PersondataService.class),
+                mock(Norg2Client.class),
+                Set.of(new NavEnhet("4802", "Trysil")),
+                mock(SlettemerkeProperties.class),
+                false,
+                mock(VeilarbArenaClient.class)
+        );
 
         deltaker.godkjennAvtale(Instant.now(), avtale);
         arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
@@ -1092,21 +1140,6 @@ public class AvtaleTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
         avtale.togglegodkjennEtterregistrering(TestData.enNavIdent());
-    }
-
-    @Test
-    public void inngått_avtale_uten_tilskuddsperioder_skal_ikke_genere_nye_tilskuddsperioder_ved_endringer() {
-        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        avtale.getTilskuddPeriode().clear();
-        Veileder veileder = TestData.enVeileder(avtale);
-        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
-        veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
-        assertThat(avtale.getTilskuddPeriode()).isEmpty();
-        veileder.endreTilskuddsberegning(TestData.enEndreTilskuddsberegning(), avtale);
-        veileder.forlengAvtale(avtale.getGjeldendeInnhold().getSluttDato().plusDays(3), avtale);
-        veileder.forkortAvtale(avtale, avtale.getGjeldendeInnhold().getSluttDato().minusDays(3), "en grunn", null);
-        assertThat(avtale.getTilskuddPeriode()).isEmpty();
     }
 
     @Test

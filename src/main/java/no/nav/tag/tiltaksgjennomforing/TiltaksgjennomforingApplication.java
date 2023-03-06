@@ -5,6 +5,7 @@ import no.nav.security.token.support.spring.api.EnableJwtTokenValidation;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
@@ -16,6 +17,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 })
 @EnableConfigurationProperties
 @EnableJpaRepositories
+@EnableCaching
 @OpenAPIDefinition
 public class TiltaksgjennomforingApplication {
     public static void main(String[] args) {

@@ -19,8 +19,9 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
-@Profile({Miljø.DEV_FSS, Miljø.LOCAL})
+@Profile({Miljø.DEV_FSS, Miljø.PROD_FSS, Miljø.LOCAL})
 @Component
 @RequiredArgsConstructor
 @EnableScheduling
@@ -32,7 +33,7 @@ public class AvtaleHendelseStatusendringJobb {
 
     private final ObjectMapper objectMapper;
 
-    @Scheduled(fixedDelayString = "${tiltaksgjennomforing.avtale-hendelse-melding.fixed-delay}")
+    @Scheduled(fixedDelayString = "${tiltaksgjennomforing.avtale-hendelse-melding.fixed-delay}", timeUnit = TimeUnit.MINUTES)
     public void sjekkOmStatusendring() {
         if (!leaderPodCheck.isLeaderPod()) {
             log.info("Pod er ikke leader, så kjører ikke jobb for å finne avtaler med statusendring");
@@ -52,7 +53,7 @@ public class AvtaleHendelseStatusendringJobb {
                     AvtaleMeldingEntitet entitet = new AvtaleMeldingEntitet(UUID.randomUUID(), avtaleId, tidspunkt, HendelseType.STATUSENDRING, avtale.statusSomEnum(), meldingSomString);
                     avtaleMeldingEntitetRepository.save(entitet);
                     log.info("Avtale med id {} har byttet status til {}, siste melding har status {}, så sender melding med den nye statusen på topic {}",
-                            avtale.getId(), avtale.statusSomEnum(), entitet.getAvtaleStatus(), Topics.AVTALE_HENDELSE);
+                            avtale.getId(), avtale.statusSomEnum(), avtaleMeldingEntitet.getAvtaleStatus(), Topics.AVTALE_HENDELSE);
                     antallNyeMeldinger++;
                 } catch (JsonProcessingException e) {
                     log.error("Feil ved parsing av AvtaleHendelseMelding i statusendringjobb til json for hendelse med avtaleId {}", avtaleMelding.getAvtaleId());

@@ -5,22 +5,26 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
-@Component
+@Service
 public class VeilarbArenaClient {
 
     private final RestTemplate restTemplate;
     private final VeilarbArenaProperties veilarbArenaProperties;
 
-    public VeilarbArenaClient(@Qualifier("veilarbarenaRestTemplate") RestTemplate restTemplate,
-                              VeilarbArenaProperties veilarbArenaProperties) {
+    public VeilarbArenaClient(
+            @Qualifier("veilarbarenaRestTemplate") RestTemplate restTemplate,
+            VeilarbArenaProperties veilarbArenaProperties
+    ) {
         this.restTemplate = restTemplate;
         this.veilarbArenaProperties = veilarbArenaProperties;
     }
@@ -70,6 +74,11 @@ public class VeilarbArenaClient {
                 !Kvalifiseringsgruppe.kvalifisererTilVariglonnstilskudd(oppfølgingStatus.getKvalifiseringsgruppe())) {
             throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_VARIG_LONNTILSKUDD_FEIL);
         }
+    }
+
+    @Cacheable(EhCacheConfig.ARENA_CACHCE)
+    public Oppfølgingsstatus HentOppfølgingsenhetFraCacheEllerArena(String fnr) {
+        return this.hentOppfølgingStatus(fnr);
     }
 
     public String hentOppfølgingsEnhet(String fnr) {

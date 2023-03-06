@@ -58,7 +58,7 @@ tiltaksgjennomforing:
   dvh-melding:
     fixed-delay: 600000
   avtale-hendelse-melding:
-    fixed-delay: 600000
+    fixed-delay: 120
   tilskuddsperioder:
     tiltakstyper: SOMMERJOBB,MIDLERTIDIG_LONNSTILSKUDD,VARIG_LONNSTILSKUDD
 
@@ -87,3 +87,24 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
+
+caches:
+  ehcaches:
+    - name: pdl_cache
+      expiryInMinutes: 60
+      maximumSize: 1000
+    - name: norgnavn_cache
+      expiryInMinutes: 60
+      maximumSize: 1000
+    - name: norggeoenhet_cache
+      expiryInMinutes: 60
+      maximumSize: 1000
+    - name: arena_cache
+      expiryInMinutes: 60
+      maximumSize: 1000
+    - name: abac_cache
+      expiryInMinutes: 30
+      maximumSize: 1000
+    - name: axsys_cache
+      expiryInMinutes: 60
+      maximumSize: 1000

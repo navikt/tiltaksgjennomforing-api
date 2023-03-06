@@ -48,7 +48,6 @@ public class InnloggingService {
     private final Norg2Client norg2Client;
     private final AxsysService axsysService;
     private final SlettemerkeProperties slettemerkeProperties;
-    private final TilskuddsperiodeConfig tilskuddsperiodeConfig;
     private final VeilarbArenaClient veilarbArenaClient;
     private final ArbeidsgiverTokenStrategyFactory arbeidsgiverTokenStrategyFactory;
 
@@ -70,7 +69,7 @@ public class InnloggingService {
             NavIdent navIdent = new NavIdent(brukerOgIssuer.getBrukerIdent());
             Set<NavEnhet> navEnheter = hentNavEnheter(navIdent);
             boolean harAdGruppeForBeslutter = tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId());
-            return new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, navEnheter, slettemerkeProperties, tilskuddsperiodeConfig, harAdGruppeForBeslutter, veilarbArenaClient);
+            return new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, navEnheter, slettemerkeProperties, harAdGruppeForBeslutter, veilarbArenaClient);
         } else if (issuer == Issuer.ISSUER_AAD && avtalerolle == Avtalerolle.BESLUTTER) {
             boolean harAdGruppeForBeslutter = tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId());
             if (harAdGruppeForBeslutter) {

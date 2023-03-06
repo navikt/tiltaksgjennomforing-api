@@ -3,9 +3,12 @@ package no.nav.tag.tiltaksgjennomforing.persondata;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -92,7 +95,6 @@ public class PersondataService {
         try {
             return restTemplate.postForObject(persondataProperties.getUri(), createRequestEntity(pdlRequest), PdlRespons.class);
         } catch (RestClientException exception) {
-            stsClient.evictToken();
             log.error("Feil fra PDL med request-url: " + persondataProperties.getUri(), exception);
             throw exception;
         }
@@ -120,6 +122,12 @@ public class PersondataService {
     public boolean erKode6(Fnr fnr) {
         String gradering = hentAdressebeskyttelse(fnr).getGradering();
         return "STRENGT_FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG_UTLAND".equals(gradering);
+    }
+
+    @Cacheable(EhCacheConfig.PDL_CACHE)
+    public PdlRespons hentPersondataFraPdl(Fnr fnr) {
+        PdlRequest pdlRequest = new PdlRequest(resourceAsString(persondataQueryResource), new Variables(fnr.asString()));
+        return utførKallTilPdl(pdlRequest);
     }
 
     public PdlRespons hentPersondata(Fnr fnr) {

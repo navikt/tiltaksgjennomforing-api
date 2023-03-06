@@ -26,7 +26,7 @@ public class AbacAdapterTest {
         NavIdent veilederIdent = new NavIdent("F142226");
         Fnr deltakerFnr = new Fnr("01118023456");
 
-        boolean verdic = abacAdapter.harLeseTilgang(veilederIdent, deltakerFnr);
+        boolean verdic = abacAdapter.harLeseTilgang(veilederIdent.asString(), deltakerFnr.asString());
 
         assertFalse(verdic);
     }
@@ -36,7 +36,7 @@ public class AbacAdapterTest {
         NavIdent veilederIdent = new NavIdent("F142226");
         Fnr deltakerFnr = new Fnr("11111111111");
 
-        boolean verdic = abacAdapter.harLeseTilgang(veilederIdent, deltakerFnr);
+        boolean verdic = abacAdapter.harLeseTilgang(veilederIdent.asString(), deltakerFnr.asString());
         assertThat(verdic).isFalse();
     }
 
@@ -45,7 +45,7 @@ public class AbacAdapterTest {
         NavIdent veilederIdent = new NavIdent("F142226");
         Fnr deltakerFnr = new Fnr("07098142678");
 
-        boolean verdic = abacAdapter.harLeseTilgang(veilederIdent, deltakerFnr);
+        boolean verdic = abacAdapter.harLeseTilgang(veilederIdent.asString(), deltakerFnr.asString());
         assertTrue(verdic);
     }
 
@@ -54,12 +54,12 @@ public class AbacAdapterTest {
         NavIdent veilederIdent = new NavIdent("F142226");
         Fnr deltakerFnr = new Fnr("01118023456");
 
-        boolean harIkkeTilgang = abacAdapter.harLeseTilgang(veilederIdent, deltakerFnr);
+        boolean harIkkeTilgang = abacAdapter.harLeseTilgang(veilederIdent.asString(), deltakerFnr.asString());
 
         assertFalse(harIkkeTilgang);
 
         NavIdent veilederSkalHaTilgang = new NavIdent("X142226");
-        boolean harTilgang = abacAdapter.harLeseTilgang(veilederSkalHaTilgang, deltakerFnr);
+        boolean harTilgang = abacAdapter.harLeseTilgang(veilederSkalHaTilgang.asString(), deltakerFnr.asString());
 
         assertTrue(harTilgang);
 

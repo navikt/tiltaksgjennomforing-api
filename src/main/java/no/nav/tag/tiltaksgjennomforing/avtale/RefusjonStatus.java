@@ -8,5 +8,7 @@ public enum RefusjonStatus {
     KORRIGERT,
     UTGÅTT,
     ANNULLERT,
-    UTBETALING_FEILET
+    UTBETALING_FEILET,
+    GODKJENT_MINUSBELØP,
+    GODKJENT_NULLBELØP
 }
