@@ -38,4 +38,4 @@ spec:
             action: "Sjekk logs.adeo.no for logger: https://logs.adeo.no/app/r/s/HT3Nd"
           labels:
             namespace: team-tiltak
-            severity: warning
+            severity: critical
