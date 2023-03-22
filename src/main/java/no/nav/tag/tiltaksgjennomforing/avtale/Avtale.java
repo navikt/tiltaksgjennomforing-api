@@ -669,7 +669,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         return getGjeldendeInnhold().felterSomIkkeErFyltUt();
     }
 
-    private void annullerTilskuddsperiode(TilskuddPeriode tilskuddsperiode) {
+    public void annullerTilskuddsperiode(TilskuddPeriode tilskuddsperiode) {
         // Sjekk på refusjonens status
         if (tilskuddsperiode.getRefusjonStatus() == RefusjonStatus.UTGÅTT) {
             log.warn("Sender ikke annuleringsmelding for tilskuddsperiode {} med utgått refusjon.", tilskuddsperiode.getId());
