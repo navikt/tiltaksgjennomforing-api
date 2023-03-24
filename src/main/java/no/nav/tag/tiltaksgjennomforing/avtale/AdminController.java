@@ -2,12 +2,11 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.security.token.support.core.api.Protected;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
-import no.nav.security.token.support.core.api.Unprotected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.UtviklerTilgangProperties;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -106,6 +105,26 @@ public class AdminController {
         Avtale avtale = tilskuddPeriode.getAvtale();
         avtale.annullerTilskuddsperiode(tilskuddPeriode);
         tilskuddPeriodeRepository.save(tilskuddPeriode);
+        avtaleRepository.save(avtale);
+    }
+
+    @PostMapping("/annuller-og-resend-tilskuddsperiode/{tilskuddsperiodeId}")
+    @Transactional
+    public void annullerOgResendTilskuddsperiode(@PathVariable("tilskuddsperiodeId") UUID id) {
+        sjekkTilgang();
+        log.info("Annullerer tilskuddsperiode {} og resender", id);
+        throw new NotImplementedException("Kommer snart :)");
+    }
+
+    @PostMapping("/annuller-og-generer-tilskuddsperiode/{tilskuddsperiodeId}")
+    @Transactional
+    public void annullerOgGenererTilskuddsperiode(@PathVariable("tilskuddsperiodeId") UUID id) {
+        sjekkTilgang();
+        log.info("Annullerer tilskuddsperiode {} og genererer ny ubehandlet", id);
+        TilskuddPeriode tilskuddPeriode = tilskuddPeriodeRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
+        Avtale avtale = tilskuddPeriode.getAvtale();
+        avtale.annullerTilskuddsperiode(tilskuddPeriode);
+        avtale.lagNyTilskuddsperiodeFraAnnullertPeriode(tilskuddPeriode);
         avtaleRepository.save(avtale);
     }
 
