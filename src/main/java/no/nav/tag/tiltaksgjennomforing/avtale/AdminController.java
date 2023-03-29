@@ -6,7 +6,6 @@ import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.UtviklerTilgangProperties;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
-import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -112,8 +111,12 @@ public class AdminController {
     @Transactional
     public void annullerOgResendTilskuddsperiode(@PathVariable("tilskuddsperiodeId") UUID id) {
         sjekkTilgang();
-        log.info("Annullerer tilskuddsperiode {} og resender", id);
-        throw new NotImplementedException("Kommer snart :)");
+        log.info("Annullerer tilskuddsperiode {} og resender som godkjent", id);
+        TilskuddPeriode tilskuddPeriode = tilskuddPeriodeRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
+        Avtale avtale = tilskuddPeriode.getAvtale();
+        avtale.annullerTilskuddsperiode(tilskuddPeriode);
+        avtale.lagNyGodkjentTilskuddsperiodeFraAnnullertPeriode(tilskuddPeriode);
+        avtaleRepository.save(avtale);
     }
 
     @PostMapping("/annuller-og-generer-tilskuddsperiode/{tilskuddsperiodeId}")

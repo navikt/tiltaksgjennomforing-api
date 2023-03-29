@@ -699,15 +699,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         TilskuddPeriode gjeldendePeriode = gjeldendeTilskuddsperiode();
 
         // Sjekk om samme løpenummer allerede er godkjent og annullert. Trenger da en "ekstra" resendingsnummer
-        Integer resendingsnummer = null;
-        for (TilskuddPeriode periode : tilskuddPeriode) {
-            if(periode.getStatus() == TilskuddPeriodeStatus.ANNULLERT && periode.getLøpenummer().equals(gjeldendePeriode.getLøpenummer())) {
-                if(resendingsnummer == null) {
-                    resendingsnummer = 0;
-                }
-                resendingsnummer++;
-            }
-        }
+        Integer resendingsnummer = finnResendingsNummer(gjeldendePeriode);
         gjeldendePeriode.godkjenn(beslutter, enhet);
         if (!erAvtaleInngått()) {
             LocalDateTime tidspunkt = Now.localDateTime();
@@ -1042,6 +1034,35 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         List<TilskuddPeriode> nyetilskuddsperioder = beregnTilskuddsperioder(startDato, gjeldendeInnhold.getSluttDato());
         tilskuddPeriode.addAll(nyetilskuddsperioder);
         fikseLøpenumre(tilskuddPeriode.stream().toList(), 1);
+    }
+
+    public void lagNyGodkjentTilskuddsperiodeFraAnnullertPeriode(TilskuddPeriode annullertTilskuddPeriode) {
+        krevEnAvTiltakstyper(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
+        if(annullertTilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
+            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET);
+        }
+        TilskuddPeriode nyTilskuddsperiode = annullertTilskuddPeriode.deaktiverOgLagNyUbehandlet();
+        annullertTilskuddPeriode.setAktiv(true);
+        nyTilskuddsperiode.setStatus(TilskuddPeriodeStatus.GODKJENT);
+        nyTilskuddsperiode.setGodkjentAvNavIdent(annullertTilskuddPeriode.getGodkjentAvNavIdent());
+        nyTilskuddsperiode.setGodkjentTidspunkt(annullertTilskuddPeriode.getGodkjentTidspunkt());
+        nyTilskuddsperiode.setEnhet(annullertTilskuddPeriode.getEnhet());
+        Integer resendingsnummer = finnResendingsNummer(annullertTilskuddPeriode);
+        registerEvent(new TilskuddsperiodeGodkjent(this, nyTilskuddsperiode, nyTilskuddsperiode.getGodkjentAvNavIdent(), resendingsnummer));
+        tilskuddPeriode.add(nyTilskuddsperiode);
+    }
+
+    private Integer finnResendingsNummer(TilskuddPeriode gjeldendePeriode) {
+        Integer resendingsnummer = null;
+        for (TilskuddPeriode periode : tilskuddPeriode) {
+            if(periode.getStatus() == TilskuddPeriodeStatus.ANNULLERT && periode.getLøpenummer().equals(gjeldendePeriode.getLøpenummer())) {
+                if(resendingsnummer == null) {
+                    resendingsnummer = 0;
+                }
+                resendingsnummer++;
+            }
+        }
+        return resendingsnummer;
     }
 
     public void lagNyTilskuddsperiodeFraAnnullertPeriode(TilskuddPeriode annullertTilskuddPeriode) {
