@@ -8,6 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.NavEnhetIkkeFunnetException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
@@ -15,18 +19,24 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 
 @Slf4j
 public class Beslutter extends Avtalepart<NavIdent> {
-
-    private TilgangskontrollService tilgangskontrollService;
     private AxsysService axsysService;
+    private Norg2Client norg2Client;
+    private TilgangskontrollService tilgangskontrollService;
 
-    public Beslutter(NavIdent identifikator, TilgangskontrollService tilgangskontrollService, AxsysService axsysService) {
+    public Beslutter(NavIdent identifikator, TilgangskontrollService tilgangskontrollService, AxsysService axsysService, Norg2Client norg2Client) {
         super(identifikator);
         this.tilgangskontrollService = tilgangskontrollService;
         this.axsysService = axsysService;
+        this.norg2Client = norg2Client;
     }
 
     public void godkjennTilskuddsperiode(Avtale avtale, String enhet) {
         sjekkTilgang(avtale);
+        final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetsnavn(enhet);
+
+        if (response == null) {
+            throw new FeilkodeException(Feilkode.ENHET_FINNES_IKKE);
+        }
         avtale.godkjennTilskuddsperiode(getIdentifikator(), enhet);
     }
 
