@@ -85,10 +85,10 @@ no.nav.gcp.kafka.aiven:
 no.nav.security.jwt:
   issuer:
     aad:
-      discoveryurl: https://tiltak-fakelogin.labs.nais.io/metadata?issuer=aad
+      discoveryurl: https://tiltak-fakelogin.ekstern.dev.nav.no/metadata?issuer=aad
       accepted_audience: fake-aad
     tokenx:
-      discoveryurl: https://tiltak-fakelogin.labs.nais.io/metadata?issuer=tokenx
+      discoveryurl: https://tiltak-fakelogin.ekstern.dev.nav.no/metadata?issuer=tokenx
       accepted_audience: fake-tokenx
   client: null
 
