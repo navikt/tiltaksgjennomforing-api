@@ -678,9 +678,12 @@ public class TestData {
     public static Beslutter enBeslutter(Avtale avtale) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         AxsysService axsysService = mock(AxsysService.class);
+        Norg2Client norg2Client = mock(Norg2Client.class);
         NavIdent navIdent = new NavIdent("B999999");
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), eq(avtale.getDeltakerFnr()))).thenReturn(true);
-        return new Beslutter(navIdent, tilgangskontrollService, axsysService);
+        when(norg2Client.hentOppfølgingsEnhetsnavn(eq("0000"))).thenReturn(new Norg2OppfølgingResponse(0, "0000", "Oslo"));
+        when(norg2Client.hentOppfølgingsEnhetsnavn(eq("0906"))).thenReturn(new Norg2OppfølgingResponse(906, "0906", "Oslo"));
+        return new Beslutter(navIdent, tilgangskontrollService, axsysService, norg2Client);
     }
 
     public static Maal etMaal() {

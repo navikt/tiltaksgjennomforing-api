@@ -1,19 +1,29 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 
+import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.NavEnhetIkkeFunnetException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.junit.jupiter.api.Test;
 
 
@@ -22,6 +32,7 @@ class BeslutterTest {
     private TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
     private AvtaleRepository avtaleRepository = mock(AvtaleRepository.class);
     private AxsysService axsysService = mock(AxsysService.class);
+    private Norg2Client norg2Client = mock(Norg2Client.class);
 
     @Test
     public void hentAlleAvtalerMedMuligTilgang__hent_ingen_GODKJENTE_når_avtaler_har_gjeldende_tilskuddsperiodestatus_ubehandlet() {
@@ -33,8 +44,7 @@ class BeslutterTest {
         tilskuddPeriode.setBeløp(1200);
         tilskuddPeriode.setAvtale(avtale);
         avtale.setTilskuddPeriode(new TreeSet<>(List.of(tilskuddPeriode)));
-
-        Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService);
+        Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService, norg2Client);
         Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
         AvtalePredicate avtalePredicate = new AvtalePredicate();
         avtalePredicate.setTilskuddPeriodeStatus(TilskuddPeriodeStatus.UBEHANDLET);
@@ -66,7 +76,7 @@ class BeslutterTest {
 
         Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
 
-        Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService);
+        Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService, norg2Client);
 
         AvtalePredicate avtalePredicate = new AvtalePredicate();
         avtalePredicate.setTilskuddPeriodeStatus(TilskuddPeriodeStatus.GODKJENT);
@@ -105,7 +115,7 @@ class BeslutterTest {
 
         avtale.setTilskuddPeriode(new TreeSet<>(List.of(tilskuddPeriode, tilskuddPeriode2)));
 
-        Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService);
+        Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService, norg2Client);
 
         Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
         AvtalePredicate avtalePredicate = new AvtalePredicate();
@@ -146,7 +156,7 @@ class BeslutterTest {
 
         avtale.setTilskuddPeriode(new TreeSet<>(List.of(tilskuddPeriode, tilskuddPeriode2)));
 
-        Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService);
+        Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService, norg2Client);
 
         AvtalePredicate avtalePredicate = new AvtalePredicate();
         avtalePredicate.setTilskuddPeriodeStatus(null);
@@ -178,5 +188,42 @@ class BeslutterTest {
 
         beslutter.setOmAvtalenKanEtterregistreres(avtale);
         assertThat(avtale.isGodkjentForEtterregistrering()).isFalse();
+    }
+
+    @Test
+    public void kan_ikke_godkjenne_periode_på_enhet_som_ikke_finnes() {
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
+
+        // Gi veileder tilgang til deltaker
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(avtale.getVeilederNavIdent()), any(Fnr.class)))
+                .thenReturn(true);
+
+        Veileder veileder = new Veileder(
+                avtale.getVeilederNavIdent(),
+                tilgangskontrollService,
+                mock(PersondataService.class),
+                mock(Norg2Client.class),
+                Set.of(new NavEnhet("4802", "Trysil")),
+                mock(SlettemerkeProperties.class),
+                false,
+                mock(VeilarbArenaClient.class));
+
+        avtale.endreAvtale(
+                Instant.now(),
+                TestData.endringPåAlleLønnstilskuddFelter(),
+                Avtalerolle.VEILEDER,
+                avtalerMedTilskuddsperioder
+        );
+        arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
+        veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
+        assertThat(avtale.erAvtaleInngått()).isFalse();
+        Beslutter beslutter = TestData.enBeslutter(avtale);
+        assertFeilkode(
+                Feilkode.ENHET_FINNES_IKKE,
+                () -> beslutter.godkjennTilskuddsperiode(avtale, "9999")
+        );
+        assertThat(avtale.erAvtaleInngått()).isFalse();
     }
 }

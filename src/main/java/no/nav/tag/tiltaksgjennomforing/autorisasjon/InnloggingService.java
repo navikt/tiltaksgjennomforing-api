@@ -73,7 +73,7 @@ public class InnloggingService {
         } else if (issuer == Issuer.ISSUER_AAD && avtalerolle == Avtalerolle.BESLUTTER) {
             boolean harAdGruppeForBeslutter = tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId());
             if (harAdGruppeForBeslutter) {
-                return new Beslutter(new NavIdent(brukerOgIssuer.getBrukerIdent()), tilgangskontrollService, axsysService);
+                return new Beslutter(new NavIdent(brukerOgIssuer.getBrukerIdent()), tilgangskontrollService, axsysService, norg2Client);
             } else {
                 throw new FeilkodeException(Feilkode.MANGLER_AD_GRUPPE_BESLUTTER);
             }
