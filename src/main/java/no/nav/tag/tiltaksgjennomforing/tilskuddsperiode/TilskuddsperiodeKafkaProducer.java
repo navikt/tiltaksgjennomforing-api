@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAnnullert;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeForkortet;
@@ -55,17 +54,14 @@ public class TilskuddsperiodeKafkaProducer {
         publiserTilskuddsperiodeForkortetMelding(melding);
     }
 
-    @VisibleForTesting
     public void publiserTilskuddsperiodeGodkjentMelding(TilskuddsperiodeGodkjentMelding melding) {
         publiserMelding(Topics.TILSKUDDSPERIODE_GODKJENT, melding.getTilskuddsperiodeId().toString(), melding);
     }
 
-    @VisibleForTesting
     public void publiserTilskuddsperiodeAnnullertMelding(TilskuddsperiodeAnnullertMelding melding) {
         publiserMelding(Topics.TILSKUDDSPERIODE_ANNULLERT, melding.getTilskuddsperiodeId().toString(), melding);
     }
 
-    @VisibleForTesting
     public void publiserTilskuddsperiodeForkortetMelding(TilskuddsperiodeForkortetMelding melding) {
         publiserMelding(Topics.TILSKUDDSPERIODE_FORKORTET, melding.getTilskuddsperiodeId().toString(), melding);
     }
