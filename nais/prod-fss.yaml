@@ -6,6 +6,9 @@ metadata:
   labels:
     team: arbeidsgiver
 spec:
+  env:
+    - name: ENV
+      value: prod-fss
   azure:
     application:
       enabled: true

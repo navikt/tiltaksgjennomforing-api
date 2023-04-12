@@ -6,6 +6,9 @@ metadata:
   labels:
     team: arbeidsgiver
 spec:
+  env:
+    - name: ENV
+      value: dev-gcp-labs
   image: {{image}}
   team: arbeidsgiver
   port: 8080
