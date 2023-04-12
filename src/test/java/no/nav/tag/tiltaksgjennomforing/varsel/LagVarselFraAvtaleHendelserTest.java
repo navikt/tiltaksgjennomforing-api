@@ -235,7 +235,7 @@ class LagVarselFraAvtaleHendelserTest {
     void forleng_avtale() {
         Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
-        avtaleRepository.save(avtale);
+        avtale = avtaleRepository.save(avtale);
         Veileder veileder = TestData.enVeileder(avtale);
 
         veileder.forlengAvtale(avtale.getGjeldendeInnhold().getSluttDato().plusMonths(1), avtale);
