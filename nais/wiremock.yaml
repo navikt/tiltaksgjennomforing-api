@@ -39,4 +39,4 @@ spec:
   accessPolicy:
     inbound:
       rules:
-      - application: tiltaksgjennomforing-api
+      - application: tiltaksgjennomforing-api-labs
