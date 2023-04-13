@@ -15,7 +15,7 @@ public class ByEnvironmentStrategy implements Strategy {
 
     private final String environment;
 
-    public ByEnvironmentStrategy(@Value("${ENV:}") String clusterName) {
+    public ByEnvironmentStrategy(@Value("${MILJO:}") String clusterName) {
         this.environment = clusterName.isEmpty() ? Miljø.LOCAL : clusterName;
     }
 
