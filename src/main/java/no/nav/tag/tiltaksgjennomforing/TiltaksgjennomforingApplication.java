@@ -21,9 +21,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @OpenAPIDefinition
 public class TiltaksgjennomforingApplication {
     public static void main(String[] args) {
-        String clusterName = System.getenv("NAIS_CLUSTER_NAME");
+        String clusterName = System.getenv("MILJO");
         if (clusterName == null) {
-            System.out.println("Kan ikke startes uten miljøvariabel NAIS_CLUSTER_NAME. Lokalt kan LokalTiltaksgjennomforingApplication kjøres.");
+            System.out.println("Kan ikke startes uten miljøvariabel MILJO. Lokalt kan LokalTiltaksgjennomforingApplication kjøres.");
             System.exit(1);
         }
         new SpringApplicationBuilder(TiltaksgjennomforingApplication.class)

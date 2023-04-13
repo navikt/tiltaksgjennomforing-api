@@ -11,7 +11,7 @@ import org.springframework.web.client.RestTemplate;
 
 
 @Configuration
-@Profile(value = {Miljø.LABS_GCP})
+@Profile(value = {Miljø.DEV_GCP_LABS })
 @Slf4j
 public class LabsSecurityAzureClientConfiguration {
     @Bean("notifikasjonerRestTemplate")

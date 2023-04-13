@@ -6,6 +6,9 @@ metadata:
   labels:
     team: arbeidsgiver
 spec:
+  env:
+    - name: MILJO
+      value: dev-fss
   azure:
     application:
       enabled: true

@@ -1,11 +1,14 @@
 apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
-  name: tiltaksgjennomforing-api
+  name: tiltaksgjennomforing-api-labs
   namespace: arbeidsgiver
   labels:
     team: arbeidsgiver
 spec:
+  env:
+    - name: MILJO
+      value: dev-gcp-labs
   image: {{image}}
   team: arbeidsgiver
   port: 8080
@@ -37,12 +40,12 @@ spec:
   accessPolicy:
     inbound:
       rules:
-        - application: tiltaksgjennomforing
+        - application: tiltaksgjennomforing-labs
     outbound:
       rules:
         - application: tiltak-fakelogin
         - application: tiltaksgjennomforing-wiremock
-        - application: tiltak-refusjon-api
+        - application: tiltak-refusjon-api-labs
         - application: tiltak-dokgen
   envFrom:
     - configmap: loginservice-idporten
