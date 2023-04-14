@@ -131,7 +131,7 @@ public class AvtaleRepositoryTest {
         // Lage avtale
         Avtale lagretAvtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         lagretAvtale.getGjeldendeInnhold().setSumLonnstilskudd(20000);
-        avtaleRepository.save(lagretAvtale);
+        lagretAvtale = avtaleRepository.save(lagretAvtale);
 
         // Lagre tilskuddsperiode skal fungere
         EndreAvtale endreAvtale = new EndreAvtale();
@@ -187,8 +187,7 @@ public class AvtaleRepositoryTest {
 
     @Test
     public void endreAvtale__skal_publisere_domainevent() {
-        Avtale avtale = TestData.enArbeidstreningAvtale();
-        avtaleRepository.save(avtale);
+        Avtale avtale = avtaleRepository.save(TestData.enArbeidstreningAvtale());
         verify(metrikkRegistrering, never()).avtaleEndret(any());
         avtale.endreAvtale(Now.instant(), TestData.ingenEndring(), Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
         avtaleRepository.save(avtale);

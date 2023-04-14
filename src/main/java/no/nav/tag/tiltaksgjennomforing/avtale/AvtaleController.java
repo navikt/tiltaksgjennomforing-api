@@ -615,8 +615,8 @@ public class AvtaleController {
         Beslutter beslutter = innloggingService.hentBeslutter();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         beslutter.setOmAvtalenKanEtterregistreres(avtale);
-        avtaleRepository.save(avtale);
-        return avtale;
+        var oppdatertAvtale = avtaleRepository.save(avtale);
+        return oppdatertAvtale;
     }
 
     @PostMapping("/{avtaleId}/endre-kostnadssted")
@@ -628,8 +628,8 @@ public class AvtaleController {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         veileder.oppdatereKostnadssted(avtale, norg2Client, endreKostnadsstedRequest.getEnhet());
-        avtaleRepository.save(avtale);
-        return avtale;
+        var oppdatertAvtale = avtaleRepository.save(avtale);
+        return oppdatertAvtale;
     }
 
     @PostMapping("/{avtaleId}/avslag-tilskuddsperiode")
@@ -648,7 +648,7 @@ public class AvtaleController {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = veileder.hentAvtale(avtaleRepository, avtaleId);
         veileder.oppdatereEnheterEtterForespørsel(avtale);
-        Avtale oppdatertAvtale = avtaleRepository.save(avtale);
+        var oppdatertAvtale = avtaleRepository.save(avtale);
 
         return oppdatertAvtale;
     };

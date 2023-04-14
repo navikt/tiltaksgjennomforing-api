@@ -42,13 +42,13 @@ class LagSmsFraAvtaleHendelseTest {
         avtale.getGjeldendeInnhold().setDeltakerTlf("42234567");
         avtale.getGjeldendeInnhold().setMentorTlf("42234200");
         avtale.delMedAvtalepart(Avtalerolle.ARBEIDSGIVER);
-        avtaleRepository.save(avtale);
+        avtale = avtaleRepository.save(avtale);
         assertSmsOpprettetOgSendt(HendelseType.DELT_MED_ARBEIDSGIVER, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
         avtale.delMedAvtalepart(Avtalerolle.DELTAKER);
-        avtaleRepository.save(avtale);
+        avtale = avtaleRepository.save(avtale);
         assertSmsOpprettetOgSendt(HendelseType.DELT_MED_DELTAKER, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
         avtale.delMedAvtalepart(Avtalerolle.MENTOR);
-        avtaleRepository.save(avtale);
+        avtale = avtaleRepository.save(avtale);
         assertSmsOpprettetOgSendt(HendelseType.DELT_MED_MENTOR, avtale.getId(), avtale.getGjeldendeInnhold().getMentorTlf(), SELVBETJENINGSONE_VARSELTEKST);
     }
 
@@ -58,10 +58,10 @@ class LagSmsFraAvtaleHendelseTest {
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         Deltaker deltaker = TestData.enDeltaker(avtale);
         arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
-        avtaleRepository.save(avtale);
+        avtale = avtaleRepository.save(avtale);
         assertSmsOpprettetOgSendt(HendelseType.GODKJENT_AV_ARBEIDSGIVER, avtale.getId(), avtale.getGjeldendeInnhold().getVeilederTlf(), FAGSYSTEMSONE_VARSELTEKST);
         deltaker.godkjennAvtale(Instant.now(), avtale);
-        avtaleRepository.save(avtale);
+        avtale = avtaleRepository.save(avtale);
         assertSmsOpprettetOgSendt(HendelseType.GODKJENT_AV_DELTAKER, avtale.getId(), avtale.getGjeldendeInnhold().getVeilederTlf(), FAGSYSTEMSONE_VARSELTEKST);
     }
 
@@ -109,14 +109,14 @@ class LagSmsFraAvtaleHendelseTest {
         deltaker.godkjennAvtale(Instant.now(), avtale);
         //Arbeidsgiver opphever deltaker
         arbeidsgiver.opphevGodkjenninger(avtale);
-        avtaleRepository.save(avtale);
+        avtale = avtaleRepository.save(avtale);
         assertSmsOpprettetOgSendt(HendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
 
         deltaker.godkjennAvtale(Instant.now(), avtale);
         arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
         //Veileder opphever arbeidsgiver og deltaker
         veileder.opphevGodkjenninger(avtale);
-        avtaleRepository.save(avtale);
+        avtale = avtaleRepository.save(avtale);
         assertSmsOpprettetOgSendt(HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
         assertSmsOpprettetOgSendt(HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
     }
