@@ -105,7 +105,7 @@ public class LagSmsFraAvtaleHendelse {
 
     private void refusjonVarslingMedKontaktperson(Avtale avtale, String smsTekst, HendelseType hendelseType) {
         if (avtale.getGjeldendeInnhold().getRefusjonKontaktperson() != null && avtale.getGjeldendeInnhold().getRefusjonKontaktperson().getRefusjonKontaktpersonTlf() != null) {
-            if (avtale.getGjeldendeInnhold().getRefusjonKontaktperson().getØnskerVarslingOmRefusjon()) {
+            if (avtale.getGjeldendeInnhold().getRefusjonKontaktperson().getØnskerVarslingOmRefusjon() != null && avtale.getGjeldendeInnhold().getRefusjonKontaktperson().getØnskerVarslingOmRefusjon()) {
                 Sms smsTilArbeidsgiver = Sms.nyttVarsel(avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), avtale.getBedriftNr(), smsTekst, hendelseType, avtale.getId());
                 lagreOgSendKafkaMelding(smsTilArbeidsgiver);
             }
