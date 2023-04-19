@@ -1,6 +1,5 @@
 spring:
   datasource:
-    platform: postgres
     url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
     username: sa
     password: sa
@@ -11,6 +10,9 @@ spring:
       path: /h2-console
   main:
     banner-mode: "console"
+  sql:
+    init:
+      platform: postgres
 
 no.nav.security.jwt:
   issuer:
@@ -29,7 +31,7 @@ tiltaksgjennomforing:
   kafka:
     enabled: false
     fake: true
-    fake-url: http://tiltak-refusjon-api/fake-kafka
+    fake-url: http://tiltak-refusjon-api-labs/fake-kafka
   altinn-tilgangsstyring:
     uri: http://tiltaksgjennomforing-wiremock/altinn-tilgangsstyring
     proxyUri: http://heh:9090/
