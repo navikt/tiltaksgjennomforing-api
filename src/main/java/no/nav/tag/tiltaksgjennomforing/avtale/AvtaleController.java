@@ -14,6 +14,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -32,10 +33,12 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.util.Map.entry;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
 
 @Protected
@@ -97,53 +100,33 @@ public class AvtaleController {
 
     @GetMapping("/beslutter-liste")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    public List<AvtaleMinimal> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
+    public Map<String, Object> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
             AvtalePredicate queryParametre,
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = "startDato") String sorteringskolonne,
-            @RequestParam(value = "skip", required = false, defaultValue = "0") Integer skip,
-            @RequestParam(value = "limit", required = false, defaultValue = "100000000") Integer limit
-
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(value = "size", required = false, defaultValue = "20") Integer size
     ) {
         Beslutter beslutter = innloggingService.hentBeslutter();
         Instant start = Instant.now();
-        List<AvtaleMinimal> avtaler = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
+        Page<AvtaleMinimal> avtaler = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
                 avtaleRepository,
                 queryParametre,
-                sorteringskolonne);
-        Instant end = Instant.now();
-        Duration hentMinimalListeTid = Duration.between(start, end);
-        if(hentMinimalListeTid.getSeconds() > 1) {
-            log.info(
-                    "Brukte over et sekund for å hente beslutterliste. {} sekunder, {} antall avtaler",
-                    hentMinimalListeTid.getSeconds(),
-                    avtaler.size()
-            );
-        }
+                sorteringskolonne,
+                page,
+                size
+        );
 
-        start = Instant.now();
-        List<AvtaleMinimal> avtalerMedTilgang = avtaler.stream()
-                .skip(skip)
-                .limit(limit)
+        List<AvtaleMinimal> avtalerMedTilgang = avtaler.getContent().stream()
                 .filter(avtaleMinimal -> beslutter.harTilgangTilFnr(
-                        new Fnr(avtaleMinimal.getDeltakerFnr()))).collect(Collectors.toList()
-                );
-        end = Instant.now();
-        Duration abacFiltreringTid = Duration.between(start, end);
-        if(abacFiltreringTid.getSeconds() > 1) {
-            log.info(
-                    "Brukte over et sekund for abac-filtrering. {} sekunder, {} antall avtaler",
-                    abacFiltreringTid.getSeconds(),
-                    avtalerMedTilgang.size()
-            );
-        }
-        if(hentMinimalListeTid.getSeconds() + abacFiltreringTid.getSeconds() > 1) {
-            log.info(
-                    "Total tid for å hente list større en et sekund {}",
-                    hentMinimalListeTid.getSeconds() + abacFiltreringTid.getSeconds()
-            );
-        }
+                        new Fnr(avtaleMinimal.getDeltakerFnr()))).toList();
 
-        return avtalerMedTilgang;
+        return Map.ofEntries(
+                entry("avtaler", avtalerMedTilgang),
+                entry("size", avtaler.getSize()),
+                entry("currentPage", avtaler.getNumber()),
+                entry("totalItems", avtaler.getTotalElements()),
+                entry("totalPages", avtaler.getTotalPages())
+        );
     }
 
     @GetMapping("/{avtaleId}/pdf")

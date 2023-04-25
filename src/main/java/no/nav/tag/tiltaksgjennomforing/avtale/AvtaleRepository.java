@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -132,12 +135,15 @@ List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet
                     "AND EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
                     "(:tilskuddsperiodestatus = status AND start_dato <= current_date + CAST(:plussDato as INTEGER ) OR (:tilskuddsperiodestatus = status and løpenummer = 1))) " +
                     "AND AVTALE.ENHET_OPPFOLGING IN (:navEnheter) " +
+                    "AND (:bedriftNr IS NULL OR AVTALE.BEDRIFT_NR in (:bedriftNr)) " +
                     "GROUP BY AVTALE.ID, AVTALE_INNHOLD.DELTAKER_FORNAVN, AVTALE_INNHOLD.DELTAKER_ETTERNAVN, AVTALE.VEILEDER_NAV_IDENT, AVTALE_INNHOLD.BEDRIFT_NAVN", nativeQuery = true)
-    List<AvtaleMinimal> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandletMinimal(
+    Page<AvtaleMinimal> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandletMinimal(
             @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
             @Param("navEnheter") Set<String> navEnheter,
             @Param("plussDato") int plussDato,
-            @Param("tiltakstype") Set<String> tiltakstype);
+            @Param("tiltakstype") Set<String> tiltakstype,
+            @Param("bedriftNr") String bedriftNr,
+            Pageable pageable);
 
     @Query(value =
             "SELECT cast(AVTALE.ID as varchar) as id, AVTALE.VEILEDER_NAV_IDENT as veilederNavIdent, AVTALE_INNHOLD.DELTAKER_FORNAVN as deltakerFornavn, :tilskuddsperiodestatus as tilskuddsperiodestatus," +
@@ -148,41 +154,14 @@ List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet
                     "AND AVTALE.TILTAKSTYPE in (:tiltakstype) " +
                     "AND EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND :tilskuddsperiodestatus = status " +
                     "AND AVTALE.ENHET_OPPFOLGING IN (:navEnheter)) " +
+                    "AND (:bedriftNr IS NULL OR AVTALE.BEDRIFT_NR in (:bedriftNr)) " +
                     "GROUP BY AVTALE.ID, AVTALE_INNHOLD.DELTAKER_FORNAVN, AVTALE_INNHOLD.DELTAKER_ETTERNAVN, AVTALE.VEILEDER_NAV_IDENT, AVTALE_INNHOLD.BEDRIFT_NAVN", nativeQuery = true)
-    List<AvtaleMinimal> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjentEllerAvslåttMinimal(
+    Page<AvtaleMinimal> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjentEllerAvslåttMinimal(
             @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
             @Param("navEnheter") Set<String> navEnheter,
-            @Param("tiltakstype") Set<String> tiltakstype);
-
-    @Query(value =
-            "SELECT distinct AVTALE.* FROM AVTALE " +
-                    "LEFT JOIN AVTALE_INNHOLD " +
-                    "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
-                    "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
-                    "AND EXISTS (SELECT avtale_id, status FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
-                    "((:tilskuddsperiodestatus LIKE 'GODKJENT' AND :tilskuddsperiodestatus = status))) " +
-                    "AND NOT EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where " +
-                    "avtale_id = AVTALE.ID AND status LIKE 'UBEHANDLET' " +
-                    "AND ((start_dato <= current_date + CAST(:plussDato AS INTEGER)) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET'))) " +
-                    "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter))", nativeQuery = true)
-    List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(
-            @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
-            @Param("navEnheter") Set<String> navEnheter,
-            @Param("plussDato") int plussDato);
-
-    @Query(value =
-            "SELECT distinct AVTALE.* FROM AVTALE " +
-                    "LEFT JOIN AVTALE_INNHOLD " +
-                    "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
-                    "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
-                    "AND EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
-                    "(:tilskuddsperiodestatus LIKE 'AVSLÅTT' AND :tilskuddsperiodestatus = status) " +
-                    "AND ((start_dato <= current_date + CAST(:plussDato as INTEGER)) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET'))) " +
-                    "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter))", nativeQuery = true)
-    List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterAvslatt(
-            @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
-            @Param("navEnheter") Set<String> navEnheter,
-            @Param("plussDato") int plussDato);
+            @Param("tiltakstype") Set<String> tiltakstype,
+            @Param("bedriftNr") String bedriftNr,
+            Pageable pageable);
 
 }
 
