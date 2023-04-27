@@ -113,7 +113,7 @@ public class FnrTest {
     }
 
     @Test
-    void testOver67ÅrFørsteJanuar() {
+    void testAtAldersjekkKanGjøresPåSyntetiskFnr() {
         Fnr fnr = new Fnr("07459742977");
         fnr.erUnder16år();
     }
