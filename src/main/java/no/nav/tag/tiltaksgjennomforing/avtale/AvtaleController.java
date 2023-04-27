@@ -140,11 +140,11 @@ public class AvtaleController {
                     abacFiltreringTid.getSeconds(),
                     avtalerMedTilgang.size()
             );
-            SECURE_LOGGER.info("Brukte over et sekund for abac-filtrering for {}. {} sekunder, {} antall avtaler",
-                    beslutter.getIdentifikator(),
-                    abacFiltreringTid.getSeconds(),
-                    avtalerMedTilgang.size());
         }
+        SECURE_LOGGER.info("Brukte over et sekund for abac-filtrering for {}. {} sekunder, {} antall avtaler",
+                beslutter.getIdentifikator(),
+                abacFiltreringTid.getSeconds(),
+                avtalerMedTilgang.size());
         if(hentMinimalListeTid.getSeconds() + abacFiltreringTid.getSeconds() > 1) {
             log.info(
                     "Total tid for å hente list større en et sekund {}",
