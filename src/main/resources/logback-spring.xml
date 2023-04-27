@@ -1,4 +1,7 @@
 <configuration>
+    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+    </appender>
     <springProfile name="prod-fss, dev-fss, dev-gcp-labs">
         <appender name="secureLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <file>/secure-logs/secure.log</file>
@@ -22,9 +25,6 @@
         </logger>
     </springProfile>
 
-    <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
-    </appender>
     <logger name="jsonLogger" additivity="false" level="DEBUG">
         <appender-ref ref="consoleAppender"/>
     </logger>
