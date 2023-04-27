@@ -10,6 +10,9 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.sql.Date;
 import java.time.Instant;
@@ -56,15 +59,15 @@ public class Veileder extends Avtalepart<NavIdent> {
     }
 
     @Override
-    List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
+    Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, Pageable pageable) {
         if (queryParametre.getVeilederNavIdent() != null) {
-            return avtaleRepository.findAllByVeilederNavIdent(queryParametre.getVeilederNavIdent());
+            return avtaleRepository.findAllByVeilederNavIdent(queryParametre.getVeilederNavIdent(), pageable);
 
         } else if (queryParametre.getDeltakerFnr() != null) {
-            return avtaleRepository.findAllByDeltakerFnr(queryParametre.getDeltakerFnr());
+            return avtaleRepository.findAllByDeltakerFnr(queryParametre.getDeltakerFnr(), pageable);
 
         } else if (queryParametre.getBedriftNr() != null) {
-            return avtaleRepository.findAllByBedriftNrIn(Set.of(queryParametre.getBedriftNr()));
+            return avtaleRepository.findAllByBedriftNrIn(Set.of(queryParametre.getBedriftNr()), pageable);
 
         } else if (
                 queryParametre.getNavEnhet() != null &&
@@ -72,16 +75,16 @@ public class Veileder extends Avtalepart<NavIdent> {
                         queryParametre.getErUfordelt()
         ) {
 
-            return avtaleRepository.findAllUfordelteByEnhet(queryParametre.getNavEnhet());
+            return avtaleRepository.findAllUfordelteByEnhet(queryParametre.getNavEnhet(), pageable);
 
         } else if (queryParametre.getNavEnhet() != null) {
-            return avtaleRepository.findAllFordelteOrUfordeltByEnhet(queryParametre.getNavEnhet());
+            return avtaleRepository.findAllFordelteOrUfordeltByEnhet(queryParametre.getNavEnhet(), pageable);
 
         } else if (queryParametre.getAvtaleNr() != null) {
-            return avtaleRepository.findAllByAvtaleNr(queryParametre.getAvtaleNr());
+            return avtaleRepository.findAllByAvtaleNr(queryParametre.getAvtaleNr(), pageable);
 
         } else {
-            return avtaleRepository.findAllByVeilederNavIdent(getIdentifikator());
+            return avtaleRepository.findAllByVeilederNavIdent(getIdentifikator(), pageable);
         }
     }
 

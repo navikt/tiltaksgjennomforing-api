@@ -4,6 +4,10 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -16,6 +20,7 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskudd
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -30,14 +35,14 @@ public class DeltakerTest {
 
     @Test
     public void mentor_Avtaler__skjul_mentor_fnr_for_deltaker() {
+        Pageable pageable = PageRequest.of(0, 100);
         Avtale avtale = TestData.enMentorAvtaleSignert();
         Deltaker deltaker = TestData.enDeltaker(avtale);
         AvtalePredicate avtalePredicate = new AvtalePredicate();
-        when(avtaleRepository.findAllByDeltakerFnr(any())).thenReturn(List.of(avtale));
-
-        List<Avtale> avtaler = deltaker.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
-        assertThat(avtaler.get(0).getMentorFnr()).isNull();
-        assertThat(avtaler.get(0).getGjeldendeInnhold().getMentorTimelonn()).isNull();
+        when(avtaleRepository.findAllByDeltakerFnr(any(), eq(pageable))).thenReturn(new PageImpl<Avtale>(List.of(avtale)));
+        Page<Avtale> avtaler = deltaker.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate, pageable);
+        assertThat(avtaler.getContent().get(0).getMentorFnr()).isNull();
+        assertThat(avtaler.getContent().get(0).getGjeldendeInnhold().getMentorTimelonn()).isNull();
 
     }
 

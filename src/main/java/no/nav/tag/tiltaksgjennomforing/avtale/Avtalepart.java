@@ -8,15 +8,16 @@ import no.nav.tag.tiltaksgjennomforing.enhet.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.Map.entry;
 
 @AllArgsConstructor
 @Slf4j
@@ -34,16 +35,24 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     abstract boolean harTilgangTilAvtale(Avtale avtale);
 
-    abstract List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre);
+    abstract Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, Pageable pageable);
 
-    public List<Avtale> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, String sorteringskolonne, int skip, int limit) {
-        return hentAlleAvtalerMedMuligTilgang(avtaleRepository, queryParametre).stream()
+    public Map<String, Object> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, String sorteringskolonne, Pageable pageable) {
+        Page<Avtale> avtaler = hentAlleAvtalerMedMuligTilgang(avtaleRepository, queryParametre, pageable);
+
+        List<Avtale> avtalerMedTilgang = avtaler.getContent().stream()
                 .filter(queryParametre).filter(avtale -> !avtale.isFeilregistrert())
-                .sorted(AvtaleSorterer.comparatorForAvtale(sorteringskolonne))
-                .skip(skip)
-                .limit(limit)
+                //.sorted(AvtaleSorterer.comparatorForAvtale(sorteringskolonne))
                 .filter(this::harTilgang)
                 .collect(Collectors.toList());
+
+        return Map.ofEntries(
+                entry("avtaler", avtalerMedTilgang),
+                entry("size", avtaler.getSize()),
+                entry("currentPage", avtaler.getNumber()),
+                entry("totalItems", avtaler.getTotalElements()),
+                entry("totalPages", avtaler.getTotalPages())
+        );
     }
 
     public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {

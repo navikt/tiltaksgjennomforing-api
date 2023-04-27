@@ -4,10 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+
 import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtalePredicate;
@@ -19,6 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 public class InnloggetArbeidsgiverTest {
@@ -43,10 +44,12 @@ public class InnloggetArbeidsgiverTest {
 
     @Test
     public void hentAlleAvtalerMedLesetilgang_uten_annullertGrunn() {
+        Pageable pageable = PageRequest.of(0, 100);
         Set<BedriftNr> bedriftNrSet = Set.of(avtale.getBedriftNr());
-        when(avtaleRepository.findAllByBedriftNrIn(eq(bedriftNrSet))).thenReturn(Arrays.asList(avtale));
-        List<Avtale> hentetAvtaler = arbeidsgiver.hentAlleAvtalerMedLesetilgang(avtaleRepository, new AvtalePredicate(), Avtale.Fields.sistEndret, 0, Integer.MAX_VALUE);
-        assertThat(hentetAvtaler.get(0).getAnnullertGrunn()).isNull();
+        when(avtaleRepository.findAllByBedriftNrIn(eq(bedriftNrSet), eq(pageable))).thenReturn(new PageImpl<Avtale>(List.of(avtale)));
+        Map<String, Object> avtaler = arbeidsgiver.hentAlleAvtalerMedLesetilgang(avtaleRepository, new AvtalePredicate(), Avtale.Fields.sistEndret, pageable);
+        List<Avtale> avtaleList = (List<Avtale>)avtaler.get("avtaler");
+        assertThat(avtaleList.get(0).getAnnullertGrunn()).isNull();
     }
 
     @Test

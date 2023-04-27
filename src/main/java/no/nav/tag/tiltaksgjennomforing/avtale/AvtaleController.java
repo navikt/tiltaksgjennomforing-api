@@ -15,6 +15,8 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -82,20 +84,22 @@ public class AvtaleController {
 
     @GetMapping
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    public List<Avtale> hentAlleAvtalerInnloggetBrukerHarTilgangTil(
+    public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTil(
             AvtalePredicate queryParametre,
-            @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
             @CookieValue("innlogget-part") Avtalerolle innloggetPart,
-            @RequestParam(value = "skip", required = false, defaultValue = "0") Integer skip,
-            @RequestParam(value = "limit", required = false, defaultValue = "100000000") Integer limit
+            @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(value = "size", required = false, defaultValue = "20") Integer size
     ) {
-        return innloggingService.hentAvtalepart(innloggetPart).hentAlleAvtalerMedLesetilgang(
+        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
+        Pageable pageable = PageRequest.of(page, size);
+        Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,
                 queryParametre,
                 sorteringskolonne,
-                skip,
-                limit
+                pageable
         );
+        return avtaler;
     }
 
     @GetMapping("/beslutter-liste")
@@ -107,7 +111,6 @@ public class AvtaleController {
             @RequestParam(value = "size", required = false, defaultValue = "20") Integer size
     ) {
         Beslutter beslutter = innloggingService.hentBeslutter();
-        Instant start = Instant.now();
         Page<AvtaleMinimal> avtaler = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
                 avtaleRepository,
                 queryParametre,

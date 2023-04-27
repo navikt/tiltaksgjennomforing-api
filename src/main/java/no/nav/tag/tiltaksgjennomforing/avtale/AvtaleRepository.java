@@ -30,30 +30,33 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     List<Avtale> findAllByBedriftNr(BedriftNr bedriftNr);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    List<Avtale> findAllByBedriftNrIn(Set<BedriftNr> bedriftNrList);
+    Page<Avtale> findAllByBedriftNrIn(Set<BedriftNr> bedriftNrList, Pageable pageable);
+
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    Page<Avtale> findAllByDeltakerFnr(Fnr deltakerFnr, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     List<Avtale> findAllByDeltakerFnr(Fnr deltakerFnr);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    List<Avtale> findAllByMentorFnr(Fnr mentorFnr);
+    Page<Avtale> findAllByMentorFnr(Fnr mentorFnr, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    List<Avtale> findAllByVeilederNavIdent(NavIdent veilederNavIdent);
+    Page<Avtale> findAllByVeilederNavIdent(NavIdent veilederNavIdent, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    @Query("FROM Avtale "
-            + "where veilederNavIdent is null "
-            + "and (enhetOppfolging in (?1) or enhetGeografisk in (?1))")
-    List<Avtale> findAllUfordelteByEnhet(String navEnhet);
+    @Query(value = "SELECT * FROM AVTALE "
+            + "where VEILEDER_NAV_IDENT is null "
+            + "and (ENHET_OPPFOLGING = :navEnhet or ENHET_GEOGRAFISK = :navEnhet)", nativeQuery = true)
+    Page<Avtale> findAllUfordelteByEnhet(@Param("navEnhet") String navEnhet, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    @Query("FROM Avtale "
-            + "where enhetOppfolging in (?1) or enhetGeografisk in (?1)")
-    List<Avtale> findAllFordelteOrUfordeltByEnhet(String navEnhet);
+    @Query(value = "SELECT * FROM AVTALE "
+            + "where ENHET_OPPFOLGING = :navEnhet or ENHET_GEOGRAFISK = :navEnhet", nativeQuery = true)
+    Page<Avtale> findAllFordelteOrUfordeltByEnhet(@Param("navEnhet") String navEnhet, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    List<Avtale>findAllByAvtaleNr(Integer avtaleNr);
+    Page<Avtale>findAllByAvtaleNr(Integer avtaleNr, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     List<Avtale> findAllByTiltakstype(Tiltakstype tiltakstype);
@@ -109,21 +112,6 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             @Param("startDato") Date startDato,
             @Param("sluttDato") Date sluttDato
     );
-
-
-@Query(value =
-        "SELECT distinct AVTALE.* FROM AVTALE " +
-                "LEFT JOIN AVTALE_INNHOLD " +
-                "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
-                "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
-                "AND EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
-                "(:tilskuddsperiodestatus LIKE 'UBEHANDLET' AND :tilskuddsperiodestatus = status AND " +
-                "((start_dato <= current_date + CAST(:plussDato as INTEGER )) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET')))) " +
-                "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter))", nativeQuery = true)
-List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
-        @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
-        @Param("navEnheter") Set<String> navEnheter,
-        @Param("plussDato") int plussDato);
 
     @Query(value =
             "SELECT cast(AVTALE.ID as varchar) as id, AVTALE.VEILEDER_NAV_IDENT as veilederNavIdent, AVTALE_INNHOLD.DELTAKER_FORNAVN as deltakerFornavn, :tilskuddsperiodestatus as tilskuddsperiodestatus," +

@@ -80,8 +80,8 @@ public class Beslutter extends Avtalepart<NavIdent> {
     }
 
     @Override
-    List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
-        return avtaleRepository.findAllByAvtaleNr(queryParametre.getAvtaleNr());
+    Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, Pageable pageable) {
+        return avtaleRepository.findAllByAvtaleNr(queryParametre.getAvtaleNr(), pageable);
     }
 
     private Integer getPlussdato() {

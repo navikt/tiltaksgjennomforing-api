@@ -17,6 +17,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -28,6 +31,7 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enArbeidstreningAv
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enNavIdent;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.InstanceOfAssertFactories.predicate;
 import static org.mockito.Mockito.*;
 
 @SuppressWarnings("rawtypes")
@@ -54,6 +58,8 @@ public class AvtaleControllerTest {
     private PersondataService persondataService;
     @Mock
     private KontoregisterService kontoregisterService;
+
+    private Pageable pageable = PageRequest.of(0, 100);
 
     private static List<Avtale> lagListeMedAvtaler(Avtale avtale, int antall) {
         List<Avtale> avtaler = new ArrayList<>();
@@ -139,21 +145,22 @@ public class AvtaleControllerTest {
         );
         værInnloggetSom(veileder);
         when(
-                avtaleRepository.findAllByVeilederNavIdent(veilederNavIdent)
-        ).thenReturn(asList(avtaleForVeilederSomSøkesEtter, avtaleForAnnenVeilder));
+                avtaleRepository.findAllByVeilederNavIdent(eq(veilederNavIdent), eq(pageable))
+        ).thenReturn(new PageImpl<Avtale>(List.of(avtaleForVeilederSomSøkesEtter, avtaleForAnnenVeilder)));
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 eq(identTilInnloggetVeileder),
                 any(Fnr.class)
         )).thenReturn(true);
         AvtalePredicate avtalePredicate = new AvtalePredicate();
         avtalePredicate.setVeilederNavIdent(veilederNavIdent);
-        Iterable<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(
+        Map<String, Object> avtalerPageResponse = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(
                 avtalePredicate.setVeilederNavIdent(veilederNavIdent),
-                Avtale.Fields.sistEndret,
                 Avtalerolle.VEILEDER,
+                Avtale.Fields.sistEndret,
                 0,
-                Integer.MAX_VALUE
+                100
         );
+        List<Avtale> avtaler = (List<Avtale>)avtalerPageResponse.get("avtaler");
         assertThat(avtaler)
                 .contains(avtaleForVeilederSomSøkesEtter)
                 .doesNotContain(avtaleForAnnenVeilder);
@@ -176,19 +183,22 @@ public class AvtaleControllerTest {
         );
         værInnloggetSom(veileder);
         when(
-                avtaleRepository.findAllByVeilederNavIdent(veilederNavIdent)
-        ).thenReturn(List.of(avtaleForVeilederSomSøkesEtter));
+                avtaleRepository.findAllByVeilederNavIdent(eq(veilederNavIdent), eq(pageable))
+        ).thenReturn(new PageImpl<Avtale>(List.of(avtaleForVeilederSomSøkesEtter)));;
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 eq(identTilInnloggetVeileder),
                 any(Fnr.class)
         )).thenReturn(false);
-        Iterable<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(
-                new AvtalePredicate().setVeilederNavIdent(veilederNavIdent),
+        AvtalePredicate avtalePredicate = new AvtalePredicate();
+
+        Map<String, Object> avtalerPageResponse = veileder.hentAlleAvtalerMedLesetilgang(
+                avtaleRepository,
+                avtalePredicate.setVeilederNavIdent(veilederNavIdent),
                 Avtale.Fields.sistEndret,
-                Avtalerolle.VEILEDER,
-                0,
-                Integer.MAX_VALUE
+                pageable
         );
+
+        List<Avtale> avtaler = (List<Avtale>)avtalerPageResponse.get("avtaler");
         assertThat(avtaler).doesNotContain(avtaleForVeilederSomSøkesEtter);
     }
 
@@ -208,21 +218,25 @@ public class AvtaleControllerTest {
                 veilarbArenaClient
         );
         værInnloggetSom(veileder);
+
         when(
-                avtaleRepository.findAllByVeilederNavIdent(identTilInnloggetVeileder)
-        ).thenReturn(asList(avtaleForInnloggetVeileder, avtaleForAnnenVeilder));
+                avtaleRepository.findAllByVeilederNavIdent(eq(identTilInnloggetVeileder), eq(pageable))
+        ).thenReturn(new PageImpl<Avtale>(List.of(avtaleForInnloggetVeileder, avtaleForAnnenVeilder)));
+
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 eq(identTilInnloggetVeileder),
                 any(Fnr.class)
         )).thenReturn(true);
+        AvtalePredicate avtalePredicate = new AvtalePredicate();
 
-        Iterable<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(
-                new AvtalePredicate().setVeilederNavIdent(identTilInnloggetVeileder),
+        Map<String, Object> avtalerPageResponse = veileder.hentAlleAvtalerMedLesetilgang(
+                avtaleRepository,
+                avtalePredicate.setVeilederNavIdent(identTilInnloggetVeileder),
                 Avtale.Fields.sistEndret,
-                Avtalerolle.VEILEDER,
-                0,
-                Integer.MAX_VALUE
+                pageable
         );
+
+        List<Avtale> avtaler = (List<Avtale>)avtalerPageResponse.get("avtaler");
         assertThat(avtaler)
                 .contains(avtaleForInnloggetVeileder)
                 .doesNotContain(avtaleForAnnenVeilder);
@@ -247,21 +261,21 @@ public class AvtaleControllerTest {
         Avtale nyAvtaleMedOppfølgningsEnhet = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet();
 
         when(
-                avtaleRepository.findAllFordelteOrUfordeltByEnhet(navEnhet)
-        ).thenReturn(asList(nyAvtaleMedGeografiskEnhet, nyAvtaleMedOppfølgningsEnhet));
+                avtaleRepository.findAllFordelteOrUfordeltByEnhet(eq(navEnhet), eq(pageable))
+        ).thenReturn(new PageImpl<Avtale>(List.of(nyAvtaleMedGeografiskEnhet, nyAvtaleMedOppfølgningsEnhet)));
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any(Fnr.class))).thenReturn(true);
 
-        List<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(
+        Map<String, Object> avtalerPageResponse = veileder.hentAlleAvtalerMedLesetilgang(
+                avtaleRepository,
                 new AvtalePredicate().setNavEnhet(navEnhet),
                 Avtale.Fields.sistEndret,
-                Avtalerolle.VEILEDER,
-                0,
-                Integer.MAX_VALUE
+                pageable
         );
+
+        List<Avtale> avtaler = (List<Avtale>)avtalerPageResponse.get("avtaler");
         assertThat(avtaler).isNotNull();
         assertThat(avtaler)
                 .contains(nyAvtaleMedGeografiskEnhet);
-
     }
 
     @Test
@@ -282,19 +296,19 @@ public class AvtaleControllerTest {
         Avtale enArbeidstreningsAvtale = TestData.enArbeidstreningAvtale();
         enArbeidstreningsAvtale.setAvtaleNr(TestData.ET_AVTALENR);
 
-        when(avtaleRepository.findAllByAvtaleNr(TestData.ET_AVTALENR)).thenReturn(asList(enArbeidstreningsAvtale));
+        when(avtaleRepository.findAllByAvtaleNr(eq(TestData.ET_AVTALENR), eq(pageable))).thenReturn(new PageImpl<Avtale>(List.of(enArbeidstreningsAvtale)));
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any(Fnr.class))).thenReturn(true);
 
-        List<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(
+        Map<String, Object> avtalerPageResponse = veileder.hentAlleAvtalerMedLesetilgang(
+                avtaleRepository,
                 new AvtalePredicate().setAvtaleNr(TestData.ET_AVTALENR),
                 Avtale.Fields.sistEndret,
-                Avtalerolle.VEILEDER,
-                0,
-                Integer.MAX_VALUE
+                pageable
         );
+
+        List<Avtale> avtaler = (List<Avtale>)avtalerPageResponse.get("avtaler");
         assertThat(avtaler).isNotNull();
         assertThat(avtaler).contains(enArbeidstreningsAvtale);
-
     }
 
     @Test
@@ -476,15 +490,17 @@ public class AvtaleControllerTest {
         List<Avtale> alleAvtaler = new ArrayList<>();
         alleAvtaler.addAll(avtalerBrukerHarTilgangTil);
         alleAvtaler.addAll(lagListeMedAvtaler(avtaleUtenTilgang, 4));
-        when(avtaleRepository.findAllByDeltakerFnr(deltaker.getIdentifikator())).thenReturn(alleAvtaler);
-        var hentedeAvtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(
+        when(avtaleRepository.findAllByDeltakerFnr(eq(deltaker.getIdentifikator()), eq(pageable))).thenReturn(new PageImpl<Avtale>(alleAvtaler));
+
+        Map<String, Object> avtalerPageResponse = deltaker.hentAlleAvtalerMedLesetilgang(
+                avtaleRepository,
                 new AvtalePredicate(),
                 Avtale.Fields.sistEndret,
-                Avtalerolle.DELTAKER,
-                0,
-                Integer.MAX_VALUE
+                pageable
         );
-        assertThat(hentedeAvtaler)
+
+        List<Avtale> avtaler = (List<Avtale>)avtalerPageResponse.get("avtaler");
+        assertThat(avtaler)
                 .hasSize(avtalerBrukerHarTilgangTil.size())
                 .allMatch(deltaker::harTilgang);
     }

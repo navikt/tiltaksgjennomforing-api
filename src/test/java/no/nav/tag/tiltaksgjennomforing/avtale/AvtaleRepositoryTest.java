@@ -15,6 +15,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -24,6 +27,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -234,10 +238,11 @@ public class AvtaleRepositoryTest {
         Avtale lagretAvtale = TestData.enArbeidstreningAvtale();
         avtaleRepository.save(lagretAvtale);
         Set<String> navEnheter = Set.of(ENHET_OPPFØLGING.getVerdi());
-
+        Pageable pageable = PageRequest.of(0, 100);
+        Set<String> tiltakstyper = Set.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD.name(), Tiltakstype.VARIG_LONNSTILSKUDD.name());
         Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
-        List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
-            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter, plussDato);
+        Page<AvtaleMinimal> avtalerMedTilskuddsperioder = avtaleRepository
+                .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandletMinimal(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter, plussDato, tiltakstyper, "", pageable);
 
         assertThat(avtalerMedTilskuddsperioder).isEmpty();
     }
@@ -247,11 +252,13 @@ public class AvtaleRepositoryTest {
 
         Avtale lagretAvtale = avtaleRepository.save(TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate(), Now.localDate().plusDays(15)));
         Set<String> navEnheter = Set.of(ENHET_OPPFØLGING.getVerdi());
+        Set<String> tiltakstyper = Set.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD.name(), Tiltakstype.VARIG_LONNSTILSKUDD.name());
+        Pageable pageable = PageRequest.of(0, 100);
         Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
-        List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
-            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter, plussDato);
+        Page<AvtaleMinimal> avtalerMedTilskuddsperioder = avtaleRepository
+                .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandletMinimal(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter, plussDato, tiltakstyper, null, pageable);
 
-        assertThat(avtalerMedTilskuddsperioder).containsOnly(lagretAvtale);
+        assertThat(avtalerMedTilskuddsperioder.getContent().stream().map(avtale -> avtale.getId()).toList()).containsOnly(lagretAvtale.getId().toString());
     }
 
     @Test
@@ -259,14 +266,15 @@ public class AvtaleRepositoryTest {
         Now.fixedDate(LocalDate.of(2021, 10, 1));
         Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.of(2021, 10, 1), LocalDate.of(2021, 10, 31));
         Set<String> navEnheter = Set.of(ENHET_OPPFØLGING.getVerdi());
-
+        Set<String> tiltakstyper = Set.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD.name(), Tiltakstype.VARIG_LONNSTILSKUDD.name());
+        Pageable pageable = PageRequest.of(0, 100);
         lagretAvtale.godkjennTilskuddsperiode(TestData.enInnloggetBeslutter().getIdentifikator(), lagretAvtale.getEnhetGeografisk());
         avtaleRepository.save(lagretAvtale);
         Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
-        List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
-            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter, plussDato);
+        Page<AvtaleMinimal> avtalerMedTilskuddsperioder = avtaleRepository
+            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandletMinimal(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter, plussDato, tiltakstyper, "", pageable);
 
-        assertThat(avtalerMedTilskuddsperioder).doesNotContain(lagretAvtale);
+        assertThat(avtalerMedTilskuddsperioder.getContent().stream().map(avtale -> avtale.getId()).toList()).doesNotContain(lagretAvtale.getId().toString());
         Now.resetClock();
     }
 
@@ -275,61 +283,62 @@ public class AvtaleRepositoryTest {
 
         Avtale lagretAvtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate(), Now.localDate().plusMonths(2));
         Set<String> navEnheter = Set.of("0000");
-
+        Set<String> tiltakstyper = Set.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD.name(), Tiltakstype.VARIG_LONNSTILSKUDD.name());
+        Pageable pageable = PageRequest.of(0, 100);
         lagretAvtale.godkjennTilskuddsperiode(TestData.enInnloggetBeslutter().getIdentifikator(), lagretAvtale.getEnhetGeografisk());
         avtaleRepository.save(lagretAvtale);
         Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
-        List<Avtale> avtalerMedTilskuddsperioder = avtaleRepository
-            .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter, plussDato);
+        Page<AvtaleMinimal> avtalerMedTilskuddsperioder = avtaleRepository
+                .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandletMinimal(TilskuddPeriodeStatus.UBEHANDLET.name(), navEnheter, plussDato, tiltakstyper, "", pageable);
 
         assertThat(avtalerMedTilskuddsperioder).isEmpty();
     }
 
     @Test
     public void findAllByEnhet__skal_kunne_hente_avtale_med_enhet() {
-
+        Pageable pageable = PageRequest.of(0, 100);
         Avtale lagretAvtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet();
         avtaleRepository.save(lagretAvtale);
 
-        List<Avtale> avtaleMedRiktigEnhet = avtaleRepository
-            .findAllUfordelteByEnhet(ENHET_OPPFØLGING.getVerdi());
+        Page<Avtale> avtaleMedRiktigEnhet = avtaleRepository
+            .findAllUfordelteByEnhet(ENHET_OPPFØLGING.getVerdi(), pageable);
 
-        assertThat(avtaleMedRiktigEnhet).isNotEmpty();
+        assertThat(avtaleMedRiktigEnhet.getContent()).isNotEmpty();
     }
 
     @Test
     public void findAllByEnhet__skal_ikke_kunne_hente_avtale_med_feil_enhet() {
-
+        Pageable pageable = PageRequest.of(0, 100);
         Avtale lagretAvtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet();
         avtaleRepository.save(lagretAvtale);
 
-        List<Avtale> avtaleMedRiktigEnhet = avtaleRepository
-            .findAllUfordelteByEnhet(ENHET_GEOGRAFISK.getVerdi());
+        Page<Avtale> avtaleMedRiktigEnhet = avtaleRepository
+            .findAllUfordelteByEnhet(ENHET_GEOGRAFISK.getVerdi(), pageable);
 
-        assertThat(avtaleMedRiktigEnhet).isEmpty();
+        assertThat(avtaleMedRiktigEnhet.getContent()).isEmpty();
     }
 
     @Test
     public void findAllByEnhet__skal_kunne_hente_avtale_med_både_geografisk_og_oppfølgningsenhet() {
-
+        Pageable pageable = PageRequest.of(0, 100);
         Avtale lagretAvtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhetOgGeografiskEnhet();
         avtaleRepository.save(lagretAvtale);
 
-        List<Avtale> avtaleMedRiktigEnhet = avtaleRepository
-            .findAllUfordelteByEnhet(ENHET_OPPFØLGING.getVerdi());
+        Page<Avtale> avtaleMedRiktigEnhet = avtaleRepository
+            .findAllUfordelteByEnhet(ENHET_OPPFØLGING.getVerdi(), pageable);
 
-        assertThat(avtaleMedRiktigEnhet).isNotEmpty();
+        assertThat(avtaleMedRiktigEnhet.getContent()).isNotEmpty();
     }
 
     @Test
     public void findAllByEnhet__skal_kunne_hente_avtale_med_både_oppfølgning_og_geografiskenhet() {
-
+        Pageable pageable = PageRequest.of(0, 100);
         Avtale lagretAvtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhetOgGeografiskEnhet();
         avtaleRepository.save(lagretAvtale);
 
-        List<Avtale> avtaleMedRiktigEnhet = avtaleRepository
-            .findAllUfordelteByEnhet(ENHET_GEOGRAFISK.getVerdi());
+        Page<Avtale> avtaleMedRiktigEnhet = avtaleRepository
+            .findAllUfordelteByEnhet(ENHET_GEOGRAFISK.getVerdi(), pageable);
 
-        assertThat(avtaleMedRiktigEnhet).isNotEmpty();
+        assertThat(avtaleMedRiktigEnhet.getContent()).isNotEmpty();
     }
 }

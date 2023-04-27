@@ -4,6 +4,9 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,8 +28,11 @@ public class Deltaker extends Avtalepart<Fnr> {
     }
 
     @Override
-    List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
-        return avtaleRepository.findAllByDeltakerFnr(getIdentifikator()).stream().map(this::skjulMentorFødselsnummer).toList();
+    Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, Pageable pageable) {
+
+        Page<Avtale> avtaler = avtaleRepository.findAllByDeltakerFnr(getIdentifikator(), pageable);
+        Page<Avtale> filtrereAvtalerKanske = avtaler.map(this::skjulMentorFødselsnummer);
+        return filtrereAvtalerKanske;
     }
 
     private Avtale skjulMentorFødselsnummer(Avtale avtale){
