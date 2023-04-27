@@ -16,7 +16,7 @@
             <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
         </appender>
         <logger name="secureLogger" level="INFO" additivity="false">
-            <appender-ref ref="consoleAppender"/>
+            <appender-ref ref="secureLog"/>
         </logger>
     </springProfile>
     <springProfile name="local">
