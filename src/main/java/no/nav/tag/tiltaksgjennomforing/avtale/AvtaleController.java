@@ -14,6 +14,9 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -45,6 +48,8 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
 @Slf4j
 @RequiredArgsConstructor
 public class AvtaleController {
+
+    private static final Logger SECURE_LOGGER = LoggerFactory.getLogger("secureLogger");
 
     private final AvtaleRepository avtaleRepository;
     private final AvtaleInnholdRepository avtaleInnholdRepository;
@@ -135,6 +140,10 @@ public class AvtaleController {
                     abacFiltreringTid.getSeconds(),
                     avtalerMedTilgang.size()
             );
+            SECURE_LOGGER.info("Brukte over et sekund for abac-filtrering for {}. {} sekunder, {} antall avtaler",
+                    beslutter.getIdentifikator(),
+                    abacFiltreringTid.getSeconds(),
+                    avtalerMedTilgang.size());
         }
         if(hentMinimalListeTid.getSeconds() + abacFiltreringTid.getSeconds() > 1) {
             log.info(
