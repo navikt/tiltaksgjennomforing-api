@@ -59,6 +59,8 @@ spec:
   prometheus:
     enabled: true
     path: /tiltaksgjennomforing-api/internal/actuator/prometheus
+  secureLogs:
+    enabled: true
   accessPolicy:
     inbound:
       rules:
