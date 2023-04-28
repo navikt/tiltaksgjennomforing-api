@@ -121,12 +121,14 @@ public class AvtaleController {
         }
 
         start = Instant.now();
+        var fnrSet = avtaler.stream().map(AvtaleMinimal::getDeltakerFnr).map(Fnr::new).collect(Collectors.toSet());
+        var deltakereBeslutterHarTilgangTil = beslutter.harTilgangTilFnr(fnrSet).stream().map(Fnr::asString).collect(Collectors.toSet());
+
         List<AvtaleMinimal> avtalerMedTilgang = avtaler.stream()
                 .skip(skip)
                 .limit(limit)
-                .filter(avtaleMinimal -> beslutter.harTilgangTilFnr(
-                        new Fnr(avtaleMinimal.getDeltakerFnr()))).collect(Collectors.toList()
-                );
+                .filter(avtaleMinimal -> deltakereBeslutterHarTilgangTil.contains(avtaleMinimal.getDeltakerFnr()))
+                .toList();
         end = Instant.now();
         Duration abacFiltreringTid = Duration.between(start, end);
         if(abacFiltreringTid.getSeconds() > 1) {

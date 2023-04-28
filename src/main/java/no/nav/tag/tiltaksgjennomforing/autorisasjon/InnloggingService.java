@@ -69,11 +69,11 @@ public class InnloggingService {
             NavIdent navIdent = new NavIdent(brukerOgIssuer.getBrukerIdent());
             Set<NavEnhet> navEnheter = hentNavEnheter(navIdent);
             boolean harAdGruppeForBeslutter = tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId());
-            return new Veileder(navIdent, tilgangskontrollService, persondataService, norg2Client, navEnheter, slettemerkeProperties, harAdGruppeForBeslutter, veilarbArenaClient);
+            return new Veileder(navIdent, tokenUtils.hentAzureOid(), tilgangskontrollService, persondataService, norg2Client, navEnheter, slettemerkeProperties, harAdGruppeForBeslutter, veilarbArenaClient);
         } else if (issuer == Issuer.ISSUER_AAD && avtalerolle == Avtalerolle.BESLUTTER) {
             boolean harAdGruppeForBeslutter = tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId());
             if (harAdGruppeForBeslutter) {
-                return new Beslutter(new NavIdent(brukerOgIssuer.getBrukerIdent()), tilgangskontrollService, axsysService, norg2Client);
+                return new Beslutter(new NavIdent(brukerOgIssuer.getBrukerIdent()), tokenUtils.hentAzureOid(), tilgangskontrollService, axsysService, norg2Client);
             } else {
                 throw new FeilkodeException(Feilkode.MANGLER_AD_GRUPPE_BESLUTTER);
             }

@@ -19,7 +19,11 @@ public class TokenUtils {
     private static final String ACR = "acr";
     private static final String LEVEL4 = "Level4";
 
-   public enum Issuer {
+    public UUID hentAzureOid() {
+        return hentClaim(ISSUER_AAD, "oid").map(UUID::fromString).orElse(null);
+    }
+
+    public enum Issuer {
         ISSUER_AAD("aad"),
         ISSUER_SYSTEM("system"),
         ISSUER_TOKENX("tokenx");
