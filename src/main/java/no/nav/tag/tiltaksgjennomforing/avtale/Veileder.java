@@ -67,13 +67,13 @@ public class Veileder extends Avtalepart<NavIdent> {
             return avtaleRepository.findAllFordelteOrUfordeltByEnhet(queryParametre.getNavEnhet(), pageable);
         }
         else {
-            Avtale exampleAvtale = Avtale.builder()
+            Avtale.AvtaleBuilder exampleAvtaleBuilder = Avtale.builder()
                     .avtaleNr(queryParametre.getAvtaleNr())
                     .veilederNavIdent(queryParametre.getVeilederNavIdent())
                     .deltakerFnr(queryParametre.getDeltakerFnr())
                     .bedriftNr(queryParametre.getBedriftNr())
-                    .tiltakstype(queryParametre.getTiltakstype())
-                    .build();
+                    .tiltakstype(queryParametre.getTiltakstype());
+            Avtale exampleAvtale = exampleAvtaleBuilder.build();
             return avtaleRepository.findAll(Example.of(exampleAvtale), pageable);
         }
     }
