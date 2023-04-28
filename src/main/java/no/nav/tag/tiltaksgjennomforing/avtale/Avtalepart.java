@@ -41,7 +41,7 @@ public abstract class Avtalepart<T extends Identifikator> {
         Page<Avtale> avtaler = hentAlleAvtalerMedMuligTilgang(avtaleRepository, queryParametre, pageable);
 
         List<Avtale> avtalerMedTilgang = avtaler.getContent().stream()
-                .filter(queryParametre).filter(avtale -> !avtale.isFeilregistrert())
+                .filter(avtale -> !avtale.isFeilregistrert())
                 //.sorted(AvtaleSorterer.comparatorForAvtale(sorteringskolonne))
                 .filter(this::harTilgang)
                 .collect(Collectors.toList());

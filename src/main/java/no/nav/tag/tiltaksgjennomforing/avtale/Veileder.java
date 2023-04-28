@@ -10,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -60,31 +61,20 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     @Override
     Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, Pageable pageable) {
-        if (queryParametre.getVeilederNavIdent() != null) {
-            return avtaleRepository.findAllByVeilederNavIdent(queryParametre.getVeilederNavIdent(), pageable);
-
-        } else if (queryParametre.getDeltakerFnr() != null) {
-            return avtaleRepository.findAllByDeltakerFnr(queryParametre.getDeltakerFnr(), pageable);
-
-        } else if (queryParametre.getBedriftNr() != null) {
-            return avtaleRepository.findAllByBedriftNrIn(Set.of(queryParametre.getBedriftNr()), pageable);
-
-        } else if (
-                queryParametre.getNavEnhet() != null &&
-                        queryParametre.getErUfordelt() != null &&
-                        queryParametre.getErUfordelt()
-        ) {
-
+        if (queryParametre.getErUfordelt() != null && queryParametre.getErUfordelt()) {
             return avtaleRepository.findAllUfordelteByEnhet(queryParametre.getNavEnhet(), pageable);
-
-        } else if (queryParametre.getNavEnhet() != null) {
+        } else if ( queryParametre.getNavEnhet() != null) {
             return avtaleRepository.findAllFordelteOrUfordeltByEnhet(queryParametre.getNavEnhet(), pageable);
-
-        } else if (queryParametre.getAvtaleNr() != null) {
-            return avtaleRepository.findAllByAvtaleNr(queryParametre.getAvtaleNr(), pageable);
-
-        } else {
-            return avtaleRepository.findAllByVeilederNavIdent(getIdentifikator(), pageable);
+        }
+        else {
+            Avtale exampleAvtale = Avtale.builder()
+                    .avtaleNr(queryParametre.getAvtaleNr())
+                    .veilederNavIdent(queryParametre.getVeilederNavIdent())
+                    .deltakerFnr(queryParametre.getDeltakerFnr())
+                    .bedriftNr(queryParametre.getBedriftNr())
+                    .tiltakstype(queryParametre.getTiltakstype())
+                    .build();
+            return avtaleRepository.findAll(Example.of(exampleAvtale), pageable);
         }
     }
 

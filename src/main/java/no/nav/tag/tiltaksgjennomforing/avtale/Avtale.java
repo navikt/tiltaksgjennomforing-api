@@ -2,9 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
@@ -19,6 +17,7 @@ import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.*;
+import org.hibernate.annotations.Generated;
 import org.hibernate.type.PostgresUUIDType;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
@@ -37,7 +36,9 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 @Slf4j
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Builder(toBuilder = true)
 @Entity
+@AllArgsConstructor
 @NoArgsConstructor
 @FieldNameConstants
 @TypeDef(name = "postgres-uuid",
