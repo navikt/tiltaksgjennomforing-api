@@ -131,9 +131,6 @@ public class VeilederTest {
 
         // Gi veileder tilgang til deltaker
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(avtale.getVeilederNavIdent()), any(Fnr.class)))
-                .thenReturn(true);
-
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
                 tilgangskontrollService,
@@ -144,6 +141,8 @@ public class VeilederTest {
 
                 false,
                 mock(VeilarbArenaClient.class));
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class)))
+                .thenReturn(true);
 
         avtale.endreAvtale(
                 Instant.now(),
@@ -282,8 +281,18 @@ public class VeilederTest {
         final PdlRespons pdlRespons = TestData.enPdlrespons(false);
         final VeilarbArenaClient veilarbArenaClient = mock(VeilarbArenaClient.class);
 
+        Veileder veileder = new Veileder(
+                navIdent,
+                tilgangskontrollService,
+                persondataService,
+                norg2Client,
+                Set.of(navEnhet),
+                new SlettemerkeProperties(),
+                false,
+                veilarbArenaClient
+        );
 
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any())).thenReturn(true);
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
         when(persondataService.hentPersondata(fnr)).thenReturn(pdlRespons);
         when(persondataService.erKode6(pdlRespons)).thenCallRealMethod();
         when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
@@ -298,16 +307,6 @@ public class VeilederTest {
                         TestData.ENHET_GEOGRAFISK.getVerdi()
                 ));
 
-        Veileder veileder = new Veileder(
-                navIdent,
-                tilgangskontrollService,
-                persondataService,
-                norg2Client,
-                Set.of(navEnhet),
-                new SlettemerkeProperties(),
-                false,
-                veilarbArenaClient
-        );
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
 
         assertThat(avtale.getVeilederNavIdent()).isEqualTo(TestData.enNavIdent());
@@ -345,7 +344,7 @@ public class VeilederTest {
                 veilarbArenaClient
         );
 
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any())).thenReturn(true);
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
         when(persondataService.hentPersondata(fnr)).thenReturn(pdlRespons);
         when(veilarbArenaClient.hentOppfølgingsEnhet(fnr.asString())).thenReturn(navEnhet.getVerdi());
         when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
@@ -366,9 +365,6 @@ public class VeilederTest {
         NavIdent navIdent = new NavIdent("Z123456");
 
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), eq(avtale.getDeltakerFnr())))
-                .thenReturn(true);
-
         SlettemerkeProperties slettemerkeProperties = new SlettemerkeProperties();
         slettemerkeProperties.setIdent(List.of(navIdent));
         Veileder veileder = new Veileder(
@@ -381,6 +377,10 @@ public class VeilederTest {
                 false,
                 mock(VeilarbArenaClient.class)
         );
+
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), eq(avtale.getDeltakerFnr())))
+                .thenReturn(true);
+
         veileder.slettemerk(avtale);
         assertThat(avtale.isSlettemerket()).isTrue();
     }
@@ -392,7 +392,6 @@ public class VeilederTest {
         NavIdent navIdent = new NavIdent("X123456");
 
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), eq(avtale.getDeltakerFnr()))).thenReturn(true);
 
         SlettemerkeProperties slettemerkeProperties = new SlettemerkeProperties();
         slettemerkeProperties.setIdent(List.of(new NavIdent("Z123456")));
@@ -406,6 +405,7 @@ public class VeilederTest {
                 false,
                 mock(VeilarbArenaClient.class)
         );
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), eq(avtale.getDeltakerFnr()))).thenReturn(true);
         assertThatThrownBy(() -> veileder.slettemerk(avtale)).isExactlyInstanceOf(IkkeAdminTilgangException.class);
     }
 

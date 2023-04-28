@@ -19,7 +19,7 @@ import java.util.*;
 import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
 @Slf4j
-public class Veileder extends Avtalepart<NavIdent> {
+public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     private final TilgangskontrollService tilgangskontrollService;
 
     private final PersondataService persondataService;
@@ -69,7 +69,7 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
-        return tilgangskontrollService.harSkrivetilgangTilKandidat(getIdentifikator(), avtale.getDeltakerFnr());
+        return tilgangskontrollService.harSkrivetilgangTilKandidat(this, avtale.getDeltakerFnr());
     }
 
     @Override
@@ -265,21 +265,21 @@ public class Veileder extends Avtalepart<NavIdent> {
     }
 
     public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
-        this.sjekkTilgangskontroll(getIdentifikator(), opprettAvtale.getDeltakerFnr());
+        this.sjekkTilgangskontroll(opprettAvtale.getDeltakerFnr());
         Avtale avtale = Avtale.veilederOppretterAvtale(opprettAvtale, getIdentifikator());
         leggTilEnheter(avtale);
         return avtale;
     }
 
     public Avtale opprettMentorAvtale(OpprettMentorAvtale opprettMentorAvtale) {
-        this.sjekkTilgangskontroll(getIdentifikator(), opprettMentorAvtale.getDeltakerFnr());
+        this.sjekkTilgangskontroll(opprettMentorAvtale.getDeltakerFnr());
         Avtale avtale = Avtale.veilederOppretterAvtale(opprettMentorAvtale, getIdentifikator());
         leggTilEnheter(avtale);
         return avtale;
     }
 
-    public void sjekkTilgangskontroll(NavIdent identifikator, Fnr deltakerFnr) {
-        if(!tilgangskontrollService.harSkrivetilgangTilKandidat(identifikator, deltakerFnr)) {
+    private void sjekkTilgangskontroll(Fnr deltakerFnr) {
+        if(!tilgangskontrollService.harSkrivetilgangTilKandidat(this, deltakerFnr)) {
             throw new IkkeTilgangTilDeltakerException();
         }
     }
@@ -448,4 +448,11 @@ public class Veileder extends Avtalepart<NavIdent> {
         );
     }
 
+    @Override public UUID getAzureOid() {
+        return azureOid;
+    }
+
+    @Override public NavIdent getNavIdent() {
+        return getIdentifikator();
+    }
 }

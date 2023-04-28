@@ -150,7 +150,7 @@ public class CachingConfigMockTest {
         mockAbacAdapter = AopTestUtils.getTargetObject(abacAdapter);
 
         lenient().when(mockTilgangskontrollService.harSkrivetilgangTilKandidat(
-                eq(avtale.getVeilederNavIdent()),
+                any(),
                 eq(avtale.getDeltakerFnr())
         )).thenReturn(true, true, true);
 
