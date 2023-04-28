@@ -28,9 +28,11 @@ public class Veileder extends Avtalepart<NavIdent> {
     private final Norg2Client norg2Client;
     private final Set<NavEnhet> navEnheter;
     private final VeilarbArenaClient veilarbArenaClient;
+    private final UUID azureOid;
 
     public Veileder(
             NavIdent identifikator,
+            UUID azureOid,
             TilgangskontrollService tilgangskontrollService,
             PersondataService persondataService,
             Norg2Client norg2Client,
@@ -41,6 +43,7 @@ public class Veileder extends Avtalepart<NavIdent> {
     ) {
 
         super(identifikator);
+        this.azureOid = azureOid;
         this.tilgangskontrollService = tilgangskontrollService;
         this.persondataService = persondataService;
         this.norg2Client = norg2Client;
@@ -48,6 +51,20 @@ public class Veileder extends Avtalepart<NavIdent> {
         this.slettemerkeProperties = slettemerkeProperties;
         this.harAdGruppeForBeslutter = harAdGruppeForBeslutter;
         this.veilarbArenaClient = veilarbArenaClient;
+    }
+
+    @Deprecated
+    public Veileder(
+            NavIdent identifikator,
+            TilgangskontrollService tilgangskontrollService,
+            PersondataService persondataService,
+            Norg2Client norg2Client,
+            Set<NavEnhet> navEnheter,
+            SlettemerkeProperties slettemerkeProperties,
+            boolean harAdGruppeForBeslutter,
+            VeilarbArenaClient veilarbArenaClient
+    ) {
+        this(identifikator, null, tilgangskontrollService, persondataService, norg2Client, navEnheter, slettemerkeProperties, harAdGruppeForBeslutter, veilarbArenaClient);
     }
 
     @Override
