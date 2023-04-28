@@ -155,11 +155,15 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         if (tilganger.isEmpty()) {
             return Page.empty();
         }
-        Page<Avtale> avtaler = avtaleRepository.findAllByBedriftNrIn(tilganger.keySet(), pageable);
-        Page<Avtale> avtalerMedMuligTilgang = avtaler
+        Page<Avtale> avtaler;
+        if(queryParametre.getTiltakstype() != null) {
+            avtaler = avtaleRepository.findAllByBedriftNrInAndTiltakstype(tilganger.keySet(), queryParametre.getTiltakstype(), pageable);
+        } else {
+            avtaler = avtaleRepository.findAllByBedriftNrIn(tilganger.keySet(), pageable);
+        }
+        return avtaler
                 .map(Arbeidsgiver::fjernAvbruttGrunn)
                 .map(Arbeidsgiver::fjernAnnullertGrunn);
-        return avtalerMedMuligTilgang;
     }
 
     public List<Avtale> hentAvtalerForMinsideArbeidsgiver(AvtaleRepository avtaleRepository, BedriftNr bedriftNr) {
