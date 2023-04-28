@@ -196,11 +196,6 @@ public class CachingConfigTest {
 
         final TilgangskontrollService mockTilgangskontrollService = mock(TilgangskontrollService.class);
 
-        lenient().when(mockTilgangskontrollService.harSkrivetilgangTilKandidat(
-                eq(avtale.getVeilederNavIdent()),
-                eq(avtale.getDeltakerFnr())
-        )).thenReturn(true, true, true);
-
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
                 mockTilgangskontrollService,
@@ -211,6 +206,11 @@ public class CachingConfigTest {
                 false,
                 veilarbArenaClient
         );
+
+        lenient().when(mockTilgangskontrollService.harSkrivetilgangTilKandidat(
+                eq(veileder),
+                eq(avtale.getDeltakerFnr())
+        )).thenReturn(true, true, true);
 
         veileder.endreAvtale(
                 Instant.now(),

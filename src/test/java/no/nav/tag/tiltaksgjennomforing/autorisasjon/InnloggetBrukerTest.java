@@ -64,12 +64,12 @@ public class InnloggetBrukerTest {
                 veilarbArenaClient
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
-                veileder.getIdentifikator(),
+                veileder,
                 avtale.getDeltakerFnr())
         ).thenReturn(true);
 
         assertThat(veileder.harTilgang(avtale)).isTrue();
-        verify(tilgangskontrollService).harSkrivetilgangTilKandidat(veileder.getIdentifikator(), avtale.getDeltakerFnr());
+        verify(tilgangskontrollService).harSkrivetilgangTilKandidat(veileder, avtale.getDeltakerFnr());
     }
 
     @Test
@@ -85,7 +85,7 @@ public class InnloggetBrukerTest {
                 veilarbArenaClient
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
-                veileder.getIdentifikator(),
+                veileder,
                 avtale.getDeltakerFnr()
         )).thenReturn(false);
 
@@ -104,12 +104,12 @@ public class InnloggetBrukerTest {
                 false, veilarbArenaClient
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
-                veileder.getIdentifikator(),
+                veileder,
                 avtale.getDeltakerFnr())
         ).thenReturn(true);
 
         assertThat(veileder.harTilgang(avtale)).isTrue();
-        verify(tilgangskontrollService).harSkrivetilgangTilKandidat(veileder.getIdentifikator(), avtale.getDeltakerFnr());
+        verify(tilgangskontrollService).harSkrivetilgangTilKandidat(veileder, avtale.getDeltakerFnr());
     }
 
     @Test
@@ -125,7 +125,7 @@ public class InnloggetBrukerTest {
                 veilarbArenaClient
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
-                veileder.getIdentifikator(),
+                veileder,
                 avtale.getDeltakerFnr())
         ).thenReturn(false);
 

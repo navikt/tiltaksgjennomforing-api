@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,8 +23,8 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.NavEnhetIkkeFunnetException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
-import org.junit.jupiter.api.Test;
 
+import org.junit.jupiter.api.Test;
 
 class BeslutterTest {
 
@@ -197,8 +196,6 @@ class BeslutterTest {
 
         // Gi veileder tilgang til deltaker
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(avtale.getVeilederNavIdent()), any(Fnr.class)))
-                .thenReturn(true);
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
@@ -209,6 +206,9 @@ class BeslutterTest {
                 mock(SlettemerkeProperties.class),
                 false,
                 mock(VeilarbArenaClient.class));
+
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class)))
+                .thenReturn(true);
 
         avtale.endreAvtale(
                 Instant.now(),
