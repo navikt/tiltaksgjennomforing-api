@@ -8,7 +8,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -44,8 +43,10 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByMentorFnr(Fnr mentorFnr, Pageable pageable);
 
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByVeilederNavIdentIsNullAndEnhetGeografiskOrVeilederNavIdentIsNullAndEnhetOppfolging(String enhetGeografisk, String enhetOppfolging, Pageable pageable);
 
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByEnhetGeografiskOrEnhetOppfolging(String enhetGeografisk, String enhetOppfolging, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})

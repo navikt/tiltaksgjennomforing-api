@@ -59,7 +59,6 @@ public class Veileder extends Avtalepart<NavIdent> {
     @Override
     Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, Pageable pageable) {
         if(queryParametre.getStatus() != null) {
-            // Spesialcase grunnet ikke mulig å filtrere i databasen (sigh...)
             Pageable allPages = PageRequest.of(0, Integer.MAX_VALUE);
             Page<Avtale> avtalerUtenStatusFiltrering;
             if (queryParametre.getErUfordelt() != null && queryParametre.getErUfordelt()) {
@@ -80,16 +79,12 @@ public class Veileder extends Avtalepart<NavIdent> {
             int skip = pageable.getPageNumber() > 0 ? (pageable.getPageNumber())*pageable.getPageSize() : 0;
             List<Avtale> totaltFørPaging = avtalerUtenStatusFiltrering.getContent().stream()
                     .filter(avtale -> avtale.statusSomEnum() == queryParametre.getStatus()).toList();
-
             List<Avtale> avtaler = avtalerUtenStatusFiltrering.getContent().stream()
                     .filter(avtale -> avtale.statusSomEnum() == queryParametre.getStatus())
-                    //.sorted(AvtaleSorterer.comparatorForAvtale(pageable.getSort()))
                     .skip(skip)
                     .limit(pageable.getPageSize()).toList();
             return new PageImpl<>(avtaler, pageable, totaltFørPaging.size());
         }
-
-
 
         if (queryParametre.getErUfordelt() != null && queryParametre.getErUfordelt()) {
             return avtaleRepository.findAllByVeilederNavIdentIsNullAndEnhetGeografiskOrVeilederNavIdentIsNullAndEnhetOppfolging(queryParametre.getNavEnhet(), queryParametre.getNavEnhet(), pageable);
