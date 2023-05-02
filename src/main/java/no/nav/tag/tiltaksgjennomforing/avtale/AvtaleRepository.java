@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -43,19 +44,9 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByMentorFnr(Fnr mentorFnr, Pageable pageable);
 
-    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    Page<Avtale> findAllByVeilederNavIdent(NavIdent veilederNavIdent, Pageable pageable);
+    Page<Avtale> findAllByVeilederNavIdentIsNullAndEnhetGeografiskOrVeilederNavIdentIsNullAndEnhetOppfolging(String enhetGeografisk, String enhetOppfolging, Pageable pageable);
 
-    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    @Query(value = "SELECT * FROM AVTALE "
-            + "where VEILEDER_NAV_IDENT is null "
-            + "and (ENHET_OPPFOLGING = :navEnhet or ENHET_GEOGRAFISK = :navEnhet)", nativeQuery = true)
-    Page<Avtale> findAllUfordelteByEnhet(@Param("navEnhet") String navEnhet, Pageable pageable);
-
-    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    @Query(value = "SELECT * FROM AVTALE "
-            + "where ENHET_OPPFOLGING = :navEnhet or ENHET_GEOGRAFISK = :navEnhet", nativeQuery = true)
-    Page<Avtale> findAllFordelteOrUfordeltByEnhet(@Param("navEnhet") String navEnhet, Pageable pageable);
+    Page<Avtale> findAllByEnhetGeografiskOrEnhetOppfolging(String enhetGeografisk, String enhetOppfolging, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale>findAllByAvtaleNr(Integer avtaleNr, Pageable pageable);
@@ -65,7 +56,6 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     List<Avtale> findAllByTiltakstypeAndGjeldendeInnhold_DatoForRedusertProsentNullAndGjeldendeInnhold_AvtaleInngåttNotNull(Tiltakstype tiltakstype);
-    //List<Avtale> findAllByGjeldendeInnhold_SumLønnstilskuddRedusertNullAndGjeldendeInnhold_AvtaleInngåttNotNullAndTiltakstype(Tiltakstype tiltakstype);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Override

@@ -17,6 +17,7 @@ import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -41,6 +42,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Map.entry;
+import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleSorterer.getSortingOrderForPageable;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
 
 @Protected
@@ -92,7 +94,7 @@ public class AvtaleController {
             @RequestParam(value = "size", required = false, defaultValue = "10") Integer size
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(getSortingOrderForPageable(sorteringskolonne)));
         Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,
                 queryParametre,

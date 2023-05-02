@@ -42,7 +42,6 @@ public abstract class Avtalepart<T extends Identifikator> {
 
         List<Avtale> avtalerMedTilgang = avtaler.getContent().stream()
                 .filter(avtale -> !avtale.isFeilregistrert())
-                //.sorted(AvtaleSorterer.comparatorForAvtale(sorteringskolonne))
                 .filter(this::harTilgang)
                 .collect(Collectors.toList());
 

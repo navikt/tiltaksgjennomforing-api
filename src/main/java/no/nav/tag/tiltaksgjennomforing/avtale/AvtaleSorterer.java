@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import java.util.Comparator;
 import lombok.experimental.UtilityClass;
+import org.springframework.data.domain.Sort;
 
 @UtilityClass
 public class AvtaleSorterer {
@@ -19,5 +20,21 @@ public class AvtaleSorterer {
 
     private static String lowercaseEllerNull(String x) {
         return x != null ? x.toLowerCase() : null;
+    }
+
+    static Sort.Order getSortingOrderForPageable(String sortingOrder) {
+        switch (sortingOrder) {
+            case "deltakerFornavn":
+                return Sort.Order.asc("gjeldendeInnhold.deltakerFornavn");
+            case "opprettetTidspunkt":
+                return Sort.Order.asc("opprettetTidspunkt");
+            case "bedriftNavn":
+                return Sort.Order.asc("gjeldendeInnhold.bedriftNavn");
+            case "startDato":
+                return Sort.Order.asc("gjeldendeInnhold.startDato");
+            case "sistEndret":
+            default:
+                return Sort.Order.asc("sistEndret");
+        }
     }
 }

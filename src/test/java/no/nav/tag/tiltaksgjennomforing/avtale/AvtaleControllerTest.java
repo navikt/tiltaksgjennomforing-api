@@ -187,7 +187,7 @@ public class AvtaleControllerTest {
         Avtale nyAvtaleMedOppfølgningsEnhet = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet();
 
         when(
-                avtaleRepository.findAllFordelteOrUfordeltByEnhet(eq(navEnhet), eq(pageable))
+                avtaleRepository.findAllByEnhetGeografiskOrEnhetOppfolging(eq(navEnhet), eq(navEnhet), eq(pageable))
         ).thenReturn(new PageImpl<Avtale>(List.of(nyAvtaleMedGeografiskEnhet, nyAvtaleMedOppfølgningsEnhet)));
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any(Fnr.class))).thenReturn(true);
 
