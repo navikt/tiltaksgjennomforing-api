@@ -27,14 +27,14 @@ public class AvtaleSorterer {
             case "deltakerFornavn":
                 return Sort.Order.asc("gjeldendeInnhold.deltakerFornavn");
             case "opprettetTidspunkt":
-                return Sort.Order.asc("opprettetTidspunkt");
+                return Sort.Order.desc("opprettetTidspunkt");
             case "bedriftNavn":
                 return Sort.Order.asc("gjeldendeInnhold.bedriftNavn");
             case "startDato":
                 return Sort.Order.asc("gjeldendeInnhold.startDato");
             case "sistEndret":
             default:
-                return Sort.Order.asc("sistEndret");
+                return Sort.Order.desc("sistEndret");
         }
     }
 }
