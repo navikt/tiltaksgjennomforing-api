@@ -54,7 +54,7 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     private Integer lonnstilskuddProsent;
 
     @Enumerated(EnumType.STRING)
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     private Set<Avslagsårsak> avslagsårsaker = EnumSet.noneOf(Avslagsårsak.class);
 
     private String avslagsforklaring;

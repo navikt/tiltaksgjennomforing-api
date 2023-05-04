@@ -70,6 +70,12 @@ public class AvtaleController {
         return avtalepart.hentAvtale(avtaleRepository, id);
     }
 
+    @GetMapping("/avtaleNr/{avtaleNr}")
+    public Avtale hentFraAvtaleNr(@PathVariable("avtaleNr") int avtaleNr, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
+        return avtalepart.hentAvtaleFraAvtaleNr(avtaleRepository, avtaleNr);
+    }
+
     @GetMapping("/{avtaleId}/versjoner")
     public List<AvtaleInnhold> hentVersjoner(
             @PathVariable("avtaleId") UUID id,

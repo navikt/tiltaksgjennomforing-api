@@ -92,7 +92,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private Formidlingsgruppe formidlingsgruppe;
 
 
-    @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
     @SortNatural
     private SortedSet<TilskuddPeriode> tilskuddPeriode = new TreeSet<>();

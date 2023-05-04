@@ -45,8 +45,10 @@ public abstract class Avtalepart<T extends Identifikator> {
                 .filter(this::harTilgang)
                 .collect(Collectors.toList());
 
+        List<AvtaleMinimalListevisning> listMinimal = avtalerMedTilgang.stream().map(avtale -> AvtaleMinimalListevisning.fromAvtale(avtale)).toList();
+
         return Map.ofEntries(
-                entry("avtaler", avtalerMedTilgang),
+                entry("avtaler", listMinimal),
                 entry("size", avtaler.getSize()),
                 entry("currentPage", avtaler.getNumber()),
                 entry("totalItems", avtaler.getTotalElements()),
@@ -57,6 +59,12 @@ public abstract class Avtalepart<T extends Identifikator> {
     public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
+        sjekkTilgang(avtale);
+        return avtale;
+    }
+
+    public Avtale hentAvtaleFraAvtaleNr(AvtaleRepository avtaleRepository, int avtaleNr) {
+        Avtale avtale = avtaleRepository.findByAvtaleNr(avtaleNr).orElseThrow(RessursFinnesIkkeException::new);
         sjekkTilgang(avtale);
         return avtale;
     }
