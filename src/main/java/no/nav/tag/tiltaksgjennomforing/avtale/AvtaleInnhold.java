@@ -109,12 +109,12 @@ public class AvtaleInnhold {
     private Stillingstype stillingstype;
 
     // Arbeidstrening
-    @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
     private List<Maal> maal = new ArrayList<>();
 
     // Inkluderingstilskudd
-    @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
     private List<Inkluderingstilskuddsutgift> inkluderingstilskuddsutgift = new ArrayList<>();
     private String inkluderingstilskuddBegrunnelse;

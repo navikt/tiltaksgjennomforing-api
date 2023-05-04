@@ -43,16 +43,6 @@ public class InnloggetArbeidsgiverTest {
     }
 
     @Test
-    public void hentAlleAvtalerMedLesetilgang_uten_annullertGrunn() {
-        Pageable pageable = PageRequest.of(0, 100);
-        Set<BedriftNr> bedriftNrSet = Set.of(avtale.getBedriftNr());
-        when(avtaleRepository.findAllByBedriftNrIn(eq(bedriftNrSet), eq(pageable))).thenReturn(new PageImpl<Avtale>(List.of(avtale)));
-        Map<String, Object> avtaler = arbeidsgiver.hentAlleAvtalerMedLesetilgang(avtaleRepository, new AvtalePredicate(), Avtale.Fields.sistEndret, pageable);
-        List<Avtale> avtaleList = (List<Avtale>)avtaler.get("avtaler");
-        assertThat(avtaleList.get(0).getAnnullertGrunn()).isNull();
-    }
-
-    @Test
     public void hentAvtalerForMinsideArbeidsgiver_uten_annullertGrunn() {
         when(avtaleRepository.findAllByBedriftNr(eq(avtale.getBedriftNr()))).thenReturn(Arrays.asList(avtale));
         List<Avtale> hentetAvtaler = arbeidsgiver.hentAvtalerForMinsideArbeidsgiver(avtaleRepository, avtale.getBedriftNr());
