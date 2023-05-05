@@ -63,5 +63,9 @@ spec:
         - application: min-side-arbeidsgiver
           namespace: fager
           cluster: dev-gcp
+    outbound:
+      rules:
+        - application: poao-tilgang
+          namespace: poao
   envFrom:
     - configmap: loginservice-idporten
