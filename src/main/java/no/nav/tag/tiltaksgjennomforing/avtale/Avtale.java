@@ -24,6 +24,7 @@ import org.springframework.data.domain.AbstractAggregateRoot;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.*;
+import javax.persistence.OrderBy;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -95,6 +96,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
     @SortNatural
+    @OrderBy("startDato ASC")
     private SortedSet<TilskuddPeriode> tilskuddPeriode = new TreeSet<>();
     private boolean feilregistrert;
 

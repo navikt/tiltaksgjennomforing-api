@@ -37,4 +37,34 @@ public class AvtaleSorterer {
                 return Sort.Order.desc("sistEndret");
         }
     }
+
+   static protected Sort.Order getSortingOrderForPageabl(String order, String direction) {
+       SortingDirection sortingDirection = SortingDirection.valueOf(direction.toUpperCase());
+       return switch (sortingDirection) {
+            case ASC -> getSortingOrderForPageableASC(SortingOrder.valueOf(order.toUpperCase()));
+            case DESC -> getSortingOrderForPageableDESC(SortingOrder.valueOf(order.toUpperCase()));
+        };
+    }
+
+    static private Sort.Order getSortingOrderForPageableASC(SortingOrder sortingOrder) {
+        return switch (sortingOrder) {
+            case OPPRETTETTIDSPUNKT -> Sort.Order.asc("opprettetTidspunkt");
+            case BEDRIFTNAVN -> Sort.Order.asc("bedriftNavn");
+            case DELTAKERFORNAVN -> Sort.Order.asc("deltakerFornavn");
+            case STATUS -> Sort.Order.asc("antallUbehandlet");
+            case STARTDATO -> Sort.Order.asc("startDato");
+            case SISTENDRET -> Sort.Order.asc("sistEndret");
+        };
+    }
+
+    static private Sort.Order getSortingOrderForPageableDESC(SortingOrder sortingOrder) {
+        return switch (sortingOrder) {
+            case OPPRETTETTIDSPUNKT -> Sort.Order.desc("opprettetTidspunkt");
+            case BEDRIFTNAVN -> Sort.Order.desc("bedriftNavn");
+            case DELTAKERFORNAVN -> Sort.Order.desc("deltakerFornavn");
+            case STATUS -> Sort.Order.desc("antallUbehandlet");
+            case STARTDATO -> Sort.Order.desc("startDato");
+            case SISTENDRET -> Sort.Order.desc("sistEndret");
+        };
+    }
 }

@@ -106,30 +106,35 @@ public class AvtaleController {
                 queryParametre,
                 sorteringskolonne,
                 pageable
+
         );
         return avtaler;
     }
-
+// sorteringskolonne=sistEndret size=10 sorteringOrder=ASC
     @GetMapping("/beslutter-liste")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public Map<String, Object> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
             AvtalePredicate queryParametre,
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = "startDato") String sorteringskolonne,
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(value = "size", required = false, defaultValue = "20") Integer size
+            @RequestParam(value = "size", required = false, defaultValue = "20") Integer size,
+            @RequestParam(value = "sorteringOrder", required = false, defaultValue = "ASC") String sorteringOrder
     ) {
         Beslutter beslutter = innloggingService.hentBeslutter();
-        Page<AvtaleMinimal> avtaler = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
+
+        log.info("sorteringOrder: {}", sorteringOrder);
+        Page<BeslutterOversiktDTO> avtaler = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
                 avtaleRepository,
                 queryParametre,
                 sorteringskolonne,
                 page,
-                size
+                size,
+                sorteringOrder
         );
 
-        List<AvtaleMinimal> avtalerMedTilgang = avtaler.getContent().stream()
-                .filter(avtaleMinimal -> beslutter.harTilgangTilFnr(
-                        new Fnr(avtaleMinimal.getDeltakerFnr()))).toList();
+        List<BeslutterOversiktDTO> avtalerMedTilgang = avtaler.getContent().stream()
+                .filter(oversiktDTO -> beslutter.harTilgangTilFnr(
+                        oversiktDTO.getDeltakerFnr())).toList();
 
         return Map.ofEntries(
                 entry("avtaler", avtalerMedTilgang),
