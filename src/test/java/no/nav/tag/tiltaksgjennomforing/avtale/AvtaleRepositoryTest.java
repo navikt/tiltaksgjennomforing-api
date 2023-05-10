@@ -35,7 +35,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest
-@ActiveProfiles(Miljø.LOCAL)
+@ActiveProfiles({Miljø.LOCAL, "wiremock"})
 @DirtiesContext
 public class AvtaleRepositoryTest {
 
@@ -269,7 +269,7 @@ public class AvtaleRepositoryTest {
         avtaleRepository.save(lagretAvtale);
 
         Page<Avtale> avtaleMedRiktigEnhet = avtaleRepository
-                .findAllByVeilederNavIdentIsNullAndEnhetGeografiskOrVeilederNavIdentIsNullAndEnhetOppfolging(ENHET_GEOGRAFISK.getVerdi(), ENHET_GEOGRAFISK.getVerdi(), pageable);
+                .findAllByVeilederNavIdentIsNullAndEnhetGeografiskOrVeilederNavIdentIsNullAndEnhetOppfolging(ENHET_GEOGRAFISK.getVerdi(), ENHET_OPPFØLGING.getVerdi(), pageable);
 
         assertThat(avtaleMedRiktigEnhet.getContent()).isNotEmpty();
     }
