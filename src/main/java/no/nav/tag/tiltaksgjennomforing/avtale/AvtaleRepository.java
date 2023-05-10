@@ -110,11 +110,11 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             @Param("sluttDato") Date sluttDato
     );
 
-    @Query(value = "SELECT a.id as id, a.veilederNavIdent as veilederNavIdent, a.gjeldendeInnhold.deltakerFornavn as deltakerFornavn," +
-            " a.opprettetTidspunkt as opprettetTidspunkt, a.sistEndret as sistEndret, a.gjeldendeInnhold.deltakerEtternavn as deltakerEtternavn, " +
+    @Query(value = "SELECT a.id as id, a.veilederNavIdent as veilederNavIdent, a.gjeldendeInnhold.deltakerFornavn as deltakerFornavn, " +
+            "a.opprettetTidspunkt as opprettetTidspunkt, a.sistEndret as sistEndret, a.gjeldendeInnhold.deltakerEtternavn as deltakerEtternavn, " +
             "a.deltakerFnr as deltakerFnr, a.gjeldendeInnhold.bedriftNavn as bedriftNavn, a.bedriftNr as bedriftNr, min(t.startDato) as startDato, " +
-            "t.status as status, count(t.id) as antallUbehandlet " +
-            "from Avtale  a " +
+            " t.status as status, count(t.id) as antallUbehandlet " +
+            "from Avtale a " +
             "left join AvtaleInnhold i on i.id = a.gjeldendeInnhold.id " +
             "left join TilskuddPeriode t on (t.avtale.id = a.id and t.status = :tilskuddsperiodestatus and t.startDato <= :decisiondate) " +
             "where a.gjeldendeInnhold.godkjentAvVeileder is not null " +
@@ -122,7 +122,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             "and exists (select distinct p.avtale.id, p.status, p.løpenummer, p.startDato from TilskuddPeriode p where p.avtale.id = a.id " +
             "and ((:tilskuddsperiodestatus = p.status and p.startDato <= :decisiondate) or (:tilskuddsperiodestatus = p.status AND p.løpenummer = 1))) " +
             "and a.enhetOppfolging IN (:navEnheter) AND (:bedriftNr is null or cast(a.bedriftNr as text) = :bedriftNr) " +
-            "GROUP BY a.id, a.gjeldendeInnhold.deltakerFornavn, a.gjeldendeInnhold.deltakerEtternavn, a.veilederNavIdent, a.gjeldendeInnhold.bedriftNavn ",
+            "GROUP BY a.id, a.gjeldendeInnhold.deltakerFornavn, a.gjeldendeInnhold.deltakerEtternavn, a.veilederNavIdent, a.gjeldendeInnhold.bedriftNavn, status ",
             nativeQuery = false)
     Page<BeslutterOversiktDTO> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
             @Param("tilskuddsperiodestatus") TilskuddPeriodeStatus tilskuddsperiodestatus,
@@ -131,6 +131,18 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             @Param("navEnheter") Set<String> navEnheter,
             @Param("bedriftNr") String bedriftNr,
             Pageable pageable);
+
+    @Query(value = "select a.id as id, a.gjeldendeInnhold.deltakerFornavn as deltakerFornavn, a.gjeldendeInnhold.deltakerEtternavn as deltakerEtternavn, " +
+            "a.veilederNavIdent as veilederNavIdent, a.gjeldendeInnhold.startDato as startDato, a.gjeldendeInnhold.sluttDato as sluttDato " +
+            "from Avtale a " +
+            "left join AvtaleInnhold i on i.id = a.gjeldendeInnhold.id " ,
+            nativeQuery = false)
+    Page<?> finnAvtalerForInnloggetPartHar(
+            @Param("tiltakstype") Set<Tiltakstype> tiltakstype,
+            @Param("navEnheter") Set<String> navEnheter,
+            @Param("bedriftNr") String bedriftNr,
+            Pageable pageable
+    );
 
 
 
