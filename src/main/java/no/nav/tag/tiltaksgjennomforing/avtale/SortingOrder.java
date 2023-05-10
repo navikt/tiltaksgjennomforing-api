@@ -1,6 +1,5 @@
-package no.nav.tag.tiltaksgjennomforing.avtale
+package no.nav.tag.tiltaksgjennomforing.avtale;
 
-enum class SortingOrder {
-
+enum SortingOrder {
     OPPRETTETTIDSPUNKT, BEDRIFTNAVN, DELTAKERFORNAVN, STATUS, STARTDATO, SISTENDRET
 }
