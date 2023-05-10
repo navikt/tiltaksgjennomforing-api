@@ -58,6 +58,7 @@ public class Veileder extends Avtalepart<NavIdent> {
 
     @Override
     Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, Pageable pageable) {
+        NavIdent veilederNavIdent = queryParametre.getVeilederNavIdent() != null ? queryParametre.getVeilederNavIdent() : getIdentifikator();
         if(queryParametre.getStatus() != null) {
             Pageable allPages = PageRequest.of(0, Integer.MAX_VALUE);
             Page<Avtale> avtalerUtenStatusFiltrering;
@@ -69,7 +70,7 @@ public class Veileder extends Avtalepart<NavIdent> {
             else {
                 Avtale.AvtaleBuilder exampleAvtaleBuilder = Avtale.builder()
                         .avtaleNr(queryParametre.getAvtaleNr())
-                        .veilederNavIdent(queryParametre.getVeilederNavIdent())
+                        .veilederNavIdent(veilederNavIdent)
                         .deltakerFnr(queryParametre.getDeltakerFnr())
                         .bedriftNr(queryParametre.getBedriftNr())
                         .tiltakstype(queryParametre.getTiltakstype());
@@ -94,7 +95,7 @@ public class Veileder extends Avtalepart<NavIdent> {
         else {
             Avtale.AvtaleBuilder exampleAvtaleBuilder = Avtale.builder()
                     .avtaleNr(queryParametre.getAvtaleNr())
-                    .veilederNavIdent(queryParametre.getVeilederNavIdent())
+                    .veilederNavIdent(veilederNavIdent)
                     .deltakerFnr(queryParametre.getDeltakerFnr())
                     .bedriftNr(queryParametre.getBedriftNr())
                     .tiltakstype(queryParametre.getTiltakstype());
