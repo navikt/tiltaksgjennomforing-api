@@ -110,9 +110,10 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             @Param("sluttDato") Date sluttDato
     );
 
-    @Query(value = "SELECT a.id as id, a.veilederNavIdent as veilederNavIdent, a.gjeldendeInnhold.deltakerFornavn as deltakerFornavn, a.opprettetTidspunkt as opprettetTidspunkt, a.sistEndret as sistEndret, " +
-            "a.gjeldendeInnhold.deltakerEtternavn as deltakerEtternavn, a.deltakerFnr as deltakerFnr, a.gjeldendeInnhold.bedriftNavn as bedriftNavn, " +
-            "a.bedriftNr as bedriftNr, min(t.startDato) as startDato, t.status as status, count(t.id) as antallUbehandlet " +
+    @Query(value = "SELECT a.id as id, a.veilederNavIdent as veilederNavIdent, a.gjeldendeInnhold.deltakerFornavn as deltakerFornavn," +
+            " a.opprettetTidspunkt as opprettetTidspunkt, a.sistEndret as sistEndret, a.gjeldendeInnhold.deltakerEtternavn as deltakerEtternavn, " +
+            "a.deltakerFnr as deltakerFnr, a.gjeldendeInnhold.bedriftNavn as bedriftNavn, a.bedriftNr as bedriftNr, min(t.startDato) as startDato, " +
+            "t.status as status, count(t.id) as antallUbehandlet " +
             "from Avtale  a " +
             "left join AvtaleInnhold i on i.id = a.gjeldendeInnhold.id " +
             "left join TilskuddPeriode t on (t.avtale.id = a.id and t.status = :tilskuddsperiodestatus and t.startDato <= :decisiondate) " +

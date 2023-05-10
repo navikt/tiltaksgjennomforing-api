@@ -110,7 +110,7 @@ public class AvtaleController {
         );
         return avtaler;
     }
-// sorteringskolonne=sistEndret size=10 sorteringOrder=ASC
+
     @GetMapping("/beslutter-liste")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public Map<String, Object> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
@@ -121,8 +121,6 @@ public class AvtaleController {
             @RequestParam(value = "sorteringOrder", required = false, defaultValue = "ASC") String sorteringOrder
     ) {
         Beslutter beslutter = innloggingService.hentBeslutter();
-
-        log.info("sorteringOrder: {}", sorteringOrder);
         Page<BeslutterOversiktDTO> avtaler = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
                 avtaleRepository,
                 queryParametre,
@@ -131,7 +129,6 @@ public class AvtaleController {
                 size,
                 sorteringOrder
         );
-
         List<BeslutterOversiktDTO> avtalerMedTilgang = avtaler.getContent().stream()
                 .filter(oversiktDTO -> beslutter.harTilgangTilFnr(
                         oversiktDTO.getDeltakerFnr())).toList();
