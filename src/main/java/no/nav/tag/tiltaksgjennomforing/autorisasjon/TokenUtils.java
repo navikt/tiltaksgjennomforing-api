@@ -71,8 +71,10 @@ public class TokenUtils {
     }
 
     private Optional<String> hentClaim(Issuer issuer, String claim) {
-        return hentClaimSet(issuer).filter(jwtClaimsSet -> innloggingsNivaOK(issuer, jwtClaimsSet))
-            .map(jwtClaimsSet -> String.valueOf(jwtClaimsSet.get(claim)));
+        return hentClaimSet(issuer)
+                .filter(jwtClaimsSet -> innloggingsNivaOK(issuer, jwtClaimsSet))
+                .map(jwtClaimsSet -> jwtClaimsSet.get(claim))
+                .map(String::valueOf);
     }
 
     private boolean innloggingsNivaOK(Issuer issuer, JwtTokenClaims jwtClaimsSet) {
