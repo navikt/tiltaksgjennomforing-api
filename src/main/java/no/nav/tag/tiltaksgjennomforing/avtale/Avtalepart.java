@@ -43,9 +43,9 @@ public abstract class Avtalepart<T extends Identifikator> {
         List<Avtale> avtalerMedTilgang = avtaler.getContent().stream()
                 .filter(avtale -> !avtale.isFeilregistrert())
                 .filter(this::harTilgang)
-                .collect(Collectors.toList());
+                .toList();
 
-        List<AvtaleMinimalListevisning> listMinimal = avtalerMedTilgang.stream().map(avtale -> AvtaleMinimalListevisning.fromAvtale(avtale)).toList();
+        List<AvtaleMinimalListevisning> listMinimal = avtalerMedTilgang.stream().map(AvtaleMinimalListevisning::fromAvtale).toList();
 
         return Map.ofEntries(
                 entry("avtaler", listMinimal),
