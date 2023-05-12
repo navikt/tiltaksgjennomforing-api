@@ -19,7 +19,11 @@ public class TokenUtils {
     private static final String ACR = "acr";
     private static final String LEVEL4 = "Level4";
 
-   public enum Issuer {
+    public UUID hentAzureOid() {
+        return hentClaim(ISSUER_AAD, "oid").map(UUID::fromString).orElse(null);
+    }
+
+    public enum Issuer {
         ISSUER_AAD("aad"),
         ISSUER_SYSTEM("system"),
         ISSUER_TOKENX("tokenx");
@@ -67,8 +71,10 @@ public class TokenUtils {
     }
 
     private Optional<String> hentClaim(Issuer issuer, String claim) {
-        return hentClaimSet(issuer).filter(jwtClaimsSet -> innloggingsNivaOK(issuer, jwtClaimsSet))
-            .map(jwtClaimsSet -> String.valueOf(jwtClaimsSet.get(claim)));
+        return hentClaimSet(issuer)
+                .filter(jwtClaimsSet -> innloggingsNivaOK(issuer, jwtClaimsSet))
+                .map(jwtClaimsSet -> jwtClaimsSet.get(claim))
+                .map(String::valueOf);
     }
 
     private boolean innloggingsNivaOK(Issuer issuer, JwtTokenClaims jwtClaimsSet) {

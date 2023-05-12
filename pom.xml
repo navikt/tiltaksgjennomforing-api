@@ -116,6 +116,13 @@
             <artifactId>spring-kafka</artifactId>
         </dependency>
 
+        <!-- Tilgangskontroll -->
+        <dependency>
+            <groupId>com.github.navikt.poao-tilgang</groupId>
+            <artifactId>client</artifactId>
+            <version>2023.05.05_08.12-543e9642853e</version>
+        </dependency>
+
         <!-- OIDC Support -->
         <dependency>
             <groupId>no.nav.security</groupId>
@@ -255,6 +262,15 @@
         <repository>
             <id>confluent</id>
             <url>https://packages.confluent.io/maven/</url>
+        </repository>
+        <!-- Legger til central eksplisitt for prioritet over jitpack -->
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+        <repository>
+            <id>jitpack</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
     <pluginRepositories>

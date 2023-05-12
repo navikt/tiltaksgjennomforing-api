@@ -23,16 +23,24 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 @Slf4j
-public class Beslutter extends Avtalepart<NavIdent> {
+public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
     private AxsysService axsysService;
     private Norg2Client norg2Client;
     private TilgangskontrollService tilgangskontrollService;
 
-    public Beslutter(NavIdent identifikator, TilgangskontrollService tilgangskontrollService, AxsysService axsysService, Norg2Client norg2Client) {
+    private UUID azureOid;
+
+    public Beslutter(NavIdent identifikator, UUID azureOid, TilgangskontrollService tilgangskontrollService, AxsysService axsysService, Norg2Client norg2Client) {
         super(identifikator);
+        this.azureOid = azureOid;
         this.tilgangskontrollService = tilgangskontrollService;
         this.axsysService = axsysService;
         this.norg2Client = norg2Client;
+    }
+
+    @Deprecated
+    public Beslutter(NavIdent identifikator, TilgangskontrollService tilgangskontrollService, AxsysService axsysService, Norg2Client norg2Client) {
+        this(identifikator, null, tilgangskontrollService, axsysService, norg2Client);
     }
 
     public void godkjennTilskuddsperiode(Avtale avtale, String enhet) {
@@ -74,11 +82,18 @@ public class Beslutter extends Avtalepart<NavIdent> {
 
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
-        return tilgangskontrollService.harSkrivetilgangTilKandidat(getIdentifikator(), avtale.getDeltakerFnr());
+        return tilgangskontrollService.harSkrivetilgangTilKandidat(this, avtale.getDeltakerFnr());
     }
 
     public boolean harTilgangTilFnr(Fnr fnr) {
-        return tilgangskontrollService.harSkrivetilgangTilKandidat(getIdentifikator(), fnr);
+        return tilgangskontrollService.harSkrivetilgangTilKandidat(this, fnr);
+    }
+
+    public Set<Fnr> harTilgangTilFnr(Set<Fnr> fnrSet) {
+        return tilgangskontrollService.skriveTilganger(this, fnrSet).entrySet().stream()
+                .filter(Map.Entry::getValue)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -176,5 +191,15 @@ public class Beslutter extends Avtalepart<NavIdent> {
     @Override
     public InnloggetBruker innloggetBruker() {
         return new InnloggetBeslutter(getIdentifikator());
+    }
+
+    @Override
+    public UUID getAzureOid() {
+        return azureOid;
+    }
+
+    @Override
+    public NavIdent getNavIdent() {
+        return getIdentifikator();
     }
 }

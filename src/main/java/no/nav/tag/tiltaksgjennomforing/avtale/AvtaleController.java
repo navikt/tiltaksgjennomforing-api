@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+
 import org.springframework.http.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -32,14 +33,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static java.util.Map.entry;
 import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleSorterer.getSortingOrderForPageable;
@@ -93,6 +92,7 @@ public class AvtaleController {
     @GetMapping
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTil(
+
             AvtalePredicate queryParametre,
             @CookieValue("innlogget-part") Avtalerolle innloggetPart,
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
@@ -212,6 +212,7 @@ public class AvtaleController {
         avtalepart.godkjennAvtale(sistEndret, avtale);
         avtaleRepository.save(avtale);
     }
+
     @PostMapping("/{avtaleId}/mentorGodkjennTaushetserklæring")
     @Transactional
     public void mentorGodkjennTaushetserklæring(
@@ -220,12 +221,12 @@ public class AvtaleController {
             @CookieValue("innlogget-part") Avtalerolle innloggetPart
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        if(!avtalepart.rolle().equals(Avtalerolle.MENTOR)) throw new TiltaksgjennomforingException("Du må være mentor for å signere her");
+        if (!avtalepart.rolle().equals(Avtalerolle.MENTOR))
+            throw new TiltaksgjennomforingException("Du må være mentor for å signere her");
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         avtalepart.godkjennAvtale(sistEndret, avtale);
         avtaleRepository.save(avtale);
     }
-
 
     // Arbeidsgiver-operasjoner
 
@@ -255,7 +256,9 @@ public class AvtaleController {
         return ResponseEntity.created(uri).build();
     }
 
-    /** VEILEDER-OPERASJONER **/
+    /**
+     * VEILEDER-OPERASJONER
+     **/
     @GetMapping("/deltaker-allerede-paa-tiltak")
     @Transactional
     public ResponseEntity<List<AlleredeRegistrertAvtale>> sjekkOmDeltakerAlleredeErRegistrertPaaTiltak(
@@ -303,18 +306,17 @@ public class AvtaleController {
     @Transactional
     public ResponseEntity<?> opprettMentorAvtale(@RequestBody OpprettMentorAvtale opprettMentorAvtale) {
         Avtale avtale = null;
-        if(opprettMentorAvtale.getDeltakerFnr().equals(opprettMentorAvtale.getMentorFnr())){
+        if (opprettMentorAvtale.getDeltakerFnr().equals(opprettMentorAvtale.getMentorFnr())) {
             throw new FeilkodeException(Feilkode.DELTAGER_OG_MENTOR_KAN_IKKE_HA_SAMME_FØDSELSNUMMER);
         }
 
-        if(opprettMentorAvtale.getAvtalerolle().equals(Avtalerolle.VEILEDER)){
+        if (opprettMentorAvtale.getAvtalerolle().equals(Avtalerolle.VEILEDER)) {
             avtale = innloggingService.hentVeileder().opprettMentorAvtale(opprettMentorAvtale);
 
-        }
-        else if(opprettMentorAvtale.getAvtalerolle().equals(Avtalerolle.ARBEIDSGIVER)){
+        } else if (opprettMentorAvtale.getAvtalerolle().equals(Avtalerolle.ARBEIDSGIVER)) {
             avtale = innloggingService.hentArbeidsgiver().opprettMentorAvtale(opprettMentorAvtale);
         }
-        if(avtale == null){
+        if (avtale == null) {
             throw new RuntimeException("Opprett Mentor fant ingen avtale å behandle.");
         }
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(opprettMentorAvtale.getBedriftNr()).getBedriftNavn());
@@ -322,7 +324,6 @@ public class AvtaleController {
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
     }
-
 
     @PostMapping("/{avtaleId}/forkort")
     @Transactional
@@ -394,7 +395,7 @@ public class AvtaleController {
     @PostMapping("/{avtaleId}/endre-inkluderingstilskudd")
     @Transactional
     public void endreInkluderingstilskudd(@PathVariable("avtaleId") UUID avtaleId,
-                         @RequestBody EndreInkluderingstilskudd endreInkluderingstilskudd) {
+            @RequestBody EndreInkluderingstilskudd endreInkluderingstilskudd) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         veileder.endreInkluderingstilskudd(endreInkluderingstilskudd, avtale);
@@ -452,7 +453,7 @@ public class AvtaleController {
     @PostMapping("/{avtaleId}/endre-tilskuddsberegning")
     @Transactional
     public void endreTilskuddsberegning(@PathVariable("avtaleId") UUID avtaleId,
-                                        @RequestBody EndreTilskuddsberegning endreTilskuddsberegning) {
+            @RequestBody EndreTilskuddsberegning endreTilskuddsberegning) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
@@ -482,7 +483,7 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
-    @PostMapping({"/{avtaleId}/godkjenn-paa-vegne-av", "/{avtaleId}/godkjenn-paa-vegne-av-deltaker"})
+    @PostMapping({ "/{avtaleId}/godkjenn-paa-vegne-av", "/{avtaleId}/godkjenn-paa-vegne-av-deltaker" })
     @Transactional
     public void godkjennPaVegneAv(
             @PathVariable("avtaleId") UUID avtaleId,
@@ -607,7 +608,7 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/set-om-avtalen-kan-etterregistreres")
     @Transactional
-    public Avtale setOmAvtalenKanEtterregistreres(@PathVariable("avtaleId") UUID avtaleId){
+    public Avtale setOmAvtalenKanEtterregistreres(@PathVariable("avtaleId") UUID avtaleId) {
         Beslutter beslutter = innloggingService.hentBeslutter();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         beslutter.setOmAvtalenKanEtterregistreres(avtale);
@@ -640,14 +641,15 @@ public class AvtaleController {
     @PostMapping("/{avtaleId}/oppdaterOppfølgingsEnhet")
     public Avtale oppdaterOppfølgingsEnhet(
             @PathVariable("avtaleId") UUID avtaleId
-    ){
+    ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = veileder.hentAvtale(avtaleRepository, avtaleId);
         veileder.oppdatereEnheterEtterForespørsel(avtale);
         var oppdatertAvtale = avtaleRepository.save(avtale);
 
         return oppdatertAvtale;
-    };
+    }
 
+    ;
 
 }

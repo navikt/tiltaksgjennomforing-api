@@ -647,6 +647,22 @@ public class AvtaleTest {
     }
 
     @Test
+    public void sistEndretNå__kalles_ved_forlengAvtale() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        Instant sistEndret = avtale.getSistEndret();
+        avtale.forlengAvtale(avtale.getGjeldendeInnhold().getSluttDato().plusDays(1), TestData.enNavIdent());
+        assertThat(avtale.getSistEndret()).isAfter(sistEndret);
+    }
+
+    @Test
+    public void sistEndretNå__kalles_ved_forkortAvtale() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
+        Instant sistEndret = avtale.getSistEndret();
+        avtale.forkortAvtale(avtale.getGjeldendeInnhold().getSluttDato().minusDays(1), "lala", null, TestData.enNavIdent());
+        assertThat(avtale.getSistEndret()).isAfter(sistEndret);
+    }
+
+    @Test
     public void avtaleklarForOppstart() {
         Avtale avtale = TestData.enAvtaleKlarForOppstart();
         assertThat(avtale.status()).isEqualTo(Status.KLAR_FOR_OPPSTART.getBeskrivelse());
@@ -918,10 +934,6 @@ public class AvtaleTest {
 
         // Gi veileder tilgang til deltaker
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(
-                eq(avtale.getVeilederNavIdent()),
-                any(Fnr.class)
-        )).thenReturn(true);
 
         TilskuddsperiodeConfig tilskuddsperiodeConfig = new TilskuddsperiodeConfig();
 
@@ -935,6 +947,10 @@ public class AvtaleTest {
                 false,
                 mock(VeilarbArenaClient.class)
         );
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(
+                eq(veileder),
+                any(Fnr.class)
+        )).thenReturn(true);
         veileder.endreAvtale(
                 Instant.now(),
                 TestData.endringPåAlleArbeidstreningFelter(),
@@ -957,7 +973,6 @@ public class AvtaleTest {
 
         // Gi veileder tilgang til deltaker
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(avtale.getVeilederNavIdent()), any(Fnr.class))).thenReturn(true);
 
         TilskuddsperiodeConfig tilskuddsperiodeConfig = new TilskuddsperiodeConfig();
 
@@ -971,6 +986,8 @@ public class AvtaleTest {
                 false,
                 mock(VeilarbArenaClient.class)
         );
+
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
 
         deltaker.godkjennAvtale(Instant.now(), avtale);
         arbeidsgiver.godkjennAvtale(Instant.now(), avtale);

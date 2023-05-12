@@ -90,7 +90,7 @@ public class AvtaleControllerTest {
                 veilarbArenaClient
         );
         værInnloggetSom(veileder);
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder.getIdentifikator()), any(Fnr.class))).thenReturn(true);
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         Avtale hentetAvtale = avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER);
         assertThat(hentetAvtale).isEqualTo(avtale);
@@ -128,7 +128,6 @@ public class AvtaleControllerTest {
         ).isExactlyInstanceOf(TilgangskontrollException.class);
     }
 
-
     @Test
     public void hentAvtalerOpprettetAvVeileder_skal_returnere_tom_liste_dersom_veileder_ikke_har_tilgang() {
         NavIdent veilederNavIdent = new NavIdent("Z222222");
@@ -152,7 +151,7 @@ public class AvtaleControllerTest {
                 avtaleRepository.findAll(eq(Example.of(exampleAvtale)), eq(pageable))
         ).thenReturn(new PageImpl<Avtale>(List.of(avtaleForVeilederSomSøkesEtter)));;
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
-                eq(identTilInnloggetVeileder),
+                eq(veileder),
                 any(Fnr.class)
         )).thenReturn(false);
         AvtalePredicate avtalePredicate = new AvtalePredicate();
@@ -168,7 +167,6 @@ public class AvtaleControllerTest {
         assertThat(avtaler).doesNotContain(avtaleForVeilederSomSøkesEtter);
     }
 
-    @Test
     public void hentAvtaleOpprettetAvInnloggetVeileder_fordelt_oppfolgingsEnhet_og_geoEnhet() {
         NavIdent navIdent = new NavIdent("Z123456");
         String navEnhet = "0904";
@@ -189,7 +187,7 @@ public class AvtaleControllerTest {
         when(
                 avtaleRepository.findAllByEnhetGeografiskOrEnhetOppfolging(eq(navEnhet), eq(navEnhet), eq(pageable))
         ).thenReturn(new PageImpl<Avtale>(List.of(nyAvtaleMedGeografiskEnhet, nyAvtaleMedOppfølgningsEnhet)));
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any(Fnr.class))).thenReturn(true);
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
 
         Map<String, Object> avtalerPageResponse = veileder.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,
@@ -226,7 +224,7 @@ public class AvtaleControllerTest {
         when(
                 avtaleRepository.findAll(eq(Example.of(exampleAvtale)), eq(pageable))
         ).thenReturn(new PageImpl<Avtale>(List.of(enArbeidstreningsAvtale)));
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any(Fnr.class))).thenReturn(true);
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
 
         Map<String, Object> avtalerPageResponse = veileder.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,
@@ -304,18 +302,17 @@ public class AvtaleControllerTest {
                 avtale.getBedriftNr(),
                 Tiltakstype.ARBEIDSTRENING
         );
-        værInnloggetSom(
-                new Veileder(
-                        navIdent,
-                        tilgangskontrollService,
-                        persondataService,
-                        norg2Client,
-                        Set.of(navEnhet),
-                        new SlettemerkeProperties(),
-                        false,
-                        veilarbArenaClient
-                )
+        var veileder = new Veileder(
+                navIdent,
+                tilgangskontrollService,
+                persondataService,
+                norg2Client,
+                Set.of(navEnhet),
+                new SlettemerkeProperties(),
+                false,
+                veilarbArenaClient
         );
+        værInnloggetSom(veileder);
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
         when(
                 eregService.hentVirksomhet(avtale.getBedriftNr())).thenReturn(
@@ -324,7 +321,7 @@ public class AvtaleControllerTest {
                                 avtale.getGjeldendeInnhold().getBedriftNavn()
                         )
         );
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(navIdent), any())).thenReturn(true);
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
         when(persondataService.hentPersondata(fnr)).thenReturn(pdlRespons);
         when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
                 .thenReturn(
@@ -377,7 +374,7 @@ public class AvtaleControllerTest {
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
-                any(NavIdent.class),
+                any(Veileder.class),
                 any(Fnr.class)
         )).thenReturn(true);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
@@ -449,7 +446,7 @@ public class AvtaleControllerTest {
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = new Fnr("11111100000");
         when(
-                tilgangskontrollService.harSkrivetilgangTilKandidat(enNavAnsatt.getIdentifikator(), deltakerFnr)
+                tilgangskontrollService.harSkrivetilgangTilKandidat(enNavAnsatt, deltakerFnr)
         ).thenReturn(false);
         assertThatThrownBy(
                 () -> avtaleController.opprettAvtaleSomVeileder(
@@ -475,7 +472,7 @@ public class AvtaleControllerTest {
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = new Fnr("11111100000");
         when(
-                tilgangskontrollService.harSkrivetilgangTilKandidat(enNavAnsatt.getIdentifikator(), deltakerFnr)
+                tilgangskontrollService.harSkrivetilgangTilKandidat(enNavAnsatt, deltakerFnr)
         ).thenReturn(true);
         PdlRespons pdlRespons = TestData.enPdlrespons(true);
         when(persondataServiceIMetode.hentPersondata(deltakerFnr)).thenReturn(pdlRespons);
@@ -559,7 +556,7 @@ public class AvtaleControllerTest {
         when(kontoregisterService.hentKontonummer(anyString())).thenReturn("990983666");
         when(
                 tilgangskontrollService.harSkrivetilgangTilKandidat(
-                        eq(identTilInnloggetVeileder),
+                        eq(veileder),
                         any(Fnr.class)
                 )
         ).thenReturn(true);
@@ -585,7 +582,7 @@ public class AvtaleControllerTest {
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
-                        eq(identTilInnloggetVeileder),
+                        eq(veileder),
                         any(Fnr.class)
                 )).thenReturn(false);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
@@ -612,7 +609,7 @@ public class AvtaleControllerTest {
         værInnloggetSom(veileder);
         when(kontoregisterService.hentKontonummer(anyString())).thenThrow(KontoregisterFeilException.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
-                eq(identTilInnloggetVeileder),
+                eq(veileder),
                 any(Fnr.class)
         )).thenReturn(true);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));

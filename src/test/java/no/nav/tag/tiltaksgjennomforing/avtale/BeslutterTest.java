@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -12,7 +11,6 @@ import static org.mockito.Mockito.when;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
@@ -20,7 +18,6 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.NavEnhetIkkeFunnetException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
@@ -30,6 +27,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import org.junit.jupiter.api.Test;
 
 class BeslutterTest {
 
@@ -93,8 +91,6 @@ class BeslutterTest {
 
         // Gi veileder tilgang til deltaker
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(avtale.getVeilederNavIdent()), any(Fnr.class)))
-                .thenReturn(true);
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
@@ -105,6 +101,9 @@ class BeslutterTest {
                 mock(SlettemerkeProperties.class),
                 false,
                 mock(VeilarbArenaClient.class));
+
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class)))
+                .thenReturn(true);
 
         avtale.endreAvtale(
                 Instant.now(),
