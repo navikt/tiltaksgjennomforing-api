@@ -28,9 +28,7 @@ public class TilgangskontrollServiceImpl implements TilgangskontrollService {
         executorService.submit(() -> {
             try {
                 var harPoaoTilgang = poaoTilgangService.harLeseTilgang(internBruker.getAzureOid(), fnr.asString());
-                if (harPoaoTilgang == harAbacTilgang) {
-                    log.info("Tilgangskontroll: likt utfall i abac og poao");
-                } else {
+                if (harPoaoTilgang != harAbacTilgang) {
                     log.warn("Tilgangskontroll: ulikt utfall i abac ({}) og poao ({})", harAbacTilgang, harPoaoTilgang);
                 }
             } catch (Exception e) {
