@@ -46,10 +46,10 @@ public class PoaoTilgangServiceImpl implements PoaoTilgangService {
                         .build());
     }
 
-    public boolean harLeseTilgang(UUID beslutterAzureUUID, String deltakerFnr) {
+    public boolean harSkriveTilgang(UUID beslutterAzureUUID, String deltakerFnr) {
         return klient.evaluatePolicy(new NavAnsattTilgangTilEksternBrukerPolicyInput(
                 beslutterAzureUUID,
-                TilgangType.LESE,
+                TilgangType.SKRIVE,
                 deltakerFnr)
         ).get().isPermit();
     }

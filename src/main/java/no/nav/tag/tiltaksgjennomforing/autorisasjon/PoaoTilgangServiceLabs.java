@@ -10,7 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.Miljø;
 @Profile(value = { Miljø.DEV_GCP_LABS, Miljø.LOCAL })
 public class PoaoTilgangServiceLabs implements PoaoTilgangService {
 
-    public boolean harLeseTilgang(UUID beslutterAzureUUID, String deltakerFnr) {
+    public boolean harSkriveTilgang(UUID beslutterAzureUUID, String deltakerFnr) {
         return true;
     }
 }

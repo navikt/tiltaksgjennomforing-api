@@ -27,7 +27,7 @@ public class TilgangskontrollServiceImpl implements TilgangskontrollService {
         var harAbacTilgang = abacAdapter.harLeseTilgang(internBruker.getNavIdent().asString(), fnr.asString());
         executorService.submit(() -> {
             try {
-                var harPoaoTilgang = poaoTilgangService.harLeseTilgang(internBruker.getAzureOid(), fnr.asString());
+                var harPoaoTilgang = poaoTilgangService.harSkriveTilgang(internBruker.getAzureOid(), fnr.asString());
                 if (harPoaoTilgang != harAbacTilgang) {
                     log.warn("Tilgangskontroll: ulikt utfall i abac ({}) og poao ({})", harAbacTilgang, harPoaoTilgang);
                 }
