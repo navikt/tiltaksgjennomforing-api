@@ -132,20 +132,4 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             @Param("bedriftNr") String bedriftNr,
             Pageable pageable);
 
-    @Query(value = "select a.id as id, a.gjeldendeInnhold.deltakerFornavn as deltakerFornavn, a.gjeldendeInnhold.deltakerEtternavn as deltakerEtternavn, " +
-            "a.veilederNavIdent as veilederNavIdent, a.gjeldendeInnhold.startDato as startDato, a.gjeldendeInnhold.sluttDato as sluttDato " +
-            "from Avtale a " +
-            "left join AvtaleInnhold i on i.id = a.gjeldendeInnhold.id " ,
-            nativeQuery = false)
-    Page<?> finnAvtalerForInnloggetPartHar(
-            @Param("tiltakstype") Set<Tiltakstype> tiltakstype,
-            @Param("navEnheter") Set<String> navEnheter,
-            @Param("bedriftNr") String bedriftNr,
-            Pageable pageable
-    );
-
-
-
-
-
 }
