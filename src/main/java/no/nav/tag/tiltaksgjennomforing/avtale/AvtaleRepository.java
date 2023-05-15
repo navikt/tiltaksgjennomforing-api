@@ -3,21 +3,27 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import io.micrometer.core.annotation.Timed;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecificationExecutor {
 
+public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecificationExecutor {
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Override
     Optional<Avtale> findById(UUID id);
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    Optional<Avtale> findByAvtaleNr(Integer avtaleNr);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Override
@@ -27,37 +33,34 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     List<Avtale> findAllByBedriftNr(BedriftNr bedriftNr);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    List<Avtale> findAllByBedriftNrIn(Set<BedriftNr> bedriftNrList);
+    Page<Avtale> findAllByBedriftNrIn(Set<BedriftNr> bedriftNrList, Pageable pageable);
+
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    Page<Avtale> findAllByBedriftNrInAndTiltakstype(Set<BedriftNr> bedriftNrList, Tiltakstype tiltakstype, Pageable pageable);
+
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    Page<Avtale> findAllByDeltakerFnr(Fnr deltakerFnr, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     List<Avtale> findAllByDeltakerFnr(Fnr deltakerFnr);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    List<Avtale> findAllByMentorFnr(Fnr mentorFnr);
+    Page<Avtale> findAllByMentorFnr(Fnr mentorFnr, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    List<Avtale> findAllByVeilederNavIdent(NavIdent veilederNavIdent);
+    Page<Avtale> findAllByVeilederNavIdentIsNullAndEnhetGeografiskOrVeilederNavIdentIsNullAndEnhetOppfolging(String enhetGeografisk, String enhetOppfolging, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    @Query("FROM Avtale "
-            + "where veilederNavIdent is null "
-            + "and (enhetOppfolging in (?1) or enhetGeografisk in (?1))")
-    List<Avtale> findAllUfordelteByEnhet(String navEnhet);
+    Page<Avtale> findAllByEnhetGeografiskOrEnhetOppfolging(String enhetGeografisk, String enhetOppfolging, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    @Query("FROM Avtale "
-            + "where enhetOppfolging in (?1) or enhetGeografisk in (?1)")
-    List<Avtale> findAllFordelteOrUfordeltByEnhet(String navEnhet);
-
-    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    List<Avtale>findAllByAvtaleNr(Integer avtaleNr);
+    Page<Avtale> findAllByAvtaleNr(Integer avtaleNr, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     List<Avtale> findAllByTiltakstype(Tiltakstype tiltakstype);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     List<Avtale> findAllByTiltakstypeAndGjeldendeInnhold_DatoForRedusertProsentNullAndGjeldendeInnhold_AvtaleInngåttNotNull(Tiltakstype tiltakstype);
-    //List<Avtale> findAllByGjeldendeInnhold_SumLønnstilskuddRedusertNullAndGjeldendeInnhold_AvtaleInngåttNotNullAndTiltakstype(Tiltakstype tiltakstype);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Override
@@ -107,82 +110,26 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             @Param("sluttDato") Date sluttDato
     );
 
-
-@Query(value =
-        "SELECT distinct AVTALE.* FROM AVTALE " +
-                "LEFT JOIN AVTALE_INNHOLD " +
-                "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
-                "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
-                "AND EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
-                "(:tilskuddsperiodestatus LIKE 'UBEHANDLET' AND :tilskuddsperiodestatus = status AND " +
-                "((start_dato <= current_date + CAST(:plussDato as INTEGER )) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET')))) " +
-                "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter))", nativeQuery = true)
-List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
-        @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
-        @Param("navEnheter") Set<String> navEnheter,
-        @Param("plussDato") int plussDato);
-
-    @Query(value =
-            "SELECT cast(AVTALE.ID as varchar) as id, AVTALE.VEILEDER_NAV_IDENT as veilederNavIdent, AVTALE_INNHOLD.DELTAKER_FORNAVN as deltakerFornavn, :tilskuddsperiodestatus as tilskuddsperiodestatus," +
-                    "AVTALE_INNHOLD.DELTAKER_ETTERNAVN as deltakerEtternavn, COUNT(TILSKUDD_PERIODE.ID) as antallUbehandlet, AVTALE.DELTAKER_FNR as deltakerFnr, AVTALE_INNHOLD.BEDRIFT_NAVN as bedriftNavn, AVTALE.BEDRIFT_NR as bedriftNr FROM AVTALE " +
-                    "LEFT JOIN AVTALE_INNHOLD ON AVTALE_INNHOLD.ID = AVTALE.GJELDENDE_INNHOLD_ID " +
-                    "LEFT JOIN TILSKUDD_PERIODE ON (TILSKUDD_PERIODE.AVTALE_ID = AVTALE.ID AND TILSKUDD_PERIODE.STATUS = :tilskuddsperiodestatus AND TILSKUDD_PERIODE.START_DATO <= current_date + CAST(:plussDato as INTEGER )) " +
-                    "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
-                    "AND AVTALE.TILTAKSTYPE in (:tiltakstype) " +
-                    "AND EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
-                    "(:tilskuddsperiodestatus = status AND start_dato <= current_date + CAST(:plussDato as INTEGER ) OR (:tilskuddsperiodestatus = status and løpenummer = 1))) " +
-                    "AND AVTALE.ENHET_OPPFOLGING IN (:navEnheter) " +
-                    "GROUP BY AVTALE.ID, AVTALE_INNHOLD.DELTAKER_FORNAVN, AVTALE_INNHOLD.DELTAKER_ETTERNAVN, AVTALE.VEILEDER_NAV_IDENT, AVTALE_INNHOLD.BEDRIFT_NAVN", nativeQuery = true)
-    List<AvtaleMinimal> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandletMinimal(
-            @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
+    @Query(value = "SELECT a.id as id, a.veilederNavIdent as veilederNavIdent, a.gjeldendeInnhold.deltakerFornavn as deltakerFornavn, " +
+            "a.opprettetTidspunkt as opprettetTidspunkt, a.sistEndret as sistEndret, a.gjeldendeInnhold.deltakerEtternavn as deltakerEtternavn, " +
+            "a.deltakerFnr as deltakerFnr, a.gjeldendeInnhold.bedriftNavn as bedriftNavn, a.bedriftNr as bedriftNr, min(t.startDato) as startDato, " +
+            " t.status as status, count(t.id) as antallUbehandlet " +
+            "from Avtale a " +
+            "left join AvtaleInnhold i on i.id = a.gjeldendeInnhold.id " +
+            "left join TilskuddPeriode t on (t.avtale.id = a.id and t.status = :tilskuddsperiodestatus and t.startDato <= :decisiondate) " +
+            "where a.gjeldendeInnhold.godkjentAvVeileder is not null " +
+            "and a.tiltakstype in (:tiltakstype) " +
+            "and exists (select distinct p.avtale.id, p.status, p.løpenummer, p.startDato from TilskuddPeriode p where p.avtale.id = a.id " +
+            "and ((:tilskuddsperiodestatus = p.status and p.startDato <= :decisiondate) or (:tilskuddsperiodestatus = p.status AND p.løpenummer = 1))) " +
+            "and a.enhetOppfolging IN (:navEnheter) AND (:bedriftNr is null or cast(a.bedriftNr as text) = :bedriftNr) " +
+            "GROUP BY a.id, a.gjeldendeInnhold.deltakerFornavn, a.gjeldendeInnhold.deltakerEtternavn, a.veilederNavIdent, a.gjeldendeInnhold.bedriftNavn, status ",
+            nativeQuery = false)
+    Page<BeslutterOversiktDTO> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
+            @Param("tilskuddsperiodestatus") TilskuddPeriodeStatus tilskuddsperiodestatus,
+            @Param("decisiondate") LocalDate decisiondate,
+            @Param("tiltakstype") Set<Tiltakstype> tiltakstype,
             @Param("navEnheter") Set<String> navEnheter,
-            @Param("plussDato") int plussDato,
-            @Param("tiltakstype") Set<String> tiltakstype);
-
-    @Query(value =
-            "SELECT cast(AVTALE.ID as varchar) as id, AVTALE.VEILEDER_NAV_IDENT as veilederNavIdent, AVTALE_INNHOLD.DELTAKER_FORNAVN as deltakerFornavn, :tilskuddsperiodestatus as tilskuddsperiodestatus," +
-                    "AVTALE_INNHOLD.DELTAKER_ETTERNAVN as deltakerEtternavn, COUNT(TILSKUDD_PERIODE.ID) as antallUbehandlet, AVTALE.DELTAKER_FNR as deltakerFnr, AVTALE_INNHOLD.BEDRIFT_NAVN as bedriftNavn, AVTALE.BEDRIFT_NR as bedriftNr FROM AVTALE " +
-                    "LEFT JOIN AVTALE_INNHOLD ON AVTALE_INNHOLD.ID = AVTALE.GJELDENDE_INNHOLD_ID " +
-                    "LEFT JOIN TILSKUDD_PERIODE ON (TILSKUDD_PERIODE.AVTALE_ID = AVTALE.ID AND TILSKUDD_PERIODE.STATUS = :tilskuddsperiodestatus) " +
-                    "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
-                    "AND AVTALE.TILTAKSTYPE in (:tiltakstype) " +
-                    "AND EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND :tilskuddsperiodestatus = status " +
-                    "AND AVTALE.ENHET_OPPFOLGING IN (:navEnheter)) " +
-                    "GROUP BY AVTALE.ID, AVTALE_INNHOLD.DELTAKER_FORNAVN, AVTALE_INNHOLD.DELTAKER_ETTERNAVN, AVTALE.VEILEDER_NAV_IDENT, AVTALE_INNHOLD.BEDRIFT_NAVN", nativeQuery = true)
-    List<AvtaleMinimal> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjentEllerAvslåttMinimal(
-            @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
-            @Param("navEnheter") Set<String> navEnheter,
-            @Param("tiltakstype") Set<String> tiltakstype);
-
-    @Query(value =
-            "SELECT distinct AVTALE.* FROM AVTALE " +
-                    "LEFT JOIN AVTALE_INNHOLD " +
-                    "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
-                    "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
-                    "AND EXISTS (SELECT avtale_id, status FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
-                    "((:tilskuddsperiodestatus LIKE 'GODKJENT' AND :tilskuddsperiodestatus = status))) " +
-                    "AND NOT EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where " +
-                    "avtale_id = AVTALE.ID AND status LIKE 'UBEHANDLET' " +
-                    "AND ((start_dato <= current_date + CAST(:plussDato AS INTEGER)) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET'))) " +
-                    "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter))", nativeQuery = true)
-    List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(
-            @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
-            @Param("navEnheter") Set<String> navEnheter,
-            @Param("plussDato") int plussDato);
-
-    @Query(value =
-            "SELECT distinct AVTALE.* FROM AVTALE " +
-                    "LEFT JOIN AVTALE_INNHOLD " +
-                    "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
-                    "WHERE AVTALE_INNHOLD.GODKJENT_AV_VEILEDER is not null " +
-                    "AND EXISTS (SELECT avtale_id, status, løpenummer, start_dato FROM TILSKUDD_PERIODE where avtale_id = AVTALE.ID AND " +
-                    "(:tilskuddsperiodestatus LIKE 'AVSLÅTT' AND :tilskuddsperiodestatus = status) " +
-                    "AND ((start_dato <= current_date + CAST(:plussDato as INTEGER)) OR (løpenummer = 1 AND status LIKE 'UBEHANDLET'))) " +
-                    "AND (AVTALE.ENHET_OPPFOLGING IN (:navEnheter) OR AVTALE.ENHET_GEOGRAFISK IN (:navEnheter))", nativeQuery = true)
-    List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterAvslatt(
-            @Param("tilskuddsperiodestatus") String tilskuddsperiodestatus,
-            @Param("navEnheter") Set<String> navEnheter,
-            @Param("plussDato") int plussDato);
+            @Param("bedriftNr") String bedriftNr,
+            Pageable pageable);
 
 }
-

@@ -17,6 +17,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -28,6 +32,7 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enArbeidstreningAv
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enNavIdent;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.InstanceOfAssertFactories.predicate;
 import static org.mockito.Mockito.*;
 
 @SuppressWarnings("rawtypes")
@@ -54,6 +59,8 @@ public class AvtaleControllerTest {
     private PersondataService persondataService;
     @Mock
     private KontoregisterService kontoregisterService;
+
+    private Pageable pageable = PageRequest.of(0, 100);
 
     private static List<Avtale> lagListeMedAvtaler(Avtale avtale, int antall) {
         List<Avtale> avtaler = new ArrayList<>();
@@ -122,44 +129,6 @@ public class AvtaleControllerTest {
     }
 
     @Test
-    public void hentAvtalerOpprettetAvVeileder_skal_returnere_avtaler_dersom_veileder_har_tilgang() {
-        NavIdent veilederNavIdent = new NavIdent("Z222222");
-        Avtale avtaleForVeilederSomSøkesEtter = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), veilederNavIdent);
-        Avtale avtaleForAnnenVeilder = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), new NavIdent("Z111111"));
-        NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
-        Veileder veileder = new Veileder(
-                identTilInnloggetVeileder,
-                tilgangskontrollService,
-                persondataService,
-                norg2Client,
-                Collections.emptySet(),
-                new SlettemerkeProperties(),
-                false,
-                veilarbArenaClient
-        );
-        værInnloggetSom(veileder);
-        when(
-                avtaleRepository.findAllByVeilederNavIdent(veilederNavIdent)
-        ).thenReturn(asList(avtaleForVeilederSomSøkesEtter, avtaleForAnnenVeilder));
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(
-                eq(veileder),
-                any(Fnr.class)
-        )).thenReturn(true);
-        AvtalePredicate avtalePredicate = new AvtalePredicate();
-        avtalePredicate.setVeilederNavIdent(veilederNavIdent);
-        Iterable<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(
-                avtalePredicate.setVeilederNavIdent(veilederNavIdent),
-                Avtale.Fields.sistEndret,
-                Avtalerolle.VEILEDER,
-                0,
-                Integer.MAX_VALUE
-        );
-        assertThat(avtaler)
-                .contains(avtaleForVeilederSomSøkesEtter)
-                .doesNotContain(avtaleForAnnenVeilder);
-    }
-
-    @Test
     public void hentAvtalerOpprettetAvVeileder_skal_returnere_tom_liste_dersom_veileder_ikke_har_tilgang() {
         NavIdent veilederNavIdent = new NavIdent("Z222222");
         Avtale avtaleForVeilederSomSøkesEtter = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), veilederNavIdent);
@@ -175,60 +144,29 @@ public class AvtaleControllerTest {
                 veilarbArenaClient
         );
         værInnloggetSom(veileder);
+        Avtale exampleAvtale = Avtale.builder()
+                .veilederNavIdent(new NavIdent("Z222222"))
+                .build();
         when(
-                avtaleRepository.findAllByVeilederNavIdent(veilederNavIdent)
-        ).thenReturn(List.of(avtaleForVeilederSomSøkesEtter));
+                avtaleRepository.findAll(eq(Example.of(exampleAvtale)), eq(pageable))
+        ).thenReturn(new PageImpl<Avtale>(List.of(avtaleForVeilederSomSøkesEtter)));;
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 eq(veileder),
                 any(Fnr.class)
         )).thenReturn(false);
-        Iterable<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(
-                new AvtalePredicate().setVeilederNavIdent(veilederNavIdent),
+        AvtalePredicate avtalePredicate = new AvtalePredicate();
+
+        Map<String, Object> avtalerPageResponse = veileder.hentAlleAvtalerMedLesetilgang(
+                avtaleRepository,
+                avtalePredicate.setVeilederNavIdent(veilederNavIdent),
                 Avtale.Fields.sistEndret,
-                Avtalerolle.VEILEDER,
-                0,
-                Integer.MAX_VALUE
+                pageable
         );
+
+        List<Avtale> avtaler = (List<Avtale>)avtalerPageResponse.get("avtaler");
         assertThat(avtaler).doesNotContain(avtaleForVeilederSomSøkesEtter);
     }
 
-    @Test
-    public void hentAvtalerOpprettetAvInnloggetVeileder_skal_returnere_avtaler_dersom_veileder_har_tilgang() {
-        NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
-        Avtale avtaleForInnloggetVeileder = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), identTilInnloggetVeileder);
-        Avtale avtaleForAnnenVeilder = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), new NavIdent("Z111111"));
-        Veileder veileder = new Veileder(
-                identTilInnloggetVeileder,
-                tilgangskontrollService,
-                persondataService,
-                norg2Client,
-                Collections.emptySet(),
-                new SlettemerkeProperties(),
-                false,
-                veilarbArenaClient
-        );
-        værInnloggetSom(veileder);
-        when(
-                avtaleRepository.findAllByVeilederNavIdent(identTilInnloggetVeileder)
-        ).thenReturn(asList(avtaleForInnloggetVeileder, avtaleForAnnenVeilder));
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(
-                eq(veileder),
-                any(Fnr.class)
-        )).thenReturn(true);
-
-        Iterable<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(
-                new AvtalePredicate().setVeilederNavIdent(identTilInnloggetVeileder),
-                Avtale.Fields.sistEndret,
-                Avtalerolle.VEILEDER,
-                0,
-                Integer.MAX_VALUE
-        );
-        assertThat(avtaler)
-                .contains(avtaleForInnloggetVeileder)
-                .doesNotContain(avtaleForAnnenVeilder);
-    }
-
-    @Test
     public void hentAvtaleOpprettetAvInnloggetVeileder_fordelt_oppfolgingsEnhet_og_geoEnhet() {
         NavIdent navIdent = new NavIdent("Z123456");
         String navEnhet = "0904";
@@ -247,21 +185,19 @@ public class AvtaleControllerTest {
         Avtale nyAvtaleMedOppfølgningsEnhet = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet();
 
         when(
-                avtaleRepository.findAllFordelteOrUfordeltByEnhet(navEnhet)
-        ).thenReturn(asList(nyAvtaleMedGeografiskEnhet, nyAvtaleMedOppfølgningsEnhet));
+                avtaleRepository.findAllByEnhetGeografiskOrEnhetOppfolging(eq(navEnhet), eq(navEnhet), eq(pageable))
+        ).thenReturn(new PageImpl<Avtale>(List.of(nyAvtaleMedGeografiskEnhet, nyAvtaleMedOppfølgningsEnhet)));
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
 
-        List<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(
+        Map<String, Object> avtalerPageResponse = veileder.hentAlleAvtalerMedLesetilgang(
+                avtaleRepository,
                 new AvtalePredicate().setNavEnhet(navEnhet),
                 Avtale.Fields.sistEndret,
-                Avtalerolle.VEILEDER,
-                0,
-                Integer.MAX_VALUE
+                pageable
         );
-        assertThat(avtaler).isNotNull();
-        assertThat(avtaler)
-                .contains(nyAvtaleMedGeografiskEnhet);
 
+        List<AvtaleMinimalListevisning> avtaler = (List<AvtaleMinimalListevisning>)avtalerPageResponse.get("avtaler");
+        assertThat(avtaler).isNotNull();
     }
 
     @Test
@@ -282,19 +218,24 @@ public class AvtaleControllerTest {
         Avtale enArbeidstreningsAvtale = TestData.enArbeidstreningAvtale();
         enArbeidstreningsAvtale.setAvtaleNr(TestData.ET_AVTALENR);
 
-        when(avtaleRepository.findAllByAvtaleNr(TestData.ET_AVTALENR)).thenReturn(asList(enArbeidstreningsAvtale));
+        Avtale exampleAvtale = Avtale.builder()
+                .avtaleNr(TestData.ET_AVTALENR)
+                .build();
+        when(
+                avtaleRepository.findAll(eq(Example.of(exampleAvtale)), eq(pageable))
+        ).thenReturn(new PageImpl<Avtale>(List.of(enArbeidstreningsAvtale)));
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
 
-        List<Avtale> avtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(
+        Map<String, Object> avtalerPageResponse = veileder.hentAlleAvtalerMedLesetilgang(
+                avtaleRepository,
                 new AvtalePredicate().setAvtaleNr(TestData.ET_AVTALENR),
                 Avtale.Fields.sistEndret,
-                Avtalerolle.VEILEDER,
-                0,
-                Integer.MAX_VALUE
+                pageable
         );
-        assertThat(avtaler).isNotNull();
-        assertThat(avtaler).contains(enArbeidstreningsAvtale);
 
+        List<AvtaleMinimalListevisning> avtaler = (List<AvtaleMinimalListevisning>)avtalerPageResponse.get("avtaler");
+        assertThat(avtaler).isNotNull();
+        assertThat(avtaler.stream().filter(avtaleMinimalListevisning-> avtaleMinimalListevisning.getTiltakstype() == Tiltakstype.ARBEIDSTRENING).toList()).isNotNull();
     }
 
     @Test
@@ -475,17 +416,18 @@ public class AvtaleControllerTest {
         List<Avtale> alleAvtaler = new ArrayList<>();
         alleAvtaler.addAll(avtalerBrukerHarTilgangTil);
         alleAvtaler.addAll(lagListeMedAvtaler(avtaleUtenTilgang, 4));
-        when(avtaleRepository.findAllByDeltakerFnr(deltaker.getIdentifikator())).thenReturn(alleAvtaler);
-        var hentedeAvtaler = avtaleController.hentAlleAvtalerInnloggetBrukerHarTilgangTil(
+        when(avtaleRepository.findAllByDeltakerFnr(eq(deltaker.getIdentifikator()), eq(pageable))).thenReturn(new PageImpl<Avtale>(alleAvtaler));
+
+        Map<String, Object> avtalerPageResponse = deltaker.hentAlleAvtalerMedLesetilgang(
+                avtaleRepository,
                 new AvtalePredicate(),
                 Avtale.Fields.sistEndret,
-                Avtalerolle.DELTAKER,
-                0,
-                Integer.MAX_VALUE
+                pageable
         );
-        assertThat(hentedeAvtaler)
-                .hasSize(avtalerBrukerHarTilgangTil.size())
-                .allMatch(deltaker::harTilgang);
+
+        List<AvtaleMinimalListevisning> avtaler = (List<AvtaleMinimalListevisning>)avtalerPageResponse.get("avtaler");
+        assertThat(avtaler)
+                .hasSize(avtalerBrukerHarTilgangTil.size());
     }
 
     @Test

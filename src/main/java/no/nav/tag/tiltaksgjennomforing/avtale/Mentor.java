@@ -7,6 +7,9 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetMentor;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 public class Mentor extends Avtalepart<Fnr> {
 
@@ -27,10 +30,12 @@ public class Mentor extends Avtalepart<Fnr> {
     }
 
     @Override
-    List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
-        return avtaleRepository.findAllByMentorFnr(getIdentifikator()).stream()
+    Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, Pageable pageable) {
+        Page<Avtale> avtaler = avtaleRepository.findAllByMentorFnr(getIdentifikator(), pageable);
+        Page<Avtale> avtalerMedMuligTilgang = avtaler
                 .map(this::gjemInnholdOmMentorIkkeHarSignertErklæring)
-                .map(this::skjulDeltakerFødselsnummer).toList();
+                .map(this::skjulDeltakerFødselsnummer);
+        return avtalerMedMuligTilgang;
     }
 
     private Avtale gjemInnholdOmMentorIkkeHarSignertErklæring(Avtale avtale){

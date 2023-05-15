@@ -20,6 +20,9 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidExcep
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
@@ -148,31 +151,19 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     @Override
-    List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
+    Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, Pageable pageable) {
         if (tilganger.isEmpty()) {
-            return Collections.emptyList();
+            return Page.empty();
         }
-        return avtaleRepository.findAllByBedriftNrIn(tilganger.keySet()).stream()
+        Page<Avtale> avtaler;
+        if(queryParametre.getTiltakstype() != null) {
+            avtaler = avtaleRepository.findAllByBedriftNrInAndTiltakstype(tilganger.keySet(), queryParametre.getTiltakstype(), pageable);
+        } else {
+            avtaler = avtaleRepository.findAllByBedriftNrIn(tilganger.keySet(), pageable);
+        }
+        return avtaler
                 .map(Arbeidsgiver::fjernAvbruttGrunn)
-                .map(Arbeidsgiver::fjernAnnullertGrunn)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Avtale> hentAlleAvtalerMedLesetilgang(
-            AvtaleRepository avtaleRepository,
-            AvtalePredicate queryParametre,
-            String sorteringskolonne,
-            int skip,
-            int limit
-    ) {
-        return super.hentAlleAvtalerMedLesetilgang(
-                avtaleRepository,
-                queryParametre,
-                sorteringskolonne,
-                skip,
-                limit
-        ).stream().map(Arbeidsgiver::fjernAvbruttGrunn).collect(Collectors.toList());
+                .map(Arbeidsgiver::fjernAnnullertGrunn);
     }
 
     public List<Avtale> hentAvtalerForMinsideArbeidsgiver(AvtaleRepository avtaleRepository, BedriftNr bedriftNr) {

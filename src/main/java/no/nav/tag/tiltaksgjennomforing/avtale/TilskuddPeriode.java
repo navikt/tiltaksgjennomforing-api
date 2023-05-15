@@ -54,14 +54,14 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     private Integer lonnstilskuddProsent;
 
     @Enumerated(EnumType.STRING)
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection(fetch = FetchType.LAZY)
     private Set<Avslagsårsak> avslagsårsaker = EnumSet.noneOf(Avslagsårsak.class);
 
     private String avslagsforklaring;
     @Convert(converter = NavIdentConverter.class)
     private NavIdent avslåttAvNavIdent;
     private LocalDateTime avslåttTidspunkt;
-    private Integer løpenummer;
+    private Integer løpenummer = 1;
 
     @Enumerated(EnumType.STRING)
     private TilskuddPeriodeStatus status = TilskuddPeriodeStatus.UBEHANDLET;

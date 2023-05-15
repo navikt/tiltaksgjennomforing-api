@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
+
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
@@ -16,6 +17,10 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.NavEnhetIkkeFunnetException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @Slf4j
 public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
@@ -92,63 +97,27 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     @Override
-    List<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre) {
-        return avtaleRepository.findAllByAvtaleNr(queryParametre.getAvtaleNr());
+    Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, Pageable pageable) {
+        return avtaleRepository.findAllByAvtaleNr(queryParametre.getAvtaleNr(), pageable);
     }
 
     private Integer getPlussdato() {
         return ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
     }
 
-    List<Avtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
+    Page<BeslutterOversiktDTO> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
             AvtaleRepository avtaleRepository,
             AvtalePredicate queryParametre,
-            String sorteringskolonne) {
+            String sorteringskolonne,
+            Integer page,
+            Integer size,
+            String sorteringOrder
+    ) {
+        Sort by = Sort.by(AvtaleSorterer.getSortingOrderForPageabl(sorteringskolonne, sorteringOrder));
+        Pageable paging = PageRequest.of(page, size, by);
 
         Set<String> navEnheter = hentNavEnheter();
-        if (navEnheter.isEmpty()) {
-            throw new NavEnhetIkkeFunnetException();
-        }
 
-        TilskuddPeriodeStatus status = queryParametre.getTilskuddPeriodeStatus();
-        Tiltakstype tiltakstype = queryParametre.getTiltakstype();
-        Integer plussDato = getPlussdato();
-
-        if (status == null) {
-            status = TilskuddPeriodeStatus.UBEHANDLET;
-        }
-
-        return switch (status) {
-            case GODKJENT -> filtrereVekkAvslattPerioder(
-                    avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjent(
-                            status.name(),
-                            navEnheter,
-                            plussDato),
-                    tiltakstype,
-                    sorteringskolonne);
-            case AVSLÅTT -> filtrereOgFinAvslattPerioder(
-                    avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterAvslatt(
-                            status.name(),
-                            navEnheter,
-                            plussDato),
-                    tiltakstype,
-                    sorteringskolonne);
-            default -> filtrereVekkAvslattPerioder(
-                    avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandlet(
-                            status.name(),
-                            navEnheter,
-                            plussDato),
-                    tiltakstype,
-                    sorteringskolonne);
-        };
-    }
-
-    List<AvtaleMinimal> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
-            AvtaleRepository avtaleRepository,
-            AvtalePredicate queryParametre,
-            String sorteringskolonne) {
-
-        Set<String> navEnheter = hentNavEnheter();
         if (navEnheter.isEmpty()) {
             throw new NavEnhetIkkeFunnetException();
         }
@@ -157,43 +126,29 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
         Tiltakstype tiltakstype = queryParametre.getTiltakstype();
         BedriftNr bedriftNr = queryParametre.getBedriftNr();
         Integer plussDato = getPlussdato();
+        LocalDate decisiondate = LocalDate.now().plusDays(plussDato);
 
         if (status == null) {
             status = TilskuddPeriodeStatus.UBEHANDLET;
         }
 
-        Set<String> tiltakstyper = new HashSet<>();
-        if(tiltakstype != null) {
-            tiltakstyper.add(tiltakstype.name());
+        Set<Tiltakstype> tiltakstyper = new HashSet<>();
+        if (tiltakstype != null) {
+            tiltakstyper.add(tiltakstype);
         } else {
-            tiltakstyper.add(Tiltakstype.SOMMERJOBB.name());
-            tiltakstyper.add(Tiltakstype.VARIG_LONNSTILSKUDD.name());
-            tiltakstyper.add(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD.name());
-        }
-        List<AvtaleMinimal> resultat = new ArrayList<>();
-        if(status == TilskuddPeriodeStatus.GODKJENT || status == TilskuddPeriodeStatus.AVSLÅTT) {
-            resultat = avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterGodkjentEllerAvslåttMinimal(
-                    status.name(),
-                    navEnheter,
-                    tiltakstyper);
-        } else {
-            resultat = avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandletMinimal(
-                    status.name(),
-                    navEnheter,
-                    plussDato,
-                    tiltakstyper);
+            tiltakstyper.add(Tiltakstype.SOMMERJOBB);
+            tiltakstyper.add(Tiltakstype.VARIG_LONNSTILSKUDD);
+            tiltakstyper.add(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         }
 
-        if(bedriftNr != null) {
-            resultat = resultat.stream().filter(avtaleMinimal -> {
-                if(avtaleMinimal.getBedriftNr().equals(bedriftNr.asString())) {
-                    return true;
-                }
-                return false;
-            }).collect(Collectors.toList());
-        }
-
-        return resultat;
+        return avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
+                status,
+                decisiondate,
+                tiltakstyper,
+                navEnheter,
+                bedriftNr != null ? bedriftNr.asString() : null,
+                paging
+        );
     }
 
     private Set<String> hentNavEnheter() {

@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import java.util.Comparator;
 import lombok.experimental.UtilityClass;
+import org.springframework.data.domain.Sort;
 
 @UtilityClass
 public class AvtaleSorterer {
@@ -19,5 +20,51 @@ public class AvtaleSorterer {
 
     private static String lowercaseEllerNull(String x) {
         return x != null ? x.toLowerCase() : null;
+    }
+
+    static Sort.Order getSortingOrderForPageable(String sortingOrder) {
+        switch (sortingOrder) {
+            case "deltakerFornavn":
+                return Sort.Order.asc("gjeldendeInnhold.deltakerFornavn");
+            case "opprettetTidspunkt":
+                return Sort.Order.desc("opprettetTidspunkt");
+            case "bedriftNavn":
+                return Sort.Order.asc("gjeldendeInnhold.bedriftNavn");
+            case "startDato":
+                return Sort.Order.asc("gjeldendeInnhold.startDato");
+            case "sistEndret":
+            default:
+                return Sort.Order.desc("sistEndret");
+        }
+    }
+
+   static protected Sort.Order getSortingOrderForPageabl(String order, String direction) {
+       SortingDirection sortingDirection = SortingDirection.valueOf(direction.toUpperCase());
+       return switch (sortingDirection) {
+            case ASC -> getSortingOrderForPageableASC(SortingOrder.valueOf(order.toUpperCase()));
+            case DESC -> getSortingOrderForPageableDESC(SortingOrder.valueOf(order.toUpperCase()));
+        };
+    }
+
+    static private Sort.Order getSortingOrderForPageableASC(SortingOrder sortingOrder) {
+        return switch (sortingOrder) {
+            case OPPRETTETTIDSPUNKT -> Sort.Order.asc("opprettetTidspunkt");
+            case BEDRIFTNAVN -> Sort.Order.asc("bedriftNavn");
+            case DELTAKERFORNAVN -> Sort.Order.asc("deltakerFornavn");
+            case STATUS -> Sort.Order.asc("antallUbehandlet");
+            case STARTDATO -> Sort.Order.asc("startDato");
+            case SISTENDRET -> Sort.Order.asc("sistEndret");
+        };
+    }
+
+    static private Sort.Order getSortingOrderForPageableDESC(SortingOrder sortingOrder) {
+        return switch (sortingOrder) {
+            case OPPRETTETTIDSPUNKT -> Sort.Order.desc("opprettetTidspunkt");
+            case BEDRIFTNAVN -> Sort.Order.desc("bedriftNavn");
+            case DELTAKERFORNAVN -> Sort.Order.desc("deltakerFornavn");
+            case STATUS -> Sort.Order.desc("antallUbehandlet");
+            case STARTDATO -> Sort.Order.desc("startDato");
+            case SISTENDRET -> Sort.Order.desc("sistEndret");
+        };
     }
 }

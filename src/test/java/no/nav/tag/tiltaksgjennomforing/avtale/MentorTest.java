@@ -4,6 +4,7 @@ import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -15,10 +16,16 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 public class MentorTest {
 
     private AvtaleRepository avtaleRepository = mock(AvtaleRepository.class);
+
+    private Pageable pageable = PageRequest.of(0, 100);
 
     @Test
     public void hentAlleAvtalerMedMuligTilgang__mentor_en_avtale() {
@@ -28,15 +35,16 @@ public class MentorTest {
         Avtale avtaleSignert = TestData.enMentorAvtaleSignert();
         Mentor mentor = TestData.enMentor(avtaleSignert);
         AvtalePredicate avtalePredicate = new AvtalePredicate();
-        // NÅR
-        when(avtaleRepository.findAllByMentorFnr(any())).thenReturn(List.of(avtaleUsignert,avtaleSignert));
-        List<Avtale> avtaler = mentor.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
 
-        assertThat(avtaler.size()).isEqualTo(2);
-        assertThat(avtaler.get(0)).isEqualTo(avtaleUsignert);
-        assertThat(avtaler.get(1)).isEqualTo(avtaleSignert);
-        assertThat(avtaler.get(0).getDeltakerFnr()).isNull();
-        assertThat(avtaler.get(1).getDeltakerFnr()).isNull();
+        // NÅR
+        when(avtaleRepository.findAllByMentorFnr(any(), eq(pageable))).thenReturn(new PageImpl<Avtale>(List.of(avtaleUsignert, avtaleSignert)));
+        Page<Avtale> avtaler = mentor.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate, pageable);
+
+        assertThat(avtaler.getTotalElements()).isEqualTo(2);
+        assertThat(avtaler.getContent().get(0)).isEqualTo(avtaleUsignert);
+        assertThat(avtaler.getContent().get(1)).isEqualTo(avtaleSignert);
+        assertThat(avtaler.getContent().get(0).getDeltakerFnr()).isNull();
+        assertThat(avtaler.getContent().get(1).getDeltakerFnr()).isNull();
      }
 
     @Test
@@ -82,17 +90,17 @@ public class MentorTest {
         Mentor mentor = TestData.enMentor(avtale);
         AvtalePredicate avtalePredicate = new AvtalePredicate();
         // NÅR
-        when(avtaleRepository.findAllByMentorFnr(any())).thenReturn(List.of(avtale));
-        List<Avtale> avtaler = mentor.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
+        when(avtaleRepository.findAllByMentorFnr(any(), eq(pageable))).thenReturn(new PageImpl<Avtale>(List.of(avtale)));
+        Page<Avtale> avtaler = mentor.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate, pageable);
 
         assertThat(avtaler).isNotEmpty();
-        assertThat(avtaler.get(0).getDeltakerFnr()).isNull();
-        assertThat(avtaler.get(0).getVeilederNavIdent()).isNull();
-        assertThat(avtaler.get(0).getGjeldendeInnhold().getDeltakerFornavn()).isNull();
-        assertThat(avtaler.get(0).getGjeldendeInnhold().getDeltakerEtternavn()).isNull();
-        assertThat(avtaler.get(0).getGjeldendeInnhold().getVeilederTlf()).isNull();
-        assertThat(avtaler.get(0).getGjeldendeInnhold().getArbeidsgiverKontonummer()).isNull();
-        assertThat(avtaler.get(0).getBedriftNr()).isNotNull();
+        assertThat(avtaler.getContent().get(0).getDeltakerFnr()).isNull();
+        assertThat(avtaler.getContent().get(0).getVeilederNavIdent()).isNull();
+        assertThat(avtaler.getContent().get(0).getGjeldendeInnhold().getDeltakerFornavn()).isNull();
+        assertThat(avtaler.getContent().get(0).getGjeldendeInnhold().getDeltakerEtternavn()).isNull();
+        assertThat(avtaler.getContent().get(0).getGjeldendeInnhold().getVeilederTlf()).isNull();
+        assertThat(avtaler.getContent().get(0).getGjeldendeInnhold().getArbeidsgiverKontonummer()).isNull();
+        assertThat(avtaler.getContent().get(0).getBedriftNr()).isNotNull();
     }
 
     @Test
