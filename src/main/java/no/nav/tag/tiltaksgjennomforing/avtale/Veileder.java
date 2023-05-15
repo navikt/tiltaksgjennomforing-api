@@ -110,14 +110,25 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             return avtaleRepository.findAllByEnhetGeografiskOrEnhetOppfolging(queryParametre.getNavEnhet(), queryParametre.getNavEnhet(), pageable);
         }
         else {
-            Avtale.AvtaleBuilder exampleAvtaleBuilder = Avtale.builder()
-                    .avtaleNr(queryParametre.getAvtaleNr())
-                    .veilederNavIdent(veilederNavIdent)
-                    .deltakerFnr(queryParametre.getDeltakerFnr())
-                    .bedriftNr(queryParametre.getBedriftNr())
-                    .tiltakstype(queryParametre.getTiltakstype());
-            Avtale exampleAvtale = exampleAvtaleBuilder.build();
-            return avtaleRepository.findAll(Example.of(exampleAvtale), pageable);
+            // Om det er
+            if(queryParametre.getVeilederNavIdent() == null) {
+                Avtale.AvtaleBuilder exampleAvtaleBuilder = Avtale.builder()
+                        .avtaleNr(queryParametre.getAvtaleNr())
+                        .deltakerFnr(queryParametre.getDeltakerFnr())
+                        .bedriftNr(queryParametre.getBedriftNr())
+                        .tiltakstype(queryParametre.getTiltakstype());
+                Avtale exampleAvtale = exampleAvtaleBuilder.build();
+                return avtaleRepository.findAll(Example.of(exampleAvtale), pageable);
+            } else {
+                Avtale.AvtaleBuilder exampleAvtaleBuilder = Avtale.builder()
+                        .avtaleNr(queryParametre.getAvtaleNr())
+                        .veilederNavIdent(veilederNavIdent)
+                        .deltakerFnr(queryParametre.getDeltakerFnr())
+                        .bedriftNr(queryParametre.getBedriftNr())
+                        .tiltakstype(queryParametre.getTiltakstype());
+                Avtale exampleAvtale = exampleAvtaleBuilder.build();
+                return avtaleRepository.findAll(Example.of(exampleAvtale), pageable);
+            }
         }
     }
 
