@@ -84,9 +84,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             // Har filtrert på status. Da går siste filtrering på status i java-kode
             Pageable allPages = PageRequest.of(0, Integer.MAX_VALUE);
             Page<Avtale> avtalerUtenStatusFiltrering = null;
-
-
-
             if (queryParametre.getVeilederNavIdent() != null) {
                 exampleAvtaleBuilder
                         .veilederNavIdent(queryParametre.getVeilederNavIdent())
