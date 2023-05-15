@@ -111,7 +111,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         }
         else {
             // Om det er
-            if(queryParametre.getVeilederNavIdent() == null) {
+            if(queryParametre.getVeilederNavIdent() == null && (queryParametre.getAvtaleNr() != null || queryParametre.getDeltakerFnr() != null || queryParametre.getBedriftNr() != null || queryParametre.getTiltakstype() != null)) {
                 Avtale.AvtaleBuilder exampleAvtaleBuilder = Avtale.builder()
                         .avtaleNr(queryParametre.getAvtaleNr())
                         .deltakerFnr(queryParametre.getDeltakerFnr())
