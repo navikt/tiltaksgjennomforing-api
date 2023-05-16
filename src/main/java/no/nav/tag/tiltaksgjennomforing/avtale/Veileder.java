@@ -76,24 +76,46 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     @Override
     Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, Pageable pageable) {
         NavIdent veilederNavIdent = queryParametre.getVeilederNavIdent() != null ? queryParametre.getVeilederNavIdent() : getIdentifikator();
+
+        boolean brukerExampleQuery = true;
+        Avtale.AvtaleBuilder exampleAvtaleBuilder = Avtale.builder();
+
         if(queryParametre.getStatus() != null) {
+            // Har filtrert på status. Da går siste filtrering på status i java-kode
             Pageable allPages = PageRequest.of(0, Integer.MAX_VALUE);
-            Page<Avtale> avtalerUtenStatusFiltrering;
-            if (queryParametre.getErUfordelt() != null && queryParametre.getErUfordelt()) {
-                avtalerUtenStatusFiltrering = avtaleRepository.findAllByVeilederNavIdentIsNullAndEnhetGeografiskOrVeilederNavIdentIsNullAndEnhetOppfolging(queryParametre.getNavEnhet(), queryParametre.getNavEnhet(), allPages);
-            } else if ( queryParametre.getNavEnhet() != null) {
-                avtalerUtenStatusFiltrering = avtaleRepository.findAllByEnhetGeografiskOrEnhetOppfolging(queryParametre.getNavEnhet(), queryParametre.getNavEnhet(), allPages);
-            }
-            else {
-                Avtale.AvtaleBuilder exampleAvtaleBuilder = Avtale.builder()
-                        .avtaleNr(queryParametre.getAvtaleNr())
-                        .veilederNavIdent(veilederNavIdent)
+            Page<Avtale> avtalerUtenStatusFiltrering = null;
+            if (queryParametre.getVeilederNavIdent() != null) {
+                exampleAvtaleBuilder
+                        .veilederNavIdent(queryParametre.getVeilederNavIdent())
+                        .tiltakstype(queryParametre.getTiltakstype());
+            } else if (queryParametre.getDeltakerFnr() != null) {
+                exampleAvtaleBuilder
                         .deltakerFnr(queryParametre.getDeltakerFnr())
+                        .tiltakstype(queryParametre.getTiltakstype());
+            } else if (queryParametre.getBedriftNr() != null) {
+                exampleAvtaleBuilder
                         .bedriftNr(queryParametre.getBedriftNr())
                         .tiltakstype(queryParametre.getTiltakstype());
+            } else if (queryParametre.getNavEnhet() != null && queryParametre.getErUfordelt() != null && queryParametre.getErUfordelt()) {
+                brukerExampleQuery = false;
+                avtalerUtenStatusFiltrering = avtaleRepository.findAllByVeilederNavIdentIsNullAndEnhetGeografiskOrVeilederNavIdentIsNullAndEnhetOppfolging(queryParametre.getNavEnhet(), queryParametre.getNavEnhet(), allPages);
+            } else if (queryParametre.getNavEnhet() != null) {
+                brukerExampleQuery = false;
+                avtalerUtenStatusFiltrering = avtaleRepository.findAllByEnhetGeografiskOrEnhetOppfolging(queryParametre.getNavEnhet(), queryParametre.getNavEnhet(), allPages);
+            } else if (queryParametre.getAvtaleNr() != null) {
+                exampleAvtaleBuilder
+                        .avtaleNr(queryParametre.getAvtaleNr())
+                        .tiltakstype(queryParametre.getTiltakstype());
+            } else {
+                exampleAvtaleBuilder
+                        .veilederNavIdent(veilederNavIdent)
+                        .tiltakstype(queryParametre.getTiltakstype());
+            }
+            if (brukerExampleQuery) {
                 Avtale exampleAvtale = exampleAvtaleBuilder.build();
                 avtalerUtenStatusFiltrering = avtaleRepository.findAll(Example.of(exampleAvtale), allPages);
             }
+
             int skip = pageable.getPageNumber() > 0 ? (pageable.getPageNumber())*pageable.getPageSize() : 0;
             List<Avtale> totaltFørPaging = avtalerUtenStatusFiltrering.getContent().stream()
                     .filter(avtale -> avtale.statusSomEnum() == queryParametre.getStatus()).toList();
@@ -103,28 +125,39 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
                     .limit(pageable.getPageSize()).toList();
             return new PageImpl<>(avtaler, pageable, totaltFørPaging.size());
         }
-
-        if (queryParametre.getErUfordelt() != null && queryParametre.getErUfordelt()) {
-            return avtaleRepository.findAllByVeilederNavIdentIsNullAndEnhetGeografiskOrVeilederNavIdentIsNullAndEnhetOppfolging(queryParametre.getNavEnhet(), queryParametre.getNavEnhet(), pageable);
-        } else if ( queryParametre.getNavEnhet() != null) {
-            return avtaleRepository.findAllByEnhetGeografiskOrEnhetOppfolging(queryParametre.getNavEnhet(), queryParametre.getNavEnhet(), pageable);
-        }
         else {
-            // Om det er
-            if(queryParametre.getVeilederNavIdent() == null && (queryParametre.getAvtaleNr() != null || queryParametre.getDeltakerFnr() != null || queryParametre.getBedriftNr() != null || queryParametre.getTiltakstype() != null)) {
-                Avtale.AvtaleBuilder exampleAvtaleBuilder = Avtale.builder()
-                        .avtaleNr(queryParametre.getAvtaleNr())
+            // Har ikke filtrert på status. Da går all filtrering i JPA/database
+            if (queryParametre.getVeilederNavIdent() != null) {
+                exampleAvtaleBuilder
+                        .veilederNavIdent(queryParametre.getVeilederNavIdent())
+                        .tiltakstype(queryParametre.getTiltakstype());
+                Avtale exampleAvtale = exampleAvtaleBuilder.build();
+                return avtaleRepository.findAll(Example.of(exampleAvtale), pageable);
+            } else if (queryParametre.getDeltakerFnr() != null) {
+                exampleAvtaleBuilder
                         .deltakerFnr(queryParametre.getDeltakerFnr())
+                        .tiltakstype(queryParametre.getTiltakstype());
+                Avtale exampleAvtale = exampleAvtaleBuilder.build();
+                return avtaleRepository.findAll(Example.of(exampleAvtale), pageable);
+            } else if (queryParametre.getBedriftNr() != null) {
+                exampleAvtaleBuilder
                         .bedriftNr(queryParametre.getBedriftNr())
                         .tiltakstype(queryParametre.getTiltakstype());
                 Avtale exampleAvtale = exampleAvtaleBuilder.build();
                 return avtaleRepository.findAll(Example.of(exampleAvtale), pageable);
-            } else {
-                Avtale.AvtaleBuilder exampleAvtaleBuilder = Avtale.builder()
+            } else if (queryParametre.getNavEnhet() != null && queryParametre.getErUfordelt() != null && queryParametre.getErUfordelt()) {
+                return avtaleRepository.findAllByVeilederNavIdentIsNullAndEnhetGeografiskOrVeilederNavIdentIsNullAndEnhetOppfolging(queryParametre.getNavEnhet(), queryParametre.getNavEnhet(), pageable);
+            } else if (queryParametre.getNavEnhet() != null) {
+                return avtaleRepository.findAllByEnhetGeografiskOrEnhetOppfolging(queryParametre.getNavEnhet(), queryParametre.getNavEnhet(), pageable);
+            } else if (queryParametre.getAvtaleNr() != null) {
+                exampleAvtaleBuilder
                         .avtaleNr(queryParametre.getAvtaleNr())
+                        .tiltakstype(queryParametre.getTiltakstype());
+                Avtale exampleAvtale = exampleAvtaleBuilder.build();
+                return avtaleRepository.findAll(Example.of(exampleAvtale), pageable);
+            } else {
+                exampleAvtaleBuilder
                         .veilederNavIdent(veilederNavIdent)
-                        .deltakerFnr(queryParametre.getDeltakerFnr())
-                        .bedriftNr(queryParametre.getBedriftNr())
                         .tiltakstype(queryParametre.getTiltakstype());
                 Avtale exampleAvtale = exampleAvtaleBuilder.build();
                 return avtaleRepository.findAll(Example.of(exampleAvtale), pageable);
