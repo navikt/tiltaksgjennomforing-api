@@ -34,12 +34,21 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByBedriftNrIn(Set<BedriftNr> bedriftNrList, Pageable pageable);
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    Page<Avtale> findAllByBedriftNr(BedriftNr bedriftNr, Pageable pageable);
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    Page<Avtale> findAllByBedriftNrAndTiltakstype(BedriftNr bedriftNr, Tiltakstype tiltakstype, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByBedriftNrInAndTiltakstype(Set<BedriftNr> bedriftNrList, Tiltakstype tiltakstype, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByDeltakerFnr(Fnr deltakerFnr, Pageable pageable);
+    Page<Avtale> findAllByDeltakerFnrAndTiltakstype(Fnr deltakerFnr, Tiltakstype tiltakstype, Pageable pageable);
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    Page<Avtale> findAllByVeilederNavIdent(NavIdent veilederNavIdent, Pageable pageable);
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    Page<Avtale> findAllByVeilederNavIdentAndTiltakstype(NavIdent veilederNavIdent, Tiltakstype tiltakstype, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     List<Avtale> findAllByDeltakerFnr(Fnr deltakerFnr);
@@ -55,6 +64,8 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByAvtaleNr(Integer avtaleNr, Pageable pageable);
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    Page<Avtale> findAllByAvtaleNrAndTiltakstype(Integer avtaleNr, Tiltakstype tiltakstype, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     List<Avtale> findAllByTiltakstype(Tiltakstype tiltakstype);
