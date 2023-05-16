@@ -70,7 +70,11 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
-        return tilgangskontrollService.harSkrivetilgangTilKandidat(this, avtale.getDeltakerFnr());
+        boolean harTilgang = tilgangskontrollService.harSkrivetilgangTilKandidat(this, avtale.getDeltakerFnr());
+        if(!harTilgang) {
+            log.info("Har ikke tilgang til avtale {}", avtale.getAvtaleNr());
+        }
+        return harTilgang;
     }
 
     @Override
@@ -150,11 +154,14 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             } else if (queryParametre.getNavEnhet() != null) {
                 return avtaleRepository.findAllByEnhetGeografiskOrEnhetOppfolging(queryParametre.getNavEnhet(), queryParametre.getNavEnhet(), pageable);
             } else if (queryParametre.getAvtaleNr() != null) {
+                log.info("Henter avtaler basert på avtaleNr {}", queryParametre.toString());
                 exampleAvtaleBuilder
                         .avtaleNr(queryParametre.getAvtaleNr())
                         .tiltakstype(queryParametre.getTiltakstype());
                 Avtale exampleAvtale = exampleAvtaleBuilder.build();
-                return avtaleRepository.findAll(Example.of(exampleAvtale), pageable);
+                Page<Avtale> avtaler = avtaleRepository.findAll(Example.of(exampleAvtale), pageable);
+                log.info("Examplequery ga {} på avtaleNr {}", avtaler.getTotalElements(), queryParametre.getAvtaleNr());
+                return avtaler;
             } else {
                 exampleAvtaleBuilder
                         .veilederNavIdent(veilederNavIdent)
