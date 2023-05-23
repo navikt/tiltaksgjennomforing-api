@@ -4,6 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.datavarehus.DvhMeldingEntitetRepository;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.metrikker.MetrikkRegistrering;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.SmsRepository;
@@ -228,7 +229,7 @@ public class AvtaleRepositoryTest {
     }
 
     @Test
-    public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_ikke_kunne_hente_avtale_med_tiltakstype_arbeidstrening_3() {
+    public void finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter__skal_ikke_kunne_hente_avtale_med_tiltakstype_arbeidstrening() {
         Avtale avtale = enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate().plusDays(1), Now.localDate().plusMonths(3).plusDays(1));
         Avtale avtale2 = enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate().plusDays(5), Now.localDate().plusMonths(3).plusDays(5));
         Avtale avtale3 = enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate().plusDays(10), Now.localDate().plusMonths(3).plusDays(10));
@@ -260,6 +261,41 @@ public class AvtaleRepositoryTest {
 
         List<BeslutterOversikt> beslutterOversiktList = BeslutterOversikt.getBeslutterOversikt(beslutterOversikt);
         assertThat(beslutterOversiktList.size()).isEqualTo(4);
+    }
+
+    @Test
+    public void finnGodkjenteAvtalerForAvtaleOversikt_veileder() {
+        Avtale avtale = enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate().plusDays(1), Now.localDate().plusMonths(3).plusDays(1));
+        Avtale avtale2 = enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate().plusDays(5), Now.localDate().plusMonths(3).plusDays(5));
+        Avtale avtale3 = enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate().plusDays(10), Now.localDate().plusMonths(3).plusDays(10));
+        Avtale avtale4 = enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate().plusDays(15), Now.localDate().plusMonths(3).plusDays(15));
+        avtale.getGjeldendeInnhold().setDeltakerFornavn("Arne");
+        avtale2.getGjeldendeInnhold().setDeltakerFornavn("Bjarne");
+        avtale3.getGjeldendeInnhold().setDeltakerFornavn("Carl");
+
+        avtaleRepository.save(avtale);
+        avtaleRepository.save(avtale2);
+        avtaleRepository.save(avtale3);
+        avtaleRepository.save(avtale4);
+
+        Set<NavEnhet> navEnheter = Set.of(ENHET_OPPFØLGING);
+        Set<String> tiltakstype = Set.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD.name(), Tiltakstype.VARIG_LONNSTILSKUDD.name());
+        Sort by = Sort.by(Sort.Order.asc("startDato"));
+        Pageable pageable = PageRequest.of(0, 10);
+        long plussDato = ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3));
+        LocalDate decisiondate = LocalDate.now().plusDays(plussDato);
+
+        Page<Object> beslutterOversikt = avtaleRepository.finnAvtalerForInnloggetVeilederHvorStatusIkkeErSatt(
+                null,
+                null,
+                null,
+                List.of("999999999"),
+                Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
+                pageable
+        );
+
+
+        assertThat(beslutterOversikt.getContent().size()).isEqualTo(4);
     }
 
     @Test

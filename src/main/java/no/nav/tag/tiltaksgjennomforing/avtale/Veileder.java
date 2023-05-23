@@ -87,6 +87,13 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             Page<Avtale> avtalerUtenStatusFiltrering = null;
             if(queryParametre.getTiltakstype() != null) {
                 // Filtrer på tiltakstype
+
+                // tiltakstype
+                // navIdent
+                // DeltakerFnr
+                // bedriftnr
+
+
                 if (queryParametre.getVeilederNavIdent() != null) {
                     avtalerUtenStatusFiltrering = avtaleRepository.findAllByVeilederNavIdentAndTiltakstype(queryParametre.getVeilederNavIdent(), queryParametre.getTiltakstype(), pageable);
                 } else if (queryParametre.getDeltakerFnr() != null) {

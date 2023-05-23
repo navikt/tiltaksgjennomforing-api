@@ -148,4 +148,119 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             @Param("bedriftNr") String bedriftNr,
             Pageable pageable);
 
+    @Query(value = "select a from Avtale a " +
+            "left join AvtaleInnhold i on i.id = a.gjeldendeInnhold.id " +
+            "where (:avtaleNr is null or a.avtaleNr = :avtaleNr) and (:veilederNavIdent is null or a.veilederNavIdent = :veilederNavIdent) " +
+            "and (:deltakerFnr is null or a.deltakerFnr = :deltakerFnr) and (:bedriftNr is null or cast(a.bedriftNr as text) in (:bedriftNr)) " +
+            "and (:tiltakstype is null or a.tiltakstype = :tiltakstype)",
+            nativeQuery = false)
+    Page<Object> finnAvtalerForInnloggetVeilederHvorStatusIkkeErSatt(
+            @Param("avtaleNr") Integer avtaleNr,
+            @Param("veilederNavIdent") NavIdent veilederNavIdent,
+            @Param("deltakerFnr") Fnr deltakerFnr,
+            @Param("bedriftNr") List<String> bedriftNr,
+            @Param("tiltakstype") Tiltakstype tiltakstype,
+            Pageable pageable
+    );
+
+    @Query(value = "select a from Avtale a " +
+            "left join AvtaleInnhold i on i.id = a.gjeldendeInnhold.id " +
+            "where (:avtaleNr is null or a.avtaleNr = :avtaleNr) and (:veilederNavIdent is null or a.veilederNavIdent = :veilederNavIdent) " +
+            "and (:deltakerFnr is null or a.deltakerFnr = :deltakerFnr) and (:bedriftNr is null or cast(a.bedriftNr as text) in (:bedriftNr)) " +
+            "and (:tiltakstype is null or a.tiltakstype = :tiltakstype) and a.annullertTidspunkt is not null",
+            nativeQuery = false)
+    Page<Object> finnAvtalerForInnloggetVeilederHvorStatusErAnnullert(
+            @Param("avtaleNr") Integer avtaleNr,
+            @Param("veilederNavIdent") NavIdent veilederNavIdent,
+            @Param("deltakerFnr") Fnr deltakerFnr,
+            @Param("bedriftNr") List<String> bedriftNr,
+            @Param("tiltakstype") Tiltakstype tiltakstype,
+            Pageable pageable
+    );
+
+    @Query(value = "select a from Avtale a " +
+            "left join AvtaleInnhold i on i.id = a.gjeldendeInnhold.id " +
+            "where (:avtaleNr is null or a.avtaleNr = :avtaleNr) and (:veilederNavIdent is null or a.veilederNavIdent = :veilederNavIdent) " +
+            "and (:deltakerFnr is null or a.deltakerFnr = :deltakerFnr) and (:bedriftNr is null or cast(a.bedriftNr as text) in (:bedriftNr)) " +
+            "and (:tiltakstype is null or a.tiltakstype = :tiltakstype) and a.avbrutt is true",
+            nativeQuery = false)
+    Page<Object> finnAvtalerForInnloggetVeilederHvorStatusErAvbrutt(
+            @Param("avtaleNr") Integer avtaleNr,
+            @Param("veilederNavIdent") NavIdent veilederNavIdent,
+            @Param("deltakerFnr") Fnr deltakerFnr,
+            @Param("bedriftNr") List<String> bedriftNr,
+            @Param("tiltakstype") Tiltakstype tiltakstype,
+            Pageable pageable
+    );
+
+    @Query(value = "select a from Avtale a " +
+            "left join AvtaleInnhold i on i.id = a.gjeldendeInnhold.id " +
+            "where (:avtaleNr is null or a.avtaleNr = :avtaleNr) and (:veilederNavIdent is null or a.veilederNavIdent = :veilederNavIdent) " +
+            "and (:deltakerFnr is null or a.deltakerFnr = :deltakerFnr) and (:bedriftNr is null or cast(a.bedriftNr as text) in (:bedriftNr)) " +
+            "and (:tiltakstype is null or a.tiltakstype = :tiltakstype) and (a.gjeldendeInnhold.sluttDato <= :decisiondate " +
+            "and a.gjeldendeInnhold.avtaleInngått is not null)",
+            nativeQuery = false)
+    Page<Object> finnAvtalerForInnloggetVeilederHvorStatusErAvsluttet(
+            @Param("avtaleNr") Integer avtaleNr,
+            @Param("veilederNavIdent") NavIdent veilederNavIdent,
+            @Param("deltakerFnr") Fnr deltakerFnr,
+            @Param("bedriftNr") List<String> bedriftNr,
+            @Param("tiltakstype") Tiltakstype tiltakstype,
+            @Param("decisiondate") LocalDate decisiondate,
+            Pageable pageable
+    );
+
+    @Query(value = "select a from Avtale a " +
+            "left join AvtaleInnhold i on i.id = a.gjeldendeInnhold.id " +
+            "where (:avtaleNr is null or a.avtaleNr = :avtaleNr) and (:veilederNavIdent is null or a.veilederNavIdent = :veilederNavIdent) " +
+            "and (:deltakerFnr is null or a.deltakerFnr = :deltakerFnr) and (:bedriftNr is null or cast(a.bedriftNr as text) in (:bedriftNr)) " +
+            "and (:tiltakstype is null or a.tiltakstype = :tiltakstype) and (a.gjeldendeInnhold.startDato <= :decisiondate " +
+            "and a.gjeldendeInnhold.avtaleInngått is not null)",
+            nativeQuery = false)
+    Page<Object> finnAvtalerForInnloggetVeilederHvorStatusErGjennomfores(
+            @Param("avtaleNr") Integer avtaleNr,
+            @Param("veilederNavIdent") NavIdent veilederNavIdent,
+            @Param("deltakerFnr") Fnr deltakerFnr,
+            @Param("bedriftNr") List<String> bedriftNr,
+            @Param("tiltakstype") Tiltakstype tiltakstype,
+            @Param("decisiondate") LocalDate decisiondate,
+            Pageable pageable
+    );
+
+    @Query(value = "select a from Avtale a " +
+            "left join AvtaleInnhold i on i.id = a.gjeldendeInnhold.id " +
+            "where (:avtaleNr is null or a.avtaleNr = :avtaleNr) and (:veilederNavIdent is null or a.veilederNavIdent = :veilederNavIdent) " +
+            "and (:deltakerFnr is null or a.deltakerFnr = :deltakerFnr) and (:bedriftNr is null or cast(a.bedriftNr as text) in (:bedriftNr)) " +
+            "and (:tiltakstype is null or a.tiltakstype = :tiltakstype) and a.gjeldendeInnhold.avtaleInngått is not null",
+            nativeQuery = false)
+    Page<Object> finnAvtalerForInnloggetVeilederHvorStatusErKlarForOppstart(
+            @Param("avtaleNr") Integer avtaleNr,
+            @Param("veilederNavIdent") NavIdent veilederNavIdent,
+            @Param("deltakerFnr") Fnr deltakerFnr,
+            @Param("bedriftNr") List<String> bedriftNr,
+            @Param("tiltakstype") Tiltakstype tiltakstype,
+            Pageable pageable
+    );
+
+    @Query(value = "select a from Avtale a " +
+            "left join AvtaleInnhold i on i.id = a.gjeldendeInnhold.id " +
+            "where (:avtaleNr is null or a.avtaleNr = :avtaleNr) and (:veilederNavIdent is null or a.veilederNavIdent = :veilederNavIdent) " +
+            "and (:deltakerFnr is null or a.deltakerFnr = :deltakerFnr) and (:bedriftNr is null or cast(a.bedriftNr as text) in (:bedriftNr)) " +
+            "and (" +
+            "a.gjeldendeInnhold.deltakerFornavn is not null and a.gjeldendeInnhold.deltakerEtternavn is not null and a.gjeldendeInnhold.deltakerTlf is not null and " +
+            "a.gjeldendeInnhold.bedriftNavn is not null and a.gjeldendeInnhold.arbeidsgiverFornavn is not null and a.gjeldendeInnhold.arbeidsgiverEtternavn is not null " +
+            "and a.gjeldendeInnhold.arbeidsgiverTlf is not null and a.gjeldendeInnhold.veilederFornavn is not null and a.gjeldendeInnhold.veilederEtternavn is not null" +
+            ") " +
+            "and (:tiltakstype  = 'MIDLERTIDIG_LONNSTILSKUDD')",
+            nativeQuery = false)
+    Page<Object> finnAvtalerForInnloggetVeilederHvorStatusErManglerGodkjenning(
+            @Param("avtaleNr") Integer avtaleNr,
+            @Param("veilederNavIdent") NavIdent veilederNavIdent,
+            @Param("deltakerFnr") Fnr deltakerFnr,
+            @Param("bedriftNr") List<String> bedriftNr,
+            @Param("tiltakstype") Tiltakstype tiltakstype,
+            Pageable pageable
+    );
+
+
 }
