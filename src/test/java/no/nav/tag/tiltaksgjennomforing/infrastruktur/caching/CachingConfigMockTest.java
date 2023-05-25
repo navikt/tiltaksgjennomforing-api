@@ -41,7 +41,6 @@ public class CachingConfigMockTest {
     private PersondataService mockPersondataService;
     private Norg2Client mockNorg2Client;
     private VeilarbArenaClient mockVeilarbArenaClient;
-    private AbacAdapter mockAbacAdapter;
 
     @Autowired
     private TilgangskontrollService tilgangskontrollService;
@@ -51,8 +50,6 @@ public class CachingConfigMockTest {
     private Norg2Client norg2Client;
     @Autowired
     private VeilarbArenaClient veilarbArenaClient;
-    @Autowired
-    AbacAdapter abacAdapter;
 
     private Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
     private final PdlRespons FØRSTE_PDL_RESPONSE = TestData.enPdlrespons(false);
@@ -91,8 +88,6 @@ public class CachingConfigMockTest {
             Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
             "0904"
     );
-    private final boolean FØRSTE_ABAC_VERDIC_FOR_F142226_07098142678 = true;
-    private final boolean ANDRE_ABAC_VERDIC_FOR_F142226_11111111111 = false;
 
 
     @EnableCaching
@@ -147,7 +142,6 @@ public class CachingConfigMockTest {
         mockPersondataService = AopTestUtils.getTargetObject(persondataService);
         mockNorg2Client = AopTestUtils.getTargetObject(norg2Client);
         mockVeilarbArenaClient = AopTestUtils.getTargetObject(veilarbArenaClient);
-        mockAbacAdapter = AopTestUtils.getTargetObject(abacAdapter);
 
         lenient().when(mockTilgangskontrollService.harSkrivetilgangTilKandidat(
                 any(),
@@ -163,14 +157,6 @@ public class CachingConfigMockTest {
         when(mockVeilarbArenaClient.HentOppfølgingsenhetFraCacheEllerArena(avtale.getDeltakerFnr().asString())).thenReturn(
                 FØRSTE_OPPFØLGNING_ENHET_ARENA,
                 ANDRE_OPPFØLGNING_ENHET_ARENA
-        );
-        when(mockAbacAdapter.harSkriveTilgang("F142226", "07098142678")).thenReturn(
-                FØRSTE_ABAC_VERDIC_FOR_F142226_07098142678,
-                FØRSTE_ABAC_VERDIC_FOR_F142226_07098142678
-        );
-        when(mockAbacAdapter.harSkriveTilgang("F142226", "11111111111")).thenReturn(
-                ANDRE_ABAC_VERDIC_FOR_F142226_11111111111,
-                ANDRE_ABAC_VERDIC_FOR_F142226_11111111111
         );
     }
 
@@ -211,31 +197,6 @@ public class CachingConfigMockTest {
 
         /** Blir kalt 2 ganger. Andre iterasjon så treffer vi cache response istedenfor endepunkt */
         verify(mockNorg2Client, times(1)).hentGeoEnhetFraCacheEllerNorg2(geoEnhet);
-    }
-
-    @Test
-    public void bekreft_antall_ganger_Cacheable_endepunkter_blir_kalt_ved_abac() {
-        NavIdent veilederIdent = new NavIdent("F142226");
-
-        Fnr første_deltakerFnr = new Fnr("07098142678");
-        Fnr andre_deltakerFnr = new Fnr("11111111111");
-
-        boolean tilgang_navId_F142226_og_fnr_07098142678 = abacAdapter.harSkriveTilgang(veilederIdent.asString(), første_deltakerFnr.asString());
-        boolean tilgang_navId_F142226_og_fnr_07098142678_response2 = abacAdapter.harSkriveTilgang(veilederIdent.asString(), første_deltakerFnr.asString());
-
-        verify(mockAbacAdapter, times(1)).harSkriveTilgang(veilederIdent.asString(), første_deltakerFnr.asString());
-
-
-        boolean tilgang_navId_F142226_og_fnr_11111111111 = abacAdapter.harSkriveTilgang(veilederIdent.asString(), andre_deltakerFnr.asString());
-        boolean tilgang_navId_F142226_og_fnr_11111111111_response2 = abacAdapter.harSkriveTilgang(veilederIdent.asString(), andre_deltakerFnr.asString());
-
-       verify(mockAbacAdapter, times(1)).harSkriveTilgang(veilederIdent.asString(), andre_deltakerFnr.asString());
-
-        Assertions.assertEquals(FØRSTE_ABAC_VERDIC_FOR_F142226_07098142678, tilgang_navId_F142226_og_fnr_07098142678);
-        Assertions.assertEquals(FØRSTE_ABAC_VERDIC_FOR_F142226_07098142678, tilgang_navId_F142226_og_fnr_07098142678_response2);
-
-        Assertions.assertEquals(ANDRE_ABAC_VERDIC_FOR_F142226_11111111111, tilgang_navId_F142226_og_fnr_11111111111);
-        Assertions.assertEquals(ANDRE_ABAC_VERDIC_FOR_F142226_11111111111, tilgang_navId_F142226_og_fnr_11111111111_response2);
     }
 
     @Test
