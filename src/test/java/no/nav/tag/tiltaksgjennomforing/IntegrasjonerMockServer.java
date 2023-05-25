@@ -19,6 +19,10 @@ public class IntegrasjonerMockServer implements DisposableBean {
         server.start();
     }
 
+    public WireMockServer getServer() {
+        return server;
+    }
+
     @Override
     public void destroy() {
         log.info("Stopper mockserver.");

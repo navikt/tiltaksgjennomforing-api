@@ -43,20 +43,17 @@ public class CachingConfigTest {
     private final VeilarbArenaClient veilarbArenaClient;
     private final Norg2Client norg2Client;
     private final PersondataService persondataService;
-    private final AbacAdapter abacAdapter;
 
     public CachingConfigTest(
             @Autowired CacheManager cacheManager,
             @Autowired VeilarbArenaClient veilarbArenaClient,
             @Autowired Norg2Client norg2Client,
-            @Autowired PersondataService persondataService,
-            @Autowired AbacAdapter abacAdapter
+            @Autowired PersondataService persondataService
     ){
         this.cacheManager = cacheManager;
         this.veilarbArenaClient = veilarbArenaClient;
         this.norg2Client = norg2Client;
         this.persondataService = persondataService;
-        this.abacAdapter = abacAdapter;
     }
 
     private  <T,K> T getCacheValue(String cacheName, K cacheKey, Class<T> clazz) {
@@ -150,39 +147,6 @@ public class CachingConfigTest {
                 persondataService.hentNavnFraPdlRespons(pdlRespons).getEtternavn(),
                 persondataService.hentNavnFraPdlRespons(pdlCache).getEtternavn()
         );
-    }
-
-    @Test
-    public void sjekk_at_caching_fanger_opp_data_fra_abac_cache() {
-        NavIdent veilederIdent = new NavIdent("F142226");
-        Fnr deltakerFnr = new Fnr("07098142678");
-
-        NavIdent veilederIdent2 = new NavIdent("F142226");
-        Fnr deltakerFnr2 = new Fnr("11111111111");
-
-        Fnr brukerFnr = new Fnr("00000000000");
-
-        boolean tilgang_navId_F142226_og_fnr_07098142678 = abacAdapter.harSkriveTilgang(veilederIdent.asString(), deltakerFnr.asString());
-        boolean tilgang_navId_F142226_og_fnr_11111111111 = abacAdapter.harSkriveTilgang(veilederIdent2.asString(), deltakerFnr2.asString());
-
-        Assertions.assertTrue(getCacheValue(ABAC_CACHE, veilederIdent.asString() + deltakerFnr.asString(), boolean.class));
-        Assertions.assertEquals(
-                tilgang_navId_F142226_og_fnr_07098142678,
-                getCacheValue(ABAC_CACHE, veilederIdent.asString() + deltakerFnr.asString(), boolean.class)
-        );
-        Assertions.assertFalse(getCacheValue(ABAC_CACHE, veilederIdent2.asString() + deltakerFnr2.asString(), boolean.class));
-        Assertions.assertEquals(
-                tilgang_navId_F142226_og_fnr_11111111111,
-                getCacheValue(ABAC_CACHE, veilederIdent2.asString() + deltakerFnr2.asString(), boolean.class)
-        );
-        Assertions.assertNotEquals(
-                getCacheValue(ABAC_CACHE, veilederIdent.asString() + deltakerFnr.asString(), boolean.class),
-                (getCacheValue(ABAC_CACHE, veilederIdent2.asString() + deltakerFnr2.asString(), boolean.class))
-        );
-
-        Assertions.assertThrows(Exception.class, () -> {
-            getCacheValue(ABAC_CACHE, veilederIdent.asString() + brukerFnr.asString(), boolean.class);
-        });
     }
 
     @Test

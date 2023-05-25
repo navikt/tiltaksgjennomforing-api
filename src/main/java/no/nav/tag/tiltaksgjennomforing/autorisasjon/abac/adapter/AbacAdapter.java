@@ -1,25 +1,25 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter;
 
-import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.Cache;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
 import static no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter.AbacTransformer.tilAbacRequestBody;
 
 @Service
-@RequiredArgsConstructor
 public class AbacAdapter {
     final Logger log = LoggerFactory.getLogger(getClass());
     private final RestTemplate restTemplate;
@@ -28,21 +28,42 @@ public class AbacAdapter {
 
     private final AbacProperties abacProperties;
 
-    @Cacheable(value = EhCacheConfig.ABAC_CACHE, key = "#navIdent + #deltakerFnr")
+    private final Cache cache;
+
+    public AbacAdapter(RestTemplate restTemplate, STSClient stsClient, AbacProperties abacProperties, EhCacheCacheManager cacheManager) {
+        this.restTemplate = restTemplate;
+        this.stsClient = stsClient;
+        this.abacProperties = abacProperties;
+        this.cache = cacheManager.getCache(EhCacheConfig.ABAC_CACHE);
+    }
+
+    Map<String, String> cacheKey(String navIdent, String deltakerFnr) {
+        return Map.of("navIdent", navIdent, "deltakerFnr", deltakerFnr);
+    }
+
+    private AbacResponse hentRespons(String navIdent, String deltakerFnr) {
+        return restTemplate.postForObject(
+                abacProperties.getUri(),
+                getHttpEntity(tilAbacRequestBody(navIdent, deltakerFnr)),
+                AbacResponse.class
+        );
+    }
+
     public boolean harSkriveTilgang(String navIdent, String deltakerFnr) {
+        var key = cacheKey(navIdent, deltakerFnr);
+        var cachedValue = cache.get(key, Boolean.class);
+        if (cachedValue != null) {
+            return cachedValue;
+        }
         try {
-            AbacResponse response = restTemplate.postForObject(
-                    abacProperties.getUri(),
-                    getHttpEntity(tilAbacRequestBody(navIdent, deltakerFnr)),
-                    AbacResponse.class
-            );
-            return Objects.equals(response.response.decision, "Permit");
+            var result = Objects.equals(hentRespons(navIdent, deltakerFnr).response.decision, "Permit");
+            cache.putIfAbsent(key, result);
+            return result;
         } catch (RuntimeException ex) {
             log.error("Abac feil", ex);
             return false;
         }
     }
-
 
     private HttpEntity getHttpEntity(String body) {
         HttpHeaders headers = new HttpHeaders();
