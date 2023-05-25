@@ -5,6 +5,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+
+import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -25,7 +27,9 @@ public class TilgangskontrollServiceImpl implements TilgangskontrollService {
 
     public boolean harSkrivetilgangTilKandidat(InternBruker internBruker, Fnr fnr) {
         var harAbacTilgang = abacAdapter.harSkriveTilgang(internBruker.getNavIdent().asString(), fnr.asString());
+        var contextMap = MDC.getCopyOfContextMap();
         executorService.submit(() -> {
+            MDC.setContextMap(contextMap);
             try {
                 var harPoaoTilgang = poaoTilgangService.harSkriveTilgang(internBruker.getAzureOid(), fnr.asString());
                 if (harPoaoTilgang != harAbacTilgang) {
@@ -33,6 +37,9 @@ public class TilgangskontrollServiceImpl implements TilgangskontrollService {
                 }
             } catch (Exception e) {
                 log.error("Feil ved tilgangskontroll-sammenligning", e);
+            }
+            finally {
+                MDC.clear();
             }
         });
         return harAbacTilgang;
