@@ -164,11 +164,11 @@ public class CachingConfigMockTest {
                 FØRSTE_OPPFØLGNING_ENHET_ARENA,
                 ANDRE_OPPFØLGNING_ENHET_ARENA
         );
-        when(mockAbacAdapter.harLeseTilgang("F142226", "07098142678")).thenReturn(
+        when(mockAbacAdapter.harSkriveTilgang("F142226", "07098142678")).thenReturn(
                 FØRSTE_ABAC_VERDIC_FOR_F142226_07098142678,
                 FØRSTE_ABAC_VERDIC_FOR_F142226_07098142678
         );
-        when(mockAbacAdapter.harLeseTilgang("F142226", "11111111111")).thenReturn(
+        when(mockAbacAdapter.harSkriveTilgang("F142226", "11111111111")).thenReturn(
                 ANDRE_ABAC_VERDIC_FOR_F142226_11111111111,
                 ANDRE_ABAC_VERDIC_FOR_F142226_11111111111
         );
@@ -220,16 +220,16 @@ public class CachingConfigMockTest {
         Fnr første_deltakerFnr = new Fnr("07098142678");
         Fnr andre_deltakerFnr = new Fnr("11111111111");
 
-        boolean tilgang_navId_F142226_og_fnr_07098142678 = abacAdapter.harLeseTilgang(veilederIdent.asString(), første_deltakerFnr.asString());
-        boolean tilgang_navId_F142226_og_fnr_07098142678_response2 = abacAdapter.harLeseTilgang(veilederIdent.asString(), første_deltakerFnr.asString());
+        boolean tilgang_navId_F142226_og_fnr_07098142678 = abacAdapter.harSkriveTilgang(veilederIdent.asString(), første_deltakerFnr.asString());
+        boolean tilgang_navId_F142226_og_fnr_07098142678_response2 = abacAdapter.harSkriveTilgang(veilederIdent.asString(), første_deltakerFnr.asString());
 
-        verify(mockAbacAdapter, times(1)).harLeseTilgang(veilederIdent.asString(), første_deltakerFnr.asString());
+        verify(mockAbacAdapter, times(1)).harSkriveTilgang(veilederIdent.asString(), første_deltakerFnr.asString());
 
 
-        boolean tilgang_navId_F142226_og_fnr_11111111111 = abacAdapter.harLeseTilgang(veilederIdent.asString(), andre_deltakerFnr.asString());
-        boolean tilgang_navId_F142226_og_fnr_11111111111_response2 = abacAdapter.harLeseTilgang(veilederIdent.asString(), andre_deltakerFnr.asString());
+        boolean tilgang_navId_F142226_og_fnr_11111111111 = abacAdapter.harSkriveTilgang(veilederIdent.asString(), andre_deltakerFnr.asString());
+        boolean tilgang_navId_F142226_og_fnr_11111111111_response2 = abacAdapter.harSkriveTilgang(veilederIdent.asString(), andre_deltakerFnr.asString());
 
-       verify(mockAbacAdapter, times(1)).harLeseTilgang(veilederIdent.asString(), andre_deltakerFnr.asString());
+       verify(mockAbacAdapter, times(1)).harSkriveTilgang(veilederIdent.asString(), andre_deltakerFnr.asString());
 
         Assertions.assertEquals(FØRSTE_ABAC_VERDIC_FOR_F142226_07098142678, tilgang_navId_F142226_og_fnr_07098142678);
         Assertions.assertEquals(FØRSTE_ABAC_VERDIC_FOR_F142226_07098142678, tilgang_navId_F142226_og_fnr_07098142678_response2);

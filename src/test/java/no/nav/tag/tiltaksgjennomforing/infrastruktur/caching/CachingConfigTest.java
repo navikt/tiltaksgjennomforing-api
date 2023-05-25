@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -163,8 +162,8 @@ public class CachingConfigTest {
 
         Fnr brukerFnr = new Fnr("00000000000");
 
-        boolean tilgang_navId_F142226_og_fnr_07098142678 = abacAdapter.harLeseTilgang(veilederIdent.asString(), deltakerFnr.asString());
-        boolean tilgang_navId_F142226_og_fnr_11111111111 = abacAdapter.harLeseTilgang(veilederIdent2.asString(), deltakerFnr2.asString());
+        boolean tilgang_navId_F142226_og_fnr_07098142678 = abacAdapter.harSkriveTilgang(veilederIdent.asString(), deltakerFnr.asString());
+        boolean tilgang_navId_F142226_og_fnr_11111111111 = abacAdapter.harSkriveTilgang(veilederIdent2.asString(), deltakerFnr2.asString());
 
         Assertions.assertTrue(getCacheValue(ABAC_CACHE, veilederIdent.asString() + deltakerFnr.asString(), boolean.class));
         Assertions.assertEquals(

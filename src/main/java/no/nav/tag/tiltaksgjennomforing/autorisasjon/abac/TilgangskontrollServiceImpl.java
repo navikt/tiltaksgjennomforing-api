@@ -24,7 +24,7 @@ public class TilgangskontrollServiceImpl implements TilgangskontrollService {
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public boolean harSkrivetilgangTilKandidat(InternBruker internBruker, Fnr fnr) {
-        var harAbacTilgang = abacAdapter.harLeseTilgang(internBruker.getNavIdent().asString(), fnr.asString());
+        var harAbacTilgang = abacAdapter.harSkriveTilgang(internBruker.getNavIdent().asString(), fnr.asString());
         executorService.submit(() -> {
             try {
                 var harPoaoTilgang = poaoTilgangService.harSkriveTilgang(internBruker.getAzureOid(), fnr.asString());

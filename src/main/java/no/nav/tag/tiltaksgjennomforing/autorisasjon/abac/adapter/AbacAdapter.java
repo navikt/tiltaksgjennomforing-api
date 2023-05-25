@@ -1,9 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
 import org.slf4j.Logger;
@@ -32,7 +29,7 @@ public class AbacAdapter {
     private final AbacProperties abacProperties;
 
     @Cacheable(value = EhCacheConfig.ABAC_CACHE, key = "#navIdent + #deltakerFnr")
-    public boolean harLeseTilgang(String navIdent, String deltakerFnr) {
+    public boolean harSkriveTilgang(String navIdent, String deltakerFnr) {
         try {
             AbacResponse response = restTemplate.postForObject(
                     abacProperties.getUri(),
