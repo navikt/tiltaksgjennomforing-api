@@ -66,8 +66,7 @@ public class ArbeidsgiverTest {
                 ),
                 Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
                 persondataService,
-                norg2Client,
-                veilarbArenaClient);
+                norg2Client);
 
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
         assertThat(avtale.isOpprettetAvArbeidsgiver()).isTrue();
@@ -84,7 +83,6 @@ public class ArbeidsgiverTest {
                 null,
                 null,
                 null,
-                null,
                 null
         );
         assertThatThrownBy(
@@ -96,7 +94,6 @@ public class ArbeidsgiverTest {
     public void endreAvtale_validererTilDato() {
         Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
-                null,
                 null,
                 null,
                 null,

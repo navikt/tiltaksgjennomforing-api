@@ -139,7 +139,6 @@ public class InnloggetBrukerTest {
                         Set.of(),
                         Map.of(),
                         null,
-                        null,
                         null
                 ).harTilgang(avtale)
         ).isFalse();
@@ -185,7 +184,6 @@ public class InnloggetBrukerTest {
                         Set.of(),
                         Map.of(),
                         null,
-                        null,
                         null).harTilgang(avtale)
         ).isFalse();
     }
@@ -197,7 +195,6 @@ public class InnloggetBrukerTest {
                 new Fnr("00000000009"),
                 Set.of(),
                 tilganger,
-                null,
                 null,
                 null
         );
@@ -211,7 +208,6 @@ public class InnloggetBrukerTest {
                 new Fnr("00000000009"),
                 Set.of(),
                 tilganger,
-                null,
                 null,
                 null
         );
@@ -230,7 +226,6 @@ public class InnloggetBrukerTest {
                 Set.of(),
                 tilganger,
                 null,
-                null,
                 null
         );
         assertThat(Arbeidsgiver.harTilgang(avtale)).isFalse();
@@ -246,7 +241,6 @@ public class InnloggetBrukerTest {
                 Set.of(),
                 tilganger,
                 null,
-                null,
                 null
         );
         assertThat(Arbeidsgiver.harTilgang(avtale)).isTrue();
@@ -260,7 +254,6 @@ public class InnloggetBrukerTest {
                 new Fnr("00000000009"),
                 Set.of(),
                 tilganger,
-                null,
                 null,
                 null
         );

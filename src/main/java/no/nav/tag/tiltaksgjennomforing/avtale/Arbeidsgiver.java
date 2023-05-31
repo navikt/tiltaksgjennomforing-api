@@ -50,7 +50,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     private static boolean annullertForMerEnn12UkerSiden(Avtale avtale) {
-        return avtale.getAnnullertTidspunkt()
+        return avtale.getAnnullertTidspunkt() != null && avtale.getAnnullertTidspunkt()
                 .plus(84, ChronoUnit.DAYS)
                 .isBefore(Now.instant());
     }
