@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,44 +13,44 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
-
 
 public class Arbeidsgiver extends Avtalepart<Fnr> {
     private final Map<BedriftNr, Collection<Tiltakstype>> tilganger;
     private final Set<AltinnReportee> altinnOrganisasjoner;
     private final PersondataService persondataService;
     private final Norg2Client norg2Client;
-    private final VeilarbArenaClient veilarbArenaClient;
 
     public Arbeidsgiver(
             Fnr identifikator,
             Set<AltinnReportee> altinnOrganisasjoner,
             Map<BedriftNr, Collection<Tiltakstype>> tilganger,
             PersondataService persondataService,
-            Norg2Client norg2Client,
-            VeilarbArenaClient veilarbArenaClient
+            Norg2Client norg2Client
     ) {
         super(identifikator);
         this.altinnOrganisasjoner = altinnOrganisasjoner;
         this.tilganger = tilganger;
         this.persondataService = persondataService;
         this.norg2Client = norg2Client;
-        this.veilarbArenaClient = veilarbArenaClient;
     }
 
     private static boolean avbruttForMerEnn12UkerSiden(Avtale avtale) {
         return avtale.isAvbrutt() && avtale.getSistEndret()
+                .plus(84, ChronoUnit.DAYS)
+                .isBefore(Now.instant());
+    }
+
+    private static boolean annullertForMerEnn12UkerSiden(Avtale avtale) {
+        return avtale.getAnnullertTidspunkt()
                 .plus(84, ChronoUnit.DAYS)
                 .isBefore(Now.instant());
     }
@@ -137,6 +136,9 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
             return false;
         }
         if (avbruttForMerEnn12UkerSiden(avtale)) {
+            return false;
+        }
+        if (annullertForMerEnn12UkerSiden(avtale)) {
             return false;
         }
         return harTilgangPåTiltakIBedrift(avtale.getBedriftNr(), avtale.getTiltakstype());
