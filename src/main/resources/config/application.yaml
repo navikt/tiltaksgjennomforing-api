@@ -61,6 +61,8 @@ tiltaksgjennomforing:
     fixed-delay: 120
   tilskuddsperioder:
     tiltakstyper: SOMMERJOBB,MIDLERTIDIG_LONNSTILSKUDD,VARIG_LONNSTILSKUDD
+  salesforcekontorer:
+    enheter: ${tiltaksgjennomforing.salesforce.enheter}
 
 no.nav.security.jwt:
   client:

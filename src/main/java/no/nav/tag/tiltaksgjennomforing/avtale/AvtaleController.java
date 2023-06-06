@@ -61,12 +61,23 @@ public class AvtaleController {
     private final KontoregisterService kontoregisterService;
     private final DokgenService dokgenService;
     private final TilskuddsperiodeConfig tilskuddsperiodeConfig;
+    private final SalesforceKontorerConfig salesforceKontorerConfig;
     private final VeilarbArenaClient veilarbArenaClient;
 
     @GetMapping("/{avtaleId}")
     public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         return avtalepart.hentAvtale(avtaleRepository, id);
+    }
+
+    @GetMapping("/{avtaleId}/vis-salesforce-dialog")
+    public Boolean visSalesforceDialog(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
+        Avtale avtale = avtalepart.hentAvtale(avtaleRepository, id);
+        if(salesforceKontorerConfig.getEnheter().contains(avtale.getEnhetOppfolging())) {
+            return true;
+        }
+        return false;
     }
 
     @GetMapping("/avtaleNr/{avtaleNr}")
