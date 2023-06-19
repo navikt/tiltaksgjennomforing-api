@@ -74,7 +74,9 @@ public class AvtaleController {
     public Boolean visSalesforceDialog(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtalepart.hentAvtale(avtaleRepository, id);
-        if(salesforceKontorerConfig.getEnheter().contains(avtale.getEnhetOppfolging()) && avtale.statusSomEnum() == Status.GJENNOMFØRES && avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD) {
+        if(salesforceKontorerConfig.getEnheter().contains(avtale.getEnhetOppfolging()) &&
+                avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD &&
+                (avtale.statusSomEnum() == Status.GJENNOMFØRES || avtale.statusSomEnum() == Status.AVSLUTTET)) {
             return true;
         }
         return false;
