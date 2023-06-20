@@ -4,7 +4,6 @@ package no.nav.tag.tiltaksgjennomforing.infrastruktur.cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.PersistenceConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
@@ -32,27 +31,22 @@ public class EhCacheConfig extends CachingConfigurerSupport {
 
     public static final String ARENA_CACHCE = "arena_cache";
 
-    @Autowired
-    private CacheDto cacheDto;
-
     @Bean
-    public CacheManager ehCacheManager() {
+    public CacheManager ehCacheManager(CacheDto cacheDto) {
         net.sf.ehcache.config.Configuration config = new net.sf.ehcache.config.Configuration();
-        cacheDto.getEhcaches().stream().forEach(cache -> {
-            config.addCache(
-                    setupCache(
-                            cache.getName(),
-                            cache.getMaximumSize(),
-                            Duration.ofMinutes(cache.getExpiryInMinutes())
-                    )
-            );
-        });
+        cacheDto.getEhcaches().forEach(cache -> config.addCache(
+                setupCache(
+                        cache.getName(),
+                        cache.getMaximumSize(),
+                        Duration.ofMinutes(cache.getExpiryInMinutes())
+                )
+        ));
         return CacheManager.newInstance(config);
     }
 
     @Bean
-    public EhCacheCacheManager cacheManager() {
-        return new EhCacheCacheManager(ehCacheManager());
+    public EhCacheCacheManager cacheManager(CacheDto cacheDto) {
+        return new EhCacheCacheManager(ehCacheManager(cacheDto));
     }
 
     private static CacheConfiguration setupCache(String name, int maxEntriesLocalHeap, Duration duration) {
