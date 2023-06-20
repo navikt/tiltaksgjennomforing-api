@@ -38,7 +38,7 @@ public class AvtaleSorterer {
         }
     }
 
-   static protected Sort.Order getSortingOrderForPageabl(String order, String direction) {
+   static protected Sort.Order getSortingOrderForPageable(String order, String direction) {
        SortingDirection sortingDirection = SortingDirection.valueOf(direction.toUpperCase());
        return switch (sortingDirection) {
             case ASC -> getSortingOrderForPageableASC(SortingOrder.valueOf(order.toUpperCase()));
