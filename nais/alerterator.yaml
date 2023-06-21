@@ -30,7 +30,7 @@ spec:
             severity: critical
 
         - alert: TILTAKSGJENNOMFORING-API ERROR!
-          expr: sum(increase(logd_messages_total{log_app="tiltaksgjennomforing-api",log_level="Error"}[10m])) > 0
+          expr: sum(increase(logback_events_total{app="tiltak-refusjon-api",level="error"}[10m])) > 0
           for: 10s
           annotations:
             summary: |-
