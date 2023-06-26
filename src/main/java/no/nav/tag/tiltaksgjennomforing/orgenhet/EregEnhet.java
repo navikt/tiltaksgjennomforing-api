@@ -14,9 +14,6 @@ public class EregEnhet {
     private String type;
 
     public Organisasjon konverterTilDomeneObjekt() {
-        String bedriftnavn = Stream.of(navn.getNavnelinje1(), navn.getNavnelinje2(), navn.getNavnelinje3(), navn.getNavnelinje4())
-                .filter(navnelinje -> navnelinje != null)
-                .collect(Collectors.joining(" "));
-        return new Organisasjon(new BedriftNr(organisasjonsnummer), bedriftnavn);
+        return new Organisasjon(new BedriftNr(organisasjonsnummer), navn.getSammensattnavn());
     }
 }

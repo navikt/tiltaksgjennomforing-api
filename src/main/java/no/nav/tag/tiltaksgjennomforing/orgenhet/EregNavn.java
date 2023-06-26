@@ -8,4 +8,5 @@ public class EregNavn {
     private String navnelinje2;
     private String navnelinje3;
     private String navnelinje4;
+    private String sammensattnavn;
 }
