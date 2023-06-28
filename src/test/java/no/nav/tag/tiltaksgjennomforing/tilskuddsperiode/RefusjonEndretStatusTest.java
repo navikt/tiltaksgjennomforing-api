@@ -12,7 +12,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.util.Optional;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
-import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 
 class RefusjonEndretStatusTest {

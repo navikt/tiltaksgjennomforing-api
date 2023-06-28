@@ -1,7 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy;
 
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-
 import java.time.LocalDate;
 
 public class VarigLonnstilskuddStartOgSluttDatoStrategy implements StartOgSluttDatoStrategy {

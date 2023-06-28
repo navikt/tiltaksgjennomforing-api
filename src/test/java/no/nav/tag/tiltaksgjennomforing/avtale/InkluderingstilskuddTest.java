@@ -2,7 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.EnumSet;
 import java.util.List;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;

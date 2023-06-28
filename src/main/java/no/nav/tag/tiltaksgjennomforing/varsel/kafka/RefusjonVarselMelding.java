@@ -2,7 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Value;
 
 import java.time.LocalDate;
 import java.util.UUID;

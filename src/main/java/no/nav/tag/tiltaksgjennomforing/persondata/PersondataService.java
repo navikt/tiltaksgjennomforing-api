@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.persondata;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;

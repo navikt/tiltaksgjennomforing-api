@@ -28,12 +28,10 @@ import org.springframework.http.ResponseEntity;
 import java.time.Instant;
 import java.util.*;
 
-import static java.util.Arrays.asList;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enArbeidstreningAvtale;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enNavIdent;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.InstanceOfAssertFactories.predicate;
 import static org.mockito.Mockito.*;
 
 @SuppressWarnings("rawtypes")

@@ -1,9 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonStatus;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
