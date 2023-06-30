@@ -8,10 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.security.token.support.core.api.Unprotected;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
@@ -30,6 +30,7 @@ public class InternalAvtaleHendelseController {
 
     private final AvtaleMeldingEntitetRepository avtaleMeldingEntitetRepository;
     private final AvtaleRepository avtaleRepository;
+    private final InnloggingService innloggingService;
 
     private final TokenUtils tokenUtils;
 
@@ -39,17 +40,19 @@ public class InternalAvtaleHendelseController {
         }
     }
 
-    @PostMapping("/fnr")
-    public List<String> hentSisteHendelseForFnr(@RequestBody AvtaleMeldingForFnr meldingForFnr) {
-        sjekkTilgang();
+    @GetMapping("/{fnr}")
+    public List<String> hentSisteHendelseForFnr(@PathVariable("avtaleId") String fnr) {
+        Avtalepart avtalepart = innloggingService.hentAvtalepart(Avtalerolle.VEILEDER);
         List<String> hendelser = new ArrayList<>();
-        if(Fnr.erGyldigFnr(meldingForFnr.fnr)) {
-            List<Avtale> alleAvtalerForDeltaker = avtaleRepository.findAllByDeltakerFnr(new Fnr(meldingForFnr.fnr));
+        if(Fnr.erGyldigFnr(fnr)) {
+            List<Avtale> alleAvtalerForDeltaker = avtaleRepository.findAllByDeltakerFnr(new Fnr(fnr));
             alleAvtalerForDeltaker.forEach(avtale -> {
-                List<AvtaleMeldingEntitet> avtaleMeldingEntiteter = avtaleMeldingEntitetRepository.findAllByAvtaleId(avtale.getId());
-                AvtaleMeldingEntitet avtaleMeldingEntitet = avtaleMeldingEntiteter.stream().max(Comparator.comparing(melding -> melding.getTidspunkt())).orElseGet(null);
-                if(avtaleMeldingEntitet != null) {
-                    hendelser.add(avtaleMeldingEntitet.getJson());
+                if(avtalepart.harTilgang(avtale)) {
+                    List<AvtaleMeldingEntitet> avtaleMeldingEntiteter = avtaleMeldingEntitetRepository.findAllByAvtaleId(avtale.getId());
+                    AvtaleMeldingEntitet avtaleMeldingEntitet = avtaleMeldingEntiteter.stream().max(Comparator.comparing(melding -> melding.getTidspunkt())).orElseGet(null);
+                    if(avtaleMeldingEntitet != null) {
+                        hendelser.add(avtaleMeldingEntitet.getJson());
+                    }
                 }
             });
         }
@@ -59,10 +62,14 @@ public class InternalAvtaleHendelseController {
 
     @GetMapping("/{avtaleId}")
     public String hentSisteHendelse(@PathVariable("avtaleId") UUID avtaleId) {
-        List<AvtaleMeldingEntitet> avtaleMeldingEntiteter = avtaleMeldingEntitetRepository.findAllByAvtaleId(avtaleId);
-        AvtaleMeldingEntitet avtaleMeldingEntitet = avtaleMeldingEntiteter.stream().max(Comparator.comparing(melding -> melding.getTidspunkt())).orElseThrow(RessursFinnesIkkeException::new);
-
-        return avtaleMeldingEntitet.getJson();
+        Avtalepart avtalepart = innloggingService.hentAvtalepart(Avtalerolle.VEILEDER);
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        if(avtalepart.harTilgang(avtale)) {
+            List<AvtaleMeldingEntitet> avtaleMeldingEntiteter = avtaleMeldingEntitetRepository.findAllByAvtaleId(avtaleId);
+            AvtaleMeldingEntitet avtaleMeldingEntitet = avtaleMeldingEntiteter.stream().max(Comparator.comparing(melding -> melding.getTidspunkt())).orElseThrow(RessursFinnesIkkeException::new);
+            return avtaleMeldingEntitet.getJson();
+        }
+        throw new IkkeTilgangTilDeltakerException();
     }
 
     @GetMapping("/skjema")
