@@ -1087,6 +1087,18 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (!nySluttDato.isBefore(gjeldendeInnhold.getSluttDato())) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_ETTER_SLUTTDATO);
         }
+        // Kan ikke forkorte før en utbetalt/sendtkrav tilskuddsperiode
+        TreeSet<TilskuddPeriode> aktiveTilskuddsperioder = new TreeSet(tilskuddPeriode.stream().filter(t -> t.isAktiv()).collect(Collectors.toSet()));
+        Optional<TilskuddPeriode> sisteUtbetalt = aktiveTilskuddsperioder.descendingSet().stream().filter(tilskuddPeriode -> (
+                tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.SENDT_KRAV ||
+                tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.UTBETALT ||
+                tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.UTBETALING_FEILET ||
+                tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.GODKJENT_MINUSBELØP ||
+                tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.GODKJENT_NULLBELØP)
+        ).max(Comparator.comparing(tilskuddPeriode1 -> tilskuddPeriode1.getStartDato()));
+        if (sisteUtbetalt.isPresent() && nySluttDato.isBefore(sisteUtbetalt.get().getSluttDato())) {
+            throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_FOR_UTBETALT_TILSKUDDSPERIODE);
+        }
         sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), nySluttDato);
         if (StringUtils.isBlank(grunn) || (grunn.equals("Annet") && StringUtils.isBlank(annetGrunn))) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_GRUNN_MANGLER);
