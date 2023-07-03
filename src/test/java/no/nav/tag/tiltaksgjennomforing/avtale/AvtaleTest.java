@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.AssertFeilkode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
@@ -974,8 +975,6 @@ public class AvtaleTest {
         // Gi veileder tilgang til deltaker
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
 
-        TilskuddsperiodeConfig tilskuddsperiodeConfig = new TilskuddsperiodeConfig();
-
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
                 tilgangskontrollService,
@@ -1057,6 +1056,89 @@ public class AvtaleTest {
         avtale.forkortAvtale(Now.localDate().plusMonths(12).minusDays(1), "grunn", "", TestData.enNavIdent());
         assertThat(avtale.getGjeldendeInnhold().getDatoForRedusertProsent()).isNull();
         assertThat(avtale.getGjeldendeInnhold().getSumLønnstilskuddRedusert()).isNull();
+    }
+
+    // Man skal ikke kunne forkorte en avtale sånn at man får en sluttdato som er før en godkjent/utbetalt tilskuddsperide (refusjon)
+    @Test
+    public void kan_ikke_forkorte_forbi_utbetalt_tilskuddsperiode() {
+        Now.fixedDate(LocalDate.of(2023,1,1));
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        Deltaker deltaker = TestData.enDeltaker(avtale);
+        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
+        // Gi veileder tilgang til deltaker
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+
+        Veileder veileder = new Veileder(
+                avtale.getVeilederNavIdent(),
+                tilgangskontrollService,
+                mock(PersondataService.class),
+                mock(Norg2Client.class),
+                Set.of(new NavEnhet("4802", "Trysil")),
+                mock(SlettemerkeProperties.class),
+                false,
+                mock(VeilarbArenaClient.class)
+        );
+
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
+        deltaker.godkjennAvtale(Instant.now(), avtale);
+        arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
+        veileder.godkjennAvtale(Instant.now(), avtale);
+
+        avtale.tilskuddsperiode(0).setRefusjonStatus(RefusjonStatus.UTBETALT);
+        avtale.tilskuddsperiode(1).setRefusjonStatus(RefusjonStatus.UTBETALT);
+        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"), TestData.ENHET_OPPFØLGING.getVerdi());
+        avtale.getTilskuddPeriode().forEach(tilskuddPeriode -> {
+            System.out.print(tilskuddPeriode.getRefusjonStatus() + " ");
+            System.out.println(tilskuddPeriode.getStartDato());
+        });
+        avtale.forkortAvtale(LocalDate.of(2023,2, 28), "Grunn", "Grunn2", veileder.getNavIdent());
+        assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(LocalDate.of(2023,2,28));
+        assertFeilkode(Feilkode.KAN_IKKE_FORKORTE_FOR_UTBETALT_TILSKUDDSPERIODE, () -> avtale.forkortAvtale(LocalDate.of(2023,2,27), "Grunn", "Grunn2", veileder.getNavIdent()));
+        Now.resetClock();
+    }
+
+    // Man skal ikke kunne forkorte en avtale sånn at man får en sluttdato som er før en godkjent/utbetalt tilskuddsperide (refusjon)
+    @Test
+    public void kan_ikke_forkorte_forbi_utbetalt_tilskuddsperiode_med_split_mitt_i_en_måned() {
+        Now.fixedDate(LocalDate.of(2023,1,15));
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        Deltaker deltaker = TestData.enDeltaker(avtale);
+        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
+        // Gi veileder tilgang til deltaker
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+
+        Veileder veileder = new Veileder(
+                avtale.getVeilederNavIdent(),
+                tilgangskontrollService,
+                mock(PersondataService.class),
+                mock(Norg2Client.class),
+                Set.of(new NavEnhet("4802", "Trysil")),
+                mock(SlettemerkeProperties.class),
+                false,
+                mock(VeilarbArenaClient.class)
+        );
+
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
+        deltaker.godkjennAvtale(Instant.now(), avtale);
+        arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
+        veileder.godkjennAvtale(Instant.now(), avtale);
+
+        avtale.tilskuddsperiode(0).setRefusjonStatus(RefusjonStatus.UTBETALT);
+        avtale.tilskuddsperiode(1).setRefusjonStatus(RefusjonStatus.UTBETALT);
+        avtale.tilskuddsperiode(2).setRefusjonStatus(RefusjonStatus.UTBETALT);
+        avtale.tilskuddsperiode(3).setRefusjonStatus(RefusjonStatus.UTBETALT);
+        avtale.tilskuddsperiode(4).setRefusjonStatus(RefusjonStatus.UTBETALT);
+        avtale.tilskuddsperiode(5).setRefusjonStatus(RefusjonStatus.UTBETALT);
+        avtale.tilskuddsperiode(6).setRefusjonStatus(RefusjonStatus.UTBETALT);
+        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"), TestData.ENHET_OPPFØLGING.getVerdi());
+        avtale.getTilskuddPeriode().forEach(tilskuddPeriode -> {
+            System.out.print(tilskuddPeriode.getRefusjonStatus() + " ");
+            System.out.println(tilskuddPeriode.getStartDato());
+        });
+        avtale.forkortAvtale(LocalDate.of(2023,7, 14), "Grunn", "Grunn2", veileder.getNavIdent());
+        assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(LocalDate.of(2023,7,14));
+        assertFeilkode(Feilkode.KAN_IKKE_FORKORTE_FOR_UTBETALT_TILSKUDDSPERIODE, () -> avtale.forkortAvtale(LocalDate.of(2023,7,13), "Grunn", "Grunn2", veileder.getNavIdent()));
+        Now.resetClock();
     }
 
     //40%
@@ -1157,11 +1239,6 @@ public class AvtaleTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
         avtale.togglegodkjennEtterregistrering(TestData.enNavIdent());
-    }
-
-    @Test
-    public void forlenge_avtale_etter_etterregistrering() {
-        // Implementer meg
     }
 
 }
