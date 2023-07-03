@@ -1084,16 +1084,16 @@ public class AvtaleTest {
         arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
         veileder.godkjennAvtale(Instant.now(), avtale);
 
+        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"), TestData.ENHET_OPPFØLGING.getVerdi());
+        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"), TestData.ENHET_OPPFØLGING.getVerdi());
         avtale.tilskuddsperiode(0).setRefusjonStatus(RefusjonStatus.UTBETALT);
         avtale.tilskuddsperiode(1).setRefusjonStatus(RefusjonStatus.UTBETALT);
-        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"), TestData.ENHET_OPPFØLGING.getVerdi());
-        avtale.getTilskuddPeriode().forEach(tilskuddPeriode -> {
-            System.out.print(tilskuddPeriode.getRefusjonStatus() + " ");
-            System.out.println(tilskuddPeriode.getStartDato());
-        });
+
         avtale.forkortAvtale(LocalDate.of(2023,2, 28), "Grunn", "Grunn2", veileder.getNavIdent());
         assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(LocalDate.of(2023,2,28));
         assertFeilkode(Feilkode.KAN_IKKE_FORKORTE_FOR_UTBETALT_TILSKUDDSPERIODE, () -> avtale.forkortAvtale(LocalDate.of(2023,2,27), "Grunn", "Grunn2", veileder.getNavIdent()));
+
+        assertThat(avtale.getGjeldendeTilskuddsperiodestatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
         Now.resetClock();
     }
 
