@@ -2,9 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.UUID;
 import lombok.Value;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
@@ -13,12 +10,20 @@ import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Value
 public class TilskuddsperiodeGodkjentMelding {
 
     UUID avtaleId;
     UUID tilskuddsperiodeId;
     UUID avtaleInnholdId;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    LocalDate avtaleFom;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    LocalDate avtaleTom;
     Tiltakstype tiltakstype;
     String deltakerFornavn;
     String deltakerEtternavn;
@@ -46,10 +51,12 @@ public class TilskuddsperiodeGodkjentMelding {
     LocalDateTime godkjentTidspunkt;
 
     public static TilskuddsperiodeGodkjentMelding create(Avtale avtale, TilskuddPeriode tilskuddsperiode, Integer resendingsnummer) {
-        return new TilskuddsperiodeGodkjentMelding
-                (avtale.getId(),
+        return new TilskuddsperiodeGodkjentMelding(
+                avtale.getId(),
                 tilskuddsperiode.getId(),
                 avtale.getGjeldendeInnhold().getId(),
+                avtale.getGjeldendeInnhold().getStartDato(),
+                avtale.getGjeldendeInnhold().getSluttDato(),
                 avtale.getTiltakstype(),
                 avtale.getGjeldendeInnhold().getDeltakerFornavn(),
                 avtale.getGjeldendeInnhold().getDeltakerEtternavn(),
