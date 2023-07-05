@@ -68,6 +68,8 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
         final UUID avtaleId = UUID.randomUUID();
         final UUID tilskuddPeriodeId = UUID.randomUUID();
         final UUID avtaleInnholdId = UUID.randomUUID();
+        final LocalDate avtaleFom = LocalDate.of(2023, 1, 1);
+        final LocalDate avtaleTom = LocalDate.of(2023, 5, 1);
         final Tiltakstype tiltakstype = Tiltakstype.VARIG_LONNSTILSKUDD;
         final String deltakerFornavn = "Donald";
         final String deltakerEtternavn = "Duck";
@@ -86,7 +88,7 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
         final NavIdent beslutterNavIdent = new NavIdent("X234567");
 
         final TilskuddsperiodeGodkjentMelding tilskuddMelding = new TilskuddsperiodeGodkjentMelding(avtaleId,
-                tilskuddPeriodeId, avtaleInnholdId, tiltakstype, deltakerFornavn, deltakerEtternavn,
+                tilskuddPeriodeId, avtaleInnholdId, avtaleFom, avtaleTom, tiltakstype, deltakerFornavn, deltakerEtternavn,
                 deltakerFnr, arbeidsgiverFornavn, arbeidsgiverEtternavn, arbeidsgiverTlf, veilederNavIdent, bedriftNavn, bedriftnummer, tilskuddBeløp, tilskuddFraDato, tilskuddTilDato, 10.6, 0.02, 14.1, 60, avtaleNr, løpenummer, 0,
             "4808", beslutterNavIdent, LocalDateTime.now());
 
