@@ -255,6 +255,7 @@ public class AvtaleRepositoryTest {
                 tiltakstype,
                 navEnheter,
                 null,
+                null,
                 pageable
         );
 

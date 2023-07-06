@@ -523,7 +523,7 @@ public class TestData {
     }
 
     public static InnloggetBeslutter enInnloggetBeslutter() {
-        return new InnloggetBeslutter(new NavIdent("F888888"));
+        return new InnloggetBeslutter(new NavIdent("F888888"), Set.of(ENHET_OPPFØLGING));
     }
 
     public static Arbeidsgiver enArbeidsgiver() {
@@ -676,10 +676,9 @@ public class TestData {
 
     public static Beslutter enBeslutter(Avtale avtale) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        AxsysService axsysService = mock(AxsysService.class);
         Norg2Client norg2Client = mock(Norg2Client.class);
         NavIdent navIdent = new NavIdent("B999999");
-        var beslutter = new Beslutter(navIdent, tilgangskontrollService, axsysService, norg2Client);
+        var beslutter = new Beslutter(navIdent, UUID.randomUUID(), Set.of(), tilgangskontrollService, norg2Client);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(beslutter, avtale.getDeltakerFnr())).thenReturn(true);
         when(norg2Client.hentOppfølgingsEnhetsnavn(eq("0000"))).thenReturn(new Norg2OppfølgingResponse(0, "0000", "Oslo"));
         when(norg2Client.hentOppfølgingsEnhetsnavn(eq("0906"))).thenReturn(new Norg2OppfølgingResponse(906, "0906", "Oslo"));

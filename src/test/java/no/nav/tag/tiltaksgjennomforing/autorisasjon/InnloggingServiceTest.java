@@ -93,6 +93,7 @@ public class InnloggingServiceTest {
     @Test
     public void hentInnloggetBruker__er_nav_ansatt_og_beslutter() {
         InnloggetBeslutter navAnsatt = TestData.enInnloggetBeslutter();
+        when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(List.of(ENHET_OPPFØLGING));
         værInnloggetBeslutter(navAnsatt);
         assertThat(innloggingService.hentInnloggetBruker(Avtalerolle.BESLUTTER)).isEqualTo(navAnsatt);
     }
