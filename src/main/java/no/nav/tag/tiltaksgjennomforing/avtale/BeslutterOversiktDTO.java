@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 
 public interface BeslutterOversiktDTO {
         String getId();
+        Integer getAvtaleNr();
+        Tiltakstype getTiltakstype();
         NavIdent getVeilederNavIdent();
         String getDeltakerFornavn();
         String getDeltakerEtternavn();

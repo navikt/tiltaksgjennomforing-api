@@ -1,10 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
@@ -15,32 +10,35 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.NavEnhetIkkeFunnetException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 @Slf4j
 public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
-    private AxsysService axsysService;
     private Norg2Client norg2Client;
     private TilgangskontrollService tilgangskontrollService;
 
     private UUID azureOid;
 
-    public Beslutter(NavIdent identifikator, UUID azureOid, TilgangskontrollService tilgangskontrollService, AxsysService axsysService, Norg2Client norg2Client) {
+    private Set<NavEnhet> navEnheter;
+
+    public Beslutter(NavIdent identifikator, UUID azureOid, Set<NavEnhet> navEnheter, TilgangskontrollService tilgangskontrollService, Norg2Client norg2Client) {
         super(identifikator);
         this.azureOid = azureOid;
+        this.navEnheter = navEnheter;
         this.tilgangskontrollService = tilgangskontrollService;
-        this.axsysService = axsysService;
         this.norg2Client = norg2Client;
-    }
-
-    @Deprecated
-    public Beslutter(NavIdent identifikator, TilgangskontrollService tilgangskontrollService, AxsysService axsysService, Norg2Client norg2Client) {
-        this(identifikator, null, tilgangskontrollService, axsysService, norg2Client);
     }
 
     public void godkjennTilskuddsperiode(Avtale avtale, String enhet) {
@@ -63,23 +61,6 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
         avtale.togglegodkjennEtterregistrering(getIdentifikator());
     }
 
-    private List<Avtale> filtrereVekkAvslattPerioder(List<Avtale> avtaler, Tiltakstype tiltakstype, String sorteringskolonne) {
-        return avtaler.stream()
-                .filter(avtale -> avtale.gjeldendeTilskuddsperiode().getStatus() != TilskuddPeriodeStatus.AVSLÅTT &&
-                        (avtale.getTiltakstype() == tiltakstype || tiltakstype == null))
-                .sorted(AvtaleSorterer.comparatorForAvtale(sorteringskolonne))
-                .collect(Collectors.toList());
-    }
-
-    private List<Avtale> filtrereOgFinAvslattPerioder(List<Avtale> avtaler, Tiltakstype tiltakstype, String sorteringskolonne) {
-        return avtaler.stream()
-                .filter(avtale -> avtale.gjeldendeTilskuddsperiode().getStatus() == TilskuddPeriodeStatus.AVSLÅTT &&
-                        (avtale.getTiltakstype() == tiltakstype || tiltakstype == null))
-                .sorted(AvtaleSorterer.comparatorForAvtale(sorteringskolonne))
-                .collect(Collectors.toList());
-    }
-
-
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
         return tilgangskontrollService.harSkrivetilgangTilKandidat(this, avtale.getDeltakerFnr());
@@ -87,13 +68,6 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
 
     public boolean harTilgangTilFnr(Fnr fnr) {
         return tilgangskontrollService.harSkrivetilgangTilKandidat(this, fnr);
-    }
-
-    public Set<Fnr> harTilgangTilFnr(Set<Fnr> fnrSet) {
-        return tilgangskontrollService.skriveTilganger(this, fnrSet).entrySet().stream()
-                .filter(Map.Entry::getValue)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toSet());
     }
 
     @Override
@@ -125,6 +99,8 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
         TilskuddPeriodeStatus status = queryParametre.getTilskuddPeriodeStatus();
         Tiltakstype tiltakstype = queryParametre.getTiltakstype();
         BedriftNr bedriftNr = queryParametre.getBedriftNr();
+        Integer avtaleNr = queryParametre.getAvtaleNr();
+        String filtrertNavEnhet = queryParametre.getNavEnhet();
         Integer plussDato = getPlussdato();
         LocalDate decisiondate = LocalDate.now().plusDays(plussDato);
 
@@ -145,17 +121,15 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
                 status,
                 decisiondate,
                 tiltakstyper,
-                navEnheter,
+                filtrertNavEnhet != null ? Set.of(filtrertNavEnhet) : navEnheter,
                 bedriftNr != null ? bedriftNr.asString() : null,
+                avtaleNr,
                 paging
         );
     }
 
     private Set<String> hentNavEnheter() {
-        return axsysService.hentEnheterNavAnsattHarTilgangTil(getIdentifikator())
-                .stream()
-                .map(NavEnhet::getVerdi)
-                .collect(Collectors.toSet());
+        return this.navEnheter.stream().map(NavEnhet::getVerdi).collect(Collectors.toSet());
     }
 
     @Override
@@ -190,7 +164,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     public InnloggetBruker innloggetBruker() {
-        return new InnloggetBeslutter(getIdentifikator());
+        return new InnloggetBeslutter(getIdentifikator(), navEnheter);
     }
 
     @Override

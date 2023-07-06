@@ -72,7 +72,9 @@ public class InnloggingService {
         } else if (issuer == Issuer.ISSUER_AAD && avtalerolle == Avtalerolle.BESLUTTER) {
             boolean harAdGruppeForBeslutter = tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId());
             if (harAdGruppeForBeslutter) {
-                return new Beslutter(new NavIdent(brukerOgIssuer.getBrukerIdent()), tokenUtils.hentAzureOid(), tilgangskontrollService, axsysService, norg2Client);
+                var navIdent = new NavIdent(brukerOgIssuer.getBrukerIdent());
+                var navEnheter = hentNavEnheter(navIdent);
+                return new Beslutter(navIdent, tokenUtils.hentAzureOid(), navEnheter, tilgangskontrollService, norg2Client);
             } else {
                 throw new FeilkodeException(Feilkode.MANGLER_AD_GRUPPE_BESLUTTER);
             }
@@ -83,7 +85,7 @@ public class InnloggingService {
     }
 
     private Set<NavEnhet> hentNavEnheter(NavIdent navIdent) {
-        return new HashSet<NavEnhet>(axsysService.hentEnheterNavAnsattHarTilgangTil(navIdent));
+        return new HashSet<>(axsysService.hentEnheterNavAnsattHarTilgangTil(navIdent));
     }
 
     public Veileder hentVeileder() {
