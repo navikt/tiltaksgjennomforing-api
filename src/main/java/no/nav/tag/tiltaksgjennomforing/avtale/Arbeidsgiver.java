@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
@@ -158,10 +159,22 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
             return Page.empty();
         }
         Page<Avtale> avtaler;
-        if(queryParametre.getTiltakstype() != null) {
-            avtaler = avtaleRepository.findAllByBedriftNrInAndTiltakstype(tilganger.keySet(), queryParametre.getTiltakstype(), pageable);
+        if (queryParametre.getTiltakstype() != null) {
+            if (harTilgangPåTiltakIBedrift(queryParametre.getBedriftNr(), queryParametre.getTiltakstype()))
+                avtaler = avtaleRepository.findAllByBedriftNrInAndTiltakstype(Set.of(queryParametre.getBedriftNr()), queryParametre.getTiltakstype(), pageable);
+            else if (queryParametre.getBedriftNr() == null) {
+                avtaler = avtaleRepository.findAllByBedriftNrInAndTiltakstype(tilganger.keySet(), queryParametre.getTiltakstype(), pageable);
+            } else { // Bruker ba om informasjon på en bedrift hen ikke har tilgang til, og får dermed tom liste
+                avtaler = Page.empty();
+            }
         } else {
-            avtaler = avtaleRepository.findAllByBedriftNrIn(tilganger.keySet(), pageable);
+            if (queryParametre.getBedriftNr() != null && tilganger.containsKey(queryParametre.getBedriftNr()))
+                avtaler = avtaleRepository.findAllByBedriftNrIn(Set.of(queryParametre.getBedriftNr()), pageable);
+            else if (queryParametre.getBedriftNr() == null) {
+                avtaler = avtaleRepository.findAllByBedriftNrIn(tilganger.keySet(), pageable);
+            } else { // Bruker ba om informasjon på en bedrift hen ikke har tilgang til, og får dermed tom liste
+                avtaler = Page.empty();
+            }
         }
         return avtaler
                 .map(Arbeidsgiver::fjernAvbruttGrunn)
