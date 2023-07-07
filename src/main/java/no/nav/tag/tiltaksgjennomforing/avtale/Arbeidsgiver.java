@@ -163,7 +163,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
             if (harTilgangPåTiltakIBedrift(queryParametre.getBedriftNr(), queryParametre.getTiltakstype()))
                 avtaler = avtaleRepository.findAllByBedriftNrInAndTiltakstype(Set.of(queryParametre.getBedriftNr()), queryParametre.getTiltakstype(), pageable);
             else {
-                avtaler = avtaleRepository.findAllByBedriftNrIn(tilganger.keySet(), pageable);
+                avtaler = avtaleRepository.findAllByBedriftNrInAndTiltakstype(tilganger.keySet(), queryParametre.getTiltakstype(), pageable);
             }
         } else {
             if (tilganger.containsKey(queryParametre.getBedriftNr()))
