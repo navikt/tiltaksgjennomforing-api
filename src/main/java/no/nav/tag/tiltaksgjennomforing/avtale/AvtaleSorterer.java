@@ -23,19 +23,14 @@ public class AvtaleSorterer {
     }
 
     static Sort.Order getSortingOrderForPageable(String sortingOrder) {
-        switch (sortingOrder) {
-            case "deltakerFornavn":
-                return Sort.Order.asc("gjeldendeInnhold.deltakerFornavn");
-            case "opprettetTidspunkt":
-                return Sort.Order.desc("opprettetTidspunkt");
-            case "bedriftNavn":
-                return Sort.Order.asc("gjeldendeInnhold.bedriftNavn");
-            case "startDato":
-                return Sort.Order.asc("gjeldendeInnhold.startDato");
-            case "sistEndret":
-            default:
-                return Sort.Order.desc("sistEndret");
-        }
+        return switch (sortingOrder) {
+            case "deltakerFornavn" -> Sort.Order.asc("gjeldendeInnhold.deltakerFornavn");
+            case "opprettetTidspunkt" -> Sort.Order.desc("opprettetTidspunkt");
+            case "bedriftNavn" -> Sort.Order.asc("gjeldendeInnhold.bedriftNavn");
+            case "startDato" -> Sort.Order.asc("gjeldendeInnhold.startDato");
+            case "tiltakstype" -> Sort.Order.asc("tiltakstype");
+            default -> Sort.Order.desc("sistEndret");
+        };
     }
 
    static protected Sort.Order getSortingOrderForPageable(String order, String direction) {
@@ -54,6 +49,7 @@ public class AvtaleSorterer {
             case STATUS -> Sort.Order.asc("antallUbehandlet");
             case STARTDATO -> Sort.Order.asc("startDato");
             case SISTENDRET -> Sort.Order.asc("sistEndret");
+            case TILTAKSTYPE -> Sort.Order.asc("tiltakstype");
         };
     }
 
@@ -65,6 +61,7 @@ public class AvtaleSorterer {
             case STATUS -> Sort.Order.desc("antallUbehandlet");
             case STARTDATO -> Sort.Order.desc("startDato");
             case SISTENDRET -> Sort.Order.desc("sistEndret");
+            case TILTAKSTYPE -> Sort.Order.desc("tiltakstype");
         };
     }
 }
