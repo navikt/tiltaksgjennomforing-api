@@ -204,6 +204,47 @@ public class VeilederTest {
     }
 
     @Test
+    public void overtarAvtaleHvorVeilederAlleredeErSatt_skalIkke_overskrive_oppfølgningsstatus_som_er_allerede_satt() throws InterruptedException {
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setFormidlingsgruppe(null);
+        avtale.setKvalifiseringsgruppe(null);
+        avtale.setEnhetOppfolging(null);
+
+        Veileder nyVeileder = TestData.enVeileder(new NavIdent("J987654"));
+        Oppfølgingsstatus oppfølgingsstatus = new Oppfølgingsstatus(
+                Formidlingsgruppe.ARBEIDSSOKER,
+                Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS,
+                "0906"
+        );
+        VeilarbArenaClient veilarbArenaClient = Mockito.spy(new VeilarbArenaClient(null, null));
+        Mockito.doReturn(oppfølgingsstatus).when(veilarbArenaClient).hentOppfølgingStatus(Mockito.anyString());
+        nyVeileder.hentOppfølgingFraArena(avtale,veilarbArenaClient );
+
+        Oppfølgingsstatus nyOppfølgingsstatusSomSkalIkkeSettes = new Oppfølgingsstatus(
+                Formidlingsgruppe.ARBEIDSSOKER,
+                Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS,
+                "0906"
+        );
+        Mockito.doReturn(nyOppfølgingsstatusSomSkalIkkeSettes).when(veilarbArenaClient).hentOppfølgingStatus(Mockito.anyString());
+        nyVeileder.hentOppfølgingFraArena(avtale,veilarbArenaClient );
+        assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(oppfølgingsstatus.getKvalifiseringsgruppe());
+
+        //SKal kunne endre oppfølgningsstatus på endre avtale
+        Oppfølgingsstatus nyOppfølgingsstatusSomSkalSettes = new Oppfølgingsstatus(
+                Formidlingsgruppe.ARBEIDSSOKER,
+                Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS,
+                "0906"
+        );
+        Mockito.doReturn(nyOppfølgingsstatusSomSkalSettes).when(veilarbArenaClient).hentOppfølgingStatus(Mockito.anyString());
+        Thread.sleep(100000);
+        nyVeileder.oppdatereOppfølgingStatusVedEndreAvtale(avtale);
+        assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(nyOppfølgingsstatusSomSkalSettes.getKvalifiseringsgruppe());
+
+    }
+
+
+
+    @Test
     public void overtarAvtale_uten_tilskuddsprosent__verifiser_blir_satt_og_beregnet() {
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(
                 new OpprettAvtale(

@@ -373,6 +373,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             Avtale avtale,
             VeilarbArenaClient veilarbArenaClient
     ) {
+        if(avtale.harOppfølgingsStatus()) return;
         Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
         if (oppfølgingsstatus == null) return;
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
