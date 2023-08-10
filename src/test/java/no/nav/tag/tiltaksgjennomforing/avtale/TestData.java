@@ -800,6 +800,24 @@ public class TestData {
         return veileder;
     }
 
+    public static Veileder enVeileder(NavIdent navIdent, VeilarbArenaClient veilarbArenaClient) {
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        KontoregisterService kontoregisterService = mock(KontoregisterService.class);
+        AvtaleRepository avtaleRepository = mock(AvtaleRepository.class);
+        var veileder = new Veileder(
+                navIdent,
+                tilgangskontrollService,
+                mock(PersondataService.class),
+                mock(Norg2Client.class),
+                Set.of(ENHET_OPPFØLGING),
+                new SlettemerkeProperties(),
+                false,
+                veilarbArenaClient
+        );
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
+        return veileder;
+    }
+
     public static Veileder enVeileder(Avtale avtale, PersondataService persondataService) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         var veileder = new Veileder(
