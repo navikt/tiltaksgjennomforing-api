@@ -152,6 +152,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         return avtale;
     }
 
+    protected boolean harOppfølgingsStatus() {
+        return (this.getEnhetOppfolging() != null ||
+                this.getKvalifiseringsgruppe() != null ||
+                this.getFormidlingsgruppe() != null);
+    }
+
     public static Avtale veilederOppretterAvtale(OpprettMentorAvtale opprettMentorAvtale, NavIdent navIdent) {
         Avtale avtale = new Avtale(opprettMentorAvtale);
         avtale.veilederNavIdent = sjekkAtIkkeNull(navIdent, "Veileders NAV-ident må være satt.");
