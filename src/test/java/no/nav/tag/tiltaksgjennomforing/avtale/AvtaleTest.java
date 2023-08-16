@@ -1058,6 +1058,21 @@ public class AvtaleTest {
         assertThat(avtale.getGjeldendeInnhold().getSumLønnstilskuddRedusert()).isNull();
     }
 
+    @Test
+    public void godkjenn_avtale_skal_ikke_gå_hvis_over_72() {
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        Fnr fnr = new Fnr("07075014443");
+        avtale.setDeltakerFnr(fnr);
+        Deltaker deltaker = TestData.enDeltaker(avtale);
+        Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
+        Veileder veileder = TestData.enVeileder(avtale);
+
+        deltaker.godkjennAvtale(Instant.now(), avtale);
+        arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
+
+        assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> veileder.godkjennAvtale(Instant.now(), avtale));
+    }
+
     // Man skal ikke kunne forkorte en avtale sånn at man får en sluttdato som er før en godkjent/utbetalt tilskuddsperide (refusjon)
     @Test
     public void kan_ikke_forkorte_forbi_utbetalt_tilskuddsperiode() {

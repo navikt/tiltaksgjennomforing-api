@@ -420,10 +420,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
                 this.getDeltakerFnr().erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
             throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_GAMMEL_FRA_OPPSTARTDATO);
         }
-        if (this.getTiltakstype() == Tiltakstype.VARIG_LONNSTILSKUDD && this.getDeltakerFnr().erOver72ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
+        else if (this.getTiltakstype() != Tiltakstype.SOMMERJOBB && this.getDeltakerFnr().erOver72ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
             throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
-        } else if (this.getTiltakstype() != Tiltakstype.VARIG_LONNSTILSKUDD && this.getDeltakerFnr().erOver67ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
-            throw new FeilkodeException(Feilkode.DELTAKER_67_AAR);
         }
 
         LocalDateTime tidspunkt = Now.localDateTime();
