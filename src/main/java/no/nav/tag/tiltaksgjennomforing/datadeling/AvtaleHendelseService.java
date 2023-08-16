@@ -9,7 +9,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
-import no.nav.tag.tiltaksgjennomforing.varsel.VarselRepository;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +24,6 @@ public class AvtaleHendelseService {
 
     private final AvtaleRepository avtaleRepository;
     private final AvtaleMeldingEntitetRepository avtaleMeldingEntitetRepository;
-    private final VarselRepository varselRepository;
 
     private final ObjectMapper objectMapper;
 

@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Objects;
 
+import static no.nav.tag.tiltaksgjennomforing.infrastruktur.CorrelationIdSupplier.MDC_CORRELATION_ID_KEY;
+
 /**
  * Dette filteret fanger opp alle responser fra APIet.
  * Dersom en person (arbeidsgiver, saksbehandler) har gjort et oppslag
@@ -47,15 +49,14 @@ class AuditLoggingFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var wrapper = new ContentCachingResponseWrapper(response);
         filterChain.doFilter(request, wrapper);
-        String traceId;
-        if (MDC.get("traceId") != null) traceId = MDC.get("traceId");
-        else if (request.getAttribute("traceId") != null) traceId = (String) request.getAttribute("traceId");
-        else traceId = null;
+        String correlationId;
+        if (request.getAttribute(MDC_CORRELATION_ID_KEY) != null) correlationId = (String) request.getAttribute(MDC_CORRELATION_ID_KEY);
+        else correlationId = null;
 
-        if (traceId == null) {
-            log.error("$className: feilet pga manglende traceId. Sjekk om OpenTelemetry er riktig konfigurert eller om rekkefølgen på spring-filtre er riktig");
+        if (correlationId == null) {
+            log.error("{}: feilet pga manglende correlationId.", classname);
         }
-        if (Objects.equals(response.getContentType(), "application/json") && traceId != null) {
+        if (Objects.equals(response.getContentType(), "application/json") && correlationId != null) {
             try {
                 List<String> fnr = JsonPath.read(wrapper.getContentInputStream(), "$..deltakerFnr");
                 var utførtTid = Now.instant();
@@ -78,15 +79,15 @@ class AuditLoggingFilter extends OncePerRequestFilter {
                                 msgForUri(uri),
                                 uri,
                                 HttpMethod.valueOf(request.getMethod()),
-                                traceId
+                                correlationId
                         );
                         auditLogger.logg(entry);
                     });
                 }
             } catch (IOException ex) {
-                log.warn("$className: Klarte ikke dekode responsen. Var det ikke gyldig JSON?");
+                log.warn("{}: Klarte ikke dekode responsen. Var det ikke gyldig JSON?", classname);
             } catch (Exception ex) {
-                log.error("$className: Logging feilet", ex);
+                log.error("{}: Logging feilet", classname, ex);
             }
         }
         wrapper.copyBodyToResponse();
