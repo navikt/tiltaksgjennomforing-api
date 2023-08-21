@@ -53,7 +53,7 @@ class AuditLoggingFilter extends OncePerRequestFilter {
         if (correlationId == null) {
             log.error("{}: feilet pga manglende correlationId.", classname);
         }
-        if (Objects.equals(response.getContentType(), "application/json") && correlationId != null) {
+        if (response.getContentType().startsWith("application/json") && correlationId != null) {
             try {
                 List<String> fnr = JsonPath.read(wrapper.getContentInputStream(), "$..deltakerFnr");
                 var utførtTid = Now.instant();
