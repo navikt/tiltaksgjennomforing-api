@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -18,7 +19,7 @@ public class AuditKafkaLogger implements AuditLogger {
     private final KafkaTemplate<String, String> auditKafkaTemplate;
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public AuditKafkaLogger(KafkaTemplate<String, String> kafkaTemplate) {
+    public AuditKafkaLogger(@Qualifier("auditEntryTemplate") KafkaTemplate<String, String> kafkaTemplate) {
         this.auditKafkaTemplate = kafkaTemplate;
     }
 
