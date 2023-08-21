@@ -1,5 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing;
 
-public interface AuditLogger {
-    void logg(AuditEntry event);
+public enum EventType {
+    CREATE, READ, UPDATE, DELETE
 }

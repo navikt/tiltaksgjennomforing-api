@@ -1,6 +1,20 @@
 package no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing;
 
+import org.springframework.http.HttpMethod;
+
+import java.net.URI;
+import java.time.Instant;
+
 public record AuditEntry(
-        String brukerId,
-        String it, java.time.Instant utførtTid, String s, java.net.URI uri,
-        org.springframework.http.HttpMethod httpMethod, String traceId) {}
+        String appNavn,
+        String utførtAv,
+        String oppslagPå,
+        EventType eventType,
+        boolean forespørselTillatt,
+        Instant utførtTid,
+        String beskrivelse,
+        URI requestUrl,
+        HttpMethod requestMethod,
+        String correlationId
+) {
+}

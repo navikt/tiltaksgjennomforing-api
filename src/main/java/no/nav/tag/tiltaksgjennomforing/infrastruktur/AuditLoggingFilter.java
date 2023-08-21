@@ -1,28 +1,25 @@
 package no.nav.tag.tiltaksgjennomforing.infrastruktur;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.jayway.jsonpath.JsonPath;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.context.TokenValidationContextHolder;
-
-import java.util.List;
-
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditEntry;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditLogger;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.EventType;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.MDC;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 import java.util.Objects;
 
 import static no.nav.tag.tiltaksgjennomforing.infrastruktur.CorrelationIdSupplier.MDC_CORRELATION_ID_KEY;
@@ -73,8 +70,11 @@ class AuditLoggingFilter extends OncePerRequestFilter {
                 if (brukerId != null) {
                     fnr.forEach(it -> {
                         var entry = new AuditEntry(
+                                "tiltaksgjennomforing-api",
                                 brukerId,
                                 it,
+                                EventType.READ,
+                                true,
                                 utførtTid,
                                 msgForUri(uri),
                                 uri,
