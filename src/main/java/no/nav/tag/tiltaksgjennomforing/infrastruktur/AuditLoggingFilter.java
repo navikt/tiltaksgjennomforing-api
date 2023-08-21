@@ -2,7 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.infrastruktur;
 
 import com.jayway.jsonpath.JsonPath;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.security.token.support.core.context.TokenValidationContextHolder;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditEntry;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditLogger;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.EventType;
@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
-import java.util.Objects;
 
 import static no.nav.tag.tiltaksgjennomforing.infrastruktur.CorrelationIdSupplier.MDC_CORRELATION_ID_KEY;
 
@@ -33,12 +32,12 @@ import static no.nav.tag.tiltaksgjennomforing.infrastruktur.CorrelationIdSupplie
 @Slf4j
 @Component
 class AuditLoggingFilter extends OncePerRequestFilter {
-    private final TokenValidationContextHolder context;
+    private final TokenUtils tokenUtils;
     private final AuditLogger auditLogger;
     private static final String classname = AuditLoggingFilter.class.getName();
 
-    public AuditLoggingFilter(TokenValidationContextHolder context, AuditLogger auditLogger) {
-        this.context = context;
+    public AuditLoggingFilter(TokenUtils tokenUtils, AuditLogger auditLogger) {
+        this.tokenUtils = tokenUtils;
         this.auditLogger = auditLogger;
     }
 
@@ -57,14 +56,7 @@ class AuditLoggingFilter extends OncePerRequestFilter {
             try {
                 List<String> fnr = JsonPath.read(wrapper.getContentInputStream(), "$..deltakerFnr");
                 var utførtTid = Now.instant();
-                String brukerId;
-                if (context.getTokenValidationContext().hasTokenFor("tokenx")) {
-                    brukerId = context.getTokenValidationContext().getClaims("tokenx").getStringClaim("pid");
-                } else if (context.getTokenValidationContext().hasTokenFor("aad")) {
-                    brukerId = context.getTokenValidationContext().getClaims("aad").getStringClaim("NAVident");
-                } else {
-                    brukerId = null;
-                }
+                String brukerId = tokenUtils.hentBrukerOgIssuer().map(TokenUtils.BrukerOgIssuer::getBrukerIdent).orElse(null);
                 var uri = URI.create(request.getRequestURI());
                 // Logger kun oppslag dersom en innlogget bruker utførte oppslaget
                 if (brukerId != null) {
