@@ -69,19 +69,22 @@ class AuditLoggingFilter extends OncePerRequestFilter {
                 // Logger kun oppslag dersom en innlogget bruker utførte oppslaget
                 if (brukerId != null) {
                     fnr.forEach(it -> {
-                        var entry = new AuditEntry(
-                                "tiltaksgjennomforing-api",
-                                brukerId,
-                                it,
-                                EventType.READ,
-                                true,
-                                utførtTid,
-                                msgForUri(uri),
-                                uri,
-                                HttpMethod.valueOf(request.getMethod()),
-                                correlationId
-                        );
-                        auditLogger.logg(entry);
+                        // Ikke logg at en bruker slår opp sin egen informasjon
+                        if (!brukerId.equals(it)) {
+                            var entry = new AuditEntry(
+                                    "tiltaksgjennomforing-api",
+                                    brukerId,
+                                    it,
+                                    EventType.READ,
+                                    true,
+                                    utførtTid,
+                                    msgForUri(uri),
+                                    uri,
+                                    HttpMethod.valueOf(request.getMethod()),
+                                    correlationId
+                            );
+                            auditLogger.logg(entry);
+                        }
                     });
                 }
             } catch (IOException ex) {
