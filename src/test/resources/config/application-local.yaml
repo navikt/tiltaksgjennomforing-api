@@ -112,5 +112,7 @@ tiltaksgjennomforing:
     tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD
   salesforcekontorer:
     enheter: 0906
+  utvikler-tilgang:
+    gruppe-tilgang: 1a1d2745-952f-4a0f-839f-9530145b1d4a
 
 ELECTOR_PATH: null

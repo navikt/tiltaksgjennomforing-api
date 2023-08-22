@@ -14,6 +14,7 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -128,6 +129,22 @@ public class AdminController {
         Avtale avtale = tilskuddPeriode.getAvtale();
         avtale.annullerTilskuddsperiode(tilskuddPeriode);
         avtale.lagNyTilskuddsperiodeFraAnnullertPeriode(tilskuddPeriode);
+        avtaleRepository.save(avtale);
+    }
+
+    @PostMapping("/annuller-og-generer-behandlet-i-arena-perioder/{avtaleId}/{dato}")
+    @Transactional
+    public void annullerOgGenererBehandletIArenaPerioder(@PathVariable("avtaleId") UUID avtaleId, @PathVariable("dato") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dato) {
+        sjekkTilgang();
+        log.info("Annullerer behandlet i arena perioder på avtale {}", avtaleId);
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        List<TilskuddPeriode> tilskuddsperioder = tilskuddPeriodeRepository.findAllByAvtaleAndSluttDatoBefore(avtale, dato);
+
+        tilskuddsperioder.stream().toList().forEach(tp -> {
+            avtale.annullerTilskuddsperiode(tp);
+            avtale.lagNyBehandletIArenaTilskuddsperiodeFraAnnullertPeriode(tp);
+        });
+
         avtaleRepository.save(avtale);
     }
 
