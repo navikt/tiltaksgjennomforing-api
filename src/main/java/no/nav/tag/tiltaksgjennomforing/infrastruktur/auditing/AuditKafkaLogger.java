@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
@@ -18,7 +19,9 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
 public class AuditKafkaLogger implements AuditLogger {
     private final KafkaTemplate<String, String> auditKafkaTemplate;
-    private final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    private final ObjectMapper mapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
     public AuditKafkaLogger(@Qualifier("auditEntryTemplate") KafkaTemplate<String, String> kafkaTemplate) {
         this.auditKafkaTemplate = kafkaTemplate;
