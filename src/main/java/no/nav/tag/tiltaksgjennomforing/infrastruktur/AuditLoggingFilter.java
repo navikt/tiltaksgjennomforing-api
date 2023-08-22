@@ -52,7 +52,7 @@ class AuditLoggingFilter extends OncePerRequestFilter {
         if (correlationId == null) {
             log.error("{}: feilet pga manglende correlationId.", classname);
         }
-        if (response.getContentType().startsWith("application/json") && correlationId != null) {
+        if (response.getContentType() != null && response.getContentType().startsWith("application/json") && correlationId != null) {
             try {
                 List<String> fnr = JsonPath.read(wrapper.getContentInputStream(), "$..deltakerFnr");
                 var utførtTid = Now.instant();
@@ -89,19 +89,16 @@ class AuditLoggingFilter extends OncePerRequestFilter {
     }
 
     private static String msgForUri(URI uri) {
-        if (uri.toString().contains("/refusjon/hentliste")) {
-            return "Oppslag på refusjoner";
-        } else if (uri.toString().contains("/refusjon/\\w+")) {
-            return "Hent detaljer om refusjon";
-        } else if (uri.toString().contains("/refusjon/")) {
-            return "Oppslag på refusjoner";
-        } else if (uri.toString().contains("/korreksjon/")) {
-            return "Oppslag på korreksjoner";
-        } else if (uri.toString().contains("/korreksjon/\\w+")) {
-            return "Hent detaljer om korreksjon";
+        var uriString = uri.toString();
+        if (uriString.contains("/avtaler/deltaker-allerede-paa-tiltak")) {
+            return "Undersøk om deltaker allerede er på arbeidsmarkedstiltak. I forbindelse med opprettelse av avtale";
+        } else if(uriString.matches("/avtaler/\\w+")){
+            return "Hent detaljer for avtale for arbeidsmarkedstiltak";
+        } else if (uriString.contains("/avtaler") || uriString.contains("avtaler/beslutter-liste")) {
+            return "Hent liste over avtaler for arbeidsmarkedstiltak";
         } else {
             log.warn("{}: Fant ikke en lesbar melding for uri: {}", classname, uri);
-            return "Oppslag i refusjonsløsning";
+            return "Oppslag i løsning for tiltaksgjennomføring";
         }
     }
 }
