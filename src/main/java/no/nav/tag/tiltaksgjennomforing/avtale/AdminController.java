@@ -14,7 +14,6 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
