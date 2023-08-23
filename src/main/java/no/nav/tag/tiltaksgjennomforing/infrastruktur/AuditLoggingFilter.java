@@ -60,7 +60,7 @@ class AuditLoggingFilter extends OncePerRequestFilter {
                 var uri = URI.create(request.getRequestURI());
                 // Logger kun oppslag dersom en innlogget bruker utførte oppslaget
                 if (brukerId != null) {
-                    fnr.forEach(it -> {
+                    fnr.stream().distinct().forEach(it -> {
                         // Ikke logg at en bruker slår opp sin egen informasjon
                         if (!brukerId.equals(it)) {
                             var entry = new AuditEntry(
