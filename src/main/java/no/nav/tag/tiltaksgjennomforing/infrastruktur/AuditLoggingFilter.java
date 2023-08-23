@@ -54,19 +54,19 @@ class AuditLoggingFilter extends OncePerRequestFilter {
         }
         if (response.getContentType() != null && response.getContentType().startsWith("application/json") && correlationId != null) {
             try {
-                List<String> fnr = JsonPath.read(wrapper.getContentInputStream(), "$..deltakerFnr");
+                List<String> fnrListe = JsonPath.read(wrapper.getContentInputStream(), "$..deltakerFnr");
                 var utførtTid = Now.instant();
                 String brukerId = tokenUtils.hentBrukerOgIssuer().map(TokenUtils.BrukerOgIssuer::getBrukerIdent).orElse(null);
                 var uri = URI.create(request.getRequestURI());
                 // Logger kun oppslag dersom en innlogget bruker utførte oppslaget
                 if (brukerId != null) {
-                    fnr.stream().distinct().forEach(it -> {
+                    fnrListe.stream().distinct().forEach(deltakerFnr -> {
                         // Ikke logg at en bruker slår opp sin egen informasjon
-                        if (!brukerId.equals(it)) {
+                        if (!brukerId.equals(deltakerFnr)) {
                             var entry = new AuditEntry(
                                     "tiltaksgjennomforing-api",
                                     brukerId,
-                                    it,
+                                    deltakerFnr,
                                     EventType.READ,
                                     true,
                                     utførtTid,
