@@ -1085,6 +1085,17 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         tilskuddPeriode.add(nyUbehandletPeriode);
     }
 
+    public void lagNyBehandletIArenaTilskuddsperiodeFraAnnullertPeriode(TilskuddPeriode annullertTilskuddPeriode) {
+        krevEnAvTiltakstyper(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
+        if(annullertTilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
+            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET);
+        }
+        TilskuddPeriode nyUbehandletPeriode = annullertTilskuddPeriode.deaktiverOgLagNyUbehandlet();
+        nyUbehandletPeriode.setStatus(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
+        annullertTilskuddPeriode.setAktiv(true);
+        tilskuddPeriode.add(nyUbehandletPeriode);
+    }
+
     public void forkortAvtale(LocalDate nySluttDato, String grunn, String annetGrunn, NavIdent utførtAv) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
 

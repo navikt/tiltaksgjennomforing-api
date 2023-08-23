@@ -11,3 +11,8 @@ Cookie: io.nais.wonderwall.session=<SESSION_ID>
 ### Reberegn ubehandlet perioder
 POST https://tiltaksgjennomforing.intern.nav.no/tiltaksgjennomforing/api/utvikler-admin/reberegn-ubehandlede-tilskuddsperioder/<UUID>
 Cookie: io.nais.wonderwall.session=<SESSION_ID>
+
+
+### Annuller perioder med sluttdato før oppgitt dato på avtale og lag nye med status behandlet i arena
+POST https://tiltaksgjennomforing.intern.nav.no/tiltaksgjennomforing/api/utvikler-admin/annuller-og-generer-behandlet-i-arena-perioder/58f5f3ff-fd7b-469b-9e7b-6c43b2888fba/2023-02-01
+Cookie: io.nais.wonderwall.session=<SESSION_ID>

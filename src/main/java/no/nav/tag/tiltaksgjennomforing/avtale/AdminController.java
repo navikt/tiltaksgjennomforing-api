@@ -131,6 +131,24 @@ public class AdminController {
         avtaleRepository.save(avtale);
     }
 
+    @PostMapping("/annuller-og-generer-behandlet-i-arena-perioder/{avtaleId}/{dato}")
+    @Transactional
+    public void annullerOgGenererBehandletIArenaPerioder(@PathVariable("avtaleId") UUID avtaleId, @PathVariable("dato") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dato) {
+        sjekkTilgang();
+        log.info("Annullerer tilskuddsperioder med sluttdato før {} på avtale {} og lager nye med status behandlet i arena", dato, avtaleId);
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        List<TilskuddPeriode> tilskuddsperioder = tilskuddPeriodeRepository.findAllByAvtaleAndSluttDatoBefore(avtale, dato);
+        log.info("Fant {} tilskuddsperioder som skal annulleres og genereres på nytt med behandlet i arena status", tilskuddsperioder.size());
+
+        tilskuddsperioder.stream().toList().forEach(tp -> {
+            avtale.annullerTilskuddsperiode(tp);
+            avtale.lagNyBehandletIArenaTilskuddsperiodeFraAnnullertPeriode(tp);
+        });
+
+        log.info("Avtale {} har nå {} perioder med status behandlet i arena", avtale, avtale.getTilskuddPeriode().stream().filter(tp -> tp.getStatus() == TilskuddPeriodeStatus.BEHANDLET_I_ARENA).count());
+        avtaleRepository.save(avtale);
+    }
+
     @PostMapping("/lag-tilskuddsperioder-for-en-avtale/{avtaleId}/{migreringsDato}")
     @Transactional
     public void lagTilskuddsperioderPåEnAvtale(@PathVariable("avtaleId") UUID id, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate migreringsDato) {
