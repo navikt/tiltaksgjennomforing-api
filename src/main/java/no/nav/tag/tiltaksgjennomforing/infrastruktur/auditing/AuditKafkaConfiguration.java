@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,12 +34,6 @@ public class AuditKafkaConfiguration {
     private String sslKeystoreLocationEnvKey;
     @Value("${no.nav.gcp.kafka.aiven.keystore-password}")
     private String sslKeystorePasswordEnvKey;
-    @Value("${no.nav.gcp.kafka.aiven.schema-registry-url}")
-    private String schemaRegistryUrl;
-    @Value("${no.nav.gcp.kafka.aiven.schema-registry-credentials-source}")
-    private String schemaRegistryCredentialsSource;
-    @Value("${no.nav.gcp.kafka.aiven.schema-registry-user-info}")
-    private String schemaRegistryUserInfo;
 
     private Map<String, Object> producerConfigs() {
         Map<String, Object> props = new HashMap<>();
@@ -57,11 +50,6 @@ public class AuditKafkaConfiguration {
         props.put(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG, sslKeystoreLocationEnvKey);
         props.put(SslConfigs.SSL_KEYSTORE_PASSWORD_CONFIG, sslKeystorePasswordEnvKey);
 
-        props.put(JsonSerializer.ADD_TYPE_INFO_HEADERS, false);
-
-        props.put("schema.registry.url", schemaRegistryUrl);
-        props.put("basic.auth.credentials.source", schemaRegistryCredentialsSource);
-        props.put("basic.auth.user.info", schemaRegistryUserInfo);
         return props;
     }
 
