@@ -14,4 +14,6 @@ public class Topics {
 
     public static final String AVTALE_HENDELSE = "arbeidsgiver.tiltak-avtale-hendelse";
     public static final String AVTALE_HENDELSE_COMPACT = "arbeidsgiver.tiltak-avtale-hendelse-compact";
+
+    public static final String AUDIT_HENDELSE = "arbeidsgiver.tiltak-audit-hendelse";
 }

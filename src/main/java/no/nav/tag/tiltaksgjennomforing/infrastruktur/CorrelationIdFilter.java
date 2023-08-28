@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
+import static no.nav.tag.tiltaksgjennomforing.infrastruktur.CorrelationIdSupplier.MDC_CORRELATION_ID_KEY;
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Component
@@ -25,6 +27,7 @@ public class CorrelationIdFilter extends OncePerRequestFilter {
             Optional.ofNullable(request.getHeader(HEADER_NAME))
                     .filter(StringUtils::isNotBlank)
                     .ifPresentOrElse(CorrelationIdSupplier::set, CorrelationIdSupplier::generateToken);
+            request.setAttribute(MDC_CORRELATION_ID_KEY, CorrelationIdSupplier.get());
             response.addHeader(HEADER_NAME, CorrelationIdSupplier.get());
             chain.doFilter(request, response);
         } finally {

@@ -8,22 +8,22 @@ import java.util.UUID;
 
 @UtilityClass
 public class CorrelationIdSupplier {
-    private static final String MDC_TOKEN_KEY = "correlationId";
+    public static final String MDC_CORRELATION_ID_KEY = "correlationId";
 
     public static void generateToken() {
-        MDC.put(MDC_TOKEN_KEY, UUID.randomUUID().toString());
+        MDC.put(MDC_CORRELATION_ID_KEY, UUID.randomUUID().toString());
     }
 
     public static void set(String token) {
         Assert.hasLength(token, "Token kan ikke være blank");
-        MDC.put(MDC_TOKEN_KEY, token);
+        MDC.put(MDC_CORRELATION_ID_KEY, token);
     }
 
     public static String get() {
-        return MDC.get(MDC_TOKEN_KEY);
+        return MDC.get(MDC_CORRELATION_ID_KEY);
     }
 
     public static void remove() {
-        MDC.remove(MDC_TOKEN_KEY);
+        MDC.remove(MDC_CORRELATION_ID_KEY);
     }
 }

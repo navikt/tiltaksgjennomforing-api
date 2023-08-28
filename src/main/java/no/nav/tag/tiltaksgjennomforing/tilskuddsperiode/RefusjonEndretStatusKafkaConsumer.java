@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeRepository;
@@ -17,12 +16,10 @@ import java.util.UUID;
 @Slf4j
 public class RefusjonEndretStatusKafkaConsumer {
     private final TilskuddPeriodeRepository tilskuddPeriodeRepository;
-    private final ObjectMapper objectMapper;
 
 
-    public RefusjonEndretStatusKafkaConsumer(TilskuddPeriodeRepository tilskuddPeriodeRepository, ObjectMapper objectMapper) {
+    public RefusjonEndretStatusKafkaConsumer(TilskuddPeriodeRepository tilskuddPeriodeRepository) {
         this.tilskuddPeriodeRepository = tilskuddPeriodeRepository;
-        this.objectMapper = objectMapper;
     }
 
     @KafkaListener(topics = Topics.REFUSJON_ENDRET_STATUS, containerFactory = "refusjonEndretStatusContainerFactory")

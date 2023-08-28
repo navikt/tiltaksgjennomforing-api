@@ -14,6 +14,7 @@ import java.time.LocalDate;
 @Data
 public class AvtaleMinimalListevisning {
     private String id;
+    private String deltakerFnr;
     private String deltakerFornavn;
     private String deltakerEtternavn;
     private String bedriftNavn;
@@ -29,6 +30,7 @@ public class AvtaleMinimalListevisning {
     public static AvtaleMinimalListevisning fromAvtale(Avtale avtale) {
         AvtaleMinimalListevisning avtaleMininal = AvtaleMinimalListevisning.builder()
                 .id(avtale.getId().toString())
+                .deltakerFnr(avtale.getDeltakerFnr() != null ? avtale.getDeltakerFnr().asString() : null)
                 .deltakerEtternavn(avtale.getGjeldendeInnhold().getDeltakerEtternavn())
                 .deltakerFornavn(avtale.getGjeldendeInnhold().getDeltakerFornavn())
                 .bedriftNavn(avtale.getGjeldendeInnhold().getBedriftNavn())
