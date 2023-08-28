@@ -11,7 +11,7 @@ public record AuditEntry(
         String oppslagPå,
         EventType eventType,
         boolean forespørselTillatt,
-        Instant utførtTid,
+        Instant oppslagUtførtTid,
         String beskrivelse,
         URI requestUrl,
         HttpMethod requestMethod,
