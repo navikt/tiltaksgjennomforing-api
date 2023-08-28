@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Builder
 @AllArgsConstructor
@@ -30,7 +31,7 @@ public class AvtaleMinimalListevisning {
     public static AvtaleMinimalListevisning fromAvtale(Avtale avtale) {
         AvtaleMinimalListevisning avtaleMininal = AvtaleMinimalListevisning.builder()
                 .id(avtale.getId().toString())
-                .deltakerFnr(avtale.getDeltakerFnr().asString())
+                .deltakerFnr(avtale.getDeltakerFnr() != null ? avtale.getDeltakerFnr().asString() : null)
                 .deltakerEtternavn(avtale.getGjeldendeInnhold().getDeltakerEtternavn())
                 .deltakerFornavn(avtale.getGjeldendeInnhold().getDeltakerFornavn())
                 .bedriftNavn(avtale.getGjeldendeInnhold().getBedriftNavn())
