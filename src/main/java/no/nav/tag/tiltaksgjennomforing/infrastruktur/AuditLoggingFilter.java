@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static no.nav.tag.tiltaksgjennomforing.infrastruktur.CorrelationIdSupplier.MDC_CORRELATION_ID_KEY;
 
@@ -88,14 +89,15 @@ class AuditLoggingFilter extends OncePerRequestFilter {
         wrapper.copyBodyToResponse();
     }
 
+    private static final Pattern AVTALE_PATTERN = Pattern.compile("/avtaler/[\\w,\\-]+$");
     private static String msgForUri(URI uri) {
         var uriString = uri.toString();
         if (uriString.contains("/avtaler/deltaker-allerede-paa-tiltak")) {
             return "Undersøk om deltaker allerede er på arbeidsmarkedstiltak. I forbindelse med opprettelse av avtale";
-        } else if(uriString.matches("/avtaler/\\w+")){
-            return "Hent detaljer for avtale for arbeidsmarkedstiltak";
-        } else if (uriString.contains("/avtaler") || uriString.contains("avtaler/beslutter-liste")) {
-            return "Hent liste over avtaler for arbeidsmarkedstiltak";
+        } else if (uriString.endsWith("/avtaler") || uriString.endsWith("avtaler/beslutter-liste")) {
+            return "Hent liste over avtaler om arbeidsmarkedstiltak";
+        } else if(AVTALE_PATTERN.matcher(uriString).find()){
+            return "Hent detaljer for avtale om arbeidsmarkedstiltak";
         } else {
             log.warn("{}: Fant ikke en lesbar melding for uri: {}", classname, uri);
             return "Oppslag i løsning for tiltaksgjennomføring";
