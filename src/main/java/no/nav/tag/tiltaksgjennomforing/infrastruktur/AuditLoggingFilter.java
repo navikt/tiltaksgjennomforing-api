@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import static no.nav.tag.tiltaksgjennomforing.infrastruktur.CorrelationIdSupplier.MDC_CORRELATION_ID_KEY;
@@ -61,7 +62,7 @@ class AuditLoggingFilter extends OncePerRequestFilter {
                 var uri = URI.create(request.getRequestURI());
                 // Logger kun oppslag dersom en innlogget bruker utførte oppslaget
                 if (brukerId != null) {
-                    fnrListe.stream().distinct().forEach(deltakerFnr -> {
+                    fnrListe.stream().filter(Objects::nonNull).distinct().forEach(deltakerFnr -> {
                         // Ikke logg at en bruker slår opp sin egen informasjon
                         if (!brukerId.equals(deltakerFnr)) {
                             var entry = new AuditEntry(
