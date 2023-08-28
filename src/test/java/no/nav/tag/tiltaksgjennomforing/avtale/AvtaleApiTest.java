@@ -6,7 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditVoidLogger;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditConsoleLogger;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -65,7 +65,7 @@ public class AvtaleApiTest {
     @Mock
     private PersondataService persondataService;
     @SpyBean
-    private AuditVoidLogger auditVoidLogger;
+    private AuditConsoleLogger auditConsoleLogger;
 
     @Test
     public void hentSkalReturnereRiktigAvtale() throws Exception {
@@ -88,7 +88,7 @@ public class AvtaleApiTest {
         assertEquals(200, res.getStatus());
         assertEquals(avtale.getId().toString(), mapper.readTree(res.getContentAsByteArray()).get("id").asText());
 
-        verify(auditVoidLogger, times(1)).logg(any());
+        verify(auditConsoleLogger, times(1)).logg(any());
     }
 
     private MockHttpServletResponse hentAvtaleForVeileder(NavIdent navIdent, UUID avtaleId) throws Exception {
