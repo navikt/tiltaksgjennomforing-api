@@ -59,7 +59,7 @@ no.nav.security.jwt:
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
       tokenx-altinn:
-        token-endpoint-url: https://tokendings.prod-gcp.nais.io/token
+        token-endpoint-url: ${TOKEN_X_TOKEN_ENDPOINT}
         grant-type: urn:ietf:params:oauth:grant-type:token-exchange
         authentication:
           client-id: ${TOKEN_X_CLIENT_ID}
