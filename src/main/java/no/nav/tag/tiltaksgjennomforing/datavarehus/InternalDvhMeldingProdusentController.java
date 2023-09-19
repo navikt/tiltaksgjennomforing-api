@@ -33,7 +33,7 @@ public class InternalDvhMeldingProdusentController {
     public void patcheAvtale(@RequestBody PatchRequest request) {
         log.info("Patcher avtaler til dvh");
         sjekkTilgang();
-        avtaleRepository.findAllById(request.getAvtaleIder()).forEach(avtale -> {
+        avtaleRepository.findAllById(request.avtaleIder()).forEach(avtale -> {
             UUID meldingId = UUID.randomUUID();
             String utførtAv = tokenUtils.hentBrukerOgIssuer().map(TokenUtils.BrukerOgIssuer::getBrukerIdent).orElse("patch");
             AvroTiltakHendelse avroTiltakHendelse = AvroTiltakHendelseFabrikk.konstruer(avtale, Now.localDateTime(), meldingId, DvhHendelseType.PATCHING, utførtAv);
@@ -55,9 +55,7 @@ public class InternalDvhMeldingProdusentController {
         }
     }
 
-    @Value
-    private class PatchRequest {
-        List<UUID> avtaleIder;
+    private record PatchRequest(List<UUID> avtaleIder) {
     }
 
 }
