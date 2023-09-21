@@ -148,11 +148,11 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     }
 
     public boolean erUtbetalt() {
-        return refusjonStatus == RefusjonStatus.UTBETALT;
+        return refusjonStatus == RefusjonStatus.UTBETALT || refusjonStatus == RefusjonStatus.KORRIGERT;
     }
 
     public boolean erRefusjonGodkjent() {
-        return refusjonStatus == RefusjonStatus.SENDT_KRAV;
+        return refusjonStatus == RefusjonStatus.SENDT_KRAV || refusjonStatus == RefusjonStatus.GODKJENT_MINUSBELØP || refusjonStatus == RefusjonStatus.GODKJENT_NULLBELØP;
     }
 
 }

@@ -869,13 +869,13 @@ public class AvtaleTest {
 
     @Test
     public void forleng_24_mnd_midl_lts() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedSpesieltTilpassetInnsatsGodkjentAvVeileder();
         avtale.forlengAvtale(avtale.getGjeldendeInnhold().getStartDato().plusMonths(24).minusDays(1), TestData.enNavIdent());
     }
 
     @Test
     public void forleng_over_24_mnd_midl_lts() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedSpesieltTilpassetInnsatsGodkjentAvVeileder();
         assertFeilkode(Feilkode.VARIGHET_FOR_LANG_MIDLERTIDIG_LONNSTILSKUDD_24_MND, () -> avtale.forlengAvtale(avtale.getGjeldendeInnhold().getStartDato().plusMonths(24), TestData.enNavIdent()));
     }
 
@@ -884,7 +884,7 @@ public class AvtaleTest {
         Now.fixedDate(LocalDate.of(2021, 11, 25));
         LocalDate startDato = LocalDate.of(2021, 11, 30);
         LocalDate sluttDato = LocalDate.of(2022, 11, 25);
-        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(startDato, sluttDato);
+        Avtale avtale = TestData.enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(startDato, sluttDato);
         Now.resetClock();
         LocalDate nySluttDato = avtale.getGjeldendeInnhold().getSluttDato().plusMonths(1);
         avtale.forlengAvtale(nySluttDato, TestData.enNavIdent());
@@ -896,7 +896,7 @@ public class AvtaleTest {
         Now.fixedDate(LocalDate.of(2023, 03, 15));
         LocalDate startDato = LocalDate.of(2022, 03, 01);
         LocalDate sluttDato = LocalDate.of(2023, 02, 28);
-        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(startDato, sluttDato);
+        Avtale avtale = TestData.enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(startDato, sluttDato);
         // Alle perioder er godkjent
         avtale.getTilskuddPeriode().forEach(t -> {
             t.godkjenn(TestData.enNavIdent2(), "1234");
@@ -912,7 +912,7 @@ public class AvtaleTest {
         Now.fixedDate(LocalDate.of(2023, 03, 15));
         LocalDate startDato = LocalDate.of(2022, 03, 01);
         LocalDate sluttDato = LocalDate.of(2023, 02, 28);
-        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(startDato, sluttDato);
+        Avtale avtale = TestData.enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(startDato, sluttDato);
         LocalDate nySluttDato = sluttDato.plusMonths(6);
         avtale.forlengAvtale(nySluttDato, TestData.enNavIdent());
         assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(nySluttDato);

@@ -110,7 +110,7 @@ public class InternalAvtaleControllerTest {
     }
 
     private static List<Avtale> enAvtaleMedTilskudsPerioderSomSkalJournalføres() {
-        Avtale avtale4 = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate(), Now.localDate());
+        Avtale avtale4 = TestData.enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate(), Now.localDate());
         avtale4.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         avtale4.setId(AVTALE_ID_3);
         return Arrays.asList(avtale4);

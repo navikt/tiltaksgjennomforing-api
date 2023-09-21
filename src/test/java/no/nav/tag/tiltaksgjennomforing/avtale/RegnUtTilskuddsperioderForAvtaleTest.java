@@ -355,7 +355,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
     @Test
     public void sjekk_at_nye_perioder_ved_forlengelse_starter_etter_utbetalte_perioder() {
         Now.fixedDate(LocalDate.of(2021, 1, 1));
-        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 4, 1));
+        Avtale avtale = TestData.enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.of(2021, 1, 1), LocalDate.of(2021, 4, 1));
 
         avtale.tilskuddsperiode(0).setRefusjonStatus(RefusjonStatus.UTBETALT);
         avtale.tilskuddsperiode(1).setRefusjonStatus(RefusjonStatus.UTBETALT);
@@ -370,19 +370,6 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
         harRiktigeEgenskaper(avtale);
         Now.resetClock();
-    }
-
-    @Test
-    public void sjekk_at_godkjent_perioder_beholdes_ved_endring_som_ikke_påvirker_økonomi() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
-        avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
-        UUID idPåGodkjentTilskuddsperiode = avtale.tilskuddsperiode(0).getId();
-
-        avtale.forlengAvtale(avtale.getGjeldendeInnhold().getSluttDato().plusDays(1), TestData.enNavIdent());
-
-        assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
-        assertThat(avtale.tilskuddsperiode(0).getId()).isEqualTo(idPåGodkjentTilskuddsperiode);
-        harRiktigeEgenskaper(avtale);
     }
 
     @Test
@@ -427,23 +414,23 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
     }
 
     @Test
-    public void sjekk_at_godkjent_periode_ikke_annulleres_ved_forlengelse() {
+    public void sjekk_at_godkjent_periode_annulleres_ved_forlengelse() {
         Now.fixedDate(LocalDate.of(2021, 1, 1));
         LocalDate avtaleFørsteDag = LocalDate.of(2021, 1, 1);
-        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleFørsteDag, avtaleFørsteDag);
+        Avtale avtale = TestData.enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleFørsteDag, avtaleFørsteDag);
 
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
         UUID idPåGodkjentTilskuddsperiode = avtale.tilskuddsperiode(0).getId();
 
         avtale.forlengAvtale(avtaleFørsteDag.plusDays(1), TestData.enNavIdent());
 
-        assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
+        assertThat(avtale.tilskuddsperiode(0).getStatus()).isEqualTo(TilskuddPeriodeStatus.ANNULLERT);
         assertThat(avtale.tilskuddsperiode(0).getId()).isEqualTo(idPåGodkjentTilskuddsperiode);
         assertThat(avtale.tilskuddsperiode(0).getStartDato()).isEqualTo(avtaleFørsteDag);
         assertThat(avtale.tilskuddsperiode(0).getSluttDato()).isEqualTo(avtaleFørsteDag);
 
         assertThat(avtale.tilskuddsperiode(1).getStatus()).isEqualTo(TilskuddPeriodeStatus.UBEHANDLET);
-        assertThat(avtale.tilskuddsperiode(1).getStartDato()).isEqualTo(avtaleFørsteDag.plusDays(1));
+        assertThat(avtale.tilskuddsperiode(1).getStartDato()).isEqualTo(avtaleFørsteDag);
         assertThat(avtale.tilskuddsperiode(1).getSluttDato()).isEqualTo(avtaleFørsteDag.plusDays(1));
 
         harRiktigeEgenskaper(avtale);
@@ -455,7 +442,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         Now.fixedDate(LocalDate.of(2020, 6, 28));
         LocalDate avtaleStart = LocalDate.of(2021, 1, 1);
         LocalDate avtaleSlutt = LocalDate.of(2021, 8, 1);
-        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
+        Avtale avtale = TestData.enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
 
 
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
@@ -487,7 +474,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         Now.fixedDate(LocalDate.of(2021, 1, 01));
         LocalDate avtaleStart = LocalDate.of(2021, 1, 1);
         LocalDate avtaleSlutt = LocalDate.of(2021, 6, 2);
-        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
+        Avtale avtale = TestData.enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
 
         avtale.getTilskuddPeriode().forEach(tilskuddPeriode -> {
             LocalDate fra = tilskuddPeriode.getStartDato();
@@ -507,7 +494,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
         Now.fixedDate(LocalDate.of(2021, 1, 1));
         LocalDate avtaleStart = LocalDate.of(2021, 1, 20);
         LocalDate avtaleSlutt = LocalDate.of(2022, 3, 2);
-        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
+        Avtale avtale = TestData.enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
 
         avtale.getTilskuddPeriode().forEach(tilskuddPeriode -> {
             // start- og sluttdato er alltid i samme måned
@@ -555,7 +542,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
     private void harRiktigeLøpenumre(Collection<TilskuddPeriode> tilskuddPerioder) {
         int løpenummer = 1;
-        for (TilskuddPeriode tilskuddPeriode : tilskuddPerioder.stream().filter(tp -> tp.getStatus() != TilskuddPeriodeStatus.ANNULLERT).collect(Collectors.toList())) {
+        for (TilskuddPeriode tilskuddPeriode : tilskuddPerioder) {
             assertThat(tilskuddPeriode.getLøpenummer()).isEqualTo(løpenummer++);
         }
     }
