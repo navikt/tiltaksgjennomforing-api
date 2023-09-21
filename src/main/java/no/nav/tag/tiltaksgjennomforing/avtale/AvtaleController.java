@@ -18,27 +18,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-
 import org.springframework.http.*;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static java.util.Map.entry;
 import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleSorterer.getSortingOrderForPageable;
@@ -63,6 +50,7 @@ public class AvtaleController {
     private final TilskuddsperiodeConfig tilskuddsperiodeConfig;
     private final SalesforceKontorerConfig salesforceKontorerConfig;
     private final VeilarbArenaClient veilarbArenaClient;
+    private final FilterSokRepository filterSokRepository;
 
     @GetMapping("/{avtaleId}")
     public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
@@ -74,7 +62,7 @@ public class AvtaleController {
     public Boolean visSalesforceDialog(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtalepart.hentAvtale(avtaleRepository, id);
-        if(salesforceKontorerConfig.getEnheter().contains(avtale.getEnhetOppfolging()) &&
+        if (salesforceKontorerConfig.getEnheter().contains(avtale.getEnhetOppfolging()) &&
                 avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD &&
                 (avtale.statusSomEnum() == Status.GJENNOMFØRES || avtale.statusSomEnum() == Status.AVSLUTTET)) {
             return true;
@@ -122,6 +110,69 @@ public class AvtaleController {
 
         );
         return avtaler;
+    }
+
+    @GetMapping
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTil3(
+
+            String filterSokId,
+            @CookieValue("innlogget-part") Avtalerolle innloggetPart,
+            @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size
+    ) {
+        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
+
+        FilterSok filterSok = filterSokRepository.findFilterSokBySokId(filterSokId);
+        AvtalePredicate avtalePredicate = filterSok.getAvtalePredicate();
+
+        Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageable(sorteringskolonne)));
+        Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
+                avtaleRepository,
+                avtalePredicate,
+                sorteringskolonne,
+                pageable
+
+        );
+        return avtaler;
+    }
+
+    @PostMapping("/sok")
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTil2(
+            @RequestBody AvtalePredicate queryParametre,
+            @CookieValue("innlogget-part") Avtalerolle innloggetPart,
+            @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size
+    ) {
+
+        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
+        Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageable(sorteringskolonne)));
+        Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
+                avtaleRepository,
+                queryParametre,
+                sorteringskolonne,
+                pageable
+
+        );
+        HashMap<String, Object> stringObjectHashMap = new HashMap<>(avtaler);
+        stringObjectHashMap.put("sokeParametere", queryParametre);
+
+
+        FilterSok filterSokiDb = filterSokRepository.findFilterSokBySokId(queryParametre.generateHash());
+        if (filterSokiDb != null) {
+            stringObjectHashMap.put("sokId", filterSokiDb.getSokId());
+            if (!filterSokiDb.erLik(queryParametre)) {
+                log.error("Kollisjon i søkId: " + filterSokiDb.getSokId());
+            }
+        } else {
+            FilterSok filterSok = new FilterSok(queryParametre);
+            filterSokRepository.save(filterSok);
+            stringObjectHashMap.put("sokId", filterSok.getSokId());
+        }
+        return stringObjectHashMap;
     }
 
     @GetMapping("/beslutter-liste")
@@ -408,7 +459,7 @@ public class AvtaleController {
     @PostMapping("/{avtaleId}/endre-inkluderingstilskudd")
     @Transactional
     public void endreInkluderingstilskudd(@PathVariable("avtaleId") UUID avtaleId,
-            @RequestBody EndreInkluderingstilskudd endreInkluderingstilskudd) {
+                                          @RequestBody EndreInkluderingstilskudd endreInkluderingstilskudd) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         veileder.endreInkluderingstilskudd(endreInkluderingstilskudd, avtale);
@@ -466,7 +517,7 @@ public class AvtaleController {
     @PostMapping("/{avtaleId}/endre-tilskuddsberegning")
     @Transactional
     public void endreTilskuddsberegning(@PathVariable("avtaleId") UUID avtaleId,
-            @RequestBody EndreTilskuddsberegning endreTilskuddsberegning) {
+                                        @RequestBody EndreTilskuddsberegning endreTilskuddsberegning) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
@@ -496,7 +547,7 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
-    @PostMapping({ "/{avtaleId}/godkjenn-paa-vegne-av", "/{avtaleId}/godkjenn-paa-vegne-av-deltaker" })
+    @PostMapping({"/{avtaleId}/godkjenn-paa-vegne-av", "/{avtaleId}/godkjenn-paa-vegne-av-deltaker"})
     @Transactional
     public void godkjennPaVegneAv(
             @PathVariable("avtaleId") UUID avtaleId,

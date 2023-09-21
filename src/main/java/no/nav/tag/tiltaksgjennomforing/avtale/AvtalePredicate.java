@@ -3,6 +3,13 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 @Data
@@ -35,4 +42,31 @@ public class AvtalePredicate implements Predicate<Avtale> {
                 && (erLiktHvisOppgitt(navEnhet, avtale.getEnhetGeografisk()) || erLiktHvisOppgitt(navEnhet, avtale.getEnhetOppfolging()))
                 && erLiktHvisOppgitt(avtaleNr, avtale.getAvtaleNr());
     }
+
+    public String generateHash() {
+        List<String> liste = List.of(Objects.toString(veilederNavIdent, "")
+                , Objects.toString(bedriftNr, "")
+                , Objects.toString(deltakerFnr, "")
+                , Objects.toString(tiltakstype, "")
+                , Objects.toString(status, "")
+                , Objects.toString(tilskuddPeriodeStatus, "")
+                , Objects.toString(navEnhet, "")
+                , Objects.toString(avtaleNr, ""));
+
+        String yourString = String.join(";", liste);
+
+        byte[] bytesOfMessage = yourString.getBytes(StandardCharsets.UTF_8);
+
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        byte[] theMD5digest = md.digest(bytesOfMessage);
+        return String.format("%032X", new BigInteger(1, theMD5digest));
+        //return new String(theMD5digest);
+    }
+
+
 }
