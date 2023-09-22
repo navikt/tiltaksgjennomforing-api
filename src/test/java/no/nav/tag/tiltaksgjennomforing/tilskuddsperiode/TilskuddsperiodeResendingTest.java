@@ -57,7 +57,7 @@ public class TilskuddsperiodeResendingTest {
         Now.fixedDate(LocalDate.of(2023, 03, 1));
         LocalDate avtaleStart = LocalDate.of(2022, 10, 20);
         LocalDate avtaleSlutt = LocalDate.of(2024, 3, 2);
-        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
+        Avtale avtale = TestData.enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
         // Godkjenner første gang. Denne skal ikke ha noen resendingsnummer
         avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), "4321");
         avtale.nyeTilskuddsperioderEtterMigreringFraArena(LocalDate.of(2022, 10, 20), false);

@@ -12,7 +12,7 @@ public class AvtaleArenaMigreringTest {
     @Test
     public void lonnstilskudd_tilskuddsperioder_skal_ha_status_ubehandlet_hvis_ikke_ryddeavtale() {
         Now.fixedDate(LocalDate.of(2023, 02, 15));
-        Avtale avtale = TestData.enLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.of(2022, 05, 01), LocalDate.of(2023, 04,30));
+        Avtale avtale = TestData.enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.of(2022, 05, 01), LocalDate.of(2023, 04,30));
         assertThat(avtale.getTilskuddPeriode()).isNotEmpty();
 
         avtale.getTilskuddPeriode().forEach(tilskuddPeriode -> {
@@ -24,7 +24,7 @@ public class AvtaleArenaMigreringTest {
     @Test
     public void lonnstilskudd_skal_generere_tilskuddsperioder_med_behandlet_status_om_ryddeavtale() {
         Now.fixedDate(LocalDate.of(2023, 02, 15));
-        Avtale avtale = TestData.enLønnstilskuddsRyddeAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.of(2022, 05, 01), LocalDate.of(2023, 04,30));
+        Avtale avtale = TestData.enMidlertidigLønnstilskuddsRyddeAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate.of(2022, 05, 01), LocalDate.of(2023, 04,30));
         assertThat(avtale.getTilskuddPeriode()).isNotEmpty();
 
         avtale.getTilskuddPeriode().forEach(tilskuddPeriode -> {
