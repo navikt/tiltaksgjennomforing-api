@@ -145,7 +145,7 @@ public class AdminController {
             avtale.lagNyBehandletIArenaTilskuddsperiodeFraAnnullertPeriode(tp);
         });
 
-        log.info("Avtale {} har nå {} perioder med status behandlet i arena", avtale, avtale.getTilskuddPeriode().stream().filter(tp -> tp.getStatus() == TilskuddPeriodeStatus.BEHANDLET_I_ARENA).count());
+        log.info("Avtale {} har nå {} perioder med status behandlet i arena", avtaleId, avtale.getTilskuddPeriode().stream().filter(tp -> tp.getStatus() == TilskuddPeriodeStatus.BEHANDLET_I_ARENA).count());
         avtaleRepository.save(avtale);
     }
 
