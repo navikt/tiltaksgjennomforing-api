@@ -118,7 +118,8 @@ tiltaksgjennomforing:
     oppgave-uri: https://oppgave.nais.preprod.local/api/v1/oppgaver
   unleash:
     enabled: true
-    unleash-uri: https://unleash.nais.io/api/
+    api-uri: ${UNLEASH_SERVER_API_URL}/api
+    api-token: ${UNLEASH_SERVER_API_TOKEN}
   consumer:
     system:
       id: ${tiltaksgjennomforing.consumer.system}

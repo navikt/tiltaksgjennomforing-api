@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 
-import no.finn.unleash.Unleash;
+import io.getunleash.Unleash;
+import io.getunleash.UnleashContext;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,14 +29,14 @@ public class FeatureToggleServiceTest {
 
     @Test
     public void hentFeatureToggles__skal_returnere_true_hvis_feature_er_på() {
-        when(unleash.isEnabled(eq("feature_som_er_på"), any())).thenReturn(true);
+        when(unleash.isEnabled(eq("feature_som_er_på"), any(UnleashContext.class))).thenReturn(true);
         Map<String, Boolean> toggles = featureToggleService.hentFeatureToggles(Arrays.asList("feature_som_er_på"));
         assertThat(toggles.get("feature_som_er_på")).isTrue();
     }
 
     @Test
     public void hentFeatureToggles__skal_returnere_false_hvis_feature_er_av() {
-        when(unleash.isEnabled(eq("feature_som_er_av"), any())).thenReturn(false);
+        when(unleash.isEnabled(eq("feature_som_er_av"), any(UnleashContext.class))).thenReturn(false);
         Map<String, Boolean> toggles = featureToggleService.hentFeatureToggles(Arrays.asList("feature_som_er_av"));
         assertThat(toggles.get("feature_som_er_av")).isFalse();
     }
@@ -49,8 +50,8 @@ public class FeatureToggleServiceTest {
     @Test
     public void hentFeatureToggles__skal_kunne_returnere_flere_toggles() {
         List<String> features = Arrays.asList("feature1", "feature2", "feature3");
-        when(unleash.isEnabled(eq("feature1"), any())).thenReturn(true);
-        when(unleash.isEnabled(eq("feature2"), any())).thenReturn(false);
+        when(unleash.isEnabled(eq("feature1"), any(UnleashContext.class))).thenReturn(true);
+        when(unleash.isEnabled(eq("feature2"), any(UnleashContext.class))).thenReturn(false);
 
         Map<String, Boolean> toggles = featureToggleService.hentFeatureToggles(features);
 

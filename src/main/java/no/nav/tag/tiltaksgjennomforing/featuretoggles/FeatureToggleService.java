@@ -1,9 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 
-import no.finn.unleash.Unleash;
-import no.finn.unleash.UnleashContext;
-import no.finn.unleash.UnleashContext.Builder;
-import no.finn.unleash.Variant;
+import io.getunleash.Unleash;
+import io.getunleash.UnleashContext;
+import io.getunleash.Variant;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,7 +45,7 @@ public class FeatureToggleService {
     }
 
     private UnleashContext contextMedInnloggetBruker() {
-        Builder builder = UnleashContext.builder();
+        UnleashContext.Builder builder = UnleashContext.builder();
         tokenUtils.hentBrukerOgIssuer().map(a -> builder.userId(a.getBrukerIdent()));
         return builder.build();
     }

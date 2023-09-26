@@ -2,7 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 
 import java.util.List;
 import java.util.Map;
-import no.finn.unleash.Variant;
+import io.getunleash.Variant;
 import no.nav.security.token.support.core.api.Unprotected;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
