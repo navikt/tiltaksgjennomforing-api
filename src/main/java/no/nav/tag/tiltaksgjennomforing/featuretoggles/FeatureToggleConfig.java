@@ -1,8 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 
-import no.finn.unleash.DefaultUnleash;
-import no.finn.unleash.Unleash;
-import no.finn.unleash.util.UnleashConfig;
+
+import io.getunleash.DefaultUnleash;
+import io.getunleash.Unleash;
+import io.getunleash.util.UnleashConfig;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.ByEnhetStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,8 +22,9 @@ public class FeatureToggleConfig {
 
     @Bean
     @ConditionalOnProperty("tiltaksgjennomforing.unleash.enabled")
-    public Unleash initializeUnleash(@Value(
-            "${tiltaksgjennomforing.unleash.unleash-uri}") String unleashUrl,
+    public Unleash initializeUnleash(
+            @Value("${tiltaksgjennomforing.unleash.api-uri}") String unleashUrl,
+            @Value("${tiltaksgjennomforing.unleash.api-token}") String apiKey,
                                      ByEnvironmentStrategy byEnvironmentStrategy,
                                      ByEnhetStrategy byEnhetStrategy,
                                      ByOrgnummerStrategy byOrgnummerStrategy) {
@@ -30,6 +32,7 @@ public class FeatureToggleConfig {
                 .appName(APP_NAME)
                 .instanceId(APP_NAME + "-" + byEnvironmentStrategy.getEnvironment())
                 .unleashAPI(unleashUrl)
+                .apiKey(apiKey)
                 .build();
 
         return new DefaultUnleash(

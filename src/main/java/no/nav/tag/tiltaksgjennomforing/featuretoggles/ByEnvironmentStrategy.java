@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 
-import no.finn.unleash.strategy.Strategy;
+
+import io.getunleash.strategy.Strategy;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

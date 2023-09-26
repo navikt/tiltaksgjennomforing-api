@@ -11,6 +11,8 @@ env:
 
 jobs:
   bygg:
+    permissions:
+      packages: write
     name: Bygg
     runs-on: ubuntu-latest
     steps:
@@ -46,8 +48,9 @@ jobs:
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-fss
-          RESOURCE: nais/dev-fss.yaml
+          RESOURCE: nais/dev-fss.yaml,nais/unleash-apitoken.yml
           PRINT_PAYLOAD: true
+          VAR: unleash-environment=development
 
   deploy-gcp-labs:
     name: Deploy til gcp (gamle labs)
