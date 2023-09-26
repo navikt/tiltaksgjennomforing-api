@@ -11,6 +11,8 @@ env:
 
 jobs:
   bygg:
+    permissions:
+      packages: write
     name: Bygg
     runs-on: ubuntu-latest
     steps:
