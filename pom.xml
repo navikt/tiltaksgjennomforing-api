@@ -123,9 +123,9 @@
 
         <!-- Tilgangskontroll -->
         <dependency>
-            <groupId>com.github.navikt.poao-tilgang</groupId>
+            <groupId>no.nav.poao-tilgang</groupId>
             <artifactId>client</artifactId>
-            <version>2023.05.05_08.12-543e9642853e</version>
+            <version>2023.09.25_09.26-72043f243cad</version>
         </dependency>
 
         <!-- OIDC Support -->
@@ -268,14 +268,14 @@
             <id>confluent</id>
             <url>https://packages.confluent.io/maven/</url>
         </repository>
-        <!-- Legger til central eksplisitt for prioritet over jitpack -->
+        <!-- Legger til central eksplisitt for prioritet over github package registry -->
         <repository>
             <id>central</id>
             <url>https://repo.maven.apache.org/maven2</url>
         </repository>
         <repository>
-            <id>jitpack</id>
-            <url>https://jitpack.io</url>
+            <id>github</id>
+            <url>https://github-package-registry-mirror.gc.nav.no/cached/maven-release</url>
         </repository>
     </repositories>
     <pluginRepositories>
