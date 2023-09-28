@@ -9,9 +9,12 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.UtviklerTilgangProperties;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeRepository;
+import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,9 +29,10 @@ import java.util.UUID;
 @ProtectedWithClaims(issuer = "aad")
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
 @Slf4j
-public class InternalTilskuddsperiodeController {
+public class TilskuddsperiodeAdminController {
     private final TilskuddsperiodeKafkaProducer tilskuddsperiodeKafkaProducer;
     private final AvtaleRepository avtaleRepository;
+    private final TilskuddPeriodeRepository tilskuddPeriodeRepository;
     private final UtviklerTilgangProperties utviklerTilgangProperties;
     private final TokenUtils tokenUtils;
 
@@ -38,20 +42,26 @@ public class InternalTilskuddsperiodeController {
         }
     }
 
-    @PostMapping("/send-godkjenn-melding")
-    @Transactional
-    public void sendTilskuddsperiodeGodkjent(@RequestBody SendTilskuddsperiodeGodkjentRequest request) {
+    // Generer en kafkamelding og send den. Oppdaterer ikke statuser eller lignende på perioden
+    @PostMapping("/send-tilskuddsperiode-godkjent-melding/{tilskuddsperiodeId}")
+    public void sendTilskuddsperiodeGodkjentMelding(@PathVariable("tilskuddsperiodeId") UUID id) {
         sjekkTilgang();
-        // Endepunkt for å sende melding til Kafka om en tilskuddsperiode som ikke ble sendt pga. toggle som feilaktig var avskrudd
-        Avtale avtale = avtaleRepository.findById(request.getAvtaleId()).orElseThrow();
-        TilskuddPeriode tilskuddPeriode = avtale.getTilskuddPeriode().stream().filter(tp -> tp.getId().equals(request.getTilskuddsperiodeId())).findFirst().orElseThrow();
+        log.info("Lager og sender tilskuddsperiode godkjent-melding for tilskuddsperiode: {}", id);
+        TilskuddPeriode tilskuddPeriode = tilskuddPeriodeRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
+        Avtale avtale = tilskuddPeriode.getAvtale();
         TilskuddsperiodeGodkjentMelding melding = TilskuddsperiodeGodkjentMelding.create(avtale, tilskuddPeriode, 0);
         tilskuddsperiodeKafkaProducer.publiserTilskuddsperiodeGodkjentMelding(melding);
+
     }
 
-    @Value
-    private static class SendTilskuddsperiodeGodkjentRequest {
-        UUID tilskuddsperiodeId;
-        UUID avtaleId;
+    // Generer en kafkamelding og send den. Oppdaterer ikke statuser eller lignende på perioden
+    @PostMapping("/send-tilskuddsperiode-annullert-melding/{tilskuddsperiodeId}")
+    public void sendTilskuddsperiodeAnnullertMelding(@PathVariable("tilskuddsperiodeId") UUID id) {
+        sjekkTilgang();
+        log.info("Lager og sender tilskuddsperiode annullert-melding for tilskuddsperiode: {}", id);
+        TilskuddPeriode tilskuddPeriode = tilskuddPeriodeRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
+        TilskuddsperiodeAnnullertMelding melding = new TilskuddsperiodeAnnullertMelding(tilskuddPeriode.getId(), TilskuddsperiodeAnnullertÅrsak.AVTALE_ANNULLERT);
+        tilskuddsperiodeKafkaProducer.publiserTilskuddsperiodeAnnullertMelding(melding);
     }
+
 }
