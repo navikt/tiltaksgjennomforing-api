@@ -49,7 +49,7 @@ public class TilskuddsperiodeAdminController {
         log.info("Lager og sender tilskuddsperiode godkjent-melding for tilskuddsperiode: {}", id);
         TilskuddPeriode tilskuddPeriode = tilskuddPeriodeRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
         Avtale avtale = tilskuddPeriode.getAvtale();
-        TilskuddsperiodeGodkjentMelding melding = TilskuddsperiodeGodkjentMelding.create(avtale, tilskuddPeriode, 0);
+        TilskuddsperiodeGodkjentMelding melding = TilskuddsperiodeGodkjentMelding.create(avtale, tilskuddPeriode, null);
         tilskuddsperiodeKafkaProducer.publiserTilskuddsperiodeGodkjentMelding(melding);
 
     }
