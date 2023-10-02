@@ -134,7 +134,11 @@ public class AvtaleController {
                 pageable
 
         );
-        return avtaler;
+        HashMap<String, Object> stringObjectHashMap = new HashMap<>(avtaler);
+        stringObjectHashMap.put("sokeParametere", avtalePredicate);
+        stringObjectHashMap.put("sokId", filterSok.getSokId());
+
+        return stringObjectHashMap;
     }
 
     @PostMapping("/sok")
