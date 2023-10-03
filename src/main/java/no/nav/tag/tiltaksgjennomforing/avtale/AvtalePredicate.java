@@ -1,7 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import com.google.common.hash.Hashing;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.postgresql.shaded.com.ongres.scram.common.bouncycastle.pbkdf2.SHA256Digest;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -53,20 +55,23 @@ public class AvtalePredicate implements Predicate<Avtale> {
                 , Objects.toString(navEnhet, "")
                 , Objects.toString(avtaleNr, ""));
 
-        String yourString = String.join(";", liste);
+        String predicateString = String.join(";", liste);
 
-        byte[] bytesOfMessage = yourString.getBytes(StandardCharsets.UTF_8);
-
-        MessageDigest md = null;
+        MessageDigest digest = null;
         try {
-            md = MessageDigest.getInstance("MD5");
+            digest = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
-        byte[] theMD5digest = md.digest(bytesOfMessage);
-        return String.format("%032X", new BigInteger(1, theMD5digest));
-        //return new String(theMD5digest);
+        byte[] hash = digest.digest(predicateString.getBytes(StandardCharsets.UTF_8));
+        StringBuilder sb = new StringBuilder();
+        for (byte b : hash) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
     }
+
+
 
 
 }
