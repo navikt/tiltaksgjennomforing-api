@@ -124,6 +124,8 @@ public class AvtaleController {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
 
         FilterSok filterSok = filterSokRepository.findFilterSokBySokId(filterSokId);
+        filterSok.setAntallGangerSokt(filterSok.getAntallGangerSokt() + 1);
+        filterSokRepository.save(filterSok);
         AvtalePredicate avtalePredicate = filterSok.getAvtalePredicate();
 
         Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageable(sorteringskolonne)));
@@ -167,6 +169,8 @@ public class AvtaleController {
         FilterSok filterSokiDb = filterSokRepository.findFilterSokBySokId(queryParametre.generateHash());
         if (filterSokiDb != null) {
             stringObjectHashMap.put("sokId", filterSokiDb.getSokId());
+            filterSokiDb.setAntallGangerSokt(filterSokiDb.getAntallGangerSokt() + 1);
+            filterSokRepository.save(filterSokiDb);
             if (!filterSokiDb.erLik(queryParametre)) {
                 log.error("Kollisjon i søkId: " + filterSokiDb.getSokId());
             }

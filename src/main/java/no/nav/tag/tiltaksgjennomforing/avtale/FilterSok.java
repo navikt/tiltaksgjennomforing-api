@@ -19,11 +19,13 @@ public class FilterSok {
     private String sokId;
     private LocalDateTime tidspunktSokt;
     private String queryParametre;
+    private Integer antallGangerSokt;
 
 
     @SneakyThrows
     public FilterSok(AvtalePredicate queryParametre) {
         this.tidspunktSokt = LocalDateTime.now();
+        this.antallGangerSokt = 1;
         this.sokId = queryParametre.generateHash();
         ObjectMapper mapper = new ObjectMapper();
         this.queryParametre = mapper.writeValueAsString(queryParametre);
