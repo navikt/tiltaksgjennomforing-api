@@ -114,7 +114,7 @@ public class AvtaleController {
 
     @GetMapping("/sok")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTil3(
+    public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTilMedGet(
             @RequestParam(value = "sokId") String filterSokId,
             @CookieValue("innlogget-part") Avtalerolle innloggetPart,
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
@@ -123,7 +123,8 @@ public class AvtaleController {
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
 
-        FilterSok filterSok = filterSokRepository.findFilterSokBySokId(filterSokId);
+        FilterSok filterSok = filterSokRepository.findFilterSokBySokId(filterSokId).orElse(null);
+        if (filterSok != null) {
         filterSok.setAntallGangerSokt(filterSok.getAntallGangerSokt() + 1);
         filterSokRepository.save(filterSok);
         AvtalePredicate avtalePredicate = filterSok.getAvtalePredicate();
@@ -139,13 +140,24 @@ public class AvtaleController {
         HashMap<String, Object> stringObjectHashMap = new HashMap<>(avtaler);
         stringObjectHashMap.put("sokeParametere", avtalePredicate);
         stringObjectHashMap.put("sokId", filterSok.getSokId());
+        return  stringObjectHashMap;
 
-        return stringObjectHashMap;
+        } else {
+            return Map.ofEntries(
+                    entry("avtaler", List.of()),
+                    entry("size", 0),
+                    entry("currentPage", 0),
+                    entry("totalItems", 0),
+                    entry("totalPages", 0),
+                    entry("sokeParametere", ""),
+                    entry("sokId", "")
+            );
+        }
     }
 
     @PostMapping("/sok")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTil2(
+    public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTilMedPost(
             @RequestBody AvtalePredicate queryParametre,
             @CookieValue("innlogget-part") Avtalerolle innloggetPart,
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
@@ -166,7 +178,7 @@ public class AvtaleController {
         stringObjectHashMap.put("sokeParametere", queryParametre);
 
 
-        FilterSok filterSokiDb = filterSokRepository.findFilterSokBySokId(queryParametre.generateHash());
+        FilterSok filterSokiDb = filterSokRepository.findFilterSokBySokId(queryParametre.generateHash()).orElse(null);
         if (filterSokiDb != null) {
             stringObjectHashMap.put("sokId", filterSokiDb.getSokId());
             filterSokiDb.setAntallGangerSokt(filterSokiDb.getAntallGangerSokt() + 1);

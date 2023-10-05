@@ -2,7 +2,9 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface FilterSokRepository extends JpaRepository<FilterSok, String> {
 
-    FilterSok findFilterSokBySokId(String sokId);
+    Optional<FilterSok> findFilterSokBySokId(String sokId);
 }
