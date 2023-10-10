@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static java.util.Map.entry;
@@ -126,6 +127,7 @@ public class AvtaleController {
         FilterSok filterSok = filterSokRepository.findFilterSokBySokId(filterSokId).orElse(null);
         if (filterSok != null) {
         filterSok.setAntallGangerSokt(filterSok.getAntallGangerSokt() + 1);
+        filterSok.setSistSoktTidspunkt(LocalDateTime.now());
         filterSokRepository.save(filterSok);
         AvtalePredicate avtalePredicate = filterSok.getAvtalePredicate();
 
@@ -140,6 +142,7 @@ public class AvtaleController {
         HashMap<String, Object> stringObjectHashMap = new HashMap<>(avtaler);
         stringObjectHashMap.put("sokeParametere", avtalePredicate);
         stringObjectHashMap.put("sokId", filterSok.getSokId());
+        stringObjectHashMap.put("sorteringskolonne", sorteringskolonne);
         return  stringObjectHashMap;
 
         } else {
@@ -176,6 +179,7 @@ public class AvtaleController {
         );
         HashMap<String, Object> stringObjectHashMap = new HashMap<>(avtaler);
         stringObjectHashMap.put("sokeParametere", queryParametre);
+        stringObjectHashMap.put("sorteringskolonne", sorteringskolonne);
 
 
         FilterSok filterSokiDb = filterSokRepository.findFilterSokBySokId(queryParametre.generateHash()).orElse(null);
