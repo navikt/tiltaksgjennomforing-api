@@ -186,6 +186,7 @@ public class AvtaleController {
         if (filterSokiDb != null) {
             stringObjectHashMap.put("sokId", filterSokiDb.getSokId());
             filterSokiDb.setAntallGangerSokt(filterSokiDb.getAntallGangerSokt() + 1);
+            filterSokiDb.setSistSoktTidspunkt(LocalDateTime.now());
             filterSokRepository.save(filterSokiDb);
             if (!filterSokiDb.erLik(queryParametre)) {
                 log.error("Kollisjon i søkId: " + filterSokiDb.getSokId());
