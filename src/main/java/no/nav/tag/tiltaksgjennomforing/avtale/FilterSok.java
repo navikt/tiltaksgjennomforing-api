@@ -43,7 +43,6 @@ public class FilterSok {
 
     public AvtalePredicate getAvtalePredicate() {
         ObjectMapper mapper = new ObjectMapper();
-        // ignore uknown fields
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         try {
             return mapper.readValue(this.queryParametre, AvtalePredicate.class);
