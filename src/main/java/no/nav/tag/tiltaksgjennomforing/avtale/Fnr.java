@@ -87,14 +87,18 @@ public class Fnr extends Identifikator {
         if (!isSynthetic(fodselsnummer)) {
             return fodselsnummer;
         } else {
-            return fodselsnummer.substring(0, 2) + (getThirdDigit(fodselsnummer) - 8) + fodselsnummer.substring(3);
+            if (getThirdDigit(fodselsnummer) > 8) {
+                return fodselsnummer.substring(0, 2) + (getThirdDigit(fodselsnummer) - 8) + fodselsnummer.substring(3);
+            } else {
+                return fodselsnummer.substring(0, 2) + (getThirdDigit(fodselsnummer) - 4) + fodselsnummer.substring(3);
+            }
         }
     }
 
     private static boolean isSynthetic(String fodselsnummer) {
         try {
             int thirdDigit = getThirdDigit(fodselsnummer);
-            if (thirdDigit == 8 || thirdDigit == 9) {
+            if (thirdDigit > 3) {
                 return true;
             }
         } catch (IllegalArgumentException e) {

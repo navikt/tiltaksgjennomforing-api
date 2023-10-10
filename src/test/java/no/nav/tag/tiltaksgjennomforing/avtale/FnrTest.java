@@ -111,4 +111,10 @@ public class FnrTest {
 
         Now.resetClock();
     }
+
+    @Test
+    void testAtAldersjekkKanGjøresPåSyntetiskFnr() {
+        Fnr fnr = new Fnr("07459742977");
+        fnr.erUnder16år();
+    }
 }
