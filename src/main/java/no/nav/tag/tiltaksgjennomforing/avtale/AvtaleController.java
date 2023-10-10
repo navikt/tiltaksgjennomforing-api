@@ -126,24 +126,24 @@ public class AvtaleController {
 
         FilterSok filterSok = filterSokRepository.findFilterSokBySokId(filterSokId).orElse(null);
         if (filterSok != null) {
-        filterSok.setAntallGangerSokt(filterSok.getAntallGangerSokt() + 1);
-        filterSok.setSistSoktTidspunkt(LocalDateTime.now());
-        filterSokRepository.save(filterSok);
-        AvtalePredicate avtalePredicate = filterSok.getAvtalePredicate();
+            filterSok.setAntallGangerSokt(filterSok.getAntallGangerSokt() + 1);
+            filterSok.setSistSoktTidspunkt(LocalDateTime.now());
+            filterSokRepository.save(filterSok);
+            AvtalePredicate avtalePredicate = filterSok.getAvtalePredicate();
 
-        Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageable(sorteringskolonne)));
-        Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
-                avtaleRepository,
-                avtalePredicate,
-                sorteringskolonne,
-                pageable
+            Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageable(sorteringskolonne)));
+            Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
+                    avtaleRepository,
+                    avtalePredicate,
+                    sorteringskolonne,
+                    pageable
 
-        );
-        HashMap<String, Object> stringObjectHashMap = new HashMap<>(avtaler);
-        stringObjectHashMap.put("sokeParametere", avtalePredicate);
-        stringObjectHashMap.put("sokId", filterSok.getSokId());
-        stringObjectHashMap.put("sorteringskolonne", sorteringskolonne);
-        return  stringObjectHashMap;
+            );
+            HashMap<String, Object> stringObjectHashMap = new HashMap<>(avtaler);
+            stringObjectHashMap.put("sokeParametere", avtalePredicate);
+            stringObjectHashMap.put("sokId", filterSok.getSokId());
+            stringObjectHashMap.put("sorteringskolonne", sorteringskolonne);
+            return stringObjectHashMap;
 
         } else {
             return Map.ofEntries(
