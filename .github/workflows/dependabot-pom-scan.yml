@@ -2,7 +2,7 @@ name: Monitor dependencies with Dependabot
 on:
   push:
     branches:
-      - main
+      - master
     paths:
       - "pom.xml"
   workflow_dispatch:
