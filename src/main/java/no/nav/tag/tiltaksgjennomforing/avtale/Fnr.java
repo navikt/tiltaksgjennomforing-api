@@ -87,7 +87,7 @@ public class Fnr extends Identifikator {
         if (!isSynthetic(fodselsnummer)) {
             return fodselsnummer;
         } else {
-            if (getThirdDigit(fodselsnummer) > 8) {
+            if (getThirdDigit(fodselsnummer) > 7) {
                 return fodselsnummer.substring(0, 2) + (getThirdDigit(fodselsnummer) - 8) + fodselsnummer.substring(3);
             } else {
                 return fodselsnummer.substring(0, 2) + (getThirdDigit(fodselsnummer) - 4) + fodselsnummer.substring(3);

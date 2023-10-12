@@ -115,6 +115,17 @@ public class FnrTest {
     @Test
     void testAtAldersjekkKanGjøresPåSyntetiskFnr() {
         Fnr fnr = new Fnr("07459742977");
-        fnr.erUnder16år();
+        assertThat(fnr.erUnder16år()).isFalse();
+        assertThat(fnr.erOver30år()).isFalse();
+    }
+
+    @Test
+    void testAtAldersjekkKanGjøresPåSyntetiskFnrFraSkatteEtaten() {
+        Fnr fnr = new Fnr("21899797180");
+        assertThat(fnr.erUnder16år()).isFalse();
+        assertThat(fnr.erOver30år()).isFalse();
     }
 }
+
+
+
