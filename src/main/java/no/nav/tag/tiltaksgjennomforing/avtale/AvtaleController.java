@@ -19,27 +19,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-
 import org.springframework.http.*;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static java.util.Map.entry;
 import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleSorterer.getSortingOrderForPageable;
@@ -64,6 +52,7 @@ public class AvtaleController {
     private final TilskuddsperiodeConfig tilskuddsperiodeConfig;
     private final SalesforceKontorerConfig salesforceKontorerConfig;
     private final VeilarbArenaClient veilarbArenaClient;
+    private final FilterSokRepository filterSokRepository;
 
     @ApiBeskrivelse("Hent detaljer for avtale om arbeidsmarkedstiltak")
     @GetMapping("/{avtaleId}")
@@ -126,6 +115,94 @@ public class AvtaleController {
 
         );
         return avtaler;
+    }
+
+    @ApiBeskrivelse("Hent liste over avtaler om arbeidsmarkedstiltak")
+    @GetMapping("/sok")
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTilMedGet(
+            @RequestParam(value = "sokId") String filterSokId,
+            @CookieValue("innlogget-part") Avtalerolle innloggetPart,
+            @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size
+    ) {
+        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
+
+        FilterSok filterSok = filterSokRepository.findFilterSokBySokId(filterSokId).orElse(null);
+        if (filterSok != null) {
+            filterSok.setAntallGangerSokt(filterSok.getAntallGangerSokt() + 1);
+            filterSok.setSistSoktTidspunkt(LocalDateTime.now());
+            filterSokRepository.save(filterSok);
+            AvtalePredicate avtalePredicate = filterSok.getAvtalePredicate();
+
+            Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageable(sorteringskolonne)));
+            Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
+                    avtaleRepository,
+                    avtalePredicate,
+                    sorteringskolonne,
+                    pageable
+
+            );
+            HashMap<String, Object> stringObjectHashMap = new HashMap<>(avtaler);
+            stringObjectHashMap.put("sokeParametere", avtalePredicate);
+            stringObjectHashMap.put("sokId", filterSok.getSokId());
+            stringObjectHashMap.put("sorteringskolonne", sorteringskolonne);
+            return stringObjectHashMap;
+
+        } else {
+            return Map.ofEntries(
+                    entry("avtaler", List.of()),
+                    entry("size", 0),
+                    entry("currentPage", 0),
+                    entry("totalItems", 0),
+                    entry("totalPages", 0),
+                    entry("sokeParametere", ""),
+                    entry("sokId", "")
+            );
+        }
+    }
+
+    @ApiBeskrivelse("Hent liste over avtaler om arbeidsmarkedstiltak")
+    @PostMapping("/sok")
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTilMedPost(
+            @RequestBody AvtalePredicate queryParametre,
+            @CookieValue("innlogget-part") Avtalerolle innloggetPart,
+            @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size
+    ) {
+
+        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
+        Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageable(sorteringskolonne)));
+        Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
+                avtaleRepository,
+                queryParametre,
+                sorteringskolonne,
+                pageable
+
+        );
+        HashMap<String, Object> stringObjectHashMap = new HashMap<>(avtaler);
+        stringObjectHashMap.put("sokeParametere", queryParametre);
+        stringObjectHashMap.put("sorteringskolonne", sorteringskolonne);
+
+
+        FilterSok filterSokiDb = filterSokRepository.findFilterSokBySokId(queryParametre.generateHash()).orElse(null);
+        if (filterSokiDb != null) {
+            stringObjectHashMap.put("sokId", filterSokiDb.getSokId());
+            filterSokiDb.setAntallGangerSokt(filterSokiDb.getAntallGangerSokt() + 1);
+            filterSokiDb.setSistSoktTidspunkt(LocalDateTime.now());
+            filterSokRepository.save(filterSokiDb);
+            if (!filterSokiDb.erLik(queryParametre)) {
+                log.error("Kollisjon i søkId: " + filterSokiDb.getSokId());
+            }
+        } else {
+            FilterSok filterSok = new FilterSok(queryParametre);
+            filterSokRepository.save(filterSok);
+            stringObjectHashMap.put("sokId", filterSok.getSokId());
+        }
+        return stringObjectHashMap;
     }
 
     @ApiBeskrivelse("Hent liste over avtaler om arbeidsmarkedstiltak")
