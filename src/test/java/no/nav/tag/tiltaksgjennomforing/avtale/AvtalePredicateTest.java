@@ -119,4 +119,24 @@ public class AvtalePredicateTest {
         query.setAvtaleNr(TestData.ET_AVTALENR);
         assertThat(query.test(avtale)).isTrue();
     }
+
+    @Test
+    void ignorerer_ugyldig_felt_i_prediacate() {
+        FilterSok filterSok = new FilterSok();
+        filterSok.setQueryParametre("""
+                {"avtaleNr": 1, "avtaleTulleNummer": 1337}
+                """);
+        AvtalePredicate avtalePredicate = filterSok.getAvtalePredicate();
+        assertThat(avtalePredicate.getAvtaleNr()).isEqualTo(1);
+    }
+
+    @Test
+    void ignorerer_ugyldig_json_i_prediacate() {
+        FilterSok filterSok = new FilterSok();
+        filterSok.setQueryParametre("""
+                {
+                """);
+        AvtalePredicate avtalePredicate = filterSok.getAvtalePredicate();
+        assertThat(avtalePredicate).isEqualTo(new AvtalePredicate());
+    }
 }

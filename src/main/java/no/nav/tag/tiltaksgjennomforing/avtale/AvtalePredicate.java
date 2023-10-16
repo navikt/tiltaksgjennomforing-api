@@ -1,12 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import com.google.common.hash.Hashing;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.postgresql.shaded.com.ongres.scram.common.bouncycastle.pbkdf2.SHA256Digest;
-
-import java.io.Serializable;
-import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -70,8 +65,6 @@ public class AvtalePredicate implements Predicate<Avtale> {
         }
         return sb.toString();
     }
-
-
 
 
 }
