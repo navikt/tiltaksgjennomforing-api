@@ -157,7 +157,8 @@ public class AvtaleController {
                     entry("currentPage", 0),
                     entry("totalItems", 0),
                     entry("totalPages", 0),
-                    entry("sokeParametere", ""),
+                    entry("sokeParametere", new AvtalePredicate()),
+                    entry("sorteringskolonne", "sistEndret"),
                     entry("sokId", "")
             );
         }
