@@ -21,8 +21,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
+import static no.nav.tag.tiltaksgjennomforing.ApiBeskriver.API_BESKRIVELSE_ATTRIBUTT;
 import static no.nav.tag.tiltaksgjennomforing.infrastruktur.CorrelationIdSupplier.MDC_CORRELATION_ID_KEY;
 
 /**
@@ -48,7 +48,8 @@ class AuditLoggingFilter extends OncePerRequestFilter {
         var wrapper = new ContentCachingResponseWrapper(response);
         filterChain.doFilter(request, wrapper);
         String correlationId;
-        if (request.getAttribute(MDC_CORRELATION_ID_KEY) != null) correlationId = (String) request.getAttribute(MDC_CORRELATION_ID_KEY);
+        if (request.getAttribute(MDC_CORRELATION_ID_KEY) != null)
+            correlationId = (String) request.getAttribute(MDC_CORRELATION_ID_KEY);
         else correlationId = null;
 
         if (correlationId == null) {
@@ -63,6 +64,10 @@ class AuditLoggingFilter extends OncePerRequestFilter {
                 // Logger kun oppslag dersom en innlogget bruker utførte oppslaget
                 if (brukerId != null) {
                     fnrListe.stream().filter(Objects::nonNull).distinct().forEach(deltakerFnr -> {
+                        var apiBeskrivelse = (String) request.getAttribute(API_BESKRIVELSE_ATTRIBUTT);
+                        if (apiBeskrivelse == null) {
+                            log.warn("Manglende @ApiBeskrivelse for api-endepunkt {}", uri);
+                        }
                         // Ikke logg at en bruker slår opp sin egen informasjon
                         if (!brukerId.equals(deltakerFnr)) {
                             var entry = new AuditEntry(
@@ -72,7 +77,8 @@ class AuditLoggingFilter extends OncePerRequestFilter {
                                     EventType.READ,
                                     true,
                                     utførtTid,
-                                    msgForUri(uri),
+                                    apiBeskrivelse != null ? apiBeskrivelse
+                                            : "Oppslag i løsning for arbeidsmarkedstiltak",
                                     uri,
                                     HttpMethod.valueOf(request.getMethod()),
                                     correlationId
@@ -88,20 +94,5 @@ class AuditLoggingFilter extends OncePerRequestFilter {
             }
         }
         wrapper.copyBodyToResponse();
-    }
-
-    private static final Pattern AVTALE_PATTERN = Pattern.compile("/avtaler/[\\w,\\-]+$");
-    private static String msgForUri(URI uri) {
-        var uriString = uri.toString();
-        if (uriString.contains("/avtaler/deltaker-allerede-paa-tiltak")) {
-            return "Undersøk om deltaker allerede er på arbeidsmarkedstiltak. I forbindelse med opprettelse av avtale";
-        } else if (uriString.endsWith("/avtaler") || uriString.endsWith("avtaler/beslutter-liste")) {
-            return "Hent liste over avtaler om arbeidsmarkedstiltak";
-        } else if(AVTALE_PATTERN.matcher(uriString).find()){
-            return "Hent detaljer for avtale om arbeidsmarkedstiltak";
-        } else {
-            log.warn("{}: Fant ikke en lesbar melding for uri: {}", classname, uri);
-            return "Oppslag i løsning for tiltaksgjennomføring";
-        }
     }
 }

@@ -46,6 +46,7 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         avtaleRepository.save(TestData.enSommerjobbAvtaleGodkjentAvBeslutter());
         avtaleRepository.save(TestData.enSommerjobbAvtaleGodkjentAvArbeidsgiver());
         Now.resetClock();
+        avtaleRepository.save(TestData.enMidlertidigLonnstilskuddAvtaleMedSpesieltTilpassetInnsatsGodkjentAvVeileder());
         avtaleRepository.save(TestData.enMentorAvtaleMedMedAltUtfylt());
         avtaleRepository.save(TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt());
         avtaleRepository.save(TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedGeografiskEnhet());

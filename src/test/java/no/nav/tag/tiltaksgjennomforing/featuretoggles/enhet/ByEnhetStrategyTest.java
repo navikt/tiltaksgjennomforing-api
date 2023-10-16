@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet;
 
-import no.finn.unleash.UnleashContext;
+import io.getunleash.UnleashContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestClientException;
 

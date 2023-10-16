@@ -70,5 +70,8 @@ spec:
       rules:
         - application: poao-tilgang
           namespace: poao
+      external:
+        - host: team-tiltak-unleash-api.nav.cloud.nais.io
   envFrom:
     - configmap: loginservice-idporten
+    - secret: tiltaksgjennomforing-api-unleash-api-token

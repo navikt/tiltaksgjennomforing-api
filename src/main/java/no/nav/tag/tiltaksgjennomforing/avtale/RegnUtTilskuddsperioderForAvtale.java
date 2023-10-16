@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static no.nav.tag.tiltaksgjennomforing.utils.DatoUtils.sisteDatoIMnd;
+
 @Slf4j
 @UtilityClass
 public class RegnUtTilskuddsperioderForAvtale {
@@ -114,9 +116,6 @@ public class RegnUtTilskuddsperioderForAvtale {
 
     private LocalDate førsteDatoIMnd(LocalDate dato) {
         return LocalDate.of(dato.getYear(), dato.getMonth(), 01);
-    }
-    private LocalDate sisteDatoIMnd(LocalDate dato) {
-        return LocalDate.of(dato.getYear(), dato.getMonth(), dato.lengthOfMonth());
     }
 
     private static List<Periode> splittHvisNyttÅr (LocalDate fraDato, LocalDate tilDato) {

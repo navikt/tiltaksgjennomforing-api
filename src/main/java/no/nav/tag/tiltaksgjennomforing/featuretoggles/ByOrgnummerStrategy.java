@@ -1,9 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 
+import io.getunleash.UnleashContext;
+import io.getunleash.strategy.Strategy;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import no.finn.unleash.UnleashContext;
-import no.finn.unleash.strategy.Strategy;
+
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
