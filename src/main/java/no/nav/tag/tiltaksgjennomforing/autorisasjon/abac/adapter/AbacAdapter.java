@@ -50,6 +50,14 @@ public class AbacAdapter {
     }
 
     public boolean harSkriveTilgang(String navIdent, String deltakerFnr) {
+        if (navIdent == null) {
+            log.error("Navident manglet i tilgangskontroll");
+            return false;
+        }
+        if (deltakerFnr == null) {
+            log.error("DeltakerFnr manglet i tilgangskontroll");
+            return false;
+        }
         var key = cacheKey(navIdent, deltakerFnr);
         var cachedValue = cache.get(key, Boolean.class);
         if (cachedValue != null) {

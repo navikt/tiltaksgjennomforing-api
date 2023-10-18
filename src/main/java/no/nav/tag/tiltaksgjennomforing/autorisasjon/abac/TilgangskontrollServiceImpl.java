@@ -31,14 +31,15 @@ public class TilgangskontrollServiceImpl implements TilgangskontrollService {
         executorService.submit(() -> {
             MDC.setContextMap(contextMap);
             try {
-                var harPoaoTilgang = poaoTilgangService.harSkriveTilgang(internBruker.getAzureOid(), fnr.asString());
-                if (harPoaoTilgang != harAbacTilgang) {
-                    log.warn("Tilgangskontroll: ulikt utfall i abac ({}) og poao ({})", harAbacTilgang, harPoaoTilgang);
+                if (internBruker.getAzureOid() != null && fnr.asString() != null) {
+                    var harPoaoTilgang = poaoTilgangService.harSkriveTilgang(internBruker.getAzureOid(), fnr.asString());
+                    if (harPoaoTilgang != harAbacTilgang) {
+                        log.warn("Tilgangskontroll: ulikt utfall i abac ({}) og poao ({})", harAbacTilgang, harPoaoTilgang);
+                    }
                 }
             } catch (Exception e) {
                 log.error("Feil ved tilgangskontroll-sammenligning", e);
-            }
-            finally {
+            } finally {
                 MDC.clear();
             }
         });
