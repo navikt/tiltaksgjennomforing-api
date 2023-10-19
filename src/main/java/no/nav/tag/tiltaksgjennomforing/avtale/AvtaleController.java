@@ -128,9 +128,6 @@ public class AvtaleController {
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "10") Integer size
     ) {
-        log.error("Kalte ny endepunkt for søk (get)");
-        throw new NotImplementedException("Ikke ferdig enda");
-        /*
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
 
         FilterSok filterSok = filterSokRepository.findFilterSokBySokId(filterSokId).orElse(null);
@@ -166,7 +163,6 @@ public class AvtaleController {
                     entry("sokId", "")
             );
         }
-        */
     }
 
     @ApiBeskrivelse("Hent liste over avtaler om arbeidsmarkedstiltak")
@@ -179,9 +175,7 @@ public class AvtaleController {
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "10") Integer size
     ) {
-        log.error("Kalte ny endepunkt for søk (post)");
-        throw new NotImplementedException("Ikke ferdig enda");
-        /*Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
+        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageable(sorteringskolonne)));
         Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,
@@ -209,7 +203,7 @@ public class AvtaleController {
             filterSokRepository.save(filterSok);
             stringObjectHashMap.put("sokId", filterSok.getSokId());
         }
-        return stringObjectHashMap;*/
+        return stringObjectHashMap;
     }
 
     @ApiBeskrivelse("Hent liste over avtaler om arbeidsmarkedstiltak")

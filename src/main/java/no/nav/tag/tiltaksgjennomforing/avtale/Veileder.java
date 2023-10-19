@@ -168,6 +168,11 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         }
     }
 
+    @Override
+    AvtaleMinimalListevisning skjulData(AvtaleMinimalListevisning avtaleMinimalListevisning) {
+        return avtaleMinimalListevisning;
+    }
+
     public void annullerAvtale(Instant sistEndret, String annullerGrunn, Avtale avtale) {
         avtale.sjekkSistEndret(sistEndret);
         avtale.annuller(this, annullerGrunn);

@@ -27,10 +27,13 @@ public class Deltaker extends Avtalepart<Fnr> {
 
     @Override
     Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, Pageable pageable) {
-
         Page<Avtale> avtaler = avtaleRepository.findAllByDeltakerFnr(getIdentifikator(), pageable);
-        Page<Avtale> filtrereAvtalerKanske = avtaler.map(this::skjulMentorFødselsnummer);
-        return filtrereAvtalerKanske;
+        return avtaler;
+    }
+
+    @Override
+    AvtaleMinimalListevisning skjulData(AvtaleMinimalListevisning avtaleMinimalListevisning) {
+        return avtaleMinimalListevisning;
     }
 
     private Avtale skjulMentorFødselsnummer(Avtale avtale){

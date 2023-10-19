@@ -176,9 +176,12 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
                 avtaler = Page.empty();
             }
         }
-        return avtaler
-                .map(Arbeidsgiver::fjernAvbruttGrunn)
-                .map(Arbeidsgiver::fjernAnnullertGrunn);
+        return avtaler;
+    }
+
+    @Override
+    AvtaleMinimalListevisning skjulData(AvtaleMinimalListevisning avtaleMinimalListevisning) {
+        return avtaleMinimalListevisning;
     }
 
     public List<Avtale> hentAvtalerForMinsideArbeidsgiver(AvtaleRepository avtaleRepository, BedriftNr bedriftNr) {
@@ -234,6 +237,5 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         fjernKvalifiseringsgruppe(avtale);
         return avtale;
     }
-
 
 }

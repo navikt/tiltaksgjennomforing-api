@@ -36,6 +36,8 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     abstract Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, Pageable pageable);
 
+    abstract AvtaleMinimalListevisning skjulData(AvtaleMinimalListevisning avtaleMinimalListevisning);
+
     public Map<String, Object> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, String sorteringskolonne, Pageable pageable) {
         Page<Avtale> avtaler = hentAlleAvtalerMedMuligTilgang(avtaleRepository, queryParametre, pageable);
 
@@ -45,6 +47,10 @@ public abstract class Avtalepart<T extends Identifikator> {
                 .toList();
 
         List<AvtaleMinimalListevisning> listMinimal = avtalerMedTilgang.stream().map(AvtaleMinimalListevisning::fromAvtale).toList();
+
+        // Fjern data her og ikke i entity
+        listMinimal = listMinimal.stream().map(avtaleMinimal -> skjulData(avtaleMinimal)).toList();
+
 
         return Map.ofEntries(
                 entry("avtaler", listMinimal),
