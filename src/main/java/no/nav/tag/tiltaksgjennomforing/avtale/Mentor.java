@@ -38,19 +38,7 @@ public class Mentor extends Avtalepart<Fnr> {
         avtaleMinimalListevisning.setDeltakerFnr(null);
         return avtaleMinimalListevisning;
     }
-
-    private Avtale gjemInnholdOmMentorIkkeHarSignertErklæring(Avtale avtale){
-        if(!avtale.erGodkjentTaushetserklæringAvMentor()) {
-            AvtaleInnhold innhold = AvtaleInnhold.nyttTomtInnhold(avtale.getTiltakstype());
-            innhold.setBedriftNavn(avtale.getGjeldendeInnhold().getBedriftNavn());
-            innhold.setAvtale(avtale);
-            avtale.setGjeldendeInnhold(innhold);
-            avtale.setDeltakerFnr(null);
-            avtale.setVeilederNavIdent(null);
-        }
-        return avtale;
-    }
-
+    
     @Override
     public void godkjennForAvtalepart(Avtale avtale) {
         avtale.godkjennForMentor(getIdentifikator());
