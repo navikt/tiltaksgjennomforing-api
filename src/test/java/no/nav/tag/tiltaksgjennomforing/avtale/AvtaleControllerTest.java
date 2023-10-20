@@ -97,7 +97,7 @@ public class AvtaleControllerTest {
         værInnloggetSom(veileder);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.empty());
         assertThatThrownBy(
-                () -> avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER)
+                () -> avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER, null)
         ).isExactlyInstanceOf(RessursFinnesIkkeException.class);
     }
 
@@ -118,7 +118,7 @@ public class AvtaleControllerTest {
         );
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         assertThatThrownBy(
-                () -> avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER)
+                () -> avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER, null)
         ).isExactlyInstanceOf(TilgangskontrollException.class);
     }
 
@@ -280,7 +280,7 @@ public class AvtaleControllerTest {
         );
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         assertThatThrownBy(
-                () -> avtaleController.hent(avtale.getId(), Avtalerolle.ARBEIDSGIVER)
+                () -> avtaleController.hent(avtale.getId(), Avtalerolle.ARBEIDSGIVER, null)
         ).isExactlyInstanceOf(TilgangskontrollException.class);
     }
 
@@ -515,7 +515,7 @@ public class AvtaleControllerTest {
         var arbeidsgiver = TestData.enArbeidsgiver(avtale);
         værInnloggetSom(arbeidsgiver);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        Avtale hentetAvtale = avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER);
+        Avtale hentetAvtale = avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER, null);
         assertThat(hentetAvtale.getAvbruttGrunn()).isNull();
     }
 
@@ -525,7 +525,7 @@ public class AvtaleControllerTest {
         var arbeidsgiver = TestData.enArbeidsgiver(avtale);
         værInnloggetSom(arbeidsgiver);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        Avtale hentetAvtale = avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER);
+        Avtale hentetAvtale = avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER, null);
         assertThat(hentetAvtale.getEnhetGeografisk()).isNull();
         assertThat(hentetAvtale.getEnhetOppfolging()).isNull();
     }

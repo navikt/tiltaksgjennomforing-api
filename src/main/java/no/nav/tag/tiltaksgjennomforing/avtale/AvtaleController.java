@@ -1,6 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.DistributionSummary;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.Protected;
@@ -15,20 +17,39 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
-import org.apache.commons.lang3.NotImplementedException;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 import static java.util.Map.entry;
 import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleSorterer.getSortingOrderForPageable;
@@ -54,12 +75,34 @@ public class AvtaleController {
     private final SalesforceKontorerConfig salesforceKontorerConfig;
     private final VeilarbArenaClient veilarbArenaClient;
     private final FilterSokRepository filterSokRepository;
+    private final MeterRegistry meterRegistry;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @ApiBeskrivelse("Hent detaljer for avtale om arbeidsmarkedstiltak")
     @GetMapping("/{avtaleId}")
-    public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
+    public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart, @RequestHeader(value = "referer", required = false) final String referer) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
+        sendMetrikkPåPage(referer);
         return avtalepart.hentAvtale(avtaleRepository, id);
+    }
+
+    private void sendMetrikkPåPage(String referer) {
+        DistributionSummary summary = DistributionSummary
+                .builder("tiltaksgjennomforing.avtale.page")
+                .description("Fra side i søket avtalen åpnes")
+                .register(meterRegistry);
+
+        try {
+            URL refererUrl = new URL(referer);
+            String queryStr = refererUrl.getQuery();
+            String[] params = queryStr.split("&");
+            for(String param : params) {
+                String[] paramValues = param.split("=");
+                if(paramValues[0].equals("page") && paramValues.length > 1) {
+                    summary.record(Double.valueOf(paramValues[1]));
+                }
+            }
+        } catch (MalformedURLException e) {}
     }
 
     @GetMapping("/{avtaleId}/vis-salesforce-dialog")
