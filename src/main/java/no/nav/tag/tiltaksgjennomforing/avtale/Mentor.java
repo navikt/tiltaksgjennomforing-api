@@ -30,24 +30,15 @@ public class Mentor extends Avtalepart<Fnr> {
     @Override
     Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, Pageable pageable) {
         Page<Avtale> avtaler = avtaleRepository.findAllByMentorFnr(getIdentifikator(), pageable);
-        Page<Avtale> avtalerMedMuligTilgang = avtaler
-                .map(this::gjemInnholdOmMentorIkkeHarSignertErklæring)
-                .map(this::skjulDeltakerFødselsnummer);
-        return avtalerMedMuligTilgang;
+        return avtaler;
     }
 
-    private Avtale gjemInnholdOmMentorIkkeHarSignertErklæring(Avtale avtale){
-        if(!avtale.erGodkjentTaushetserklæringAvMentor()) {
-            AvtaleInnhold innhold = AvtaleInnhold.nyttTomtInnhold(avtale.getTiltakstype());
-            innhold.setBedriftNavn(avtale.getGjeldendeInnhold().getBedriftNavn());
-            innhold.setAvtale(avtale);
-            avtale.setGjeldendeInnhold(innhold);
-            avtale.setDeltakerFnr(null);
-            avtale.setVeilederNavIdent(null);
-        }
-        return avtale;
+    @Override
+    AvtaleMinimalListevisning skjulData(AvtaleMinimalListevisning avtaleMinimalListevisning) {
+        avtaleMinimalListevisning.setDeltakerFnr(null);
+        return avtaleMinimalListevisning;
     }
-
+    
     @Override
     public void godkjennForAvtalepart(Avtale avtale) {
         avtale.godkjennForMentor(getIdentifikator());

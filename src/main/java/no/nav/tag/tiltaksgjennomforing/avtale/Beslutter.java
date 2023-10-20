@@ -75,6 +75,11 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
         return avtaleRepository.findAllByAvtaleNr(queryParametre.getAvtaleNr(), pageable);
     }
 
+    @Override
+    AvtaleMinimalListevisning skjulData(AvtaleMinimalListevisning avtaleMinimalListevisning) {
+        return avtaleMinimalListevisning;
+    }
+
     private Integer getPlussdato() {
         return ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
     }

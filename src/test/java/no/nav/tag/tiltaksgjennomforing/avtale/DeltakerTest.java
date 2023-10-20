@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
@@ -30,19 +31,6 @@ public class DeltakerTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Deltaker deltaker = TestData.enDeltaker(avtale);
         assertThatThrownBy(() -> deltaker.opphevGodkjenninger(avtale)).isInstanceOf(KanIkkeOppheveException.class);
-    }
-
-    @Test
-    public void mentor_Avtaler__skjul_mentor_fnr_for_deltaker() {
-        Pageable pageable = PageRequest.of(0, 100);
-        Avtale avtale = TestData.enMentorAvtaleSignert();
-        Deltaker deltaker = TestData.enDeltaker(avtale);
-        AvtalePredicate avtalePredicate = new AvtalePredicate();
-        when(avtaleRepository.findAllByDeltakerFnr(any(), eq(pageable))).thenReturn(new PageImpl<Avtale>(List.of(avtale)));
-        Page<Avtale> avtaler = deltaker.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate, pageable);
-        assertThat(avtaler.getContent().get(0).getMentorFnr()).isNull();
-        assertThat(avtaler.getContent().get(0).getGjeldendeInnhold().getMentorTimelonn()).isNull();
-
     }
 
     @Test

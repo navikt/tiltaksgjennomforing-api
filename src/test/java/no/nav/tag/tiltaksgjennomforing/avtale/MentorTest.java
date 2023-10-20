@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
@@ -36,13 +37,11 @@ public class MentorTest {
 
         // NÅR
         when(avtaleRepository.findAllByMentorFnr(any(), eq(pageable))).thenReturn(new PageImpl<Avtale>(List.of(avtaleUsignert, avtaleSignert)));
-        Page<Avtale> avtaler = mentor.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate, pageable);
-
-        assertThat(avtaler.getTotalElements()).isEqualTo(2);
-        assertThat(avtaler.getContent().get(0)).isEqualTo(avtaleUsignert);
-        assertThat(avtaler.getContent().get(1)).isEqualTo(avtaleSignert);
-        assertThat(avtaler.getContent().get(0).getDeltakerFnr()).isNull();
-        assertThat(avtaler.getContent().get(1).getDeltakerFnr()).isNull();
+        Map<String, Object> avtalerMinimalPage = mentor.hentAlleAvtalerMedLesetilgang(avtaleRepository, avtalePredicate, null, pageable);
+        List<AvtaleMinimalListevisning> avtalerMinimal = (List<AvtaleMinimalListevisning>) avtalerMinimalPage.get("avtaler");
+        assertThat(avtalerMinimal.size()).isEqualTo(2);
+        assertThat(avtalerMinimal.get(0).getDeltakerFnr()).isNull();
+        assertThat(avtalerMinimal.get(1).getDeltakerFnr()).isNull();
      }
 
     @Test
@@ -89,16 +88,12 @@ public class MentorTest {
         AvtalePredicate avtalePredicate = new AvtalePredicate();
         // NÅR
         when(avtaleRepository.findAllByMentorFnr(any(), eq(pageable))).thenReturn(new PageImpl<Avtale>(List.of(avtale)));
-        Page<Avtale> avtaler = mentor.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate, pageable);
+        Map<String, Object> avtalerMinimalPage = mentor.hentAlleAvtalerMedLesetilgang(avtaleRepository, avtalePredicate, null, pageable);
+        List<AvtaleMinimalListevisning> avtalerMinimal = (List<AvtaleMinimalListevisning>) avtalerMinimalPage.get("avtaler");
 
-        assertThat(avtaler).isNotEmpty();
-        assertThat(avtaler.getContent().get(0).getDeltakerFnr()).isNull();
-        assertThat(avtaler.getContent().get(0).getVeilederNavIdent()).isNull();
-        assertThat(avtaler.getContent().get(0).getGjeldendeInnhold().getDeltakerFornavn()).isNull();
-        assertThat(avtaler.getContent().get(0).getGjeldendeInnhold().getDeltakerEtternavn()).isNull();
-        assertThat(avtaler.getContent().get(0).getGjeldendeInnhold().getVeilederTlf()).isNull();
-        assertThat(avtaler.getContent().get(0).getGjeldendeInnhold().getArbeidsgiverKontonummer()).isNull();
-        assertThat(avtaler.getContent().get(0).getBedriftNr()).isNotNull();
+        assertThat(avtalerMinimal).isNotEmpty();
+        assertThat(avtalerMinimal.get(0).getDeltakerFnr()).isNull();
+        assertThat(avtalerMinimal.get(0).getBedriftNavn()).isNotNull();
     }
 
     @Test
