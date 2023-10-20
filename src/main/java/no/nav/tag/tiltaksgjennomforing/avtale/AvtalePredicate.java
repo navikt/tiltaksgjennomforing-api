@@ -46,6 +46,7 @@ public class AvtalePredicate implements Predicate<Avtale> {
                 , Objects.toString(deltakerFnr, "")
                 , Objects.toString(tiltakstype, "")
                 , Objects.toString(status, "")
+                , Objects.toString(erUfordelt, "")
                 , Objects.toString(tilskuddPeriodeStatus, "")
                 , Objects.toString(navEnhet, "")
                 , Objects.toString(avtaleNr, ""));
