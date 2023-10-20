@@ -96,11 +96,13 @@ public class AvtaleController {
             try {
                 URL refererUrl = new URL(referer);
                 String queryStr = refererUrl.getQuery();
-                String[] params = queryStr.split("&");
-                for(String param : params) {
-                    String[] paramValues = param.split("=");
-                    if(paramValues[0].equals("page") && paramValues.length > 1) {
-                        summary.record(Double.valueOf(paramValues[1]));
+                if(StringUtils.isNotBlank(queryStr)) {
+                    String[] params = queryStr.split("&");
+                    for(String param : params) {
+                        String[] paramValues = param.split("=");
+                        if(paramValues[0].equals("page") && paramValues.length > 1) {
+                            summary.record(Double.valueOf(paramValues[1]));
+                        }
                     }
                 }
             } catch (MalformedURLException e) {}
