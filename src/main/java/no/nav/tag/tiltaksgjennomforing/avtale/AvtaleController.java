@@ -17,6 +17,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -87,22 +88,23 @@ public class AvtaleController {
     }
 
     private void sendMetrikkPåPage(String referer) {
-        DistributionSummary summary = DistributionSummary
-                .builder("tiltaksgjennomforing.avtale.page")
-                .description("Fra side i søket avtalen åpnes")
-                .register(meterRegistry);
-
-        try {
-            URL refererUrl = new URL(referer);
-            String queryStr = refererUrl.getQuery();
-            String[] params = queryStr.split("&");
-            for(String param : params) {
-                String[] paramValues = param.split("=");
-                if(paramValues[0].equals("page") && paramValues.length > 1) {
-                    summary.record(Double.valueOf(paramValues[1]));
+        if(StringUtils.isNotEmpty(referer)) {
+            DistributionSummary summary = DistributionSummary
+                    .builder("tiltaksgjennomforing.avtale.page")
+                    .description("Fra side i søket avtalen åpnes")
+                    .register(meterRegistry);
+            try {
+                URL refererUrl = new URL(referer);
+                String queryStr = refererUrl.getQuery();
+                String[] params = queryStr.split("&");
+                for(String param : params) {
+                    String[] paramValues = param.split("=");
+                    if(paramValues[0].equals("page") && paramValues.length > 1) {
+                        summary.record(Double.valueOf(paramValues[1]));
+                    }
                 }
-            }
-        } catch (MalformedURLException e) {}
+            } catch (MalformedURLException e) {}
+        }
     }
 
     @GetMapping("/{avtaleId}/vis-salesforce-dialog")
