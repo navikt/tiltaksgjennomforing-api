@@ -92,6 +92,7 @@ public class AvtaleController {
             DistributionSummary summary = DistributionSummary
                     .builder("tiltaksgjennomforing.avtale.page")
                     .description("Fra side i søket avtalen åpnes")
+                    .publishPercentiles(0.5,0.75,0.9,0.99)
                     .register(meterRegistry);
             try {
                 URL refererUrl = new URL(referer);
