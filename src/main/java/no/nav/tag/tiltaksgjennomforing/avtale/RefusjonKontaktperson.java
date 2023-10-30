@@ -26,4 +26,8 @@ public class RefusjonKontaktperson {
      public boolean erIkkeTom() {
           return refusjonKontaktpersonEtternavn != null && refusjonKontaktpersonFornavn != null && refusjonKontaktpersonTlf != null && !this.refusjonKontaktpersonEtternavn.isEmpty() && !refusjonKontaktpersonFornavn.isEmpty() && !refusjonKontaktpersonTlf.isEmpty();
      }
+
+     public boolean erTom() {
+          return refusjonKontaktpersonEtternavn == null && refusjonKontaktpersonFornavn == null && refusjonKontaktpersonTlf == null && ønskerVarslingOmRefusjon == null;
+     }
 }
