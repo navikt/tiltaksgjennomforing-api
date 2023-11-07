@@ -1337,7 +1337,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (endreInkluderingstilskudd.getInkluderingstilskuddsutgift().isEmpty()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_INKLUDERINGSTILSKUDD_TOM_LISTE);
         }
-        if (endreInkluderingstilskudd.inkluderingstilskuddTotalBeløp() > 136000) {
+        if (endreInkluderingstilskudd.inkluderingstilskuddTotalBeløp() > 143900) {
             throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_SUM_FOR_HØY);
         }
         for (Inkluderingstilskuddsutgift i : endreInkluderingstilskudd.getInkluderingstilskuddsutgift()) {

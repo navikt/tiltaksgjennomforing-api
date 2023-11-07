@@ -41,7 +41,7 @@ public class InkluderingstilskuddStrategy extends BaseAvtaleInnholdStrategy {
     }
 
     private void sjekkTotalBeløp() {
-        Integer MAX_SUM = 136700;
+        Integer MAX_SUM = 143900;
         Integer sum = avtaleInnhold.inkluderingstilskuddTotalBeløp();
         if (sum > MAX_SUM) {
             throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_SUM_FOR_HØY);
