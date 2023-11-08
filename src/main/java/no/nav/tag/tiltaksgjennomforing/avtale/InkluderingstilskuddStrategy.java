@@ -43,7 +43,7 @@ public class InkluderingstilskuddStrategy extends BaseAvtaleInnholdStrategy {
 
     private void sjekkTotalBeløp(List<Inkluderingstilskuddsutgift> inkluderingstilskuddsutgift) {
         Integer MAX_SUM = 143900;
-        Integer sum = inkluderingstilskuddsutgift.stream().mapToInt(Inkluderingstilskuddsutgift::getBeløp).sum();
+        Integer sum = inkluderingstilskuddsutgift.stream().map(Inkluderingstilskuddsutgift::getBeløp).reduce(0, Integer::sum);
         if (sum > MAX_SUM) {
             throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_SUM_FOR_HØY);
         }
