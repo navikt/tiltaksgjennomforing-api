@@ -121,8 +121,8 @@ public class AvtaleInnhold {
 
     @JsonProperty
     public Integer inkluderingstilskuddTotalBeløp() {
-        return inkluderingstilskuddsutgift.stream().map(inkluderingstilskuddsutgift -> inkluderingstilskuddsutgift.getBeløp())
-                .collect(Collectors.toList()).stream()
+        return inkluderingstilskuddsutgift.stream()
+                .map(Inkluderingstilskuddsutgift::getBeløp)
                 .reduce(0, Integer::sum);
     }
 
