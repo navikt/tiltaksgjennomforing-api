@@ -41,6 +41,10 @@ public class InkluderingstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         return alleFelter;
     }
 
+    /**
+     * Sjekker at summen av alle inkluderingstilskuddsbeløp ikke overstiger 143 900.
+     * Beløpet er bestemt her: https://www.nav.no/arbeidsgiver/inkluderingstilskudd#hva
+     */
     private void sjekkTotalBeløp(List<Inkluderingstilskuddsutgift> inkluderingstilskuddsutgift) {
         Integer MAX_SUM = 143900;
         Integer sum = inkluderingstilskuddsutgift.stream().map(Inkluderingstilskuddsutgift::getBeløp).reduce(0, Integer::sum);
