@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-@Profile("testdata")
+@Profile({"testdata", Miljø.DEV_GCP_LABS})
 public class LastInnTestData implements ApplicationListener<ApplicationReadyEvent> {
     private final AvtaleRepository avtaleRepository;
 
