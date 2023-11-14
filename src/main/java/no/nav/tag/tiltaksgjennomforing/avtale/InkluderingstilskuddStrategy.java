@@ -4,6 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class InkluderingstilskuddStrategy extends BaseAvtaleInnholdStrategy {
@@ -14,7 +15,7 @@ public class InkluderingstilskuddStrategy extends BaseAvtaleInnholdStrategy {
 
     @Override
     public void endre(EndreAvtale nyAvtale) {
-        sjekkTotalBeløp();
+        sjekkTotalBeløp(nyAvtale.getInkluderingstilskuddsutgift());
 
         avtaleInnhold.getInkluderingstilskuddsutgift().clear();
         avtaleInnhold.getInkluderingstilskuddsutgift().addAll(nyAvtale.getInkluderingstilskuddsutgift());
@@ -40,9 +41,13 @@ public class InkluderingstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         return alleFelter;
     }
 
-    private void sjekkTotalBeløp() {
-        Integer MAX_SUM = 136700;
-        Integer sum = avtaleInnhold.inkluderingstilskuddTotalBeløp();
+    /**
+     * Sjekker at summen av alle inkluderingstilskuddsbeløp ikke overstiger 143 900.
+     * Beløpet er bestemt her: https://www.nav.no/arbeidsgiver/inkluderingstilskudd#hva
+     */
+    private void sjekkTotalBeløp(List<Inkluderingstilskuddsutgift> inkluderingstilskuddsutgift) {
+        Integer MAX_SUM = 143900;
+        Integer sum = inkluderingstilskuddsutgift.stream().map(Inkluderingstilskuddsutgift::getBeløp).reduce(0, Integer::sum);
         if (sum > MAX_SUM) {
             throw new FeilkodeException(Feilkode.INKLUDERINGSTILSKUDD_SUM_FOR_HØY);
         }

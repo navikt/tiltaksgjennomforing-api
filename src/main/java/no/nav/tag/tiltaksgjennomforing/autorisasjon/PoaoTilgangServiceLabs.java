@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 
 @Service
-@Profile(value = { Miljø.DEV_GCP_LABS, Miljø.LOCAL })
+@Profile(value = { Miljø.DEV_GCP_LABS, Miljø.LOCAL, Miljø.DOCKER_COMPOSE })
 public class PoaoTilgangServiceLabs implements PoaoTilgangService {
 
     public boolean harSkriveTilgang(UUID beslutterAzureUUID, String deltakerFnr) {
