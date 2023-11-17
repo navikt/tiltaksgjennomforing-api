@@ -53,7 +53,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.Map.entry;
-import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleSorterer.getSortingOrderForPageable;
+import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleSorterer.getSortingOrderForPageableVeileder;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
 
 @Protected
@@ -88,25 +88,26 @@ public class AvtaleController {
     }
 
     private void sendMetrikkPåPage(String referer) {
-        if(StringUtils.isNotEmpty(referer)) {
+        if (StringUtils.isNotEmpty(referer)) {
             DistributionSummary summary = DistributionSummary
                     .builder("tiltaksgjennomforing.avtale.page")
                     .description("Fra side i søket avtalen åpnes")
-                    .publishPercentiles(0.5,0.75,0.9,0.99)
+                    .publishPercentiles(0.5, 0.75, 0.9, 0.99)
                     .register(meterRegistry);
             try {
                 URL refererUrl = new URL(referer);
                 String queryStr = refererUrl.getQuery();
-                if(StringUtils.isNotBlank(queryStr)) {
+                if (StringUtils.isNotBlank(queryStr)) {
                     String[] params = queryStr.split("&");
-                    for(String param : params) {
+                    for (String param : params) {
                         String[] paramValues = param.split("=");
-                        if(paramValues[0].equals("page") && paramValues.length > 1) {
+                        if (paramValues[0].equals("page") && paramValues.length > 1) {
                             summary.record(Double.valueOf(paramValues[1]));
                         }
                     }
                 }
-            } catch (MalformedURLException e) {}
+            } catch (MalformedURLException e) {
+            }
         }
     }
 
@@ -114,7 +115,7 @@ public class AvtaleController {
     public Boolean visSalesforceDialog(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtalepart.hentAvtale(avtaleRepository, id);
-        if(salesforceKontorerConfig.getEnheter().contains(avtale.getEnhetOppfolging()) &&
+        if (salesforceKontorerConfig.getEnheter().contains(avtale.getEnhetOppfolging()) &&
                 avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD &&
                 (avtale.statusSomEnum() == Status.GJENNOMFØRES || avtale.statusSomEnum() == Status.AVSLUTTET)) {
             return true;
@@ -155,7 +156,7 @@ public class AvtaleController {
             @RequestParam(value = "size", required = false, defaultValue = "10") Integer size
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageable(sorteringskolonne)));
+        Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageableVeileder(sorteringskolonne)));
         Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,
                 queryParametre,
@@ -174,7 +175,8 @@ public class AvtaleController {
             @CookieValue("innlogget-part") Avtalerolle innloggetPart,
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size
+            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
+            @RequestParam(value = "sorteringOrder", required = false, defaultValue = "ASC") String sorteringOrder
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
 
@@ -185,7 +187,11 @@ public class AvtaleController {
             filterSokRepository.save(filterSok);
             AvtalePredicate avtalePredicate = filterSok.getAvtalePredicate();
 
-            Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageable(sorteringskolonne)));
+            Pageable pageable = PageRequest.of(
+                    Math.abs(page),
+                    Math.abs(size),
+                    Sort.by(getSortingOrderForPageableVeileder(sorteringskolonne, sorteringOrder))
+            );
             Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
                     avtaleRepository,
                     avtalePredicate,
@@ -197,6 +203,7 @@ public class AvtaleController {
             stringObjectHashMap.put("sokeParametere", avtalePredicate);
             stringObjectHashMap.put("sokId", filterSok.getSokId());
             stringObjectHashMap.put("sorteringskolonne", sorteringskolonne);
+            stringObjectHashMap.put("sorteringOrder", sorteringOrder);
             return stringObjectHashMap;
 
         } else {
@@ -208,6 +215,7 @@ public class AvtaleController {
                     entry("totalPages", 0),
                     entry("sokeParametere", new AvtalePredicate()),
                     entry("sorteringskolonne", "sistEndret"),
+                    entry("sorteringOrder", "ASC"),
                     entry("sokId", "")
             );
         }
@@ -221,10 +229,11 @@ public class AvtaleController {
             @CookieValue("innlogget-part") Avtalerolle innloggetPart,
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size
+            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
+            @RequestParam(value = "sorteringOrder", required = false, defaultValue = "ASC") String sorteringOrder
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageable(sorteringskolonne)));
+        Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageableVeileder(sorteringskolonne, sorteringOrder)));
         Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,
                 queryParametre,
@@ -235,6 +244,7 @@ public class AvtaleController {
         HashMap<String, Object> stringObjectHashMap = new HashMap<>(avtaler);
         stringObjectHashMap.put("sokeParametere", queryParametre);
         stringObjectHashMap.put("sorteringskolonne", sorteringskolonne);
+        stringObjectHashMap.put("sorteringOrder", sorteringOrder);
 
 
         FilterSok filterSokiDb = filterSokRepository.findFilterSokBySokId(queryParametre.generateHash()).orElse(null);
@@ -544,7 +554,7 @@ public class AvtaleController {
     @PostMapping("/{avtaleId}/endre-inkluderingstilskudd")
     @Transactional
     public void endreInkluderingstilskudd(@PathVariable("avtaleId") UUID avtaleId,
-            @RequestBody EndreInkluderingstilskudd endreInkluderingstilskudd) {
+                                          @RequestBody EndreInkluderingstilskudd endreInkluderingstilskudd) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         veileder.endreInkluderingstilskudd(endreInkluderingstilskudd, avtale);
@@ -602,7 +612,7 @@ public class AvtaleController {
     @PostMapping("/{avtaleId}/endre-tilskuddsberegning")
     @Transactional
     public void endreTilskuddsberegning(@PathVariable("avtaleId") UUID avtaleId,
-            @RequestBody EndreTilskuddsberegning endreTilskuddsberegning) {
+                                        @RequestBody EndreTilskuddsberegning endreTilskuddsberegning) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
@@ -633,7 +643,7 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
-    @PostMapping({ "/{avtaleId}/godkjenn-paa-vegne-av", "/{avtaleId}/godkjenn-paa-vegne-av-deltaker" })
+    @PostMapping({"/{avtaleId}/godkjenn-paa-vegne-av", "/{avtaleId}/godkjenn-paa-vegne-av-deltaker"})
     @Transactional
     public void godkjennPaVegneAv(
             @PathVariable("avtaleId") UUID avtaleId,
