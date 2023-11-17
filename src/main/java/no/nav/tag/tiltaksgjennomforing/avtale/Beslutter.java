@@ -92,7 +92,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
             Integer size,
             String sorteringOrder
     ) {
-        Sort by = Sort.by(AvtaleSorterer.getSortingOrderForPageable(sorteringskolonne, sorteringOrder));
+        Sort by = Sort.by(AvtaleSorterer.getSortingOrderForPageableBeslutter(sorteringskolonne, sorteringOrder));
         Pageable paging = PageRequest.of(page, size, by);
 
         Set<String> navEnheter = hentNavEnheter();
@@ -102,6 +102,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
         }
 
         TilskuddPeriodeStatus status = queryParametre.getTilskuddPeriodeStatus();
+//        Status gjeldandeStatus = queryParametre.getStatus();
         Tiltakstype tiltakstype = queryParametre.getTiltakstype();
         BedriftNr bedriftNr = queryParametre.getBedriftNr();
         Integer avtaleNr = queryParametre.getAvtaleNr();
@@ -121,6 +122,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
             tiltakstyper.add(Tiltakstype.VARIG_LONNSTILSKUDD);
             tiltakstyper.add(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         }
+
 
         return avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
                 status,

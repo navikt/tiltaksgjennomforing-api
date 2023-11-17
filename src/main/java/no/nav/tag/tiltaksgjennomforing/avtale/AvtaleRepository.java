@@ -126,9 +126,45 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             @Param("sluttDato") Date sluttDato
     );
 
-    @Query(value = "SELECT a.id as id, a.avtaleNr as avtaleNr, a.tiltakstype as tiltakstype, a.veilederNavIdent as veilederNavIdent, a.gjeldendeInnhold.deltakerFornavn as deltakerFornavn, " +
-            "a.opprettetTidspunkt as opprettetTidspunkt, a.sistEndret as sistEndret, a.gjeldendeInnhold.deltakerEtternavn as deltakerEtternavn, " +
-            "a.deltakerFnr as deltakerFnr, a.gjeldendeInnhold.bedriftNavn as bedriftNavn, a.bedriftNr as bedriftNr, min(t.startDato) as startDato, " +
+    @Query(value = "SELECT a.id as id, a.avtaleNr as avtaleNr, a.tiltakstype as tiltakstype, a.veilederNavIdent as veilederNavIdent, " +
+            "a.gjeldendeInnhold.deltakerFornavn as deltakerFornavn, a.opprettetTidspunkt as opprettetTidspunkt, a.sistEndret as sistEndret, " +
+            "a.gjeldendeInnhold.deltakerEtternavn as deltakerEtternavn, a.deltakerFnr as deltakerFnr, a.gjeldendeInnhold.bedriftNavn as bedriftNavn, " +
+            "a.bedriftNr as bedriftNr, min(t.startDato) as startDato, t.status as status, count(t.id) as antallUbehandlet " +
+            "FROM Avtale a " +
+            "LEFT JOIN AvtaleInnhold i ON i.id = a.gjeldendeInnhold.id " +
+            "LEFT JOIN TilskuddPeriode t ON (t.avtale.id = a.id AND t.status = :tilskuddsperiodestatus AND t.startDato <= :decisiondate) " +
+            "WHERE a.gjeldendeInnhold.godkjentAvVeileder IS NOT NULL " +
+            "AND a.tiltakstype IN (:tiltakstype) " +
+            "AND EXISTS (SELECT 1 FROM TilskuddPeriode p WHERE p.avtale.id = a.id " +
+            "AND ((:tilskuddsperiodestatus = p.status AND p.startDato <= :decisiondate) OR (:tilskuddsperiodestatus = p.status AND p.løpenummer = 1))) " +
+            "AND a.enhetOppfolging IN (:navEnheter) " +
+            "AND (:avtaleNr IS NULL OR a.avtaleNr = :avtaleNr) " +
+            "AND (:bedriftNr IS NULL OR CAST(a.bedriftNr AS text) = :bedriftNr) " +
+            "AND EXISTS (" +
+            "    SELECT 1 FROM TilskuddPeriode tp" +
+            "    WHERE tp.avtale.id = a.id" +
+            "    AND tp.startDato = (" +
+            "        SELECT MAX(tpInner.startDato)" +
+            "        FROM TilskuddPeriode tpInner" +
+            "        WHERE tpInner.avtale.id = tp.avtale.id" +
+            "        AND tpInner.startDato <= CURRENT_DATE" +
+            "    )" +
+            "    AND tp.status = 'UBEHANDLET'" +
+            ")" +
+            "GROUP BY a.id, a.gjeldendeInnhold.deltakerFornavn, a.gjeldendeInnhold.deltakerEtternavn, a.veilederNavIdent, a.gjeldendeInnhold.bedriftNavn, status",
+            nativeQuery = false)
+    Page<BeslutterOversiktDTO> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterTest(
+            @Param("tilskuddsperiodestatus") TilskuddPeriodeStatus tilskuddsperiodestatus,
+            @Param("decisiondate") LocalDate decisiondate,
+            @Param("tiltakstype") Set<Tiltakstype> tiltakstype,
+            @Param("navEnheter") Set<String> navEnheter,
+            @Param("bedriftNr") String bedriftNr,
+            @Param("avtaleNr") Integer avtaleNr,
+            Pageable pageable);
+
+    @Query(value = "SELECT a.id as id, a.avtaleNr as avtaleNr, a.tiltakstype as tiltakstype, a.veilederNavIdent as veilederNavIdent, " +
+            "a.gjeldendeInnhold.deltakerFornavn as deltakerFornavn, a.opprettetTidspunkt as opprettetTidspunkt, a.sistEndret as sistEndret, " +
+            "a.gjeldendeInnhold.deltakerEtternavn as deltakerEtternavn, a.deltakerFnr as deltakerFnr, a.gjeldendeInnhold.bedriftNavn as bedriftNavn, a.bedriftNr as bedriftNr, min(t.startDato) as startDato, " +
             " t.status as status, count(t.id) as antallUbehandlet " +
             "from Avtale a " +
             "left join AvtaleInnhold i on i.id = a.gjeldendeInnhold.id " +
