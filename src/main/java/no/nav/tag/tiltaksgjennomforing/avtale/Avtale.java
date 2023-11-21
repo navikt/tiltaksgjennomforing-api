@@ -361,6 +361,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         boolean varGodkjentAvDeltaker = erGodkjentAvDeltaker();
         opphevGodkjenninger();
         registerEvent(new GodkjenningerOpphevetAvArbeidsgiver(this, new GamleVerdier(varGodkjentAvDeltaker, false)));
+        if (varGodkjentAvDeltaker) {
+            registerEvent(new DeltakersGodkjenningOpphevetAvArbeidsgiver(this));
+        }
     }
 
     void opphevGodkjenningerSomVeileder() {
@@ -368,6 +371,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         boolean varGodkjentAvArbeidsgiver = erGodkjentAvArbeidsgiver();
         opphevGodkjenninger();
         registerEvent(new GodkjenningerOpphevetAvVeileder(this, new GamleVerdier(varGodkjentAvDeltaker, varGodkjentAvArbeidsgiver)));
+        if (varGodkjentAvDeltaker) {
+            registerEvent(new DeltakersGodkjenningOpphevetAvVeileder(this));
+        }
     }
 
     private void opphevGodkjenninger() {

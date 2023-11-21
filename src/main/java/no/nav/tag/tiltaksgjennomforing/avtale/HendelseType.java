@@ -47,7 +47,9 @@ public enum HendelseType {
     AVTALE_SLETTET("Avtale slettet av veileder"),
     GODKJENT_FOR_ETTERREGISTRERING("Avtale er godkjent for etterregistrering"),
     FJERNET_ETTERREGISTRERING("Fjernet etterregistrering på avtale"),
-    STATUSENDRING("Statusendring");
+    STATUSENDRING("Statusendring"),
+    DELTAKERS_GODKJENNING_OPPHEVET_AV_VEILEDER("Deltakers godkjenning opphevet av veileder"),
+    DELTAKERS_GODKJENNING_OPPHEVET_AV_ARBEIDSGIVER("Deltakers godkjenning opphevet av arbeidsgiver");
 
     private final String tekst;
 }

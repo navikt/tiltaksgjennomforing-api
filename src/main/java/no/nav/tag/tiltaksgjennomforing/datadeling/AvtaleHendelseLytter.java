@@ -128,6 +128,14 @@ public class AvtaleHendelseLytter {
     public void signertAvMentor(SignertAvMentor event) {
         lagHendelse(event.getAvtale(), HendelseType.SIGNERT_AV_MENTOR, event.getUtfortAv(), Avtalerolle.MENTOR);
     }
+    @EventListener
+    public void deltakersGodkjenningOpphevetAvVeileder(DeltakersGodkjenningOpphevetAvVeileder event) {
+        lagHendelse(event.getAvtale(), HendelseType.DELTAKERS_GODKJENNING_OPPHEVET_AV_VEILEDER, event.getAvtale().getVeilederNavIdent(), Avtalerolle.VEILEDER);
+    }
+    @EventListener
+    public void deltakersGodkjenningOpphevetAvArbeidsgiver(DeltakersGodkjenningOpphevetAvArbeidsgiver event) {
+        lagHendelse(event.getAvtale(), HendelseType.DELTAKERS_GODKJENNING_OPPHEVET_AV_ARBEIDSGIVER, event.getAvtale().getBedriftNr(), Avtalerolle.ARBEIDSGIVER);
+    }
 
     private void lagHendelse(Avtale avtale, HendelseType hendelseType, Identifikator utførtAv, Avtalerolle utførtAvRolle) {
         LocalDateTime tidspunkt = Now.localDateTime();
