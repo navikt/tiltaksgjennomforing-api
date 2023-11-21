@@ -38,7 +38,9 @@ public class AvtaleSorterer {
             case "opprettetTidspunkt" -> "opprettetTidspunkt";
             case "bedriftNavn" -> "gjeldendeInnhold.bedriftNavn";
             case "startDato" -> "gjeldendeInnhold.startDato";
+            case "sluttDato" -> "gjeldendeInnhold.sluttDato";
             case "tiltakstype" -> "tiltakstype";
+            case "veilederNavIdent" -> "veilederNavIdent";
             default -> "sistEndret";
         };
         return new Sort.Order(Sort.Direction.fromString(sorteringsRetning), feldtnavn);
