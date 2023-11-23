@@ -13,7 +13,8 @@ public class AvtaleSorterer {
             case AvtaleInnhold.Fields.deltakerEtternavn -> Comparator.comparing(avtale -> lowercaseEllerNull(avtale.getGjeldendeInnhold().getDeltakerEtternavn()), Comparator.nullsLast(Comparator.naturalOrder()));
             case AvtaleInnhold.Fields.deltakerFornavn -> Comparator.comparing(avtale -> lowercaseEllerNull(avtale.getGjeldendeInnhold().getDeltakerFornavn()), Comparator.nullsLast(Comparator.naturalOrder()));
             case "status" -> Comparator.comparing(Avtale::status);
-            case "startDato" -> Comparator.comparing(avtale -> (avtale.gjeldendeTilskuddsperiode() != null ? avtale.gjeldendeTilskuddsperiode().getStartDato() : avtale.getGjeldendeInnhold().getStartDato()), Comparator.nullsLast(Comparator.naturalOrder()));
+            case "startDato" ->
+                    Comparator.comparing(avtale -> (avtale.gjeldendeTilskuddsperiode() != null ? avtale.gjeldendeTilskuddsperiode().getStartDato() : avtale.getGjeldendeInnhold().getStartDato()), Comparator.nullsLast(Comparator.naturalOrder()));
             default -> Comparator.comparing(Avtale::getSistEndret, Comparator.reverseOrder());
         };
     }
@@ -22,20 +23,27 @@ public class AvtaleSorterer {
         return x != null ? x.toLowerCase() : null;
     }
 
-    static Sort.Order getSortingOrderForPageable(String sortingOrder) {
-        return switch (sortingOrder) {
-            case "deltakerFornavn" -> Sort.Order.asc("gjeldendeInnhold.deltakerFornavn");
-            case "opprettetTidspunkt" -> Sort.Order.desc("opprettetTidspunkt");
-            case "bedriftNavn" -> Sort.Order.asc("gjeldendeInnhold.bedriftNavn");
-            case "startDato" -> Sort.Order.asc("gjeldendeInnhold.startDato");
-            case "tiltakstype" -> Sort.Order.asc("tiltakstype");
-            default -> Sort.Order.desc("sistEndret");
-        };
+    static Sort.Order getSortingOrderForPageableVeileder(String sorteringskolonne) {
+        return getSortingOrderForPageableVeileder(sorteringskolonne, "ASC");
     }
 
-   static protected Sort.Order getSortingOrderForPageable(String order, String direction) {
-       SortingDirection sortingDirection = SortingDirection.valueOf(direction.toUpperCase());
-       return switch (sortingDirection) {
+    static Sort.Order getSortingOrderForPageableVeileder(String sorteringskolonne, String sorteringsRetning) {
+        var feldtnavn = switch (sorteringskolonne) {
+            case "deltakerFornavn" -> "gjeldendeInnhold.deltakerFornavn";
+            case "opprettetTidspunkt" -> "opprettetTidspunkt";
+            case "bedriftNavn" -> "gjeldendeInnhold.bedriftNavn";
+            case "startDato" -> "gjeldendeInnhold.startDato";
+            case "sluttDato" -> "gjeldendeInnhold.sluttDato";
+            case "tiltakstype" -> "tiltakstype";
+            case "veilederNavIdent" -> "veilederNavIdent";
+            default -> "sistEndret";
+        };
+        return new Sort.Order(Sort.Direction.fromString(sorteringsRetning), feldtnavn);
+    }
+
+    static protected Sort.Order getSortingOrderForPageableBeslutter(String order, String direction) {
+        SortingDirection sortingDirection = SortingDirection.valueOf(direction.toUpperCase());
+        return switch (sortingDirection) {
             case ASC -> getSortingOrderForPageableASC(SortingOrder.valueOf(order.toUpperCase()));
             case DESC -> getSortingOrderForPageableDESC(SortingOrder.valueOf(order.toUpperCase()));
         };

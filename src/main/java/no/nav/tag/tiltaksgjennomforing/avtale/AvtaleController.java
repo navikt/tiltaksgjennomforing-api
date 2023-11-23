@@ -53,7 +53,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.Map.entry;
-import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleSorterer.getSortingOrderForPageable;
+import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleSorterer.getSortingOrderForPageableVeileder;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
 
 @Protected
@@ -155,7 +155,7 @@ public class AvtaleController {
             @RequestParam(value = "size", required = false, defaultValue = "10") Integer size
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageable(sorteringskolonne)));
+        Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageableVeileder(sorteringskolonne)));
         Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,
                 queryParametre,
@@ -174,7 +174,8 @@ public class AvtaleController {
             @CookieValue("innlogget-part") Avtalerolle innloggetPart,
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size
+            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
+            @RequestParam(value = "sorteringOrder", required = false, defaultValue = "ASC") String sorteringOrder
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
 
@@ -185,7 +186,11 @@ public class AvtaleController {
             filterSokRepository.save(filterSok);
             AvtalePredicate avtalePredicate = filterSok.getAvtalePredicate();
 
-            Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageable(sorteringskolonne)));
+            Pageable pageable = PageRequest.of(
+                    Math.abs(page),
+                    Math.abs(size),
+                    Sort.by(getSortingOrderForPageableVeileder(sorteringskolonne, sorteringOrder))
+            );
             Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
                     avtaleRepository,
                     avtalePredicate,
@@ -197,6 +202,7 @@ public class AvtaleController {
             stringObjectHashMap.put("sokeParametere", avtalePredicate);
             stringObjectHashMap.put("sokId", filterSok.getSokId());
             stringObjectHashMap.put("sorteringskolonne", sorteringskolonne);
+            stringObjectHashMap.put("sorteringOrder", sorteringOrder);
             return stringObjectHashMap;
 
         } else {
@@ -208,6 +214,7 @@ public class AvtaleController {
                     entry("totalPages", 0),
                     entry("sokeParametere", new AvtalePredicate()),
                     entry("sorteringskolonne", "sistEndret"),
+                    entry("sorteringOrder", "ASC"),
                     entry("sokId", "")
             );
         }
@@ -221,10 +228,11 @@ public class AvtaleController {
             @CookieValue("innlogget-part") Avtalerolle innloggetPart,
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
-            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size
+            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
+            @RequestParam(value = "sorteringOrder", required = false, defaultValue = "ASC") String sorteringOrder
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageable(sorteringskolonne)));
+        Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageableVeileder(sorteringskolonne, sorteringOrder)));
         Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,
                 queryParametre,
@@ -235,6 +243,7 @@ public class AvtaleController {
         HashMap<String, Object> stringObjectHashMap = new HashMap<>(avtaler);
         stringObjectHashMap.put("sokeParametere", queryParametre);
         stringObjectHashMap.put("sorteringskolonne", sorteringskolonne);
+        stringObjectHashMap.put("sorteringOrder", sorteringOrder);
 
 
         FilterSok filterSokiDb = filterSokRepository.findFilterSokBySokId(queryParametre.generateHash()).orElse(null);
