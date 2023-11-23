@@ -45,7 +45,11 @@ public class VarselController {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow();
         avtalepart.sjekkTilgang(avtale);
-        return varselRepository.findAllByAvtaleIdAndMottaker(avtaleId, innloggetPart);
+        if (innloggetPart == Avtalerolle.BESLUTTER) { //Henter hendelselogg i form av varsel for veileder til beslutter
+            return varselRepository.finnVarselForVeileder(avtaleId);
+        } else {
+            return varselRepository.findAllByAvtaleIdAndMottaker(avtaleId, innloggetPart);
+        }
     }
 
     @PostMapping("{varselId}/sett-til-lest")

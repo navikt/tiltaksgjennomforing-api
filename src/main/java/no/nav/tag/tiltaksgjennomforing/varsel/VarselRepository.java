@@ -4,6 +4,7 @@ import io.micrometer.core.annotation.Timed;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.Collection;
 import java.util.List;
@@ -22,6 +23,10 @@ public interface  VarselRepository extends JpaRepository<Varsel, UUID> {
 
     @Timed(percentiles = { 0.5d, 0.75d, 0.9d, 0.99d, 0.999d })
     List<Varsel> findAllByAvtaleIdAndMottaker(UUID avtaleId, Avtalerolle mottaker);
+
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    @Query("select v from Varsel v where v.avtaleId = :avtaleId and v.mottaker = 'VEILEDER'")
+    List<Varsel> finnVarselForVeileder(UUID avtaleId);
 
     @Timed(percentiles = { 0.5d, 0.75d, 0.9d, 0.99d, 0.999d })
     List<Varsel> findAllByLestIsFalseAndBjelleIsTrueAndIdentifikatorIn(Collection<String> identifikator);
