@@ -20,7 +20,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 @ProtectedWithClaims(issuer = "aad")
 @RestController
@@ -182,12 +181,12 @@ public class AdminController {
         log.info("Finner avtaler som har tilskuddsperioder med mindre startdato enn en periode med lavere løpenummer");
         List<Avtale> midlertidige = avtaleRepository.findAllByTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         midlertidige.removeIf(a -> a.getGjeldendeInnhold().getAvtaleInngått() == null);
-        midlertidige.removeIf(a -> a.getTilskuddPeriode().size() == 0);
+        midlertidige.removeIf(a -> a.getTilskuddPeriode().isEmpty());
 
         midlertidige.forEach(avtale -> {
             avtale.getTilskuddPeriode().forEach(tp -> {
                 if (tp.getLøpenummer() > 1) {
-                    TilskuddPeriode forrigePeriode = avtale.getTilskuddPeriode().stream().filter(t -> t.getLøpenummer() == tp.getLøpenummer() - 1).collect(Collectors.toList()).stream().findFirst().orElseThrow();
+                    TilskuddPeriode forrigePeriode = avtale.getTilskuddPeriode().stream().filter(t -> t.getLøpenummer() == tp.getLøpenummer() - 1).toList().stream().findFirst().orElseThrow();
                     if (tp.getStartDato().isBefore(forrigePeriode.getStartDato())) {
                         log.warn("Tilskuddsperiode med id {} har startDato før startDatoen til forrige løpenummer!", tp.getId());
                     }
