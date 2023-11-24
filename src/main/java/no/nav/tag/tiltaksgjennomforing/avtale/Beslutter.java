@@ -92,7 +92,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
             Integer size,
             String sorteringOrder
     ) {
-        Sort by = Sort.by(AvtaleSorterer.getSortingOrderForPageable(sorteringskolonne, sorteringOrder));
+        Sort by = Sort.by(AvtaleSorterer.getSortingOrderForPageableBeslutter(sorteringskolonne, sorteringOrder));
         Pageable paging = PageRequest.of(page, size, by);
 
         Set<String> navEnheter = hentNavEnheter();
