@@ -195,6 +195,23 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
             nyeTilskuddsperioder();
         }
+//        int sum = 0;
+//        int counter = 0;
+//        List<Integer> tilskuddBeløpList = this.tilskuddPeriode.stream().map(x -> x.getBeløp()).toList();
+//        for (TilskuddPeriode tilskuddPeriode : this.tilskuddPeriode) {
+//            if (sum >= 750000) {
+//                break;
+//            }
+//            sum += tilskuddPeriode.getBeløp();
+//            counter++;
+//        }
+//        System.out.println("måned den overskrider 750k: " + counter);
+//        for (int i=0; i<counter; i++) {
+//            this.tilskuddPeriode. get(i).setBeløp(750000/counter);
+//        }
+
+
+        // sjekk om summan av tiltaksperiodene er over 750000 her eller i endreAvtale
         sistEndretNå();
         registerEvent(new AvtaleEndret(this, utfortAvRolle, identifikator));
     }
@@ -886,7 +903,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
     }
 
-    void endreBeløpITilskuddsperioder() {
+    void endreBeløpITilskuddsperioder() { //endrer belopp av tilskuddsperioder som er godkjent
         sendTilbakeTilBeslutter();
         tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET)
                 .forEach(t -> t.setBeløp(beregnTilskuddsbeløp(t.getStartDato(), t.getSluttDato())));
@@ -933,6 +950,45 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         tilskuddsperioder.forEach(t -> t.setAvtale(this));
         tilskuddsperioder.forEach(t -> t.setEnhet(gjeldendeInnhold.getEnhetKostnadssted()));
         tilskuddsperioder.forEach(t -> t.setEnhetsnavn(gjeldendeInnhold.getEnhetsnavnKostnadssted()));
+
+
+        int sum = 0;
+        int arbeiderGiverAvgiftEkstra = 750000;
+        int counter = 0;
+        int forrigeÅr = 0;
+        for (TilskuddPeriode tilskuddPeriode : tilskuddsperioder) {
+            int arbeidsgiveravgiftEkstra = ArbeidsgiverAvgiftEkstra.getArbeidsgiveravgiftEsktraForPeriode(tilskuddPeriode);
+            if (forrigeÅr != tilskuddPeriode.getSluttDato().getYear()) {
+                sum = 0;
+                forrigeÅr = tilskuddPeriode.getSluttDato().getYear();
+            }
+            //print
+            System.out.println("Måned: " + tilskuddPeriode.getSluttDato().getMonth() + " beløp: " + tilskuddPeriode.getBeløp() +  " sum:" + sum + " arbeidsgiveravgift: " + arbeidsgiveravgiftEkstra);
+
+
+            if ( sum > arbeiderGiverAvgiftEkstra) {
+                System.out.println("Summen er over 750000 etter måned " + counter + " av " + tilskuddsperioder.size() + " måneder" + " Sluttdato: " + tilskuddPeriode.getSluttDato() );
+                int arbeiderAvgiftPåMånedSomOverskriderEkstra = (sum - arbeiderGiverAvgiftEkstra) * 5 / 100;
+
+                System.out.println("Gammel beløp: " + tilskuddPeriode.getSluttDato() + "  " + tilskuddPeriode.getBeløp() + " nytt beløp: " + (tilskuddPeriode.getBeløp() + arbeiderAvgiftPåMånedSomOverskriderEkstra));
+                tilskuddPeriode.setBeløp(tilskuddPeriode.getBeløp());
+                tilskuddPeriode.setArbeidsgiveravgiftEkstra(arbeiderAvgiftPåMånedSomOverskriderEkstra);
+                counter++;
+                break;
+            }
+            counter++;
+            sum += tilskuddPeriode.getBeløp();
+        }
+
+        for (int i = counter; i < tilskuddsperioder.size(); i++) {
+            int arbeidsgiveravgift = tilskuddsperioder.get(i).getBeløp() * 5 / 100;
+            System.out.println("Gammel beløp: " + tilskuddsperioder.get(i).getBeløp() + " nytt beløp: " + (tilskuddsperioder.get(i).getBeløp() + arbeidsgiveravgift));
+            tilskuddsperioder.get(i).setBeløp(tilskuddsperioder.get(i).getBeløp() + arbeidsgiveravgift);
+        }
+
+
+
+        //beregning av arbeidsgiveravgift
         return tilskuddsperioder;
     }
 

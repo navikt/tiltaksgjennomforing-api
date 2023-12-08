@@ -7,6 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.apache.commons.lang3.builder.CompareToBuilder;
+import org.hibernate.annotations.ColumnDefault;
 import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.*;
@@ -70,6 +71,9 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     private RefusjonStatus refusjonStatus = null;
 
     private boolean aktiv = true;
+
+    @ColumnDefault("0")
+    private int arbeidsgiveravgiftEkstra = 0;
 
     public TilskuddPeriode deaktiverOgLagNyUbehandlet() {
         this.aktiv = false;

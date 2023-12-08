@@ -45,7 +45,7 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
     }
 
     @Override
-    public void regnUtTotalLonnstilskudd() {
+    public void regnUtTotalLonnstilskudd() {// regne ut om total lønnstilskudd er over 750000
         Integer feriepengerBelop = getFeriepengerBelop(avtaleInnhold.getFeriepengesats(), avtaleInnhold.getManedslonn());
         Integer obligTjenestepensjon = getBeregnetOtpBelop(avtaleInnhold.getOtpSats(), avtaleInnhold.getManedslonn(), feriepengerBelop);
         Integer arbeidsgiveravgiftBelop = getArbeidsgiverAvgift(avtaleInnhold.getManedslonn(), feriepengerBelop, obligTjenestepensjon,
@@ -53,6 +53,8 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         Integer sumLonnsutgifter = getSumLonnsutgifter(avtaleInnhold.getManedslonn(), feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgiftBelop);
         Integer sumlønnTilskudd = getSumLonnsTilskudd(sumLonnsutgifter, avtaleInnhold.getLonnstilskuddProsent());
         Integer månedslønnFullStilling = getLønnVedFullStilling(sumLonnsutgifter, avtaleInnhold.getStillingprosent());
+//        Integer arbeidsgiveravgiftEkstraBelop = getSumLonnsTilskuddOverskriderArbeidsgivergrense(avtaleInnhold
+        // TODO: forskjell p[ denne og beregnTilskuddsperioder
         avtaleInnhold.setFeriepengerBelop(feriepengerBelop);
         avtaleInnhold.setOtpBelop(obligTjenestepensjon);
         avtaleInnhold.setArbeidsgiveravgiftBelop(arbeidsgiveravgiftBelop);

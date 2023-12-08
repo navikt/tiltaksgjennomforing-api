@@ -194,6 +194,7 @@ public class AvtaleInnhold {
         } else {
             innholdStrategi().endre(nyAvtale);
         }
+        // Har tilgang til tilskuddsperiode her som man kan kalkulere med
     }
 
     public Set<String> felterSomIkkeErFyltUt() {

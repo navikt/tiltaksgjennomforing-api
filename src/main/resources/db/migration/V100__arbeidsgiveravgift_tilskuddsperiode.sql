@@ -1,0 +1,1 @@
+alter table TILSKUDD_PERIODE add column arbeidsgiveravgift_ekstra numeric;
