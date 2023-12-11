@@ -175,7 +175,7 @@ public class AvtaleController {
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
-            @RequestParam(value = "sorteringOrder", required = false, defaultValue = "ASC") String sorteringOrder
+            @RequestParam(value = "sorteringOrder", required = false, defaultValue = "DESC") String sorteringOrder
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
 
@@ -214,7 +214,7 @@ public class AvtaleController {
                     entry("totalPages", 0),
                     entry("sokeParametere", new AvtalePredicate()),
                     entry("sorteringskolonne", "sistEndret"),
-                    entry("sorteringOrder", "ASC"),
+                    entry("sorteringOrder", "DESC"),
                     entry("sokId", "")
             );
         }
@@ -229,7 +229,7 @@ public class AvtaleController {
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
-            @RequestParam(value = "sorteringOrder", required = false, defaultValue = "ASC") String sorteringOrder
+            @RequestParam(value = "sorteringOrder", required = false, defaultValue = "DESC") String sorteringOrder
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageableVeileder(sorteringskolonne, sorteringOrder)));
@@ -271,7 +271,7 @@ public class AvtaleController {
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = "startDato") String sorteringskolonne,
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "20") Integer size,
-            @RequestParam(value = "sorteringOrder", required = false, defaultValue = "ASC") String sorteringOrder
+            @RequestParam(value = "sorteringOrder", required = false, defaultValue = "DESC") String sorteringOrder
     ) {
         Beslutter beslutter = innloggingService.hentBeslutter();
         Page<BeslutterOversiktDTO> avtaler = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
