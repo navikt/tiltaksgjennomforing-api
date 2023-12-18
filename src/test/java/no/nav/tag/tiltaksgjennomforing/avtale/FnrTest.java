@@ -47,23 +47,29 @@ public class FnrTest {
 
     @Test
     public void testFnr1() {
+        Now.fixedDate(LocalDate.of(2021, 12, 20));
         Fnr fnrOver16 = new Fnr("29110976648");
         assertThat(fnrOver16.erUnder16år()).isTrue();
         assertThat(fnrOver16.erOver30år()).isFalse();
+        Now.resetClock();
     }
 
     @Test
     public void testFnr2() {
+        Now.fixedDate(LocalDate.of(2021, 12, 20));
         Fnr fnr = new Fnr("19109613897");
         assertThat(fnr.erUnder16år()).isFalse();
         assertThat(fnr.erOver30år()).isFalse();
+        Now.resetClock();
     }
 
     @Test
     public void testFnr3() {
+        Now.fixedDate(LocalDate.of(2021, 12, 20));
         Fnr fnr = new Fnr("25128626630");
         assertThat(fnr.erOver30år()).isTrue();
         assertThat(fnr.erUnder16år()).isFalse();
+        Now.resetClock();
     }
 
     @Test
@@ -87,16 +93,20 @@ public class FnrTest {
 
     @Test
     public void testDnr1() {
+        Now.fixedDate(LocalDate.of(2023, 11, 1));
         Fnr fnr = new Fnr("49120799125");
         assertThat(fnr.erUnder16år()).isTrue();
         assertThat(fnr.erOver30år()).isFalse();
+        Now.resetClock();
     }
 
     @Test
     public void testDnr2() {
+        Now.fixedDate(LocalDate.of(2023, 12, 1));
         Fnr fnr = new Fnr("64090099076");
         assertThat(fnr.erUnder16år()).isFalse();
         assertThat(fnr.erOver30år()).isFalse();
+        Now.resetClock();
     }
 
     @Test
@@ -114,16 +124,20 @@ public class FnrTest {
 
     @Test
     void testAtAldersjekkKanGjøresPåSyntetiskFnr() {
+        Now.fixedDate(LocalDate.of(2023, 6, 1));
         Fnr fnr = new Fnr("07459742977");
         assertThat(fnr.erUnder16år()).isFalse();
         assertThat(fnr.erOver30år()).isFalse();
+        Now.resetClock();
     }
 
     @Test
     void testAtAldersjekkKanGjøresPåSyntetiskFnrFraSkatteEtaten() {
+        Now.fixedDate(LocalDate.of(2023, 6, 1));
         Fnr fnr = new Fnr("21899797180");
         assertThat(fnr.erUnder16år()).isFalse();
         assertThat(fnr.erOver30år()).isFalse();
+        Now.resetClock();
     }
 }
 
