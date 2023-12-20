@@ -50,8 +50,8 @@ public class Norg2Client {
             if (Objects.requireNonNull(norg2OppfølgingResponse).getNavn() == null) {
                 log.warn("Fant ingen navn til enhet: {}", enhet);
             }
-        }catch (Exception e) {
-            log.error("Feil v/oppslag på enhet {}", enhet);
+        } catch (Exception e) {
+            log.error("Feil v/oppslag på enhet {}", enhet, e);
         }
         return norg2OppfølgingResponse;
     }
