@@ -37,7 +37,7 @@ public class LagSmsFraAvtaleHendelse {
     }
     @EventListener
     public void avtaleInngått(AvtaleInngått event) {
-        var smsTilDeltaker = smsTilDeltaker(event.getAvtale(), HendelseType.AVTALE_INNGÅTT);
+        //var smsTilDeltaker = smsTilDeltaker(event.getAvtale(), HendelseType.AVTALE_INNGÅTT);
         var smsTilArbeidsgiver = smsTilArbeidsgiver(event.getAvtale(), HendelseType.AVTALE_INNGÅTT);
 
         if(event.getAvtale().getTiltakstype() == Tiltakstype.MENTOR) {
@@ -45,25 +45,25 @@ public class LagSmsFraAvtaleHendelse {
             lagreOgSendKafkaMelding(smsTilMentor);
         }
 
-        lagreOgSendKafkaMelding(smsTilDeltaker);
+        //lagreOgSendKafkaMelding(smsTilDeltaker);
         lagreOgSendKafkaMelding(smsTilArbeidsgiver);
 
     }
     @EventListener
     public void godkjenningerOpphevetAvArbeidsgiver(GodkjenningerOpphevetAvArbeidsgiver event) {
-        if (event.getGamleVerdier().isGodkjentAvDeltaker()) {
-            var smsTilDeltaker = smsTilDeltaker(event.getAvtale(), HendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER);
-            lagreOgSendKafkaMelding(smsTilDeltaker);
-        }
+//        if (event.getGamleVerdier().isGodkjentAvDeltaker()) {
+//            var smsTilDeltaker = smsTilDeltaker(event.getAvtale(), HendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER);
+//            lagreOgSendKafkaMelding(smsTilDeltaker);
+//        }
         var smsTilVeileder = smsTilVeileder(event.getAvtale(), HendelseType.OPPRETTET_AV_ARBEIDSGIVER);
         lagreOgSendKafkaMelding(smsTilVeileder);
     }
     @EventListener
     public void godkjenningerOpphevetAvVeileder(GodkjenningerOpphevetAvVeileder event) {
-        if (event.getGamleVerdier().isGodkjentAvDeltaker()) {
-            var smsTilDeltaker = smsTilDeltaker(event.getAvtale(), HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER);
-            lagreOgSendKafkaMelding(smsTilDeltaker);
-        }
+//        if (event.getGamleVerdier().isGodkjentAvDeltaker()) {
+//            var smsTilDeltaker = smsTilDeltaker(event.getAvtale(), HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER);
+//            lagreOgSendKafkaMelding(smsTilDeltaker);
+//        }
         if (event.getGamleVerdier().isGodkjentAvArbeidsgiver()) {
             var smsTilArbeidsgiver = smsTilArbeidsgiver(event.getAvtale(), HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER);
             lagreOgSendKafkaMelding(smsTilArbeidsgiver);
