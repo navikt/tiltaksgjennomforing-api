@@ -58,10 +58,10 @@ public class LagSmsFraAvtaleHendelse {
         lagreOgSendKafkaMelding(smsTilDeltaker);
 
     }
+
     @EventListener
     public void godkjenningerOpphevetAvArbeidsgiver(GodkjenningerOpphevetAvArbeidsgiver event) {
-
-         if (event.getGamleVerdier().isGodkjentAvDeltaker()) {
+        if (event.getGamleVerdier().isGodkjentAvDeltaker()) {
             var smsTilDeltaker = smsTilDeltaker(event.getAvtale(), HendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER);
             lagreOgSendKafkaMelding(smsTilDeltaker);
         }
