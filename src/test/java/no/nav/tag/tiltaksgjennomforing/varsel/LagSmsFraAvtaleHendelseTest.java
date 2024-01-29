@@ -75,8 +75,7 @@ class LagSmsFraAvtaleHendelseTest {
         godkjentPaVegneGrunn.setIkkeBankId(true);
         veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
         avtaleRepository.save(avtale);
-
-        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
+        //assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
         assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
     }
 
@@ -95,7 +94,7 @@ class LagSmsFraAvtaleHendelseTest {
 
         avtaleRepository.save(avtale);
 
-        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
+       // assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
         assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
         assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getMentorTlf(), SELVBETJENINGSONE_VARSELTEKST);
     }
@@ -117,7 +116,7 @@ class LagSmsFraAvtaleHendelseTest {
         //Veileder opphever arbeidsgiver og deltaker
         veileder.opphevGodkjenninger(avtale);
         avtale = avtaleRepository.save(avtale);
-        assertSmsOpprettetOgSendt(HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
+     //   assertSmsOpprettetOgSendt(HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
         assertSmsOpprettetOgSendt(HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
     }
 

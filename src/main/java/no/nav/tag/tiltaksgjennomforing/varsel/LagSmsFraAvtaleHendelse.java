@@ -52,7 +52,7 @@ public class LagSmsFraAvtaleHendelse {
         lagreOgSendKafkaMelding(smsTilArbeidsgiver);
         boolean skalSendeSmsTilDeltaker = featureToggleService.isEnabled("sms-min-side-deltaker");
         if (!skalSendeSmsTilDeltaker) {
-            log.info("Sender ikke sms til deltaker fordi feature toggle sms-min-side-deltaker er skrudd av");
+            log.info("Sender ikke sms til deltaker fordi feature toggle sms-min-side-deltaker er skrudd på");
             return;
         }
         lagreOgSendKafkaMelding(smsTilDeltaker);
