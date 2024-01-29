@@ -1,8 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.varsel.kafka.SmsProducer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
@@ -11,9 +13,11 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
+@Slf4j
 public class LagSmsFraAvtaleHendelse {
     private final SmsRepository smsRepository;
     private final SmsProducer smsProducer;
+    private final FeatureToggleService featureToggleService;
 
     private static final BedriftNr NAV_ORGNR = new BedriftNr("889640782");
 
@@ -37,7 +41,7 @@ public class LagSmsFraAvtaleHendelse {
     }
     @EventListener
     public void avtaleInngått(AvtaleInngått event) {
-        //var smsTilDeltaker = smsTilDeltaker(event.getAvtale(), HendelseType.AVTALE_INNGÅTT);
+        var smsTilDeltaker = smsTilDeltaker(event.getAvtale(), HendelseType.AVTALE_INNGÅTT);
         var smsTilArbeidsgiver = smsTilArbeidsgiver(event.getAvtale(), HendelseType.AVTALE_INNGÅTT);
 
         if(event.getAvtale().getTiltakstype() == Tiltakstype.MENTOR) {
@@ -45,28 +49,39 @@ public class LagSmsFraAvtaleHendelse {
             lagreOgSendKafkaMelding(smsTilMentor);
         }
 
-        //lagreOgSendKafkaMelding(smsTilDeltaker);
         lagreOgSendKafkaMelding(smsTilArbeidsgiver);
+        boolean skalSendeSmsTilDeltaker = featureToggleService.isEnabled("sms-min-side-deltaker");
+        if (!skalSendeSmsTilDeltaker) {
+            log.info("Sender ikke sms til deltaker fordi feature toggle sms-min-side-deltaker er skrudd av");
+            return;
+        }
+        lagreOgSendKafkaMelding(smsTilDeltaker);
 
     }
     @EventListener
     public void godkjenningerOpphevetAvArbeidsgiver(GodkjenningerOpphevetAvArbeidsgiver event) {
-//        if (event.getGamleVerdier().isGodkjentAvDeltaker()) {
-//            var smsTilDeltaker = smsTilDeltaker(event.getAvtale(), HendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER);
-//            lagreOgSendKafkaMelding(smsTilDeltaker);
-//        }
+
+         if (event.getGamleVerdier().isGodkjentAvDeltaker()) {
+            var smsTilDeltaker = smsTilDeltaker(event.getAvtale(), HendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER);
+            lagreOgSendKafkaMelding(smsTilDeltaker);
+        }
         var smsTilVeileder = smsTilVeileder(event.getAvtale(), HendelseType.OPPRETTET_AV_ARBEIDSGIVER);
         lagreOgSendKafkaMelding(smsTilVeileder);
     }
     @EventListener
     public void godkjenningerOpphevetAvVeileder(GodkjenningerOpphevetAvVeileder event) {
-//        if (event.getGamleVerdier().isGodkjentAvDeltaker()) {
-//            var smsTilDeltaker = smsTilDeltaker(event.getAvtale(), HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER);
-//            lagreOgSendKafkaMelding(smsTilDeltaker);
-//        }
         if (event.getGamleVerdier().isGodkjentAvArbeidsgiver()) {
             var smsTilArbeidsgiver = smsTilArbeidsgiver(event.getAvtale(), HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER);
             lagreOgSendKafkaMelding(smsTilArbeidsgiver);
+        }
+        boolean skalSendeSmsTilDeltaker = featureToggleService.isEnabled("sms-min-side-deltaker");
+        if (!skalSendeSmsTilDeltaker) {
+            log.info("Sender ikke sms til deltaker fordi feature toggle sms-min-side-deltaker er skrudd av");
+            return;
+        }
+        if (event.getGamleVerdier().isGodkjentAvDeltaker()) {
+            var smsTilDeltaker = smsTilDeltaker(event.getAvtale(), HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER);
+            lagreOgSendKafkaMelding(smsTilDeltaker);
         }
     }
     @EventListener
