@@ -22,7 +22,6 @@ spec:
   kafka:
     pool: nav-dev
   image: {{image}}
-  team: arbeidsgiver
   port: 8080
   liveness:
     path: /tiltaksgjennomforing-api/internal/healthcheck
