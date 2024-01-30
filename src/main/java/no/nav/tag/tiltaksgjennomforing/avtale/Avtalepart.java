@@ -182,7 +182,7 @@ public abstract class Avtalepart<T extends Identifikator> {
         if (avtale.getEnhetOppfolging().equals(avtale.getEnhetGeografisk())) {
             avtale.setEnhetsnavnOppfolging(avtale.getEnhetsnavnGeografisk());
         } else {
-            final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetsnavn(avtale.getEnhetOppfolging());
+            final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhet(avtale.getEnhetOppfolging());
             if (response == null) return;
             avtale.setEnhetsnavnOppfolging(response.getNavn());
         }

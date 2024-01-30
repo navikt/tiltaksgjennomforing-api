@@ -20,6 +20,7 @@
         <java.version>17</java.version>
         <swagger.version>2.9.2</swagger.version>
         <avro.version>1.11.3</avro.version>
+        <lombok.version>1.18.30</lombok.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
     </properties>

@@ -7,4 +7,5 @@ public class Norg2OppfølgingResponse {
     Integer enhetId;
     String enhetNr;
     String navn;
+    Norg2EnhetStatus status;
 }
