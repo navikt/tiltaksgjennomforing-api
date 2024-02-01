@@ -10,7 +10,6 @@ spec:
     - name: MILJO
       value: dev-gcp-labs
   image: {{image}}
-  team: arbeidsgiver
   port: 8080
   replicas:
     min: 1
