@@ -25,7 +25,6 @@ spec:
   kafka:
     pool: nav-prod
   image: {{image}}
-  team: arbeidsgiver
   port: 8080
   liveness:
     path: /tiltaksgjennomforing-api/internal/healthcheck
