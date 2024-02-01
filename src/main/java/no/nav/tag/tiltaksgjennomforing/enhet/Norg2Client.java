@@ -3,15 +3,19 @@ package no.nav.tag.tiltaksgjennomforing.enhet;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig;
+import org.apache.commons.compress.harmony.pack200.NewAttribute;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.client.RestTemplate;
 
+import javax.validation.constraints.Pattern;
 import java.util.Objects;
 
 @Slf4j
 @Component
 @AllArgsConstructor
+@Validated
 public class Norg2Client {
 
     private final Norg2GeografiskProperties norg2GeografiskProperties;
@@ -20,7 +24,7 @@ public class Norg2Client {
 
     @Cacheable(EhCacheConfig.NORGNAVN_CACHE)
     public Norg2OppfølgingResponse hentOppfølgingsEnhetsnavnFraCacheNorg2(String enhet) {
-        return this.hentOppfølgingsEnhetsnavn(enhet);
+        return this.hentOppfølgingsEnhet(enhet);
     }
 
     @Cacheable(EhCacheConfig.NORG_GEO_ENHET)
@@ -43,17 +47,16 @@ public class Norg2Client {
         return norg2GeoResponse;
     }
 
-    public Norg2OppfølgingResponse hentOppfølgingsEnhetsnavn(String enhet) {
+    public Norg2OppfølgingResponse hentOppfølgingsEnhet(@Pattern(regexp = "^\\d{4}$", message = "Ugyldig enhetsnummer") String enhetsnummer) {
         Norg2OppfølgingResponse norg2OppfølgingResponse = null;
         try {
-            norg2OppfølgingResponse = restTemplate.getForObject(norg2OppfølgingProperties.getUrl() + enhet, Norg2OppfølgingResponse.class);
+            norg2OppfølgingResponse = restTemplate.getForObject(norg2OppfølgingProperties.getUrl() + enhetsnummer, Norg2OppfølgingResponse.class);
             if (Objects.requireNonNull(norg2OppfølgingResponse).getNavn() == null) {
-                log.warn("Fant ingen navn til enhet: {}", enhet);
+                log.warn("Fant ingen enhet: {}", enhetsnummer);
             }
         } catch (Exception e) {
-            log.error("Feil v/oppslag på enhet {}", enhet, e);
+            log.error("Feil v/oppslag på enhet {}", enhetsnummer, e);
         }
         return norg2OppfølgingResponse;
     }
 }
-

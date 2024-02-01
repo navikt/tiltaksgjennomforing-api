@@ -62,12 +62,14 @@ public class CachingConfigMockTest {
     private final Norg2OppfølgingResponse FØRSTE_NORG2_OPPFØLGNING_RESPONSE = new Norg2OppfølgingResponse(
             1,
             "1000",
-            "NAV Agder"
+            "NAV Agder",
+            Norg2EnhetStatus.AKTIV
     );
     private final Norg2OppfølgingResponse ANDRE_NORG2_OPPFØLGNING_RESPONSE = new Norg2OppfølgingResponse(
             2,
             "1001",
-            "NAV Agder2"
+            "NAV Agder2",
+            Norg2EnhetStatus.AKTIV
     );
     private final Norg2GeoResponse FØRSTE_NORG2_GEO_RESPONSE = new Norg2GeoResponse(
             "NAV St. Hanshaugen",
