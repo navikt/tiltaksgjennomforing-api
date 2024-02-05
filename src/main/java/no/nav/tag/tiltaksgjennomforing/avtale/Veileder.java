@@ -314,7 +314,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     private void oppdatereOppfølgingEnhetsnavnVedEndreAvtale(Avtale avtale) {
-        final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetsnavnFraCacheNorg2(
+        final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetFraCacheNorg2(
                 avtale.getEnhetOppfolging()
         );
         if (response == null) return;

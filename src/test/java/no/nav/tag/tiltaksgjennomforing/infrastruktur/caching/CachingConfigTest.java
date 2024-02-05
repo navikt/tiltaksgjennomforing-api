@@ -89,7 +89,7 @@ public class CachingConfigTest {
 
         TestData.setOppfolgingNavEnhet(avtale, oppfolgingNavEnhet);
 
-        Norg2OppfølgingResponse norg2OppfølgingResponse = norg2Client.hentOppfølgingsEnhetsnavnFraCacheNorg2(
+        Norg2OppfølgingResponse norg2OppfølgingResponse = norg2Client.hentOppfølgingsEnhetFraCacheNorg2(
                 avtale.getEnhetOppfolging()
         );
         Norg2OppfølgingResponse norgnavnCacheForEnhet = getCacheValue(
