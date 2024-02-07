@@ -19,7 +19,7 @@ public class EnhetController {
     
     @GetMapping("/{enhetsnummer}")
     public ResponseEntity<HentEnhetResponse> hent(@PathVariable("enhetsnummer") String enhetsnummer) {
-        Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhet(enhetsnummer);
+        Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetFraCacheNorg2(enhetsnummer);
         
         if (response == null || response.getStatus() == Norg2EnhetStatus.NEDLAGT) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
