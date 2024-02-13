@@ -10,22 +10,20 @@ import java.time.LocalDate;
 import java.util.UUID;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import no.nav.tag.tiltaksgjennomforing.varsel.kafka.SmsProducer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest(properties = { "tiltaksgjennomforing.kafka.enabled=true" })
+@SpringBootTest(properties = {"tiltaksgjennomforing.kafka.enabled=true"})
 @DirtiesContext
 @ActiveProfiles(Miljø.LOCAL)
-@EmbeddedKafka(partitions = 1, topics = {Topics.TILTAK_SMS })
+@EmbeddedKafka(partitions = 1, topics = {Topics.TILTAK_SMS})
 class LagSmsFraAvtaleHendelseTest {
     @Autowired
     SmsRepository smsRepository;
@@ -126,7 +124,7 @@ class LagSmsFraAvtaleHendelseTest {
     void refusjon_somerjobb_klar() {
         Avtale avtale = TestData.enSommerjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
-        LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
+        LocalDate fristForGodkjenning = LocalDate.of(2022, 04, 05);
 
         // I et reelt scenario kan ikke refusjonKlar bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
         avtale.refusjonKlar(fristForGodkjenning);
@@ -140,7 +138,7 @@ class LagSmsFraAvtaleHendelseTest {
     void refusjon_midlertidig_lonnstilskudd_klar() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
-        LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
+        LocalDate fristForGodkjenning = LocalDate.of(2022, 04, 05);
         // I et reelt scenario kan ikke refusjonKlar bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
         avtale.refusjonKlar(fristForGodkjenning);
         avtaleRepository.save(avtale);
@@ -153,7 +151,7 @@ class LagSmsFraAvtaleHendelseTest {
     void refusjon_varig_lonnstilskudd_Klar() {
         Avtale avtale = TestData.enVarigLonnstilskuddsjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
-        LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
+        LocalDate fristForGodkjenning = LocalDate.of(2022, 04, 05);
         // I et reelt scenario kan ikke refusjonKlar bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
         avtale.refusjonKlar(fristForGodkjenning);
         avtaleRepository.save(avtale);
@@ -179,7 +177,7 @@ class LagSmsFraAvtaleHendelseTest {
     void refusjon_arbeidstrening_klar() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
-        LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
+        LocalDate fristForGodkjenning = LocalDate.of(2022, 04, 05);
         // I et reelt scenario kan ikke refusjonKlar bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
         avtale.refusjonKlar(fristForGodkjenning);
         avtaleRepository.save(avtale);
@@ -193,7 +191,7 @@ class LagSmsFraAvtaleHendelseTest {
     void refusjon_sommerjobb_klar_revarsel() {
         Avtale avtale = TestData.enSommerjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
-        LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
+        LocalDate fristForGodkjenning = LocalDate.of(2022, 04, 05);
         // I et reelt scenario kan ikke refusjonRevarsel bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
         avtale.refusjonRevarsel(fristForGodkjenning);
         avtaleRepository.save(avtale);
@@ -205,7 +203,7 @@ class LagSmsFraAvtaleHendelseTest {
     void refusjon_midlertidig_lonnstilskudd_klar_revarsel() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
-        LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
+        LocalDate fristForGodkjenning = LocalDate.of(2022, 04, 05);
         // I et reelt scenario kan ikke refusjonRevarsel bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
         avtale.refusjonRevarsel(fristForGodkjenning);
         avtaleRepository.save(avtale);
@@ -217,7 +215,7 @@ class LagSmsFraAvtaleHendelseTest {
     void refusjon_varig_lonnstilskudd_klar_revarsel() {
         Avtale avtale = TestData.enVarigLonnstilskuddsjobbAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
-        LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
+        LocalDate fristForGodkjenning = LocalDate.of(2022, 04, 05);
         // I et reelt scenario kan ikke refusjonRevarsel bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
         avtale.refusjonRevarsel(fristForGodkjenning);
         avtaleRepository.save(avtale);
@@ -229,7 +227,7 @@ class LagSmsFraAvtaleHendelseTest {
     void refusjon_mentor_klar_revarsel() {
         Avtale avtale = TestData.enMentorAvtaleUsignert();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
-        LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
+        LocalDate fristForGodkjenning = LocalDate.of(2022, 04, 05);
         // I et reelt scenario kan ikke refusjonRevarsel bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
         avtale.refusjonRevarsel(fristForGodkjenning);
         avtaleRepository.save(avtale);
@@ -241,7 +239,7 @@ class LagSmsFraAvtaleHendelseTest {
     void refusjon_arbeidstrening_klar_revarsel() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         avtale.getGjeldendeInnhold().setArbeidsgiverTlf("41234567");
-        LocalDate fristForGodkjenning = LocalDate.of(2022,04,05);
+        LocalDate fristForGodkjenning = LocalDate.of(2022, 04, 05);
         // I et reelt scenario kan ikke refusjonRevarsel bli kalt uten at avtalen er godkjent av alle parter+beslutter ++
         avtale.refusjonRevarsel(fristForGodkjenning);
         avtaleRepository.save(avtale);
@@ -398,9 +396,9 @@ class LagSmsFraAvtaleHendelseTest {
                 .hasSize(1);
         verify(smsProducer).sendSmsVarselMeldingTilKafka(argThat((Sms sms) ->
                 sms.getAvtaleId().equals(avtaleId)
-                && sms.getHendelseType().equals(hendelseType)
-                && sms.getTelefonnummer().equals(telefonnummer)
-                && sms.getMeldingstekst().equals(meldingstekst)));
+                        && sms.getHendelseType().equals(hendelseType)
+                        && sms.getTelefonnummer().equals(telefonnummer)
+                        && sms.getMeldingstekst().equals(meldingstekst)));
     }
 
     private void assertSmsIkkeOpprettetEllerSendt(HendelseType hendelseType, UUID avtaleId, String telefonnummer, String meldingstekst) {
