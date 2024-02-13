@@ -75,6 +75,7 @@ class LagSmsFraAvtaleHendelseTest {
         godkjentPaVegneGrunn.setIkkeBankId(true);
         veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
         avtaleRepository.save(avtale);
+
         assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
         assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
     }
