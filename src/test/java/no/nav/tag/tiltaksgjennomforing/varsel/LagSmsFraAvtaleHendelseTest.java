@@ -33,9 +33,6 @@ class LagSmsFraAvtaleHendelseTest {
     AvtaleRepository avtaleRepository;
     @SpyBean
     SmsProducer smsProducer;
-    @MockBean
-    FeatureToggleService featureToggleService;
-
 
     private static final String SELVBETJENINGSONE_VARSELTEKST = "Du har mottatt et nytt varsel på https://arbeidsgiver.nav.no/tiltaksgjennomforing";
     private static final String FAGSYSTEMSONE_VARSELTEKST = "Du har mottatt et nytt varsel på https://tiltaksgjennomforing.intern.nav.no/tiltaksgjennomforing";
