@@ -10,11 +10,13 @@ import java.time.LocalDate;
 import java.util.UUID;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import no.nav.tag.tiltaksgjennomforing.varsel.kafka.SmsProducer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
@@ -31,6 +33,9 @@ class LagSmsFraAvtaleHendelseTest {
     AvtaleRepository avtaleRepository;
     @SpyBean
     SmsProducer smsProducer;
+    @MockBean
+    FeatureToggleService featureToggleService;
+
 
     private static final String SELVBETJENINGSONE_VARSELTEKST = "Du har mottatt et nytt varsel på https://arbeidsgiver.nav.no/tiltaksgjennomforing";
     private static final String FAGSYSTEMSONE_VARSELTEKST = "Du har mottatt et nytt varsel på https://tiltaksgjennomforing.intern.nav.no/tiltaksgjennomforing";
@@ -75,7 +80,7 @@ class LagSmsFraAvtaleHendelseTest {
         godkjentPaVegneGrunn.setIkkeBankId(true);
         veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
         avtaleRepository.save(avtale);
-        //assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
+        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
         assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
     }
 
@@ -94,7 +99,7 @@ class LagSmsFraAvtaleHendelseTest {
 
         avtaleRepository.save(avtale);
 
-       // assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
+        assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
         assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
         assertSmsOpprettetOgSendt(HendelseType.AVTALE_INNGÅTT, avtale.getId(), avtale.getGjeldendeInnhold().getMentorTlf(), SELVBETJENINGSONE_VARSELTEKST);
     }
@@ -116,7 +121,7 @@ class LagSmsFraAvtaleHendelseTest {
         //Veileder opphever arbeidsgiver og deltaker
         veileder.opphevGodkjenninger(avtale);
         avtale = avtaleRepository.save(avtale);
-     //   assertSmsOpprettetOgSendt(HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
+        assertSmsOpprettetOgSendt(HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, avtale.getId(), avtale.getGjeldendeInnhold().getDeltakerTlf(), SELVBETJENINGSONE_VARSELTEKST);
         assertSmsOpprettetOgSendt(HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER, avtale.getId(), avtale.getGjeldendeInnhold().getArbeidsgiverTlf(), SELVBETJENINGSONE_VARSELTEKST);
     }
 
