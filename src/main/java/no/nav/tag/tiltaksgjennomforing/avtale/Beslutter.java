@@ -43,7 +43,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
 
     public void godkjennTilskuddsperiode(Avtale avtale, String enhet) {
         sjekkTilgang(avtale);
-        final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetsnavn(enhet);
+        final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhet(enhet);
 
         if (response == null) {
             throw new FeilkodeException(Feilkode.ENHET_FINNES_IKKE);

@@ -62,12 +62,14 @@ public class CachingConfigMockTest {
     private final Norg2OppfølgingResponse FØRSTE_NORG2_OPPFØLGNING_RESPONSE = new Norg2OppfølgingResponse(
             1,
             "1000",
-            "NAV Agder"
+            "NAV Agder",
+            Norg2EnhetStatus.AKTIV
     );
     private final Norg2OppfølgingResponse ANDRE_NORG2_OPPFØLGNING_RESPONSE = new Norg2OppfølgingResponse(
             2,
             "1001",
-            "NAV Agder2"
+            "NAV Agder2",
+            Norg2EnhetStatus.AKTIV
     );
     private final Norg2GeoResponse FØRSTE_NORG2_GEO_RESPONSE = new Norg2GeoResponse(
             "NAV St. Hanshaugen",
@@ -148,7 +150,7 @@ public class CachingConfigMockTest {
         )).thenReturn(true, true, true);
 
         when(mockPersondataService.hentPersondataFraPdl(avtale.getDeltakerFnr())).thenReturn(FØRSTE_PDL_RESPONSE, ANDRE_PDL_RESPONSE);
-        when(mockNorg2Client.hentOppfølgingsEnhetsnavnFraCacheNorg2(any())).thenReturn(
+        when(mockNorg2Client.hentOppfølgingsEnhetFraCacheNorg2(any())).thenReturn(
                 FØRSTE_NORG2_OPPFØLGNING_RESPONSE,
                 ANDRE_NORG2_OPPFØLGNING_RESPONSE
         );
@@ -161,10 +163,10 @@ public class CachingConfigMockTest {
 
     @Test
     public void bekreft_antall_ganger_Cacheable_endepunkter_blir_kalt_ved_norg2Client_oppfølgingsEnhetsnavn() {
-        Norg2OppfølgingResponse norg2OppfølgingResponse = norg2Client.hentOppfølgingsEnhetsnavnFraCacheNorg2(
+        Norg2OppfølgingResponse norg2OppfølgingResponse = norg2Client.hentOppfølgingsEnhetFraCacheNorg2(
                 avtale.getEnhetOppfolging()
         );
-        Norg2OppfølgingResponse norg2OppfølgingResponse2 = norg2Client.hentOppfølgingsEnhetsnavnFraCacheNorg2(
+        Norg2OppfølgingResponse norg2OppfølgingResponse2 = norg2Client.hentOppfølgingsEnhetFraCacheNorg2(
                 avtale.getEnhetOppfolging()
         );
 
@@ -177,7 +179,7 @@ public class CachingConfigMockTest {
         Assertions.assertEquals(FØRSTE_NORG2_OPPFØLGNING_RESPONSE.getNavn(), norg2OppfølgingResponse2.getNavn());
 
         /** Blir kalt 2 ganger. Andre iterasjon så treffer vi cache response istedenfor endepunkt */
-        verify(mockNorg2Client, times(1)).hentOppfølgingsEnhetsnavnFraCacheNorg2(avtale.getEnhetOppfolging());
+        verify(mockNorg2Client, times(1)).hentOppfølgingsEnhetFraCacheNorg2(avtale.getEnhetOppfolging());
     }
 
     @Test
@@ -286,7 +288,7 @@ public class CachingConfigMockTest {
         );
 
         /** Blir kalt 2 ganger. Andre iterasjon så treffer vi cache response istedenfor endepunkt */
-        verify(mockNorg2Client, times(1)).hentOppfølgingsEnhetsnavnFraCacheNorg2(avtale.getEnhetOppfolging());
+        verify(mockNorg2Client, times(1)).hentOppfølgingsEnhetFraCacheNorg2(avtale.getEnhetOppfolging());
         verify(mockNorg2Client, times(1)).hentGeoEnhetFraCacheEllerNorg2(geoEnhet);
         verify(mockPersondataService, times(1)).hentPersondataFraPdl(avtale.getDeltakerFnr());
         verify(mockVeilarbArenaClient, times(1)).HentOppfølgingsenhetFraCacheEllerArena(avtale.getDeltakerFnr().asString());

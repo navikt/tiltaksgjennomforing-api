@@ -61,6 +61,68 @@
           "Content-Type": "application/json"
         }
       }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/norg2/api/v1/enhet/1337"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "enhetId": 100000193,
+          "navn": "NAV Rogaland",
+          "enhetNr": "1337",
+          "antallRessurser": 80,
+          "status": "Nedlagt",
+          "orgNivaa": "FYLKE",
+          "type": "FYLKE",
+          "organisasjonsnummer": null,
+          "underEtableringDato": "1970-01-01",
+          "aktiveringsdato": "1970-01-01",
+          "underAvviklingDato": null,
+          "nedleggelsesdato": null,
+          "oppgavebehandler": true,
+          "versjon": 8,
+          "sosialeTjenester": "Besøksadresse: Holthes vei 4\nPostadresse: Postboks 1853 Stoa, 4858 ARENDAL\nFaksnummer: 38530101\nEnhets-ID: 1000\n  \nTelefontid: 08.00-15.30\nBesøkstid: 08.00-15.30\nVarelevering: 08.00-15.30 (ytterdør er låst, men nummeret til resepsjonist er skiltet)\n\nHenvendelser til fylkesadministrasjonen settes internt til vårt sentralbordnummer som er 76 123.\nOpplys gjerne om nytt felles sentralbordnummer for fylkesadministrasjonen som er 22 82 20 00.\n\nVirkemidler/Tiltak, Saksbehandling av Tiltakspenger og tilleggstønader TA:  enhetnr 1087\nNAV Spesialtjenester Agder (tidligere ARK):  enhetsnr 1096\nArbeidslivssentret: enhetsnr 1091",
+          "kanalstrategi": null,
+          "orgNrTilKommunaltNavKontor": null
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/norg2/api/v1/enhet/1338"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "enhetId": 100000193,
+          "navn": "NAV Oslo",
+          "enhetNr": "1338",
+          "antallRessurser": 80,
+          "status": "Under avvikling",
+          "orgNivaa": "FYLKE",
+          "type": "FYLKE",
+          "organisasjonsnummer": null,
+          "underEtableringDato": "1970-01-01",
+          "aktiveringsdato": "1970-01-01",
+          "underAvviklingDato": null,
+          "nedleggelsesdato": null,
+          "oppgavebehandler": true,
+          "versjon": 8,
+          "sosialeTjenester": "Besøksadresse: Holthes vei 4\nPostadresse: Postboks 1853 Stoa, 4858 ARENDAL\nFaksnummer: 38530101\nEnhets-ID: 1000\n  \nTelefontid: 08.00-15.30\nBesøkstid: 08.00-15.30\nVarelevering: 08.00-15.30 (ytterdør er låst, men nummeret til resepsjonist er skiltet)\n\nHenvendelser til fylkesadministrasjonen settes internt til vårt sentralbordnummer som er 76 123.\nOpplys gjerne om nytt felles sentralbordnummer for fylkesadministrasjonen som er 22 82 20 00.\n\nVirkemidler/Tiltak, Saksbehandling av Tiltakspenger og tilleggstønader TA:  enhetnr 1087\nNAV Spesialtjenester Agder (tidligere ARK):  enhetsnr 1096\nArbeidslivssentret: enhetsnr 1091",
+          "kanalstrategi": null,
+          "orgNrTilKommunaltNavKontor": null
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
     }
   ]
 }

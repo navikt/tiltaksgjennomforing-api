@@ -126,6 +126,11 @@ public class AvtaleInnhold {
                 .reduce(0, Integer::sum);
     }
 
+    @JsonProperty
+    public Integer inkluderingstilskuddSats() {
+        return InkluderingstilskuddStrategy.getInkluderingstilskuddSats(this.sluttDato);
+    }
+
     // Godkjenning
     private LocalDateTime godkjentAvDeltaker;
     private LocalDateTime godkjentTaushetserklæringAvMentor;
@@ -269,5 +274,3 @@ public class AvtaleInnhold {
         setMentorOppgaver(endreOmMentor.getMentorOppgaver());
     }
 }
-
-

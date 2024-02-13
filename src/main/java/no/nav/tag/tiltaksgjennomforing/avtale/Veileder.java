@@ -314,7 +314,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     private void oppdatereOppfølgingEnhetsnavnVedEndreAvtale(Avtale avtale) {
-        final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetsnavnFraCacheNorg2(
+        final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetFraCacheNorg2(
                 avtale.getEnhetOppfolging()
         );
         if (response == null) return;
@@ -369,7 +369,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     public void hentOppfolgingEnhetsnavnFraNorg2(Avtale avtale, Norg2Client norg2Client) {
-        final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetsnavn(avtale.getEnhetOppfolging());
+        final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhet(avtale.getEnhetOppfolging());
         if (response == null) return;
         avtale.setEnhetsnavnOppfolging(response.getNavn());
     }
@@ -473,7 +473,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     protected void oppdatereKostnadssted(Avtale avtale, Norg2Client norg2Client, String enhet) {
-        final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetsnavn(enhet);
+        final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhet(enhet);
 
         if (response == null) {
             throw new FeilkodeException(Feilkode.ENHET_FINNES_IKKE);
