@@ -1,8 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.varsel.kafka.SmsProducer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
@@ -11,9 +13,11 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
+@Slf4j
 public class LagSmsFraAvtaleHendelse {
     private final SmsRepository smsRepository;
     private final SmsProducer smsProducer;
+    private final FeatureToggleService featureToggleService;
 
     private static final BedriftNr NAV_ORGNR = new BedriftNr("889640782");
 
@@ -45,7 +49,9 @@ public class LagSmsFraAvtaleHendelse {
             lagreOgSendKafkaMelding(smsTilMentor);
         }
 
-        lagreOgSendKafkaMelding(smsTilDeltaker);
+        if (!smsMinSideToggleErPå()) {
+            lagreOgSendKafkaMelding(smsTilDeltaker);
+        }
         lagreOgSendKafkaMelding(smsTilArbeidsgiver);
 
     }
@@ -53,7 +59,9 @@ public class LagSmsFraAvtaleHendelse {
     public void godkjenningerOpphevetAvArbeidsgiver(GodkjenningerOpphevetAvArbeidsgiver event) {
         if (event.getGamleVerdier().isGodkjentAvDeltaker()) {
             var smsTilDeltaker = smsTilDeltaker(event.getAvtale(), HendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER);
-            lagreOgSendKafkaMelding(smsTilDeltaker);
+            if (!smsMinSideToggleErPå()) {
+                lagreOgSendKafkaMelding(smsTilDeltaker);
+            }
         }
         var smsTilVeileder = smsTilVeileder(event.getAvtale(), HendelseType.OPPRETTET_AV_ARBEIDSGIVER);
         lagreOgSendKafkaMelding(smsTilVeileder);
@@ -62,7 +70,9 @@ public class LagSmsFraAvtaleHendelse {
     public void godkjenningerOpphevetAvVeileder(GodkjenningerOpphevetAvVeileder event) {
         if (event.getGamleVerdier().isGodkjentAvDeltaker()) {
             var smsTilDeltaker = smsTilDeltaker(event.getAvtale(), HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER);
-            lagreOgSendKafkaMelding(smsTilDeltaker);
+            if (!smsMinSideToggleErPå()) {
+                lagreOgSendKafkaMelding(smsTilDeltaker);
+            }
         }
         if (event.getGamleVerdier().isGodkjentAvArbeidsgiver()) {
             var smsTilArbeidsgiver = smsTilArbeidsgiver(event.getAvtale(), HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER);
@@ -117,6 +127,16 @@ public class LagSmsFraAvtaleHendelse {
         }
     }
 
+    private boolean smsMinSideToggleErPå() {
+        Boolean smsMinSidetogglePå = featureToggleService.isEnabled("sms-min-side-deltaker");
+        if (smsMinSidetogglePå) {
+            log.info("Toggle sms-min-side-deltaker er på: sender ikke sms til deltaker");
+            return true;
+        } else {
+            log.info("Toggle sms-min-side-deltaker er av: sender sms til deltaker som vanlig");
+            return false;
+        }
+    }
 
     private void lagreOgSendKafkaMelding(Sms sms) {
         smsRepository.save(sms);
