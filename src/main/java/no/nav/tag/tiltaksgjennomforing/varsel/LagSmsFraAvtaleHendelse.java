@@ -49,36 +49,33 @@ public class LagSmsFraAvtaleHendelse {
             lagreOgSendKafkaMelding(smsTilMentor);
         }
 
-        lagreOgSendKafkaMelding(smsTilArbeidsgiver);
-
         if (!smsMinSideToggleErPå()) {
-        lagreOgSendKafkaMelding(smsTilDeltaker);
+            lagreOgSendKafkaMelding(smsTilDeltaker);
         }
-
+        lagreOgSendKafkaMelding(smsTilArbeidsgiver);
     }
-
     @EventListener
     public void godkjenningerOpphevetAvArbeidsgiver(GodkjenningerOpphevetAvArbeidsgiver event) {
-        var smsTilVeileder = smsTilVeileder(event.getAvtale(), HendelseType.OPPRETTET_AV_ARBEIDSGIVER);
-        lagreOgSendKafkaMelding(smsTilVeileder);
         if (event.getGamleVerdier().isGodkjentAvDeltaker()) {
             var smsTilDeltaker = smsTilDeltaker(event.getAvtale(), HendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER);
             if (!smsMinSideToggleErPå()) {
                 lagreOgSendKafkaMelding(smsTilDeltaker);
             }
         }
+        var smsTilVeileder = smsTilVeileder(event.getAvtale(), HendelseType.OPPRETTET_AV_ARBEIDSGIVER);
+        lagreOgSendKafkaMelding(smsTilVeileder);
     }
     @EventListener
     public void godkjenningerOpphevetAvVeileder(GodkjenningerOpphevetAvVeileder event) {
-        if (event.getGamleVerdier().isGodkjentAvArbeidsgiver()) {
-            var smsTilArbeidsgiver = smsTilArbeidsgiver(event.getAvtale(), HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER);
-            lagreOgSendKafkaMelding(smsTilArbeidsgiver);
-        }
         if (event.getGamleVerdier().isGodkjentAvDeltaker()) {
             var smsTilDeltaker = smsTilDeltaker(event.getAvtale(), HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER);
             if (!smsMinSideToggleErPå()) {
                 lagreOgSendKafkaMelding(smsTilDeltaker);
             }
+        }
+        if (event.getGamleVerdier().isGodkjentAvArbeidsgiver()) {
+            var smsTilArbeidsgiver = smsTilArbeidsgiver(event.getAvtale(), HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER);
+            lagreOgSendKafkaMelding(smsTilArbeidsgiver);
         }
     }
     @EventListener
