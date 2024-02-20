@@ -50,11 +50,15 @@ public class LagSmsFraAvtaleHendelse {
         }
 
         lagreOgSendKafkaMelding(smsTilArbeidsgiver);
+
         boolean smsMinSideToggleErPå = featureToggleService.isEnabled("sms-min-side-deltaker");
         if (smsMinSideToggleErPå) {
             log.info("Sender ikke sms til deltaker fordi feature toggle sms-min-side-deltaker er skrudd på");
             return;
+        } else {
+            log.info("FEATURE sms-min-side er AV: sender sms som vanlig (avtaleInngått)");
         }
+
         lagreOgSendKafkaMelding(smsTilDeltaker);
 
     }
@@ -83,6 +87,8 @@ public class LagSmsFraAvtaleHendelse {
         if (smsMinSideToggleErPå) {
             log.info("Sender ikke sms til deltaker fordi feature toggle sms-min-side-deltaker er skrudd på");
             return;
+        } else {
+            log.info("FEATURE sms-min-side er AV: sender sms som vanlig (godkjenningerOpphevetAvVeileder)");
         }
         if (event.getGamleVerdier().isGodkjentAvDeltaker()) {
             var smsTilDeltaker = smsTilDeltaker(event.getAvtale(), HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER);
