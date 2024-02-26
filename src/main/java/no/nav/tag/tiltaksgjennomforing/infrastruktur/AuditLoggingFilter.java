@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.infrastruktur;
 import com.jayway.jsonpath.JsonPath;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditEntry;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditLogger;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.EventType;
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static no.nav.tag.tiltaksgjennomforing.ApiBeskriver.API_BESKRIVELSE_ATTRIBUTT;
@@ -55,25 +57,50 @@ class AuditLoggingFilter extends OncePerRequestFilter {
         if (correlationId == null) {
             log.error("{}: feilet pga manglende correlationId.", classname);
         }
-        if (response.getContentType() != null && response.getContentType().startsWith("application/json") && correlationId != null) {
+        if (response.getContentType() != null && response.getContentType().startsWith("application/json") && correlationId != null && !request.getRequestURI().contains("/internal/")) {
             try {
-                List<String> fnrListe = JsonPath.read(wrapper.getContentInputStream(), "$..deltakerFnr");
                 var utførtTid = Now.instant();
                 String brukerId = tokenUtils.hentBrukerOgIssuer().map(TokenUtils.BrukerOgIssuer::getBrukerIdent).orElse(null);
                 var uri = URI.create(request.getRequestURI());
                 // Logger kun oppslag dersom en innlogget bruker utførte oppslaget
                 if (brukerId != null) {
-                    fnrListe.stream().filter(Objects::nonNull).distinct().forEach(deltakerFnr -> {
-                        var apiBeskrivelse = (String) request.getAttribute(API_BESKRIVELSE_ATTRIBUTT);
-                        if (apiBeskrivelse == null) {
-                            log.warn("Manglende @ApiBeskrivelse for api-endepunkt {}", uri);
-                        }
-                        // Ikke logg at en bruker slår opp sin egen informasjon
-                        if (!brukerId.equals(deltakerFnr)) {
+                    var brukerErInnbygger = Fnr.erGyldigFnr(brukerId);
+                    if (brukerErInnbygger) {
+                        List<Map<String, String>> fnrListe = JsonPath.read(wrapper.getContentInputStream(), "$..['deltakerFnr', 'bedriftNr']");
+                        fnrListe.stream().filter(x -> x.get("deltakerFnr") != null && x.get("bedriftNr") != null).distinct().forEach(deltakerOgBedriftNr -> {
+                            var apiBeskrivelse = (String) request.getAttribute(API_BESKRIVELSE_ATTRIBUTT);
+                            if (apiBeskrivelse == null) {
+                                log.warn("Manglende @ApiBeskrivelse for api-endepunkt {}", uri);
+                            }
+                            // Ikke logg at en bruker slår opp sin egen informasjon
+                            if (!brukerId.equals(deltakerOgBedriftNr.get("deltakerFnr"))) {
+                                var entry = new AuditEntry(
+                                        "tiltaksgjennomforing-api",
+                                        deltakerOgBedriftNr.get("bedriftNr"),
+                                        deltakerOgBedriftNr.get("deltakerFnr"),
+                                        EventType.READ,
+                                        true,
+                                        utførtTid,
+                                        apiBeskrivelse != null ? apiBeskrivelse
+                                                : "Oppslag i løsning for arbeidsmarkedstiltak",
+                                        uri,
+                                        HttpMethod.valueOf(request.getMethod()),
+                                        correlationId
+                                );
+                                auditLogger.logg(entry);
+                            }
+                        });
+                    } else {
+                        List<String> fnrListe = JsonPath.read(wrapper.getContentInputStream(), "$..deltakerFnr");
+                        fnrListe.stream().filter(Objects::nonNull).distinct().forEach(deltaker -> {
+                            var apiBeskrivelse = (String) request.getAttribute(API_BESKRIVELSE_ATTRIBUTT);
+                            if (apiBeskrivelse == null) {
+                                log.warn("Manglende @ApiBeskrivelse for api-endepunkt {}", uri);
+                            }
                             var entry = new AuditEntry(
                                     "tiltaksgjennomforing-api",
                                     brukerId,
-                                    deltakerFnr,
+                                    deltaker,
                                     EventType.READ,
                                     true,
                                     utførtTid,
@@ -84,8 +111,8 @@ class AuditLoggingFilter extends OncePerRequestFilter {
                                     correlationId
                             );
                             auditLogger.logg(entry);
-                        }
-                    });
+                        });
+                    }
                 }
             } catch (IOException ex) {
                 log.warn("{}: Klarte ikke dekode responsen. Var det ikke gyldig JSON?", classname);
