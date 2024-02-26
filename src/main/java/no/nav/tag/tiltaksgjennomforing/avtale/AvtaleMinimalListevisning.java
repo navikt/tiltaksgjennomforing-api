@@ -17,6 +17,7 @@ public class AvtaleMinimalListevisning {
     private String deltakerFnr;
     private String deltakerFornavn;
     private String deltakerEtternavn;
+    private String bedriftNr;
     private String bedriftNavn;
     private String veilederNavIdent;
     private LocalDate startDato;
@@ -33,6 +34,7 @@ public class AvtaleMinimalListevisning {
                 .deltakerFnr(avtale.getDeltakerFnr() != null ? avtale.getDeltakerFnr().asString() : null)
                 .deltakerEtternavn(avtale.getGjeldendeInnhold().getDeltakerEtternavn())
                 .deltakerFornavn(avtale.getGjeldendeInnhold().getDeltakerFornavn())
+                .bedriftNr(avtale.getBedriftNr().asString())
                 .bedriftNavn(avtale.getGjeldendeInnhold().getBedriftNavn())
                 .veilederNavIdent(avtale.getVeilederNavIdent() != null ? avtale.getVeilederNavIdent().asString() : null)
                 .startDato(avtale.getGjeldendeInnhold().getStartDato())
