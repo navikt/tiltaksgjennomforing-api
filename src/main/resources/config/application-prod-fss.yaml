@@ -1,7 +1,7 @@
 spring:
   datasource:
-    platform: postgres
     driverClassName: org.postgresql.Driver
+    url: 'jdbc:postgresql://A01DBVL033.adeo.no:5432/tiltaksgjennomforing-p15-prod'
   kafka:
     bootstrap-servers: a01apvl00145.adeo.no:8443, a01apvl00146.adeo.no:8443, a01apvl00147.adeo.no:8443, a01apvl00148.adeo.no:8443, a01apvl00149.adeo.no:8443, a01apvl00150.adeo.no:8443
     properties:
@@ -76,7 +76,7 @@ tiltaksgjennomforing:
     azureConfig: true
     realClient: true
   database:
-    database-navn: tiltaksgjennomforing-prod
+    database-navn: tiltaksgjennomforing-p15-prod
     database-url: ${spring.datasource.url}
     vault-sti: postgresql/prod-fss
     minimum-idle: 1
