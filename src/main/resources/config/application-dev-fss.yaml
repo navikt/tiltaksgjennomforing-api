@@ -1,6 +1,7 @@
 spring:
   datasource:
     driverClassName: org.postgresql.Driver
+    url: 'jdbc:postgresql://b27dbvl032.preprod.local:5432/tiltaksgjennomforing-p15-preprod'
   kafka:
     bootstrap-servers: b27apvl00045.preprod.local:8443, b27apvl00046.preprod.local:8443, b27apvl00047.preprod.local:8443
     properties:
@@ -78,7 +79,7 @@ tiltaksgjennomforing:
     realClient: true
   database:
     database-navn: tiltaksgjennomforing-p15-preprod
-    database-url: 'jdbc:postgresql://b27dbvl032.preprod.local:5432/tiltaksgjennomforing-p15-preprod'
+    database-url: ${spring.datasource.url}
     vault-sti: postgresql/preprod-fss
     minimum-idle: 1
     maximum-pool-size: 8
