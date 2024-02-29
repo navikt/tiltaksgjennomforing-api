@@ -16,7 +16,7 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 public class SmsProducer {
     private final KafkaTemplate<String, Sms> kafkaTemplate;
 
-    public SmsProducer(@Qualifier("aivenTiltaksgjennomforingVarsel") KafkaTemplate<String, Sms> kafkaTemplate) {
+    public SmsProducer(@Qualifier("tiltaksgjennomforingVarselKafkaTemplate") KafkaTemplate<String, Sms> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 

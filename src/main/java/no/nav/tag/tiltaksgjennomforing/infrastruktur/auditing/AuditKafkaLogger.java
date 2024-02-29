@@ -23,7 +23,7 @@ public class AuditKafkaLogger implements AuditLogger {
             .registerModule(new JavaTimeModule())
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
-    public AuditKafkaLogger(@Qualifier("auditEntryTemplate") KafkaTemplate<String, String> kafkaTemplate) {
+    public AuditKafkaLogger(@Qualifier("auditEntryKafkaTemplate") KafkaTemplate<String, String> kafkaTemplate) {
         this.auditKafkaTemplate = kafkaTemplate;
     }
 
