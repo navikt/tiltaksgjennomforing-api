@@ -334,7 +334,7 @@ public class AvtaleControllerTest {
                         )
                 );
 
-        ResponseEntity svar = avtaleController.opprettAvtaleSomVeileder(opprettAvtale, null);
+        ResponseEntity svar = avtaleController.opprettAvtaleSomVeileder(opprettAvtale);
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(svar.getHeaders().getLocation().getPath()).isEqualTo("/avtaler/" + avtale.getId());
     }
@@ -445,8 +445,8 @@ public class AvtaleControllerTest {
         ).thenReturn(false);
         assertThatThrownBy(
                 () -> avtaleController.opprettAvtaleSomVeileder(
-                        new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING),
-                        null
+                        new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING)
+
                 )
         ).isInstanceOf(IkkeTilgangTilDeltakerException.class);
     }
@@ -474,8 +474,7 @@ public class AvtaleControllerTest {
         when(persondataServiceIMetode.erKode6(pdlRespons)).thenCallRealMethod();
         assertThatThrownBy(
                 () -> avtaleController.opprettAvtaleSomVeileder(
-                        new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING),
-                        null
+                        new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING)
                 )
         ).isInstanceOf(KanIkkeOppretteAvtalePåKode6Exception.class);
     }

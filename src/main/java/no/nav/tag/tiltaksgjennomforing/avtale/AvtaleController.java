@@ -440,20 +440,13 @@ public class AvtaleController {
     @PostMapping
     @Transactional
     public ResponseEntity<?> opprettAvtaleSomVeileder(
-            @RequestBody OpprettAvtale opprettAvtale,
-            @RequestParam(value = "ryddeavtale", required = false)
-            Boolean ryddeavtale
+            @RequestBody OpprettAvtale opprettAvtale
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
 
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
-        if (ryddeavtale != null && ryddeavtale) {
-            ArenaRyddeAvtale arenaRyddeAvtale = new ArenaRyddeAvtale();
-            arenaRyddeAvtale.setAvtale(avtale);
-            arenaRyddeAvtaleRepository.save(arenaRyddeAvtale);
-        }
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
     }
