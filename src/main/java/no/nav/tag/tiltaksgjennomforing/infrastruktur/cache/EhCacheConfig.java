@@ -29,7 +29,7 @@ public class EhCacheConfig extends CachingConfigurerSupport {
 
     public static final String NORG_GEO_ENHET = "norggeoenhet_cache";
 
-    public static final String ARENA_CACHCE = "arena_cache";
+    public static final String ARENA_CACHE = "arena_cache";
 
     @Bean
     public CacheManager ehCacheManager(CacheDto cacheDto) {

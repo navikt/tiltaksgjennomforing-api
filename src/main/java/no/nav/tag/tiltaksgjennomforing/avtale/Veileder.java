@@ -189,7 +189,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
         if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
-            veilarbArenaClient.sjekkOppfølingStatus(avtale);
+            veilarbArenaClient.sjekkOppfølgingStatus(avtale);
         }
         avtale.godkjennForVeileder(getIdentifikator());
     }
@@ -210,7 +210,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
         if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
-            veilarbArenaClient.sjekkOppfølingStatus(avtale);
+            veilarbArenaClient.sjekkOppfølgingStatus(avtale);
         }
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
     }
@@ -223,7 +223,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     private void sjekkOppfølgingStatusForTiltak(Avtale avtale) {
         if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
-            veilarbArenaClient.sjekkOppfølingStatus(avtale);
+            veilarbArenaClient.sjekkOppfølgingStatus(avtale);
         }
     }
 

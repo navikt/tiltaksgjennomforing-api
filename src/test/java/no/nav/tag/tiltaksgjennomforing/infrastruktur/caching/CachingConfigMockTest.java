@@ -122,7 +122,7 @@ public class CachingConfigMockTest {
         @Bean
         public CacheManager cacheManager() {
             return new ConcurrentMapCacheManager(
-                    EhCacheConfig.ARENA_CACHCE,
+                    EhCacheConfig.ARENA_CACHE,
                     EhCacheConfig.PDL_CACHE,
                     EhCacheConfig.NORGNAVN_CACHE,
                     EhCacheConfig.NORG_GEO_ENHET,

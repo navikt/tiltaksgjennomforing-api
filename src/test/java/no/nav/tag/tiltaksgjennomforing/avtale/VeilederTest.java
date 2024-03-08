@@ -456,7 +456,7 @@ public class VeilederTest {
         VeilarbArenaClient veilarbArenaClient = Mockito.spy(new VeilarbArenaClient(null, null));
         Mockito.doReturn(oppfølgingsstatus).when(veilarbArenaClient).hentOppfølgingStatus(Mockito.anyString());
 
-        assertThatThrownBy(() -> veilarbArenaClient.sjekkOppfølingStatus(avtale))
+        assertThatThrownBy(() -> veilarbArenaClient.sjekkOppfølgingStatus(avtale))
                 .isExactlyInstanceOf(FeilkodeException.class)
                 .hasMessage(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET.name());
     }
