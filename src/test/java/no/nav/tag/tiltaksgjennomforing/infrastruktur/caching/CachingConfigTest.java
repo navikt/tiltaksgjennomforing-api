@@ -77,9 +77,9 @@ public class CachingConfigTest {
         veilarbArenaClient.HentOppfølgingsenhetFraCacheEllerArena(ETT_FNR_NR3);
         veilarbArenaClient.HentOppfølgingsenhetFraCacheEllerArena(ETT_FNR_NR2);
 
-        Assertions.assertEquals("0906", getCacheValue(ARENA_CACHCE, ETT_FNR_NR, Oppfølgingsstatus.class).getOppfolgingsenhet());
-        Assertions.assertEquals("0904", getCacheValue(ARENA_CACHCE, ETT_FNR_NR2, Oppfølgingsstatus.class).getOppfolgingsenhet());
-        Assertions.assertEquals("0906", getCacheValue(ARENA_CACHCE, ETT_FNR_NR3, Oppfølgingsstatus.class).getOppfolgingsenhet());
+        Assertions.assertEquals("0906", getCacheValue(ARENA_CACHE, ETT_FNR_NR, Oppfølgingsstatus.class).getOppfolgingsenhet());
+        Assertions.assertEquals("0904", getCacheValue(ARENA_CACHE, ETT_FNR_NR2, Oppfølgingsstatus.class).getOppfolgingsenhet());
+        Assertions.assertEquals("0906", getCacheValue(ARENA_CACHE, ETT_FNR_NR3, Oppfølgingsstatus.class).getOppfolgingsenhet());
     }
 
     @Test
@@ -199,7 +199,7 @@ public class CachingConfigTest {
                 Norg2GeoResponse.class
         );
         PdlRespons pdlCache = getCacheValue(PDL_CACHE, avtale.getDeltakerFnr(), PdlRespons.class);
-        Oppfølgingsstatus arenaCache = getCacheValue(ARENA_CACHCE, avtale.getDeltakerFnr().asString(), Oppfølgingsstatus.class);
+        Oppfølgingsstatus arenaCache = getCacheValue(ARENA_CACHE, avtale.getDeltakerFnr().asString(), Oppfølgingsstatus.class);
 
         Assertions.assertEquals("NAV St. Hanshaugen", norggeoenhetCacheForGeoEnhet.getNavn());
         Assertions.assertEquals("0313", norggeoenhetCacheForGeoEnhet.getEnhetNr());

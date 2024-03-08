@@ -8,7 +8,11 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
@@ -47,7 +51,7 @@ public class VeilarbArenaClient {
         return oppfølgingStatus;
     }
 
-    public void sjekkOppfølingStatus(Avtale avtale) {
+    public void sjekkOppfølgingStatus(Avtale avtale) {
         Oppfølgingsstatus oppfølgingStatus = hentOppfølgingStatus(avtale.getDeltakerFnr().asString());
         sjekkStatus(avtale, oppfølgingStatus);
     }
@@ -76,7 +80,7 @@ public class VeilarbArenaClient {
         }
     }
 
-    @Cacheable(EhCacheConfig.ARENA_CACHCE)
+    @Cacheable(EhCacheConfig.ARENA_CACHE)
     public Oppfølgingsstatus HentOppfølgingsenhetFraCacheEllerArena(String fnr) {
         return this.hentOppfølgingStatus(fnr);
     }
