@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Profile("!local")
 @Component
@@ -25,7 +26,7 @@ public class DvhStatusendringJobb {
     private final AvtaleRepository avtaleRepository;
     private final LeaderPodCheck leaderPodCheck;
 
-    @Scheduled(fixedDelayString = "${tiltaksgjennomforing.dvh-melding.fixed-delay}")
+    @Scheduled(fixedDelayString = "${tiltaksgjennomforing.dvh-melding.fixed-delay}", timeUnit = TimeUnit.MINUTES)
     public void sjekkOmStatusendring() {
 
         if (!leaderPodCheck.isLeaderPod()) {
