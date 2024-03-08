@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Profile("!local")
@@ -33,7 +34,9 @@ public class DvhStatusendringJobb {
         }
 
         int antallNyeMeldinger = 0;
-        for (DvhMeldingEntitet dvhMeldingEntitet : dvhMeldingRepository.findNyesteDvhMeldingForAvtaleSomKanEndreStatus()) {
+        List<DvhMeldingEntitet> nyesteDvhMeldingForAvtaleSomKanEndreStatus = dvhMeldingRepository.findNyesteDvhMeldingForAvtaleSomKanEndreStatus();
+        log.info("Fant {} avtaler som kan endre status", nyesteDvhMeldingForAvtaleSomKanEndreStatus.size());
+        for (DvhMeldingEntitet dvhMeldingEntitet : nyesteDvhMeldingForAvtaleSomKanEndreStatus) {
             UUID avtaleId = dvhMeldingEntitet.getAvtaleId();
             Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow();
 
