@@ -53,6 +53,23 @@ class BeregningLonnstilskuddTest {
     }
 
     @Test
+    public void test_regn_ut_sumUtgifter() {
+        // GIVEN
+        EndreAvtale endreAvtale = new EndreAvtale();
+        endreAvtale.setStillingprosent(40);
+        endreAvtale.setManedslonn(16666);
+        endreAvtale.setFeriepengesats(new BigDecimal(0.102));
+        endreAvtale.setOtpSats(0.02);
+        endreAvtale.setArbeidsgiveravgift(new BigDecimal(0.141));
+
+        // WHEN
+        strategy.endreAvtaleInnholdMedKvalifiseringsgruppe(endreAvtale, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+
+        // THEN
+        assertThat(avtaleInnhold.getSumLonnsutgifter()).isEqualTo(21375);
+    }
+
+    @Test
     public void test_regn_ut_sumLonntilskudd() {
         // GIVEN
         EndreAvtale endreAvtale = new EndreAvtale();

@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,19 +47,26 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
 
     @Override
     public void regnUtTotalLonnstilskudd() {
-        Integer feriepengerBelop = getFeriepengerBelop(avtaleInnhold.getFeriepengesats(), avtaleInnhold.getManedslonn());
-        Integer obligTjenestepensjon = getBeregnetOtpBelop(avtaleInnhold.getOtpSats(), avtaleInnhold.getManedslonn(), feriepengerBelop);
-        Integer arbeidsgiveravgiftBelop = getArbeidsgiverAvgift(avtaleInnhold.getManedslonn(), feriepengerBelop, obligTjenestepensjon,
+        BigDecimal feriepengerBelop = getFeriepengerBelop(avtaleInnhold.getFeriepengesats(), avtaleInnhold.getManedslonn());
+        BigDecimal obligTjenestepensjon = getBeregnetOtpBelop(toBigDecimal(avtaleInnhold.getOtpSats()), avtaleInnhold.getManedslonn(), feriepengerBelop);
+        BigDecimal arbeidsgiveravgiftBelop = getArbeidsgiverAvgift(avtaleInnhold.getManedslonn(), feriepengerBelop, obligTjenestepensjon,
                 avtaleInnhold.getArbeidsgiveravgift());
         Integer sumLonnsutgifter = getSumLonnsutgifter(avtaleInnhold.getManedslonn(), feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgiftBelop);
         Integer sumlønnTilskudd = getSumLonnsTilskudd(sumLonnsutgifter, avtaleInnhold.getLonnstilskuddProsent());
         Integer månedslønnFullStilling = getLønnVedFullStilling(sumLonnsutgifter, avtaleInnhold.getStillingprosent());
-        avtaleInnhold.setFeriepengerBelop(feriepengerBelop);
-        avtaleInnhold.setOtpBelop(obligTjenestepensjon);
-        avtaleInnhold.setArbeidsgiveravgiftBelop(arbeidsgiveravgiftBelop);
+        avtaleInnhold.setFeriepengerBelop(convertBigDecimalToInt(feriepengerBelop));
+        avtaleInnhold.setOtpBelop(convertBigDecimalToInt(obligTjenestepensjon));
+        avtaleInnhold.setArbeidsgiveravgiftBelop(convertBigDecimalToInt(arbeidsgiveravgiftBelop));
         avtaleInnhold.setSumLonnsutgifter(sumLonnsutgifter);
         avtaleInnhold.setSumLonnstilskudd(sumlønnTilskudd);
         avtaleInnhold.setManedslonn100pst(månedslønnFullStilling);
+    }
+
+    private BigDecimal toBigDecimal (Double value) {
+        if(value == null){
+            return null;
+        }
+        return BigDecimal.valueOf(value);
     }
 
     private Integer getLønnVedFullStilling(Integer sumUtgifter, Integer stillingsProsent) {
@@ -76,30 +84,34 @@ public class LonnstilskuddStrategy extends BaseAvtaleInnholdStrategy {
         return (int) Math.round(sumLonnsutgifter * lonnstilskuddProsentSomDecimal);
     }
 
-    private Integer getSumLonnsutgifter(Integer manedslonn, Integer feriepengerBelop, Integer obligTjenestepensjon, Integer arbeidsgiveravgiftBelop) {
+    private Integer convertBigDecimalToInt(BigDecimal value){
+        return value == null ? null : value.setScale(0, RoundingMode.HALF_UP).intValue();
+    }
+
+    private Integer getSumLonnsutgifter(Integer manedslonn, BigDecimal feriepengerBelop, BigDecimal obligTjenestepensjon, BigDecimal arbeidsgiveravgiftBelop) {
         if (erIkkeTomme(feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgiftBelop)) {
-            return manedslonn + feriepengerBelop + obligTjenestepensjon + arbeidsgiveravgiftBelop;
+            return manedslonn + convertBigDecimalToInt(feriepengerBelop.add(obligTjenestepensjon).add(arbeidsgiveravgiftBelop));
         }
         return null;
     }
 
-    private Integer getArbeidsgiverAvgift(Integer manedslonn, Integer feriepengerBelop, Integer obligTjenestepensjon, BigDecimal arbeidsgiveravgift) {
+    private BigDecimal getArbeidsgiverAvgift(Integer manedslonn, BigDecimal feriepengerBelop, BigDecimal obligTjenestepensjon, BigDecimal arbeidsgiveravgift) {
         if (erIkkeTomme(manedslonn, feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgift)) {
-            return (int) Math.round((manedslonn + feriepengerBelop + obligTjenestepensjon) * (arbeidsgiveravgift.doubleValue()));
+            return   arbeidsgiveravgift.multiply(BigDecimal.valueOf(manedslonn).add(feriepengerBelop).add(obligTjenestepensjon));
         }
         return null;
     }
 
-    private Integer getBeregnetOtpBelop(Double optSats, Integer manedslonn, Integer feriepenger) {
+    private BigDecimal getBeregnetOtpBelop(BigDecimal optSats, Integer manedslonn, BigDecimal feriepenger) {
         if (erIkkeTomme(optSats, manedslonn, feriepenger)) {
-            return (int) Math.round((manedslonn + feriepenger) * optSats);
+            return (optSats.multiply(BigDecimal.valueOf(manedslonn).add(feriepenger)));
         }
         return null;
     }
 
-    private Integer getFeriepengerBelop(BigDecimal feriepengersats, Integer manedslonn) {
+    private BigDecimal getFeriepengerBelop(BigDecimal feriepengersats, Integer manedslonn) {
         if (erIkkeTomme(feriepengersats, manedslonn)) {
-            return (int) Math.round((feriepengersats.doubleValue()) * manedslonn);
+            return (feriepengersats.multiply(BigDecimal.valueOf(manedslonn)));
         }
         return null;
     }
