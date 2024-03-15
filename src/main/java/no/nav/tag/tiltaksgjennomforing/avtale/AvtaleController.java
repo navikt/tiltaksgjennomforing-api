@@ -434,7 +434,29 @@ public class AvtaleController {
                 sluttDato != null ? LocalDate.parse(sluttDato) : null,
                 avtaleRepository
         );
-        return new ResponseEntity<List<AlleredeRegistrertAvtale>>(avtaler, HttpStatus.OK);
+        return ResponseEntity.ok(avtaler);
+    }
+
+    /**
+     * VEILEDER-OPERASJONER
+     **/
+    @ApiBeskrivelse("Hent liste over registrerte avtaler for bruker")
+    @PostMapping("/deltaker-allerede-paa-tiltak")
+    @Transactional
+    public ResponseEntity<List<AlleredeRegistrertAvtale>> sjekkOmDeltakerAlleredeErRegistrertPaaTiltak(
+            @RequestBody AlleredePaaTiltakRequest alleredePaaTiltakRequest
+
+    ) {
+        Veileder veileder = innloggingService.hentVeileder();
+        List<AlleredeRegistrertAvtale> avtaler = veileder.hentAvtaleDeltakerAlleredeErRegistrertPaa(
+                alleredePaaTiltakRequest.deltakerFnr(),
+                alleredePaaTiltakRequest.tiltakstype(),
+                alleredePaaTiltakRequest.avtaleId() != null ? UUID.fromString(alleredePaaTiltakRequest.avtaleId()) : null,
+                alleredePaaTiltakRequest.startDato() != null ? LocalDate.parse(alleredePaaTiltakRequest.startDato()) : null,
+                alleredePaaTiltakRequest.sluttDato() != null ? LocalDate.parse(alleredePaaTiltakRequest.sluttDato()) : null,
+                avtaleRepository
+        );
+        return ResponseEntity.ok(avtaler);
     }
 
     @PostMapping
