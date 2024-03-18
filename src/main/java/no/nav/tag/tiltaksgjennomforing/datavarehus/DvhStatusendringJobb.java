@@ -26,7 +26,7 @@ public class DvhStatusendringJobb {
     private final AvtaleRepository avtaleRepository;
     private final LeaderPodCheck leaderPodCheck;
 
-    @Scheduled(cron = "0 0 1 ? * * *") // Hver natt kl 01:00
+    @Scheduled(cron = "0 0 1 ? * *") // Hver natt kl 01:00
     public void sjekkOmStatusendring() {
 
         if (!leaderPodCheck.isLeaderPod()) {
