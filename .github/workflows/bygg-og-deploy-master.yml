@@ -18,10 +18,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Sjekk ut kode
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Oppsett Java 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: 'temurin'
@@ -42,7 +42,7 @@ jobs:
     needs: bygg
     steps:
       - name: Sjekk ut kode
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Deploy til dev-fss
         uses: nais/deploy/actions/deploy@v1
@@ -59,7 +59,7 @@ jobs:
     needs: bygg
     steps:
       - name: Sjekk ut kode
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Deploy til prod-fss
         uses: nais/deploy/actions/deploy@v1
@@ -76,7 +76,7 @@ jobs:
     needs: bygg
     steps:
       - name: Sjekk ut kode
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Generer tiltaksgjennomforing-wiremock configmap
         run: |
