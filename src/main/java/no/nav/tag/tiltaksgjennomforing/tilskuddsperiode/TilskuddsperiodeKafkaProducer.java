@@ -8,7 +8,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAnnullert;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeForkortet;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeGodkjent;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -26,7 +25,7 @@ public class TilskuddsperiodeKafkaProducer {
     private final KafkaTemplate<String, String> aivenKafkaTemplate;
     private final ObjectMapper objectMapper;
 
-    public TilskuddsperiodeKafkaProducer(@Qualifier("aivenKafkaTemplate") KafkaTemplate<String, String> aivenKafkaTemplate, ObjectMapper objectMapper) {
+    public TilskuddsperiodeKafkaProducer(KafkaTemplate<String, String> aivenKafkaTemplate, ObjectMapper objectMapper) {
         this.aivenKafkaTemplate = aivenKafkaTemplate;
         this.objectMapper = objectMapper;
     }

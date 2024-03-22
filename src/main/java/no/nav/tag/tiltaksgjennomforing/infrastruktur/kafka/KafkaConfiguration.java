@@ -69,7 +69,7 @@ public class KafkaConfiguration {
         config.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, sslTruststoreLocationEnvKey);
         config.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, sslTruststorePasswordEnvKey);
         config.put(SslConfigs.SSL_TRUSTSTORE_TYPE_CONFIG, JAVA_KEYSTORE);
-        
+
         return config;
     }
     
@@ -122,7 +122,7 @@ public class KafkaConfiguration {
     }
 
     @Bean
-    public KafkaTemplate<String, String> auditEntryKafkaTemplate() {
+    public KafkaTemplate<String, String> kafkaTemplate() {
         return new KafkaTemplate<>(getProducerFactory(new StringSerializer()));
     }
     
