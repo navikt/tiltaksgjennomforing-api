@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.datadeling;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -19,7 +18,7 @@ public class AvtaleMeldingKafkaProdusent {
     private final KafkaTemplate<String, String> aivenKafkaTemplate;
     private final AvtaleMeldingEntitetRepository repository;
 
-    public AvtaleMeldingKafkaProdusent(@Autowired @Qualifier("aivenKafkaTemplate") KafkaTemplate<String, String> aivenKafkaTemplate, AvtaleMeldingEntitetRepository repository) {
+    public AvtaleMeldingKafkaProdusent(@Autowired KafkaTemplate<String, String> aivenKafkaTemplate, AvtaleMeldingEntitetRepository repository) {
         this.aivenKafkaTemplate = aivenKafkaTemplate;
         this.repository = repository;
     }
