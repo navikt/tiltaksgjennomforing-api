@@ -1,0 +1,25 @@
+name: Bygg branch
+
+on:
+  push:
+    branches:
+      - '**'
+      - '!master'
+
+jobs:
+  build:
+    name: Bygg branch og lag deployment-issue
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sjekk ut kode
+        uses: actions/checkout@v4
+
+      - name: Oppsett Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: maven
+
+      - name: Bygg og test med Maven
+        run: mvn package -B -Dsurefire.useFile=false

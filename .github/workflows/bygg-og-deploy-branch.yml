@@ -1,64 +1,66 @@
-name: Bygg og deploy dev
+name: Bygg og deploy branch
 
-on:
-  workflow_dispatch:
-
-
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  GITHUB_REPOSITORY: ${{ github.repository }}
-  IMAGE: ghcr.io/${{ github.repository }}/tiltaksgjennomforing-api:${{ github.sha }}
+on: workflow_dispatch
 
 jobs:
-  bygg:
-    permissions:
-      packages: write
+  build:
     name: Bygg
+    permissions:
+      contents: read
+      id-token: write
+    outputs:
+      image: ${{ steps.docker-build-push.outputs.image }}
     runs-on: ubuntu-latest
     steps:
       - name: Sjekk ut kode
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Oppsett Java 17
-        uses: actions/setup-java@v3
+      - name: Oppsett Java 21
+        uses: actions/setup-java@v4
         with:
-          java-version: 17
-          distribution: 'temurin'
+          java-version: 21
+          distribution: temurin
           cache: maven
 
       - name: Bygg og test med Maven
         run: mvn package -B -Dsurefire.useFile=false
 
-      - name: Bygg, tag og push Docker-image
-        run: |
-          echo ${GITHUB_TOKEN} | docker login ghcr.io -u ${GITHUB_REPOSITORY} --password-stdin
-          docker build --tag ${IMAGE} .
-          docker push ${IMAGE}
+      - name: Push docker image to GAR
+        uses: nais/docker-build-push@v0
+        id: docker-build-push
+        with:
+          team: arbeidsgiver
+          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
 
   deploy-dev:
     name: Deploy til dev
     runs-on: ubuntu-latest
-    needs: bygg
+    needs: build
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Sjekk ut kode
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Deploy til dev-fss
-        uses: nais/deploy/actions/deploy@v1
+        uses: nais/deploy/actions/deploy@v2
         env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-fss
           RESOURCE: nais/dev-fss.yaml,nais/unleash-apitoken.yml
-          PRINT_PAYLOAD: true
-          VAR: unleash-environment=development
-
+          VAR: image=${{ needs.build.outputs.image }},unleash-environment=development
+          
   deploy-gcp-labs:
     name: Deploy til gcp (gamle labs)
     runs-on: ubuntu-latest
-    needs: bygg
+    needs: build
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Sjekk ut kode
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Generer tiltaksgjennomforing-wiremock configmap
         run: |
@@ -68,10 +70,8 @@ jobs:
           cat nais/wiremock-mappings.yaml # debug
 
       - name: Deploy til gcp
-        uses: nais/deploy/actions/deploy@v1
+        uses: nais/deploy/actions/deploy@v2
         env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-gcp
           RESOURCE: nais/dev-gcp-labs.yaml,nais/wiremock.yaml,nais/wiremock-mappings.yaml
-          PRINT_PAYLOAD: true
-          VAR: deploytrigger=${{ github.run_number }}
+          VAR: image=${{ needs.build.outputs.image }},deploytrigger=${{ github.run_number }}
