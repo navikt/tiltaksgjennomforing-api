@@ -49,8 +49,7 @@ jobs:
         env:
           CLUSTER: dev-fss
           RESOURCE: nais/dev-fss.yaml,nais/unleash-apitoken.yml
-          VARS: unleash-environment=development
-          VAR: image=${{ needs.build.outputs.image }}
+          VAR: image=${{ needs.build.outputs.image }},unleash-environment=development
           
   deploy-gcp-labs:
     name: Deploy til gcp (gamle labs)
@@ -75,5 +74,4 @@ jobs:
         env:
           CLUSTER: dev-gcp
           RESOURCE: nais/dev-gcp-labs.yaml,nais/wiremock.yaml,nais/wiremock-mappings.yaml
-          VARS: deploytrigger=${{ github.run_number }}
-          VAR: image=${{ needs.build.outputs.image }}
+          VAR: image=${{ needs.build.outputs.image }},deploytrigger=${{ github.run_number }}
