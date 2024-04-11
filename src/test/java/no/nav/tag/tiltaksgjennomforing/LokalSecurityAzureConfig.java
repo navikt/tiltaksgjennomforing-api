@@ -13,12 +13,17 @@ public class LokalSecurityAzureConfig {
     private final RestTemplateBuilder restTemplateBuilder;
 
     @Bean("notifikasjonerRestTemplate")
-    public RestTemplate anonymProxyRestTemplate(){
+    public RestTemplate anonymProxyRestTemplate() {
         return restTemplateBuilder.build();
     }
 
     @Bean("veilarbarenaRestTemplate")
-    public RestTemplate anonymProxyRestTemplateVeilabArena(){
+    public RestTemplate anonymProxyRestTemplateVeilabArena() {
+        return restTemplateBuilder.build();
+    }
+
+    @Bean("pdlRestTemplate")
+    public RestTemplate pdlRestTemplate(RestTemplateBuilder restTemplateBuilder) {
         return restTemplateBuilder.build();
     }
 }

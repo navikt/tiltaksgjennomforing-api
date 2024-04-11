@@ -70,6 +70,8 @@ no.nav.security.jwt:
 
 
 tiltaksgjennomforing:
+  persondata:
+    uri: https://pdl-api.intern.nav.no/graphql
   kontoregister:
     uri: https://sokos-kontoregister.nais.adeo.no/kontoregister/api/v1/hent-kontonummer-for-organisasjon/
     consumerId: ${tiltaksgjennomforing.serviceuser.username}
@@ -105,7 +107,6 @@ tiltaksgjennomforing:
   sts:
     username: ${tiltaksgjennomforing.serviceuser.username}
     password: ${tiltaksgjennomforing.serviceuser.password}
-    ws-uri: https://sts.adeo.no/SecurityTokenServiceProvider/
     rest-uri: http://security-token-service.default.svc.nais.local/rest/v1/sts/token
   axsys:
     uri: https://axsys.nais.adeo.no/api/v1/tilgang

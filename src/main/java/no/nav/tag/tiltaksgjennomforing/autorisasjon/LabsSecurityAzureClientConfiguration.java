@@ -24,4 +24,8 @@ public class LabsSecurityAzureClientConfiguration {
         return restTemplateBuilder.build();
     }
 
+    @Bean("pdlRestTemplate")
+    public RestTemplate pdlRestTemplate(RestTemplateBuilder restTemplateBuilder) {
+        return restTemplateBuilder.build();
+    }
 }

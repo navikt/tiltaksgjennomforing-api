@@ -71,6 +71,8 @@ spec:
       rules:
         - application: poao-tilgang
           namespace: poao
+        - application: pdl-api
+          namespace: pdl
       external:
         - host: team-tiltak-unleash-api.nav.cloud.nais.io
   envFrom:
