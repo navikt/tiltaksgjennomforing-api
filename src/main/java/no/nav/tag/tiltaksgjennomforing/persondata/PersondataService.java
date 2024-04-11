@@ -1,11 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.persondata;
 
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.Resource;
@@ -22,11 +21,21 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class PersondataService {
+    public PersondataService(
+            @Qualifier("pdlRestTemplate")
+            RestTemplate restTemplate,
+            PersondataProperties persondataProperties
+    ) {
+        this.restTemplate = restTemplate;
+        this.persondataProperties = persondataProperties;
+    }
+
     private final RestTemplate restTemplate;
-    private final STSClient stsClient;
+
     private final PersondataProperties persondataProperties;
+
+    private static final String BEHANDLINGSNUMMER = "B662";
 
     @Value("classpath:pdl/hentPerson.adressebeskyttelse.graphql")
     private Resource adressebeskyttelseQueryResource;
@@ -49,12 +58,9 @@ public class PersondataService {
     }
 
     private HttpEntity<String> createRequestEntity(PdlRequest pdlRequest) {
-        String stsToken = stsClient.hentSTSToken().getAccessToken();
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(stsToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Tema", "GEN");
-        headers.set("Nav-Consumer-Token", "Bearer " + stsToken);
+        headers.set("Behandlingsnummer", BEHANDLINGSNUMMER);
         return new HttpEntity(pdlRequest, headers);
     }
 

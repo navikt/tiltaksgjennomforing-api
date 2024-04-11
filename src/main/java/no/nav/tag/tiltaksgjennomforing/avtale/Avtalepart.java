@@ -177,7 +177,7 @@ public abstract class Avtalepart<T extends Identifikator> {
         avtale.setEnhetsnavnGeografisk(enhet.getNavn());
     }
 
-    protected void hentOppfølingenhetNavnFraNorg2(Avtale avtale, Norg2Client norg2Client) {
+    protected void hentOppfølgingsenhetNavnFraNorg2(Avtale avtale, Norg2Client norg2Client) {
         if (avtale.getEnhetOppfolging() == null) return;
         if (avtale.getEnhetOppfolging().equals(avtale.getEnhetGeografisk())) {
             avtale.setEnhetsnavnOppfolging(avtale.getEnhetsnavnGeografisk());

@@ -48,8 +48,6 @@ tiltaksgjennomforing:
     id: ${beslutter.ad.gruppe}
   kafka:
     enabled: true
-  persondata:
-    uri: http://pdl-api.pdl.svc.nais.local/graphql
   dokgen:
     uri: http://tiltak-dokgen.arbeidsgiver.svc.nais.local/template/tiltak-avtale/create-pdf
   notifikasjoner:

@@ -220,7 +220,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     protected void leggEnheterVedOpprettelseAvAvtale(Avtale avtale) {
         final PdlRespons persondata = this.hentPersonDataForOpprettelseAvAvtale(avtale);
         super.hentGeoEnhetFraNorg2(avtale, persondata, norg2Client);
-        super.hentOppfølingenhetNavnFraNorg2(avtale, norg2Client);
+        super.hentOppfølgingsenhetNavnFraNorg2(avtale, norg2Client);
     }
 
     private PdlRespons hentPersonDataForOpprettelseAvAvtale(Avtale avtale) {
