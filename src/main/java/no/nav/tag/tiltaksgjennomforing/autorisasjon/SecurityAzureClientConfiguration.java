@@ -43,11 +43,20 @@ public class SecurityAzureClientConfiguration {
         return restTemplateBuilder.additionalInterceptors(bearerTokenInterceptor(clientProperties, oAuth2AccessTokenService)).build();
     }
 
+    @Bean("pdlRestTemplate")
+    public RestTemplate pdlRestTemplate(RestTemplateBuilder restTemplateBuilder,
+                                                           ClientConfigurationProperties clientConfigurationProperties,
+                                                           OAuth2AccessTokenService oAuth2AccessTokenService) {
+
+        final ClientProperties clientProperties = clientConfigurationProperties.getRegistration().get("pdl-api");
+        return restTemplateBuilder.additionalInterceptors(bearerTokenInterceptor(clientProperties, oAuth2AccessTokenService)).build();
+    }
+
     private ClientHttpRequestInterceptor bearerTokenInterceptor(final ClientProperties clientProperties, final OAuth2AccessTokenService oAuth2AccessTokenService) {
         return (request, body, execution) -> {
             OAuth2AccessTokenResponse response = oAuth2AccessTokenService.getAccessToken(clientProperties);
             HttpHeaders headers = request.getHeaders();
-            if (response == null || body == null) {
+            if (response == null) {
                 throw new TilgangskontrollException("Azure klient feilet med lesing av response data");
             }
             headers.setBearerAuth(response.getAccessToken());
