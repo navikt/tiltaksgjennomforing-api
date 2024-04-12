@@ -62,9 +62,6 @@ spec:
         - application: min-side-arbeidsgiver
           namespace: fager
           cluster: dev-gcp
-        - application: mulighetsrommet-api
-          namespace: team-mulighetsrommet
-          cluster: dev-gcp
     outbound:
       rules:
         - application: poao-tilgang
