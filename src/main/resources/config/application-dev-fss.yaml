@@ -136,7 +136,7 @@ tiltaksgjennomforing:
       url: https://app-q1.adeo.no/norg2/api/v1/enhet/
   notifikasjoner:
     uri: https://ag-notifikasjon-produsent-api.intern.dev.nav.no/api/graphql
-    lenke: https://tiltaksgjennomforing.dev.nav.no/tiltaksgjennomforing/avtale/
+    lenke: https://tiltaksgjennomforing.ekstern.dev.nav.no/tiltaksgjennomforing/avtale/
     enabled: true
   dvh-melding:
     gruppe-tilgang: ${beslutter.ad.gruppe}
