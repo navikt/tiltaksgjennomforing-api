@@ -151,7 +151,3 @@ tiltaksgjennomforing:
     gruppe-tilgang: ${beslutter.ad.gruppe}
   utvikler-tilgang:
     gruppe-tilgang: ${beslutter.ad.gruppe}
-
-http:
-  proxy:
-    parametername: nothing
