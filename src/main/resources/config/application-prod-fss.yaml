@@ -141,6 +141,3 @@ tiltaksgjennomforing:
     gruppe-tilgang: fb516b74-0f2e-4b62-bad8-d70b82c3ae0b
   utvikler-tilgang:
     gruppe-tilgang: fb516b74-0f2e-4b62-bad8-d70b82c3ae0b
-http:
-  proxy:
-    parametername: nothing
