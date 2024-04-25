@@ -92,7 +92,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
                 } else if (queryParametre.getDeltakerFnr() != null) {
                     avtalerUtenStatusFiltrering = avtaleRepository.findAllByDeltakerFnrAndTiltakstypeAndFeilregistrertIsFalse(queryParametre.getDeltakerFnr(), queryParametre.getTiltakstype(), allPages);
                 } else if (queryParametre.getBedriftNr() != null) {
-                    avtalerUtenStatusFiltrering = avtaleRepository.findAllByBedriftNrAndTiltakstype(queryParametre.getBedriftNr(), queryParametre.getTiltakstype(), allPages);
+                    avtalerUtenStatusFiltrering = avtaleRepository.findAllByBedriftNrAndTiltakstypeAndFeilregistrertIsFalse(queryParametre.getBedriftNr(), queryParametre.getTiltakstype(), allPages);
                 } else if (queryParametre.getNavEnhet() != null && queryParametre.getErUfordelt() != null && queryParametre.getErUfordelt()) {
                     avtalerUtenStatusFiltrering = avtaleRepository.findAllByVeilederNavIdentIsNullAndEnhetGeografiskAndTiltakstypeOrVeilederNavIdentIsNullAndEnhetOppfolgingAndTiltakstype(queryParametre.getNavEnhet(), queryParametre.getTiltakstype(), queryParametre.getNavEnhet(), queryParametre.getTiltakstype(), allPages);
                 } else if (queryParametre.getNavEnhet() != null) {
@@ -137,7 +137,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
                 } else if (queryParametre.getDeltakerFnr() != null) {
                     return avtaleRepository.findAllByDeltakerFnrAndTiltakstypeAndFeilregistrertIsFalse(queryParametre.getDeltakerFnr(), queryParametre.getTiltakstype(), pageable);
                 } else if (queryParametre.getBedriftNr() != null) {
-                    return avtaleRepository.findAllByBedriftNrAndTiltakstype(queryParametre.getBedriftNr(), queryParametre.getTiltakstype(), pageable);
+                    return avtaleRepository.findAllByBedriftNrAndTiltakstypeAndFeilregistrertIsFalse(queryParametre.getBedriftNr(), queryParametre.getTiltakstype(), pageable);
                 } else if (queryParametre.getNavEnhet() != null && queryParametre.getErUfordelt() != null && queryParametre.getErUfordelt()) {
                     return avtaleRepository.findAllByVeilederNavIdentIsNullAndEnhetGeografiskAndTiltakstypeOrVeilederNavIdentIsNullAndEnhetOppfolgingAndTiltakstype(queryParametre.getNavEnhet(), queryParametre.getTiltakstype(), queryParametre.getNavEnhet(), queryParametre.getTiltakstype(), pageable);
                 } else if (queryParametre.getNavEnhet() != null) {
