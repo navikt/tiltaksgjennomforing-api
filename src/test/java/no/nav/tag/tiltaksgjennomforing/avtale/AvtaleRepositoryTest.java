@@ -320,6 +320,7 @@ public class AvtaleRepositoryTest {
         lagretAvtale.setFeilregistrert(false);
         Avtale lagretAvtaleFeilregistrert2 = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet();
         lagretAvtaleFeilregistrert2.setFeilregistrert(true);
+
         avtaleRepository.save(lagretAvtale);
         avtaleRepository.save(lagretAvtaleFeilregistrert2);
 
@@ -328,6 +329,7 @@ public class AvtaleRepositoryTest {
 
         assertThat(avtaleMedRiktigEnhet.getContent()).isNotEmpty();
         assertThat(avtaleMedRiktigEnhet.getTotalElements()).isEqualTo(1);
+        assertThat(avtaleMedRiktigEnhet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
     }
 
     /****************************************************************************************************
