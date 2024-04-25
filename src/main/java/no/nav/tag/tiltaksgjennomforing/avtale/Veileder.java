@@ -90,7 +90,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
                 if (queryParametre.getVeilederNavIdent() != null) {
                     avtalerUtenStatusFiltrering = avtaleRepository.findAllByVeilederNavIdentAndTiltakstypeAndFeilregistrertIsFalse(queryParametre.getVeilederNavIdent(), queryParametre.getTiltakstype(), allPages);
                 } else if (queryParametre.getDeltakerFnr() != null) {
-                    avtalerUtenStatusFiltrering = avtaleRepository.findAllByDeltakerFnrAndTiltakstype(queryParametre.getDeltakerFnr(), queryParametre.getTiltakstype(), allPages);
+                    avtalerUtenStatusFiltrering = avtaleRepository.findAllByDeltakerFnrAndTiltakstypeAndFeilregistrertIsFalse(queryParametre.getDeltakerFnr(), queryParametre.getTiltakstype(), allPages);
                 } else if (queryParametre.getBedriftNr() != null) {
                     avtalerUtenStatusFiltrering = avtaleRepository.findAllByBedriftNrAndTiltakstype(queryParametre.getBedriftNr(), queryParametre.getTiltakstype(), allPages);
                 } else if (queryParametre.getNavEnhet() != null && queryParametre.getErUfordelt() != null && queryParametre.getErUfordelt()) {
@@ -135,7 +135,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
                 if (queryParametre.getVeilederNavIdent() != null) {
                     return avtaleRepository.findAllByVeilederNavIdentAndTiltakstypeAndFeilregistrertIsFalse(queryParametre.getVeilederNavIdent(), queryParametre.getTiltakstype(), pageable);
                 } else if (queryParametre.getDeltakerFnr() != null) {
-                    return avtaleRepository.findAllByDeltakerFnrAndTiltakstype(queryParametre.getDeltakerFnr(), queryParametre.getTiltakstype(), pageable);
+                    return avtaleRepository.findAllByDeltakerFnrAndTiltakstypeAndFeilregistrertIsFalse(queryParametre.getDeltakerFnr(), queryParametre.getTiltakstype(), pageable);
                 } else if (queryParametre.getBedriftNr() != null) {
                     return avtaleRepository.findAllByBedriftNrAndTiltakstype(queryParametre.getBedriftNr(), queryParametre.getTiltakstype(), pageable);
                 } else if (queryParametre.getNavEnhet() != null && queryParametre.getErUfordelt() != null && queryParametre.getErUfordelt()) {
