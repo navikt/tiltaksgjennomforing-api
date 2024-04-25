@@ -332,6 +332,25 @@ public class AvtaleRepositoryTest {
         assertThat(avtaleMedRiktigEnhet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
     }
 
+    @Test
+    public void findAllByVeilederNavIdentAndTiltakstype__skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
+        Pageable pageable = PageRequest.of(0, 100);
+        Avtale lagretAvtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet();
+        lagretAvtale.setFeilregistrert(false);
+        Avtale lagretAvtaleFeilregistrert2 = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet();
+        lagretAvtaleFeilregistrert2.setFeilregistrert(true);
+
+        avtaleRepository.save(lagretAvtale);
+        avtaleRepository.save(lagretAvtaleFeilregistrert2);
+
+        Page<Avtale> avtaleMedRiktigEnhet = avtaleRepository
+                .findAllByVeilederNavIdentAndTiltakstypeAndFeilregistrertIsFalse(lagretAvtale.getVeilederNavIdent(), lagretAvtale.getTiltakstype(), pageable);
+
+        assertThat(avtaleMedRiktigEnhet.getContent()).isNotEmpty();
+        assertThat(avtaleMedRiktigEnhet.getTotalElements()).isEqualTo(1);
+        assertThat(avtaleMedRiktigEnhet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
+    }
+
     /****************************************************************************************************
      * SLUTT PÅ TESTER FOR FILTRERING AV AVTALER SOM IKKE VISER AVTALER MED FEILREGISTRERING = TRUE.
      *****************************************************************************************************/

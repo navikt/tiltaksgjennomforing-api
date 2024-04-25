@@ -88,7 +88,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             if(queryParametre.getTiltakstype() != null) {
                 // Filtrer på tiltakstype
                 if (queryParametre.getVeilederNavIdent() != null) {
-                    avtalerUtenStatusFiltrering = avtaleRepository.findAllByVeilederNavIdentAndTiltakstype(queryParametre.getVeilederNavIdent(), queryParametre.getTiltakstype(), allPages);
+                    avtalerUtenStatusFiltrering = avtaleRepository.findAllByVeilederNavIdentAndTiltakstypeAndFeilregistrertIsFalse(queryParametre.getVeilederNavIdent(), queryParametre.getTiltakstype(), allPages);
                 } else if (queryParametre.getDeltakerFnr() != null) {
                     avtalerUtenStatusFiltrering = avtaleRepository.findAllByDeltakerFnrAndTiltakstype(queryParametre.getDeltakerFnr(), queryParametre.getTiltakstype(), allPages);
                 } else if (queryParametre.getBedriftNr() != null) {
@@ -100,7 +100,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
                 } else if (queryParametre.getAvtaleNr() != null) {
                     avtalerUtenStatusFiltrering = avtaleRepository.findAllByAvtaleNrAndTiltakstype(queryParametre.getAvtaleNr(), queryParametre.getTiltakstype(), allPages);
                 } else {
-                    avtalerUtenStatusFiltrering = avtaleRepository.findAllByVeilederNavIdentAndTiltakstype(veilederNavIdent, queryParametre.getTiltakstype(), allPages);
+                    avtalerUtenStatusFiltrering = avtaleRepository.findAllByVeilederNavIdentAndTiltakstypeAndFeilregistrertIsFalse(veilederNavIdent, queryParametre.getTiltakstype(), allPages);
                 }
             } else {
                 if (queryParametre.getVeilederNavIdent() != null) {
@@ -133,7 +133,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             // Om det er filter med tiltaksType
             if(queryParametre.getTiltakstype() != null) {
                 if (queryParametre.getVeilederNavIdent() != null) {
-                    return avtaleRepository.findAllByVeilederNavIdentAndTiltakstype(queryParametre.getVeilederNavIdent(), queryParametre.getTiltakstype(), pageable);
+                    return avtaleRepository.findAllByVeilederNavIdentAndTiltakstypeAndFeilregistrertIsFalse(queryParametre.getVeilederNavIdent(), queryParametre.getTiltakstype(), pageable);
                 } else if (queryParametre.getDeltakerFnr() != null) {
                     return avtaleRepository.findAllByDeltakerFnrAndTiltakstype(queryParametre.getDeltakerFnr(), queryParametre.getTiltakstype(), pageable);
                 } else if (queryParametre.getBedriftNr() != null) {
@@ -145,7 +145,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
                 } else if (queryParametre.getAvtaleNr() != null) {
                     return avtaleRepository.findAllByAvtaleNrAndTiltakstype(queryParametre.getAvtaleNr(), queryParametre.getTiltakstype(), pageable);
                 } else {
-                    return avtaleRepository.findAllByVeilederNavIdentAndTiltakstype(veilederNavIdent, queryParametre.getTiltakstype(), pageable);
+                    return avtaleRepository.findAllByVeilederNavIdentAndTiltakstypeAndFeilregistrertIsFalse(veilederNavIdent, queryParametre.getTiltakstype(), pageable);
                 }
             } else {
                 // Ingen tiltakstyper i query
