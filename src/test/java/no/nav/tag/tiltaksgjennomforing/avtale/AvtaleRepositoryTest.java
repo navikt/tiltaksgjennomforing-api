@@ -388,6 +388,30 @@ public class AvtaleRepositoryTest {
         assertThat(avtaleMedRiktigEnhet.getTotalElements()).isEqualTo(1);
         assertThat(avtaleMedRiktigEnhet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
     }
+    @Test
+    public void findAllByVeilederNavIdentIsNullAndEnhetGeografiskAndTiltakstypeOrVeilederNavIdentIsNullAndEnhetOppfolgingAndTiltakstype_skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
+        Pageable pageable = PageRequest.of(0, 100);
+        Avtale lagretAvtale = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
+        lagretAvtale.setFeilregistrert(false);
+        lagretAvtale.setVeilederNavIdent(null);
+        lagretAvtale.setEnhetGeografisk("0466");
+        lagretAvtale.setEnhetsnavnOppfolging("0466");
+        Avtale lagretAvtaleFeilregistrert2 = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
+        lagretAvtaleFeilregistrert2.setEnhetGeografisk("0466");
+        lagretAvtaleFeilregistrert2.setVeilederNavIdent(null);
+        lagretAvtaleFeilregistrert2.setEnhetsnavnOppfolging("0466");
+        lagretAvtaleFeilregistrert2.setFeilregistrert(true);
+
+        avtaleRepository.save(lagretAvtale);
+        avtaleRepository.save(lagretAvtaleFeilregistrert2);
+
+        Page<Avtale> avtaleMedRiktigEnhet = avtaleRepository
+                .findAllByVeilederNavIdentIsNullAndEnhetGeografiskAndTiltakstypeAndFeilregistrertIsFalseOrVeilederNavIdentIsNullAndEnhetOppfolgingAndTiltakstypeAndFeilregistrertIsFalse(lagretAvtale.getEnhetGeografisk(), lagretAvtale.getTiltakstype(),lagretAvtale.getEnhetOppfolging(),lagretAvtale.getTiltakstype(), pageable);
+
+        assertThat(avtaleMedRiktigEnhet.getContent()).isNotEmpty();
+        assertThat(avtaleMedRiktigEnhet.getTotalElements()).isEqualTo(1);
+        assertThat(avtaleMedRiktigEnhet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
+    }
 
     /****************************************************************************************************
      * SLUTT PÅ TESTER FOR FILTRERING AV AVTALER SOM IKKE VISER AVTALER MED FEILREGISTRERING = TRUE.
