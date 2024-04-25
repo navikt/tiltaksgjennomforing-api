@@ -316,9 +316,9 @@ public class AvtaleRepositoryTest {
     @Test
     public void findAllByVeilederNavIdent__skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
         Pageable pageable = PageRequest.of(0, 100);
-        Avtale lagretAvtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet();
+        Avtale lagretAvtale = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         lagretAvtale.setFeilregistrert(false);
-        Avtale lagretAvtaleFeilregistrert2 = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet();
+        Avtale lagretAvtaleFeilregistrert2 = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         lagretAvtaleFeilregistrert2.setFeilregistrert(true);
 
         avtaleRepository.save(lagretAvtale);
@@ -335,9 +335,9 @@ public class AvtaleRepositoryTest {
     @Test
     public void findAllByVeilederNavIdentAndTiltakstype__skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
         Pageable pageable = PageRequest.of(0, 100);
-        Avtale lagretAvtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet();
+        Avtale lagretAvtale = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         lagretAvtale.setFeilregistrert(false);
-        Avtale lagretAvtaleFeilregistrert2 = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet();
+        Avtale lagretAvtaleFeilregistrert2 = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         lagretAvtaleFeilregistrert2.setFeilregistrert(true);
 
         avtaleRepository.save(lagretAvtale);
