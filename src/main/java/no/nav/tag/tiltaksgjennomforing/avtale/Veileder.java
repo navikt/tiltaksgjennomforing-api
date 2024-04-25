@@ -104,7 +104,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
                 }
             } else {
                 if (queryParametre.getVeilederNavIdent() != null) {
-                    avtalerUtenStatusFiltrering = avtaleRepository.findAllByVeilederNavIdent(queryParametre.getVeilederNavIdent(), allPages);
+                    avtalerUtenStatusFiltrering = avtaleRepository.findAllByVeilederNavIdentAndFeilregistrertIsFalse(queryParametre.getVeilederNavIdent(), allPages);
                 } else if (queryParametre.getDeltakerFnr() != null) {
                     avtalerUtenStatusFiltrering = avtaleRepository.findAllByDeltakerFnr(queryParametre.getDeltakerFnr(), allPages);
                 } else if (queryParametre.getBedriftNr() != null) {
@@ -116,7 +116,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
                 } else if (queryParametre.getAvtaleNr() != null) {
                     avtalerUtenStatusFiltrering = avtaleRepository.findAllByAvtaleNr(queryParametre.getAvtaleNr(), allPages);
                 } else {
-                    avtalerUtenStatusFiltrering = avtaleRepository.findAllByVeilederNavIdent(veilederNavIdent, allPages);
+                    avtalerUtenStatusFiltrering = avtaleRepository.findAllByVeilederNavIdentAndFeilregistrertIsFalse(veilederNavIdent, allPages);
                 }
             }
             int skip = pageable.getPageNumber() > 0 ? (pageable.getPageNumber())*pageable.getPageSize() : 0;
@@ -150,7 +150,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             } else {
                 // Ingen tiltakstyper i query
                 if (queryParametre.getVeilederNavIdent() != null) {
-                    return avtaleRepository.findAllByVeilederNavIdent(queryParametre.getVeilederNavIdent(), pageable);
+                    return avtaleRepository.findAllByVeilederNavIdentAndFeilregistrertIsFalse(queryParametre.getVeilederNavIdent(), pageable);
                 } else if (queryParametre.getDeltakerFnr() != null) {
                     return avtaleRepository.findAllByDeltakerFnr(queryParametre.getDeltakerFnr(), pageable);
                 } else if (queryParametre.getBedriftNr() != null) {
@@ -162,7 +162,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
                 } else if (queryParametre.getAvtaleNr() != null) {
                     return avtaleRepository.findAllByAvtaleNr(queryParametre.getAvtaleNr(), pageable);
                 } else {
-                    return avtaleRepository.findAllByVeilederNavIdent(veilederNavIdent, pageable);
+                    return avtaleRepository.findAllByVeilederNavIdentAndFeilregistrertIsFalse(veilederNavIdent, pageable);
                 }
             }
         }

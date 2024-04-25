@@ -51,7 +51,7 @@ public abstract class Avtalepart<T extends Identifikator> {
         // Fjern data her og ikke i entity
         listMinimal = listMinimal.stream().map(avtaleMinimal -> skjulData(avtaleMinimal)).toList();
 
-
+        //TODO: ENDRE TOTAL ITEMS OG TOTAL PAGES
         return Map.ofEntries(
                 entry("avtaler", listMinimal),
                 entry("size", avtaler.getSize()),

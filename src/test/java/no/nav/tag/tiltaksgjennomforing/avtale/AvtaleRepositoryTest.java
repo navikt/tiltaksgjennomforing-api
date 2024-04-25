@@ -263,7 +263,7 @@ public class AvtaleRepositoryTest {
         assertThat(beslutterOversiktList.size()).isEqualTo(4);
     }
 
-    @Test
+@Test
     public void findAllByEnhet__skal_kunne_hente_avtale_med_enhet() {
         Pageable pageable = PageRequest.of(0, 100);
         Avtale lagretAvtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet();
@@ -309,4 +309,29 @@ public class AvtaleRepositoryTest {
 
         assertThat(avtaleMedRiktigEnhet.getContent()).isNotEmpty();
     }
+
+    /****************************************************************************************************
+     * FILTRERING AV AVTALER SOM IKKE VISER AVTALER MED FEILREGISTRERING = TRUE.
+     *****************************************************************************************************/
+    @Test
+    public void findAllByVeilederNavIdent__skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
+        Pageable pageable = PageRequest.of(0, 100);
+        Avtale lagretAvtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet();
+        lagretAvtale.setFeilregistrert(false);
+        Avtale lagretAvtaleFeilregistrert2 = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet();
+        lagretAvtaleFeilregistrert2.setFeilregistrert(true);
+        avtaleRepository.save(lagretAvtale);
+        avtaleRepository.save(lagretAvtaleFeilregistrert2);
+
+        Page<Avtale> avtaleMedRiktigEnhet = avtaleRepository
+                .findAllByVeilederNavIdentAndFeilregistrertIsFalse(lagretAvtale.getVeilederNavIdent(), pageable);
+
+        assertThat(avtaleMedRiktigEnhet.getContent()).isNotEmpty();
+        assertThat(avtaleMedRiktigEnhet.getTotalElements()).isEqualTo(1);
+    }
+
+    /****************************************************************************************************
+     * SLUTT PÅ TESTER FOR FILTRERING AV AVTALER SOM IKKE VISER AVTALER MED FEILREGISTRERING = TRUE.
+     *****************************************************************************************************/
+
 }
