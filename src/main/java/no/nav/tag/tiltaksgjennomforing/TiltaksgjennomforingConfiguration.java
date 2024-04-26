@@ -1,16 +1,13 @@
-package no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter;
+package no.nav.tag.tiltaksgjennomforing;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
-public class RestTemplateConfiguration {
+class TiltaksgjennomforingConfiguration {
     @Bean
-    @Primary
-    public RestTemplate stsBasicAuthRestTemplate() {
+    public RestTemplate noAuthRestTemplate() {
         return new RestTemplate();
     }
-
 }

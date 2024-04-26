@@ -31,7 +31,7 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
-#TODO: Feil pakke: Flytt Kafka avien verdier her under tiltaksgjennomforing.kafka
+#TODO: Feil pakke: Flytt Kafka aiven verdier her under tiltaksgjennomforing.kafka
 no.nav.gcp.kafka.aiven:
   bootstrap-servers: ${KAFKA_BROKERS}
   truststore-path: ${KAFKA_TRUSTSTORE_PATH}

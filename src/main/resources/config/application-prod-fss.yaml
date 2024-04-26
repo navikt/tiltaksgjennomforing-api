@@ -108,8 +108,6 @@ tiltaksgjennomforing:
     mentorServiceEdition: 4
     inkluderingstilskuddServiceCode: 5516
     inkluderingstilskuddServiceEdition: 5
-  altinn-varsel:
-    uri: https://pep-gw.oera.no:9443/ekstern/altinn/notificationagencyexternalbasic/v1
   ereg:
     uri: https://ereg-services.intern.nav.no/api/v2/organisasjon
   sts:

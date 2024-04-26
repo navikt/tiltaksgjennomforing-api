@@ -110,8 +110,6 @@ tiltaksgjennomforing:
     inkluderingstilskuddServiceEdition: 5
     arbtreningServiceCode: 5332
     arbtreningServiceEdition: 1
-  altinn-varsel:
-    uri: https://pep-gw-q1.oera-q.local:9443/ekstern/altinn/notificationagencyexternalbasic/v1
   ereg:
     uri: https://ereg-services-q1.dev.intern.nav.no/api/v2/organisasjon
   sts:
