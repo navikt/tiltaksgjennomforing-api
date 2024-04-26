@@ -8,9 +8,7 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class RestTemplateConfiguration {
     @Bean
-    @Primary
     public RestTemplate stsBasicAuthRestTemplate() {
         return new RestTemplate();
     }
-
 }
