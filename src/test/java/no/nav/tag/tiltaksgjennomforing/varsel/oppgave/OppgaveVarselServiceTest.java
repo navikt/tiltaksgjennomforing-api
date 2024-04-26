@@ -2,8 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.varsel.oppgave;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.GosysFeilException;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,10 +36,7 @@ public class OppgaveVarselServiceTest {
     private ArgumentCaptor<HttpEntity<OppgaveRequest>> requestCaptor;
 
     @Mock
-    private STSClient stsClient;
-
-    @Mock
-    private RestTemplate restTemplate;
+    private RestTemplate stsRestTemplate;
 
     private OppgaveVarselService oppgaveVarselService;
 
@@ -49,17 +44,16 @@ public class OppgaveVarselServiceTest {
     public void setUp() {
         oppgaveResponse.setId("oppgaveId");
         oppgaveProperties.setOppgaveUri(uri);
-        oppgaveVarselService = new OppgaveVarselService(oppgaveProperties, restTemplate, stsClient);
+        oppgaveVarselService = new OppgaveVarselService(oppgaveProperties, stsRestTemplate);
     }
 
     @ParameterizedTest
     @EnumSource(Tiltakstype.class)
-    public void oppretterOppgaveRequestForTiltak(Tiltakstype tiltakstype){
-        when(stsClient.hentSTSToken()).thenReturn(new STSToken());
-        when(restTemplate.postForObject(any(URI.class), any(), any(Class.class))).thenReturn(oppgaveResponse);
+    public void oppretterOppgaveRequestForTiltak(Tiltakstype tiltakstype) {
+        when(stsRestTemplate.postForObject(any(URI.class), any(), any(Class.class))).thenReturn(oppgaveResponse);
 
         oppgaveVarselService.opprettOppgave("aktørId", tiltakstype, UUID.randomUUID());
-        verify(restTemplate).postForObject(eq(uri), requestCaptor.capture(), eq(OppgaveVarselService.OppgaveResponse.class));
+        verify(stsRestTemplate).postForObject(eq(uri), requestCaptor.capture(), eq(OppgaveVarselService.OppgaveResponse.class));
         OppgaveRequest request = requestCaptor.getValue().getBody();
 
         assertThat(request.getAktivDato()).isToday();
@@ -75,8 +69,7 @@ public class OppgaveVarselServiceTest {
 
     @Test
     public void oppretterOppgaveRequestFeiler() {
-        when(stsClient.hentSTSToken()).thenReturn(new STSToken());
-        when(restTemplate.postForObject(any(URI.class), any(), any(Class.class))).thenThrow(RuntimeException.class);
+        when(stsRestTemplate.postForObject(any(URI.class), any(), any(Class.class))).thenThrow(RuntimeException.class);
 
         assertThrows(GosysFeilException.class, () -> {
             oppgaveVarselService.opprettOppgave("aktørId", VARIG_LONNSTILSKUDD, UUID.randomUUID());

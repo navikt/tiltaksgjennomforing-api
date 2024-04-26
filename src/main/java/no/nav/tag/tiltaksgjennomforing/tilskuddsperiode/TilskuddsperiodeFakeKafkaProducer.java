@@ -21,8 +21,8 @@ public class TilskuddsperiodeFakeKafkaProducer {
     private final RestTemplate restTemplate;
     private final String url;
 
-    public TilskuddsperiodeFakeKafkaProducer(RestTemplate restTemplate, @Value("${tiltaksgjennomforing.kafka.fake-url}") String url) {
-        this.restTemplate = restTemplate;
+    public TilskuddsperiodeFakeKafkaProducer(RestTemplate noAuthRestTemplate, @Value("${tiltaksgjennomforing.kafka.fake-url}") String url) {
+        this.restTemplate = noAuthRestTemplate;
         this.url = url;
     }
 
