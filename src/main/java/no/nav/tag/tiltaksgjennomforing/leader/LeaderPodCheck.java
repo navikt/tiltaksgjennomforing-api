@@ -24,8 +24,8 @@ public class LeaderPodCheck {
     private final String path;
     private final boolean enabled;
 
-    public LeaderPodCheck(RestTemplate restTemplate, ObjectMapper objectMapper, @Value("${ELECTOR_PATH}") String electorPath) {
-        this.restTemplate = restTemplate;
+    public LeaderPodCheck(RestTemplate noAuthRestTemplate, ObjectMapper objectMapper, @Value("${ELECTOR_PATH}") String electorPath) {
+        this.restTemplate = noAuthRestTemplate;
         this.objectMapper = objectMapper;
         this.enabled = isNotBlank(electorPath);
         this.path = "http://" + electorPath;

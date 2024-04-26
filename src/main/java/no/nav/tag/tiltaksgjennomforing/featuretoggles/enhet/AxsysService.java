@@ -23,9 +23,9 @@ public class AxsysService {
     private final AxsysProperties axsysProperties;
     private final RestTemplate restTemplate;
 
-    public AxsysService(AxsysProperties axsysProperties, RestTemplate restTemplate) {
+    public AxsysService(AxsysProperties axsysProperties, RestTemplate noAuthRestTemplate) {
         this.axsysProperties = axsysProperties;
-        this.restTemplate = restTemplate;
+        this.restTemplate = noAuthRestTemplate;
     }
 
     @Cacheable(EhCacheConfig.AXSYS_CACHE)

@@ -1,7 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter;
 
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.sts.STSClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.Cache;
@@ -24,15 +23,12 @@ public class AbacAdapter {
     final Logger log = LoggerFactory.getLogger(getClass());
     private final RestTemplate restTemplate;
 
-    private final STSClient stsClient;
-
     private final AbacProperties abacProperties;
 
     private final Cache cache;
 
-    public AbacAdapter(RestTemplate restTemplate, STSClient stsClient, AbacProperties abacProperties, EhCacheCacheManager cacheManager) {
-        this.restTemplate = restTemplate;
-        this.stsClient = stsClient;
+    public AbacAdapter(RestTemplate stsRestTemplate, AbacProperties abacProperties, EhCacheCacheManager cacheManager) {
+        this.restTemplate = stsRestTemplate;
         this.abacProperties = abacProperties;
         this.cache = cacheManager.getCache(EhCacheConfig.ABAC_CACHE);
     }
@@ -78,7 +74,6 @@ public class AbacAdapter {
         headers.set("Nav-Consumer-Id", abacProperties.getNavConsumerId());
         headers.set("Nav-Call-Id", UUID.randomUUID().toString());
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(stsClient.hentSTSToken().getAccessToken());
         return new HttpEntity<>(body, headers);
     }
 

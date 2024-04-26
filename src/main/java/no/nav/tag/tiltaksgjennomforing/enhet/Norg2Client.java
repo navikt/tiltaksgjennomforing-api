@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.enhet;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig;
 import org.springframework.cache.annotation.Cacheable;
@@ -13,13 +12,18 @@ import java.util.Objects;
 
 @Slf4j
 @Component
-@AllArgsConstructor
 @Validated
 public class Norg2Client {
 
     private final Norg2GeografiskProperties norg2GeografiskProperties;
     private final Norg2OppfølgingProperties norg2OppfølgingProperties;
     private final RestTemplate restTemplate;
+
+    public Norg2Client(Norg2GeografiskProperties norg2GeografiskProperties, Norg2OppfølgingProperties norg2OppfølgingProperties, RestTemplate noAuthRestTemplate) {
+        this.norg2GeografiskProperties = norg2GeografiskProperties;
+        this.norg2OppfølgingProperties = norg2OppfølgingProperties;
+        this.restTemplate = noAuthRestTemplate;
+    }
 
     @Cacheable(EhCacheConfig.NORGNAVN_CACHE)
     public Norg2OppfølgingResponse hentOppfølgingsEnhetFraCacheNorg2(String enhet) {

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class STSToken {
+class STSToken {
 
     @JsonProperty("access_token")
     String accessToken;
