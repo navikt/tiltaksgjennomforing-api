@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.*;
+import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.ARBEIDSTRENING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -178,7 +179,7 @@ public class AvtaleRepositoryTest {
 
     @Test
     public void opprettAvtale__skal_publisere_domainevent() {
-        Avtale nyAvtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("10101033333"), new BedriftNr("101033333"), Tiltakstype.ARBEIDSTRENING), new NavIdent("Q000111"));
+        Avtale nyAvtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("10101033333"), new BedriftNr("101033333"), ARBEIDSTRENING), new NavIdent("Q000111"));
         avtaleRepository.save(nyAvtale);
         verify(metrikkRegistrering).avtaleOpprettet(any());
     }
@@ -391,24 +392,49 @@ public class AvtaleRepositoryTest {
         assertThat(avtaleMedRiktigEnhet.getTotalElements()).isEqualTo(1);
         assertThat(avtaleMedRiktigEnhet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
     }
+    @Test
+    public void findAllByAvtaleNrAndTiltakstype__skal_IKKE_kunne_hente_avtale_som_er_FEIL_REGISTRERT() {
+        Pageable pageable = PageRequest.of(0, 100);
+        Avtale lagretAvtaleFeilregistrert = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
+        lagretAvtaleFeilregistrert.setFeilregistrert(true);
+
+        Avtale avtaleLagret = avtaleRepository.save(lagretAvtaleFeilregistrert);
+
+        Page<Avtale> avtalerFunnet = avtaleRepository
+                .findAllByAvtaleNrAndTiltakstypeAndFeilregistrertIsFalse(avtaleLagret.getAvtaleNr(), ARBEIDSTRENING,  pageable);
+
+        assertThat(avtalerFunnet.getTotalElements()).isEqualTo(0);
+    }
+
+    @Test
+    public void findAllByAvtaleNrAndTiltakstype__skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
+        Pageable pageable = PageRequest.of(0, 100);
+        Avtale lagretAvtale_IKKE_Feilregistrert = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
+        lagretAvtale_IKKE_Feilregistrert.setFeilregistrert(false);
+
+        Avtale avtaleLagret = avtaleRepository.save(lagretAvtale_IKKE_Feilregistrert);
+
+        Page<Avtale> avtaler_IKKE_FEILREGISTRERT_Funnet = avtaleRepository
+                .findAllByAvtaleNrAndTiltakstypeAndFeilregistrertIsFalse(avtaleLagret.getAvtaleNr(), ARBEIDSTRENING,  pageable);
+
+        assertThat(avtaler_IKKE_FEILREGISTRERT_Funnet.getTotalElements()).isEqualTo(1);
+        assertThat(avtaler_IKKE_FEILREGISTRERT_Funnet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
+    }
 
     @Test
     public void findAllByBedriftNrAndTiltakstype_skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
         Pageable pageable = PageRequest.of(0, 100);
         Avtale lagretAvtale = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
         lagretAvtale.setFeilregistrert(false);
-        Avtale lagretAvtaleFeilregistrert2 = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
-        lagretAvtaleFeilregistrert2.setFeilregistrert(true);
 
         avtaleRepository.save(lagretAvtale);
-        avtaleRepository.save(lagretAvtaleFeilregistrert2);
 
-        Page<Avtale> avtaleMedRiktigEnhet = avtaleRepository
+        Page<Avtale> avtale = avtaleRepository
                 .findAllByBedriftNrAndTiltakstypeAndFeilregistrertIsFalse(lagretAvtale.getBedriftNr(), lagretAvtale.getTiltakstype(), pageable);
 
-        assertThat(avtaleMedRiktigEnhet.getContent()).isNotEmpty();
-        assertThat(avtaleMedRiktigEnhet.getTotalElements()).isEqualTo(1);
-        assertThat(avtaleMedRiktigEnhet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
+        assertThat(avtale.getContent()).isNotEmpty();
+        assertThat(avtale.getTotalElements()).isEqualTo(1);
+        assertThat(avtale.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
     }
     @Test
     public void findAllByVeilederNavIdentIsNullAndEnhetGeografiskAndTiltakstypeOrVeilederNavIdentIsNullAndEnhetOppfolgingAndTiltakstype_skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {

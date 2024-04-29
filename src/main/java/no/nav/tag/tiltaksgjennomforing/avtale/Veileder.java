@@ -98,7 +98,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
                 } else if (queryParametre.getNavEnhet() != null) {
                     avtalerUtenStatusFiltrering = avtaleRepository.findAllByEnhetGeografiskAndTiltakstypeAndFeilregistrertIsFalseOrEnhetOppfolgingAndTiltakstypeAndFeilregistrertIsFalse(queryParametre.getNavEnhet(), queryParametre.getTiltakstype(), queryParametre.getNavEnhet(), queryParametre.getTiltakstype(), allPages);
                 } else if (queryParametre.getAvtaleNr() != null) {
-                    avtalerUtenStatusFiltrering = avtaleRepository.findAllByAvtaleNrAndTiltakstype(queryParametre.getAvtaleNr(), queryParametre.getTiltakstype(), allPages);
+                    avtalerUtenStatusFiltrering = avtaleRepository.findAllByAvtaleNrAndTiltakstypeAndFeilregistrertIsFalse(queryParametre.getAvtaleNr(), queryParametre.getTiltakstype(), allPages);
                 } else {
                     avtalerUtenStatusFiltrering = avtaleRepository.findAllByVeilederNavIdentAndTiltakstypeAndFeilregistrertIsFalse(veilederNavIdent, queryParametre.getTiltakstype(), allPages);
                 }
@@ -143,7 +143,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
                 } else if (queryParametre.getNavEnhet() != null) {
                     return avtaleRepository.findAllByEnhetGeografiskAndTiltakstypeAndFeilregistrertIsFalseOrEnhetOppfolgingAndTiltakstypeAndFeilregistrertIsFalse(queryParametre.getNavEnhet(), queryParametre.getTiltakstype(), queryParametre.getNavEnhet(), queryParametre.getTiltakstype(), pageable);
                 } else if (queryParametre.getAvtaleNr() != null) {
-                    return avtaleRepository.findAllByAvtaleNrAndTiltakstype(queryParametre.getAvtaleNr(), queryParametre.getTiltakstype(), pageable);
+                    return avtaleRepository.findAllByAvtaleNrAndTiltakstypeAndFeilregistrertIsFalse(queryParametre.getAvtaleNr(), queryParametre.getTiltakstype(), pageable);
                 } else {
                     return avtaleRepository.findAllByVeilederNavIdentAndTiltakstypeAndFeilregistrertIsFalse(veilederNavIdent, queryParametre.getTiltakstype(), pageable);
                 }
