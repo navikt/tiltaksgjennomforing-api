@@ -30,12 +30,12 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     List<Avtale> findAllById(Iterable<UUID> ids);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    List<Avtale> findAllByBedriftNr(BedriftNr bedriftNr);
+    List<Avtale> findAllByBedriftNrAndFeilregistrertIsFalse(BedriftNr bedriftNr);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByBedriftNrIn(Set<BedriftNr> bedriftNrList, Pageable pageable);
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    Page<Avtale> findAllByBedriftNr(BedriftNr bedriftNr, Pageable pageable);
+    Page<Avtale> findAllByBedriftNrAndFeilregistrertIsFalse(BedriftNr bedriftNr, Pageable pageable);
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByBedriftNrAndTiltakstypeAndFeilregistrertIsFalse(BedriftNr bedriftNr, Tiltakstype tiltakstype, Pageable pageable);
 
@@ -57,7 +57,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     Page<Avtale> findAllByMentorFnr(Fnr mentorFnr, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    Page<Avtale> findAllByVeilederNavIdentIsNullAndEnhetGeografiskOrVeilederNavIdentIsNullAndEnhetOppfolging(String enhetGeografisk, String enhetOppfolging, Pageable pageable);
+    Page<Avtale> findAllByVeilederNavIdentIsNullAndEnhetGeografiskAndFeilregistrertIsFalseOrVeilederNavIdentIsNullAndEnhetOppfolgingAndFeilregistrertIsFalse(String enhetGeografisk, String enhetOppfolging, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByVeilederNavIdentIsNullAndEnhetGeografiskAndTiltakstypeAndFeilregistrertIsFalseOrVeilederNavIdentIsNullAndEnhetOppfolgingAndTiltakstypeAndFeilregistrertIsFalse(String enhetGeografisk, Tiltakstype tiltakstype, String enhetOppfolging, Tiltakstype tiltakstype2, Pageable pageable);

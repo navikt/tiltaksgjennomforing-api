@@ -185,7 +185,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     public List<Avtale> hentAvtalerForMinsideArbeidsgiver(AvtaleRepository avtaleRepository, BedriftNr bedriftNr) {
-        return avtaleRepository.findAllByBedriftNr(bedriftNr).stream()
+        return avtaleRepository.findAllByBedriftNrAndFeilregistrertIsFalse(bedriftNr).stream()
                 .filter(this::harTilgang)
                 .map(Arbeidsgiver::fjernAvbruttGrunn)
                 .map(Arbeidsgiver::fjernAnnullertGrunn)
