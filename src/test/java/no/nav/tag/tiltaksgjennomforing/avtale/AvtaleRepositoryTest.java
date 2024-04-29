@@ -325,12 +325,12 @@ public class AvtaleRepositoryTest {
         avtaleRepository.save(lagretAvtale);
         avtaleRepository.save(lagretAvtaleFeilregistrert2);
 
-        Page<Avtale> avtaleMedRiktigEnhet = avtaleRepository
+        Page<Avtale> avtalerFunnet = avtaleRepository
                 .findAllByVeilederNavIdentAndFeilregistrertIsFalse(lagretAvtale.getVeilederNavIdent(), pageable);
 
-        assertThat(avtaleMedRiktigEnhet.getContent()).isNotEmpty();
-        assertThat(avtaleMedRiktigEnhet.getTotalElements()).isEqualTo(1);
-        assertThat(avtaleMedRiktigEnhet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
+        assertThat(avtalerFunnet.getContent()).isNotEmpty();
+        assertThat(avtalerFunnet.getTotalElements()).isEqualTo(1);
+        assertThat(avtalerFunnet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
     }
 
     @Test
@@ -344,12 +344,12 @@ public class AvtaleRepositoryTest {
         avtaleRepository.save(lagretAvtale);
         avtaleRepository.save(lagretAvtaleFeilregistrert2);
 
-        Page<Avtale> avtaleMedRiktigEnhet = avtaleRepository
+        Page<Avtale> avtalerFunnet = avtaleRepository
                 .findAllByVeilederNavIdentAndTiltakstypeAndFeilregistrertIsFalse(lagretAvtale.getVeilederNavIdent(), lagretAvtale.getTiltakstype(), pageable);
 
-        assertThat(avtaleMedRiktigEnhet.getContent()).isNotEmpty();
-        assertThat(avtaleMedRiktigEnhet.getTotalElements()).isEqualTo(1);
-        assertThat(avtaleMedRiktigEnhet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
+        assertThat(avtalerFunnet.getContent()).isNotEmpty();
+        assertThat(avtalerFunnet.getTotalElements()).isEqualTo(1);
+        assertThat(avtalerFunnet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
     }
 
     @Test
@@ -363,12 +363,12 @@ public class AvtaleRepositoryTest {
         avtaleRepository.save(lagretAvtale);
         avtaleRepository.save(lagretAvtaleFeilregistrert2);
 
-        Page<Avtale> avtaleMedRiktigEnhet = avtaleRepository
+        Page<Avtale> avtalerFunnet = avtaleRepository
                 .findAllByDeltakerFnrAndTiltakstypeAndFeilregistrertIsFalse(lagretAvtale.getDeltakerFnr(), lagretAvtale.getTiltakstype(), pageable);
 
-        assertThat(avtaleMedRiktigEnhet.getContent()).isNotEmpty();
-        assertThat(avtaleMedRiktigEnhet.getTotalElements()).isEqualTo(1);
-        assertThat(avtaleMedRiktigEnhet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
+        assertThat(avtalerFunnet.getContent()).isNotEmpty();
+        assertThat(avtalerFunnet.getTotalElements()).isEqualTo(1);
+        assertThat(avtalerFunnet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
     }
     @Test
     public void findAllByEnhetGeografiskAndTiltakstypeOrEnhetOppfolgingAndTiltakstype__skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
@@ -385,12 +385,12 @@ public class AvtaleRepositoryTest {
         avtaleRepository.save(lagretAvtale);
         avtaleRepository.save(lagretAvtaleFeilregistrert2);
 
-        Page<Avtale> avtaleMedRiktigEnhet = avtaleRepository
+        Page<Avtale> avtalerFunnet = avtaleRepository
                 .findAllByEnhetGeografiskAndTiltakstypeAndFeilregistrertIsFalseOrEnhetOppfolgingAndTiltakstypeAndFeilregistrertIsFalse(lagretAvtale.getEnhetGeografisk(), lagretAvtale.getTiltakstype(),lagretAvtale.getEnhetOppfolging(),lagretAvtale.getTiltakstype(), pageable);
 
-        assertThat(avtaleMedRiktigEnhet.getContent()).isNotEmpty();
-        assertThat(avtaleMedRiktigEnhet.getTotalElements()).isEqualTo(1);
-        assertThat(avtaleMedRiktigEnhet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
+        assertThat(avtalerFunnet.getContent()).isNotEmpty();
+        assertThat(avtalerFunnet.getTotalElements()).isEqualTo(1);
+        assertThat(avtalerFunnet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
     }
     @Test
     public void findAllByAvtaleNrAndTiltakstype__skal_IKKE_kunne_hente_avtale_som_er_FEIL_REGISTRERT() {
@@ -414,11 +414,11 @@ public class AvtaleRepositoryTest {
 
         Avtale avtaleLagret = avtaleRepository.save(lagretAvtale_IKKE_Feilregistrert);
 
-        Page<Avtale> avtaler_IKKE_FEILREGISTRERT_Funnet = avtaleRepository
+        Page<Avtale> avtalerFunnet = avtaleRepository
                 .findAllByAvtaleNrAndTiltakstypeAndFeilregistrertIsFalse(avtaleLagret.getAvtaleNr(), ARBEIDSTRENING,  pageable);
 
-        assertThat(avtaler_IKKE_FEILREGISTRERT_Funnet.getTotalElements()).isEqualTo(1);
-        assertThat(avtaler_IKKE_FEILREGISTRERT_Funnet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
+        assertThat(avtalerFunnet.getTotalElements()).isEqualTo(1);
+        assertThat(avtalerFunnet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
     }
 
     @Test
@@ -429,12 +429,12 @@ public class AvtaleRepositoryTest {
 
         avtaleRepository.save(lagretAvtale);
 
-        Page<Avtale> avtale = avtaleRepository
+        Page<Avtale> avtalerFunnet = avtaleRepository
                 .findAllByBedriftNrAndTiltakstypeAndFeilregistrertIsFalse(lagretAvtale.getBedriftNr(), lagretAvtale.getTiltakstype(), pageable);
 
-        assertThat(avtale.getContent()).isNotEmpty();
-        assertThat(avtale.getTotalElements()).isEqualTo(1);
-        assertThat(avtale.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
+        assertThat(avtalerFunnet.getContent()).isNotEmpty();
+        assertThat(avtalerFunnet.getTotalElements()).isEqualTo(1);
+        assertThat(avtalerFunnet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
     }
     @Test
     public void findAllByVeilederNavIdentIsNullAndEnhetGeografiskAndTiltakstypeOrVeilederNavIdentIsNullAndEnhetOppfolgingAndTiltakstype_skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
@@ -453,12 +453,12 @@ public class AvtaleRepositoryTest {
         avtaleRepository.save(lagretAvtale);
         avtaleRepository.save(lagretAvtaleFeilregistrert2);
 
-        Page<Avtale> avtaleMedRiktigEnhet = avtaleRepository
+        Page<Avtale> avtalerFunnet = avtaleRepository
                 .findAllByVeilederNavIdentIsNullAndEnhetGeografiskAndTiltakstypeAndFeilregistrertIsFalseOrVeilederNavIdentIsNullAndEnhetOppfolgingAndTiltakstypeAndFeilregistrertIsFalse(lagretAvtale.getEnhetGeografisk(), lagretAvtale.getTiltakstype(),lagretAvtale.getEnhetOppfolging(),lagretAvtale.getTiltakstype(), pageable);
 
-        assertThat(avtaleMedRiktigEnhet.getContent()).isNotEmpty();
-        assertThat(avtaleMedRiktigEnhet.getTotalElements()).isEqualTo(1);
-        assertThat(avtaleMedRiktigEnhet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
+        assertThat(avtalerFunnet.getContent()).isNotEmpty();
+        assertThat(avtalerFunnet.getTotalElements()).isEqualTo(1);
+        assertThat(avtalerFunnet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
     }
 
     /****************************************************************************************************
