@@ -446,6 +446,52 @@ public class AvtaleRepositoryTest {
         assertThat(avtalerFunnet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
     }
     @Test
+    public void findAllByEnhetGeografiskOrEnhetOppfolging__skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
+        Pageable pageable = PageRequest.of(0, 100);
+        Avtale lagretAvtale = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
+        lagretAvtale.setFeilregistrert(false);
+        lagretAvtale.setVeilederNavIdent(null);
+        lagretAvtale.setEnhetOppfolging("0061");
+        lagretAvtale.setEnhetGeografisk("0161");
+
+        Avtale lagretAvtaleFeilregistrert2 = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
+        lagretAvtaleFeilregistrert2.setFeilregistrert(true);
+        lagretAvtaleFeilregistrert2.setVeilederNavIdent(null);
+        lagretAvtaleFeilregistrert2.setEnhetOppfolging("0071");
+        lagretAvtaleFeilregistrert2.setEnhetGeografisk("0171");
+
+        avtaleRepository.save(lagretAvtale);
+        avtaleRepository.save(lagretAvtaleFeilregistrert2);
+
+        assertThat(lagretAvtale.getBedriftNr()).isEqualTo(lagretAvtaleFeilregistrert2.getBedriftNr());
+        assertThat(lagretAvtale.getBedriftNr()).isNotNull();
+        assertThat(lagretAvtaleFeilregistrert2.getBedriftNr()).isNotNull();
+
+        Page<Avtale> avtalerFunnetIkkeFeilregistrert = avtaleRepository
+                .findAllByEnhetGeografiskAndFeilregistrertIsFalseOrEnhetOppfolgingAndFeilregistrertIsFalse(lagretAvtale.getEnhetGeografisk(),null,pageable);
+
+        assertThat(avtalerFunnetIkkeFeilregistrert.getContent()).isNotEmpty();
+        assertThat(avtalerFunnetIkkeFeilregistrert.getTotalElements()).isEqualTo(1);
+        assertThat(avtalerFunnetIkkeFeilregistrert.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
+
+        Page<Avtale> avtalerFunnetIkkeFeilregistrertOppfolgning = avtaleRepository
+                .findAllByEnhetGeografiskAndFeilregistrertIsFalseOrEnhetOppfolgingAndFeilregistrertIsFalse(null,lagretAvtale.getEnhetOppfolging(),pageable);
+
+        assertThat(avtalerFunnetIkkeFeilregistrertOppfolgning.getContent()).isNotEmpty();
+        assertThat(avtalerFunnetIkkeFeilregistrertOppfolgning.getTotalElements()).isEqualTo(1);
+        assertThat(avtalerFunnetIkkeFeilregistrertOppfolgning.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
+
+        Page<Avtale> avtalerFunnetERFeilregistrertGeografiskEnhetErSatt = avtaleRepository
+                .findAllByEnhetGeografiskAndFeilregistrertIsFalseOrEnhetOppfolgingAndFeilregistrertIsFalse(lagretAvtaleFeilregistrert2.getEnhetGeografisk(),null,pageable);
+
+        assertThat(avtalerFunnetERFeilregistrertGeografiskEnhetErSatt.getTotalElements()).isEqualTo(0);
+
+        Page<Avtale> avtalerFunnetERFeilregistrertOppfølgningEnhetErSatt = avtaleRepository
+                .findAllByEnhetGeografiskAndFeilregistrertIsFalseOrEnhetOppfolgingAndFeilregistrertIsFalse(lagretAvtaleFeilregistrert2.getEnhetOppfolging(),null,pageable);
+
+        assertThat(avtalerFunnetERFeilregistrertOppfølgningEnhetErSatt.getTotalElements()).isEqualTo(0);
+    }
+    @Test
     public void findAllByEnhetGeografiskAndTiltakstypeOrEnhetOppfolgingAndTiltakstype__skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
         Pageable pageable = PageRequest.of(0, 100);
         Avtale lagretAvtale = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();

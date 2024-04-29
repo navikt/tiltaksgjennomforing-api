@@ -180,7 +180,7 @@ public class AvtaleControllerTest {
         Avtale nyAvtaleMedOppfølgningsEnhet = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet();
 
         when(
-                avtaleRepository.findAllByEnhetGeografiskOrEnhetOppfolging(eq(navEnhet), eq(navEnhet), eq(pageable))
+                avtaleRepository.findAllByEnhetGeografiskAndFeilregistrertIsFalseOrEnhetOppfolgingAndFeilregistrertIsFalse(eq(navEnhet), eq(navEnhet), eq(pageable))
         ).thenReturn(new PageImpl<Avtale>(List.of(nyAvtaleMedGeografiskEnhet, nyAvtaleMedOppfølgningsEnhet)));
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
 
