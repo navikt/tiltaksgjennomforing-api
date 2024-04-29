@@ -369,6 +369,28 @@ public class AvtaleRepositoryTest {
         assertThat(avtaleMedRiktigEnhet.getTotalElements()).isEqualTo(1);
         assertThat(avtaleMedRiktigEnhet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
     }
+    @Test
+    public void findAllByEnhetGeografiskAndTiltakstypeOrEnhetOppfolgingAndTiltakstype__skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
+        Pageable pageable = PageRequest.of(0, 100);
+        Avtale lagretAvtale = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
+        lagretAvtale.setFeilregistrert(false);
+        lagretAvtale.setEnhetGeografisk("0461");
+        lagretAvtale.setEnhetOppfolging("0461");
+        Avtale lagretAvtaleFeilregistrert2 = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
+        lagretAvtaleFeilregistrert2.setEnhetGeografisk("0461");
+        lagretAvtaleFeilregistrert2.setEnhetOppfolging("0461");
+        lagretAvtaleFeilregistrert2.setFeilregistrert(true);
+
+        avtaleRepository.save(lagretAvtale);
+        avtaleRepository.save(lagretAvtaleFeilregistrert2);
+
+        Page<Avtale> avtaleMedRiktigEnhet = avtaleRepository
+                .findAllByEnhetGeografiskAndTiltakstypeAndFeilregistrertIsFalseOrEnhetOppfolgingAndTiltakstypeAndFeilregistrertIsFalse(lagretAvtale.getEnhetGeografisk(), lagretAvtale.getTiltakstype(),lagretAvtale.getEnhetOppfolging(),lagretAvtale.getTiltakstype(), pageable);
+
+        assertThat(avtaleMedRiktigEnhet.getContent()).isNotEmpty();
+        assertThat(avtaleMedRiktigEnhet.getTotalElements()).isEqualTo(1);
+        assertThat(avtaleMedRiktigEnhet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
+    }
 
     @Test
     public void findAllByBedriftNrAndTiltakstype_skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
