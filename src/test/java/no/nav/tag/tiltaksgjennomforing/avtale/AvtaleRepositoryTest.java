@@ -526,6 +526,19 @@ public class AvtaleRepositoryTest {
 
         assertThat(avtalerFunnet.getTotalElements()).isEqualTo(0);
     }
+    @Test
+    public void findAllByAvtaleNr__skal_IKKE_kunne_hente_avtale_som_er_FEIL_REGISTRERT() {
+        Pageable pageable = PageRequest.of(0, 100);
+        Avtale lagretAvtaleFeilregistrert = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
+        lagretAvtaleFeilregistrert.setFeilregistrert(true);
+
+        Avtale avtaleLagret = avtaleRepository.save(lagretAvtaleFeilregistrert);
+
+        Page<Avtale> avtalerFunnet = avtaleRepository
+                .findAllByAvtaleNrAndFeilregistrertIsFalse(avtaleLagret.getAvtaleNr(),  pageable);
+
+        assertThat(avtalerFunnet.getTotalElements()).isEqualTo(0);
+    }
 
     @Test
     public void findAllByAvtaleNrAndTiltakstype__skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {

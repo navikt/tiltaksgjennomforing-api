@@ -114,7 +114,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
                 } else if (queryParametre.getNavEnhet() != null) {
                     avtalerUtenStatusFiltrering = avtaleRepository.findAllByEnhetGeografiskAndFeilregistrertIsFalseOrEnhetOppfolgingAndFeilregistrertIsFalse(queryParametre.getNavEnhet(), queryParametre.getNavEnhet(), allPages);
                 } else if (queryParametre.getAvtaleNr() != null) {
-                    avtalerUtenStatusFiltrering = avtaleRepository.findAllByAvtaleNr(queryParametre.getAvtaleNr(), allPages);
+                    avtalerUtenStatusFiltrering = avtaleRepository.findAllByAvtaleNrAndFeilregistrertIsFalse(queryParametre.getAvtaleNr(), allPages);
                 } else {
                     avtalerUtenStatusFiltrering = avtaleRepository.findAllByVeilederNavIdentAndFeilregistrertIsFalse(veilederNavIdent, allPages);
                 }
@@ -160,7 +160,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
                 } else if (queryParametre.getNavEnhet() != null) {
                     return avtaleRepository.findAllByEnhetGeografiskAndFeilregistrertIsFalseOrEnhetOppfolgingAndFeilregistrertIsFalse(queryParametre.getNavEnhet(), queryParametre.getNavEnhet(), pageable);
                 } else if (queryParametre.getAvtaleNr() != null) {
-                    return avtaleRepository.findAllByAvtaleNr(queryParametre.getAvtaleNr(), pageable);
+                    return avtaleRepository.findAllByAvtaleNrAndFeilregistrertIsFalse(queryParametre.getAvtaleNr(), pageable);
                 } else {
                     return avtaleRepository.findAllByVeilederNavIdentAndFeilregistrertIsFalse(veilederNavIdent, pageable);
                 }

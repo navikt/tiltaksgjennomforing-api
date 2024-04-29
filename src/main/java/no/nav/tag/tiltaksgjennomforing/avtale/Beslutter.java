@@ -72,7 +72,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, Pageable pageable) {
-        return avtaleRepository.findAllByAvtaleNr(queryParametre.getAvtaleNr(), pageable);
+        return avtaleRepository.findAllByAvtaleNrAndFeilregistrertIsFalse(queryParametre.getAvtaleNr(), pageable);
     }
 
     @Override
