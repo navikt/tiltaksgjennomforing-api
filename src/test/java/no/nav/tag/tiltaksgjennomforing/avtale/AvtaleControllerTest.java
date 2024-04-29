@@ -411,7 +411,7 @@ public class AvtaleControllerTest {
         List<Avtale> alleAvtaler = new ArrayList<>();
         alleAvtaler.addAll(avtalerBrukerHarTilgangTil);
         alleAvtaler.addAll(lagListeMedAvtaler(avtaleUtenTilgang, 4));
-        when(avtaleRepository.findAllByDeltakerFnr(eq(deltaker.getIdentifikator()), eq(pageable))).thenReturn(new PageImpl<Avtale>(alleAvtaler));
+        when(avtaleRepository.findAllByDeltakerFnrAndFeilregistrertIsFalse(eq(deltaker.getIdentifikator()), eq(pageable))).thenReturn(new PageImpl<Avtale>(alleAvtaler));
 
         Map<String, Object> avtalerPageResponse = deltaker.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,

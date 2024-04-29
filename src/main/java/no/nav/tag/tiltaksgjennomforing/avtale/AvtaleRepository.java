@@ -43,7 +43,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     Page<Avtale> findAllByBedriftNrInAndTiltakstype(Set<BedriftNr> bedriftNrList, Tiltakstype tiltakstype, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    Page<Avtale> findAllByDeltakerFnr(Fnr deltakerFnr, Pageable pageable);
+    Page<Avtale> findAllByDeltakerFnrAndFeilregistrertIsFalse(Fnr deltakerFnr, Pageable pageable);
     Page<Avtale> findAllByDeltakerFnrAndTiltakstypeAndFeilregistrertIsFalse(Fnr deltakerFnr, Tiltakstype tiltakstype, Pageable pageable);
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByVeilederNavIdentAndFeilregistrertIsFalse(NavIdent veilederNavIdent, Pageable pageable);
@@ -51,7 +51,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     Page<Avtale> findAllByVeilederNavIdentAndTiltakstypeAndFeilregistrertIsFalse(NavIdent veilederNavIdent, Tiltakstype tiltakstype, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    List<Avtale> findAllByDeltakerFnr(Fnr deltakerFnr);
+    List<Avtale> findAllByDeltakerFnrAndFeilregistrertIsFalse(Fnr deltakerFnr);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByMentorFnr(Fnr mentorFnr, Pageable pageable);

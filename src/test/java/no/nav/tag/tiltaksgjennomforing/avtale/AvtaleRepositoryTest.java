@@ -371,6 +371,27 @@ public class AvtaleRepositoryTest {
         assertThat(avtalerFunnet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
     }
     @Test
+    public void findAllByDeltakerFnr__skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
+        Pageable pageable = PageRequest.of(0, 100);
+        Avtale lagretAvtale = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
+        lagretAvtale.setFeilregistrert(false);
+
+        Avtale lagretAvtaleFeilregistrert2 = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
+        lagretAvtaleFeilregistrert2.setFeilregistrert(true);
+
+        avtaleRepository.save(lagretAvtale);
+        avtaleRepository.save(lagretAvtaleFeilregistrert2);
+
+        assertThat(lagretAvtale.getDeltakerFnr()).isEqualTo(lagretAvtaleFeilregistrert2.getDeltakerFnr());
+
+        Page<Avtale> avtalerFunnet = avtaleRepository
+                .findAllByDeltakerFnrAndFeilregistrertIsFalse(lagretAvtale.getDeltakerFnr(), pageable);
+
+        assertThat(avtalerFunnet.getContent()).isNotEmpty();
+        assertThat(avtalerFunnet.getTotalElements()).isEqualTo(1);
+        assertThat(avtalerFunnet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
+    }
+    @Test
     public void findAllByEnhetGeografiskAndTiltakstypeOrEnhetOppfolgingAndTiltakstype__skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
         Pageable pageable = PageRequest.of(0, 100);
         Avtale lagretAvtale = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
