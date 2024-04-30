@@ -161,9 +161,9 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         Page<Avtale> avtaler;
         if (queryParametre.getTiltakstype() != null) {
             if (harTilgangPåTiltakIBedrift(queryParametre.getBedriftNr(), queryParametre.getTiltakstype()))
-                avtaler = avtaleRepository.findAllByBedriftNrInAndTiltakstype(Set.of(queryParametre.getBedriftNr()), queryParametre.getTiltakstype(), pageable);
+                avtaler = avtaleRepository.findAllByBedriftNrInAndTiltakstypeAndFeilregistrertIsFalse(Set.of(queryParametre.getBedriftNr()), queryParametre.getTiltakstype(), pageable);
             else if (queryParametre.getBedriftNr() == null) {
-                avtaler = avtaleRepository.findAllByBedriftNrInAndTiltakstype(tilganger.keySet(), queryParametre.getTiltakstype(), pageable);
+                avtaler = avtaleRepository.findAllByBedriftNrInAndTiltakstypeAndFeilregistrertIsFalse(tilganger.keySet(), queryParametre.getTiltakstype(), pageable);
             } else { // Bruker ba om informasjon på en bedrift hen ikke har tilgang til, og får dermed tom liste
                 avtaler = Page.empty();
             }
