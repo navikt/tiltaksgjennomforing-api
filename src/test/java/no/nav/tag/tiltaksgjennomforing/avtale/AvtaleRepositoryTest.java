@@ -600,6 +600,59 @@ public class AvtaleRepositoryTest {
         assertThat(avtalerFunnet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
     }
     @Test
+    public void findAllByBedriftNrIn_skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
+        Pageable pageable = PageRequest.of(0, 100);
+        Avtale lagretAvtale = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
+        lagretAvtale.setFeilregistrert(true);
+        lagretAvtale.setBedriftNr(new BedriftNr("123456789"));
+
+        Avtale lagretAvtale2 = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
+        lagretAvtale2.setFeilregistrert(false);
+        lagretAvtale2.setBedriftNr(new BedriftNr("223456789"));
+
+        Avtale lagretAvtale3 = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
+        lagretAvtale3.setFeilregistrert(true);
+        lagretAvtale3.setBedriftNr(new BedriftNr("323456789"));
+
+        avtaleRepository.save(lagretAvtale);
+        avtaleRepository.save(lagretAvtale2);
+        avtaleRepository.save(lagretAvtale3);
+
+        Set<BedriftNr> bedriftNrSet = Set.of(lagretAvtale3.getBedriftNr(),lagretAvtale2.getBedriftNr(),lagretAvtale.getBedriftNr());
+
+        Page<Avtale> avtalerFunnet = avtaleRepository
+                .findAllByBedriftNrInAndFeilregistrertIsFalse(bedriftNrSet, pageable);
+
+        assertThat(avtalerFunnet.getContent()).isNotEmpty();
+        assertThat(avtalerFunnet.getTotalElements()).isEqualTo(1);
+        assertThat(avtalerFunnet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
+    }
+
+    @Test
+    public void findAllByMentorFnr_skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
+        Pageable pageable = PageRequest.of(0, 100);
+        final Fnr mentorFnr = new Fnr("12345678911");
+        Avtale lagretAvtale = TestData.enMentorAvtaleSignert();
+        lagretAvtale.setFeilregistrert(false);
+        lagretAvtale.setMentorFnr(mentorFnr);
+
+        Avtale lagretAvtale2 = TestData.enMentorAvtaleSignert();
+        lagretAvtale2.setFeilregistrert(true);
+        lagretAvtale2.setMentorFnr(mentorFnr);
+
+
+        avtaleRepository.save(lagretAvtale);
+        avtaleRepository.save(lagretAvtale2);
+
+
+        Page<Avtale> avtalerFunnet = avtaleRepository
+                .findAllByMentorFnrAndFeilregistrertIsFalse(mentorFnr, pageable);
+
+        assertThat(avtalerFunnet.getContent()).isNotEmpty();
+        assertThat(avtalerFunnet.getTotalElements()).isEqualTo(1);
+        assertThat(avtalerFunnet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
+    }
+    @Test
     public void findAllByVeilederNavIdentIsNullAndEnhetGeografiskAndTiltakstypeOrVeilederNavIdentIsNullAndEnhetOppfolgingAndTiltakstype_skal_kunne_hente_avtale_som_ikke_er_FEIL_REGISTRERT() {
         Pageable pageable = PageRequest.of(0, 100);
         Avtale lagretAvtale = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
