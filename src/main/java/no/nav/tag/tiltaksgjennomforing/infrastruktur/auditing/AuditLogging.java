@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing;
+package no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

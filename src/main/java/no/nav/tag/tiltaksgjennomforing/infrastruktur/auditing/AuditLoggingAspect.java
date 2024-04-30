@@ -1,13 +1,9 @@
-package no.nav.tag.tiltaksgjennomforing;
+package no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.AuditerbarAvtale;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditEntry;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditLogger;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.EventType;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -49,7 +45,7 @@ public class AuditLoggingAspect {
      * @param joinPoint            Dette er punktet som denne handleren "henger" på. Brukes for å hente ut annotasjonsbeskrivelsen
      * @param resultatFraEndepunkt Objektet som ble returnert av controller-metoden
      */
-    @AfterReturning(value = "@annotation(no.nav.tag.tiltaksgjennomforing.AuditLogging)", returning = "resultatFraEndepunkt")
+    @AfterReturning(value = "@annotation(no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditLogging)", returning = "resultatFraEndepunkt")
     public void postProcess(JoinPoint joinPoint, Object resultatFraEndepunkt) {
         var httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 
