@@ -39,7 +39,7 @@ public class InnloggetArbeidsgiverTest {
 
     @Test
     public void hentAvtalerForMinsideArbeidsgiver_uten_annullertGrunn() {
-        when(avtaleRepository.findAllByBedriftNr(eq(avtale.getBedriftNr()))).thenReturn(Arrays.asList(avtale));
+        when(avtaleRepository.findAllByBedriftNrAndFeilregistrertIsFalse(eq(avtale.getBedriftNr()))).thenReturn(Arrays.asList(avtale));
         List<Avtale> hentetAvtaler = arbeidsgiver.hentAvtalerForMinsideArbeidsgiver(avtaleRepository, avtale.getBedriftNr());
         assertThat(hentetAvtaler.get(0).getAnnullertGrunn()).isNull();
     }

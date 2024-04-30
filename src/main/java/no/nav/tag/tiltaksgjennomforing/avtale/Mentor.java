@@ -29,7 +29,7 @@ public class Mentor extends Avtalepart<Fnr> {
 
     @Override
     Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, Pageable pageable) {
-        Page<Avtale> avtaler = avtaleRepository.findAllByMentorFnr(getIdentifikator(), pageable);
+        Page<Avtale> avtaler = avtaleRepository.findAllByMentorFnrAndFeilregistrertIsFalse(getIdentifikator(), pageable);
         return avtaler;
     }
 

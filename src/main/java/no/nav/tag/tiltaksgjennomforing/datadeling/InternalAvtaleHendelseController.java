@@ -44,7 +44,7 @@ public class InternalAvtaleHendelseController {
         sjekkTilgang();
         List<String> hendelser = new ArrayList<>();
         if(Fnr.erGyldigFnr(meldingForFnr.fnr)) {
-            List<Avtale> alleAvtalerForDeltaker = avtaleRepository.findAllByDeltakerFnr(new Fnr(meldingForFnr.fnr));
+            List<Avtale> alleAvtalerForDeltaker = avtaleRepository.findAllByDeltakerFnrAndFeilregistrertIsFalse(new Fnr(meldingForFnr.fnr));
             alleAvtalerForDeltaker.forEach(avtale -> {
                 List<AvtaleMeldingEntitet> avtaleMeldingEntiteter = avtaleMeldingEntitetRepository.findAllByAvtaleId(avtale.getId());
                 AvtaleMeldingEntitet avtaleMeldingEntitet = avtaleMeldingEntiteter.stream().max(Comparator.comparing(melding -> melding.getTidspunkt())).orElseGet(null);
