@@ -4,6 +4,8 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.AuditerbarAvtale;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,7 +16,7 @@ import java.util.stream.Stream;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AlleredeRegistrertAvtale {
+public class AlleredeRegistrertAvtale implements AuditerbarAvtale {
 
     private UUID id;
     private Integer avtaleNr;
@@ -66,5 +68,10 @@ public class AlleredeRegistrertAvtale {
                 Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
                 Tiltakstype.VARIG_LONNSTILSKUDD
         ).contains(avtale.getTiltakstype())));
+    }
+
+    @Override
+    public FnrOgBedrift getFnrOgBedrift() {
+        return new FnrOgBedrift(getDeltakerFnr(), getBedriftNr());
     }
 }
