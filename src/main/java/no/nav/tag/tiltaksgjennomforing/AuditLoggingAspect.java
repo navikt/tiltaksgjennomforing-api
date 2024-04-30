@@ -82,7 +82,7 @@ public class AuditLoggingAspect {
             });
             if (avtaler.size() != entiteter.size()) {
                 log.error("AuditLoggingAspect fant en respons som ikke inneholdt avtaler: {}",
-                        avtaler.stream().findFirst().getClass().getName());
+                        avtaler.stream().findFirst().map(Object::getClass).map(Class::getName).orElse("null"));
             }
         } else if (resultatobjekt instanceof AuditerbarAvtale ae) {
             // Responsen var en enkelt auditentitet
