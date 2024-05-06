@@ -47,9 +47,13 @@ public class AuditLoggingAspect {
      */
     @AfterReturning(value = "@annotation(no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditLogging)", returning = "resultatFraEndepunkt")
     public void postProcess(JoinPoint joinPoint, Object resultatFraEndepunkt) {
-        var httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        try {
+            var httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 
-        sendAuditmeldingerTilKafka(httpServletRequest, hentAuditLoggingAnnotasjonsverdi(joinPoint), hentEntiteterSomKanAuditlogges(resultatFraEndepunkt));
+            sendAuditmeldingerTilKafka(httpServletRequest, hentAuditLoggingAnnotasjonsverdi(joinPoint), hentEntiteterSomKanAuditlogges(resultatFraEndepunkt));
+        } catch (Exception ex) {
+            log.error("{}: Logging feilet", this.getClass().getName(), ex);
+        }
     }
 
     /**
