@@ -117,9 +117,6 @@ public class AuditLoggingAspect {
             if (innloggetBrukerId != null) {
                 var uri = URI.create(request.getRequestURI());
                 var utførtTid = Now.instant();
-                if (apiBeskrivelse == null) {
-                    log.warn("Manglende @ApiBeskrivelse for api-endepunkt {}", uri);
-                }
 
                 var innloggetBrukerErPrivatperson = Fnr.erGyldigFnr(innloggetBrukerId);
                 auditElementer.forEach(fnrOgBedrift -> {
