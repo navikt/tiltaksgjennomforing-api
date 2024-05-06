@@ -127,8 +127,7 @@ public class AuditLoggingAspect {
                                     EventType.READ,
                                     true,
                                     utførtTid,
-                                    apiBeskrivelse != null ? apiBeskrivelse
-                                            : "Oppslag i løsning for arbeidsmarkedstiltak",
+                                    apiBeskrivelse,
                                     uri,
                                     HttpMethod.valueOf(request.getMethod()),
                                     request.getAttribute("correlationId").toString()
