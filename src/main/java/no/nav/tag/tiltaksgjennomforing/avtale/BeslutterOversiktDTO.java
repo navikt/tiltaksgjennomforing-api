@@ -1,12 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditerbarAvtale;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AvtaleMedFnrOgBedriftNr;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public interface BeslutterOversiktDTO extends AuditerbarAvtale {
+public interface BeslutterOversiktDTO extends AvtaleMedFnrOgBedriftNr {
     String getId();
     Integer getAvtaleNr();
     Tiltakstype getTiltakstype();

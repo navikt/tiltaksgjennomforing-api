@@ -49,7 +49,7 @@ public class AuditLoggingAspect {
     public void postProcess(JoinPoint joinPoint, Object resultatFraEndepunkt) {
         var httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 
-        sendAuditmeldinger(httpServletRequest, hentAnnotasjonsbeskrivelse(joinPoint), hentEntiteterSomKanAuditlogges(resultatFraEndepunkt));
+        sendAuditmeldingerTilKafka(httpServletRequest, hentAuditLoggingAnnotasjonsverdi(joinPoint), hentEntiteterSomKanAuditlogges(resultatFraEndepunkt));
     }
 
     /**
@@ -69,10 +69,10 @@ public class AuditLoggingAspect {
             return hentEntiteterSomKanAuditlogges(hashmap.get("avtaler"));
         }
 
-        var entiteter = new ArrayList<AuditerbarAvtale>();
+        var entiteter = new ArrayList<AvtaleMedFnrOgBedriftNr>();
         if (resultatobjekt instanceof Collection<?> avtaler) {
             avtaler.forEach(avtale -> {
-                if (avtale instanceof AuditerbarAvtale ae) {
+                if (avtale instanceof AvtaleMedFnrOgBedriftNr ae) {
                     entiteter.add(ae);
                 }
             });
@@ -80,7 +80,7 @@ public class AuditLoggingAspect {
                 log.error("AuditLoggingAspect fant en respons som ikke inneholdt avtaler: {}",
                         avtaler.stream().findFirst().map(Object::getClass).map(Class::getName).orElse("null"));
             }
-        } else if (resultatobjekt instanceof AuditerbarAvtale ae) {
+        } else if (resultatobjekt instanceof AvtaleMedFnrOgBedriftNr ae) {
             // Responsen var en enkelt auditentitet
             entiteter.add(ae);
         } else {
@@ -89,28 +89,22 @@ public class AuditLoggingAspect {
         return hentOppslagsdata(entiteter);
     }
 
-    /**
-     * Henter beskrivelsen i @AuditLogging-annotasjonen (value-attributtet)
-     */
-    private static String hentAnnotasjonsbeskrivelse(JoinPoint joinPoint) {
+    private static String hentAuditLoggingAnnotasjonsverdi(JoinPoint joinPoint) {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         return methodSignature.getMethod().getAnnotation(AuditLogging.class).value();
     }
 
     /**
-     * Konverterer en liste med auditerbare avtaler til et FnrOgBedrift-sett. Dette er for å sikre at vi får ut unike
+     * Konverterer auditerbare avtaler til et FnrOgBedrift-sett for å sikre at vi får ut unike
      * oppslag (hvis vi ikke gjør dette vil man feks logge oppslag mot samme deltaker i to avtaler dobbelt).
      */
-    private static @NotNull Set<FnrOgBedrift> hentOppslagsdata(Collection<AuditerbarAvtale> result) {
+    private static @NotNull Set<FnrOgBedrift> hentOppslagsdata(Collection<AvtaleMedFnrOgBedriftNr> result) {
         return result.stream().map(
-                AuditerbarAvtale::getFnrOgBedrift
+                AvtaleMedFnrOgBedriftNr::getFnrOgBedrift
         ).collect(Collectors.toSet());
     }
 
-    /**
-     * Gitt et sett med audit-elementer, opprett auditlogg-meldinger og legg de på kafka-kø.
-     */
-    private void sendAuditmeldinger(HttpServletRequest request, String apiBeskrivelse, Set<FnrOgBedrift> auditElementer) {
+    private void sendAuditmeldingerTilKafka(HttpServletRequest request, String apiBeskrivelse, Set<FnrOgBedrift> auditElementer) {
         try {
             String innloggetBrukerId = tokenUtils.hentBrukerOgIssuer().map(TokenUtils.BrukerOgIssuer::getBrukerIdent).orElse(null);
             // Logger kun oppslag dersom en innlogget bruker utførte oppslaget

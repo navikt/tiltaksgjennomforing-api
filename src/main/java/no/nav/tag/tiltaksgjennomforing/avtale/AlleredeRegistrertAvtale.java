@@ -4,7 +4,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditerbarAvtale;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AvtaleMedFnrOgBedriftNr;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
 
 import java.time.LocalDate;
@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AlleredeRegistrertAvtale implements AuditerbarAvtale {
+public class AlleredeRegistrertAvtale implements AvtaleMedFnrOgBedriftNr {
 
     private UUID id;
     private Integer avtaleNr;

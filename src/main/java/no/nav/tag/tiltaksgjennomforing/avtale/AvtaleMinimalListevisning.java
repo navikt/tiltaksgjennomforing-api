@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditerbarAvtale;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AvtaleMedFnrOgBedriftNr;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
 
 import java.time.Instant;
@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class AvtaleMinimalListevisning implements AuditerbarAvtale {
+public class AvtaleMinimalListevisning implements AvtaleMedFnrOgBedriftNr {
     private String id;
     private String deltakerFnr;
     private String deltakerFornavn;
