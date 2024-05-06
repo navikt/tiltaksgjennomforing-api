@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AvtaleMedFnrOgBedriftNr;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -12,7 +14,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class AvtaleMinimalListevisning {
+public class AvtaleMinimalListevisning implements AvtaleMedFnrOgBedriftNr {
     private String id;
     private String deltakerFnr;
     private String deltakerFornavn;
@@ -46,5 +48,10 @@ public class AvtaleMinimalListevisning {
                 .sistEndret(avtale.getSistEndret())
                 .build();
         return avtaleMininal;
+    }
+
+    @Override
+    public FnrOgBedrift getFnrOgBedrift() {
+        return new FnrOgBedrift(new Fnr(getDeltakerFnr()), new BedriftNr(getBedriftNr()));
     }
 }

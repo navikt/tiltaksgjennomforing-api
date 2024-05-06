@@ -6,7 +6,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.Protected;
-import no.nav.tag.tiltaksgjennomforing.ApiBeskrivelse;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditLogging;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.dokgen.DokgenService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
@@ -25,7 +25,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,7 +78,7 @@ public class AvtaleController {
     private final MeterRegistry meterRegistry;
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    @ApiBeskrivelse("Hent detaljer for avtale om arbeidsmarkedstiltak")
+    @AuditLogging("Hent detaljer for avtale om arbeidsmarkedstiltak")
     @GetMapping("/{avtaleId}")
     public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart, @RequestHeader(value = "referer", required = false) final String referer) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
@@ -88,25 +87,26 @@ public class AvtaleController {
     }
 
     private void sendMetrikkPåPage(String referer) {
-        if(StringUtils.isNotEmpty(referer)) {
+        if (StringUtils.isNotEmpty(referer)) {
             DistributionSummary summary = DistributionSummary
                     .builder("tiltaksgjennomforing.avtale.page")
                     .description("Fra side i søket avtalen åpnes")
-                    .publishPercentiles(0.5,0.75,0.9,0.99)
+                    .publishPercentiles(0.5, 0.75, 0.9, 0.99)
                     .register(meterRegistry);
             try {
                 URL refererUrl = new URL(referer);
                 String queryStr = refererUrl.getQuery();
-                if(StringUtils.isNotBlank(queryStr)) {
+                if (StringUtils.isNotBlank(queryStr)) {
                     String[] params = queryStr.split("&");
-                    for(String param : params) {
+                    for (String param : params) {
                         String[] paramValues = param.split("=");
-                        if(paramValues[0].equals("page") && paramValues.length > 1) {
+                        if (paramValues[0].equals("page") && paramValues.length > 1) {
                             summary.record(Double.valueOf(paramValues[1]));
                         }
                     }
                 }
-            } catch (MalformedURLException e) {}
+            } catch (MalformedURLException e) {
+            }
         }
     }
 
@@ -114,7 +114,7 @@ public class AvtaleController {
     public Boolean visSalesforceDialog(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtalepart.hentAvtale(avtaleRepository, id);
-        if(salesforceKontorerConfig.getEnheter().contains(avtale.getEnhetOppfolging()) &&
+        if (salesforceKontorerConfig.getEnheter().contains(avtale.getEnhetOppfolging()) &&
                 avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD &&
                 (avtale.statusSomEnum() == Status.GJENNOMFØRES || avtale.statusSomEnum() == Status.AVSLUTTET)) {
             return true;
@@ -122,7 +122,7 @@ public class AvtaleController {
         return false;
     }
 
-    @ApiBeskrivelse("Hent detaljer for avtale om arbeidsmarkedstiltak")
+    @AuditLogging("Hent detaljer for avtale om arbeidsmarkedstiltak")
     @GetMapping("/avtaleNr/{avtaleNr}")
     public Avtale hentFraAvtaleNr(@PathVariable("avtaleNr") int avtaleNr, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
@@ -143,7 +143,7 @@ public class AvtaleController {
                 );
     }
 
-    @ApiBeskrivelse("Hent liste over avtaler om arbeidsmarkedstiltak")
+    @AuditLogging("Hent liste over avtaler om arbeidsmarkedstiltak")
     @GetMapping
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTil(
@@ -166,7 +166,7 @@ public class AvtaleController {
         return avtaler;
     }
 
-    @ApiBeskrivelse("Hent liste over avtaler om arbeidsmarkedstiltak")
+    @AuditLogging("Hent liste over avtaler om arbeidsmarkedstiltak")
     @GetMapping("/sok")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTilMedGet(
@@ -220,7 +220,7 @@ public class AvtaleController {
         }
     }
 
-    @ApiBeskrivelse("Hent liste over avtaler om arbeidsmarkedstiltak")
+    @AuditLogging("Hent liste over avtaler om arbeidsmarkedstiltak")
     @PostMapping("/sok")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTilMedPost(
@@ -263,7 +263,7 @@ public class AvtaleController {
         return stringObjectHashMap;
     }
 
-    @ApiBeskrivelse("Hent liste over avtaler om arbeidsmarkedstiltak")
+    @AuditLogging("Hent liste over avtaler om arbeidsmarkedstiltak")
     @GetMapping("/beslutter-liste")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public Map<String, Object> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
@@ -328,7 +328,7 @@ public class AvtaleController {
         return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
     }
 
-    @ApiBeskrivelse("Test endring av avtale om arbeidsmarkedstiltak")
+    @AuditLogging("Test endring av avtale om arbeidsmarkedstiltak")
     @PutMapping("/{avtaleId}/dry-run")
     public Avtale endreAvtaleDryRun(
             @PathVariable("avtaleId") UUID avtaleId,
@@ -384,7 +384,7 @@ public class AvtaleController {
 
     // Arbeidsgiver-operasjoner
 
-    @ApiBeskrivelse("Hent liste over avtaler om arbeidsmarkedstiltak")
+    @AuditLogging("Hent liste over avtaler om arbeidsmarkedstiltak")
     @GetMapping("/min-side-arbeidsgiver")
     public List<Avtale> hentAlleAvtalerForMinSideArbeidsgiver(@RequestParam("bedriftNr") BedriftNr bedriftNr) {
         Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
@@ -414,7 +414,7 @@ public class AvtaleController {
     /**
      * VEILEDER-OPERASJONER
      **/
-    @ApiBeskrivelse("Hent liste over registrerte avtaler for bruker")
+    @AuditLogging("Hent liste over registrerte avtaler for bruker")
     @GetMapping("/deltaker-allerede-paa-tiltak")
     @Transactional
     public ResponseEntity<List<AlleredeRegistrertAvtale>> sjekkOmDeltakerAlleredeErRegistrertPaaTiltak(
@@ -440,7 +440,7 @@ public class AvtaleController {
     /**
      * VEILEDER-OPERASJONER
      **/
-    @ApiBeskrivelse("Hent liste over registrerte avtaler for bruker")
+    @AuditLogging("Hent liste over registrerte avtaler for bruker")
     @PostMapping("/deltaker-allerede-paa-tiltak")
     @Transactional
     public ResponseEntity<List<AlleredeRegistrertAvtale>> sjekkOmDeltakerAlleredeErRegistrertPaaTiltak(
@@ -510,7 +510,7 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
-    @ApiBeskrivelse("Test forkortelse av avtale om arbeidsmarkedstiltak")
+    @AuditLogging("Test forkortelse av avtale om arbeidsmarkedstiltak")
     @PostMapping("/{avtaleId}/forkort-dry-run")
     public Avtale forkortAvtaleDryRun(
             @PathVariable("avtaleId") UUID avtaleId,
@@ -539,7 +539,7 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
-    @ApiBeskrivelse("Test forlengelse av avtale om arbeidsmarkedstiltak")
+    @AuditLogging("Test forlengelse av avtale om arbeidsmarkedstiltak")
     @PostMapping("/{avtaleId}/forleng-dry-run")
     public Avtale forlengAvtaleDryRun(
             @PathVariable("avtaleId") UUID avtaleId,
@@ -568,7 +568,7 @@ public class AvtaleController {
     @PostMapping("/{avtaleId}/endre-inkluderingstilskudd")
     @Transactional
     public void endreInkluderingstilskudd(@PathVariable("avtaleId") UUID avtaleId,
-            @RequestBody EndreInkluderingstilskudd endreInkluderingstilskudd) {
+                                          @RequestBody EndreInkluderingstilskudd endreInkluderingstilskudd) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         veileder.endreInkluderingstilskudd(endreInkluderingstilskudd, avtale);
@@ -626,7 +626,7 @@ public class AvtaleController {
     @PostMapping("/{avtaleId}/endre-tilskuddsberegning")
     @Transactional
     public void endreTilskuddsberegning(@PathVariable("avtaleId") UUID avtaleId,
-            @RequestBody EndreTilskuddsberegning endreTilskuddsberegning) {
+                                        @RequestBody EndreTilskuddsberegning endreTilskuddsberegning) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
@@ -634,7 +634,7 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
-    @ApiBeskrivelse("Test endring av tilskuddsberegning på avtale om arbeidsmarkedstiltak")
+    @AuditLogging("Test endring av tilskuddsberegning på avtale om arbeidsmarkedstiltak")
     @PostMapping("/{avtaleId}/endre-tilskuddsberegning-dry-run")
     public Avtale endreTilskuddsberegningDryRun(
             @PathVariable("avtaleId") UUID avtaleId,
@@ -657,7 +657,7 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
-    @PostMapping({ "/{avtaleId}/godkjenn-paa-vegne-av", "/{avtaleId}/godkjenn-paa-vegne-av-deltaker" })
+    @PostMapping({"/{avtaleId}/godkjenn-paa-vegne-av", "/{avtaleId}/godkjenn-paa-vegne-av-deltaker"})
     @Transactional
     public void godkjennPaVegneAv(
             @PathVariable("avtaleId") UUID avtaleId,
@@ -759,7 +759,7 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
-    @ApiBeskrivelse("Justering av migreringsdato i avtale om arbeidsmarkedstiltak")
+    @AuditLogging("Justering av migreringsdato i avtale om arbeidsmarkedstiltak")
     @PostMapping("/{avtaleId}/juster-arena-migreringsdato/dry-run")
     public Avtale justerArenaMigreringsdatoDryRun(@PathVariable("avtaleId") UUID avtaleId, @RequestBody JusterArenaMigreringsdato justerArenaMigreringsdato) {
         Veileder veileder = innloggingService.hentVeileder();
@@ -781,7 +781,7 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
-    @ApiBeskrivelse("Oppdater avtale om arbeidsmarkedstiltak")
+    @AuditLogging("Oppdater avtale om arbeidsmarkedstiltak")
     @PostMapping("/{avtaleId}/set-om-avtalen-kan-etterregistreres")
     @Transactional
     public Avtale setOmAvtalenKanEtterregistreres(@PathVariable("avtaleId") UUID avtaleId) {
@@ -792,7 +792,7 @@ public class AvtaleController {
         return oppdatertAvtale;
     }
 
-    @ApiBeskrivelse("Oppdater avtale om arbeidsmarkedstiltak")
+    @AuditLogging("Oppdater avtale om arbeidsmarkedstiltak")
     @PostMapping("/{avtaleId}/endre-kostnadssted")
     @Transactional
     public Avtale endreKostnadssted(
@@ -815,7 +815,7 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
-    @ApiBeskrivelse("Oppdater avtale om arbeidsmarkedstiltak")
+    @AuditLogging("Oppdater avtale om arbeidsmarkedstiltak")
     @PostMapping("/{avtaleId}/oppdaterOppfølgingsEnhet")
     public Avtale oppdaterOppfølgingsEnhet(
             @PathVariable("avtaleId") UUID avtaleId
