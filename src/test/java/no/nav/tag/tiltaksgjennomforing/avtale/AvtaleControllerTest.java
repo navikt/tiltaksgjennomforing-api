@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
@@ -23,17 +24,19 @@ import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -49,29 +52,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
-@SuppressWarnings("rawtypes")
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@ActiveProfiles(Miljø.LOCAL)
+@AutoConfigureMockMvc
 public class AvtaleControllerTest {
 
-    @Mock
+    @Autowired
+    MockMvc mockMvc;
+    @MockBean
     VeilarbArenaClient veilarbArenaClient;
-    @Mock
+    @MockBean
     Norg2Client norg2Client;
-    @Spy
-    TilskuddsperiodeConfig tilskuddsperiodeConfig = new TilskuddsperiodeConfig();
-    @InjectMocks
+    @Autowired
     private AvtaleController avtaleController;
-    @Mock
+    @MockBean
     private AvtaleRepository avtaleRepository;
-    @Mock
+    @MockBean
     private TilgangskontrollService tilgangskontrollService;
-    @Mock
+    @MockBean
     private InnloggingService innloggingService;
-    @Mock
+    @MockBean
     private EregService eregService;
-    @Mock
+    @MockBean
     private PersondataService persondataService;
-    @Mock
+    @MockBean
     private KontoregisterService kontoregisterService;
 
     private Pageable pageable = PageRequest.of(0, 100);
@@ -144,7 +148,8 @@ public class AvtaleControllerTest {
                 .build();
         when(
                 avtaleRepository.findAll(eq(Example.of(exampleAvtale)), eq(pageable))
-        ).thenReturn(new PageImpl<Avtale>(List.of(avtaleForVeilederSomSøkesEtter)));;
+        ).thenReturn(new PageImpl<Avtale>(List.of(avtaleForVeilederSomSøkesEtter)));
+        ;
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 eq(veileder),
                 any(Fnr.class)
@@ -158,7 +163,7 @@ public class AvtaleControllerTest {
                 pageable
         );
 
-        List<Avtale> avtaler = (List<Avtale>)avtalerPageResponse.get("avtaler");
+        List<Avtale> avtaler = (List<Avtale>) avtalerPageResponse.get("avtaler");
         assertThat(avtaler).doesNotContain(avtaleForVeilederSomSøkesEtter);
     }
 
@@ -191,7 +196,7 @@ public class AvtaleControllerTest {
                 pageable
         );
 
-        List<AvtaleMinimalListevisning> avtaler = (List<AvtaleMinimalListevisning>)avtalerPageResponse.get("avtaler");
+        List<AvtaleMinimalListevisning> avtaler = (List<AvtaleMinimalListevisning>) avtalerPageResponse.get("avtaler");
         assertThat(avtaler).isNotNull();
     }
 
@@ -229,13 +234,13 @@ public class AvtaleControllerTest {
                 pageable
         );
 
-        List<AvtaleMinimalListevisning> avtaler = (List<AvtaleMinimalListevisning>)avtalerPageResponse.get("avtaler");
+        List<AvtaleMinimalListevisning> avtaler = (List<AvtaleMinimalListevisning>) avtalerPageResponse.get("avtaler");
         assertThat(avtaler).isNotNull();
-        assertThat(avtaler.stream().filter(avtaleMinimalListevisning-> avtaleMinimalListevisning.getTiltakstype() == Tiltakstype.ARBEIDSTRENING).toList()).isNotNull();
+        assertThat(avtaler.stream().filter(avtaleMinimalListevisning -> avtaleMinimalListevisning.getTiltakstype() == Tiltakstype.ARBEIDSTRENING).toList()).isNotNull();
     }
 
     @Test
-    public void mentorGodkjennTaushetserklæring_når_innlogget_er_ikke_Mentor(){
+    public void mentorGodkjennTaushetserklæring_når_innlogget_er_ikke_Mentor() {
         Avtale enMentorAvtale = TestData.enMentorAvtaleUsignert();
         NavIdent navIdent = new NavIdent("Z123456");
         Veileder veileder = new Veileder(
@@ -251,19 +256,19 @@ public class AvtaleControllerTest {
         værInnloggetSom(veileder);
 
         assertThatThrownBy(() -> {
-            avtaleController.mentorGodkjennTaushetserklæring(enMentorAvtale.getId(), Instant.now(),Avtalerolle.DELTAKER);
+            avtaleController.mentorGodkjennTaushetserklæring(enMentorAvtale.getId(), Instant.now(), Avtalerolle.DELTAKER);
         }).isExactlyInstanceOf(TiltaksgjennomforingException.class);
     }
 
     @Test
-    public void mentorGodkjennTaushetserklæring_når_innlogget_er__Mentor(){
+    public void mentorGodkjennTaushetserklæring_når_innlogget_er__Mentor() {
         Avtale enMentorAvtale = TestData.enMentorAvtaleUsignert();
         Mentor mentor = new Mentor(enMentorAvtale.getMentorFnr());
         værInnloggetSom(mentor);
 
         when(avtaleRepository.findById(enMentorAvtale.getId())).thenReturn(Optional.of(enMentorAvtale));
 
-        avtaleController.mentorGodkjennTaushetserklæring(enMentorAvtale.getId(), Instant.now(),Avtalerolle.DELTAKER);
+        avtaleController.mentorGodkjennTaushetserklæring(enMentorAvtale.getId(), Instant.now(), Avtalerolle.DELTAKER);
     }
 
     @Test
@@ -311,10 +316,10 @@ public class AvtaleControllerTest {
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
         when(
                 eregService.hentVirksomhet(avtale.getBedriftNr())).thenReturn(
-                        new Organisasjon(
-                                avtale.getBedriftNr(),
-                                avtale.getGjeldendeInnhold().getBedriftNavn()
-                        )
+                new Organisasjon(
+                        avtale.getBedriftNr(),
+                        avtale.getGjeldendeInnhold().getBedriftNavn()
+                )
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
         when(persondataService.hentPersondata(fnr)).thenReturn(pdlRespons);
@@ -420,7 +425,7 @@ public class AvtaleControllerTest {
                 pageable
         );
 
-        List<AvtaleMinimalListevisning> avtaler = (List<AvtaleMinimalListevisning>)avtalerPageResponse.get("avtaler");
+        List<AvtaleMinimalListevisning> avtaler = (List<AvtaleMinimalListevisning>) avtalerPageResponse.get("avtaler");
         assertThat(avtaler)
                 .hasSize(avtalerBrukerHarTilgangTil.size());
     }
@@ -497,13 +502,16 @@ public class AvtaleControllerTest {
         ).isInstanceOf(TilgangskontrollException.class);
     }
 
-    private void værInnloggetSom(Avtalepart avtalepart) {
+    private void værInnloggetSom(Avtalepart<?> avtalepart) {
         lenient().when(innloggingService.hentAvtalepart(any())).thenReturn(avtalepart);
-        if (avtalepart instanceof Veileder) {
-            lenient().when(innloggingService.hentVeileder()).thenReturn((Veileder) avtalepart);
+        if (avtalepart instanceof Veileder veileder) {
+            lenient().when(innloggingService.hentVeileder()).thenReturn(veileder);
         }
-        if (avtalepart instanceof Arbeidsgiver) {
-            lenient().when(innloggingService.hentArbeidsgiver()).thenReturn((Arbeidsgiver) avtalepart);
+        if (avtalepart instanceof Arbeidsgiver arbeidsgiver) {
+            lenient().when(innloggingService.hentArbeidsgiver()).thenReturn(arbeidsgiver);
+        }
+        if (avtalepart instanceof Beslutter beslutter) {
+            lenient().when(innloggingService.hentBeslutter()).thenReturn(beslutter);
         }
     }
 
@@ -575,9 +583,9 @@ public class AvtaleControllerTest {
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
-                        eq(veileder),
-                        any(Fnr.class)
-                )).thenReturn(false);
+                eq(veileder),
+                any(Fnr.class)
+        )).thenReturn(false);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         assertThatThrownBy(
                 () -> avtaleController.hentBedriftKontonummer(avtale.getId(), Avtalerolle.VEILEDER)
