@@ -11,7 +11,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import javax.xml.bind.helpers.ValidationEventLocatorImpl;
 import java.util.Map;
 import java.util.stream.Collectors;
 
