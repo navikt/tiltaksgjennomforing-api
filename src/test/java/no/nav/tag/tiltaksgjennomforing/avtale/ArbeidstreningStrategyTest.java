@@ -14,7 +14,7 @@ class ArbeidstreningStrategyTest {
     private AvtaleInnholdStrategy strategy;
 
     @BeforeEach
-    private void setUp() {
+    public void setUp() {
         avtaleInnhold = new AvtaleInnhold();
         strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, Tiltakstype.ARBEIDSTRENING);
     }

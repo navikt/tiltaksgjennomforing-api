@@ -89,6 +89,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
+import javax.persistence.PostLoad;
+import javax.persistence.Transient;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -176,6 +178,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     @OneToOne(mappedBy = "avtale", fetch = FetchType.EAGER)
     private ArenaRyddeAvtale arenaRyddeAvtale;
 
+    @JsonIgnore
+    @Transient
+    private FnrOgBedrift fnrOgBedrift;
+
     private Avtale(OpprettAvtale opprettAvtale) {
         sjekkAtIkkeNull(opprettAvtale.getDeltakerFnr(), "Deltakers fnr må være satt.");
         sjekkAtIkkeNull(opprettAvtale.getBedriftNr(), "Arbeidsgivers bedriftnr må være satt.");
@@ -190,6 +196,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         this.opprettetTidspunkt = Now.localDateTime();
         this.deltakerFnr = opprettAvtale.getDeltakerFnr();
         this.bedriftNr = opprettAvtale.getBedriftNr();
+        this.fnrOgBedrift = new FnrOgBedrift(this.deltakerFnr, this.bedriftNr);
         this.tiltakstype = opprettAvtale.getTiltakstype();
         this.sistEndret = Now.instant();
         this.gjeldendeInnhold = AvtaleInnhold.nyttTomtInnhold(tiltakstype);
@@ -211,6 +218,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         this.deltakerFnr = opprettMentorAvtale.getDeltakerFnr();
         this.mentorFnr = opprettMentorAvtale.getMentorFnr();
         this.bedriftNr = opprettMentorAvtale.getBedriftNr();
+        this.fnrOgBedrift = new FnrOgBedrift(this.deltakerFnr, this.bedriftNr);
         this.tiltakstype = opprettMentorAvtale.getTiltakstype();
         this.sistEndret = Now.instant();
         this.gjeldendeInnhold = AvtaleInnhold.nyttTomtInnhold(tiltakstype);
@@ -497,8 +505,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         if (this.getTiltakstype() == Tiltakstype.SOMMERJOBB &&
                 this.getDeltakerFnr().erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
             throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_GAMMEL_FRA_OPPSTARTDATO);
-        }
-        else if (this.getTiltakstype() != Tiltakstype.SOMMERJOBB && this.getDeltakerFnr().erOver72ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
+        } else if (this.getTiltakstype() != Tiltakstype.SOMMERJOBB && this.getDeltakerFnr().erOver72ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
             throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
         }
 
@@ -536,8 +543,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         }
         if (this.getTiltakstype() == Tiltakstype.MENTOR && !erGodkjentTaushetserklæringAvMentor()) {
             throw new FeilkodeException(Feilkode.MENTOR_MÅ_SIGNERE_TAUSHETSERKLÆRING);
-        }
-        else if (this.getTiltakstype() != Tiltakstype.SOMMERJOBB && this.getDeltakerFnr().erOver72ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
+        } else if (this.getTiltakstype() != Tiltakstype.SOMMERJOBB && this.getDeltakerFnr().erOver72ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
             throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
         }
 
@@ -897,7 +903,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             return;
         }
         Optional<TilskuddPeriode> periodeMedHøyestLøpenummer = tilskuddPeriode.stream().max(Comparator.comparing(tilskuddPeriode1 -> tilskuddPeriode1.getLøpenummer()));
-        if(periodeMedHøyestLøpenummer.isPresent()) {
+        if (periodeMedHøyestLøpenummer.isPresent()) {
             TilskuddPeriode sisteTilskuddsperiode = periodeMedHøyestLøpenummer.get();
             if (sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) {
                 // Kan utvide siste tilskuddsperiode hvis den er ubehandlet
@@ -1129,7 +1135,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     public void lagNyGodkjentTilskuddsperiodeFraAnnullertPeriode(TilskuddPeriode annullertTilskuddPeriode) {
         krevEnAvTiltakstyper(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
-        if(annullertTilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
+        if (annullertTilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET);
         }
         TilskuddPeriode nyTilskuddsperiode = annullertTilskuddPeriode.deaktiverOgLagNyUbehandlet();
@@ -1146,8 +1152,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     private Integer finnResendingsNummer(TilskuddPeriode gjeldendePeriode) {
         Integer resendingsnummer = null;
         for (TilskuddPeriode periode : tilskuddPeriode) {
-            if(periode.getStatus() == TilskuddPeriodeStatus.ANNULLERT && periode.getLøpenummer().equals(gjeldendePeriode.getLøpenummer())) {
-                if(resendingsnummer == null) {
+            if (periode.getStatus() == TilskuddPeriodeStatus.ANNULLERT && periode.getLøpenummer().equals(gjeldendePeriode.getLøpenummer())) {
+                if (resendingsnummer == null) {
                     resendingsnummer = 0;
                 }
                 resendingsnummer++;
@@ -1158,7 +1164,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     public void lagNyTilskuddsperiodeFraAnnullertPeriode(TilskuddPeriode annullertTilskuddPeriode) {
         krevEnAvTiltakstyper(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
-        if(annullertTilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
+        if (annullertTilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET);
         }
         TilskuddPeriode nyUbehandletPeriode = annullertTilskuddPeriode.deaktiverOgLagNyUbehandlet();
@@ -1168,7 +1174,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     public void lagNyBehandletIArenaTilskuddsperiodeFraAnnullertPeriode(TilskuddPeriode annullertTilskuddPeriode) {
         krevEnAvTiltakstyper(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
-        if(annullertTilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
+        if (annullertTilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET);
         }
         TilskuddPeriode nyUbehandletPeriode = annullertTilskuddPeriode.deaktiverOgLagNyUbehandlet();
@@ -1190,10 +1196,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         TreeSet<TilskuddPeriode> aktiveTilskuddsperioder = new TreeSet(tilskuddPeriode.stream().filter(t -> t.isAktiv()).collect(Collectors.toSet()));
         Optional<TilskuddPeriode> sisteUtbetalt = aktiveTilskuddsperioder.descendingSet().stream().filter(tilskuddPeriode -> (
                 tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.SENDT_KRAV ||
-                tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.UTBETALT ||
-                tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.UTBETALING_FEILET ||
-                tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.GODKJENT_MINUSBELØP ||
-                tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.GODKJENT_NULLBELØP)
+                        tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.UTBETALT ||
+                        tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.UTBETALING_FEILET ||
+                        tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.GODKJENT_MINUSBELØP ||
+                        tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.GODKJENT_NULLBELØP)
         ).max(Comparator.comparing(tilskuddPeriode1 -> tilskuddPeriode1.getStartDato()));
         if (sisteUtbetalt.isPresent() && nySluttDato.isBefore(sisteUtbetalt.get().getSluttDato())) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_FOR_UTBETALT_TILSKUDDSPERIODE);
@@ -1460,8 +1466,18 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         registerEvent(new OmMentorEndret(this, utførtAv));
     }
 
+    /**
+     * For mentorer vil deltakers fnr skjules; som fører til at auditlogging ikke fungerer
+     * med mindre vi oppretter FnrOgBedrift-objektet umiddelbart etter last
+     * (og ikke serialiserer det nye feltet på vei ut)
+     */
+    @PostLoad
+    public void opprettFnrOgBedriftEtterDbLast() {
+        this.fnrOgBedrift = new FnrOgBedrift(this.deltakerFnr, this.bedriftNr);
+    }
+
     @Override
     public FnrOgBedrift getFnrOgBedrift() {
-        return new FnrOgBedrift(getDeltakerFnr(), getBedriftNr());
+        return this.fnrOgBedrift;
     }
 }

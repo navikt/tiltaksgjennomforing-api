@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import java.util.UUID;
+
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetMentor;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
@@ -22,8 +23,9 @@ public class Mentor extends Avtalepart<Fnr> {
 
     @Override
     public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
-        Avtale avtale = super.hentAvtale(avtaleRepository,avtaleId);
-        if(!avtale.erGodkjentTaushetserklæringAvMentor()) throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_AVTALE);
+        Avtale avtale = super.hentAvtale(avtaleRepository, avtaleId);
+        if (!avtale.erGodkjentTaushetserklæringAvMentor())
+            throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_AVTALE);
         return skjulDeltakerFødselsnummer(avtale);
     }
 
@@ -35,10 +37,9 @@ public class Mentor extends Avtalepart<Fnr> {
 
     @Override
     AvtaleMinimalListevisning skjulData(AvtaleMinimalListevisning avtaleMinimalListevisning) {
-        avtaleMinimalListevisning.setDeltakerFnr(null);
         return avtaleMinimalListevisning;
     }
-    
+
     @Override
     public void godkjennForAvtalepart(Avtale avtale) {
         avtale.godkjennForMentor(getIdentifikator());
@@ -64,7 +65,7 @@ public class Mentor extends Avtalepart<Fnr> {
         throw new TilgangskontrollException("Deltaker kan ikke oppheve godkjenninger");
     }
 
-    private Avtale skjulDeltakerFødselsnummer(Avtale avtale){
+    private Avtale skjulDeltakerFødselsnummer(Avtale avtale) {
         avtale.setDeltakerFnr(null);
         return avtale;
     }
