@@ -12,7 +12,7 @@ public class EventTypeEventLogger implements CacheEventListener<Object, Object> 
 
   @Override
   public void onEvent(
-    CacheEvent<? extends Object, ? extends Object> cacheEvent) {
+    CacheEvent<?, ?> cacheEvent) {
       log.debug("Cacheevent: {}", cacheEvent.getType());
   }
 

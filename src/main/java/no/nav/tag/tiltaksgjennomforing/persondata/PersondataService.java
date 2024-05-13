@@ -100,7 +100,7 @@ public class PersondataService {
         try {
             return restTemplate.postForObject(persondataProperties.getUri(), createRequestEntity(pdlRequest), PdlRespons.class);
         } catch (RestClientException exception) {
-            log.error("Feil fra PDL med request-url: " + persondataProperties.getUri(), exception);
+            log.error("Feil fra PDL med request-url: {}", persondataProperties.getUri(), exception);
             throw exception;
         }
     }

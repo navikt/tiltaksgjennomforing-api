@@ -12,7 +12,7 @@ public class EventAndKeyHashEventLogger implements CacheEventListener<Object, Ob
 
   @Override
   public void onEvent(
-    CacheEvent<? extends Object, ? extends Object> cacheEvent) {
+    CacheEvent<?, ?> cacheEvent) {
       log.debug("Cacheevent: {}, key-hash: {}", cacheEvent.getType(), cacheEvent.getKey().hashCode());
   }
 

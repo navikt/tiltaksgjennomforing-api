@@ -44,7 +44,7 @@ public class AxsysService {
             AxsysRespons respons = restTemplate.exchange(uri, HttpMethod.GET, new HttpEntity<>(headers), AxsysRespons.class).getBody();
             return respons.tilEnheter();
         } catch (RestClientException exception) {
-            log.warn("Feil ved henting av enheter for ident " + ident, exception);
+            log.warn("Feil ved henting av enheter for ident {}", ident, exception);
             throw exception;
         }
     }

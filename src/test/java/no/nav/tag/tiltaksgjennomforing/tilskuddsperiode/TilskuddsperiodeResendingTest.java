@@ -44,7 +44,7 @@ public class TilskuddsperiodeResendingTest {
     private FeatureToggleService featureToggleService;
 
     @Test
-    public void sjekk_at_godkjent_med_samme_løpenummer_får_resendings_nummer() throws JSONException {
+    public void sjekk_at_godkjent_med_samme_løpenummer_får_resendings_nummer() {
         when(featureToggleService.isEnabled(anyString())).thenReturn(true);
 
         Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("testGroup", "false", embeddedKafka);

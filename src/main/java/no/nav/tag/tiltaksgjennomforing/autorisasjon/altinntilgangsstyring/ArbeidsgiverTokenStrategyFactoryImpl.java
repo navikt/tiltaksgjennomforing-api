@@ -16,12 +16,10 @@ public class ArbeidsgiverTokenStrategyFactoryImpl implements ArbeidsgiverTokenSt
     private final ClientConfigurationProperties clientConfigurationProperties;
 
     public HentArbeidsgiverToken create(Issuer issuer) {
-        switch (issuer) {
-            case ISSUER_TOKENX:
-                return new HentArbeidsgiverTokenxImpl(oAuth2AccessTokenService, clientConfigurationProperties);
-            default:
-                throw new RuntimeException();
+        if (issuer == Issuer.ISSUER_TOKENX) {
+            return new HentArbeidsgiverTokenxImpl(oAuth2AccessTokenService, clientConfigurationProperties);
         }
+        throw new RuntimeException();
     }
 
 }

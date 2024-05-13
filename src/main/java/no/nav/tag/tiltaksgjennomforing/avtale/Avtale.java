@@ -1122,7 +1122,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         LocalDate startDato;
         List<TilskuddPeriode> godkjentePerioder = tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.GODKJENT).sorted(Comparator.comparing(t -> t.getLøpenummer())).toList();
 
-        if (godkjentePerioder.size() != 0) {
+        if (!godkjentePerioder.isEmpty()) {
             startDato = godkjentePerioder.get(godkjentePerioder.size() - 1).getSluttDato().plusDays(1);
         } else {
             startDato = tilskuddPeriode.first().getStartDato();

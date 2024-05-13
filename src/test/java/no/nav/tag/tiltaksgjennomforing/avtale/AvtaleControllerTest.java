@@ -147,8 +147,8 @@ public class AvtaleControllerTest {
                 .build();
         when(
                 avtaleRepository.findAll(eq(Example.of(exampleAvtale)), eq(pageable))
-        ).thenReturn(new PageImpl<Avtale>(List.of(avtaleForVeilederSomSøkesEtter)));
-        ;
+        ).thenReturn(new PageImpl<>(List.of(avtaleForVeilederSomSøkesEtter)));
+
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 eq(veileder),
                 any(Fnr.class)
@@ -224,7 +224,7 @@ public class AvtaleControllerTest {
                 .build();
         when(
                 avtaleRepository.findAll(eq(Example.of(exampleAvtale)), eq(pageable))
-        ).thenReturn(new PageImpl<Avtale>(List.of(enArbeidstreningsAvtale)));
+        ).thenReturn(new PageImpl<>(List.of(enArbeidstreningsAvtale)));
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
 
         Map<String, Object> avtalerPageResponse = veileder.hentAlleAvtalerMedLesetilgang(
@@ -416,7 +416,7 @@ public class AvtaleControllerTest {
         List<Avtale> alleAvtaler = new ArrayList<>();
         alleAvtaler.addAll(avtalerBrukerHarTilgangTil);
         alleAvtaler.addAll(lagListeMedAvtaler(avtaleUtenTilgang, 4));
-        when(avtaleRepository.findAllByDeltakerFnrAndFeilregistrertIsFalse(eq(deltaker.getIdentifikator()), eq(pageable))).thenReturn(new PageImpl<Avtale>(alleAvtaler));
+        when(avtaleRepository.findAllByDeltakerFnrAndFeilregistrertIsFalse(eq(deltaker.getIdentifikator()), eq(pageable))).thenReturn(new PageImpl<>(alleAvtaler));
 
         Map<String, Object> avtalerPageResponse = deltaker.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,

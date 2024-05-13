@@ -6,6 +6,7 @@ import com.nimbusds.jose.util.IOUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -31,7 +32,7 @@ public class JwkGenerator {
 
     public static JWKSet getJWKSet() {
         try {
-            return JWKSet.parse(IOUtils.readInputStreamToString(JwkGenerator.class.getResourceAsStream(DEFAULT_JWKSET_FILE), Charset.forName("UTF-8")));
+            return JWKSet.parse(IOUtils.readInputStreamToString(JwkGenerator.class.getResourceAsStream(DEFAULT_JWKSET_FILE), StandardCharsets.UTF_8));
         } catch (IOException | ParseException io) {
             throw new RuntimeException(io);
         }
@@ -39,8 +40,7 @@ public class JwkGenerator {
 
     public static JWKSet getJWKSetFromFile(File file) {
         try {
-            JWKSet set = JWKSet.load(file);
-            return set;
+            return JWKSet.load(file);
         } catch (IOException | ParseException e) {
             throw new RuntimeException(e);
         }

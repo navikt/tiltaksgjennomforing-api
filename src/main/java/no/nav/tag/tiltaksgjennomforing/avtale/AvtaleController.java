@@ -253,7 +253,7 @@ public class AvtaleController {
             filterSokiDb.setSistSoktTidspunkt(LocalDateTime.now());
             filterSokRepository.save(filterSokiDb);
             if (!filterSokiDb.erLik(queryParametre)) {
-                log.error("Kollisjon i søkId: " + filterSokiDb.getSokId());
+                log.error("Kollisjon i søkId: {}", filterSokiDb.getSokId());
             }
         } else {
             FilterSok filterSok = new FilterSok(queryParametre);

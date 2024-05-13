@@ -5,7 +5,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringProperties;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -51,34 +50,25 @@ public class NotifikasjonParser {
     }
 
     public AltinnNotifikasjonsProperties getNotifikasjonerProperties(Avtale avtale) {
-        switch (avtale.getTiltakstype()) {
-            case MIDLERTIDIG_LONNSTILSKUDD:
-                return new AltinnNotifikasjonsProperties(
-                        altinnTilgangsstyringProperties.getLtsMidlertidigServiceCode(),
-                        altinnTilgangsstyringProperties.getLtsMidlertidigServiceEdition());
-            case ARBEIDSTRENING:
-                return new AltinnNotifikasjonsProperties(
-                        altinnTilgangsstyringProperties.getArbtreningServiceCode(),
-                        altinnTilgangsstyringProperties.getArbtreningServiceEdition());
-            case SOMMERJOBB:
-                return new AltinnNotifikasjonsProperties(
-                        altinnTilgangsstyringProperties.getSommerjobbServiceCode(),
-                        altinnTilgangsstyringProperties.getSommerjobbServiceEdition());
-            case MENTOR:
-                return new AltinnNotifikasjonsProperties(
-                        altinnTilgangsstyringProperties.getMentorServiceCode(),
-                        altinnTilgangsstyringProperties.getMentorServiceEdition());
-            case INKLUDERINGSTILSKUDD:
-                return new AltinnNotifikasjonsProperties(
-                        altinnTilgangsstyringProperties.getInkluderingstilskuddServiceCode(),
-                        altinnTilgangsstyringProperties.getInkluderingstilskuddServiceEdition());
-            case VARIG_LONNSTILSKUDD:
-                return new AltinnNotifikasjonsProperties(
-                        altinnTilgangsstyringProperties.getLtsVarigServiceCode(),
-                        altinnTilgangsstyringProperties.getLtsVarigServiceEdition());
-            default:
-                log.error("Kan ikke sette opp notifikasjon for ukjent tiltaktstype");
-                throw new TiltaksgjennomforingException("Kan ikke sette opp notifikasjon for ukjent tiltaktstype");
-        }
+        return switch (avtale.getTiltakstype()) {
+            case MIDLERTIDIG_LONNSTILSKUDD -> new AltinnNotifikasjonsProperties(
+                    altinnTilgangsstyringProperties.getLtsMidlertidigServiceCode(),
+                    altinnTilgangsstyringProperties.getLtsMidlertidigServiceEdition());
+            case ARBEIDSTRENING -> new AltinnNotifikasjonsProperties(
+                    altinnTilgangsstyringProperties.getArbtreningServiceCode(),
+                    altinnTilgangsstyringProperties.getArbtreningServiceEdition());
+            case SOMMERJOBB -> new AltinnNotifikasjonsProperties(
+                    altinnTilgangsstyringProperties.getSommerjobbServiceCode(),
+                    altinnTilgangsstyringProperties.getSommerjobbServiceEdition());
+            case MENTOR -> new AltinnNotifikasjonsProperties(
+                    altinnTilgangsstyringProperties.getMentorServiceCode(),
+                    altinnTilgangsstyringProperties.getMentorServiceEdition());
+            case INKLUDERINGSTILSKUDD -> new AltinnNotifikasjonsProperties(
+                    altinnTilgangsstyringProperties.getInkluderingstilskuddServiceCode(),
+                    altinnTilgangsstyringProperties.getInkluderingstilskuddServiceEdition());
+            case VARIG_LONNSTILSKUDD -> new AltinnNotifikasjonsProperties(
+                    altinnTilgangsstyringProperties.getLtsVarigServiceCode(),
+                    altinnTilgangsstyringProperties.getLtsVarigServiceEdition());
+        };
     }
 }
