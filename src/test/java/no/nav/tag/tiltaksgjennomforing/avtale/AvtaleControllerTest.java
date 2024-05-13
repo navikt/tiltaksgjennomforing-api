@@ -255,9 +255,8 @@ public class AvtaleControllerTest {
         );
         værInnloggetSom(veileder);
 
-        assertThatThrownBy(() -> {
-            avtaleController.mentorGodkjennTaushetserklæring(enMentorAvtale.getId(), Instant.now(), Avtalerolle.DELTAKER);
-        }).isExactlyInstanceOf(TiltaksgjennomforingException.class);
+        assertThatThrownBy(() ->
+                avtaleController.mentorGodkjennTaushetserklæring(enMentorAvtale.getId(), Instant.now(), Avtalerolle.DELTAKER)).isExactlyInstanceOf(TiltaksgjennomforingException.class);
     }
 
     @Test

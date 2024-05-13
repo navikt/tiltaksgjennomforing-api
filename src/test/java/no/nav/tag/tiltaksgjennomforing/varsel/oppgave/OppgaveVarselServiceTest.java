@@ -71,8 +71,7 @@ public class OppgaveVarselServiceTest {
     public void oppretterOppgaveRequestFeiler() {
         when(stsRestTemplate.postForObject(any(URI.class), any(), any(Class.class))).thenThrow(RuntimeException.class);
 
-        assertThrows(GosysFeilException.class, () -> {
-            oppgaveVarselService.opprettOppgave("aktørId", VARIG_LONNSTILSKUDD, UUID.randomUUID());
-        });
+        assertThrows(GosysFeilException.class, () ->
+                oppgaveVarselService.opprettOppgave("aktørId", VARIG_LONNSTILSKUDD, UUID.randomUUID()));
     }
 }

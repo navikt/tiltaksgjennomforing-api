@@ -898,9 +898,8 @@ public class AvtaleTest {
         LocalDate sluttDato = LocalDate.of(2023, 02, 28);
         Avtale avtale = TestData.enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(startDato, sluttDato);
         // Alle perioder er godkjent
-        avtale.getTilskuddPeriode().forEach(t -> {
-            t.godkjenn(TestData.enNavIdent2(), "1234");
-        });
+        avtale.getTilskuddPeriode().forEach(t ->
+                t.godkjenn(TestData.enNavIdent2(), "1234"));
         LocalDate nySluttDato = sluttDato.plusMonths(6);
         avtale.forlengAvtale(nySluttDato, TestData.enNavIdent());
         assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(nySluttDato);

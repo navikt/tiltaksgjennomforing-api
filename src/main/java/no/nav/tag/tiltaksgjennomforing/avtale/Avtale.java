@@ -329,10 +329,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     @JsonProperty
     public boolean erRyddeAvtale() {
-        if (arenaRyddeAvtale != null) {
-            return true;
-        }
-        return false;
+        return arenaRyddeAvtale != null;
     }
 
     @JsonProperty
@@ -1050,11 +1047,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         }
         // Statuser som skal få tilskuddsperioder
         Status status = statusSomEnum();
-        if (status == Status.ANNULLERT || status == Status.AVBRUTT) {
-            return false;
-        }
-
-        return true;
+        return status != Status.ANNULLERT && status != Status.AVBRUTT;
     }
 
     /**

@@ -52,7 +52,7 @@ public class Mentor extends Avtalepart<Fnr> {
 
     @Override
     public boolean erGodkjentAvInnloggetBruker(Avtale avtale) {
-        return avtale.getMentorFnr().equals(getIdentifikator().asString()) && avtale.erGodkjentTaushetserklæringAvMentor();
+        return avtale.getMentorFnr().equals(getIdentifikator()) && avtale.erGodkjentTaushetserklæringAvMentor();
     }
 
     @Override

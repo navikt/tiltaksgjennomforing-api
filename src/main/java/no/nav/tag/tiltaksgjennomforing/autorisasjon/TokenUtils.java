@@ -51,18 +51,12 @@ public class TokenUtils {
 
     public boolean harAdGruppe(UUID gruppeAD) {
         Optional<List<String>> groupsClaim = hentClaims(ISSUER_AAD, "groups");
-        if (!groupsClaim.isPresent()) {
-            return false;
-        }
-        return groupsClaim.get().contains(gruppeAD.toString());
+        return groupsClaim.map(strings -> strings.contains(gruppeAD.toString())).orElse(false);
     }
 
     public boolean harAdRolle(String rolle) {
         Optional<List<String>> roller = hentClaims(ISSUER_AAD, "roles");
-        if (!roller.isPresent()) {
-            return false;
-        }
-        return roller.get().contains(rolle.toString());
+        return roller.map(strings -> strings.contains(rolle)).orElse(false);
     }
 
     private Optional<List<String>> hentClaims(Issuer issuer, String claim) {

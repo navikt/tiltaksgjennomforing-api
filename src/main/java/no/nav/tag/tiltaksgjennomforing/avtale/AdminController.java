@@ -183,16 +183,14 @@ public class AdminController {
         midlertidige.removeIf(a -> a.getGjeldendeInnhold().getAvtaleInngått() == null);
         midlertidige.removeIf(a -> a.getTilskuddPeriode().isEmpty());
 
-        midlertidige.forEach(avtale -> {
-            avtale.getTilskuddPeriode().forEach(tp -> {
-                if (tp.getLøpenummer() > 1) {
-                    TilskuddPeriode forrigePeriode = avtale.getTilskuddPeriode().stream().filter(t -> t.getLøpenummer() == tp.getLøpenummer() - 1).toList().stream().findFirst().orElseThrow();
-                    if (tp.getStartDato().isBefore(forrigePeriode.getStartDato())) {
-                        log.warn("Tilskuddsperiode med id {} har startDato før startDatoen til forrige løpenummer!", tp.getId());
-                    }
+        midlertidige.forEach(avtale -> avtale.getTilskuddPeriode().forEach(tp -> {
+            if (tp.getLøpenummer() > 1) {
+                TilskuddPeriode forrigePeriode = avtale.getTilskuddPeriode().stream().filter(t -> t.getLøpenummer() == tp.getLøpenummer() - 1).toList().stream().findFirst().orElseThrow();
+                if (tp.getStartDato().isBefore(forrigePeriode.getStartDato())) {
+                    log.warn("Tilskuddsperiode med id {} har startDato før startDatoen til forrige løpenummer!", tp.getId());
                 }
-            });
-        });
+            }
+        }));
     }
 
 }

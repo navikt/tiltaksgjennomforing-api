@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonStatus;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;

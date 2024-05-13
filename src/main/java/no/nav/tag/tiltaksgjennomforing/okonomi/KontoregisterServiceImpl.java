@@ -39,8 +39,7 @@ public class KontoregisterServiceImpl implements KontoregisterService{
             return response.getBody().getKontonr();
 
         } catch (RestClientException | URISyntaxException  exception) {
-            if(exception instanceof HttpClientErrorException){
-                HttpClientErrorException hcee = (HttpClientErrorException)exception;
+            if(exception instanceof HttpClientErrorException hcee){
                 if(hcee.getStatusCode() == NOT_FOUND) {
                     throw new KontoregisterFantIkkeBedriftFeilException();
                 }

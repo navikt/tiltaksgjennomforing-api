@@ -5,7 +5,6 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.util.IOUtils;
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
