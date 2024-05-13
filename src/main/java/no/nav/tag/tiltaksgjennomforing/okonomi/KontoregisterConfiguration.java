@@ -4,7 +4,6 @@ import no.nav.security.token.support.client.core.ClientProperties;
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenResponse;
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService;
 import no.nav.security.token.support.client.spring.ClientConfigurationProperties;
-import no.nav.security.token.support.client.spring.oauth2.EnableOAuth2Client;
 import no.nav.tag.tiltaksgjennomforing.utils.ConditionalOnPropertyNotEmpty;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +13,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
-@EnableOAuth2Client(cacheEnabled = true)
 @Configuration
 @ConditionalOnPropertyNotEmpty("tiltaksgjennomforing.kontoregister.azureConfig")
 class KontoregisterConfiguration {
