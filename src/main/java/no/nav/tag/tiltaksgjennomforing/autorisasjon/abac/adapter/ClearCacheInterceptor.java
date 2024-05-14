@@ -1,9 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter;
 
-import static java.util.Optional.ofNullable;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
@@ -12,6 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import static java.util.Optional.ofNullable;
 
 @Component
 @RequiredArgsConstructor

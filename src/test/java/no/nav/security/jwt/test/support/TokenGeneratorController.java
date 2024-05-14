@@ -1,19 +1,11 @@
 package no.nav.security.jwt.test.support;
 
-import static no.nav.security.jwt.test.support.JwtTokenGenerator.ACR_LEVEL_4;
-
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.util.IOUtils;
 import com.nimbusds.jwt.SignedJWT;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import no.nav.security.token.support.core.api.Unprotected;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.BeslutterAdGruppeProperties;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +13,15 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static no.nav.security.jwt.test.support.JwtTokenGenerator.ACR_LEVEL_4;
 
 @RestController
 @RequestMapping("/local")
@@ -35,16 +36,16 @@ public class TokenGeneratorController {
     }
 
     private static void bakeCookie(
-        String subject,
-        String cookieName,
-        String redirect,
-        String expiry,
-        HttpServletResponse response,
-        Map<String, Object> claims,
-        String issuer,
-        String audience,
-        String acrLevel,
-        List<String> groups
+            String subject,
+            String cookieName,
+            String redirect,
+            String expiry,
+            HttpServletResponse response,
+            Map<String, Object> claims,
+            String issuer,
+            String audience,
+            String acrLevel,
+            List<String> groups
     ) throws IOException {
         long expiryTime = expiry != null ? Long.parseLong(expiry) : JwtTokenGenerator.EXPIRY;
         SignedJWT token = JwtTokenGenerator.createSignedJWT(subject, expiryTime, claims, issuer, audience, acrLevel, groups);
@@ -90,13 +91,13 @@ public class TokenGeneratorController {
     @Unprotected
     @GetMapping("/selvbetjening-login")
     public void addSelvbetjeningCookie(@RequestHeader(value = "selvbetjening-id", defaultValue = "00000000000") String subject,
-        @RequestParam(value = "cookiename", defaultValue = SELVBETJENING_IDTOKEN) String cookieName,
-        @RequestParam(value = "acr-level", defaultValue = ACR_LEVEL_4) String acrLevel,
-        @RequestParam(value = "redirect", required = false) String redirect,
-        @RequestParam(value = "expiry", required = false) String expiry,
-        HttpServletResponse response) throws IOException {
+                                       @RequestParam(value = "cookiename", defaultValue = SELVBETJENING_IDTOKEN) String cookieName,
+                                       @RequestParam(value = "acr-level", defaultValue = ACR_LEVEL_4) String acrLevel,
+                                       @RequestParam(value = "redirect", required = false) String redirect,
+                                       @RequestParam(value = "expiry", required = false) String expiry,
+                                       HttpServletResponse response) throws IOException {
         bakeCookie(subject, cookieName, redirect, expiry, response, new HashMap<>(), "selvbetjening", "aud-selvbetjening", acrLevel,
-            List.of(beslutterAdGruppeProperties.getId().toString()));
+                List.of(beslutterAdGruppeProperties.getId().toString()));
     }
 
     @Unprotected
@@ -109,7 +110,7 @@ public class TokenGeneratorController {
                              HttpServletResponse response
     ) throws IOException {
         bakeCookie(subject, cookieName, redirect, expiry, response, Collections.singletonMap("NAVident", navIdent), "isso", "aud-isso", null,
-            Collections.singletonList(beslutterAdGruppeProperties.getId().toString()));
+                Collections.singletonList(beslutterAdGruppeProperties.getId().toString()));
     }
 
     @Unprotected

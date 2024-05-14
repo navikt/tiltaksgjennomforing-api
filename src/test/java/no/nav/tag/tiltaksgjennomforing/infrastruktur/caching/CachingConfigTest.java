@@ -25,7 +25,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import static no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig.*;
+import static no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;

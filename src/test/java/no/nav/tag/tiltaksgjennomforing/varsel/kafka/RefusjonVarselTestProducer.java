@@ -20,19 +20,13 @@ public class RefusjonVarselTestProducer {
     }
 
     public void publiserMelding(String meldingId, RefusjonVarselMelding refusjonVarselMelding) {
-        kafkaTemplate.send(Topics.TILTAK_VARSEL, meldingId, refusjonVarselMelding)
-                .addCallback(new ListenableFutureCallback<>() {
-                    @Override
-                    public void onSuccess(SendResult<String, RefusjonVarselMelding> result) {
-                        log.info("Melding med id {} sendt til Kafka topic {}", meldingId, Topics.TILTAK_VARSEL);
-                    }
-
-                    @Override
-                    public void onFailure(Throwable ex) {
-                        log.error("Melding med id {} kunne ikke sendes til Kafka topic {}", meldingId, Topics.TILTAK_VARSEL);
-                        log.error("Feilmelding: ", ex);
-                    }
-                });
+        kafkaTemplate.send(Topics.TILTAK_VARSEL, meldingId, refusjonVarselMelding).whenComplete((result, ex) -> {
+            if (ex != null) {
+                log.error("Melding med id {} kunne ikke sendes til Kafka topic {}", meldingId, Topics.TILTAK_VARSEL);
+                log.error("Feilmelding: ", ex);
+            } else {
+                log.info("Melding med id {} sendt til Kafka topic {}", meldingId, Topics.TILTAK_VARSEL);
+            }
+        });
     }
-
 }

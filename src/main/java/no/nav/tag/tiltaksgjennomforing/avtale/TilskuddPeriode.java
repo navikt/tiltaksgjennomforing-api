@@ -9,7 +9,7 @@ import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.jetbrains.annotations.NotNull;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.EnumSet;

@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.experimental.FieldNameConstants;

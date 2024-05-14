@@ -10,11 +10,14 @@ import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnholdRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -35,9 +38,9 @@ public class InternalAvtaleController {
             innloggingService.validerSystembruker();
             List<AvtaleInnhold> avtaleVersjoner = avtaleInnholdRepository.finnAvtaleVersjonerTilJournalfoering();
             List<AvtaleTilJournalfoering> avtalerTilJournalfoering = avtaleVersjoner.stream().map(avtaleInnhold -> {
-                SortedSet<TilskuddPeriode> tilskuddPeriode = avtaleInnhold.getAvtale().getTilskuddPeriode();
+                List<TilskuddPeriode> tilskuddPeriode = avtaleInnhold.getAvtale().getTilskuddPeriode();
                 AvtaleTilJournalfoering avtaleTilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtaleInnhold, null);
-                avtaleTilJournalfoering.setTilskuddsPerioder(tilskuddPeriode.stream().toList());
+                avtaleTilJournalfoering.setTilskuddsPerioder(tilskuddPeriode);
                 return avtaleTilJournalfoering;
             }).collect(Collectors.toList());
             return avtalerTilJournalfoering;

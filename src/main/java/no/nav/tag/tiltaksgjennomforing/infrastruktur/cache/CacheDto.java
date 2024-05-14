@@ -11,7 +11,7 @@ import java.util.List;
 @ConfigurationProperties(prefix = "caches")
 public class CacheDto {
 
-    private List<Cache> ehcaches;
+    private List<Cache> caffeine;
 
     @Data
     public static class Cache {

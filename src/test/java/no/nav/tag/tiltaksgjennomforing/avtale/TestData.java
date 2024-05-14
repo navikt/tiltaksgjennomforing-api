@@ -857,12 +857,12 @@ public class TestData {
             adressebeskyttelser[0] = new Adressebeskyttelse("STRENGT_FORTROLIG");
         }
 
-        HentPerson hentPerson = new HentPerson(adressebeskyttelser, new Navn[] { new Navn("Donald", null, "Duck") });
+        HentPerson hentPerson = new HentPerson(adressebeskyttelser, new Navn[]{new Navn("Donald", null, "Duck")});
         return new PdlRespons(new Data(hentPerson, null, new HentGeografiskTilknytning(null, "030101", null, null)));
     }
 
     public static TilskuddPeriode enTilskuddPeriode() {
-        return TestData.enLonnstilskuddAvtaleGodkjentAvVeileder().getTilskuddPeriode().first();
+        return TestData.enLonnstilskuddAvtaleGodkjentAvVeileder().getTilskuddPeriode().stream().findFirst().orElse(null);
     }
 
     public static EndreTilskuddsberegning enEndreTilskuddsberegning() {

@@ -3,10 +3,10 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import lombok.Data;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;

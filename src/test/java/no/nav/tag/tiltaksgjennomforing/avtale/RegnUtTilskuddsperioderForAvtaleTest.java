@@ -7,7 +7,14 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
@@ -31,7 +38,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
 
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(3);
-        assertThat(avtale.getTilskuddPeriode().first().getBeløp()).isEqualTo(avtale.getGjeldendeInnhold().getSumLonnstilskudd());
+        assertThat(avtale.getTilskuddPeriode().stream().findFirst().map(TilskuddPeriode::getBeløp).get()).isEqualTo(avtale.getGjeldendeInnhold().getSumLonnstilskudd());
         harRiktigeEgenskaper(avtale);
         Now.resetClock();
     }
@@ -156,7 +163,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
     }
 
     @Test
-    public void sjett_at_reduksjon_skjer_tidlig_12_mnd_ved_68_prosent_eller_høyre(){
+    public void sjett_at_reduksjon_skjer_tidlig_12_mnd_ved_68_prosent_eller_høyre() {
         Now.fixedDate(LocalDate.of(2021, 1, 1));
         LocalDate startDato = LocalDate.of(2021, 1, 1);
         LocalDate sluttDato = LocalDate.of(2022, 1, 10);
@@ -177,7 +184,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
     }
 
     @Test
-    public void sjett_at_reduksjon_skjer_etter_12_mnd_ved_høyre_enn_68_prosent(){
+    public void sjett_at_reduksjon_skjer_etter_12_mnd_ved_høyre_enn_68_prosent() {
         Now.fixedDate(LocalDate.of(2023, 1, 2));
         LocalDate startDato = LocalDate.of(2022, 1, 1);
         LocalDate sluttDato = LocalDate.of(2023, 12, 12);
@@ -199,7 +206,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
     }
 
     @Test
-    public void sjett_at_reduksjon_ikke_skjer_etter_12_mnd_under_68_prosent(){
+    public void sjett_at_reduksjon_ikke_skjer_etter_12_mnd_under_68_prosent() {
         Now.fixedDate(LocalDate.of(2021, 1, 1));
         LocalDate startDato = LocalDate.of(2021, 2, 1);
         LocalDate sluttDato = LocalDate.of(2023, 3, 10);
@@ -219,7 +226,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
     }
 
     @Test
-    public void sjett_at_reduksjon_ikke_skjer_før_12_mnd_over_68_prosent_eller_høyre(){
+    public void sjett_at_reduksjon_ikke_skjer_før_12_mnd_over_68_prosent_eller_høyre() {
         Now.fixedDate(LocalDate.of(2021, 1, 1));
         LocalDate startDato = LocalDate.of(2021, 2, 1);
         LocalDate sluttDato = LocalDate.of(2021, 3, 1);
@@ -239,7 +246,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
     }
 
     @Test
-    public void sjett_at_reduksjon_ikke_skjer_før_12_mnd_under_68_prosent(){
+    public void sjett_at_reduksjon_ikke_skjer_før_12_mnd_under_68_prosent() {
         Now.fixedDate(LocalDate.of(2021, 1, 1));
         LocalDate startDato = LocalDate.of(2021, 2, 1);
         LocalDate sluttDato = LocalDate.of(2021, 6, 1);
@@ -277,7 +284,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
     @Test
     public void sjekk_at_reduksjon_skjer_etter_12_mnd_ved_60_prosent() {
-        Now.fixedDate(LocalDate.of(2021,1,1));
+        Now.fixedDate(LocalDate.of(2021, 1, 1));
         LocalDate startDato = LocalDate.of(2021, 1, 1);
         LocalDate sluttDato = LocalDate.of(2022, 12, 31);
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();

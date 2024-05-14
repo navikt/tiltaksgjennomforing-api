@@ -45,8 +45,8 @@ public class TokenUtils {
 
     public Optional<BrukerOgIssuer> hentBrukerOgIssuer() {
         return hentClaim(ISSUER_SYSTEM, "sub").map(sub -> new BrukerOgIssuer(ISSUER_SYSTEM, sub))
-            .or(() -> hentClaim(ISSUER_AAD, "NAVident").map(sub -> new BrukerOgIssuer(ISSUER_AAD, sub)))
-            .or(() -> hentClaim(ISSUER_TOKENX, "pid").map(it -> new BrukerOgIssuer(ISSUER_TOKENX, it)));
+                .or(() -> hentClaim(ISSUER_AAD, "NAVident").map(sub -> new BrukerOgIssuer(ISSUER_AAD, sub)))
+                .or(() -> hentClaim(ISSUER_TOKENX, "pid").map(it -> new BrukerOgIssuer(ISSUER_TOKENX, it)));
     }
 
     public boolean harAdGruppe(UUID gruppeAD) {
@@ -84,9 +84,11 @@ public class TokenUtils {
             // Er ikke i kontekst av en request
             return Optional.empty();
         }
-        JwtTokenClaims claims = tokenValidationContext.getClaims(issuer.issuerName);
-        return Optional.ofNullable(claims);
-
+        try {
+            return Optional.of(tokenValidationContext.getClaims(issuer.issuerName));
+        } catch (IllegalArgumentException e) {
+            return Optional.empty();
+        }
     }
 
     public String hentTokenx() {

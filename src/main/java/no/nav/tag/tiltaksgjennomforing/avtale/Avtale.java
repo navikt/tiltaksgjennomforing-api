@@ -2,6 +2,19 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -61,8 +74,8 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AvtaleMedFnrOgBedriftNr;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AvtaleMedFnrOgBedriftNr;
 import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -72,34 +85,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
-import org.hibernate.annotations.SortNatural;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.type.PostgresUUIDType;
+import org.hibernate.generator.EventType;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
-import javax.persistence.PostLoad;
-import javax.persistence.Transient;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -116,9 +113,6 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldNameConstants
-@TypeDef(name = "postgres-uuid",
-        defaultForType = UUID.class,
-        typeClass = PostgresUUIDType.class)
 public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFnrOgBedriftNr {
 
     @Convert(converter = FnrConverter.class)
@@ -139,7 +133,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     @EqualsAndHashCode.Include
     private UUID id;
 
-    @Generated(GenerationTime.INSERT)
+    @Generated(event = EventType.INSERT)
     private Integer avtaleNr;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -169,9 +163,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
-    @SortNatural
     @OrderBy("startDato ASC")
-    private SortedSet<TilskuddPeriode> tilskuddPeriode = new TreeSet<>();
+    private List<TilskuddPeriode> tilskuddPeriode = new ArrayList<>();
     private boolean feilregistrert;
 
     @JsonIgnore
@@ -1104,7 +1097,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         // Finn første ubehandlede periode
         //Optional<TilskuddPeriode> førsteUbehandledeTilskuddsperiode = tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET).findFirst();
         // Fjern ubehandlede
-        for (TilskuddPeriode tilskuddsperiode : Set.copyOf(tilskuddPeriode)) {
+        for (TilskuddPeriode tilskuddsperiode : List.copyOf(tilskuddPeriode)) {
             TilskuddPeriodeStatus status = tilskuddsperiode.getStatus();
             if (status == TilskuddPeriodeStatus.UBEHANDLET) {
                 tilskuddPeriode.remove(tilskuddsperiode);
@@ -1113,12 +1106,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
         // Lag nye fra og med siste ikke ubehandlet + en dag
         LocalDate startDato;
-        List<TilskuddPeriode> godkjentePerioder = tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.GODKJENT).sorted(Comparator.comparing(t -> t.getLøpenummer())).toList();
+        List<TilskuddPeriode> godkjentePerioder = tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.GODKJENT).sorted(Comparator.comparing(TilskuddPeriode::getLøpenummer)).toList();
 
         if (!godkjentePerioder.isEmpty()) {
             startDato = godkjentePerioder.get(godkjentePerioder.size() - 1).getSluttDato().plusDays(1);
         } else {
-            startDato = tilskuddPeriode.first().getStartDato();
+            startDato = tilskuddPeriode.stream().findFirst().map(TilskuddPeriode::getStartDato).orElse(null);
         }
 
         List<TilskuddPeriode> nyetilskuddsperioder = beregnTilskuddsperioder(startDato, gjeldendeInnhold.getSluttDato());

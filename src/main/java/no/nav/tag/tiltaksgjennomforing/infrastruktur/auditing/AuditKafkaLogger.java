@@ -30,19 +30,11 @@ public class AuditKafkaLogger implements AuditLogger {
     @Override
     public void logg(AuditEntry event) {
         try {
-            auditKafkaTemplate.send(Topics.AUDIT_HENDELSE, mapper.writeValueAsString(event))
-                    .addCallback(new ListenableFutureCallback<>() {
-                                     @Override
-                                     public void onFailure(@NotNull Throwable ex) {
-                                         log.error("Audit-hendelse kunne ikke sendes til Kafka topic {}", Topics.AUDIT_HENDELSE, ex);
-                                     }
-
-                                     @Override
-                                     public void onSuccess(SendResult<String, String> result) {
-
-                                     }
-                                 }
-                    );
+            auditKafkaTemplate.send(Topics.AUDIT_HENDELSE, mapper.writeValueAsString(event)).whenComplete((result, ex) -> {
+                if (ex != null) {
+                    log.error("Audit-hendelse kunne ikke sendes til Kafka topic {}", Topics.AUDIT_HENDELSE, ex);
+                }
+            });
         } catch (JsonProcessingException ex) {
             log.error("Audit-hendelse kunne ikke serialiseres til Kafkamelding", ex);
         }
