@@ -133,7 +133,7 @@ public class AuditLoggingAspect {
                                     utførtTid,
                                     apiBeskrivelse,
                                     uri,
-                                    HttpMethod.valueOf(request.getMethod()),
+                                    request.getMethod(),
                                     request.getAttribute("correlationId").toString()
                             )
                     );
