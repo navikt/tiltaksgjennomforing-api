@@ -870,7 +870,7 @@ public class TestData {
         BigDecimal feriepengesats = new BigDecimal("0.166");
         BigDecimal arbeidsgiveravgift = BigDecimal.ZERO;
         int manedslonn = 44444;
-        return EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).build();
+        return new EndreTilskuddsberegning(manedslonn, feriepengesats, arbeidsgiveravgift, otpSats);
     }
 
     public static Avtale enArbeidstreningAvtaleGodkjentAvVeileder() {

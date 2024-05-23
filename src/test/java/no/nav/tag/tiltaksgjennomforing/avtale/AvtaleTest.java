@@ -372,7 +372,7 @@ public class AvtaleTest {
         for (String felt : felterSomKrevesForTiltakstype) {
             EndreAvtale endreAvtale = endringPåAltUtenom(felt, tiltakstype);
             avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
-             assertThat(avtale.felterSomIkkeErFyltUt()).containsOnly(felt);
+            assertThat(avtale.felterSomIkkeErFyltUt()).containsOnly(felt);
             assertFeilkode(Feilkode.ALT_MA_VAERE_FYLT_UT, () -> avtale.godkjennForArbeidsgiver(TestData.enIdentifikator()));
         }
     }
@@ -383,12 +383,13 @@ public class AvtaleTest {
 
     private static EndreAvtale endringPåAltUtenom(String felt, Tiltakstype tiltakstype) {
         EndreAvtale endreAvtale =
-        switch(tiltakstype){
-            case ARBEIDSTRENING -> TestData.endringPåAlleArbeidstreningFelter();
-            case MENTOR -> TestData.endringPåAlleMentorFelter();
-            case INKLUDERINGSTILSKUDD -> TestData.endringPåAlleInkluderingstilskuddFelter();
-            case MIDLERTIDIG_LONNSTILSKUDD, SOMMERJOBB, VARIG_LONNSTILSKUDD -> TestData.endringPåAlleLønnstilskuddFelter();
-        };
+                switch (tiltakstype) {
+                    case ARBEIDSTRENING -> TestData.endringPåAlleArbeidstreningFelter();
+                    case MENTOR -> TestData.endringPåAlleMentorFelter();
+                    case INKLUDERINGSTILSKUDD -> TestData.endringPåAlleInkluderingstilskuddFelter();
+                    case MIDLERTIDIG_LONNSTILSKUDD, SOMMERJOBB, VARIG_LONNSTILSKUDD ->
+                            TestData.endringPåAlleLønnstilskuddFelter();
+                };
         Object field = ReflectionTestUtils.getField(endreAvtale, felt);
         if (field instanceof Collection) {
             ((Collection) field).clear();
@@ -795,7 +796,7 @@ public class AvtaleTest {
         Integer stillingKonseptId = 9999;
         Integer stillingprosent = 90;
         Integer antallDagerPerUke = 4;
-        var endreStillingsbeskrivelse = new EndreStillingsbeskrivelse(stillingstittel, arbeidsoppgaver, stillingStyrk08, stillingKonseptId, stillingprosent, antallDagerPerUke).toBuilder().build();
+        var endreStillingsbeskrivelse = new EndreStillingsbeskrivelse(stillingstittel, arbeidsoppgaver, stillingStyrk08, stillingKonseptId, stillingprosent, antallDagerPerUke);
 
         assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(1);
         avtale.endreStillingsbeskrivelse(endreStillingsbeskrivelse, new NavIdent("Z123456"));
@@ -1081,7 +1082,7 @@ public class AvtaleTest {
     // Man skal ikke kunne forkorte en avtale sånn at man får en sluttdato som er før en godkjent/utbetalt tilskuddsperide (refusjon)
     @Test
     public void kan_ikke_forkorte_forbi_utbetalt_tilskuddsperiode() {
-        Now.fixedDate(LocalDate.of(2023,1,1));
+        Now.fixedDate(LocalDate.of(2023, 1, 1));
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         Deltaker deltaker = TestData.enDeltaker(avtale);
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
@@ -1109,9 +1110,9 @@ public class AvtaleTest {
         avtale.tilskuddsperiode(0).setRefusjonStatus(RefusjonStatus.UTBETALT);
         avtale.tilskuddsperiode(1).setRefusjonStatus(RefusjonStatus.UTBETALT);
 
-        avtale.forkortAvtale(LocalDate.of(2023,2, 28), "Grunn", "Grunn2", veileder.getNavIdent());
-        assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(LocalDate.of(2023,2,28));
-        assertFeilkode(Feilkode.KAN_IKKE_FORKORTE_FOR_UTBETALT_TILSKUDDSPERIODE, () -> avtale.forkortAvtale(LocalDate.of(2023,2,27), "Grunn", "Grunn2", veileder.getNavIdent()));
+        avtale.forkortAvtale(LocalDate.of(2023, 2, 28), "Grunn", "Grunn2", veileder.getNavIdent());
+        assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(LocalDate.of(2023, 2, 28));
+        assertFeilkode(Feilkode.KAN_IKKE_FORKORTE_FOR_UTBETALT_TILSKUDDSPERIODE, () -> avtale.forkortAvtale(LocalDate.of(2023, 2, 27), "Grunn", "Grunn2", veileder.getNavIdent()));
 
         assertThat(avtale.getGjeldendeTilskuddsperiodestatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
         Now.resetClock();
@@ -1120,7 +1121,7 @@ public class AvtaleTest {
     // Man skal ikke kunne forkorte en avtale sånn at man får en sluttdato som er før en godkjent/utbetalt tilskuddsperide (refusjon)
     @Test
     public void kan_ikke_forkorte_forbi_utbetalt_tilskuddsperiode_med_split_mitt_i_en_måned() {
-        Now.fixedDate(LocalDate.of(2023,1,15));
+        Now.fixedDate(LocalDate.of(2023, 1, 15));
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         Deltaker deltaker = TestData.enDeltaker(avtale);
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
@@ -1155,9 +1156,9 @@ public class AvtaleTest {
             System.out.print(tilskuddPeriode.getRefusjonStatus() + " ");
             System.out.println(tilskuddPeriode.getStartDato());
         });
-        avtale.forkortAvtale(LocalDate.of(2023,7, 14), "Grunn", "Grunn2", veileder.getNavIdent());
-        assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(LocalDate.of(2023,7,14));
-        assertFeilkode(Feilkode.KAN_IKKE_FORKORTE_FOR_UTBETALT_TILSKUDDSPERIODE, () -> avtale.forkortAvtale(LocalDate.of(2023,7,13), "Grunn", "Grunn2", veileder.getNavIdent()));
+        avtale.forkortAvtale(LocalDate.of(2023, 7, 14), "Grunn", "Grunn2", veileder.getNavIdent());
+        assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(LocalDate.of(2023, 7, 14));
+        assertFeilkode(Feilkode.KAN_IKKE_FORKORTE_FOR_UTBETALT_TILSKUDDSPERIODE, () -> avtale.forkortAvtale(LocalDate.of(2023, 7, 13), "Grunn", "Grunn2", veileder.getNavIdent()));
         Now.resetClock();
     }
 
