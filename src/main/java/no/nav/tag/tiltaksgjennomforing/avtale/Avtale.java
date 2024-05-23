@@ -1092,7 +1092,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         // Finn første ubehandlede periode
         //Optional<TilskuddPeriode> førsteUbehandledeTilskuddsperiode = tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET).findFirst();
         // Fjern ubehandlede
-        for (TilskuddPeriode tilskuddsperiode : List.copyOf(tilskuddPeriode)) {
+        for (TilskuddPeriode tilskuddsperiode : Set.copyOf(tilskuddPeriode)) {
             TilskuddPeriodeStatus status = tilskuddsperiode.getStatus();
             if (status == TilskuddPeriodeStatus.UBEHANDLET) {
                 tilskuddPeriode.remove(tilskuddsperiode);
