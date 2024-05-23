@@ -148,7 +148,7 @@ public class AvtaleRepositoryTest {
 
         var perioder = nyLagretAvtale.getTilskuddPeriode();
         assertThat(perioder).isNotEmpty();
-        assertThat(lagretAvtale.getId()).isEqualTo(perioder.stream().findFirst().get().getAvtale().getId());
+        assertThat(lagretAvtale.getId()).isEqualTo(perioder.first().getAvtale().getId());
     }
 
     @Test
