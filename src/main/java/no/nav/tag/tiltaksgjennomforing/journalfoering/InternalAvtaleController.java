@@ -41,7 +41,7 @@ public class InternalAvtaleController {
             List<AvtaleTilJournalfoering> avtalerTilJournalfoering = avtaleVersjoner.stream().map(avtaleInnhold -> {
                 SortedSet<TilskuddPeriode> tilskuddPeriode = avtaleInnhold.getAvtale().getTilskuddPeriode();
                 AvtaleTilJournalfoering avtaleTilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtaleInnhold, null);
-                avtaleTilJournalfoering.setTilskuddsPerioder(tilskuddPeriode);
+                avtaleTilJournalfoering.setTilskuddsPerioder(tilskuddPeriode.stream().toList());
                 return avtaleTilJournalfoering;
             }).collect(Collectors.toList());
             return avtalerTilJournalfoering;

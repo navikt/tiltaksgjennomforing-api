@@ -14,7 +14,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedSet;
 import java.util.UUID;
 
 @Data
@@ -93,7 +92,7 @@ public class AvtaleTilJournalfoering {
     private LocalDate godkjentAvArbeidsgiver;
     private LocalDate godkjentAvVeileder;
     private LocalDate godkjentTaushetserklæringAvMentor;
-    private SortedSet<TilskuddPeriode> tilskuddsPerioder;
+    private List<TilskuddPeriode> tilskuddsPerioder;
     private boolean godkjentPaVegneAv;
     private Avtalerolle avtalerolle;
 
