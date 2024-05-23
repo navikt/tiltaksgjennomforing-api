@@ -72,17 +72,12 @@ public class TilskuddsperiodeKafkaProducer {
             return;
         }
 
-        aivenKafkaTemplate.send(topic, meldingId, meldingSomString)
-                .addCallback(new ListenableFutureCallback<>() {
-                    @Override
-                    public void onSuccess(SendResult<String, String> result) {
-                        log.info("Melding med id {} sendt til Kafka topic {}", meldingId, topic);
-                    }
-
-                    @Override
-                    public void onFailure(Throwable ex) {
-                        log.warn("Melding med id {} kunne ikke sendes til Kafka topic {}", meldingId, topic);
-                    }
-                });
+        aivenKafkaTemplate.send(topic, meldingId, meldingSomString).whenComplete((result, ex) -> {
+            if (ex != null) {
+                log.warn("Melding med id {} kunne ikke sendes til Kafka topic {}", meldingId, topic);
+            } else {
+                log.info("Melding med id {} sendt til Kafka topic {}", meldingId, topic);
+            }
+        });
     }
 }

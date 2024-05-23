@@ -8,7 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
@@ -51,16 +51,14 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
     }
 
     private static String lagVarselTekst(Avtale avtale, HendelseType hendelseType) {
-        switch (hendelseType) {
-            case TILSKUDDSPERIODE_AVSLATT:
-                return tilskuddsperiodeAvslåttTekst(avtale, hendelseType.getTekst());
-            case AVTALE_FORKORTET:
-                return "Avtale forkortet til " + avtale.getGjeldendeInnhold().getSluttDato().format(DateTimeFormatter.ofPattern("dd.MM.YYYY"));
-            case AVTALE_FORLENGET:
-                return "Avtale forlenget til " + avtale.getGjeldendeInnhold().getSluttDato().format(DateTimeFormatter.ofPattern("dd.MM.YYYY"));
-            default:
-                return hendelseType.getTekst();
-        }
+        return switch (hendelseType) {
+            case TILSKUDDSPERIODE_AVSLATT -> tilskuddsperiodeAvslåttTekst(avtale, hendelseType.getTekst());
+            case AVTALE_FORKORTET ->
+                    "Avtale forkortet til " + avtale.getGjeldendeInnhold().getSluttDato().format(DateTimeFormatter.ofPattern("dd.MM.YYYY"));
+            case AVTALE_FORLENGET ->
+                    "Avtale forlenget til " + avtale.getGjeldendeInnhold().getSluttDato().format(DateTimeFormatter.ofPattern("dd.MM.YYYY"));
+            default -> hendelseType.getTekst();
+        };
     }
 
     public static Varsel nyttVarsel(Identifikator identifikator, boolean bjelle, Avtale avtale, Avtalerolle mottaker, Avtalerolle utførtAv, Identifikator utførtAvIdentifikator, HendelseType hendelseType, UUID avtaleId) {

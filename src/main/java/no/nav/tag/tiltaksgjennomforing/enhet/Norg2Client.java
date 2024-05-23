@@ -1,13 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.enhet;
 
+import jakarta.validation.constraints.Pattern;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.client.RestTemplate;
 
-import javax.validation.constraints.Pattern;
 import java.util.Objects;
 
 @Slf4j
@@ -25,12 +25,12 @@ public class Norg2Client {
         this.restTemplate = noAuthRestTemplate;
     }
 
-    @Cacheable(EhCacheConfig.NORGNAVN_CACHE)
+    @Cacheable(CacheConfig.NORGNAVN_CACHE)
     public Norg2OppfølgingResponse hentOppfølgingsEnhetFraCacheNorg2(String enhet) {
         return this.hentOppfølgingsEnhet(enhet);
     }
 
-    @Cacheable(EhCacheConfig.NORG_GEO_ENHET)
+    @Cacheable(CacheConfig.NORG_GEO_ENHET)
     public Norg2GeoResponse hentGeoEnhetFraCacheEllerNorg2(String geoTilknytning) {
         return this.hentGeografiskEnhet(geoTilknytning);
     }

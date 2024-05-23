@@ -3,7 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.CorrelationIdSupplier;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
@@ -28,7 +28,7 @@ public class AxsysService {
         this.restTemplate = noAuthRestTemplate;
     }
 
-    @Cacheable(EhCacheConfig.AXSYS_CACHE)
+    @Cacheable(CacheConfig.AXSYS_CACHE)
     public List<NavEnhet> hentEnheterNavAnsattHarTilgangTil(NavIdent ident) {
         URI uri = UriComponentsBuilder.fromUri(axsysProperties.getUri())
                 .pathSegment(ident.asString())
@@ -44,12 +44,12 @@ public class AxsysService {
             AxsysRespons respons = restTemplate.exchange(uri, HttpMethod.GET, new HttpEntity<>(headers), AxsysRespons.class).getBody();
             return respons.tilEnheter();
         } catch (RestClientException exception) {
-            log.warn("Feil ved henting av enheter for ident " + ident, exception);
+            log.warn("Feil ved henting av enheter for ident {}", ident, exception);
             throw exception;
         }
     }
 
-    @CacheEvict(cacheNames= EhCacheConfig.AXSYS_CACHE, allEntries=true)
+    @CacheEvict(cacheNames= CacheConfig.AXSYS_CACHE, allEntries=true)
     public void cacheEvict() {
         log.info("Tømmer axsys cache for data");
     }

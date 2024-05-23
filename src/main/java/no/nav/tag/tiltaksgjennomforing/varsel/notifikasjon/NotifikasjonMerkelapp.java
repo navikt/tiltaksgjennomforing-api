@@ -18,19 +18,12 @@ public enum NotifikasjonMerkelapp {
     }
 
     public static NotifikasjonMerkelapp getMerkelapp(String merkelapp) {
-        switch (merkelapp) {
-            case "Midlertidig lønnstilskudd":
-            case "Varig lønnstilskudd":
-                return NotifikasjonMerkelapp.LONNTILSKUDD;
-            case "Mentor":
-                return NotifikasjonMerkelapp.MENTOR;
-            case "Sommerjobb":
-                return NotifikasjonMerkelapp.SOMMERJOBB;
-            case "Inkluderingstilskudd":
-                return NotifikasjonMerkelapp.INKLUDERINGSTILSKUDD;
-            case "Arbeidstrening":
-            default:
-                return NotifikasjonMerkelapp.ARBEIDSTRENING;
-        }
+        return switch (merkelapp) {
+            case "Midlertidig lønnstilskudd", "Varig lønnstilskudd" -> NotifikasjonMerkelapp.LONNTILSKUDD;
+            case "Mentor" -> NotifikasjonMerkelapp.MENTOR;
+            case "Sommerjobb" -> NotifikasjonMerkelapp.SOMMERJOBB;
+            case "Inkluderingstilskudd" -> NotifikasjonMerkelapp.INKLUDERINGSTILSKUDD;
+            default -> NotifikasjonMerkelapp.ARBEIDSTRENING;
+        };
     }
 }

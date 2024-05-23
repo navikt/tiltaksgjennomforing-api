@@ -1,8 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import java.math.BigDecimal;
 import lombok.Builder;
 import lombok.Value;
+
+import java.math.BigDecimal;
 
 @Value
 @Builder(toBuilder = true)

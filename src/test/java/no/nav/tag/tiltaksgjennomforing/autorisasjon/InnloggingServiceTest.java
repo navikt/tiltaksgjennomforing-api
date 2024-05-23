@@ -70,15 +70,15 @@ public class InnloggingServiceTest {
     @Test
     public void hentInnloggetBruker__selvbetjeningbruker_type_arbeidsgiver_skal_hente_organisasjoner() {
         InnloggetArbeidsgiver selvbetjeningBruker = new InnloggetArbeidsgiver(new Fnr("11111111111"), Set.of(), Map.of());
-        when(altinnTilgangsstyringService.hentTilganger(eq((Fnr) selvbetjeningBruker.getIdentifikator()), any())).thenReturn(Map.of());
-        when(altinnTilgangsstyringService.hentAltinnOrganisasjoner(eq((Fnr) selvbetjeningBruker.getIdentifikator()), any())).thenReturn(Set.of());
+        when(altinnTilgangsstyringService.hentTilganger(eq(selvbetjeningBruker.getIdentifikator()), any())).thenReturn(Map.of());
+        when(altinnTilgangsstyringService.hentAltinnOrganisasjoner(eq(selvbetjeningBruker.getIdentifikator()), any())).thenReturn(Set.of());
         værInnloggetArbeidsgiver(selvbetjeningBruker);
 
        when(arbeidsgiverTokenStrategyFactory.create(Issuer.ISSUER_TOKENX)).thenReturn(() -> "");
 
         assertThat(innloggingService.hentInnloggetBruker(Optional.of(Avtalerolle.ARBEIDSGIVER).get())).isEqualTo(selvbetjeningBruker);
-        verify(altinnTilgangsstyringService).hentTilganger(eq((Fnr) selvbetjeningBruker.getIdentifikator()), any());
-        verify(altinnTilgangsstyringService).hentAltinnOrganisasjoner(eq((Fnr) selvbetjeningBruker.getIdentifikator()), any());
+        verify(altinnTilgangsstyringService).hentTilganger(eq(selvbetjeningBruker.getIdentifikator()), any());
+        verify(altinnTilgangsstyringService).hentAltinnOrganisasjoner(eq(selvbetjeningBruker.getIdentifikator()), any());
     }
 
     @Test

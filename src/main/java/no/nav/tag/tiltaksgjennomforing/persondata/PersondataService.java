@@ -3,7 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.persondata;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
@@ -100,7 +100,7 @@ public class PersondataService {
         try {
             return restTemplate.postForObject(persondataProperties.getUri(), createRequestEntity(pdlRequest), PdlRespons.class);
         } catch (RestClientException exception) {
-            log.error("Feil fra PDL med request-url: " + persondataProperties.getUri(), exception);
+            log.error("Feil fra PDL med request-url: {}", persondataProperties.getUri(), exception);
             throw exception;
         }
     }
@@ -129,7 +129,7 @@ public class PersondataService {
         return "STRENGT_FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG_UTLAND".equals(gradering);
     }
 
-    @Cacheable(EhCacheConfig.PDL_CACHE)
+    @Cacheable(CacheConfig.PDL_CACHE)
     public PdlRespons hentPersondataFraPdl(Fnr fnr) {
         PdlRequest pdlRequest = new PdlRequest(resourceAsString(persondataQueryResource), new Variables(fnr.asString()));
         return utførKallTilPdl(pdlRequest);

@@ -147,8 +147,8 @@ public class AvtaleControllerTest {
                 .build();
         when(
                 avtaleRepository.findAll(eq(Example.of(exampleAvtale)), eq(pageable))
-        ).thenReturn(new PageImpl<Avtale>(List.of(avtaleForVeilederSomSøkesEtter)));
-        ;
+        ).thenReturn(new PageImpl<>(List.of(avtaleForVeilederSomSøkesEtter)));
+
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 eq(veileder),
                 any(Fnr.class)
@@ -166,6 +166,7 @@ public class AvtaleControllerTest {
         assertThat(avtaler).doesNotContain(avtaleForVeilederSomSøkesEtter);
     }
 
+    @Test
     public void hentAvtaleOpprettetAvInnloggetVeileder_fordelt_oppfolgingsEnhet_og_geoEnhet() {
         NavIdent navIdent = new NavIdent("Z123456");
         String navEnhet = "0904";
@@ -185,7 +186,7 @@ public class AvtaleControllerTest {
 
         when(
                 avtaleRepository.findAllByEnhetGeografiskAndFeilregistrertIsFalseOrEnhetOppfolgingAndFeilregistrertIsFalse(eq(navEnhet), eq(navEnhet), eq(pageable))
-        ).thenReturn(new PageImpl<Avtale>(List.of(nyAvtaleMedGeografiskEnhet, nyAvtaleMedOppfølgningsEnhet)));
+        ).thenReturn(new PageImpl<>(List.of(nyAvtaleMedGeografiskEnhet, nyAvtaleMedOppfølgningsEnhet)));
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
 
         Map<String, Object> avtalerPageResponse = veileder.hentAlleAvtalerMedLesetilgang(
@@ -223,7 +224,7 @@ public class AvtaleControllerTest {
                 .build();
         when(
                 avtaleRepository.findAll(eq(Example.of(exampleAvtale)), eq(pageable))
-        ).thenReturn(new PageImpl<Avtale>(List.of(enArbeidstreningsAvtale)));
+        ).thenReturn(new PageImpl<>(List.of(enArbeidstreningsAvtale)));
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
 
         Map<String, Object> avtalerPageResponse = veileder.hentAlleAvtalerMedLesetilgang(
@@ -254,9 +255,8 @@ public class AvtaleControllerTest {
         );
         værInnloggetSom(veileder);
 
-        assertThatThrownBy(() -> {
-            avtaleController.mentorGodkjennTaushetserklæring(enMentorAvtale.getId(), Instant.now(), Avtalerolle.DELTAKER);
-        }).isExactlyInstanceOf(TiltaksgjennomforingException.class);
+        assertThatThrownBy(() ->
+                avtaleController.mentorGodkjennTaushetserklæring(enMentorAvtale.getId(), Instant.now(), Avtalerolle.DELTAKER)).isExactlyInstanceOf(TiltaksgjennomforingException.class);
     }
 
     @Test
@@ -415,7 +415,7 @@ public class AvtaleControllerTest {
         List<Avtale> alleAvtaler = new ArrayList<>();
         alleAvtaler.addAll(avtalerBrukerHarTilgangTil);
         alleAvtaler.addAll(lagListeMedAvtaler(avtaleUtenTilgang, 4));
-        when(avtaleRepository.findAllByDeltakerFnrAndFeilregistrertIsFalse(eq(deltaker.getIdentifikator()), eq(pageable))).thenReturn(new PageImpl<Avtale>(alleAvtaler));
+        when(avtaleRepository.findAllByDeltakerFnrAndFeilregistrertIsFalse(eq(deltaker.getIdentifikator()), eq(pageable))).thenReturn(new PageImpl<>(alleAvtaler));
 
         Map<String, Object> avtalerPageResponse = deltaker.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,

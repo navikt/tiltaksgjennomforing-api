@@ -5,10 +5,12 @@ management.endpoints.web:
   base-path: /internal/actuator
 
 spring:
+  cache:
+    type: caffeine
   jpa:
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQL9Dialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   application:
     name: tiltaksgjennomforing-api
   main:
@@ -89,7 +91,7 @@ no.nav.security.jwt:
           client-auth-method: client_secret_basic
 
 caches:
-  ehcaches:
+  caffeine:
     - name: pdl_cache
       expiryInMinutes: 60
       maximumSize: 1000

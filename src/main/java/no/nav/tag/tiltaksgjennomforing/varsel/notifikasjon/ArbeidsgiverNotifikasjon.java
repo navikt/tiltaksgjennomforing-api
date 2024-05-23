@@ -10,7 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNrConverter;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 

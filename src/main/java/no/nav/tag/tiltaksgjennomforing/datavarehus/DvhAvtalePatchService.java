@@ -41,7 +41,7 @@ public class DvhAvtalePatchService {
     }
 
     @Transactional
-    void lagDvhPatchMelding(Avtale avtale) {
+    public void lagDvhPatchMelding(Avtale avtale) {
         LocalDateTime tidspunkt = Now.localDateTime();
         UUID meldingId = UUID.randomUUID();
         var melding = AvroTiltakHendelseFabrikk.konstruer(avtale, tidspunkt, meldingId, DvhHendelseType.PATCHING, "system");

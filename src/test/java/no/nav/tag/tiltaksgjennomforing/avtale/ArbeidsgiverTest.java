@@ -1,22 +1,22 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.util.Map;
-import java.util.Set;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
+
+import java.util.Map;
+import java.util.Set;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 public class ArbeidsgiverTest {
@@ -44,7 +44,6 @@ public class ArbeidsgiverTest {
 
         PersondataService persondataService = mock(PersondataService.class);
         Norg2Client norg2Client = mock(Norg2Client.class);
-        VeilarbArenaClient veilarbArenaClient = mock(VeilarbArenaClient.class);
 
         final PdlRespons pdlRespons = TestData.enPdlrespons(false);
         final Norg2GeoResponse navEnhet = new Norg2GeoResponse("Nav Grorud", "0411");

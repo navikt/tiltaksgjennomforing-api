@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -133,7 +133,7 @@ public class AuditLoggingAspect {
                                     utførtTid,
                                     apiBeskrivelse,
                                     uri,
-                                    HttpMethod.valueOf(request.getMethod()),
+                                    request.getMethod(),
                                     request.getAttribute("correlationId").toString()
                             )
                     );

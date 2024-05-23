@@ -1,10 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
 import java.util.List;
+
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 
 public class VarselFactory {
     private final Avtale avtale;
@@ -38,9 +40,9 @@ public class VarselFactory {
     }
 
     public List<Varsel> alleParter() {
-        return switch (avtale.getTiltakstype()){
-            case MENTOR ->  List.of(deltaker(), arbeidsgiver(), veileder(), mentor());
-            default ->  List.of(deltaker(), arbeidsgiver(), veileder());
-        };
+        if (avtale.getTiltakstype() == Tiltakstype.MENTOR) {
+            return List.of(deltaker(), arbeidsgiver(), veileder(), mentor());
+        }
+        return List.of(deltaker(), arbeidsgiver(), veileder());
     }
 }

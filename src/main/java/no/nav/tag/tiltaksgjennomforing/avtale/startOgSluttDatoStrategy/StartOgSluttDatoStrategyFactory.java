@@ -7,21 +7,14 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 @UtilityClass
 public class StartOgSluttDatoStrategyFactory {
     public static StartOgSluttDatoStrategy create(Tiltakstype tiltakstype, Kvalifiseringsgruppe kvalifiseringsgruppe) {
-        switch (tiltakstype) {
-            case ARBEIDSTRENING:
-                return new ArbeidstreningStartOgSluttDatoStrategy();
-            case MIDLERTIDIG_LONNSTILSKUDD:
-                return new MidlertidigLonnstilskuddStartOgSluttDatoStrategy(kvalifiseringsgruppe);
-            case VARIG_LONNSTILSKUDD:
-                return new VarigLonnstilskuddStartOgSluttDatoStrategy();
-            case MENTOR:
-                return new MentorStartOgSluttDatoStrategy(kvalifiseringsgruppe);
-            case INKLUDERINGSTILSKUDD:
-                return new InkluderingstilskuddStartOgSluttDatoStrategy();
-            case SOMMERJOBB:
-                return new SommerjobbStartOgSluttDatoStrategy();
-        }
-        return new StartOgSluttDatoStrategy() {
+        return switch (tiltakstype) {
+            case ARBEIDSTRENING -> new ArbeidstreningStartOgSluttDatoStrategy();
+            case MIDLERTIDIG_LONNSTILSKUDD ->
+                    new MidlertidigLonnstilskuddStartOgSluttDatoStrategy(kvalifiseringsgruppe);
+            case VARIG_LONNSTILSKUDD -> new VarigLonnstilskuddStartOgSluttDatoStrategy();
+            case MENTOR -> new MentorStartOgSluttDatoStrategy(kvalifiseringsgruppe);
+            case INKLUDERINGSTILSKUDD -> new InkluderingstilskuddStartOgSluttDatoStrategy();
+            case SOMMERJOBB -> new SommerjobbStartOgSluttDatoStrategy();
         };
     }
 }

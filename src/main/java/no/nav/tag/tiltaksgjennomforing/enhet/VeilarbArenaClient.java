@@ -5,7 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
@@ -80,7 +80,7 @@ public class VeilarbArenaClient {
         }
     }
 
-    @Cacheable(EhCacheConfig.ARENA_CACHE)
+    @Cacheable(CacheConfig.ARENA_CACHE)
     public Oppfølgingsstatus HentOppfølgingsenhetFraCacheEllerArena(String fnr) {
         return this.hentOppfølgingStatus(fnr);
     }
@@ -110,8 +110,7 @@ public class VeilarbArenaClient {
                 log.warn("Kandidat ikke registrert i veilarbarena");
                 return null;
             }
-            log.error("Kunne ikke hente Oppfølgingsstatus fra veilarbarena: status=" +
-                    exception.getRawStatusCode(), exception);
+            log.error("Kunne ikke hente Oppfølgingsstatus fra veilarbarena: status={}", exception.getRawStatusCode(), exception);
             return null;
         }
     }

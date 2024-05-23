@@ -101,7 +101,7 @@ public class AvtaleController {
                     for (String param : params) {
                         String[] paramValues = param.split("=");
                         if (paramValues[0].equals("page") && paramValues.length > 1) {
-                            summary.record(Double.valueOf(paramValues[1]));
+                            summary.record(Double.parseDouble(paramValues[1]));
                         }
                     }
                 }
@@ -114,12 +114,9 @@ public class AvtaleController {
     public Boolean visSalesforceDialog(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtalepart.hentAvtale(avtaleRepository, id);
-        if (salesforceKontorerConfig.getEnheter().contains(avtale.getEnhetOppfolging()) &&
+        return salesforceKontorerConfig.getEnheter().contains(avtale.getEnhetOppfolging()) &&
                 avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD &&
-                (avtale.statusSomEnum() == Status.GJENNOMFØRES || avtale.statusSomEnum() == Status.AVSLUTTET)) {
-            return true;
-        }
-        return false;
+                (avtale.statusSomEnum() == Status.GJENNOMFØRES || avtale.statusSomEnum() == Status.AVSLUTTET);
     }
 
     @AuditLogging("Hent detaljer for avtale om arbeidsmarkedstiltak")
@@ -253,7 +250,7 @@ public class AvtaleController {
             filterSokiDb.setSistSoktTidspunkt(LocalDateTime.now());
             filterSokRepository.save(filterSokiDb);
             if (!filterSokiDb.erLik(queryParametre)) {
-                log.error("Kollisjon i søkId: " + filterSokiDb.getSokId());
+                log.error("Kollisjon i søkId: {}", filterSokiDb.getSokId());
             }
         } else {
             FilterSok filterSok = new FilterSok(queryParametre);
@@ -746,7 +743,7 @@ public class AvtaleController {
         avtale.nyeTilskuddsperioderEtterMigreringFraArena(justerArenaMigreringsdato.getMigreringsdato(), false);
         Optional<ArenaRyddeAvtale> lagretAvtaleSomRyddeAvtale = arenaRyddeAvtaleRepository.findByAvtale(avtale);
 
-        if (!lagretAvtaleSomRyddeAvtale.isPresent()) {
+        if (lagretAvtaleSomRyddeAvtale.isEmpty()) {
             ArenaRyddeAvtale arenaRyddeAvtale = new ArenaRyddeAvtale();
             arenaRyddeAvtale.setAvtale(avtale);
             arenaRyddeAvtale.setMigreringsdato(justerArenaMigreringsdato.getMigreringsdato());

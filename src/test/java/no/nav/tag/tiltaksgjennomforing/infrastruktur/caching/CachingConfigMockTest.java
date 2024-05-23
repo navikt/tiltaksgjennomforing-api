@@ -7,7 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter.AbacAdapter;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.enhet.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;
 import no.nav.tag.tiltaksgjennomforing.persondata.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -122,12 +122,12 @@ public class CachingConfigMockTest {
         @Bean
         public CacheManager cacheManager() {
             return new ConcurrentMapCacheManager(
-                    EhCacheConfig.ARENA_CACHE,
-                    EhCacheConfig.PDL_CACHE,
-                    EhCacheConfig.NORGNAVN_CACHE,
-                    EhCacheConfig.NORG_GEO_ENHET,
-                    EhCacheConfig.AXSYS_CACHE,
-                    EhCacheConfig.ABAC_CACHE
+                    CacheConfig.ARENA_CACHE,
+                    CacheConfig.PDL_CACHE,
+                    CacheConfig.NORGNAVN_CACHE,
+                    CacheConfig.NORG_GEO_ENHET,
+                    CacheConfig.AXSYS_CACHE,
+                    CacheConfig.ABAC_CACHE
             );
         }
     }
