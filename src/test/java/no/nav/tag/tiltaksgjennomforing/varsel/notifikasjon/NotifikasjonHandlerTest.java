@@ -54,8 +54,7 @@ public class NotifikasjonHandlerTest {
     @Test
     public void sjekkOgSettStatusResponseTest() {
         ArbeidsgiverNotifikasjon arbeidsgiverNotifikasjon = new ArbeidsgiverNotifikasjon();
-        FellesResponse response = new FellesResponse("" +
-                MutationStatus.NY_OPPGAVE_VELLYKKET.getStatus(),
+        FellesResponse response = new FellesResponse(MutationStatus.NY_OPPGAVE_VELLYKKET.getStatus(),
                 "231a0f8c-237c-4357-8101-6a356a9ace86",
                 "nihil ut eum alias saepe nesciunt minima");
         MutationStatus mutationStatus = MutationStatus.NY_OPPGAVE_VELLYKKET;

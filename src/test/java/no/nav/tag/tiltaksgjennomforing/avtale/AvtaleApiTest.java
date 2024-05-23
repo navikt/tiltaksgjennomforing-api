@@ -8,6 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditConsoleLogger;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,28 +16,20 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import javax.servlet.http.Cookie;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
-import static java.lang.String.format;
-import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleApiTest.AvtaleApiTestUtil.lagTokenForNavIdent;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enArbeidstreningAvtale;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleApiTestUtil.*;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ActiveProfiles("local")
@@ -58,7 +51,7 @@ public class AvtaleApiTest {
     VeilarbArenaClient veilarbArenaClient;
     @Mock
     Norg2Client norg2Client;
-    @MockBean
+    @Autowired
     private AvtaleRepository avtaleRepository;
     @MockBean
     private TilgangskontrollService tilgangskontrollService;
@@ -83,46 +76,54 @@ public class AvtaleApiTest {
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
         when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(List.of());
-        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
-        var res = hentAvtaleForVeileder(navIdent, avtale.getId());
+        avtaleRepository.save(avtale);
+        var res = hentAvtaleForVeileder(veileder, avtale.getId());
         assertEquals(200, res.getStatus());
+        assertTrue(jsonHarVerdi(res.getContentAsString(), avtale.getDeltakerFnr().asString()));
         assertEquals(avtale.getId().toString(), mapper.readTree(res.getContentAsByteArray()).get("id").asText());
 
         verify(auditConsoleLogger, times(1)).logg(any());
     }
 
-    private MockHttpServletResponse hentAvtaleForVeileder(NavIdent navIdent, UUID avtaleId) throws Exception {
-        var headers = new HttpHeaders();
-        headers.put("Authorization", List.of("Bearer " + lagTokenForNavIdent(navIdent)));
-        return mockMvc.perform(MockMvcRequestBuilders.get(URI.create("/avtaler/" + avtaleId))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .headers(headers)
-                        .cookie(new Cookie("innlogget-part", Avtalerolle.VEILEDER.toString()))
-                        .accept(MediaType.APPLICATION_JSON))
-                .andReturn()
-                .getResponse();
+    @Test
+    public void hentBeslutterListe() throws Exception {
+        Avtale avtale = enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate().plusDays(1), Now.localDate().plusMonths(3).plusDays(1));
+        Avtale avtale2 = enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate().plusDays(5), Now.localDate().plusMonths(3).plusDays(5));
+        Avtale avtale3 = enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate().plusDays(10), Now.localDate().plusMonths(3).plusDays(10));
+        Avtale avtale4 = enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(Now.localDate().plusDays(15), Now.localDate().plusMonths(3).plusDays(15));
+        avtale.getGjeldendeInnhold().setDeltakerFornavn("Arne");
+        avtale2.getGjeldendeInnhold().setDeltakerFornavn("Bjarne");
+        avtale3.getGjeldendeInnhold().setDeltakerFornavn("Carl");
+
+        avtaleRepository.save(avtale);
+        avtaleRepository.save(avtale2);
+        avtaleRepository.save(avtale3);
+        avtaleRepository.save(avtale4);
+
+        var beslutterIdent = TestData.enNavIdent();
+        var beslutter = new Beslutter(
+                beslutterIdent,
+                UUID.randomUUID(),
+                Set.of(ENHET_OPPFØLGING),
+                tilgangskontrollService,
+                norg2Client
+        );
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(beslutter), any(Fnr.class))).thenReturn(true);
+        when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(List.of(ENHET_OPPFØLGING));
+
+        var respons = hentAvtaleListeForBeslutterPåNavEnhet(beslutter, ENHET_OPPFØLGING.getVerdi());
+
+        assertFalse(jsonHarVerdi(respons.getContentAsString(), avtale.getDeltakerFnr().asString()));
+        assertFalse(jsonHarNøkkel(respons.getContentAsString(), "deltakerFnr"));
+
+        assertEquals(4, ((List<?>) mapper.readValue(respons.getContentAsString(), HashMap.class).get("avtaler")).size());
     }
 
-    static class AvtaleApiTestUtil {
-        private static String tokenRequest(String url) {
-            try {
-                return HttpClient.newHttpClient().send(
-                        HttpRequest.newBuilder()
-                                .GET()
-                                .uri(URI.create(url))
-                                .build(), HttpResponse.BodyHandlers.ofString()
-                ).body();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
+    private MockHttpServletResponse hentAvtaleForVeileder(Veileder veileder, UUID avtaleId) throws Exception {
+        return getForPart(mockMvc, veileder, "/avtaler/" + avtaleId);
+    }
 
-        private String lagTokenForFnr(String fnr) {
-            return tokenRequest(format("https://tiltak-fakelogin.ekstern.dev.nav.no/token?pid=%s&aud=fake-tokenx&iss=tokenx&acr=Level4", fnr));
-        }
-
-        static String lagTokenForNavIdent(NavIdent navIdent) {
-            return tokenRequest(format("https://tiltak-fakelogin.ekstern.dev.nav.no/token?NAVident=%s&aud=fake-aad&iss=aad&acr=Level4", navIdent.asString()));
-        }
+    private MockHttpServletResponse hentAvtaleListeForBeslutterPåNavEnhet(Beslutter beslutter, String navEnhet) throws Exception {
+        return getForPart(mockMvc, beslutter, "/avtaler/beslutter-liste?navEnhet=%s".formatted(navEnhet));
     }
 }

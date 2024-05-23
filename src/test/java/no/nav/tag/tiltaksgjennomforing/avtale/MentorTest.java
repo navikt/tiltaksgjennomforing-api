@@ -1,59 +1,85 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
 
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
+import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
+import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleApiTestUtil.getForPart;
+import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleApiTestUtil.jsonHarVerdi;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+
+@ActiveProfiles("local")
+@SpringBootTest
+@AutoConfigureMockMvc
 public class MentorTest {
 
-    private AvtaleRepository avtaleRepository = mock(AvtaleRepository.class);
+    @Autowired
+    MockMvc mockMvc;
+    @MockBean
+    private AvtaleRepository avtaleRepository;
+    @Autowired
+    ObjectMapper mapper;
 
-    private Pageable pageable = PageRequest.of(0, 100);
+    private final Pageable pageable = PageRequest.of(0, 100);
 
     @Test
-    public void hentAlleAvtalerMedMuligTilgang__mentor_en_avtale() {
+    public void hentAlleAvtalerMedMuligTilgang__mentor_en_avtale() throws Exception {
 
         // GITT
         Avtale avtaleUsignert = TestData.enMentorAvtaleUsignert();
         Avtale avtaleSignert = TestData.enMentorAvtaleSignert();
         Mentor mentor = TestData.enMentor(avtaleSignert);
-        AvtalePredicate avtalePredicate = new AvtalePredicate();
 
         // NÅR
-        when(avtaleRepository.findAllByMentorFnrAndFeilregistrertIsFalse(any(), eq(pageable))).thenReturn(new PageImpl<Avtale>(List.of(avtaleUsignert, avtaleSignert)));
-        Map<String, Object> avtalerMinimalPage = mentor.hentAlleAvtalerMedLesetilgang(avtaleRepository, avtalePredicate, null, pageable);
-        List<AvtaleMinimalListevisning> avtalerMinimal = (List<AvtaleMinimalListevisning>) avtalerMinimalPage.get("avtaler");
-        assertThat(avtalerMinimal.size()).isEqualTo(2);
-        assertThat(avtalerMinimal.get(0).getDeltakerFnr()).isNull();
-        assertThat(avtalerMinimal.get(1).getDeltakerFnr()).isNull();
-     }
+        when(avtaleRepository.findAllByMentorFnrAndFeilregistrertIsFalse(any(), any())).thenReturn(new PageImpl<>(List.of(avtaleUsignert, avtaleSignert)));
+        var avtalerRespons = hentAvtalerForMentor(mentor);
+        var avtalerMinimal = mapper.readValue(avtalerRespons.getContentAsString(), HashMap.class);
+
+        assertThat(((List<?>) avtalerMinimal.get("avtaler")).size()).isEqualTo(2);
+        assertFalse(jsonHarVerdi(avtalerRespons.getContentAsString(), avtaleSignert.getDeltakerFnr().asString()));
+        assertFalse(jsonHarVerdi(avtalerRespons.getContentAsString(), avtaleUsignert.getDeltakerFnr().asString()));
+    }
 
     @Test
-    public void deltakerFNR_skal_være_null_selv_om_mentor_har_signert(){
+    public void deltakerFNR_skal_være_null_selv_om_mentor_har_signert() throws Exception {
         // GITT
         Avtale avtaleSignert = TestData.enMentorAvtaleSignert();
+        var originalJson = mapper.valueToTree(avtaleSignert);
+        var deltakerFnr = avtaleSignert.getDeltakerFnr().asString();
         Mentor mentor = TestData.enMentor(avtaleSignert);
         // NÅR
         when(avtaleRepository.findById(any())).thenReturn(Optional.of(avtaleSignert));
-        Avtale avtale = mentor.hentAvtale(avtaleRepository, avtaleSignert.getId());
+        var respons = hentAvtaleForMentor(mentor, avtaleSignert.getId());
+        var avtaleJson = mapper.readTree(respons.getContentAsString(StandardCharsets.UTF_8));
 
-        assertThat(avtale).isEqualTo(avtaleSignert);
-        assertThat(avtale.getDeltakerFnr()).isNull();
+        assertEquals(avtaleJson, ((ObjectNode) originalJson.deepCopy()).putNull("deltakerFnr"),
+                "Når vi fjerner fnr fra det opprinnelige testobjektet skal det matche responsen");
+        assertFalse(jsonHarVerdi(respons.getContentAsString(), deltakerFnr));
     }
 
     @Test
@@ -86,12 +112,11 @@ public class MentorTest {
         Mentor mentor = TestData.enMentor(avtale);
         AvtalePredicate avtalePredicate = new AvtalePredicate();
         // NÅR
-        when(avtaleRepository.findAllByMentorFnrAndFeilregistrertIsFalse(any(), eq(pageable))).thenReturn(new PageImpl<Avtale>(List.of(avtale)));
+        when(avtaleRepository.findAllByMentorFnrAndFeilregistrertIsFalse(any(), eq(pageable))).thenReturn(new PageImpl<>(List.of(avtale)));
         Map<String, Object> avtalerMinimalPage = mentor.hentAlleAvtalerMedLesetilgang(avtaleRepository, avtalePredicate, null, pageable);
         List<AvtaleMinimalListevisning> avtalerMinimal = (List<AvtaleMinimalListevisning>) avtalerMinimalPage.get("avtaler");
 
         assertThat(avtalerMinimal).isNotEmpty();
-        assertThat(avtalerMinimal.get(0).getDeltakerFnr()).isNull();
         assertThat(avtalerMinimal.get(0).getBedriftNavn()).isNotNull();
     }
 
@@ -112,8 +137,8 @@ public class MentorTest {
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         Veileder veileder = TestData.enVeileder(avtale);
         arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
-        veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(),avtale);
-        //veileder.godkjennAvtale(Instant.now(), avtale);
+        veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
+
         assertThat(avtale.getGjeldendeInnhold().getInnholdType()).isEqualTo(AvtaleInnholdType.INNGÅ);
         EndreOmMentor endreOmMentor = new EndreOmMentor("Per", "Persen", "12345678", "litt mentorering", 5.0, 500);
         veileder.endreOmMentor(endreOmMentor, avtale);
@@ -137,6 +162,14 @@ public class MentorTest {
                 Feilkode.KAN_IKKE_ENDRE_OM_MENTOR_IKKE_INNGAATT_AVTALE,
                 () -> veileder.endreOmMentor(new EndreOmMentor("Per", "Persen", "12345678", "litt mentorering", 5.0, 500), avtale)
         );
+    }
+
+    private MockHttpServletResponse hentAvtalerForMentor(Mentor mentor) throws Exception {
+        return getForPart(mockMvc, mentor, "/avtaler");
+    }
+
+    private MockHttpServletResponse hentAvtaleForMentor(Mentor mentor, UUID avtaleId) throws Exception {
+        return getForPart(mockMvc, mentor, "/avtaler/" + avtaleId);
     }
 
 }

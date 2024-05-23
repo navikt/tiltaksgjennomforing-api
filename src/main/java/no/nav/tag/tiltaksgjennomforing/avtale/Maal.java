@@ -7,7 +7,7 @@ import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.UUID;
 
 @Data

@@ -4,6 +4,7 @@ package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 import io.getunleash.DefaultUnleash;
 import io.getunleash.Unleash;
 import io.getunleash.util.UnleashConfig;
+import jakarta.servlet.http.HttpServletRequest;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.ByEnhetStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,8 +12,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.annotation.RequestScope;
-
-import javax.servlet.http.HttpServletRequest;
 
 
 @Configuration

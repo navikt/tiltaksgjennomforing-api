@@ -15,15 +15,6 @@ public class AvtalePredicateTest {
         return null;
     }
 
-    private static Status annenStatusEnnPåAvtale(Avtale avtale) {
-        for (Status s : Status.values()) {
-            if (!s.equals(avtale.getTiltakstype())) {
-                return s;
-            }
-        }
-        return null;
-    }
-
     @Test
     void veileder_nav_ident_oppgitt() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
@@ -92,7 +83,7 @@ public class AvtalePredicateTest {
     void status_annen_type() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         AvtalePredicate query = new AvtalePredicate();
-        query.setStatus(annenStatusEnnPåAvtale(avtale));
+        query.setStatus(Status.ANNULLERT);
         assertThat(query.test(avtale)).isFalse();
     }
 

@@ -1,11 +1,11 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter;
 
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -27,10 +27,10 @@ public class AbacAdapter {
 
     private final Cache cache;
 
-    public AbacAdapter(RestTemplate stsRestTemplate, AbacProperties abacProperties, EhCacheCacheManager cacheManager) {
+    public AbacAdapter(RestTemplate stsRestTemplate, AbacProperties abacProperties, CacheManager cacheManager) {
         this.restTemplate = stsRestTemplate;
         this.abacProperties = abacProperties;
-        this.cache = cacheManager.getCache(EhCacheConfig.ABAC_CACHE);
+        this.cache = cacheManager.getCache(CacheConfig.ABAC_CACHE);
     }
 
     Map<String, String> cacheKey(String navIdent, String deltakerFnr) {
@@ -77,7 +77,7 @@ public class AbacAdapter {
         return new HttpEntity<>(body, headers);
     }
 
-    @CacheEvict(cacheNames = EhCacheConfig.ABAC_CACHE, allEntries = true)
+    @CacheEvict(cacheNames = CacheConfig.ABAC_CACHE, allEntries = true)
     public void cacheEvict() {
         log.info("Tømmer abac cache for data");
     }

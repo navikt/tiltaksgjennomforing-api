@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
@@ -30,19 +31,11 @@ public class AuditKafkaLogger implements AuditLogger {
     @Override
     public void logg(AuditEntry event) {
         try {
-            auditKafkaTemplate.send(Topics.AUDIT_HENDELSE, mapper.writeValueAsString(event))
-                    .addCallback(new ListenableFutureCallback<>() {
-                                     @Override
-                                     public void onFailure(@NotNull Throwable ex) {
-                                         log.error("Audit-hendelse kunne ikke sendes til Kafka topic {}", Topics.AUDIT_HENDELSE, ex);
-                                     }
-
-                                     @Override
-                                     public void onSuccess(SendResult<String, String> result) {
-
-                                     }
-                                 }
-                    );
+            auditKafkaTemplate.send(Topics.AUDIT_HENDELSE, mapper.writeValueAsString(event)).whenComplete((result, ex) -> {
+                if (ex != null) {
+                    log.error("Audit-hendelse kunne ikke sendes til Kafka topic {}", Topics.AUDIT_HENDELSE, ex);
+                }
+            });
         } catch (JsonProcessingException ex) {
             log.error("Audit-hendelse kunne ikke serialiseres til Kafkamelding", ex);
         }

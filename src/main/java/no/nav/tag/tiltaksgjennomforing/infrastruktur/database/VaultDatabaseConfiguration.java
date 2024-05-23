@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Profile;
 import javax.sql.DataSource;
 
 @Configuration
-@Profile({ Miljø.DEV_FSS, Miljø.PROD_FSS })
+@Profile({Miljø.DEV_FSS, Miljø.PROD_FSS})
 public class VaultDatabaseConfiguration {
     private final DatabaseProperties config;
 
@@ -32,13 +32,11 @@ public class VaultDatabaseConfiguration {
 
     @Bean
     public FlywayMigrationStrategy flywayMigrationStrategy() {
-        return flyway -> {
-            Flyway.configure()
-                    .dataSource(dataSource("admin"))
-                    .initSql(String.format("SET ROLE \"%s\"", dbRole("admin")))
-                    .load()
-                    .migrate();
-        };
+        return flyway -> Flyway.configure()
+                .dataSource(dataSource("admin"))
+                .initSql(String.format("SET ROLE \"%s\"", dbRole("admin")))
+                .load()
+                .migrate();
     }
 
     private HikariDataSource dataSource(String user) {

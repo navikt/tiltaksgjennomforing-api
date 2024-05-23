@@ -43,14 +43,12 @@ public class InternalAvtaleHendelseController {
     public List<String> hentSisteHendelseForFnr(@RequestBody AvtaleMeldingForFnr meldingForFnr) {
         sjekkTilgang();
         List<String> hendelser = new ArrayList<>();
-        if(Fnr.erGyldigFnr(meldingForFnr.fnr)) {
+        if (Fnr.erGyldigFnr(meldingForFnr.fnr)) {
             List<Avtale> alleAvtalerForDeltaker = avtaleRepository.findAllByDeltakerFnrAndFeilregistrertIsFalse(new Fnr(meldingForFnr.fnr));
             alleAvtalerForDeltaker.forEach(avtale -> {
                 List<AvtaleMeldingEntitet> avtaleMeldingEntiteter = avtaleMeldingEntitetRepository.findAllByAvtaleId(avtale.getId());
-                AvtaleMeldingEntitet avtaleMeldingEntitet = avtaleMeldingEntiteter.stream().max(Comparator.comparing(melding -> melding.getTidspunkt())).orElseGet(null);
-                if(avtaleMeldingEntitet != null) {
-                    hendelser.add(avtaleMeldingEntitet.getJson());
-                }
+                avtaleMeldingEntiteter.stream().max(Comparator.comparing(AvtaleMeldingEntitet::getTidspunkt))
+                        .ifPresent(avtaleMeldingEntitet -> hendelser.add(avtaleMeldingEntitet.getJson()));
             });
         }
 
@@ -60,7 +58,7 @@ public class InternalAvtaleHendelseController {
     @GetMapping("/{avtaleId}")
     public String hentSisteHendelse(@PathVariable("avtaleId") UUID avtaleId) {
         List<AvtaleMeldingEntitet> avtaleMeldingEntiteter = avtaleMeldingEntitetRepository.findAllByAvtaleId(avtaleId);
-        AvtaleMeldingEntitet avtaleMeldingEntitet = avtaleMeldingEntiteter.stream().max(Comparator.comparing(melding -> melding.getTidspunkt())).orElseThrow(RessursFinnesIkkeException::new);
+        AvtaleMeldingEntitet avtaleMeldingEntitet = avtaleMeldingEntiteter.stream().max(Comparator.comparing(AvtaleMeldingEntitet::getTidspunkt)).orElseThrow(RessursFinnesIkkeException::new);
 
         return avtaleMeldingEntitet.getJson();
     }
@@ -78,6 +76,7 @@ public class InternalAvtaleHendelseController {
     }
 
 
-    private record AvtaleMeldingForFnr(String fnr) { }
+    private record AvtaleMeldingForFnr(String fnr) {
+    }
 
 }

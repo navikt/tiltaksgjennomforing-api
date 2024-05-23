@@ -49,15 +49,13 @@ public enum Kvalifiseringsgruppe {
     }
 
     public Integer finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(Integer prosentsatsLiten, Integer prosentsatsStor) {
-        switch (this) {
-            case SPESIELT_TILPASSET_INNSATS, VARIG_TILPASSET_INNSATS:
-                return prosentsatsStor;
-            case SITUASJONSBESTEMT_INNSATS:
-                return prosentsatsLiten;
-            default: {
+        return switch (this) {
+            case SPESIELT_TILPASSET_INNSATS, VARIG_TILPASSET_INNSATS -> prosentsatsStor;
+            case SITUASJONSBESTEMT_INNSATS -> prosentsatsLiten;
+            default -> {
                 log.warn("feilet med setting av kvalifiseringsgruppe. Kvalifiseringsgruppe: {}", this);
-                return null;
+                yield null;
             }
-        }
+        };
     }
 }

@@ -5,12 +5,12 @@ import no.nav.tag.tiltaksgjennomforing.IntegrasjonerMockServer;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.EhCacheConfig;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
+import org.springframework.cache.CacheManager;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -19,25 +19,25 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-@ActiveProfiles({ Miljø.LOCAL, "wiremock" })
+@ActiveProfiles({Miljø.LOCAL, "wiremock"})
 @DirtiesContext
 public class AbacAdapterTest {
     private final AbacAdapter abacAdapter;
-    private final EhCacheCacheManager cacheManager;
+    private final CacheManager cacheManager;
     private final WireMockServer mockServer;
 
     public AbacAdapterTest(
             @Autowired AbacAdapter abacAdapter,
             @Autowired IntegrasjonerMockServer mockServerService,
-            @Autowired EhCacheCacheManager ehCacheCacheManager) {
+            @Autowired CacheManager cacheManager) {
         this.abacAdapter = abacAdapter;
-        this.cacheManager = ehCacheCacheManager;
+        this.cacheManager = cacheManager;
         this.mockServer = mockServerService.getServer();
     }
 
     @BeforeEach
     public void setup() {
-        cacheManager.getCache(EhCacheConfig.ABAC_CACHE).clear();
+        cacheManager.getCache(CacheConfig.ABAC_CACHE).clear();
     }
 
     @Test

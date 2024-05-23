@@ -45,24 +45,18 @@ public class TokenUtils {
 
     public Optional<BrukerOgIssuer> hentBrukerOgIssuer() {
         return hentClaim(ISSUER_SYSTEM, "sub").map(sub -> new BrukerOgIssuer(ISSUER_SYSTEM, sub))
-            .or(() -> hentClaim(ISSUER_AAD, "NAVident").map(sub -> new BrukerOgIssuer(ISSUER_AAD, sub)))
-            .or(() -> hentClaim(ISSUER_TOKENX, "pid").map(it -> new BrukerOgIssuer(ISSUER_TOKENX, it)));
+                .or(() -> hentClaim(ISSUER_AAD, "NAVident").map(sub -> new BrukerOgIssuer(ISSUER_AAD, sub)))
+                .or(() -> hentClaim(ISSUER_TOKENX, "pid").map(it -> new BrukerOgIssuer(ISSUER_TOKENX, it)));
     }
 
     public boolean harAdGruppe(UUID gruppeAD) {
         Optional<List<String>> groupsClaim = hentClaims(ISSUER_AAD, "groups");
-        if (!groupsClaim.isPresent()) {
-            return false;
-        }
-        return groupsClaim.get().contains(gruppeAD.toString());
+        return groupsClaim.map(strings -> strings.contains(gruppeAD.toString())).orElse(false);
     }
 
     public boolean harAdRolle(String rolle) {
         Optional<List<String>> roller = hentClaims(ISSUER_AAD, "roles");
-        if (!roller.isPresent()) {
-            return false;
-        }
-        return roller.get().contains(rolle.toString());
+        return roller.map(strings -> strings.contains(rolle)).orElse(false);
     }
 
     private Optional<List<String>> hentClaims(Issuer issuer, String claim) {
@@ -90,9 +84,11 @@ public class TokenUtils {
             // Er ikke i kontekst av en request
             return Optional.empty();
         }
-        JwtTokenClaims claims = tokenValidationContext.getClaims(issuer.issuerName);
-        return Optional.ofNullable(claims);
-
+        try {
+            return Optional.of(tokenValidationContext.getClaims(issuer.issuerName));
+        } catch (IllegalArgumentException e) {
+            return Optional.empty();
+        }
     }
 
     public String hentTokenx() {

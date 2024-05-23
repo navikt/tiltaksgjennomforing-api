@@ -27,18 +27,14 @@ public class DvhMeldingKafkaProdusent {
     public void dvhMeldingOpprettet(DvhMeldingOpprettet event) {
         String meldingId = event.getAvroTiltakHendelse().getMeldingId();
         String topic = Topics.DVH_MELDING;
-        dvhMeldingKafkaTemplate.send(topic, meldingId, event.getAvroTiltakHendelse()).addCallback(new ListenableFutureCallback<>() {
-            @Override
-            public void onSuccess(SendResult<String, AvroTiltakHendelse> result) {
+        dvhMeldingKafkaTemplate.send(topic, meldingId, event.getAvroTiltakHendelse()).whenComplete((result, ex) -> {
+            if (ex != null) {
+                log.error("DvhMelding med id {} kunne ikke sendes til Kafka topic {}", meldingId, topic);
+            } else {
                 log.info("DvhMelding med id {} sendt til Kafka topic {}", meldingId, topic);
                 DvhMeldingEntitet entitet = event.getEntitet();
                 entitet.setSendt(true);
                 repository.save(entitet);
-            }
-
-            @Override
-            public void onFailure(Throwable ex) {
-                log.error("DvhMelding med id {} kunne ikke sendes til Kafka topic {}", meldingId, topic);
             }
         });
     }

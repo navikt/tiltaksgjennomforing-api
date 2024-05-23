@@ -1,9 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AvtaleMedFnrOgBedriftNr;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -12,12 +15,10 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class AvtaleMinimalListevisning {
+public class AvtaleMinimalListevisning implements AvtaleMedFnrOgBedriftNr {
     private String id;
-    private String deltakerFnr;
     private String deltakerFornavn;
     private String deltakerEtternavn;
-    private String bedriftNr;
     private String bedriftNavn;
     private String veilederNavIdent;
     private LocalDate startDato;
@@ -27,14 +28,14 @@ public class AvtaleMinimalListevisning {
     private boolean erGodkjentTaushetserklæringAvMentor;
     private TilskuddPeriodeStatus gjeldendeTilskuddsperiodeStatus;
     private Instant sistEndret;
+    @JsonIgnore
+    private FnrOgBedrift fnrOgBedrift;
 
     public static AvtaleMinimalListevisning fromAvtale(Avtale avtale) {
-        AvtaleMinimalListevisning avtaleMininal = AvtaleMinimalListevisning.builder()
+        return AvtaleMinimalListevisning.builder()
                 .id(avtale.getId().toString())
-                .deltakerFnr(avtale.getDeltakerFnr() != null ? avtale.getDeltakerFnr().asString() : null)
                 .deltakerEtternavn(avtale.getGjeldendeInnhold().getDeltakerEtternavn())
                 .deltakerFornavn(avtale.getGjeldendeInnhold().getDeltakerFornavn())
-                .bedriftNr(avtale.getBedriftNr().asString())
                 .bedriftNavn(avtale.getGjeldendeInnhold().getBedriftNavn())
                 .veilederNavIdent(avtale.getVeilederNavIdent() != null ? avtale.getVeilederNavIdent().asString() : null)
                 .startDato(avtale.getGjeldendeInnhold().getStartDato())
@@ -44,7 +45,12 @@ public class AvtaleMinimalListevisning {
                 .erGodkjentTaushetserklæringAvMentor(avtale.erGodkjentTaushetserklæringAvMentor())
                 .gjeldendeTilskuddsperiodeStatus(avtale.getGjeldendeTilskuddsperiodestatus())
                 .sistEndret(avtale.getSistEndret())
+                .fnrOgBedrift(new FnrOgBedrift(avtale.getDeltakerFnr(), avtale.getBedriftNr()))
                 .build();
-        return avtaleMininal;
+    }
+
+    @Override
+    public FnrOgBedrift getFnrOgBedrift() {
+        return this.fnrOgBedrift;
     }
 }

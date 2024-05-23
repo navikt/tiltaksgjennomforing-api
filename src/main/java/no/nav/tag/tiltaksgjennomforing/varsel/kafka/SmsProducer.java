@@ -21,14 +21,10 @@ public class SmsProducer {
     }
 
     public void sendSmsVarselMeldingTilKafka(Sms sms) {
-        kafkaTemplate.send(Topics.TILTAK_SMS, sms.getSmsVarselId().toString(), sms).addCallback(new ListenableFutureCallback<>() {
-            @Override
-            public void onFailure(Throwable ex) {
+        kafkaTemplate.send(Topics.TILTAK_SMS, sms.getSmsVarselId().toString(), sms).whenComplete((result, ex) -> {
+            if (ex != null) {
                 log.warn("Sms med id={} kunne ikke sendes til Kafka topic", sms.getSmsVarselId());
-            }
-
-            @Override
-            public void onSuccess(SendResult<String, Sms> result) {
+            } else {
                 log.info("Sms med id={} sendt på Kafka topic {}", sms.getSmsVarselId(), result.getProducerRecord().topic());
             }
         });

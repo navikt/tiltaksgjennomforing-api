@@ -2,33 +2,103 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.Transient;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortet;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlenget;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiverErFordelt;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleSlettemerket;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.DeltakersGodkjenningOpphevetAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.DeltakersGodkjenningOpphevetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.FjernetEtterregistrering;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GamleVerdier;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvDeltaker;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentForEtterregistrering;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltaker;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltakerOgArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.InkluderingstilskuddEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.KontaktinformasjonEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.MålEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.OmMentorEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.OppfølgingOgTilretteleggingEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonFristForlenget;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKlar;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKlarRevarsel;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKorrigert;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.SignertAvMentor;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.StillingsbeskrivelseEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsberegningEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAnnullert;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAvslått;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeForkortet;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeGodkjent;
 import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttDatoStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
-import no.nav.tag.tiltaksgjennomforing.exceptions.*;
+import no.nav.tag.tiltaksgjennomforing.exceptions.AltMåVæreFyltUtException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørVeilederException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.AvtaleErIkkeFordeltException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.DeltakerHarGodkjentException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AvtaleMedFnrOgBedriftNr;
 import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Generated;
-import org.hibernate.type.PostgresUUIDType;
+import org.hibernate.annotations.SortNatural;
+import org.hibernate.generator.EventType;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.*;
-import javax.persistence.OrderBy;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,15 +108,12 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 @Slf4j
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Builder(toBuilder = true)
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldNameConstants
-@TypeDef(name = "postgres-uuid",
-        defaultForType = UUID.class,
-        typeClass = PostgresUUIDType.class)
-public class Avtale extends AbstractAggregateRoot<Avtale> {
+@Builder
+public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFnrOgBedriftNr {
 
     @Convert(converter = FnrConverter.class)
     private Fnr deltakerFnr;
@@ -66,7 +133,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     @EqualsAndHashCode.Include
     private UUID id;
 
-    @Generated(GenerationTime.INSERT)
+    @Generated(event = EventType.INSERT)
     private Integer avtaleNr;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -97,13 +164,16 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
     @SortNatural
-    @OrderBy("startDato ASC")
     private SortedSet<TilskuddPeriode> tilskuddPeriode = new TreeSet<>();
     private boolean feilregistrert;
 
     @JsonIgnore
     @OneToOne(mappedBy = "avtale", fetch = FetchType.EAGER)
     private ArenaRyddeAvtale arenaRyddeAvtale;
+
+    @JsonIgnore
+    @Transient
+    private FnrOgBedrift fnrOgBedrift;
 
     private Avtale(OpprettAvtale opprettAvtale) {
         sjekkAtIkkeNull(opprettAvtale.getDeltakerFnr(), "Deltakers fnr må være satt.");
@@ -119,6 +189,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         this.opprettetTidspunkt = Now.localDateTime();
         this.deltakerFnr = opprettAvtale.getDeltakerFnr();
         this.bedriftNr = opprettAvtale.getBedriftNr();
+        this.fnrOgBedrift = new FnrOgBedrift(this.deltakerFnr, this.bedriftNr);
         this.tiltakstype = opprettAvtale.getTiltakstype();
         this.sistEndret = Now.instant();
         this.gjeldendeInnhold = AvtaleInnhold.nyttTomtInnhold(tiltakstype);
@@ -140,6 +211,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         this.deltakerFnr = opprettMentorAvtale.getDeltakerFnr();
         this.mentorFnr = opprettMentorAvtale.getMentorFnr();
         this.bedriftNr = opprettMentorAvtale.getBedriftNr();
+        this.fnrOgBedrift = new FnrOgBedrift(this.deltakerFnr, this.bedriftNr);
         this.tiltakstype = opprettMentorAvtale.getTiltakstype();
         this.sistEndret = Now.instant();
         this.gjeldendeInnhold = AvtaleInnhold.nyttTomtInnhold(tiltakstype);
@@ -250,10 +322,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     @JsonProperty
     public boolean erRyddeAvtale() {
-        if (arenaRyddeAvtale != null) {
-            return true;
-        }
-        return false;
+        return arenaRyddeAvtale != null;
     }
 
     @JsonProperty
@@ -426,8 +495,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (this.getTiltakstype() == Tiltakstype.SOMMERJOBB &&
                 this.getDeltakerFnr().erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
             throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_GAMMEL_FRA_OPPSTARTDATO);
-        }
-        else if (this.getTiltakstype() != Tiltakstype.SOMMERJOBB && this.getDeltakerFnr().erOver72ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
+        } else if (this.getTiltakstype() != Tiltakstype.SOMMERJOBB && this.getDeltakerFnr().erOver72ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
             throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
         }
 
@@ -465,8 +533,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         if (this.getTiltakstype() == Tiltakstype.MENTOR && !erGodkjentTaushetserklæringAvMentor()) {
             throw new FeilkodeException(Feilkode.MENTOR_MÅ_SIGNERE_TAUSHETSERKLÆRING);
-        }
-        else if (this.getTiltakstype() != Tiltakstype.SOMMERJOBB && this.getDeltakerFnr().erOver72ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
+        } else if (this.getTiltakstype() != Tiltakstype.SOMMERJOBB && this.getDeltakerFnr().erOver72ÅrFraSluttDato(getGjeldendeInnhold().getSluttDato())) {
             throw new FeilkodeException(Feilkode.DELTAKER_72_AAR);
         }
 
@@ -767,7 +834,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     @JsonProperty
     public TilskuddPeriode gjeldendeTilskuddsperiode() {
-        TreeSet<TilskuddPeriode> aktiveTilskuddsperioder = new TreeSet(tilskuddPeriode.stream().filter(t -> t.isAktiv()).collect(Collectors.toSet()));
+        TreeSet<TilskuddPeriode> aktiveTilskuddsperioder = new TreeSet<>(tilskuddPeriode.stream().filter(TilskuddPeriode::isAktiv).collect(Collectors.toSet()));
 
         if (aktiveTilskuddsperioder.isEmpty()) {
             return null;
@@ -786,13 +853,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
 
         // Finn siste godkjent
-        Optional<TilskuddPeriode> sisteGodkjent = aktiveTilskuddsperioder.descendingSet().stream().filter(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.GODKJENT)
-                .findFirst();
-        if (sisteGodkjent.isPresent()) {
-            return sisteGodkjent.get();
-        }
-
-        return aktiveTilskuddsperioder.first();
+        return aktiveTilskuddsperioder.descendingSet().stream()
+                .filter(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.GODKJENT)
+                .findFirst()
+                .orElseGet(aktiveTilskuddsperioder::first);
     }
 
     public TreeSet<TilskuddPeriode> finnTilskuddsperioderIkkeLukketForEndring() {
@@ -825,26 +889,24 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         if (tilskuddPeriode.isEmpty()) {
             return;
         }
-        Optional<TilskuddPeriode> periodeMedHøyestLøpenummer = tilskuddPeriode.stream().max(Comparator.comparing(tilskuddPeriode1 -> tilskuddPeriode1.getLøpenummer()));
-        if(periodeMedHøyestLøpenummer.isPresent()) {
-            TilskuddPeriode sisteTilskuddsperiode = periodeMedHøyestLøpenummer.get();
-            if (sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) {
-                // Kan utvide siste tilskuddsperiode hvis den er ubehandlet
-                tilskuddPeriode.remove(sisteTilskuddsperiode);
-                List<TilskuddPeriode> nyeTilskuddperioder = beregnTilskuddsperioder(sisteTilskuddsperiode.getStartDato(), nySluttDato);
-                fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer());
-                tilskuddPeriode.addAll(nyeTilskuddperioder);
-            } else if (sisteTilskuddsperiode.getSluttDato().isBefore(sisteDatoIMnd(sisteTilskuddsperiode.getSluttDato())) && sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.GODKJENT && (!sisteTilskuddsperiode.erRefusjonGodkjent() && !sisteTilskuddsperiode.erUtbetalt())) {
-                annullerTilskuddsperiode(sisteTilskuddsperiode);
-                List<TilskuddPeriode> nyeTilskuddperioder = beregnTilskuddsperioder(sisteTilskuddsperiode.getStartDato(), nySluttDato);
-                fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer() + 1);
-                tilskuddPeriode.addAll(nyeTilskuddperioder);
-            } else {
-                // Regner ut nye perioder fra gammel avtaleslutt til ny avtaleslutt
-                List<TilskuddPeriode> nyeTilskuddperioder = beregnTilskuddsperioder(gammelSluttDato.plusDays(1), nySluttDato);
-                fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer() + 1);
-                tilskuddPeriode.addAll(nyeTilskuddperioder);
-            }
+        Optional<TilskuddPeriode> periodeMedHøyestLøpenummer = tilskuddPeriode.stream().max(Comparator.comparing(TilskuddPeriode::getLøpenummer));
+        TilskuddPeriode sisteTilskuddsperiode = periodeMedHøyestLøpenummer.get();
+        if (sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) {
+            // Kan utvide siste tilskuddsperiode hvis den er ubehandlet
+            tilskuddPeriode.remove(sisteTilskuddsperiode);
+            List<TilskuddPeriode> nyeTilskuddperioder = beregnTilskuddsperioder(sisteTilskuddsperiode.getStartDato(), nySluttDato);
+            fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer());
+            tilskuddPeriode.addAll(nyeTilskuddperioder);
+        } else if (sisteTilskuddsperiode.getSluttDato().isBefore(sisteDatoIMnd(sisteTilskuddsperiode.getSluttDato())) && sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.GODKJENT && (!sisteTilskuddsperiode.erRefusjonGodkjent() && !sisteTilskuddsperiode.erUtbetalt())) {
+            annullerTilskuddsperiode(sisteTilskuddsperiode);
+            List<TilskuddPeriode> nyeTilskuddperioder = beregnTilskuddsperioder(sisteTilskuddsperiode.getStartDato(), nySluttDato);
+            fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer() + 1);
+            tilskuddPeriode.addAll(nyeTilskuddperioder);
+        } else {
+            // Regner ut nye perioder fra gammel avtaleslutt til ny avtaleslutt
+            List<TilskuddPeriode> nyeTilskuddperioder = beregnTilskuddsperioder(gammelSluttDato.plusDays(1), nySluttDato);
+            fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer() + 1);
+            tilskuddPeriode.addAll(nyeTilskuddperioder);
         }
     }
 
@@ -973,11 +1035,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         }
         // Statuser som skal få tilskuddsperioder
         Status status = statusSomEnum();
-        if (status == Status.ANNULLERT || status == Status.AVBRUTT) {
-            return false;
-        }
-
-        return true;
+        return status != Status.ANNULLERT && status != Status.AVBRUTT;
     }
 
     /**
@@ -1043,12 +1101,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
         // Lag nye fra og med siste ikke ubehandlet + en dag
         LocalDate startDato;
-        List<TilskuddPeriode> godkjentePerioder = tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.GODKJENT).sorted(Comparator.comparing(t -> t.getLøpenummer())).toList();
+        List<TilskuddPeriode> godkjentePerioder = tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.GODKJENT).sorted(Comparator.comparing(TilskuddPeriode::getLøpenummer)).toList();
 
-        if (godkjentePerioder.size() != 0) {
+        if (!godkjentePerioder.isEmpty()) {
             startDato = godkjentePerioder.get(godkjentePerioder.size() - 1).getSluttDato().plusDays(1);
         } else {
-            startDato = tilskuddPeriode.first().getStartDato();
+            startDato = tilskuddPeriode.stream().findFirst().map(TilskuddPeriode::getStartDato).orElse(null);
         }
 
         List<TilskuddPeriode> nyetilskuddsperioder = beregnTilskuddsperioder(startDato, gjeldendeInnhold.getSluttDato());
@@ -1058,7 +1116,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     public void lagNyGodkjentTilskuddsperiodeFraAnnullertPeriode(TilskuddPeriode annullertTilskuddPeriode) {
         krevEnAvTiltakstyper(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
-        if(annullertTilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
+        if (annullertTilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET);
         }
         TilskuddPeriode nyTilskuddsperiode = annullertTilskuddPeriode.deaktiverOgLagNyUbehandlet();
@@ -1075,8 +1133,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
     private Integer finnResendingsNummer(TilskuddPeriode gjeldendePeriode) {
         Integer resendingsnummer = null;
         for (TilskuddPeriode periode : tilskuddPeriode) {
-            if(periode.getStatus() == TilskuddPeriodeStatus.ANNULLERT && periode.getLøpenummer().equals(gjeldendePeriode.getLøpenummer())) {
-                if(resendingsnummer == null) {
+            if (periode.getStatus() == TilskuddPeriodeStatus.ANNULLERT && periode.getLøpenummer().equals(gjeldendePeriode.getLøpenummer())) {
+                if (resendingsnummer == null) {
                     resendingsnummer = 0;
                 }
                 resendingsnummer++;
@@ -1087,7 +1145,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     public void lagNyTilskuddsperiodeFraAnnullertPeriode(TilskuddPeriode annullertTilskuddPeriode) {
         krevEnAvTiltakstyper(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
-        if(annullertTilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
+        if (annullertTilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET);
         }
         TilskuddPeriode nyUbehandletPeriode = annullertTilskuddPeriode.deaktiverOgLagNyUbehandlet();
@@ -1097,7 +1155,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
 
     public void lagNyBehandletIArenaTilskuddsperiodeFraAnnullertPeriode(TilskuddPeriode annullertTilskuddPeriode) {
         krevEnAvTiltakstyper(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
-        if(annullertTilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
+        if (annullertTilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET);
         }
         TilskuddPeriode nyUbehandletPeriode = annullertTilskuddPeriode.deaktiverOgLagNyUbehandlet();
@@ -1119,10 +1177,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         TreeSet<TilskuddPeriode> aktiveTilskuddsperioder = new TreeSet(tilskuddPeriode.stream().filter(t -> t.isAktiv()).collect(Collectors.toSet()));
         Optional<TilskuddPeriode> sisteUtbetalt = aktiveTilskuddsperioder.descendingSet().stream().filter(tilskuddPeriode -> (
                 tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.SENDT_KRAV ||
-                tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.UTBETALT ||
-                tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.UTBETALING_FEILET ||
-                tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.GODKJENT_MINUSBELØP ||
-                tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.GODKJENT_NULLBELØP)
+                        tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.UTBETALT ||
+                        tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.UTBETALING_FEILET ||
+                        tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.GODKJENT_MINUSBELØP ||
+                        tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.GODKJENT_NULLBELØP)
         ).max(Comparator.comparing(tilskuddPeriode1 -> tilskuddPeriode1.getStartDato()));
         if (sisteUtbetalt.isPresent() && nySluttDato.isBefore(sisteUtbetalt.get().getSluttDato())) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_FOR_UTBETALT_TILSKUDDSPERIODE);
@@ -1389,4 +1447,18 @@ public class Avtale extends AbstractAggregateRoot<Avtale> {
         registerEvent(new OmMentorEndret(this, utførtAv));
     }
 
+    /**
+     * For mentorer vil deltakers fnr skjules; som fører til at auditlogging ikke fungerer
+     * med mindre vi oppretter FnrOgBedrift-objektet umiddelbart etter last
+     * (og ikke serialiserer det nye feltet på vei ut)
+     */
+    @PostLoad
+    public void opprettFnrOgBedriftEtterDbLast() {
+        this.fnrOgBedrift = new FnrOgBedrift(this.deltakerFnr, this.bedriftNr);
+    }
+
+    @Override
+    public FnrOgBedrift getFnrOgBedrift() {
+        return this.fnrOgBedrift;
+    }
 }

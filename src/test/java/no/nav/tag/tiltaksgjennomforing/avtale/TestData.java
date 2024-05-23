@@ -46,7 +46,7 @@ public class TestData {
     public static NavEnhet ENHET_GEOGRAFISK = new NavEnhet("0904", "Vinstra");
     public static Integer ET_AVTALENR = 10;
 
-    public static EnumSet avtalerMedTilskuddsperioder = EnumSet.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
+    public static EnumSet<Tiltakstype> avtalerMedTilskuddsperioder = EnumSet.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
 
     public static Avtale enArbeidstreningAvtale() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
@@ -857,7 +857,7 @@ public class TestData {
             adressebeskyttelser[0] = new Adressebeskyttelse("STRENGT_FORTROLIG");
         }
 
-        HentPerson hentPerson = new HentPerson(adressebeskyttelser, new Navn[] { new Navn("Donald", null, "Duck") });
+        HentPerson hentPerson = new HentPerson(adressebeskyttelser, new Navn[]{new Navn("Donald", null, "Duck")});
         return new PdlRespons(new Data(hentPerson, null, new HentGeografiskTilknytning(null, "030101", null, null)));
     }
 

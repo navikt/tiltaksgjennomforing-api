@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Value;
 
 @Value
-@Builder(toBuilder = true)
+@Builder
 public class EndreStillingsbeskrivelse {
     String stillingstittel;
     String arbeidsoppgaver;
