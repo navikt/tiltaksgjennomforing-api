@@ -38,7 +38,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
 
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(3);
-        assertThat(avtale.getTilskuddPeriode().stream().findFirst().map(TilskuddPeriode::getBeløp).get()).isEqualTo(avtale.getGjeldendeInnhold().getSumLonnstilskudd());
+        assertThat(avtale.getTilskuddPeriode().first().getBeløp()).isEqualTo(avtale.getGjeldendeInnhold().getSumLonnstilskudd());
         harRiktigeEgenskaper(avtale);
         Now.resetClock();
     }

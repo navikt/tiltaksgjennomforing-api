@@ -862,7 +862,7 @@ public class TestData {
     }
 
     public static TilskuddPeriode enTilskuddPeriode() {
-        return TestData.enLonnstilskuddAvtaleGodkjentAvVeileder().getTilskuddPeriode().stream().findFirst().orElse(null);
+        return TestData.enLonnstilskuddAvtaleGodkjentAvVeileder().getTilskuddPeriode().first();
     }
 
     public static EndreTilskuddsberegning enEndreTilskuddsberegning() {
@@ -870,7 +870,7 @@ public class TestData {
         BigDecimal feriepengesats = new BigDecimal("0.166");
         BigDecimal arbeidsgiveravgift = BigDecimal.ZERO;
         int manedslonn = 44444;
-        return new EndreTilskuddsberegning(manedslonn, feriepengesats, arbeidsgiveravgift, otpSats);
+        return EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).build();
     }
 
     public static Avtale enArbeidstreningAvtaleGodkjentAvVeileder() {
