@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -38,7 +39,7 @@ public class InternalAvtaleController {
             innloggingService.validerSystembruker();
             List<AvtaleInnhold> avtaleVersjoner = avtaleInnholdRepository.finnAvtaleVersjonerTilJournalfoering();
             List<AvtaleTilJournalfoering> avtalerTilJournalfoering = avtaleVersjoner.stream().map(avtaleInnhold -> {
-                List<TilskuddPeriode> tilskuddPeriode = avtaleInnhold.getAvtale().getTilskuddPeriode();
+                SortedSet<TilskuddPeriode> tilskuddPeriode = avtaleInnhold.getAvtale().getTilskuddPeriode();
                 AvtaleTilJournalfoering avtaleTilJournalfoering = AvtaleTilJournalfoeringMapper.tilJournalfoering(avtaleInnhold, null);
                 avtaleTilJournalfoering.setTilskuddsPerioder(tilskuddPeriode);
                 return avtaleTilJournalfoering;

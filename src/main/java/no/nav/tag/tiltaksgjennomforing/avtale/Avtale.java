@@ -12,7 +12,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.OrderBy;
 import jakarta.persistence.PostLoad;
 import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
@@ -85,18 +84,19 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.SortNatural;
 import org.hibernate.generator.EventType;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -163,8 +163,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
-    @OrderBy("startDato ASC")
-    private List<TilskuddPeriode> tilskuddPeriode = new ArrayList<>();
+    @SortNatural
+    private SortedSet<TilskuddPeriode> tilskuddPeriode = new TreeSet<>();
     private boolean feilregistrert;
 
     @JsonIgnore
@@ -834,7 +834,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     @JsonProperty
     public TilskuddPeriode gjeldendeTilskuddsperiode() {
-        TreeSet<TilskuddPeriode> aktiveTilskuddsperioder = new TreeSet(tilskuddPeriode.stream().filter(t -> t.isAktiv()).collect(Collectors.toSet()));
+        TreeSet<TilskuddPeriode> aktiveTilskuddsperioder = new TreeSet<>(tilskuddPeriode.stream().filter(TilskuddPeriode::isAktiv).collect(Collectors.toSet()));
 
         if (aktiveTilskuddsperioder.isEmpty()) {
             return null;
@@ -853,13 +853,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         }
 
         // Finn siste godkjent
-        Optional<TilskuddPeriode> sisteGodkjent = aktiveTilskuddsperioder.descendingSet().stream().filter(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.GODKJENT)
-                .findFirst();
-        if (sisteGodkjent.isPresent()) {
-            return sisteGodkjent.get();
-        }
-
-        return aktiveTilskuddsperioder.first();
+        return aktiveTilskuddsperioder.descendingSet().stream()
+                .filter(tilskuddPeriode -> tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.GODKJENT)
+                .findFirst()
+                .orElseGet(aktiveTilskuddsperioder::first);
     }
 
     public TreeSet<TilskuddPeriode> finnTilskuddsperioderIkkeLukketForEndring() {
@@ -892,26 +889,24 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         if (tilskuddPeriode.isEmpty()) {
             return;
         }
-        Optional<TilskuddPeriode> periodeMedHøyestLøpenummer = tilskuddPeriode.stream().max(Comparator.comparing(tilskuddPeriode1 -> tilskuddPeriode1.getLøpenummer()));
-        if (periodeMedHøyestLøpenummer.isPresent()) {
-            TilskuddPeriode sisteTilskuddsperiode = periodeMedHøyestLøpenummer.get();
-            if (sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) {
-                // Kan utvide siste tilskuddsperiode hvis den er ubehandlet
-                tilskuddPeriode.remove(sisteTilskuddsperiode);
-                List<TilskuddPeriode> nyeTilskuddperioder = beregnTilskuddsperioder(sisteTilskuddsperiode.getStartDato(), nySluttDato);
-                fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer());
-                tilskuddPeriode.addAll(nyeTilskuddperioder);
-            } else if (sisteTilskuddsperiode.getSluttDato().isBefore(sisteDatoIMnd(sisteTilskuddsperiode.getSluttDato())) && sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.GODKJENT && (!sisteTilskuddsperiode.erRefusjonGodkjent() && !sisteTilskuddsperiode.erUtbetalt())) {
-                annullerTilskuddsperiode(sisteTilskuddsperiode);
-                List<TilskuddPeriode> nyeTilskuddperioder = beregnTilskuddsperioder(sisteTilskuddsperiode.getStartDato(), nySluttDato);
-                fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer() + 1);
-                tilskuddPeriode.addAll(nyeTilskuddperioder);
-            } else {
-                // Regner ut nye perioder fra gammel avtaleslutt til ny avtaleslutt
-                List<TilskuddPeriode> nyeTilskuddperioder = beregnTilskuddsperioder(gammelSluttDato.plusDays(1), nySluttDato);
-                fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer() + 1);
-                tilskuddPeriode.addAll(nyeTilskuddperioder);
-            }
+        Optional<TilskuddPeriode> periodeMedHøyestLøpenummer = tilskuddPeriode.stream().max(Comparator.comparing(TilskuddPeriode::getLøpenummer));
+        TilskuddPeriode sisteTilskuddsperiode = periodeMedHøyestLøpenummer.get();
+        if (sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) {
+            // Kan utvide siste tilskuddsperiode hvis den er ubehandlet
+            tilskuddPeriode.remove(sisteTilskuddsperiode);
+            List<TilskuddPeriode> nyeTilskuddperioder = beregnTilskuddsperioder(sisteTilskuddsperiode.getStartDato(), nySluttDato);
+            fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer());
+            tilskuddPeriode.addAll(nyeTilskuddperioder);
+        } else if (sisteTilskuddsperiode.getSluttDato().isBefore(sisteDatoIMnd(sisteTilskuddsperiode.getSluttDato())) && sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.GODKJENT && (!sisteTilskuddsperiode.erRefusjonGodkjent() && !sisteTilskuddsperiode.erUtbetalt())) {
+            annullerTilskuddsperiode(sisteTilskuddsperiode);
+            List<TilskuddPeriode> nyeTilskuddperioder = beregnTilskuddsperioder(sisteTilskuddsperiode.getStartDato(), nySluttDato);
+            fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer() + 1);
+            tilskuddPeriode.addAll(nyeTilskuddperioder);
+        } else {
+            // Regner ut nye perioder fra gammel avtaleslutt til ny avtaleslutt
+            List<TilskuddPeriode> nyeTilskuddperioder = beregnTilskuddsperioder(gammelSluttDato.plusDays(1), nySluttDato);
+            fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer() + 1);
+            tilskuddPeriode.addAll(nyeTilskuddperioder);
         }
     }
 
