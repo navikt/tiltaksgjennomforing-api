@@ -10,7 +10,6 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.KontoregisterFantIkkeBedriftFe
 import no.nav.tag.tiltaksgjennomforing.exceptions.KontoregisterFeilException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.CorrelationIdSupplier;
 import no.nav.tag.tiltaksgjennomforing.utils.ConditionalOnPropertyNotEmpty;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -27,16 +26,19 @@ import org.springframework.web.client.RestTemplate;
 public class KontoregisterServiceImpl implements KontoregisterService {
 
     private final KontoregisterProperties kontoregisterProperties;
-    private final RestTemplate restTemplate;
+    private final RestTemplate azureRestTemplate;
 
-    public KontoregisterServiceImpl(KontoregisterProperties kontoregisterProperties, @Qualifier("azure") RestTemplate restTemplate) {
+    public KontoregisterServiceImpl(
+        RestTemplate azureRestTemplate,
+        KontoregisterProperties kontoregisterProperties
+    ) {
+        this.azureRestTemplate = azureRestTemplate;
         this.kontoregisterProperties = kontoregisterProperties;
-        this.restTemplate = restTemplate;
     }
 
     public String hentKontonummer(String bedriftNr) {
         try {
-            ResponseEntity<KontoregisterResponse> response = restTemplate.exchange(
+            ResponseEntity<KontoregisterResponse> response = azureRestTemplate.exchange(
                     new URI(String.format("%s/%s", kontoregisterProperties.getUri(), bedriftNr)),
                     HttpMethod.GET,
                     lagRequest(),
