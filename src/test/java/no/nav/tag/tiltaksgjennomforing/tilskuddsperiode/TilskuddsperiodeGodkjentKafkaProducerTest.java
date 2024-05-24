@@ -81,12 +81,14 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
         final LocalDate tilskuddTilDato = Now.localDate().plusMonths(2);
         final Integer avtaleNr = 234234234;
         final Integer løpenummer = 3;
+        final String veilederFornavn = "Vera";
+        final String veilederEtternavn = "Veileder";
         final NavIdent beslutterNavIdent = new NavIdent("X234567");
 
         final TilskuddsperiodeGodkjentMelding tilskuddMelding = new TilskuddsperiodeGodkjentMelding(avtaleId,
                 tilskuddPeriodeId, avtaleInnholdId, avtaleFom, avtaleTom, tiltakstype, deltakerFornavn, deltakerEtternavn,
                 deltakerFnr, arbeidsgiverFornavn, arbeidsgiverEtternavn, arbeidsgiverTlf, veilederNavIdent, bedriftNavn, bedriftnummer, tilskuddBeløp, tilskuddFraDato, tilskuddTilDato, 10.6, 0.02, 14.1, 60, avtaleNr, løpenummer, 0,
-            "4808", beslutterNavIdent, LocalDateTime.now());
+            "4808", beslutterNavIdent, veilederFornavn, veilederEtternavn, LocalDateTime.now());
 
         //NÅR
         tilskuddsperiodeKafkaProducer.publiserTilskuddsperiodeGodkjentMelding(tilskuddMelding);
@@ -117,6 +119,8 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
         assertThat(jsonRefusjonRecord.get("avtaleNr")).isNotNull();
         assertThat(jsonRefusjonRecord.get("løpenummer")).isNotNull();
         assertThat(jsonRefusjonRecord.get("beslutterNavIdent")).isNotNull();
+        assertThat(jsonRefusjonRecord.get("veilederFornavn")).isNotNull();
+        assertThat(jsonRefusjonRecord.get("veilederEtternavn")).isNotNull();
         assertThat(jsonRefusjonRecord.get("godkjentTidspunkt")).isNotNull();
     }
 

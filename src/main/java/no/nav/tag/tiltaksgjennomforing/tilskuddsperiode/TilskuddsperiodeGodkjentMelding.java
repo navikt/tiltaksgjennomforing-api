@@ -48,6 +48,8 @@ public class TilskuddsperiodeGodkjentMelding {
     Integer resendingsnummer;
     String enhet;
     NavIdent beslutterNavIdent;
+    String veilederFornavn;
+    String veilederEtternavn;
     LocalDateTime godkjentTidspunkt;
 
     public static TilskuddsperiodeGodkjentMelding create(Avtale avtale, TilskuddPeriode tilskuddsperiode, Integer resendingsnummer) {
@@ -79,6 +81,8 @@ public class TilskuddsperiodeGodkjentMelding {
                 resendingsnummer,
                 tilskuddsperiode.getEnhet(),
                 tilskuddsperiode.getGodkjentAvNavIdent(),
+                avtale.getGjeldendeInnhold().getVeilederFornavn(),
+                avtale.getGjeldendeInnhold().getVeilederEtternavn(),
                 tilskuddsperiode.getGodkjentTidspunkt()
         );
     }
