@@ -12,7 +12,6 @@ import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.oppgaveUtfoe
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.softDeleteNotifikasjonByEksternId.Data;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.softDeleteNotifikasjonByEksternId.SoftDeleteNotifikasjonResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -28,18 +27,18 @@ import java.util.List;
 @Component
 @ConditionalOnProperty("tiltaksgjennomforing.notifikasjoner.enabled")
 public class NotifikasjonService {
-    private final RestTemplate restTemplate;
+    private final RestTemplate azureRestTemplate;
     private final NotifikasjonHandler handler;
     private final NotifikasjonerProperties notifikasjonerProperties;
     private final NotifikasjonParser notifikasjonParser;
 
     public NotifikasjonService(
-            @Qualifier("notifikasjonerRestTemplate") RestTemplate restTemplate,
-            @Autowired NotifikasjonParser notifikasjonParser,
-            NotifikasjonerProperties properties,
-            @Autowired NotifikasjonHandler handler
+        RestTemplate azureRestTemplate,
+        @Autowired NotifikasjonParser notifikasjonParser,
+        NotifikasjonerProperties properties,
+        @Autowired NotifikasjonHandler handler
     ) {
-        this.restTemplate = restTemplate;
+        this.azureRestTemplate = azureRestTemplate;
         this.notifikasjonerProperties = properties;
         this.notifikasjonParser = notifikasjonParser;
         this.handler = handler;
@@ -53,7 +52,7 @@ public class NotifikasjonService {
 
     public String opprettNotifikasjon(ArbeidsgiverMutationRequest arbeidsgiverMutationRequest) {
         try {
-            return restTemplate.postForObject(
+            return azureRestTemplate.postForObject(
                     notifikasjonerProperties.getUri(),
                     createRequestEntity(arbeidsgiverMutationRequest),
                     String.class);

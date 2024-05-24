@@ -6,7 +6,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,14 +21,14 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Service
 public class VeilarbArenaClient {
 
-    private final RestTemplate restTemplate;
+    private final RestTemplate azureRestTemplate;
     private final VeilarbArenaProperties veilarbArenaProperties;
 
     public VeilarbArenaClient(
-            @Qualifier("veilarbarenaRestTemplate") RestTemplate restTemplate,
-            VeilarbArenaProperties veilarbArenaProperties
+        RestTemplate azureRestTemplate,
+        VeilarbArenaProperties veilarbArenaProperties
     ) {
-        this.restTemplate = restTemplate;
+        this.azureRestTemplate = azureRestTemplate;
         this.veilarbArenaProperties = veilarbArenaProperties;
     }
 
@@ -97,7 +96,7 @@ public class VeilarbArenaClient {
         String uri = UriComponentsBuilder.fromHttpUrl(veilarbArenaProperties.getUrl().toString())
                 .queryParam("fnr", fnr).toUriString();
         try {
-            ResponseEntity<Oppfølgingsstatus> respons = restTemplate.exchange(
+            ResponseEntity<Oppfølgingsstatus> respons = azureRestTemplate.exchange(
                     uri,
                     HttpMethod.GET,
                     httpHeadere(),

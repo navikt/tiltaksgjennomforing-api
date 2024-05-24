@@ -4,7 +4,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.Resource;
@@ -22,19 +21,8 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class PersondataService {
-    public PersondataService(
-            @Qualifier("pdlRestTemplate")
-            RestTemplate restTemplate,
-            PersondataProperties persondataProperties
-    ) {
-        this.restTemplate = restTemplate;
-        this.persondataProperties = persondataProperties;
-    }
-
-    private final RestTemplate restTemplate;
-
+    private final RestTemplate azureRestTemplate;
     private final PersondataProperties persondataProperties;
-
     private static final String BEHANDLINGSNUMMER = "B662";
 
     @Value("classpath:pdl/hentPerson.adressebeskyttelse.graphql")
@@ -45,6 +33,14 @@ public class PersondataService {
 
     @Value("classpath:pdl/hentIdenter.graphql")
     private Resource identerQueryResource;
+
+    public PersondataService(
+        RestTemplate azureRestTemplate,
+        PersondataProperties persondataProperties
+    ) {
+        this.azureRestTemplate = azureRestTemplate;
+        this.persondataProperties = persondataProperties;
+    }
 
     @SneakyThrows
     private static String resourceAsString(Resource adressebeskyttelseQuery) {
@@ -98,7 +94,7 @@ public class PersondataService {
 
     private PdlRespons utførKallTilPdl(PdlRequest pdlRequest) {
         try {
-            return restTemplate.postForObject(persondataProperties.getUri(), createRequestEntity(pdlRequest), PdlRespons.class);
+            return azureRestTemplate.postForObject(persondataProperties.getUri(), createRequestEntity(pdlRequest), PdlRespons.class);
         } catch (RestClientException exception) {
             log.error("Feil fra PDL med request-url: {}", persondataProperties.getUri(), exception);
             throw exception;

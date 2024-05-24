@@ -21,35 +21,38 @@ public class OppgaveVarselService {
 
     private static final String CORR_ID = "X-Correlation-ID";
     private final URI uri;
-    private final RestTemplate stsRestTemplate;
+    private final RestTemplate azureRestTemplate;
 
-    public OppgaveVarselService(OppgaveProperties props, RestTemplate stsRestTemplate) {
+    public OppgaveVarselService(
+        OppgaveProperties props,
+        RestTemplate azureRestTemplate
+    ) {
         uri = UriComponentsBuilder.fromUri(props.getOppgaveUri()).build().toUri();
-        this.stsRestTemplate = stsRestTemplate;
+        this.azureRestTemplate = azureRestTemplate;
     }
 
     public void opprettOppgave(String aktørId, Tiltakstype tiltakstype, UUID avtaleId) {
         OppgaveRequest oppgaveRequest = new OppgaveRequest(aktørId, tiltakstype);
         OppgaveResponse oppgaveResponse;
 
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set(CORR_ID, avtaleId.toString());
+
         try {
-            oppgaveResponse = stsRestTemplate.postForObject(uri, entityMedStsToken(oppgaveRequest, avtaleId), OppgaveResponse.class);
+            oppgaveResponse = azureRestTemplate.postForObject(
+                uri,
+                new HttpEntity<>(oppgaveRequest, headers),
+                OppgaveResponse.class
+            );
         } catch (Exception e2) {
             log.error("Kall til Oppgave feilet, avtaleId={} : {}", avtaleId, e2.getMessage());
             throw new GosysFeilException();
         }
         log.info("Opprettet oppgave for tiltak {}. OppgaveId={}, avtaleId={}", tiltakstype.getBeskrivelse(), oppgaveResponse.getId(), avtaleId);
     }
-
-    private HttpEntity<OppgaveRequest> entityMedStsToken(final OppgaveRequest oppgaveRequest, UUID correlationId) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set(CORR_ID, correlationId.toString());
-        HttpEntity<OppgaveRequest> entity = new HttpEntity<>(oppgaveRequest, headers);
-        return entity;
-    }
-
+    
     @Data
     static class OppgaveResponse {
         private String id;

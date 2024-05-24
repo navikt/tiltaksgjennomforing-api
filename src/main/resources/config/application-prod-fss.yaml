@@ -26,7 +26,7 @@ no.nav.security.jwt:
       accepted_audience: ${tiltaksgjennomforing.audience.system}
   client:
     registration:
-      notifikasjoner:
+      ag-notifikasjon-produsent-api:
         token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
         grant-type: client_credentials
         scope: api://prod-gcp.fager.notifikasjon-produsent-api/.default
@@ -34,7 +34,7 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
-      kontoregister:
+      sokos-kontoregister:
         token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
         grant-type: client_credentials
         scope: api://prod-fss.okonomi.sokos-kontoregister/.default
@@ -75,6 +75,14 @@ no.nav.security.jwt:
           client-auth-method: private_key_jwt
         token-exchange:
           audience: prod-gcp:arbeidsgiver:altinn-rettigheter-proxy
+      oppgave:
+        token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
+        grant-type: client_credentials
+        scope: api://prod-fss.oppgavehandtering.oppgave/.default
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_basic
 
 
 tiltaksgjennomforing:
