@@ -1,17 +1,18 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.oppgave;
 
+import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.GosysFeilException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpEntity;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
@@ -25,18 +26,19 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+@ActiveProfiles({Miljø.LOCAL})
+@SpringBootTest
 public class OppgaveVarselServiceTest {
 
-    private URI uri = URI.create("test");
-    private OppgaveVarselService.OppgaveResponse oppgaveResponse = new OppgaveVarselService.OppgaveResponse();
-    private OppgaveProperties oppgaveProperties = new OppgaveProperties();
+    private final URI uri = URI.create("test");
+    private final OppgaveVarselService.OppgaveResponse oppgaveResponse = new OppgaveVarselService.OppgaveResponse();
+    private final OppgaveProperties oppgaveProperties = new OppgaveProperties();
 
     @Captor
     private ArgumentCaptor<HttpEntity<OppgaveRequest>> requestCaptor;
 
-    @Mock
-    private RestTemplate stsRestTemplate;
+    @MockBean(name = "azureRestTemplate")
+    private RestTemplate azureRestTemplate;
 
     private OppgaveVarselService oppgaveVarselService;
 
@@ -44,16 +46,16 @@ public class OppgaveVarselServiceTest {
     public void setUp() {
         oppgaveResponse.setId("oppgaveId");
         oppgaveProperties.setOppgaveUri(uri);
-        oppgaveVarselService = new OppgaveVarselService(oppgaveProperties, stsRestTemplate);
+        oppgaveVarselService = new OppgaveVarselService(oppgaveProperties, azureRestTemplate);
     }
 
     @ParameterizedTest
     @EnumSource(Tiltakstype.class)
     public void oppretterOppgaveRequestForTiltak(Tiltakstype tiltakstype) {
-        when(stsRestTemplate.postForObject(any(URI.class), any(), any(Class.class))).thenReturn(oppgaveResponse);
+        when(azureRestTemplate.postForObject(any(URI.class), any(), any(Class.class))).thenReturn(oppgaveResponse);
 
         oppgaveVarselService.opprettOppgave("aktørId", tiltakstype, UUID.randomUUID());
-        verify(stsRestTemplate).postForObject(eq(uri), requestCaptor.capture(), eq(OppgaveVarselService.OppgaveResponse.class));
+        verify(azureRestTemplate).postForObject(eq(uri), requestCaptor.capture(), eq(OppgaveVarselService.OppgaveResponse.class));
         OppgaveRequest request = requestCaptor.getValue().getBody();
 
         assertThat(request.getAktivDato()).isToday();
@@ -69,7 +71,7 @@ public class OppgaveVarselServiceTest {
 
     @Test
     public void oppretterOppgaveRequestFeiler() {
-        when(stsRestTemplate.postForObject(any(URI.class), any(), any(Class.class))).thenThrow(RuntimeException.class);
+        when(azureRestTemplate.postForObject(any(URI.class), any(), any(Class.class))).thenThrow(RuntimeException.class);
 
         assertThrows(GosysFeilException.class, () ->
                 oppgaveVarselService.opprettOppgave("aktørId", VARIG_LONNSTILSKUDD, UUID.randomUUID()));
