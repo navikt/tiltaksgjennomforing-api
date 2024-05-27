@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.autorisasjon.abac;
+package no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbtilgang;
 
 import java.util.Map;
 import java.util.Set;

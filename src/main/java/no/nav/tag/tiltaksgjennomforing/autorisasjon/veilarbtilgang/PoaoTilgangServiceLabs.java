@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.autorisasjon;
+package no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbtilgang;
 
 import java.util.UUID;
 import org.springframework.context.annotation.Profile;
@@ -8,7 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.Miljø;
 
 @Service
 @Profile(value = { Miljø.DEV_GCP_LABS, Miljø.LOCAL, Miljø.DOCKER_COMPOSE })
-public class PoaoTilgangServiceLabs implements PoaoTilgangService {
+class PoaoTilgangServiceLabs implements PoaoTilgangService {
 
     public boolean harSkriveTilgang(UUID beslutterAzureUUID, String deltakerFnr) {
         return true;

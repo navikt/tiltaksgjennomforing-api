@@ -1,8 +1,7 @@
-package no.nav.tag.tiltaksgjennomforing.autorisasjon.abac;
+package no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbtilgang;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.PoaoTilgangService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.InternBruker;
 import org.springframework.stereotype.Service;

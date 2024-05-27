@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.autorisasjon;
+package no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbtilgang;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.extern.slf4j.Slf4j;
@@ -20,13 +20,13 @@ import java.time.Duration;
 import java.util.UUID;
 
 @Service
-@Profile(value = { Miljø.DEV_FSS, Miljø.PROD_FSS })
+@Profile(value = {Miljø.DEV_FSS, Miljø.PROD_FSS})
 @Slf4j
-public class PoaoTilgangServiceImpl implements PoaoTilgangService {
+class PoaoTilgangServiceImpl implements PoaoTilgangService {
 
     private final PoaoTilgangClient klient;
 
-    public PoaoTilgangServiceImpl(
+    PoaoTilgangServiceImpl(
             @Value("${tiltaksgjennomforing.poao-tilgang.url}") String poaoTilgangUrl,
             ClientConfigurationProperties clientConfigurationProperties, OAuth2AccessTokenService oAuth2AccessTokenService
     ) {

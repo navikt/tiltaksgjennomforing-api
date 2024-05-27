@@ -1,7 +1,7 @@
-package no.nav.tag.tiltaksgjennomforing.autorisasjon;
+package no.nav.tag.tiltaksgjennomforing.autorisasjon.veilarbtilgang;
 
 import java.util.UUID;
 
-public interface PoaoTilgangService {
+interface PoaoTilgangService {
     boolean harSkriveTilgang(UUID beslutterAzureUUID, String deltakerFnr);
 }
