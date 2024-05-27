@@ -104,9 +104,6 @@ caches:
     - name: arena_cache
       expiryInMinutes: 60
       maximumSize: 1000
-    - name: abac_cache
-      expiryInMinutes: 30
-      maximumSize: 1000
     - name: axsys_cache
       expiryInMinutes: 60
       maximumSize: 1000

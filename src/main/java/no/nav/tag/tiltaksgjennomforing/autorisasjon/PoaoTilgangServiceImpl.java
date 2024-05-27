@@ -1,12 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
-import java.time.Duration;
-import java.util.UUID;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
 import com.github.benmanes.caffeine.cache.Caffeine;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.rest.client.RestClient;
 import no.nav.poao_tilgang.client.NavAnsattTilgangTilEksternBrukerPolicyInput;
@@ -18,6 +12,12 @@ import no.nav.security.token.support.client.core.ClientProperties;
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService;
 import no.nav.security.token.support.client.spring.ClientConfigurationProperties;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
+
+import java.time.Duration;
+import java.util.UUID;
 
 @Service
 @Profile(value = { Miljø.DEV_FSS, Miljø.PROD_FSS })

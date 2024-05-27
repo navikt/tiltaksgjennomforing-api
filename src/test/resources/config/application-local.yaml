@@ -79,9 +79,6 @@ tiltaksgjennomforing:
     rest-uri: http://localhost:8090/sts/sts/token
   axsys:
     uri: http://localhost:8090/axsys
-  abac:
-    uri: http://localhost:8090/abac
-    nav-consumer-id: tiltaksgjennomforing-api
   consumer:
     system:
       id: testsystem
