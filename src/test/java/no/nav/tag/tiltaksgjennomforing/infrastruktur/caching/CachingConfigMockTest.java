@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.infrastruktur.caching;
 
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.adapter.AbacAdapter;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.enhet.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
@@ -117,17 +116,13 @@ public class CachingConfigMockTest {
         }
 
         @Bean
-        public AbacAdapter abacAdapterMockImplementation() { return  mock(AbacAdapter.class); }
-
-        @Bean
         public CacheManager cacheManager() {
             return new ConcurrentMapCacheManager(
                     CacheConfig.ARENA_CACHE,
                     CacheConfig.PDL_CACHE,
                     CacheConfig.NORGNAVN_CACHE,
                     CacheConfig.NORG_GEO_ENHET,
-                    CacheConfig.AXSYS_CACHE,
-                    CacheConfig.ABAC_CACHE
+                    CacheConfig.AXSYS_CACHE
             );
         }
     }

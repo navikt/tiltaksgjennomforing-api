@@ -58,9 +58,6 @@ tiltaksgjennomforing:
     rest-uri: http://tiltaksgjennomforing-wiremock/sts/sts/token
   axsys:
     uri: http://tiltaksgjennomforing-wiremock/axsys
-  abac:
-    uri: http://tiltaksgjennomforing-wiremock/abac
-    nav-consumer-id: tiltaksgjennomforing-api
   oppgave:
     oppgave-uri: http://tiltaksgjennomforing-wiremock/api/v1/oppgaver
   veilarbarena:
