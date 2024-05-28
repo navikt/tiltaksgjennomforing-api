@@ -53,11 +53,19 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
     private static String lagVarselTekst(Avtale avtale, HendelseType hendelseType) {
         return switch (hendelseType) {
             case TILSKUDDSPERIODE_AVSLATT -> tilskuddsperiodeAvslåttTekst(avtale, hendelseType.getTekst());
+            case TILSKUDDSPERIODE_GODKJENT ->{
+                if(avtale.gjeldendeTilskuddsperiode().getStartDato() != null
+                        && avtale.gjeldendeTilskuddsperiode().getSluttDato() != null) {
+                    yield hendelseType.getTekst() + " (" + avtale.gjeldendeTilskuddsperiode().getStartDato() + " til " + avtale.gjeldendeTilskuddsperiode().getSluttDato() + ")";
+                }else{
+                    yield hendelseType.getTekst();
+                }
+            }
             case AVTALE_FORKORTET ->
                     "Avtale forkortet til " + avtale.getGjeldendeInnhold().getSluttDato().format(DateTimeFormatter.ofPattern("dd.MM.YYYY"));
             case AVTALE_FORLENGET ->
                     "Avtale forlenget til " + avtale.getGjeldendeInnhold().getSluttDato().format(DateTimeFormatter.ofPattern("dd.MM.YYYY"));
-            default -> hendelseType.getTekst();
+            default -> hendelseType.getTekst(); // TODO: Lag en for godkjent tilskuddsperiode av beslutter + legg periode det gjelder her!
         };
     }
 
