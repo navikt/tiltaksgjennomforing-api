@@ -15,6 +15,7 @@ public class StartOgSluttDatoStrategyFactory {
             case MENTOR -> new MentorStartOgSluttDatoStrategy(kvalifiseringsgruppe);
             case INKLUDERINGSTILSKUDD -> new InkluderingstilskuddStartOgSluttDatoStrategy();
             case SOMMERJOBB -> new SommerjobbStartOgSluttDatoStrategy();
+            case VTAO -> new VtaoStartOgSluttDatoStrategy();
         };
     }
 }

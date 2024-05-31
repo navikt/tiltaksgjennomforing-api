@@ -27,4 +27,6 @@ public class AltinnTilgangsstyringProperties {
     private Integer inkluderingstilskuddServiceEdition;
     private Integer mentorServiceCode;
     private Integer mentorServiceEdition;
+    private Integer vtaoServiceCode;
+    private Integer vtaoServiceEdition;
 }

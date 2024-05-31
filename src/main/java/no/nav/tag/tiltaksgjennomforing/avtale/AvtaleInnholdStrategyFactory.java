@@ -12,6 +12,7 @@ public class AvtaleInnholdStrategyFactory {
             case MENTOR -> new MentorStrategy(avtaleInnhold);
             case INKLUDERINGSTILSKUDD -> new InkluderingstilskuddStrategy(avtaleInnhold);
             case SOMMERJOBB -> new SommerjobbStrategy(avtaleInnhold);
+            case VTAO -> new VtaoStrategy(avtaleInnhold);
         };
     }
 }

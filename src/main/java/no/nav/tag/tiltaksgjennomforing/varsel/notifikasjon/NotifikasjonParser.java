@@ -69,6 +69,9 @@ public class NotifikasjonParser {
             case VARIG_LONNSTILSKUDD -> new AltinnNotifikasjonsProperties(
                     altinnTilgangsstyringProperties.getLtsVarigServiceCode(),
                     altinnTilgangsstyringProperties.getLtsVarigServiceEdition());
+            case VTAO -> new AltinnNotifikasjonsProperties(
+                    altinnTilgangsstyringProperties.getVtaoServiceCode (),
+                    altinnTilgangsstyringProperties.getVtaoServiceEdition());
         };
     }
 }
