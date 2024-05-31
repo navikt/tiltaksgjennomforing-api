@@ -532,6 +532,11 @@ public class TestData {
         return endreAvtale;
     }
 
+    public static EndreAvtale endringPåAlleVTAOFelter() {
+        EndreAvtale endreAvtale = new EndreAvtale();
+        return endreAvtale;
+    }
+
     public static Deltaker enDeltaker(Avtale avtale) {
         return new Deltaker(avtale.getDeltakerFnr());
     }
