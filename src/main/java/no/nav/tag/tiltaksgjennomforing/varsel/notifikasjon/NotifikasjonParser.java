@@ -70,7 +70,7 @@ public class NotifikasjonParser {
                     altinnTilgangsstyringProperties.getLtsVarigServiceCode(),
                     altinnTilgangsstyringProperties.getLtsVarigServiceEdition());
             case VTAO -> new AltinnNotifikasjonsProperties(
-                    altinnTilgangsstyringProperties.getVtaoServiceCode (),
+                    altinnTilgangsstyringProperties.getVtaoServiceCode(),
                     altinnTilgangsstyringProperties.getVtaoServiceEdition());
         };
     }
