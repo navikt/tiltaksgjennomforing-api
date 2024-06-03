@@ -67,6 +67,7 @@ public class EndreAvtale {
     private String mentorTlf;
     private Integer mentorTimelonn;
 
+    private Vtao vtao;
 
     public RefusjonKontaktperson getRefusjonKontaktperson(){
         if(refusjonKontaktpersonTlf == null && refusjonKontaktpersonFornavn == null && refusjonKontaktpersonEtternavn == null) {

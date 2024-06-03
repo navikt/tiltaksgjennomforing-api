@@ -2,9 +2,11 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.util.UUID;
 
+@Data
 @Entity
 public class Vtao {
     @Id
@@ -18,4 +20,14 @@ public class Vtao {
     @JsonIgnore
     private AvtaleInnhold avtaleInnhold;
 
+    public Vtao(Vtao vtao, AvtaleInnhold avtaleInnhold) {
+        id = UUID.randomUUID();
+        this.fadderFornavn = vtao.fadderFornavn;
+        this.fadderEtternavn = vtao.fadderEtternavn;
+        this.fadderTlf = vtao.fadderTlf;
+        this.avtaleInnhold = avtaleInnhold;
+    }
+
+    public Vtao() {
+    }
 }
