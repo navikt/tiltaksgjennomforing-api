@@ -17,12 +17,12 @@ spring:
   main:
     banner-mode: "console"
   kafka:
-    bootstrap-servers: ${spring.embedded.kafka.brokers}
+    bootstrap-servers: localhost:3333
   sql:
     init:
       platform: postgres
 no.nav.gcp.kafka.aiven:
-  bootstrap-servers: ${spring.embedded.kafka.brokers}
+  bootstrap-servers: localhost:3333
   truststore-path: null
   truststore-password: null
   keystore-path: null
@@ -51,7 +51,6 @@ tiltaksgjennomforing:
     id: 1a1d2745-952f-4a0f-839f-9530145b1d4a
   kafka:
     enabled: false
-    fake: true
     fake-url: http://localhost:8081/fake-kafka
   altinn-tilgangsstyring:
     uri: http://localhost:8090/altinn-tilgangsstyring
