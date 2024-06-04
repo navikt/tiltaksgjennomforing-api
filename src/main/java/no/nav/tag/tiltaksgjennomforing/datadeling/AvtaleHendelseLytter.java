@@ -136,6 +136,10 @@ public class AvtaleHendelseLytter {
     public void deltakersGodkjenningOpphevetAvArbeidsgiver(DeltakersGodkjenningOpphevetAvArbeidsgiver event) {
         lagHendelse(event.getAvtale(), HendelseType.DELTAKERS_GODKJENNING_OPPHEVET_AV_ARBEIDSGIVER, event.getAvtale().getBedriftNr(), Avtalerolle.ARBEIDSGIVER);
     }
+    @EventListener
+    public void arbeidsgiversGodkjenningOpphevetAvVeileder(ArbeidsgiversGodkjenningOpphevetAvVeileder event) {
+        lagHendelse(event.getAvtale(), HendelseType.ARBEIDSGIVERS_GODKJENNING_OPPHEVET_AV_VEILEDER, event.getAvtale().getVeilederNavIdent(), Avtalerolle.VEILEDER);
+    }
 
     private void lagHendelse(Avtale avtale, HendelseType hendelseType, Identifikator utførtAv, Avtalerolle utførtAvRolle) {
         LocalDateTime tidspunkt = Now.localDateTime();

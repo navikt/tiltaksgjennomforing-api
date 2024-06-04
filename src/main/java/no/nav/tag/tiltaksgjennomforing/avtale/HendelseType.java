@@ -49,7 +49,8 @@ public enum HendelseType {
     FJERNET_ETTERREGISTRERING("Fjernet etterregistrering på avtale"),
     STATUSENDRING("Statusendring"),
     DELTAKERS_GODKJENNING_OPPHEVET_AV_VEILEDER("Deltakers godkjenning opphevet av veileder"),
-    DELTAKERS_GODKJENNING_OPPHEVET_AV_ARBEIDSGIVER("Deltakers godkjenning opphevet av arbeidsgiver");
+    DELTAKERS_GODKJENNING_OPPHEVET_AV_ARBEIDSGIVER("Deltakers godkjenning opphevet av arbeidsgiver"),
+    ARBEIDSGIVERS_GODKJENNING_OPPHEVET_AV_VEILEDER("Arbeidsgivers godkjenning opphevet av veileder");
 
     private final String tekst;
 }
