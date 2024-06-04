@@ -33,19 +33,6 @@ public abstract class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy
         avtaleInnhold.setStillingprosent(nyAvtale.getStillingprosent());
         avtaleInnhold.setAntallDagerPerUke(nyAvtale.getAntallDagerPerUke());
         avtaleInnhold.setRefusjonKontaktperson(nyAvtale.getRefusjonKontaktperson());
-        if (nyAvtale.getVtao() != null) {
-            var eksisterendeVtao = avtaleInnhold.getVtao();
-            var nyVtao = new Vtao(nyAvtale.getVtao(), avtaleInnhold);
-            if (eksisterendeVtao == null) {
-                avtaleInnhold.setVtao(nyVtao);
-            } else {
-                eksisterendeVtao.setFadderFornavn(nyVtao.getFadderFornavn());
-                eksisterendeVtao.setFadderEtternavn(nyVtao.getFadderEtternavn());
-                eksisterendeVtao.setFadderTlf(nyVtao.getFadderTlf());
-
-            }
-        }
-
     }
 
     @Override
