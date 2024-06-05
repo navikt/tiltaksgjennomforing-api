@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest(properties = { "tiltaksgjennomforing.kafka.enabled=true" })
 @DirtiesContext
-@ActiveProfiles({ Miljø.LOCAL })
+@ActiveProfiles({ Miljø.LOCAL, Miljø.TEST })
 @EmbeddedKafka(partitions = 1, topics = { Topics.TILSKUDDSPERIODE_GODKJENT })
 class TilskuddsperiodeGodkjentKafkaProducerTest {
 

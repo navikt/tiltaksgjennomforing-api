@@ -1,11 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.enhet;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.time.Instant;
-
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
@@ -21,8 +15,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.Instant;
+
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 @SpringBootTest
-@ActiveProfiles({Miljø.LOCAL, "wiremock"})
+@ActiveProfiles({ Miljø.LOCAL, Miljø.TEST, Miljø.WIREMOCK })
 @DirtiesContext
 class VeilarbArenaClientTest {
 

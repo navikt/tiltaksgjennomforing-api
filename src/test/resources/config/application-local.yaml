@@ -17,12 +17,12 @@ spring:
   main:
     banner-mode: "console"
   kafka:
-    bootstrap-servers: localhost:3333
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
   sql:
     init:
       platform: postgres
 no.nav.gcp.kafka.aiven:
-  bootstrap-servers: localhost:3333
+  bootstrap-servers: ${spring.embedded.kafka.brokers}
   truststore-path: null
   truststore-password: null
   keystore-path: null

@@ -20,9 +20,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@ActiveProfiles(Miljø.LOCAL)
 @SpringBootTest
+@ActiveProfiles({ Miljø.LOCAL, Miljø.TEST })
 public class DeltakerTest {
+
     @MockBean
     private AvtaleRepository avtaleRepository;
 
@@ -42,7 +43,6 @@ public class DeltakerTest {
         Avtale avtaler = deltaker.hentAvtale(avtaleRepository, avtale.getId());
         assertThat(avtaler.getMentorFnr()).isNull();
         assertThat(avtaler.getGjeldendeInnhold().getMentorTimelonn()).isNull();
-
     }
 
     @Test

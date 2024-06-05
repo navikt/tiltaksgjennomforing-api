@@ -9,10 +9,10 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.serializer.JsonSerializer;
-import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.EmbeddedKafkaZKBroker;
 
 import java.util.Map;
@@ -25,7 +25,8 @@ public class LokalConfiguration {
   NotifikasjonService notifikasjon() { return Mockito.mock(NotifikasjonService.class);}
 
   @Bean
-  public EmbeddedKafkaBroker kafkaBroker() {
+  @Profile(Miljø.IKKE_TEST)
+  public EmbeddedKafkaZKBroker lokalKafkaBroker() {
     log.info("Starter lokal Kafka");
 
     return new EmbeddedKafkaZKBroker(
@@ -38,11 +39,12 @@ public class LokalConfiguration {
   }
 
   @Bean
+  @Profile(Miljø.IKKE_TEST)
   public KafkaTemplate<String, ArenaKafkaMessage<?>> arenaMockKafkaTemplate(
-      EmbeddedKafkaBroker kafkaBroker
+      EmbeddedKafkaZKBroker lokalKafkaBroker
   ) {
     Map<String, Object> props = Map.of(
-        ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBroker.getBrokersAsString(),
+        ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, lokalKafkaBroker.getBrokersAsString(),
         ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class,
         ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class
     );

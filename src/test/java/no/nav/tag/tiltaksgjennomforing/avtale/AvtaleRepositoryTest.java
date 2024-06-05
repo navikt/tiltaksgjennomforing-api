@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -36,8 +37,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest
-@ActiveProfiles({Miljø.LOCAL, "wiremock"})
+@ActiveProfiles({ Miljø.LOCAL, Miljø.TEST, Miljø.WIREMOCK })
 @DirtiesContext
+@EmbeddedKafka
 public class AvtaleRepositoryTest {
 
     @Autowired

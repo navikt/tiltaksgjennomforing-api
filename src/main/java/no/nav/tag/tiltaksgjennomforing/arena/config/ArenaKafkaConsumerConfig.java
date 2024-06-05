@@ -24,7 +24,7 @@ import java.util.Map;
 
 @EnableKafka
 @Configuration
-@Profile({ Miljø.LOCAL })
+@Profile(Miljø.LOCAL + "&" + Miljø.IKKE_TEST)
 public class ArenaKafkaConsumerConfig {
 
     @Value("${no.nav.gcp.kafka.aiven.bootstrap-servers}")
