@@ -38,7 +38,9 @@ public class AltinnTilgangsstyringService {
                 altinnTilgangsstyringProperties.getLtsVarigServiceCode(),
                 altinnTilgangsstyringProperties.getLtsVarigServiceEdition(),
                 altinnTilgangsstyringProperties.getSommerjobbServiceCode(),
-                altinnTilgangsstyringProperties.getSommerjobbServiceEdition())) {
+                altinnTilgangsstyringProperties.getSommerjobbServiceEdition(),
+                altinnTilgangsstyringProperties.getVtaoServiceCode(),
+                altinnTilgangsstyringProperties.getVtaoServiceEdition())) {
             throw new TiltaksgjennomforingException("Altinn konfigurasjon ikke komplett");
         }
         this.altinnTilgangsstyringProperties = altinnTilgangsstyringProperties;
@@ -80,6 +82,10 @@ public class AltinnTilgangsstyringService {
         AltinnReportee[] inkluderingstilskuddOrger = kallAltinn(altinnTilgangsstyringProperties.getInkluderingstilskuddServiceCode(), altinnTilgangsstyringProperties.getInkluderingstilskuddServiceEdition(), fnr,
                 arbeidsgiverToken);
         leggTil(tilganger, inkluderingstilskuddOrger, Tiltakstype.INKLUDERINGSTILSKUDD);
+
+        AltinnReportee[] vtaoOrger = kallAltinn(altinnTilgangsstyringProperties.getVtaoServiceCode(), altinnTilgangsstyringProperties.getVtaoServiceEdition(), fnr,
+                arbeidsgiverToken);
+        leggTil(tilganger, vtaoOrger, Tiltakstype.VTAO);
 
         return tilganger.toMap();
     }

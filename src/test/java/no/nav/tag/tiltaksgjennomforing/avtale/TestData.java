@@ -46,7 +46,7 @@ public class TestData {
     public static NavEnhet ENHET_GEOGRAFISK = new NavEnhet("0904", "Vinstra");
     public static Integer ET_AVTALENR = 10;
 
-    public static EnumSet<Tiltakstype> avtalerMedTilskuddsperioder = EnumSet.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
+    public static EnumSet<Tiltakstype> avtalerMedTilskuddsperioder = EnumSet.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB, Tiltakstype.VTAO);
 
     public static Avtale enArbeidstreningAvtale() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
@@ -391,6 +391,48 @@ public class TestData {
         avtale.getGjeldendeInnhold().setJournalpostId(null);
         return avtale;
     }
+    //HEPP
+    public static Avtale enVtaoAvtaleGodkjentAvArbeidsgiver() {
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO), new NavIdent("Z123456"));
+        setOppfølgingPåAvtale(avtale);
+        EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
+        endreAvtale.setStartDato(LocalDate.of(2024, 7, 1));
+        endreAvtale.setSluttDato(LocalDate.of(2026, 6, 1).plusWeeks(4).minusDays(1));
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder );
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        return avtale;
+    }
+
+    public static EndreAvtale endringPåAlleVTAOFelter() {
+        EndreAvtale endreAvtale = new EndreAvtale();
+        endreKontaktInfo(endreAvtale);
+        endreFadderInfo(endreAvtale);
+        endreAvtale.setOppfolging("Telefon hver uke");
+        endreAvtale.setTilrettelegging("Ingen");
+        endreAvtale.setStartDato(Now.localDate());
+        endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(12).minusDays(1));
+        endreAvtale.setStillingprosent(50);
+        endreAvtale.setArbeidsoppgaver("Butikkarbeid");
+        endreAvtale.setArbeidsgiverKontonummer("000111222");
+        endreAvtale.setStillingstittel("Butikkbetjent");
+        endreAvtale.setManedslonn(6808);
+        endreAvtale.setStillingstype(Stillingstype.FAST);
+        endreAvtale.setAntallDagerPerUke(5);
+        return endreAvtale;
+    }
+
+    public static EndreAvtale endreFadderInfo(EndreAvtale endreAvtale) {
+        Vtao vtao = new Vtao();
+        vtao.setFadderFornavn("Frank");
+        vtao.setFadderEtternavn("Fadder");
+        vtao.setFadderTlf("12345678");
+        endreAvtale.setVtao(vtao);
+        return endreAvtale;
+
+    }
+
+
 
     public static Avtale enLonnstilskuddAvtaleMedAltUtfyltMedGodkjentForEtterregistrering(LocalDate avtaleStart, LocalDate avtaleSlutt) {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
@@ -468,7 +510,6 @@ public class TestData {
         endreAvtale.setMentorTimelonn(1000);
         return endreAvtale;
     }
-
     public static EndreAvtale endringPåAlleArbeidstreningFelter() {
         EndreAvtale endreAvtale = new EndreAvtale();
         endreKontaktInfo(endreAvtale);
@@ -529,11 +570,6 @@ public class TestData {
         endreAvtale.setStartDato(Now.localDate());
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(6).minusDays(1));
         endreMentorInfo(endreAvtale);
-        return endreAvtale;
-    }
-
-    public static EndreAvtale endringPåAlleVTAOFelter() {
-        EndreAvtale endreAvtale = new EndreAvtale();
         return endreAvtale;
     }
 
