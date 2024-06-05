@@ -53,10 +53,20 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
     private static String lagVarselTekst(Avtale avtale, HendelseType hendelseType) {
         return switch (hendelseType) {
             case TILSKUDDSPERIODE_AVSLATT -> tilskuddsperiodeAvslåttTekst(avtale, hendelseType.getTekst());
+            case TILSKUDDSPERIODE_GODKJENT ->{
+                if(avtale.gjeldendeTilskuddsperiode() != null
+                        && avtale.gjeldendeTilskuddsperiode().getStartDato() != null
+                        && avtale.gjeldendeTilskuddsperiode().getSluttDato() != null) {
+                    DateTimeFormatter norskDatoformat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+                    yield hendelseType.getTekst() + "\n(" + avtale.gjeldendeTilskuddsperiode().getStartDato().format(norskDatoformat) + " til " + avtale.gjeldendeTilskuddsperiode().getSluttDato().format(norskDatoformat) + ")";
+                }else{
+                    yield hendelseType.getTekst();
+                }
+            }
             case AVTALE_FORKORTET ->
-                    "Avtale forkortet til " + avtale.getGjeldendeInnhold().getSluttDato().format(DateTimeFormatter.ofPattern("dd.MM.YYYY"));
+                    "Avtale forkortet til " + avtale.getGjeldendeInnhold().getSluttDato().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
             case AVTALE_FORLENGET ->
-                    "Avtale forlenget til " + avtale.getGjeldendeInnhold().getSluttDato().format(DateTimeFormatter.ofPattern("dd.MM.YYYY"));
+                    "Avtale forlenget til " + avtale.getGjeldendeInnhold().getSluttDato().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
             default -> hendelseType.getTekst();
         };
     }
