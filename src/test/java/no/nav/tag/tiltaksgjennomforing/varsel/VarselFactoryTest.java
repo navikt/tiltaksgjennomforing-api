@@ -7,13 +7,16 @@ import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.time.format.DateTimeFormatter;
+
 class VarselFactoryTest {
 
   @Test
   public void skal_returnere_tilskuddsperiode_verdi_i_teksten_naar_beslutter_godkjenner_periode(){
     Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedSpesieltTilpassetInnsatsGodkjentAvVeileder();
     VarselFactory factory = new VarselFactory(avtale, Avtalerolle.BESLUTTER, TestData.enNavIdent() , HendelseType.TILSKUDDSPERIODE_GODKJENT);
-    assertEquals("Tilskuddsperiode har blitt godkjent av beslutter (" + avtale.gjeldendeTilskuddsperiode().getStartDato() + " til " + avtale.gjeldendeTilskuddsperiode().getSluttDato() + ")",factory.veileder().getTekst());
+    DateTimeFormatter norskDatoformat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    assertEquals("Tilskuddsperiode har blitt godkjent av beslutter\n(" + avtale.gjeldendeTilskuddsperiode().getStartDato().format(norskDatoformat) + " til " + avtale.gjeldendeTilskuddsperiode().getSluttDato().format(norskDatoformat) + ")",factory.veileder().getTekst());
   }
 
   @Test
@@ -23,6 +26,13 @@ class VarselFactoryTest {
     when(tilskuddPeriode.getStartDato()).thenReturn(null);
     when(tilskuddPeriode.getSluttDato()).thenReturn(null);
     when(avtale.gjeldendeTilskuddsperiode()).thenReturn(tilskuddPeriode);
+    VarselFactory factory = new VarselFactory(avtale, Avtalerolle.BESLUTTER, TestData.enNavIdent() , HendelseType.TILSKUDDSPERIODE_GODKJENT);
+    assertEquals("Tilskuddsperiode har blitt godkjent av beslutter",factory.veileder().getTekst());
+  }
+  @Test
+  public void skal_returnere_tilskuddsperiode_er_null(){
+    Avtale avtale = Mockito.mock(Avtale.class);
+    when(avtale.gjeldendeTilskuddsperiode()).thenReturn(null);
     VarselFactory factory = new VarselFactory(avtale, Avtalerolle.BESLUTTER, TestData.enNavIdent() , HendelseType.TILSKUDDSPERIODE_GODKJENT);
     assertEquals("Tilskuddsperiode har blitt godkjent av beslutter",factory.veileder().getTekst());
   }

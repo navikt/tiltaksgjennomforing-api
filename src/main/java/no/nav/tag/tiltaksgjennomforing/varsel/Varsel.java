@@ -54,18 +54,20 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
         return switch (hendelseType) {
             case TILSKUDDSPERIODE_AVSLATT -> tilskuddsperiodeAvslåttTekst(avtale, hendelseType.getTekst());
             case TILSKUDDSPERIODE_GODKJENT ->{
-                if(avtale.gjeldendeTilskuddsperiode().getStartDato() != null
+                if(avtale.gjeldendeTilskuddsperiode() != null
+                        && avtale.gjeldendeTilskuddsperiode().getStartDato() != null
                         && avtale.gjeldendeTilskuddsperiode().getSluttDato() != null) {
-                    yield hendelseType.getTekst() + " (" + avtale.gjeldendeTilskuddsperiode().getStartDato() + " til " + avtale.gjeldendeTilskuddsperiode().getSluttDato() + ")";
+                    DateTimeFormatter norskDatoformat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+                    yield hendelseType.getTekst() + "\n(" + avtale.gjeldendeTilskuddsperiode().getStartDato().format(norskDatoformat) + " til " + avtale.gjeldendeTilskuddsperiode().getSluttDato().format(norskDatoformat) + ")";
                 }else{
                     yield hendelseType.getTekst();
                 }
             }
             case AVTALE_FORKORTET ->
-                    "Avtale forkortet til " + avtale.getGjeldendeInnhold().getSluttDato().format(DateTimeFormatter.ofPattern("dd.MM.YYYY"));
+                    "Avtale forkortet til " + avtale.getGjeldendeInnhold().getSluttDato().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
             case AVTALE_FORLENGET ->
-                    "Avtale forlenget til " + avtale.getGjeldendeInnhold().getSluttDato().format(DateTimeFormatter.ofPattern("dd.MM.YYYY"));
-            default -> hendelseType.getTekst(); // TODO: Lag en for godkjent tilskuddsperiode av beslutter + legg periode det gjelder her!
+                    "Avtale forlenget til " + avtale.getGjeldendeInnhold().getSluttDato().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+            default -> hendelseType.getTekst();
         };
     }
 
