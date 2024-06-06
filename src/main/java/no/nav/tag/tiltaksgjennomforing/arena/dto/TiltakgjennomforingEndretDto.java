@@ -15,7 +15,7 @@ public record TiltakgjennomforingEndretDto(
     Integer sakId,
 
     @JsonProperty("TILTAKSKODE")
-    Tiltakskode tiltakskode,
+    String tiltakskode,
 
     @JsonProperty("ANTALL_DELTAKERE")
     Integer antallDeltakere,

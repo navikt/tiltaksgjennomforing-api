@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.EmbeddedKafkaZKBroker;
 
 import java.util.Map;
@@ -26,7 +27,7 @@ public class LokalConfiguration {
 
   @Bean
   @Profile(Miljø.IKKE_TEST)
-  public EmbeddedKafkaZKBroker lokalKafkaBroker() {
+  public EmbeddedKafkaBroker lokalKafkaBroker() {
     log.info("Starter lokal Kafka");
 
     return new EmbeddedKafkaZKBroker(
@@ -40,9 +41,7 @@ public class LokalConfiguration {
 
   @Bean
   @Profile(Miljø.IKKE_TEST)
-  public KafkaTemplate<String, ArenaKafkaMessage<?>> arenaMockKafkaTemplate(
-      EmbeddedKafkaZKBroker lokalKafkaBroker
-  ) {
+  public KafkaTemplate<String, ArenaKafkaMessage<?>> arenaMockKafkaTemplate(EmbeddedKafkaBroker lokalKafkaBroker) {
     Map<String, Object> props = Map.of(
         ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, lokalKafkaBroker.getBrokersAsString(),
         ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class,
