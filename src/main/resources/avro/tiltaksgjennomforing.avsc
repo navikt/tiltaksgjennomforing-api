@@ -48,7 +48,8 @@
           "VARIG_LONNSTILSKUDD",
           "SOMMERJOBB",
           "MENTOR",
-          "INKLUDERINGSTILSKUDD"
+          "INKLUDERINGSTILSKUDD",
+          "VTAO"
         ]
       }
     },
@@ -64,7 +65,8 @@
             "MIDLONTIL",
             "VARLONTIL",
             "MENTOR",
-            "INKLUTILS"
+            "INKLUTILS",
+            "VATIAROR"
           ]
         }
       ]

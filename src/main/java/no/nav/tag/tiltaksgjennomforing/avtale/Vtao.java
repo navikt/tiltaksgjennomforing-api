@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.UUID;
 
@@ -18,6 +19,7 @@ public class Vtao {
     @OneToOne
     @JoinColumn(name = "avtale_innhold_id")
     @JsonIgnore
+    @ToString.Exclude
     private AvtaleInnhold avtaleInnhold;
 
     public Vtao(Vtao vtao, AvtaleInnhold avtaleInnhold) {
