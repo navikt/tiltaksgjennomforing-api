@@ -391,7 +391,7 @@ public class TestData {
         avtale.getGjeldendeInnhold().setJournalpostId(null);
         return avtale;
     }
-    //HEPP
+
     public static Avtale enVtaoAvtaleGodkjentAvArbeidsgiver() {
         Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO), new NavIdent("Z123456"));
         setOppfølgingPåAvtale(avtale);
@@ -419,6 +419,7 @@ public class TestData {
         endreAvtale.setManedslonn(6808);
         endreAvtale.setStillingstype(Stillingstype.FAST);
         endreAvtale.setAntallDagerPerUke(5);
+        endreAvtale.setHarFamilietilknytning(false);
         return endreAvtale;
     }
 

@@ -22,7 +22,8 @@ public class VtaoStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setStillingstittel(nyAvtale.getStillingstittel());
         avtaleInnhold.setStillingStyrk08(nyAvtale.getStillingStyrk08());
         avtaleInnhold.setStillingKonseptId(nyAvtale.getStillingKonseptId());
-        avtaleInnhold.setRefusjonKontaktperson(nyAvtale.getRefusjonKontaktperson());
+        avtaleInnhold.setHarFamilietilknytning(nyAvtale.getHarFamilietilknytning());
+        avtaleInnhold.setFamilietilknytningForklaring(nyAvtale.getFamilietilknytningForklaring());
         avtaleInnhold.setManedslonn(nyAvtale.getManedslonn());
         avtaleInnhold.setArbeidsgiverKontonummer(nyAvtale.getArbeidsgiverKontonummer());
 
