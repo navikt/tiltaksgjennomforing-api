@@ -14,7 +14,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@ActiveProfiles({ Miljø.LOCAL, "wiremock" })
+@ActiveProfiles({ Miljø.LOCAL, Miljø.TEST, Miljø.WIREMOCK })
 @DirtiesContext
 public class AxsysServiceTest {
     @Autowired

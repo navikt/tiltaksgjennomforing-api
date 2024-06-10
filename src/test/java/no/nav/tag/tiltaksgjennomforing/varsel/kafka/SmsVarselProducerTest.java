@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DirtiesContext
 @SpringBootTest(properties = { "tiltaksgjennomforing.kafka.enabled=true" })
-@ActiveProfiles({ Miljø.LOCAL })
+@ActiveProfiles({ Miljø.LOCAL, Miljø.TEST })
 @EmbeddedKafka(partitions = 1, controlledShutdown = false, topics = { Topics.TILTAK_SMS })
 public class SmsVarselProducerTest {
     @Autowired

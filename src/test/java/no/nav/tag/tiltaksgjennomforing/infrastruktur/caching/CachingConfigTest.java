@@ -33,7 +33,7 @@ import static org.mockito.Mockito.mock;
 
 @Slf4j
 @SpringBootTest
-@ActiveProfiles({ Miljø.LOCAL,  "wiremock" })
+@ActiveProfiles({ Miljø.LOCAL, Miljø.TEST, Miljø.WIREMOCK })
 @ExtendWith(SpringExtension.class)
 @DirtiesContext
 public class CachingConfigTest {

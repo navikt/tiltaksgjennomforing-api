@@ -1,8 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.okonomi;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KontoregisterFantIkkeBedriftFeilException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KontoregisterFeilException;
@@ -15,8 +12,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 @SpringBootTest
-@ActiveProfiles({Miljø.LOCAL, "wiremock"})
+@ActiveProfiles({ Miljø.LOCAL, Miljø.TEST, Miljø.WIREMOCK })
 @DirtiesContext
 public class KontoregisterServiceImplTest {
     @Autowired

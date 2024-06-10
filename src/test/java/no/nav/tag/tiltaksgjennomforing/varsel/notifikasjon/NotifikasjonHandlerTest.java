@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest
-@ActiveProfiles({Miljø.LOCAL})
+@ActiveProfiles({ Miljø.LOCAL, Miljø.TEST })
 @DirtiesContext
 public class NotifikasjonHandlerTest {
 

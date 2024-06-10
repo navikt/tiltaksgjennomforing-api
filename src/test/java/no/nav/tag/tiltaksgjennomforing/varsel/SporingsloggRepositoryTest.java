@@ -15,7 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@ActiveProfiles(Miljø.LOCAL)
+@ActiveProfiles({ Miljø.LOCAL, Miljø.TEST })
 @DirtiesContext
 public class SporingsloggRepositoryTest {
     @Autowired

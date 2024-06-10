@@ -11,7 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@ActiveProfiles({ Miljø.LOCAL, "wiremock" })
+@ActiveProfiles({ Miljø.LOCAL, Miljø.TEST, Miljø.WIREMOCK })
 @DirtiesContext
 public class PersondataServiceTest {
     private static final Fnr STRENGT_FORTROLIG_PERSON = new Fnr("16053900422");

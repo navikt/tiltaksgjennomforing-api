@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
@@ -32,7 +33,7 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ActiveProfiles("local")
+@ActiveProfiles({ Miljø.LOCAL, Miljø.TEST })
 @SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext

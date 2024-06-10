@@ -52,7 +52,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-@ActiveProfiles(Miljø.LOCAL)
+@ActiveProfiles({ Miljø.LOCAL, Miljø.TEST })
 @AutoConfigureMockMvc
 public class AvtaleControllerTest {
 
