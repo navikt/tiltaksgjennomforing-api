@@ -22,14 +22,26 @@ public class Vtao {
     @ToString.Exclude
     private AvtaleInnhold avtaleInnhold;
 
-    public Vtao(Vtao vtao, AvtaleInnhold avtaleInnhold) {
+    public Vtao() {
+    }
+
+    public Vtao(Vtao vtao) {
         id = UUID.randomUUID();
         this.fadderFornavn = vtao.fadderFornavn;
         this.fadderEtternavn = vtao.fadderEtternavn;
         this.fadderTlf = vtao.fadderTlf;
+        this.avtaleInnhold = null;
+    }
+
+    public Vtao(VtaoFelter vtao, AvtaleInnhold avtaleInnhold) {
+        id = UUID.randomUUID();
+        this.fadderFornavn = vtao.fadderFornavn();
+        this.fadderEtternavn = vtao.fadderEtternavn();
+        this.fadderTlf = vtao.fadderTlf();
         this.avtaleInnhold = avtaleInnhold;
     }
 
-    public Vtao() {
+    public VtaoFelter hentFelter() {
+        return new VtaoFelter(fadderFornavn, fadderEtternavn, fadderTlf);
     }
 }

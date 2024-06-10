@@ -9,14 +9,12 @@ public class VtaoStrategy extends BaseAvtaleInnholdStrategy {
     public void endre(EndreAvtale nyAvtale) {
         if (nyAvtale.getVtao() != null) {
             var eksisterendeVtao = avtaleInnhold.getVtao();
-            var nyVtao = new Vtao(nyAvtale.getVtao(), avtaleInnhold);
-            if (eksisterendeVtao == null) {
-                avtaleInnhold.setVtao(nyVtao);
+            if (eksisterendeVtao != null) {
+                eksisterendeVtao.setFadderFornavn(nyAvtale.getVtao().fadderFornavn());
+                eksisterendeVtao.setFadderEtternavn(nyAvtale.getVtao().fadderEtternavn());
+                eksisterendeVtao.setFadderTlf(nyAvtale.getVtao().fadderTlf());
             } else {
-                eksisterendeVtao.setFadderFornavn(nyVtao.getFadderFornavn());
-                eksisterendeVtao.setFadderEtternavn(nyVtao.getFadderEtternavn());
-                eksisterendeVtao.setFadderTlf(nyVtao.getFadderTlf());
-
+                avtaleInnhold.setVtao(new Vtao(nyAvtale.getVtao(), avtaleInnhold));
             }
         }
         avtaleInnhold.setStillingstittel(nyAvtale.getStillingstittel());
@@ -27,5 +25,6 @@ public class VtaoStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setManedslonn(nyAvtale.getManedslonn());
         avtaleInnhold.setArbeidsgiverKontonummer(nyAvtale.getArbeidsgiverKontonummer());
 
-        super.endre(nyAvtale);}
+        super.endre(nyAvtale);
+    }
 }

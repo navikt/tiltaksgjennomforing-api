@@ -398,7 +398,7 @@ public class TestData {
         EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
         endreAvtale.setStartDato(LocalDate.of(2024, 7, 1));
         endreAvtale.setSluttDato(LocalDate.of(2026, 6, 1).plusWeeks(4).minusDays(1));
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder );
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         return avtale;
@@ -424,15 +424,14 @@ public class TestData {
     }
 
     public static EndreAvtale endreFadderInfo(EndreAvtale endreAvtale) {
-        Vtao vtao = new Vtao();
-        vtao.setFadderFornavn("Frank");
-        vtao.setFadderEtternavn("Fadder");
-        vtao.setFadderTlf("12345678");
+        var vtao = new VtaoFelter(
+                "Frank",
+                "Fadder",
+                "12345678"
+        );
         endreAvtale.setVtao(vtao);
         return endreAvtale;
-
     }
-
 
 
     public static Avtale enLonnstilskuddAvtaleMedAltUtfyltMedGodkjentForEtterregistrering(LocalDate avtaleStart, LocalDate avtaleSlutt) {
@@ -511,6 +510,7 @@ public class TestData {
         endreAvtale.setMentorTimelonn(1000);
         return endreAvtale;
     }
+
     public static EndreAvtale endringPåAlleArbeidstreningFelter() {
         EndreAvtale endreAvtale = new EndreAvtale();
         endreKontaktInfo(endreAvtale);
@@ -823,7 +823,8 @@ public class TestData {
                         avtale.getGjeldendeInnhold().getArbeidsgiverFornavn(),
                         avtale.getGjeldendeInnhold().getArbeidsgiverEtternavn(),
                         avtale.getGjeldendeInnhold().getArbeidsgiverTlf(),
-                        new RefusjonKontaktperson("Atle", "Jørgensen", "12345678", true)),
+                        new RefusjonKontaktperson("Atle", "Jørgensen", "12345678", true),
+                        null),
                 TestData.enNavIdent());
         return avtale;
     }
