@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(properties = {"tiltaksgjennomforing.notifikasjoner.enabled=true"})
-@ActiveProfiles({ Miljø.LOCAL, Miljø.TEST, Miljø.WIREMOCK })
+@ActiveProfiles({ Miljø.TEST, Miljø.WIREMOCK })
 @DirtiesContext
 public class NotifikasjonServiceTest {
 

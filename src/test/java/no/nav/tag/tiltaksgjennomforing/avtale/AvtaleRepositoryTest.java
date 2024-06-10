@@ -37,7 +37,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest
-@ActiveProfiles({ Miljø.LOCAL, Miljø.TEST, Miljø.WIREMOCK })
+@ActiveProfiles({ Miljø.TEST, Miljø.WIREMOCK })
 @DirtiesContext
 @EmbeddedKafka
 public class AvtaleRepositoryTest {

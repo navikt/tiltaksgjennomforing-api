@@ -26,7 +26,7 @@ public class LokalConfiguration {
   NotifikasjonService notifikasjon() { return Mockito.mock(NotifikasjonService.class);}
 
   @Bean
-  @Profile(Miljø.IKKE_TEST)
+  @Profile(Miljø.LOCAL)
   public EmbeddedKafkaBroker lokalKafkaBroker() {
     log.info("Starter lokal Kafka");
 
@@ -40,7 +40,7 @@ public class LokalConfiguration {
   }
 
   @Bean
-  @Profile(Miljø.IKKE_TEST)
+  @Profile(Miljø.LOCAL)
   public KafkaTemplate<String, ArenaKafkaMessage<?>> arenaMockKafkaTemplate(EmbeddedKafkaBroker lokalKafkaBroker) {
     Map<String, Object> props = Map.of(
         ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, lokalKafkaBroker.getBrokersAsString(),

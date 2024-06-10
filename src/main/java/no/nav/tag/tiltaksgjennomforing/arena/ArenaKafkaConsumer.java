@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-@Profile(Miljø.LOCAL + "&" + Miljø.IKKE_TEST)
+@Profile(Miljø.LOCAL)
 public class ArenaKafkaConsumer {
 
     @KafkaListener(topics = Topics.ARENA_TILTAKGJENNOMFORING_ENDRET, containerFactory = "arenaTiltakgjennomforingEndretContainerFactory")

@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(properties = { "tiltaksgjennomforing.kafka.enabled=true" })
 @DirtiesContext
-@ActiveProfiles({ Miljø.LOCAL, Miljø.TEST })
+@ActiveProfiles(Miljø.TEST)
 @EnableKafka
 @EmbeddedKafka(partitions = 1, topics = { Topics.TILTAK_VARSEL })
 class RefusjonVarselConsumerTest {

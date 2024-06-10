@@ -28,7 +28,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-@ActiveProfiles({ Miljø.LOCAL, Miljø.TEST, Miljø.WIREMOCK })
+@ActiveProfiles({ Miljø.TEST, Miljø.WIREMOCK })
 @DirtiesContext
 public class AltinnTilgangsstyringServiceTest {
     @Autowired

@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.UUID;
 
 @SpringBootTest
-@ActiveProfiles({ Miljø.LOCAL, Miljø.TEST })
+@ActiveProfiles(Miljø.TEST)
 @DirtiesContext
 public class DeltakerAlleredePaTiltakTest {
 

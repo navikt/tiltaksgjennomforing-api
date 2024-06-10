@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @Unprotected
 @RestController
-@Profile(Miljø.LOCAL + "&" + Miljø.IKKE_TEST)
+@Profile(Miljø.LOCAL)
 @RequestMapping("/arena/simulator")
 public class ArenaKafkaSimulatorController {
     private final KafkaTemplate<String, ArenaKafkaMessage<?>> arenaMockKafkaTemplate;
