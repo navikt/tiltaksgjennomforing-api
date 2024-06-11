@@ -2,12 +2,29 @@ spring:
   datasource:
     url: "jdbc:postgresql://localhost:6432/sample?user=sample&password=sample"
   kafka:
-    properties:
-      security.protocol: PLAINTEXT
-      ssl:
-        keystore: null
-        truststore: null
     bootstrap-servers: localhost:9092
+    producer:
+      ssl:
+        protocol: PLAINTEXT
+        trust-store-type: JKS
+        trust-store-location: null
+        trust-store-password: null
+        key-store-type: PKCS12
+        key-store-location: null
+        key-store-password: null
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: '*'
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: ${spring.application.name}
 
 tiltaksgjennomforing:
   kontoregister:
@@ -67,17 +84,6 @@ tiltaksgjennomforing:
     fixed-delay: 120
   tilskuddsperioder:
     tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD
-
-no.nav.gcp.kafka.aiven:
-  bootstrap-servers: localhost:9092
-  truststore-path: null
-  truststore-password: null
-  keystore-path: null
-  keystore-password: null
-  schema-registry-url: http://localhost:1337
-  schema-registry-credentials-source: null
-  schema-registry-user-info: null
-  security-protocol: PLAINTEXT
 
 no.nav.security.jwt:
   issuer:

@@ -1,5 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeRepository;
@@ -16,20 +18,25 @@ import java.util.UUID;
 @Slf4j
 public class RefusjonEndretStatusKafkaConsumer {
     private final TilskuddPeriodeRepository tilskuddPeriodeRepository;
+    private final ObjectMapper objectMapper;
 
-
-    public RefusjonEndretStatusKafkaConsumer(TilskuddPeriodeRepository tilskuddPeriodeRepository) {
+    public RefusjonEndretStatusKafkaConsumer(
+        TilskuddPeriodeRepository tilskuddPeriodeRepository,
+        ObjectMapper objectMapper
+    ) {
         this.tilskuddPeriodeRepository = tilskuddPeriodeRepository;
+        this.objectMapper = objectMapper;
     }
 
-    @KafkaListener(topics = Topics.REFUSJON_ENDRET_STATUS, containerFactory = "refusjonEndretStatusContainerFactory")
-    public void refusjonEndretStatus(RefusjonEndretStatusMelding melding) {
-        TilskuddPeriode tilskuddPeriode = tilskuddPeriodeRepository.findById(UUID.fromString(melding.getTilskuddsperiodeId())).orElseThrow();
+    @KafkaListener(topics = Topics.REFUSJON_ENDRET_STATUS)
+    public void refusjonEndretStatus(String melding) throws JsonProcessingException {
+        RefusjonEndretStatusMelding refusjonEndretStatusMelding = objectMapper.readValue(melding, RefusjonEndretStatusMelding.class);
+        TilskuddPeriode tilskuddPeriode = tilskuddPeriodeRepository.findById(UUID.fromString(refusjonEndretStatusMelding.getTilskuddsperiodeId())).orElseThrow();
         if(tilskuddPeriode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) {
-            log.error("En tilskuddsperiode {} som er ubehandlet har fått statusendring fra refusjon-api", melding.getTilskuddsperiodeId());
+            log.error("En tilskuddsperiode {} som er ubehandlet har fått statusendring fra refusjon-api", refusjonEndretStatusMelding.getTilskuddsperiodeId());
         }
-        tilskuddPeriode.setRefusjonStatus(melding.getStatus());
-        log.info("Setter refusjonstatus til {} på tilskuddsperiode {}", melding.getStatus(), melding.getTilskuddsperiodeId());
+        tilskuddPeriode.setRefusjonStatus(refusjonEndretStatusMelding.getStatus());
+        log.info("Setter refusjonstatus til {} på tilskuddsperiode {}", refusjonEndretStatusMelding.getStatus(), refusjonEndretStatusMelding.getTilskuddsperiodeId());
 
         tilskuddPeriodeRepository.save(tilskuddPeriode);
 

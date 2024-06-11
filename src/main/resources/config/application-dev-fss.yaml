@@ -2,16 +2,6 @@ spring:
   datasource:
     driverClassName: org.postgresql.Driver
     url: 'jdbc:postgresql://b27dbvl032.preprod.local:5432/tiltaksgjennomforing-p15-preprod'
-  kafka:
-    bootstrap-servers: b27apvl00045.preprod.local:8443, b27apvl00046.preprod.local:8443, b27apvl00047.preprod.local:8443
-    properties:
-      security.protocol: SASL_SSL
-      sasl:
-        mechanism: PLAIN
-        jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="${tiltaksgjennomforing.serviceuser.username}" password="${tiltaksgjennomforing.serviceuser.password}";
-      ssl.truststore:
-        location: ${javax.net.ssl.trustStore}
-        password: ${javax.net.ssl.trustStorePassword}
   sql:
     init:
       platform: postgres

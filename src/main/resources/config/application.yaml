@@ -18,6 +18,18 @@ spring:
   jmx:
     enabled: false
   kafka:
+    bootstrap-servers: ${KAFKA_BROKERS}
+    producer:
+      ssl:
+        protocol: PLAINTEXT
+        trust-store-type: JKS
+        trust-store-location: ${KAFKA_TRUSTSTORE_PATH}
+        trust-store-password: ${KAFKA_CREDSTORE_PASSWORD}
+        key-store-type: PKCS12
+        key-store-location: ${KAFKA_KEYSTORE_PATH}
+        key-store-password: ${KAFKA_CREDSTORE_PASSWORD}
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
     consumer:
       auto-offset-reset: earliest
       enable-auto-commit: false
@@ -27,23 +39,8 @@ spring:
             trusted:
               packages: "*"
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.StringDeserializer
       group-id: ${spring.application.name}
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-
-#TODO: Feil pakke: Flytt Kafka aiven verdier her under tiltaksgjennomforing.kafka
-no.nav.gcp.kafka.aiven:
-  bootstrap-servers: ${KAFKA_BROKERS}
-  truststore-path: ${KAFKA_TRUSTSTORE_PATH}
-  truststore-password: ${KAFKA_CREDSTORE_PASSWORD}
-  keystore-path: ${KAFKA_KEYSTORE_PATH}
-  keystore-password: ${KAFKA_CREDSTORE_PASSWORD}
-  schema-registry-url: ${KAFKA_SCHEMA_REGISTRY}
-  schema-registry-credentials-source: USER_INFO
-  schema-registry-user-info: "${KAFKA_SCHEMA_REGISTRY_USER}:${KAFKA_SCHEMA_REGISTRY_PASSWORD}"
-  security-protocol: SSL
 
 tiltaksgjennomforing:
   beslutter-ad-gruppe:
