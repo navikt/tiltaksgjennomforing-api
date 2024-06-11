@@ -90,7 +90,6 @@ public class AltinnTilgangsstyringServiceTest {
         assertThat(tilganger.get(new BedriftNr("999999999"))).containsOnly(
                 Tiltakstype.ARBEIDSTRENING, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD,
                 Tiltakstype.SOMMERJOBB, Tiltakstype.MENTOR, Tiltakstype.INKLUDERINGSTILSKUDD, Tiltakstype.VTAO); // TODO: Tilgangsstyring skal skille på midlertidig lønnstilskudd og sommerjobb
-
     }
 
     @Test
