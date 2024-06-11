@@ -53,7 +53,9 @@ public class LagSmsFraAvtaleHendelse {
         if (!smsMinSideToggleErPå()) {
             lagreOgSendKafkaMelding(smsTilDeltaker);
         }
-        lagreOgSendKafkaMelding(smsTilArbeidsgiver);
+        if (!smsMinSideArbeidsgiverToggleErPå()) {
+            lagreOgSendKafkaMelding(smsTilArbeidsgiver);
+        }
 
     }
     @EventListener
@@ -77,7 +79,9 @@ public class LagSmsFraAvtaleHendelse {
         }
         if (event.getGamleVerdier().isGodkjentAvArbeidsgiver()) {
             var smsTilArbeidsgiver = smsTilArbeidsgiver(event.getAvtale(), HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER);
-            lagreOgSendKafkaMelding(smsTilArbeidsgiver);
+            if (!smsMinSideArbeidsgiverToggleErPå()) {
+                lagreOgSendKafkaMelding(smsTilArbeidsgiver);
+            }
         }
     }
     @EventListener
@@ -135,6 +139,16 @@ public class LagSmsFraAvtaleHendelse {
             return true;
         } else {
             log.info("Toggle sms-min-side-deltaker er av: sender sms til deltaker som vanlig");
+            return false;
+        }
+    }
+    private boolean smsMinSideArbeidsgiverToggleErPå() {
+        Boolean smsMinSideArbeidsgiverTogglePå = featureToggleService.isEnabled("arbeidsgivernotifikasjon-med-sak-og-sms");
+        if (smsMinSideArbeidsgiverTogglePå) {
+            log.info("Toggle sms-min-side-arbeidsgiver er på: sender ikke sms til arbeidsgiver");
+            return true;
+        } else {
+            log.info("Toggle sms-min-side-arbeidsgiver er av: sender sms til arbeidsgiver som vanlig");
             return false;
         }
     }
