@@ -21,7 +21,7 @@ spring:
     bootstrap-servers: ${KAFKA_BROKERS}
     producer:
       ssl:
-        protocol: PLAINTEXT
+        protocol: SSL
         trust-store-type: JKS
         trust-store-location: ${KAFKA_TRUSTSTORE_PATH}
         trust-store-password: ${KAFKA_CREDSTORE_PASSWORD}
