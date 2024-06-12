@@ -45,7 +45,7 @@ spring:
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       group-id: ${spring.application.name}
     properties:
-      schema.registry.url: ${KAFKA_SCHEMA_REGISTRY_URL}
+      schema.registry.url: ${KAFKA_SCHEMA_REGISTRY}
       basic.auth:
         credentials.source: USER_INFO
         user.info: ${KAFKA_SCHEMA_REGISTRY_USER}:${KAFKA_SCHEMA_REGISTRY_PASSWORD}
