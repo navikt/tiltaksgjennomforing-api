@@ -65,7 +65,7 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskudd
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-@ActiveProfiles({ Miljø.LOCAL, Miljø.TEST })
+@ActiveProfiles(Miljø.TEST)
 @DirtiesContext
 class LagVarselFraAvtaleHendelserTest {
     @Autowired

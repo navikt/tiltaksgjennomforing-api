@@ -4,25 +4,9 @@ spring:
     username: sa
     password: sa
     driverClassName: org.h2.Driver
-  jpa:
-    properties:
-      hibernate:
-        show_sql: false
-        use_sql_comments: false
-        format_sql: false
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-  main:
-    banner-mode: "console"
-  kafka:
-    bootstrap-servers: localhost:3333
-  sql:
-    init:
-      platform: postgres
+
 no.nav.gcp.kafka.aiven:
-  bootstrap-servers: localhost:3333
+  bootstrap-servers: ${spring.embedded.kafka.brokers}
   truststore-path: null
   truststore-password: null
   keystore-path: null
@@ -40,7 +24,6 @@ no.nav.security.jwt:
     tokenx:
       discoveryurl: https://tiltak-fakelogin.ekstern.dev.nav.no/metadata?issuer=tokenx
       accepted_audience: fake-tokenx
-  client: null
 
 tiltaksgjennomforing:
   kontoregister:
@@ -55,7 +38,6 @@ tiltaksgjennomforing:
   altinn-tilgangsstyring:
     uri: http://localhost:8090/altinn-tilgangsstyring
     proxyUri: http://heh:9090/
-    beOmRettighetBaseUrl: https://min-side-arbeidsgiver.dev.nav.no/min-side-arbeidsgiver/?fragment=be-om-tilgang
     ltsMidlertidigServiceCode: 5516
     ltsMidlertidigServiceEdition: 1
     ltsVarigServiceCode: 5516
@@ -78,13 +60,10 @@ tiltaksgjennomforing:
     rest-uri: http://localhost:8090/sts/sts/token
   axsys:
     uri: http://localhost:8090/axsys
-  consumer:
-    system:
-      id: testsystem
   persondata:
     uri: http://localhost:8090/persondata
   oppgave:
-    oppgave-uri: http://localhost:8090/api/v1/oppgaver
+    oppgave-uri: http://localhost:8090/api/v1/oppgave
   unleash:
     mock: true
   veilarbarena:
@@ -95,20 +74,9 @@ tiltaksgjennomforing:
       url: http://localhost:8090/norg2/api/v1/enhet/navkontor/
     enhet:
       url: http://localhost:8090/norg2/api/v1/enhet/
-  dokgen:
-    uri: http://localhost:5913/template/tiltak-avtale/create-pdf
   notifikasjoner:
     uri: http://localhost:8090/api/graphql
     lenke: http://localhost:3000/tiltaksgjennomforing/avtale/
     enabled: false
-  dvh-melding:
-    gruppe-tilgang: 1a1d2745-952f-4a0f-839f-9530145b1d4a
-    fixed-delay: 10
-  tilskuddsperioder:
-    tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD
-  salesforcekontorer:
-    enheter: 0906
-  utvikler-tilgang:
-    gruppe-tilgang: 1a1d2745-952f-4a0f-839f-9530145b1d4a
 
 ELECTOR_PATH: null

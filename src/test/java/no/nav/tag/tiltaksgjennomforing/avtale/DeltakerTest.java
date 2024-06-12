@@ -21,7 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-@ActiveProfiles({ Miljø.LOCAL, Miljø.TEST })
+@ActiveProfiles(Miljø.TEST)
 public class DeltakerTest {
 
     @MockBean

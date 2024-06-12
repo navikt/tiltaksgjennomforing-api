@@ -33,7 +33,7 @@ import static org.mockito.Mockito.verify;
 
 @SpringBootTest(properties = { "tiltaksgjennomforing.kafka.enabled=true" })
 @DirtiesContext
-@ActiveProfiles({ Miljø.LOCAL, Miljø.TEST })
+@ActiveProfiles(Miljø.TEST)
 @EmbeddedKafka(partitions = 1, topics = {Topics.TILTAK_SMS })
 class LagSmsFraAvtaleHendelseTest {
     @Autowired

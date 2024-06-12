@@ -33,7 +33,7 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ActiveProfiles({ Miljø.LOCAL, Miljø.TEST })
+@ActiveProfiles(Miljø.TEST)
 @SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext

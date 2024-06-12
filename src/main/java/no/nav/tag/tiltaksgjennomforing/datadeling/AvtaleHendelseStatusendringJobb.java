@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-@Profile({Miljø.DEV_FSS, Miljø.PROD_FSS, Miljø.LOCAL})
+@Profile({ Miljø.LOCAL, Miljø.DEV_FSS, Miljø.PROD_FSS })
 @Component
 @RequiredArgsConstructor
 @EnableScheduling

@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
-@ActiveProfiles({ Miljø.LOCAL, Miljø.TEST, Miljø.WIREMOCK })
+@ActiveProfiles({ Miljø.TEST, Miljø.WIREMOCK })
 @DirtiesContext
 public class KontoregisterServiceImplTest {
     @Autowired
