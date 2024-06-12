@@ -21,14 +21,14 @@ spring:
     bootstrap-servers: ${KAFKA_BROKERS}
     security:
       protocol: SSL
+    ssl:
+      trust-store-type: JKS
+      trust-store-location: file:${KAFKA_TRUSTSTORE_PATH}
+      trust-store-password: ${KAFKA_CREDSTORE_PASSWORD}
+      key-store-type: PKCS12
+      key-store-location: file:${KAFKA_KEYSTORE_PATH}
+      key-store-password: ${KAFKA_CREDSTORE_PASSWORD}
     producer:
-      ssl:
-        trust-store-type: JKS
-        trust-store-location: ${KAFKA_TRUSTSTORE_PATH}
-        trust-store-password: ${KAFKA_CREDSTORE_PASSWORD}
-        key-store-type: PKCS12
-        key-store-location: ${KAFKA_KEYSTORE_PATH}
-        key-store-password: ${KAFKA_CREDSTORE_PASSWORD}
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
       properties:
@@ -44,6 +44,11 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       group-id: ${spring.application.name}
+    properties:
+      schema.registry.url: ${KAFKA_SCHEMA_REGISTRY_URL}
+      basic.auth:
+        credentials.source: USER_INFO
+        user.info: ${KAFKA_SCHEMA_REGISTRY_USER}:${KAFKA_SCHEMA_REGISTRY_PASSWORD}
 
 tiltaksgjennomforing:
   beslutter-ad-gruppe:

@@ -8,14 +8,14 @@ spring:
     bootstrap-servers: ${spring.embedded.kafka.brokers}
     security:
       protocol: PLAINTEXT
+    ssl:
+      trust-store-type: JKS
+      trust-store-location: ""
+      trust-store-password: ""
+      key-store-type: PKCS12
+      key-store-location: ""
+      key-store-password: ""
     producer:
-      ssl:
-        trust-store-type: JKS
-        trust-store-location: ""
-        trust-store-password: ""
-        key-store-type: PKCS12
-        key-store-location: ""
-        key-store-password: ""
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
       properties:
@@ -31,6 +31,11 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       group-id: ${spring.application.name}
+    properties:
+      schema.registry.url: ""
+      basic.auth:
+        credentials.source: ""
+        user.info: ""
 
 no.nav.security.jwt:
   issuer:
