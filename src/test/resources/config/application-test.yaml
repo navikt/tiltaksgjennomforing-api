@@ -6,17 +6,20 @@ spring:
     driverClassName: org.h2.Driver
   kafka:
     bootstrap-servers: ${spring.embedded.kafka.brokers}
+    security:
+      protocol: PLAINTEXT
     producer:
       ssl:
-        protocol: PLAINTEXT
         trust-store-type: JKS
-        trust-store-location: null
-        trust-store-password: null
+        trust-store-location: ""
+        trust-store-password: ""
         key-store-type: PKCS12
-        key-store-location: null
-        key-store-password: null
+        key-store-location: ""
+        key-store-password: ""
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        ssl.endpoint.identification.algorithm: ""
     consumer:
       auto-offset-reset: earliest
       enable-auto-commit: false

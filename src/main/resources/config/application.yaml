@@ -19,9 +19,10 @@ spring:
     enabled: false
   kafka:
     bootstrap-servers: ${KAFKA_BROKERS}
+    security:
+      protocol: SSL
     producer:
       ssl:
-        protocol: SSL
         trust-store-type: JKS
         trust-store-location: ${KAFKA_TRUSTSTORE_PATH}
         trust-store-password: ${KAFKA_CREDSTORE_PASSWORD}
@@ -30,6 +31,8 @@ spring:
         key-store-password: ${KAFKA_CREDSTORE_PASSWORD}
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        ssl.endpoint.identification.algorithm: ""
     consumer:
       auto-offset-reset: earliest
       enable-auto-commit: false
