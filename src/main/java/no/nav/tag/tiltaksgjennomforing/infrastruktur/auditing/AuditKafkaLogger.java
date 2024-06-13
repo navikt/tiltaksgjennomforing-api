@@ -3,17 +3,12 @@ package no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
-import org.springframework.util.concurrent.ListenableFutureCallback;
 
 @Slf4j
 @Component
@@ -24,7 +19,7 @@ public class AuditKafkaLogger implements AuditLogger {
             .registerModule(new JavaTimeModule())
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 
-    public AuditKafkaLogger(@Qualifier("auditEntryTemplate") KafkaTemplate<String, String> kafkaTemplate) {
+    public AuditKafkaLogger(KafkaTemplate<String, String> kafkaTemplate) {
         this.auditKafkaTemplate = kafkaTemplate;
     }
 

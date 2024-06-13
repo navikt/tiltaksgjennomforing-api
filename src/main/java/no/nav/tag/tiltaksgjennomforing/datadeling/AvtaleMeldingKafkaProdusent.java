@@ -2,8 +2,6 @@ package no.nav.tag.tiltaksgjennomforing.datadeling;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -14,11 +12,14 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
 public class AvtaleMeldingKafkaProdusent {
 
-    private final KafkaTemplate<String, String> aivenKafkaTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
     private final AvtaleMeldingEntitetRepository repository;
 
-    public AvtaleMeldingKafkaProdusent(@Autowired @Qualifier("aivenKafkaTemplate") KafkaTemplate<String, String> aivenKafkaTemplate, AvtaleMeldingEntitetRepository repository) {
-        this.aivenKafkaTemplate = aivenKafkaTemplate;
+    public AvtaleMeldingKafkaProdusent(
+        KafkaTemplate<String, String> kafkaTemplate,
+        AvtaleMeldingEntitetRepository repository
+    ) {
+        this.kafkaTemplate = kafkaTemplate;
         this.repository = repository;
     }
 
@@ -26,7 +27,7 @@ public class AvtaleMeldingKafkaProdusent {
     public void avtaleMeldingOpprettet(AvtaleMeldingOpprettet event) {
         String meldingId = event.getEntitet().getAvtaleId().toString();
 
-        aivenKafkaTemplate.send(Topics.AVTALE_HENDELSE, meldingId, event.getEntitet().getJson()).whenComplete(
+        kafkaTemplate.send(Topics.AVTALE_HENDELSE, meldingId, event.getEntitet().getJson()).whenComplete(
                 (result, ex) -> {
                     if (ex != null) {
                         log.error("AvtaleHendelse med avtaleId {} kunne ikke sendes til Kafka topic {}", meldingId, Topics.AVTALE_HENDELSE);
@@ -38,7 +39,7 @@ public class AvtaleMeldingKafkaProdusent {
                     }
                 });
 
-        aivenKafkaTemplate.send(Topics.AVTALE_HENDELSE_COMPACT, meldingId, event.getEntitet().getJson()).whenComplete(
+        kafkaTemplate.send(Topics.AVTALE_HENDELSE_COMPACT, meldingId, event.getEntitet().getJson()).whenComplete(
                 (result, ex) -> {
                     if (ex != null) {
                         log.error("AvtaleHendelse med avtaleId {} kunne ikke sendes til Kafka topic {}", meldingId, Topics.AVTALE_HENDELSE_COMPACT);

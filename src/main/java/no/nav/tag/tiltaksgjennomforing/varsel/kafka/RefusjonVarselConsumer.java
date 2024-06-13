@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.kafka;
 
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
@@ -14,13 +15,19 @@ import org.springframework.stereotype.Component;
 
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class RefusjonVarselConsumer {
     private final AvtaleRepository avtaleRepository;
+    private final ObjectMapper objectMapper;
 
-    @KafkaListener(topics = Topics.TILTAK_VARSEL, containerFactory = "varselContainerFactory")
-    public void consume(RefusjonVarselMelding refusjonVarselMelding) {
+    public RefusjonVarselConsumer(AvtaleRepository avtaleRepository, ObjectMapper objectMapper) {
+        this.avtaleRepository = avtaleRepository;
+        this.objectMapper = objectMapper;
+    }
+
+    @KafkaListener(topics = Topics.TILTAK_VARSEL)
+    public void consume(String melding) throws JsonProcessingException {
+        RefusjonVarselMelding refusjonVarselMelding = objectMapper.readValue(melding, RefusjonVarselMelding.class);
         Avtale avtale = avtaleRepository.findById(refusjonVarselMelding.getAvtaleId()).orElseThrow(RuntimeException::new);
         VarselType varselType = refusjonVarselMelding.getVarselType();
 

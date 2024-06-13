@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
@@ -139,8 +140,12 @@ public class LagSmsFraAvtaleHendelse {
     }
 
     private void lagreOgSendKafkaMelding(Sms sms) {
-        smsRepository.save(sms);
-        smsProducer.sendSmsVarselMeldingTilKafka(sms);
+        try {
+            smsRepository.save(sms);
+            smsProducer.sendSmsVarselMeldingTilKafka(sms);
+        } catch (JsonProcessingException e) {
+            log.error("Feil ved sending av sms", e);
+        }
     }
 
     private static Sms smsTilDeltaker(Avtale avtale, HendelseType hendelse) {

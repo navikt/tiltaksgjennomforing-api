@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonStatus;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
@@ -9,24 +10,33 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class RefusjonEndretStatusTest {
 
     @Test
-    public void skal_kunne_finne_riktig_tilskuddsperiode_og_lagre_status_uten_å_kaste_en_feil() {
-        // GITT
+    public void skal_kunne_finne_riktig_tilskuddsperiode_og_lagre_status_uten_å_kaste_en_feil() throws JsonProcessingException {
         TilskuddPeriodeRepository tilskuddPeriodeRepository = mock(TilskuddPeriodeRepository.class);
-        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         TilskuddPeriode tilskuddPeriode = TestData.enTilskuddPeriode();
         when(tilskuddPeriodeRepository.findById(any())).thenReturn(Optional.of(tilskuddPeriode));
 
-        // NÅR
-        RefusjonEndretStatusKafkaConsumer consumer = new RefusjonEndretStatusKafkaConsumer(tilskuddPeriodeRepository);
+        ObjectMapper objectMapper = new ObjectMapper();
+        RefusjonEndretStatusKafkaConsumer consumer = new RefusjonEndretStatusKafkaConsumer(
+            tilskuddPeriodeRepository,
+            objectMapper
+        );
+        RefusjonEndretStatusMelding melding = new RefusjonEndretStatusMelding(
+            "1234",
+            "1234",
+            "1234",
+            RefusjonStatus.UTBETALT,
+            tilskuddPeriode.getId().toString()
+        );
+        consumer.refusjonEndretStatus(objectMapper.writeValueAsString(melding));
 
-        consumer.refusjonEndretStatus(new RefusjonEndretStatusMelding("1234", "1234", "1234", RefusjonStatus.UTBETALT, tilskuddPeriode.getId().toString()));
-
-        // SÅ
         verify(tilskuddPeriodeRepository).save(any());
     }
 

@@ -18,19 +18,39 @@ spring:
     banner-mode: "console"
   kafka:
     bootstrap-servers: localhost:3333
+    security:
+      protocol: PLAINTEXT
+    ssl:
+      trust-store-type: JKS
+      trust-store-location: ""
+      trust-store-password: ""
+      key-store-type: PKCS12
+      key-store-location: ""
+      key-store-password: ""
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        ssl.endpoint.identification.algorithm: ""
+    consumer:
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: '*'
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: ${spring.application.name}
+    properties:
+      schema.registry.url: ""
+      basic.auth:
+        credentials.source: ""
+        user.info: ""
   sql:
     init:
       platform: postgres
-no.nav.gcp.kafka.aiven:
-  bootstrap-servers: localhost:3333
-  truststore-path: null
-  truststore-password: null
-  keystore-path: null
-  keystore-password: null
-  schema-registry-url: null
-  schema-registry-credentials-source: null
-  schema-registry-user-info: null
-  security-protocol: PLAINTEXT
 
 no.nav.security.jwt:
   issuer:

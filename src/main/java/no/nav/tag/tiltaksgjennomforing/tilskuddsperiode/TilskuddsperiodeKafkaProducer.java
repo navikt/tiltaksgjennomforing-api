@@ -8,13 +8,10 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAnnullert;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeForkortet;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeGodkjent;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
-import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import java.util.UUID;
 
@@ -23,11 +20,11 @@ import java.util.UUID;
 @Slf4j
 public class TilskuddsperiodeKafkaProducer {
 
-    private final KafkaTemplate<String, String> aivenKafkaTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
 
-    public TilskuddsperiodeKafkaProducer(@Qualifier("aivenKafkaTemplate") KafkaTemplate<String, String> aivenKafkaTemplate, ObjectMapper objectMapper) {
-        this.aivenKafkaTemplate = aivenKafkaTemplate;
+    public TilskuddsperiodeKafkaProducer(KafkaTemplate<String, String> kafkaTemplate, ObjectMapper objectMapper) {
+        this.kafkaTemplate = kafkaTemplate;
         this.objectMapper = objectMapper;
     }
 
@@ -72,7 +69,7 @@ public class TilskuddsperiodeKafkaProducer {
             return;
         }
 
-        aivenKafkaTemplate.send(topic, meldingId, meldingSomString).whenComplete((result, ex) -> {
+        kafkaTemplate.send(topic, meldingId, meldingSomString).whenComplete((result, ex) -> {
             if (ex != null) {
                 log.warn("Melding med id {} kunne ikke sendes til Kafka topic {}", meldingId, topic);
             } else {
