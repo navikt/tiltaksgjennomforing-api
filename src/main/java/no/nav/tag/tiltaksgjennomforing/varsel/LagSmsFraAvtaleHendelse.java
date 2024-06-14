@@ -145,10 +145,10 @@ public class LagSmsFraAvtaleHendelse {
     private boolean smsMinSideArbeidsgiverToggleErPå() {
         Boolean smsMinSideArbeidsgiverTogglePå = featureToggleService.isEnabled("arbeidsgivernotifikasjon-med-sak-og-sms");
         if (smsMinSideArbeidsgiverTogglePå) {
-            log.info("Toggle sms-min-side-arbeidsgiver er på: sender ikke sms til arbeidsgiver");
+            log.info("Toggle arbeidsgivernotifikasjon-med-sak-og-sms er på: sender ikke sms til arbeidsgiver");
             return true;
         } else {
-            log.info("Toggle sms-min-side-arbeidsgiver er av: sender sms til arbeidsgiver som vanlig");
+            log.info("Toggle arbeidsgivernotifikasjon-med-sak-og-sms er av: sender sms til arbeidsgiver som vanlig");
             return false;
         }
     }
