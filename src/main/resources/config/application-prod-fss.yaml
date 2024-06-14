@@ -107,7 +107,7 @@ tiltaksgjennomforing:
     inkluderingstilskuddServiceCode: 5516
     inkluderingstilskuddServiceEdition: 5
     vtaoServiceCode: 1234
-    vtaoServiceEdition: 1
+    vtaoServiceEdition: 1 # TODO: Finn riktig service edition
 
   ereg:
     uri: https://ereg-services.intern.nav.no/api/v2/organisasjon

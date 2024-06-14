@@ -71,6 +71,8 @@ tiltaksgjennomforing:
     inkluderingstilskuddServiceEdition: 5
     arbtreningServiceCode: 5332
     arbtreningServiceEdition: 1
+    vtaoServiceCode: 1234
+    vtaoServiceEdition: 1 # TODO: Finn riktig service edition
     altinnApiKey: foo
     apiGwApiKey: foo
   ereg:
