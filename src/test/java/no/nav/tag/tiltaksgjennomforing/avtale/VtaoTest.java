@@ -231,7 +231,7 @@ public class VtaoTest {
                 lagretAvtale.getGjeldendeInnhold().getVtao().hentFelter()
         );
 
-        avtaleController.endreAvtale(lagretAvtale.getId(), lagretAvtale.getSistEndret(), endretData, Avtalerolle.VEILEDER);
+        avtaleController.endreAvtale(lagretAvtale.getId(), hentetAvtale.getSistEndret(), endretData, Avtalerolle.VEILEDER);
         var endretAvtale = avtaleController.hent(lagretAvtale.getId(), Avtalerolle.VEILEDER, null);
 
         assertEquals(
@@ -339,7 +339,7 @@ public class VtaoTest {
                 endretVtao
         );
 
-        avtaleController.endreAvtale(lagretAvtale.getId(), lagretAvtale.getSistEndret(), endretData, Avtalerolle.VEILEDER);
+        avtaleController.endreAvtale(lagretAvtale.getId(), hentetAvtale.getSistEndret(), endretData, Avtalerolle.VEILEDER);
         var endretAvtale = avtaleController.hent(lagretAvtale.getId(), Avtalerolle.VEILEDER, null);
 
         assertEquals(
