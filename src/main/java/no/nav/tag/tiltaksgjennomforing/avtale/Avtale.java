@@ -996,7 +996,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             fikseLøpenumre(tilskuddsperioder, 1);
             tilskuddPeriode.addAll(tilskuddsperioder);
         }
-        if(Utils.erIkkeTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato()) && tiltakstype.equals(tiltakstype.VTAO)){
+        if(Utils.erIkkeTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato()) && tiltakstype.equals(Tiltakstype.VTAO)){
             List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioderForVTAO(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
             fikseLøpenumre(tilskuddsperioder, 1);
             tilskuddPeriode.addAll(tilskuddsperioder);
