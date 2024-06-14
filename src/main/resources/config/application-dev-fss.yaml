@@ -108,8 +108,8 @@ tiltaksgjennomforing:
     inkluderingstilskuddServiceEdition: 5
     arbtreningServiceCode: 5332
     arbtreningServiceEdition: 1
-    vtaoServiceCode: 1234
-    vtaoServiceEdition: 1 # TODO: Finn riktig service edition
+    vtaoServiceCode: 5516
+    vtaoServiceEdition: 5 # TODO: Finn riktig service edition
   ereg:
     uri: https://ereg-services-q1.dev.intern.nav.no/api/v2/organisasjon
   sts:
