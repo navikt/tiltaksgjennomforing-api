@@ -65,7 +65,7 @@ tiltaksgjennomforing:
   avtale-hendelse-melding:
     fixed-delay: 120
   tilskuddsperioder:
-    tiltakstyper: SOMMERJOBB,MIDLERTIDIG_LONNSTILSKUDD,VARIG_LONNSTILSKUDD
+    tiltakstyper: SOMMERJOBB,MIDLERTIDIG_LONNSTILSKUDD,VARIG_LONNSTILSKUDD, VTAO
   salesforcekontorer:
     enheter: ${tiltaksgjennomforing.salesforce.enheter}
 
