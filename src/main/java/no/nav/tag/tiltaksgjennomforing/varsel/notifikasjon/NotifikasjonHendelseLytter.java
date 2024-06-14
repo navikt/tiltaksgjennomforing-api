@@ -191,10 +191,10 @@ public class NotifikasjonHendelseLytter {
     private boolean smsMinSideArbeidsgiverToggleErPå() {
         Boolean smsMinSideArbeidsgiverTogglePå = featureToggleService.isEnabled("arbeidsgivernotifikasjon-med-sak-og-sms");
         if (smsMinSideArbeidsgiverTogglePå) {
-            log.info("Toggle arbeidsgivernotifikasjon-med-sak-og-sms er på: oppretter ikke notifikasjon til arbeidsgiver");
+            log.info("Toggle arbeidsgivernotifikasjon-med-sak-og-sms er PÅ: oppretter ikke notifikasjon til arbeidsgiver");
             return true;
         } else {
-            log.info("Toggle arbeidsgivernotifikasjon-med-sak-og-sms er av: oppretter ikke notifikasjon til arbeidsgiver");
+            log.info("Toggle arbeidsgivernotifikasjon-med-sak-og-sms er AV: oppretter notifikasjon til arbeidsgiver som vanlig");
             return false;
         }
     }
