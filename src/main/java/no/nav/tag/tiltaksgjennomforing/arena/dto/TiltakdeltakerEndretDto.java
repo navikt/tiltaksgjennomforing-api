@@ -45,13 +45,14 @@ public record TiltakdeltakerEndretDto(
 
     @JsonProperty("MOD_DATO")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    String modDato,
+    LocalDateTime modDato,
 
     @JsonProperty("MOD_USER")
     String modUser,
 
     @JsonProperty("DATO_SVARFRIST")
-    String datoSvarfrist,
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    LocalDateTime datoSvarfrist,
 
     @JsonProperty("DATO_FRA")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
