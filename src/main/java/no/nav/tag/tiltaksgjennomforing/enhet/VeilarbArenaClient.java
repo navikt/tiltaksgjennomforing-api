@@ -104,12 +104,12 @@ public class VeilarbArenaClient {
             );
             return respons.getBody();
         } catch (RestClientResponseException exception) {
-            if (exception.getRawStatusCode() == HttpStatus.NOT_FOUND.value() &&
+            if (exception.getStatusCode() == HttpStatus.NOT_FOUND &&
                     !exception.getResponseBodyAsString().isEmpty()) {
                 log.warn("Kandidat ikke registrert i veilarbarena");
                 return null;
             }
-            log.error("Kunne ikke hente Oppfølgingsstatus fra veilarbarena: status={}", exception.getRawStatusCode(), exception);
+            log.error("Kunne ikke hente Oppfølgingsstatus fra veilarbarena: status={}", exception.getStatusCode(), exception);
             return null;
         }
     }
