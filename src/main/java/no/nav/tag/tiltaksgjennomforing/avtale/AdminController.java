@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.UtviklerTilgangProperties;
+import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
+import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -31,6 +33,7 @@ public class AdminController {
     private final TilskuddPeriodeRepository tilskuddPeriodeRepository;
     private final UtviklerTilgangProperties utviklerTilgangProperties;
     private final TokenUtils tokenUtils;
+    private final VeilarbArenaClient veilarbArenaClient;
 
     private void sjekkTilgang() {
         if (!tokenUtils.harAdGruppe(utviklerTilgangProperties.getGruppeTilgang())) {
@@ -191,6 +194,20 @@ public class AdminController {
                 }
             }
         }));
+    }
+
+    @PostMapping("/hent-oppfolgingsstatus")
+    public Oppfølgingsstatus hentOppfølgingsstatus(@RequestBody AvtaleRequest request) {
+        sjekkTilgang();
+        Avtale avtale;
+        if (request.avtaleId() != null) {
+            avtale = avtaleRepository.findById(UUID.fromString(request.avtaleId())).orElseThrow(RessursFinnesIkkeException::new);
+        } else if (request.avtaleNr() != null) {
+            avtale = avtaleRepository.findByAvtaleNr(request.avtaleNr()).orElseThrow(RessursFinnesIkkeException::new);
+        } else {
+            throw new RessursFinnesIkkeException();
+        }
+        return veilarbArenaClient.hentOppfølgingStatus(avtale.getDeltakerFnr().asString());
     }
 
 }
