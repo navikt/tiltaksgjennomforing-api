@@ -24,6 +24,7 @@ public class VtaoStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setFamilietilknytningForklaring(nyAvtale.getFamilietilknytningForklaring());
         avtaleInnhold.setManedslonn(nyAvtale.getManedslonn());
         avtaleInnhold.setArbeidsgiverKontonummer(nyAvtale.getArbeidsgiverKontonummer());
+        avtaleInnhold.setStillingstype(nyAvtale.getStillingstype());
 
         super.endre(nyAvtale);
     }
