@@ -13,6 +13,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.AltinnFeilException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.utils.MultiValueMap;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,8 +26,10 @@ import java.util.*;
 public class AltinnTilgangsstyringService {
     private final AltinnTilgangsstyringProperties altinnTilgangsstyringProperties;
     private final AltinnrettigheterProxyKlient klient;
+    private final FeatureToggleService featureToggleService;
 
     public AltinnTilgangsstyringService(
+            FeatureToggleService featureToggleService,
             AltinnTilgangsstyringProperties altinnTilgangsstyringProperties,
             TokenUtils tokenUtils,
             @Value("${spring.application.name}") String applicationName) {
@@ -57,7 +60,7 @@ public class AltinnTilgangsstyringService {
                 )
         );
         this.klient = new AltinnrettigheterProxyKlient(proxyKlientConfig);
-
+        this.featureToggleService = featureToggleService;
     }
 
     public Map<BedriftNr, Collection<Tiltakstype>> hentTilganger(Fnr fnr, HentArbeidsgiverToken hentArbeidsgiverToken) {
@@ -83,9 +86,11 @@ public class AltinnTilgangsstyringService {
                 arbeidsgiverToken);
         leggTil(tilganger, inkluderingstilskuddOrger, Tiltakstype.INKLUDERINGSTILSKUDD);
 
-        AltinnReportee[] vtaoOrger = kallAltinn(altinnTilgangsstyringProperties.getVtaoServiceCode(), altinnTilgangsstyringProperties.getVtaoServiceEdition(), fnr,
-                arbeidsgiverToken);
-        leggTil(tilganger, vtaoOrger, Tiltakstype.VTAO);
+        if (featureToggleService.isEnabled("vtaoTiltakToggle")) {
+            AltinnReportee[] vtaoOrger = kallAltinn(altinnTilgangsstyringProperties.getVtaoServiceCode(), altinnTilgangsstyringProperties.getVtaoServiceEdition(), fnr,
+                    arbeidsgiverToken);
+            leggTil(tilganger, vtaoOrger, Tiltakstype.VTAO);
+        }
 
         return tilganger.toMap();
     }
