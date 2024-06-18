@@ -1,6 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import java.time.LocalDate;
+
+import no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeStrategy.AvtaleBeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
 
 import java.util.Map;
@@ -9,7 +11,7 @@ import java.util.Map;
  * TODO: Kalkulering av redusert prosent og redusert dato bør kun skje her og ikke i @see avtale.java og heller ikke i frontend
  *
  */
-public class VarigLonnstilskuddStrategy extends LonnstilskuddStrategy {
+public class VarigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrategy {
 
     public static final int GRENSE_68_PROSENT_ETTER_12_MND = 68;
     public static final int MAX_67_PROSENT_ETTER_12_MND = 67;
@@ -21,7 +23,7 @@ public class VarigLonnstilskuddStrategy extends LonnstilskuddStrategy {
         return felterSomMåFyllesUt;
     }
 
-    public VarigLonnstilskuddStrategy(AvtaleInnhold avtaleInnhold) {
+    public VarigLonnstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
     }
 
@@ -37,8 +39,8 @@ public class VarigLonnstilskuddStrategy extends LonnstilskuddStrategy {
 
     @Override
     public void regnUtTotalLonnstilskudd() {
-        super.regnUtTotalLonnstilskudd();
-        regnUtDatoOgSumRedusert();
+        Avtale avtale = avtaleInnhold.getAvtale();
+        AvtaleBeregningStrategy.create(avtale.getTiltakstype()).total(avtale);
     }
 
     @Override

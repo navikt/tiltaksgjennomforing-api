@@ -9,14 +9,15 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class VarigLonnstilskuddStrategyTest {
+class VarigLonnstilskuddAvtaleInnholdStrategyTest {
 
     private AvtaleInnhold avtaleInnhold;
     private AvtaleInnholdStrategy strategy;
 
     @BeforeEach
     public void setUp() {
-        avtaleInnhold = new AvtaleInnhold();
+        Avtale avtale = TestData.enVarigLonnstilskuddsjobbAvtale();
+        avtaleInnhold = avtale.getGjeldendeInnhold();
         strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, VARIG_LONNSTILSKUDD);
     }
 

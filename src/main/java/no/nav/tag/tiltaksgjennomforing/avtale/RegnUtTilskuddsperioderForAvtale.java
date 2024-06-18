@@ -26,7 +26,7 @@ public class RegnUtTilskuddsperioderForAvtale {
     private final static int ANTALL_MÅNEDER_I_EN_PERIODE = 1;
 
     /**
-        TODO: Kalkulering av redusert prosent og redusert dato bør kun skje i {@link no.nav.tag.tiltaksgjennomforing.avtale.VarigLonnstilskuddStrategy} og heller ikke i frontend
+        TODO: Kalkulering av redusert prosent og redusert dato bør kun skje i {@link VarigLonnstilskuddAvtaleInnholdStrategy} og heller ikke i frontend
      */
     public static List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(UUID id, Tiltakstype tiltakstype, Integer sumLønnstilskuddPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed, Integer lonnstilskuddprosent, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMånedRedusert) {
         if (datoForRedusertProsent == null) {

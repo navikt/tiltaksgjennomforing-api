@@ -23,6 +23,7 @@ import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttDatoStrategyFactory;
+import no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeStrategy.AvtaleBeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.AltMåVæreFyltUtException;
@@ -136,6 +137,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     @Transient
     private FnrOgBedrift fnrOgBedrift;
 
+    public Set<TilskuddPeriode> hentTilskuddsperioder(){
+        return  this.tilskuddPeriode;
+    }
+
+    public void leggtilNyeTilskuddsperioder(List<TilskuddPeriode> tilskuddsperioder){
+        this.tilskuddPeriode.addAll(tilskuddsperioder);
+    }
     private Avtale(OpprettAvtale opprettAvtale) {
         sjekkAtIkkeNull(opprettAvtale.getDeltakerFnr(), "Deltakers fnr må være satt.");
         sjekkAtIkkeNull(opprettAvtale.getBedriftNr(), "Arbeidsgivers bedriftnr må være satt.");
@@ -947,60 +955,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     private List<TilskuddPeriode> beregnTilskuddsperioder(LocalDate startDato, LocalDate sluttDato) {
-        List<TilskuddPeriode> tilskuddsperioder = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForAvtale(
-                id,
-                tiltakstype,
-                gjeldendeInnhold.getSumLonnstilskudd(),
-                startDato,
-                sluttDato,
-                gjeldendeInnhold.getLonnstilskuddProsent(),
-                gjeldendeInnhold.getDatoForRedusertProsent(),
-                gjeldendeInnhold.getSumLønnstilskuddRedusert());
-        tilskuddsperioder.forEach(t -> t.setAvtale(this));
-        tilskuddsperioder.forEach(t -> t.setEnhet(gjeldendeInnhold.getEnhetKostnadssted()));
-        tilskuddsperioder.forEach(t -> t.setEnhetsnavn(gjeldendeInnhold.getEnhetsnavnKostnadssted()));
-        return tilskuddsperioder;
-    }
-
-    private List<TilskuddPeriode> beregnTilskuddsperioderForVTAO(LocalDate startDato, LocalDate sluttDato){
-        List<TilskuddPeriode> tilskuddsperioder = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForVTAOAvtale(
-                id,
-                tiltakstype,
-                startDato,
-                sluttDato);
-        tilskuddsperioder.forEach(t -> t.setAvtale(this));
-        tilskuddsperioder.forEach(t -> t.setEnhet(gjeldendeInnhold.getEnhetKostnadssted()));
-        tilskuddsperioder.forEach(t -> t.setEnhetsnavn(gjeldendeInnhold.getEnhetsnavnKostnadssted()));
-        return tilskuddsperioder;
+        return AvtaleBeregningStrategy.create(tiltakstype).beregn(this, startDato, sluttDato);
     }
 
     private void nyeTilskuddsperioder() {
-        if (erAvtaleInngått()) {
-            throw new FeilkodeException(Feilkode.KAN_IKKE_LAGE_NYE_TILSKUDDSPRIODER_INNGAATT_AVTALE);
-        }
-        tilskuddPeriode.removeIf(t -> (t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) || (t.getStatus() == TilskuddPeriodeStatus.BEHANDLET_I_ARENA));
-        if (Utils.erIkkeTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato(), gjeldendeInnhold.getSumLonnstilskudd())) {
-            List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioder(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
-            if (arenaRyddeAvtale != null) {
-                LocalDate standardMigreringsdato = LocalDate.of(2023, 02, 01);
-                LocalDate migreringsdato = arenaRyddeAvtale.getMigreringsdato() != null ? arenaRyddeAvtale.getMigreringsdato() : standardMigreringsdato;
-
-                tilskuddsperioder.forEach(periode -> {
-                    // Set status BEHANDLET_I_ARENA på tilskuddsperioder før migreringsdato
-                    // Eller skal det være startdato? Er jo den samme datoen som migreringsdato. hmm...
-                    if (periode.getSluttDato().minusDays(1).isBefore(migreringsdato)) {
-                        periode.setStatus(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
-                    }
-                });
-            }
-            fikseLøpenumre(tilskuddsperioder, 1);
-            tilskuddPeriode.addAll(tilskuddsperioder);
-        }
-        if(Utils.erIkkeTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato()) && tiltakstype.equals(Tiltakstype.VTAO)){
-            List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioderForVTAO(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
-            fikseLøpenumre(tilskuddsperioder, 1);
-            tilskuddPeriode.addAll(tilskuddsperioder);
-        }
+        AvtaleBeregningStrategy.create(tiltakstype).generer(this);
     }
 
     private boolean sjekkRyddingAvTilskuddsperioder() {
@@ -1219,8 +1178,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
         }
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_TILSKUDDSBEREGNING);
-        getGjeldendeInnhold().endreTilskuddsberegning(tilskuddsberegning);
-        endreBeløpITilskuddsperioder();
+        AvtaleBeregningStrategy.create(tiltakstype).endre(this, tilskuddsberegning);
         sistEndretNå();
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         registerEvent(new TilskuddsberegningEndret(this, utførtAv));

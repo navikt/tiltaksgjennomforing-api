@@ -9,14 +9,15 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.MIDLERTIDIG_LON
 import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.VARIG_LONNSTILSKUDD;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class MidlertidigLonnstilskuddStrategyTest {
+class MidlertidigLonnstilskuddAvtaleInnholdStrategyTest {
 
     private AvtaleInnhold avtaleInnhold;
     private AvtaleInnholdStrategy strategy;
 
     @BeforeEach
     public void setUp() {
-        avtaleInnhold = new AvtaleInnhold();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
+        avtaleInnhold = avtale.getGjeldendeInnhold();
         strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, MIDLERTIDIG_LONNSTILSKUDD);
     }
 
