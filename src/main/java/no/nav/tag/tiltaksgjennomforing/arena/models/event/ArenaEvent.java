@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -25,10 +26,12 @@ public class ArenaEvent {
     private UUID id;
     private String arenaId;
     private String arenaTable;
+    private LocalDateTime created;
     @Enumerated(EnumType.STRING)
     private ArenaEventStatus status;
     private int retryCount;
     private String operation;
+    private LocalDateTime operationTime;
     @JdbcTypeCode(SqlTypes.JSON)
     private JsonNode payload;
 
@@ -36,26 +39,30 @@ public class ArenaEvent {
         String id,
         String arenaTable,
         String operation,
+        LocalDateTime operationTime,
         JsonNode payload
     ) {
-        return create(id, arenaTable, operation, payload, ArenaEventStatus.PENDING);
+        return create(id, arenaTable, operation, operationTime, payload, ArenaEventStatus.PENDING);
     }
 
     public static ArenaEvent create(
         String id,
         String arenaTable,
         String operation,
+        LocalDateTime operationTime,
         JsonNode payload,
         ArenaEventStatus status
     ) {
         return ArenaEvent.builder()
-            .id(UUID.randomUUID())
             .arenaId(id)
             .arenaTable(arenaTable)
+            .id(UUID.randomUUID())
             .operation(operation)
-            .status(status)
-            .retryCount(0)
+            .operationTime(operationTime)
             .payload(payload)
+            .created(LocalDateTime.now())
+            .retryCount(0)
+            .status(status)
             .build();
     }
 }

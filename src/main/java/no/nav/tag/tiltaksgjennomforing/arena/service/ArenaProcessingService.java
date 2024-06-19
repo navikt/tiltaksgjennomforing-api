@@ -57,7 +57,13 @@ public class ArenaProcessingService {
                 : message.after();
 
             Optional<ArenaEvent> arenaEventOpt = arenaEventRepository.findByArenaIdAndArenaTable(key, table);
-            ArenaEvent arenaEvent = arenaEventOpt.orElse(ArenaEvent.create(key, table, operation, payload));
+            ArenaEvent arenaEvent = arenaEventOpt.orElse(ArenaEvent.create(
+                key,
+                table,
+                operation,
+                message.opTimestamp(),
+                payload
+            ));
 
             if (arenaEventOpt.isPresent()) {
                 arenaEvent = arenaEvent.toBuilder()
@@ -72,7 +78,14 @@ public class ArenaProcessingService {
             process(arenaEvent);
         } catch (Exception e) {
             log.error("Kunne ikke opprette arena-event. Feil operasjon: {}.", operation, e);
-            ArenaEvent arenaEvent = ArenaEvent.create(key, table, operation, message.after(), ArenaEventStatus.FAILED);
+            ArenaEvent arenaEvent = ArenaEvent.create(
+                key,
+                table,
+                operation,
+                message.opTimestamp(),
+                message.after(),
+                ArenaEventStatus.FAILED
+            );
             arenaEventRepository.save(arenaEvent);
         }
     }
