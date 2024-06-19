@@ -8,7 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaKafkaMessage;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Operation;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.TiltakdeltakerEndret;
-import no.nav.tag.tiltaksgjennomforing.arena.models.arena.TiltakgjennomforingEndret;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakgjennomforing;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakssak;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import org.springframework.context.annotation.Profile;
@@ -42,9 +42,9 @@ public class ArenaKafkaSimulatorController {
     ) {
         try {
             JsonNode payload = Operation.DELETE.getOperation().equals(melding.opType()) ? melding.before() : melding.after();
-            TiltakgjennomforingEndret tiltakgjennomforingEndret =  objectMapper.treeToValue(payload, TiltakgjennomforingEndret.class);
+            ArenaTiltakgjennomforing tiltakgjennomforingEndret =  objectMapper.treeToValue(payload, ArenaTiltakgjennomforing.class);
 
-            String id = tiltakgjennomforingEndret.tiltakgjennomforingId().toString();
+            String id = tiltakgjennomforingEndret.getTiltakgjennomforingId().toString();
             arenaMockKafkaTemplate.send(Topics.ARENA_TILTAKGJENNOMFORING_ENDRET, id, melding);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
