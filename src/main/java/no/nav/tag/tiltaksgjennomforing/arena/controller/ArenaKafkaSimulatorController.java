@@ -9,7 +9,7 @@ import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaKafkaMessage;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Operation;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.TiltakdeltakerEndret;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.TiltakgjennomforingEndret;
-import no.nav.tag.tiltaksgjennomforing.arena.models.arena.TiltaksakEndret;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakssak;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
@@ -58,9 +58,9 @@ public class ArenaKafkaSimulatorController {
     ) {
         try {
             JsonNode payload = Operation.DELETE.getOperation().equals(melding.opType()) ? melding.before() : melding.after();
-            TiltaksakEndret tiltaksakEndret =  objectMapper.treeToValue(payload, TiltaksakEndret.class);
+            ArenaTiltakssak tiltaksakEndret =  objectMapper.treeToValue(payload, ArenaTiltakssak.class);
 
-            String id = tiltaksakEndret.sakId().toString();
+            String id = tiltaksakEndret.getSakId().toString();
             arenaMockKafkaTemplate.send(Topics.ARENA_TILTAKSSAK_ENDRET, id, melding);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {

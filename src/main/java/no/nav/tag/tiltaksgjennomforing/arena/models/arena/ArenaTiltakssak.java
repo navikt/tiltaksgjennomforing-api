@@ -3,76 +3,98 @@ package no.nav.tag.tiltaksgjennomforing.arena.models.arena;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.common.base.Strings;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.arena.utils.ArenaBooleanDeserializer;
 
 import java.time.LocalDateTime;
 
-public record TiltaksakEndret(
+@Getter
+@Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+public class ArenaTiltakssak {
+    private static final String SAKSKODE_TILTAK = "TILT";
 
+    @Id
     @JsonProperty("SAK_ID")
-    Integer sakId,
+    private Integer sakId;
 
     @JsonProperty("SAKSKODE")
-    String sakskode,
+    private String sakskode;
 
     @JsonProperty("REG_DATO")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime regDato,
+    private LocalDateTime regDato;
 
     @JsonProperty("REG_USER")
-    String regUser,
+    private String regUser;
 
     @JsonProperty("MOD_DATO")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime modDato,
+    private LocalDateTime modDato;
 
     @JsonProperty("MOD_USER")
-    String modUser,
+    private String modUser;
 
     @JsonProperty("TABELLNAVNALIAS")
-    String tabellnavnalias,
+    private String tabellnavnalias;
 
     @JsonProperty("OBJEKT_ID")
-    Integer objektId,
+    private Integer objektId;
 
     @JsonProperty("AAR")
-    Integer aar,
+    private Integer aar;
 
     @JsonProperty("LOPENRSAK")
-    Integer lopenrsak,
+    private Integer lopenrsak;
 
     @JsonProperty("DATO_AVSLUTTET")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime datoAvsluttet,
+    private LocalDateTime datoAvsluttet;
 
     @JsonProperty("SAKSTATUSKODE")
-    String sakstatuskode,
+    private String sakstatuskode;
 
     @JsonProperty("ARKIVNOKKEL")
-    String arkivnokkel,
+    private String arkivnokkel;
 
     @JsonProperty("AETATENHET_ARKIV")
-    String aetatenhetArkiv,
+    private String aetatenhetArkiv;
 
     @JsonProperty("ARKIVHENVISNING")
-    String arkivhenvisning,
+    private String arkivhenvisning;
 
     @JsonProperty("BRUKERID_ANSVARLIG")
-    String brukeridAnsvarlig,
+    private String brukeridAnsvarlig;
 
     @JsonProperty("AETATENHET_ANSVARLIG")
-    String aetatenhetAnsvarlig,
+    private String aetatenhetAnsvarlig;
 
     @JsonProperty("OBJEKT_KODE")
-    String objektKode,
+    private String objektKode;
 
     @JsonProperty("STATUS_ENDRET")
-    String statusEndret,
+    private String statusEndret;
 
     @JsonProperty("PARTISJON")
-    String partisjon,
+    private String partisjon;
 
     @JsonProperty("ER_UTLAND")
     @JsonDeserialize(using = ArenaBooleanDeserializer.class)
-    Boolean erUtland
-) {}
+    private Boolean erUtland;
+
+    public boolean isTiltaksgjennomforing() {
+        return SAKSKODE_TILTAK.equals(this.getSakskode());
+    }
+
+    public boolean hasEnhent() {
+        return !Strings.isNullOrEmpty(this.getAetatenhetAnsvarlig());
+    }
+}

@@ -14,6 +14,7 @@ public class TiltakgjennomforingArenaEventProcessingService implements ArenaEven
 
     public ArenaEventStatus process(ArenaEvent arenaEvent) throws JsonProcessingException {
         TiltakgjennomforingEndret tiltaksakEndret = this.objectMapper.treeToValue(arenaEvent.getPayload(), TiltakgjennomforingEndret.class);
+
         return ArenaEventStatus.DONE;
     }
 }
