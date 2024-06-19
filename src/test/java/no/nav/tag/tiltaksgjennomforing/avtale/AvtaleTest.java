@@ -786,20 +786,20 @@ public class AvtaleTest {
         assertThat(avtale.getGjeldendeInnhold().getFeriepengesats()).isEqualTo(feriepengesats);
         assertThat(avtale.getGjeldendeInnhold().getArbeidsgiveravgift()).isEqualTo(arbeidsgiveravgift);
         assertThat(avtale.getGjeldendeInnhold().getManedslonn()).isEqualTo(manedslonn);
-        assertThat(avtale.hentTilskuddsperioder().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(9992,
+        assertThat(avtale.hentTilskuddsperioder().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(8565,
                 21724,
                 21724,
                 21724,
                 21724,
                 21724,
-                11420,
-                8029,
+                12847,
+                6959,
                 16293,
                 16293,
                 16293,
                 16293,
                 16293,
-                8565));
+                9635));
     }
 
     @Test
