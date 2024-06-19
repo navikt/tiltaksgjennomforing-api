@@ -110,6 +110,7 @@ tiltaksgjennomforing:
     arbtreningServiceEdition: 1
     vtaoServiceCode: 5516
     vtaoServiceEdition: 5 # TODO: Finn riktig service edition
+    vtaoAktiv: true
   ereg:
     uri: https://ereg-services-q1.dev.intern.nav.no/api/v2/organisasjon
   sts:

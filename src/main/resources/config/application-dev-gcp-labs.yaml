@@ -49,7 +49,7 @@ tiltaksgjennomforing:
     arbtreningServiceEdition: 1
     vtaoServiceCode: 5516
     vtaoServiceEdition: 5 # TODO: Finn riktig service edition
-
+    vtaoAktiv: true
     altinnApiKey: foo
     apiGwApiKey: foo
   ereg:
