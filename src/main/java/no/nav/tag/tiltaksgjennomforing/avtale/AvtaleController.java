@@ -6,6 +6,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.Protected;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditLogging;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
@@ -403,7 +404,7 @@ public class AvtaleController {
     @PostMapping("/opprett-som-arbeidsgiver")
     @Transactional
     public ResponseEntity<?> opprettAvtaleSomArbeidsgiver(@RequestBody OpprettAvtale opprettAvtale) {
-        if (opprettAvtale.getTiltakstype().equals(Tiltakstype.VTAO) && !featureToggleService.isEnabled("vtaoTiltakToggle")) {
+        if (opprettAvtale.getTiltakstype().equals(Tiltakstype.VTAO) && !featureToggleService.isEnabled(FeatureToggle.VTAO_TILTAK_TOGGLE)) {
             throw new FeilkodeException(Feilkode.IKKE_ADMIN_TILGANG);
         }
         Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
@@ -466,7 +467,7 @@ public class AvtaleController {
     public ResponseEntity<?> opprettAvtaleSomVeileder(
             @RequestBody OpprettAvtale opprettAvtale
     ) {
-        if (opprettAvtale.getTiltakstype().equals(Tiltakstype.VTAO) && !featureToggleService.isEnabled("vtaoTiltakToggle")) {
+        if (opprettAvtale.getTiltakstype().equals(Tiltakstype.VTAO) && !featureToggleService.isEnabled(FeatureToggle.VTAO_TILTAK_TOGGLE)) {
             throw new FeilkodeException(Feilkode.IKKE_ADMIN_TILGANG);
         }
         Veileder veileder = innloggingService.hentVeileder();

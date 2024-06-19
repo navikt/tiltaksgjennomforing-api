@@ -40,8 +40,13 @@ public class FeatureToggleService {
     }
 
 
+    @Deprecated
     public Boolean isEnabled(String feature) {
         return unleash.isEnabled(feature, contextMedInnloggetBruker());
+    }
+
+    public Boolean isEnabled(FeatureToggle feature) {
+        return unleash.isEnabled(feature.getToggleNavn(), contextMedInnloggetBruker());
     }
 
     private UnleashContext contextMedInnloggetBruker() {

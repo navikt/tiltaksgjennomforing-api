@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.varsel.kafka.SmsProducer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -133,7 +134,7 @@ public class LagSmsFraAvtaleHendelse {
     }
 
     private boolean smsMinSideToggleErPå() {
-        Boolean smsMinSidetogglePå = featureToggleService.isEnabled("sms-min-side-deltaker");
+        Boolean smsMinSidetogglePå = featureToggleService.isEnabled(FeatureToggle.SMS_MIN_SIDE_DELTAKER);
         if (smsMinSidetogglePå) {
             log.info("Toggle sms-min-side-deltaker er på: sender ikke sms til deltaker");
             return true;
@@ -143,7 +144,7 @@ public class LagSmsFraAvtaleHendelse {
         }
     }
     private boolean smsMinSideArbeidsgiverToggleErPå() {
-        Boolean smsMinSideArbeidsgiverTogglePå = featureToggleService.isEnabled("arbeidsgivernotifikasjon-med-sak-og-sms");
+        Boolean smsMinSideArbeidsgiverTogglePå = featureToggleService.isEnabled(FeatureToggle.ARBEIDSGIVERNOTIFIKASJON_MED_SAK_OG_SMS);
         if (smsMinSideArbeidsgiverTogglePå) {
             log.info("Toggle arbeidsgivernotifikasjon-med-sak-og-sms er på: sender ikke sms til arbeidsgiver");
             return true;
