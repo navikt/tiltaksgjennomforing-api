@@ -6,7 +6,11 @@ import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnrettigheterProxy
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnrettigheterProxyKlientConfig;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.ProxyConfig;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.error.exceptions.AltinnrettigheterProxyKlientFallbackException;
-import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.*;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.SelvbetjeningToken;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.ServiceCode;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.ServiceEdition;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.Subject;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
@@ -17,11 +21,15 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.utils.MultiValueMap;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-@Component
+@Service
 @Slf4j
 public class AltinnTilgangsstyringService {
     private final AltinnTilgangsstyringProperties altinnTilgangsstyringProperties;
