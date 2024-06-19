@@ -1,14 +1,16 @@
-CREATE TYPE arena_status AS ENUM ('PENDING', 'PROCESSED', 'IGNORED', 'FAILED', 'RETRY');
+CREATE TYPE arena_status AS ENUM ('PENDING', 'PROCESSING', 'DONE', 'IGNORED', 'FAILED', 'RETRY');
 
 CREATE TABLE arena_event
 (
-    id          uuid         primary key,
-    arena_id    varchar      not null,
-    arena_table varchar      not null,
-    status      arena_status not null,
-    retry_count int          not null,
-    operation   varchar      not null,
-    payload     jsonb        not null
+    id             uuid         primary key,
+    arena_id       varchar      not null,
+    arena_table    varchar      not null,
+    received_at    timestamp    not null,
+    status         arena_status not null,
+    retry_count    int          not null,
+    operation      varchar      not null,
+    operation_time timestamp    not null,
+    payload        jsonb        not null
 );
 
 CREATE INDEX idx_arena_id_table ON arena_event (arena_id, arena_table);
@@ -95,8 +97,8 @@ CREATE TABLE arena_tiltakgjennomforing
     partisjon                      varchar,
     maalform_kravbrev              varchar,
     ekstern_id                     varchar,
-    FOREIGN KEY (sak_id) REFERENCES arena_tiltakssak (sak_id),
-    FOREIGN KEY (arbgiv_id_arrangor) REFERENCES arena_ords_arbeidsgiver (arbgiv_id_arrangor)
+    FOREIGN KEY (sak_id) REFERENCES arena_tiltakssak (sak_id) ON DELETE CASCADE,
+    FOREIGN KEY (arbgiv_id_arrangor) REFERENCES arena_ords_arbeidsgiver (arbgiv_id_arrangor) ON DELETE CASCADE
 );
 
 CREATE TABLE arena_tiltakdeltaker
@@ -132,6 +134,6 @@ CREATE TABLE arena_tiltakdeltaker
     partisjon                     varchar,
     begrunnelse_bestilling        varchar,
     antall_dager_pr_uke           varchar,
-    FOREIGN KEY (tiltakgjennomforing_id) REFERENCES arena_tiltakgjennomforing (tiltakgjennomforing_id),
-    FOREIGN KEY (person_id) REFERENCES arena_ords_fnr (person_id)
+    FOREIGN KEY (tiltakgjennomforing_id) REFERENCES arena_tiltakgjennomforing (tiltakgjennomforing_id) ON DELETE CASCADE,
+    FOREIGN KEY (person_id) REFERENCES arena_ords_fnr (person_id) ON DELETE CASCADE
 );
