@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
@@ -224,6 +225,13 @@ public class MidlertidigTilskuddsperiodeBeregningStrategi implements Tilskuddspe
         }
 
         return null;
+    }
+
+    public void sjekktilskuddsprosentSats(Integer lonnstilskuddProsent) {
+        if (lonnstilskuddProsent != null && (
+                lonnstilskuddProsent != 40 && lonnstilskuddProsent != 60)) {
+            throw new FeilLonnstilskuddsprosentException();
+        }
     }
 
 }

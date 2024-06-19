@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.MidlertidigTilskuddsperiodeBeregningStrategi;
 import no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.TilskuddsperiodeBeregningStrategi;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
@@ -8,8 +9,12 @@ import java.time.LocalDate;
 
 public class MidlertidigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrategy {
 
+
+    private MidlertidigTilskuddsperiodeBeregningStrategi midlertidigTilskuddsperiodeBeregningStrategi;
+
     public MidlertidigLonnstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
+        midlertidigTilskuddsperiodeBeregningStrategi = (MidlertidigTilskuddsperiodeBeregningStrategi) TilskuddsperiodeBeregningStrategi.create(this.avtaleInnhold.getAvtale().getTiltakstype());
     }
 
     @Override
@@ -36,10 +41,7 @@ public class MidlertidigLonnstilskuddAvtaleInnholdStrategy extends Lonnstilskudd
     }
 
     private void sjekktilskuddsprosentSats(EndreAvtale endreAvtale) {
-        if (endreAvtale.getLonnstilskuddProsent() != null && (
-                endreAvtale.getLonnstilskuddProsent() != 40 && endreAvtale.getLonnstilskuddProsent() != 60)) {
-            throw new FeilLonnstilskuddsprosentException();
-        }
+        midlertidigTilskuddsperiodeBeregningStrategi.sjekktilskuddsprosentSats(endreAvtale.getLonnstilskuddProsent());
     }
 
     private void settTilskuddsprosentSats(Kvalifiseringsgruppe kvalifiseringsgruppe) {
