@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeStrategy;
+package no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
@@ -9,7 +9,7 @@ import java.util.*;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
-public class VTAOAvtaleBeregningStrategy extends BaseAvtaleBeregningStrategy {
+public class VTAOTilskuddsperiodeBeregningStrategi extends GenerellTilskuddsperiodeBeregningStrategi {
 
     public void generer(Avtale avtale){
         if (avtale.erAvtaleInngått()) {

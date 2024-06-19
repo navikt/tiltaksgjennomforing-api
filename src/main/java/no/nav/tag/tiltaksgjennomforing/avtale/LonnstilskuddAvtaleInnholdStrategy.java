@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-import no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeStrategy.AvtaleBeregningStrategy;
+import no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.TilskuddsperiodeBeregningStrategi;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
@@ -47,7 +47,7 @@ public class LonnstilskuddAvtaleInnholdStrategy extends BaseAvtaleInnholdStrateg
 
     @Override
     public void regnUtTotalLonnstilskudd() {
-        AvtaleBeregningStrategy.create(avtaleInnhold.getAvtale().getTiltakstype()).total(avtaleInnhold.getAvtale());
+        TilskuddsperiodeBeregningStrategi.create(avtaleInnhold.getAvtale().getTiltakstype()).total(avtaleInnhold.getAvtale());
     }
 
     Integer getSumLonnsTilskudd(Integer sumLonnsutgifter, Integer lonnstilskuddProsent) {

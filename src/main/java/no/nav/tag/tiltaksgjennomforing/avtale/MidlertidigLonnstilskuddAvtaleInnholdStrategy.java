@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeStrategy.AvtaleBeregningStrategy;
+import no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.TilskuddsperiodeBeregningStrategi;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
 
@@ -32,7 +32,7 @@ public class MidlertidigLonnstilskuddAvtaleInnholdStrategy extends Lonnstilskudd
     @Override
     public void regnUtTotalLonnstilskudd() {
         Avtale avtale = this.avtaleInnhold.getAvtale();
-        AvtaleBeregningStrategy.create(avtale.getTiltakstype()).total(avtale);
+        TilskuddsperiodeBeregningStrategi.create(avtale.getTiltakstype()).total(avtale);
     }
 
     private void sjekktilskuddsprosentSats(EndreAvtale endreAvtale) {

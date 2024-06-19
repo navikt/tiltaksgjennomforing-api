@@ -2,7 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import java.time.LocalDate;
 
-import no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeStrategy.AvtaleBeregningStrategy;
+import no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.TilskuddsperiodeBeregningStrategi;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
 
 import java.util.Map;
@@ -40,7 +40,7 @@ public class VarigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtale
     @Override
     public void regnUtTotalLonnstilskudd() {
         Avtale avtale = avtaleInnhold.getAvtale();
-        AvtaleBeregningStrategy.create(avtale.getTiltakstype()).total(avtale);
+        TilskuddsperiodeBeregningStrategi.create(avtale.getTiltakstype()).total(avtale);
     }
 
     @Override

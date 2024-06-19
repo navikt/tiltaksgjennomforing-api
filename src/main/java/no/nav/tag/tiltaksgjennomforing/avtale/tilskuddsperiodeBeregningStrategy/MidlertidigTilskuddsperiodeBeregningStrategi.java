@@ -1,7 +1,6 @@
-package no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeStrategy;
+package no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
@@ -10,12 +9,10 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.*;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.VarigLonnstilskuddAvtaleInnholdStrategy.GRENSE_68_PROSENT_ETTER_12_MND;
-import static no.nav.tag.tiltaksgjennomforing.avtale.VarigLonnstilskuddAvtaleInnholdStrategy.MAX_67_PROSENT_ETTER_12_MND;
 import static no.nav.tag.tiltaksgjennomforing.utils.DatoUtils.sisteDatoIMnd;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
-public class BaseAvtaleBeregningStrategy implements AvtaleBeregningStrategy {
+public class MidlertidigTilskuddsperiodeBeregningStrategi implements TilskuddsperiodeBeregningStrategi {
     public void generer(Avtale avtale){
         if (avtale.erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LAGE_NYE_TILSKUDDSPRIODER_INNGAATT_AVTALE);
@@ -71,15 +68,30 @@ public class BaseAvtaleBeregningStrategy implements AvtaleBeregningStrategy {
         }
     }
     public void endre(Avtale avtale,EndreTilskuddsberegning endreTilskuddsberegning) {
-        AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
+       AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
         avtaleInnhold.setArbeidsgiveravgift(endreTilskuddsberegning.getArbeidsgiveravgift());
         avtaleInnhold.setOtpSats(endreTilskuddsberegning.getOtpSats());
         avtaleInnhold.setManedslonn(endreTilskuddsberegning.getManedslonn());
         avtaleInnhold.setFeriepengesats(endreTilskuddsberegning.getFeriepengesats());
         total(avtale);
+        regnUtDatoOgSumRedusert(avtale);
+        avtale.sendTilbakeTilBeslutter();
+        avtale.hentTilskuddsperioder().stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET)
+                .forEach(t -> t.setBeløp(beregnTilskuddsbeløp(avtale,t.getStartDato(), t.getSluttDato())));
+
+
     }
 
-    public void total(Avtale avtale ) {
+    private Integer beregnTilskuddsbeløp(Avtale avtale,LocalDate startDato, LocalDate sluttDato) {
+        AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
+        return RegnUtTilskuddsperioderForAvtale.beløpForPeriode(startDato,
+                sluttDato,
+                gjeldendeInnhold.getDatoForRedusertProsent(),
+                gjeldendeInnhold.getSumLonnstilskudd(),
+                gjeldendeInnhold.getSumLønnstilskuddRedusert());
+    }
+
+    public void total(Avtale avtale) {
         AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
         BigDecimal feriepengerBelop = getFeriepengerBelop(avtaleInnhold.getFeriepengesats(), avtaleInnhold.getManedslonn());
         BigDecimal obligTjenestepensjon = getBeregnetOtpBelop(toBigDecimal(avtaleInnhold.getOtpSats()), avtaleInnhold.getManedslonn(), feriepengerBelop);
@@ -94,6 +106,14 @@ public class BaseAvtaleBeregningStrategy implements AvtaleBeregningStrategy {
         avtaleInnhold.setSumLonnsutgifter(sumLonnsutgifter);
         avtaleInnhold.setSumLonnstilskudd(sumlønnTilskudd);
         avtaleInnhold.setManedslonn100pst(månedslønnFullStilling);
+        regnUtDatoOgSumRedusert(avtale);
+    }
+    private void regnUtDatoOgSumRedusert(Avtale avtale) {
+        AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
+        LocalDate datoForRedusertProsent = getDatoForRedusertProsent(avtaleInnhold.getStartDato(), avtaleInnhold.getSluttDato(), avtaleInnhold.getLonnstilskuddProsent());
+        avtaleInnhold.setDatoForRedusertProsent(datoForRedusertProsent);
+        Integer sumLønnstilskuddRedusert = regnUtRedusertLønnstilskudd(avtale);
+        avtaleInnhold.setSumLønnstilskuddRedusert(sumLønnstilskuddRedusert);
     }
 
     /* Default */
@@ -109,23 +129,6 @@ public class BaseAvtaleBeregningStrategy implements AvtaleBeregningStrategy {
                 gjeldendeInnhold.getLonnstilskuddProsent(),
                 gjeldendeInnhold.getDatoForRedusertProsent(),
                 gjeldendeInnhold.getSumLønnstilskuddRedusert());
-        tilskuddsperioder.forEach(t -> t.setAvtale(avtale));
-        tilskuddsperioder.forEach(t -> t.setEnhet(gjeldendeInnhold.getEnhetKostnadssted()));
-        tilskuddsperioder.forEach(t -> t.setEnhetsnavn(gjeldendeInnhold.getEnhetsnavnKostnadssted()));
-        return tilskuddsperioder;
-    }
-
-    /* VTAO */
-    public static List<TilskuddPeriode> beregnTilskuddsperioderForVTAO(Avtale avtale){
-        AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
-        LocalDate startDato = gjeldendeInnhold.getStartDato();
-        LocalDate sluttDato = gjeldendeInnhold.getSluttDato();
-
-        List<TilskuddPeriode> tilskuddsperioder = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForVTAOAvtale(
-                avtale.getId(),
-                avtale.getTiltakstype(),
-                startDato,
-                sluttDato);
         tilskuddsperioder.forEach(t -> t.setAvtale(avtale));
         tilskuddsperioder.forEach(t -> t.setEnhet(gjeldendeInnhold.getEnhetKostnadssted()));
         tilskuddsperioder.forEach(t -> t.setEnhetsnavn(gjeldendeInnhold.getEnhetsnavnKostnadssted()));
@@ -195,28 +198,11 @@ public class BaseAvtaleBeregningStrategy implements AvtaleBeregningStrategy {
         return (int) Math.round(sumLonnsutgifter * lonnstilskuddProsentSomDecimal);
     }
 
-    void regnUtDatoOgSumRedusert(Avtale avtale) {
-        AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
-        if(avtaleInnhold.getLonnstilskuddProsent() == null || avtaleInnhold.getLonnstilskuddProsent() < GRENSE_68_PROSENT_ETTER_12_MND) {
-            avtaleInnhold.setDatoForRedusertProsent(null);
-            avtaleInnhold.setSumLønnstilskuddRedusert(null);
-            return;
-        }
-        LocalDate datoForRedusertProsent = getDatoForRedusertProsent(avtaleInnhold.getStartDato(), avtaleInnhold.getSluttDato(), avtaleInnhold.getLonnstilskuddProsent());
-        avtaleInnhold.setDatoForRedusertProsent(datoForRedusertProsent);
-        Integer sumLønnstilskuddRedusert = regnUtRedusertLønnstilskudd(avtale);
-        avtaleInnhold.setSumLønnstilskuddRedusert(sumLønnstilskuddRedusert);
-
-    }
-
-
 
     private Integer regnUtRedusertLønnstilskudd(Avtale avtale) {
         AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
         if (avtaleInnhold.getDatoForRedusertProsent() != null && avtaleInnhold.getLonnstilskuddProsent() != null) {
-            int lonnstilskuddProsent = avtaleInnhold.getLonnstilskuddProsent();
-            if(lonnstilskuddProsent >= GRENSE_68_PROSENT_ETTER_12_MND) lonnstilskuddProsent = MAX_67_PROSENT_ETTER_12_MND;
-            return getSumLonnsTilskudd(avtaleInnhold.getSumLonnsutgifter(), lonnstilskuddProsent);
+            return getSumLonnsTilskudd(avtaleInnhold.getSumLonnsutgifter(), avtaleInnhold.getLonnstilskuddProsent() - 10);
         } else {
             return null;
         }
@@ -226,34 +212,18 @@ public class BaseAvtaleBeregningStrategy implements AvtaleBeregningStrategy {
         if (startDato == null || sluttDato == null || lonnstilskuddprosent == null) {
             return null;
         }
-        if (startDato.plusYears(1).minusDays(1).isBefore(sluttDato)) {
-            return startDato.plusYears(1);
+        if (lonnstilskuddprosent == 40) {
+            if (startDato.plusMonths(6).minusDays(1).isBefore(sluttDato)) {
+                return startDato.plusMonths(6);
+            }
+
+        } else if (lonnstilskuddprosent == 60) {
+            if (startDato.plusYears(1).minusDays(1).isBefore(sluttDato)) {
+                return startDato.plusYears(1);
+            }
         }
+
         return null;
-    }
-
-
-
-    void settTilskuddsprosentSats(Avtale avtale, Kvalifiseringsgruppe kvalifiseringsgruppe) {
-        final Integer sats = kvalifiseringsgruppe.finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(40, 60);
-        avtale.getGjeldendeInnhold().setLonnstilskuddProsent(sats);
-    }
-
-    private void regnUtDatoOgSumRedusert2(Avtale avtale) {
-        AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
-        LocalDate datoForRedusertProsent = getDatoForRedusertProsent(avtaleInnhold.getStartDato(), avtaleInnhold.getSluttDato(), avtaleInnhold.getLonnstilskuddProsent());
-        avtaleInnhold.setDatoForRedusertProsent(datoForRedusertProsent);
-        Integer sumLønnstilskuddRedusert = regnUtRedusertLønnstilskudd(avtale);
-        avtaleInnhold.setSumLønnstilskuddRedusert(sumLønnstilskuddRedusert);
-    }
-
-    private Integer regnUtRedusertLønnstilskudd2(Avtale avtale) {
-        AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
-        if (avtaleInnhold.getDatoForRedusertProsent() != null && avtaleInnhold.getLonnstilskuddProsent() != null) {
-            return getSumLonnsTilskudd(avtaleInnhold.getSumLonnsutgifter(), avtaleInnhold.getLonnstilskuddProsent() - 10);
-        } else {
-            return null;
-        }
     }
 
 }
