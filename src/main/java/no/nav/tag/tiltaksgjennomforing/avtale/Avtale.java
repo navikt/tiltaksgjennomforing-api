@@ -23,7 +23,7 @@ import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttDatoStrategyFactory;
-import no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.TilskuddsperiodeBeregningStrategi;
+import no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.LonnstilskuddAvtaleBeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.AltMåVæreFyltUtException;
@@ -955,11 +955,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     private List<TilskuddPeriode> beregnTilskuddsperioder(LocalDate startDato, LocalDate sluttDato) {
-        return TilskuddsperiodeBeregningStrategi.create(tiltakstype).beregn(this, startDato, sluttDato);
+        return LonnstilskuddAvtaleBeregningStrategy.create(tiltakstype).beregn(this, startDato, sluttDato);
     }
 
     private void nyeTilskuddsperioder() {
-        TilskuddsperiodeBeregningStrategi.create(tiltakstype).generer(this);
+        LonnstilskuddAvtaleBeregningStrategy.create(tiltakstype).generer(this);
     }
 
     private boolean sjekkRyddingAvTilskuddsperioder() {
@@ -1178,7 +1178,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
         }
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_TILSKUDDSBEREGNING);
-        TilskuddsperiodeBeregningStrategi.create(tiltakstype).endre(this, tilskuddsberegning);
+        LonnstilskuddAvtaleBeregningStrategy.create(tiltakstype).endre(this, tilskuddsberegning);
         sistEndretNå();
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         registerEvent(new TilskuddsberegningEndret(this, utførtAv));

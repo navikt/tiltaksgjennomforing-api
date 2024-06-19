@@ -13,7 +13,7 @@ import java.util.*;
 import static no.nav.tag.tiltaksgjennomforing.utils.DatoUtils.sisteDatoIMnd;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
-public class MidlertidigTilskuddsperiodeBeregningStrategi implements TilskuddsperiodeBeregningStrategi {
+public class MidlertidigLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddAvtaleBeregningStrategy {
     public void generer(Avtale avtale){
         if (avtale.erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LAGE_NYE_TILSKUDDSPRIODER_INNGAATT_AVTALE);

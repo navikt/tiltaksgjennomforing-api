@@ -9,7 +9,7 @@ import java.util.*;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
-public class VTAOTilskuddsperiodeBeregningStrategi extends GenerellTilskuddsperiodeBeregningStrategi {
+public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilskuddAvtaleBeregningStrategy {
 
     public void generer(Avtale avtale){
         if (avtale.erAvtaleInngått()) {

@@ -1,20 +1,19 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.MidlertidigTilskuddsperiodeBeregningStrategi;
-import no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.TilskuddsperiodeBeregningStrategi;
+import no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.MidlertidigLonnstilskuddAvtaleBeregningStrategy;
+import no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.LonnstilskuddAvtaleBeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
 
 import java.time.LocalDate;
 
 public class MidlertidigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrategy {
 
 
-    private MidlertidigTilskuddsperiodeBeregningStrategi midlertidigTilskuddsperiodeBeregningStrategi;
+    private MidlertidigLonnstilskuddAvtaleBeregningStrategy midlertidigLonnstilskuddAvtaleBeregningStrategy;
 
     public MidlertidigLonnstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
-        midlertidigTilskuddsperiodeBeregningStrategi = (MidlertidigTilskuddsperiodeBeregningStrategi) TilskuddsperiodeBeregningStrategi.create(this.avtaleInnhold.getAvtale().getTiltakstype());
+        midlertidigLonnstilskuddAvtaleBeregningStrategy = (MidlertidigLonnstilskuddAvtaleBeregningStrategy) LonnstilskuddAvtaleBeregningStrategy.create(this.avtaleInnhold.getAvtale().getTiltakstype());
     }
 
     @Override
@@ -37,11 +36,11 @@ public class MidlertidigLonnstilskuddAvtaleInnholdStrategy extends Lonnstilskudd
     @Override
     public void regnUtTotalLonnstilskudd() {
         Avtale avtale = this.avtaleInnhold.getAvtale();
-        TilskuddsperiodeBeregningStrategi.create(avtale.getTiltakstype()).total(avtale);
+        LonnstilskuddAvtaleBeregningStrategy.create(avtale.getTiltakstype()).total(avtale);
     }
 
     private void sjekktilskuddsprosentSats(EndreAvtale endreAvtale) {
-        midlertidigTilskuddsperiodeBeregningStrategi.sjekktilskuddsprosentSats(endreAvtale.getLonnstilskuddProsent());
+        midlertidigLonnstilskuddAvtaleBeregningStrategy.sjekktilskuddsprosentSats(endreAvtale.getLonnstilskuddProsent());
     }
 
     private void settTilskuddsprosentSats(Kvalifiseringsgruppe kvalifiseringsgruppe) {
