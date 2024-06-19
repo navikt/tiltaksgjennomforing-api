@@ -5,7 +5,7 @@ CREATE TABLE arena_event
     id             uuid         primary key,
     arena_id       varchar      not null,
     arena_table    varchar      not null,
-    received_at    timestamp    not null,
+    created        timestamp    not null,
     status         arena_status not null,
     retry_count    int          not null,
     operation      varchar      not null,
