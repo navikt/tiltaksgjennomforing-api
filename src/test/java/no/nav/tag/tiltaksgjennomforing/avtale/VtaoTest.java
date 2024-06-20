@@ -3,13 +3,10 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
-import no.nav.tag.tiltaksgjennomforing.varsel.VarselRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +15,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -34,21 +31,14 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("local")
 @SpringBootTest
 @AutoConfigureMockMvc
-@DirtiesContext
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class VtaoTest {
-
-    @Autowired
-    private VarselRepository varselRepository;
     @Autowired
     private AvtaleRepository avtaleRepository;
     @Autowired
     private VtaoRepository vtaoRepository;
     @Autowired
     private AvtaleController avtaleController;
-    @Autowired
-    private AvtaleMeldingEntitetRepository avtaleMeldingEntitetRepository;
-    @Autowired
-    private MockMvc mockMvc;
     @MockBean
     private InnloggingService innloggingService;
     @MockBean
@@ -63,15 +53,6 @@ public class VtaoTest {
     Norg2Client norg2Client;
     @Autowired
     private AvtaleInnholdRepository avtaleInnholdRepository;
-
-    @BeforeEach
-    public void setUp() {
-        varselRepository.deleteAll();
-        avtaleMeldingEntitetRepository.deleteAll();
-        vtaoRepository.deleteAll();
-        avtaleInnholdRepository.deleteAll();
-        avtaleRepository.deleteAll();
-    }
 
     @Test
     public void kanOppretteVtaoAvtaleTest() {
@@ -251,10 +232,14 @@ public class VtaoTest {
                 "Men innholdet har ikke endret seg"
         );
 
-        var avtaleInnholdListe = avtaleInnholdRepository.findAll();
+        var avtaleInnholdListe = avtaleInnholdRepository.findAllByAvtale(lagretAvtale);
         assertEquals(1, avtaleInnholdListe.size());
         var vtaoListe = vtaoRepository.findAll();
-        assertEquals(1, vtaoListe.size());
+        var avtaleInnholdIdSet = avtaleInnholdListe.stream().map(AvtaleInnhold::getId).collect(Collectors.toSet());
+        assertEquals(1, vtaoListe.stream()
+                .filter(x -> avtaleInnholdIdSet.contains(x.getAvtaleInnhold().getId()))
+                .toList()
+                .size());
     }
 
     @Test
@@ -353,10 +338,14 @@ public class VtaoTest {
                 "Men innholdet har endret seg"
         );
 
-        var avtaleInnholdListe = avtaleInnholdRepository.findAll();
+        var avtaleInnholdListe = avtaleInnholdRepository.findAllByAvtale(lagretAvtale);
         assertEquals(1, avtaleInnholdListe.size());
         var vtaoListe = vtaoRepository.findAll();
-        assertEquals(1, vtaoListe.size());
+        var avtaleInnholdIdSet = avtaleInnholdListe.stream().map(AvtaleInnhold::getId).collect(Collectors.toSet());
+        assertEquals(1, vtaoListe.stream()
+                .filter(x -> avtaleInnholdIdSet.contains(x.getAvtaleInnhold().getId()))
+                .toList()
+                .size());
     }
 
     private void værInnloggetSom(Avtalepart<?> avtalepart) {
