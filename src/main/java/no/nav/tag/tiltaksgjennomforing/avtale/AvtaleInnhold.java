@@ -248,7 +248,8 @@ public class AvtaleInnhold {
     }
 
     public void reberegnLønnstilskudd() {
-        LonnstilskuddAvtaleBeregningStrategy.create(avtale.getTiltakstype()).total(avtale);
+        LonnstilskuddAvtaleBeregningStrategy lonnstilskuddBeregningStrategy = LonnstilskuddAvtaleBeregningStrategy.create(avtale.getTiltakstype());
+        if(lonnstilskuddBeregningStrategy != null) lonnstilskuddBeregningStrategy.total(avtale);
     }
 
     public void reberegnRedusertProsentOgRedusertLonnstilskudd() {

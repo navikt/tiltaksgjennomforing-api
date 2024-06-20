@@ -200,7 +200,7 @@ public class MidlertidigLonnstilskuddAvtaleBeregningStrategy implements Lonnstil
     }
 
 
-    private Integer regnUtRedusertLønnstilskudd(Avtale avtale) {
+    public Integer regnUtRedusertLønnstilskudd(Avtale avtale) {
         AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
         if (avtaleInnhold.getDatoForRedusertProsent() != null && avtaleInnhold.getLonnstilskuddProsent() != null) {
             return getSumLonnsTilskudd(avtaleInnhold.getSumLonnsutgifter(), avtaleInnhold.getLonnstilskuddProsent() - 10);
@@ -209,7 +209,7 @@ public class MidlertidigLonnstilskuddAvtaleBeregningStrategy implements Lonnstil
         }
     }
 
-    private LocalDate getDatoForRedusertProsent(LocalDate startDato, LocalDate sluttDato, Integer lonnstilskuddprosent) {
+    public LocalDate getDatoForRedusertProsent(LocalDate startDato, LocalDate sluttDato, Integer lonnstilskuddprosent) {
         if (startDato == null || sluttDato == null || lonnstilskuddprosent == null) {
             return null;
         }

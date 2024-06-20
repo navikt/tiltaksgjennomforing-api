@@ -10,12 +10,13 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.*;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.VarigLonnstilskuddAvtaleInnholdStrategy.GRENSE_68_PROSENT_ETTER_12_MND;
-import static no.nav.tag.tiltaksgjennomforing.avtale.VarigLonnstilskuddAvtaleInnholdStrategy.MAX_67_PROSENT_ETTER_12_MND;
 import static no.nav.tag.tiltaksgjennomforing.utils.DatoUtils.sisteDatoIMnd;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
 public class GenerellLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddAvtaleBeregningStrategy {
+    public static final int GRENSE_68_PROSENT_ETTER_12_MND = 68;
+    public static final int MAX_67_PROSENT_ETTER_12_MND = 67;
+
     public void generer(Avtale avtale){
         if (avtale.erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LAGE_NYE_TILSKUDDSPRIODER_INNGAATT_AVTALE);
@@ -115,22 +116,6 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         return tilskuddsperioder;
     }
 
-    /* VTAO */
-    public static List<TilskuddPeriode> beregnTilskuddsperioderForVTAO(Avtale avtale){
-        AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
-        LocalDate startDato = gjeldendeInnhold.getStartDato();
-        LocalDate sluttDato = gjeldendeInnhold.getSluttDato();
-
-        List<TilskuddPeriode> tilskuddsperioder = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForVTAOAvtale(
-                avtale.getId(),
-                avtale.getTiltakstype(),
-                startDato,
-                sluttDato);
-        tilskuddsperioder.forEach(t -> t.setAvtale(avtale));
-        tilskuddsperioder.forEach(t -> t.setEnhet(gjeldendeInnhold.getEnhetKostnadssted()));
-        tilskuddsperioder.forEach(t -> t.setEnhetsnavn(gjeldendeInnhold.getEnhetsnavnKostnadssted()));
-        return tilskuddsperioder;
-    }
 
     /* Reducer? */
     static void fikseLøpenumre(List<TilskuddPeriode> tilskuddperioder, int startPåLøpenummer) {
@@ -172,7 +157,6 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         return null;
     }
 
-
     private BigDecimal toBigDecimal (Double value) {
         if(value == null){
             return null;
@@ -195,7 +179,7 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         return (int) Math.round(sumLonnsutgifter * lonnstilskuddProsentSomDecimal);
     }
 
-    void regnUtDatoOgSumRedusert(Avtale avtale) {
+    public void regnUtDatoOgSumRedusert(Avtale avtale) {
         AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
         if(avtaleInnhold.getLonnstilskuddProsent() == null || avtaleInnhold.getLonnstilskuddProsent() < GRENSE_68_PROSENT_ETTER_12_MND) {
             avtaleInnhold.setDatoForRedusertProsent(null);
@@ -209,9 +193,7 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
 
     }
 
-
-
-    private Integer regnUtRedusertLønnstilskudd(Avtale avtale) {
+    public Integer regnUtRedusertLønnstilskudd(Avtale avtale) {
         AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
         if (avtaleInnhold.getDatoForRedusertProsent() != null && avtaleInnhold.getLonnstilskuddProsent() != null) {
             int lonnstilskuddProsent = avtaleInnhold.getLonnstilskuddProsent();
@@ -231,29 +213,4 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         }
         return null;
     }
-
-
-
-    void settTilskuddsprosentSats(Avtale avtale, Kvalifiseringsgruppe kvalifiseringsgruppe) {
-        final Integer sats = kvalifiseringsgruppe.finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(40, 60);
-        avtale.getGjeldendeInnhold().setLonnstilskuddProsent(sats);
-    }
-
-    private void regnUtDatoOgSumRedusert2(Avtale avtale) {
-        AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
-        LocalDate datoForRedusertProsent = getDatoForRedusertProsent(avtaleInnhold.getStartDato(), avtaleInnhold.getSluttDato(), avtaleInnhold.getLonnstilskuddProsent());
-        avtaleInnhold.setDatoForRedusertProsent(datoForRedusertProsent);
-        Integer sumLønnstilskuddRedusert = regnUtRedusertLønnstilskudd(avtale);
-        avtaleInnhold.setSumLønnstilskuddRedusert(sumLønnstilskuddRedusert);
-    }
-
-    private Integer regnUtRedusertLønnstilskudd2(Avtale avtale) {
-        AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
-        if (avtaleInnhold.getDatoForRedusertProsent() != null && avtaleInnhold.getLonnstilskuddProsent() != null) {
-            return getSumLonnsTilskudd(avtaleInnhold.getSumLonnsutgifter(), avtaleInnhold.getLonnstilskuddProsent() - 10);
-        } else {
-            return null;
-        }
-    }
-
 }

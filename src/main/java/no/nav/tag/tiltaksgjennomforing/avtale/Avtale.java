@@ -959,7 +959,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     private void nyeTilskuddsperioder() {
-        LonnstilskuddAvtaleBeregningStrategy.create(tiltakstype).generer(this);
+        LonnstilskuddAvtaleBeregningStrategy lonnstilskuddBeregningStrategy = LonnstilskuddAvtaleBeregningStrategy.create(this.getTiltakstype());
+        if(lonnstilskuddBeregningStrategy != null) lonnstilskuddBeregningStrategy.generer(this);
     }
 
     private boolean sjekkRyddingAvTilskuddsperioder() {
@@ -1026,6 +1027,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         }
     }
 
+
+    //TODO: Flytt til TilskuddAvtaleBeregningStrategy?
     public void reberegnUbehandledeTilskuddsperioder() {
         krevEnAvTiltakstyper(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
 

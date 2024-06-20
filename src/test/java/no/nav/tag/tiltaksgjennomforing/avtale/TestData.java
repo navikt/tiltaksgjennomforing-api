@@ -155,7 +155,7 @@ public class TestData {
 
     public static Avtale enAvtaleMedAltUtfylt() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING), veilderNavIdent);
+        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.VARIG_LONNSTILSKUDD), veilderNavIdent);
         avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
         return avtale;
     }

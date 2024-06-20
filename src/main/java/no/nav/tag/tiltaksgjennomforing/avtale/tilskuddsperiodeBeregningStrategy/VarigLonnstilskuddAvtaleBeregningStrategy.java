@@ -9,12 +9,14 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.*;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.VarigLonnstilskuddAvtaleInnholdStrategy.GRENSE_68_PROSENT_ETTER_12_MND;
-import static no.nav.tag.tiltaksgjennomforing.avtale.VarigLonnstilskuddAvtaleInnholdStrategy.MAX_67_PROSENT_ETTER_12_MND;
 import static no.nav.tag.tiltaksgjennomforing.utils.DatoUtils.sisteDatoIMnd;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
 public class VarigLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddAvtaleBeregningStrategy {
+
+    public static final int GRENSE_68_PROSENT_ETTER_12_MND = 68;
+    public static final int MAX_67_PROSENT_ETTER_12_MND = 67;
+
     public void generer(Avtale avtale){
         if (avtale.erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LAGE_NYE_TILSKUDDSPRIODER_INNGAATT_AVTALE);
@@ -96,7 +98,7 @@ public class VarigLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddA
         regnUtDatoOgSumRedusert(avtale);
     }
 
-    private void regnUtDatoOgSumRedusert(Avtale avtale) {
+    public void regnUtDatoOgSumRedusert(Avtale avtale) {
         AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
         if(avtaleInnhold.getLonnstilskuddProsent() == null || avtaleInnhold.getLonnstilskuddProsent() < GRENSE_68_PROSENT_ETTER_12_MND) {
             avtaleInnhold.setDatoForRedusertProsent(null);
@@ -129,22 +131,6 @@ public class VarigLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddA
         return tilskuddsperioder;
     }
 
-    /* VTAO */
-    public static List<TilskuddPeriode> beregnTilskuddsperioderForVTAO(Avtale avtale){
-        AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
-        LocalDate startDato = gjeldendeInnhold.getStartDato();
-        LocalDate sluttDato = gjeldendeInnhold.getSluttDato();
-
-        List<TilskuddPeriode> tilskuddsperioder = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForVTAOAvtale(
-                avtale.getId(),
-                avtale.getTiltakstype(),
-                startDato,
-                sluttDato);
-        tilskuddsperioder.forEach(t -> t.setAvtale(avtale));
-        tilskuddsperioder.forEach(t -> t.setEnhet(gjeldendeInnhold.getEnhetKostnadssted()));
-        tilskuddsperioder.forEach(t -> t.setEnhetsnavn(gjeldendeInnhold.getEnhetsnavnKostnadssted()));
-        return tilskuddsperioder;
-    }
 
     /* Reducer? */
     static void fikseLøpenumre(List<TilskuddPeriode> tilskuddperioder, int startPåLøpenummer) {

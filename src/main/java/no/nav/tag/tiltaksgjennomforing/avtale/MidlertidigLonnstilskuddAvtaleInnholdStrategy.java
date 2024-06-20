@@ -49,37 +49,12 @@ public class MidlertidigLonnstilskuddAvtaleInnholdStrategy extends Lonnstilskudd
     }
 
     private void regnUtDatoOgSumRedusert() {
-        LocalDate datoForRedusertProsent = getDatoForRedusertProsent(avtaleInnhold.getStartDato(), avtaleInnhold.getSluttDato(), avtaleInnhold.getLonnstilskuddProsent());
+       LocalDate datoForRedusertProsent = midlertidigLonnstilskuddAvtaleBeregningStrategy.getDatoForRedusertProsent(avtaleInnhold.getStartDato(), avtaleInnhold.getSluttDato(), avtaleInnhold.getLonnstilskuddProsent());
         avtaleInnhold.setDatoForRedusertProsent(datoForRedusertProsent);
-        Integer sumLønnstilskuddRedusert = regnUtRedusertLønnstilskudd();
+        Integer sumLønnstilskuddRedusert = midlertidigLonnstilskuddAvtaleBeregningStrategy.regnUtRedusertLønnstilskudd(avtaleInnhold.getAvtale());
         avtaleInnhold.setSumLønnstilskuddRedusert(sumLønnstilskuddRedusert);
     }
 
-    private Integer regnUtRedusertLønnstilskudd() {
-        if (avtaleInnhold.getDatoForRedusertProsent() != null && avtaleInnhold.getLonnstilskuddProsent() != null) {
-            return getSumLonnsTilskudd(avtaleInnhold.getSumLonnsutgifter(), avtaleInnhold.getLonnstilskuddProsent() - 10);
-        } else {
-            return null;
-        }
-    }
-
-    private LocalDate getDatoForRedusertProsent(LocalDate startDato, LocalDate sluttDato, Integer lonnstilskuddprosent) {
-        if (startDato == null || sluttDato == null || lonnstilskuddprosent == null) {
-            return null;
-        }
-        if (lonnstilskuddprosent == 40) {
-            if (startDato.plusMonths(6).minusDays(1).isBefore(sluttDato)) {
-                return startDato.plusMonths(6);
-            }
-
-        } else if (lonnstilskuddprosent == 60) {
-            if (startDato.plusYears(1).minusDays(1).isBefore(sluttDato)) {
-                return startDato.plusYears(1);
-            }
-        }
-
-        return null;
-    }
 
     @Override
     public void endreSluttDato(LocalDate nySluttDato) {

@@ -51,7 +51,7 @@ class MidlertidigLonnstilskuddAvtaleInnholdStrategyTest {
 
     @Test
     public void sjekk_riktig_otp_sats() {
-        strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, VARIG_LONNSTILSKUDD);
+        strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, MIDLERTIDIG_LONNSTILSKUDD);
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setOtpSats(0.301);
         AssertFeilkode.assertFeilkode(Feilkode.FEIL_OTP_SATS, () -> strategy.endre(endreAvtale));

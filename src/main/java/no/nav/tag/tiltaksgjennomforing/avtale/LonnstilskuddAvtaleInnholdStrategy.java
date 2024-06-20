@@ -50,6 +50,7 @@ public class LonnstilskuddAvtaleInnholdStrategy extends BaseAvtaleInnholdStrateg
         LonnstilskuddAvtaleBeregningStrategy.create(avtaleInnhold.getAvtale().getTiltakstype()).total(avtaleInnhold.getAvtale());
     }
 
+    //TODO: Denne metoden finnes i LonnstilskuddAvtaleBeregningStrategy. Finn ut om du bør kalle beregningstrategy direkte.
     Integer getSumLonnsTilskudd(Integer sumLonnsutgifter, Integer lonnstilskuddProsent) {
         if (sumLonnsutgifter == null || lonnstilskuddProsent == null) {
             return null;
@@ -58,9 +59,6 @@ public class LonnstilskuddAvtaleInnholdStrategy extends BaseAvtaleInnholdStrateg
         return (int) Math.round(sumLonnsutgifter * lonnstilskuddProsentSomDecimal);
     }
 
-    private Integer convertBigDecimalToInt(BigDecimal value){
-        return value == null ? null : value.setScale(0, RoundingMode.HALF_UP).intValue();
-    }
 
     @Override
     public Map<String, Object> alleFelterSomMåFyllesUt() {
