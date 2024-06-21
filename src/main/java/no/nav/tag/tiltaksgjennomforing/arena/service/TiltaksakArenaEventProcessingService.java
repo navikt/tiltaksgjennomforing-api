@@ -29,37 +29,56 @@ public class TiltaksakArenaEventProcessingService implements ArenaEventProcessin
 
         if (!tiltaksak.isTiltaksgjennomforing()) {
             log.info(
-                "Sak {} ignorert fordi den ikke er en tiltakssak (SAKSKODE != TILT)",
+                "{} ignorert fordi den ikke er en tiltakssak (SAKSKODE != TILT)",
                 arenaEvent.getLogId()
+            );
+            delete(
+                tiltaksak,
+                () -> log.info("Sletter tidligere håndtert sak {} som nå skal ignoreres", arenaEvent.getLogId())
             );
             return ArenaEventStatus.IGNORED;
         }
 
         if (!tiltaksak.hasEnhent()) {
             log.info(
-                "Sak {} ignorert fordi den ikke har en tilhørende enhet (AETATENHET_ANSVARLIG = null)",
+                "{} ignorert fordi den ikke har en tilhørende enhet (AETATENHET_ANSVARLIG = null)",
                 arenaEvent.getLogId()
+            );
+            delete(
+                tiltaksak,
+                () -> log.info("Sletter tidligere håndtert sak {} som nå skal ignoreres", arenaEvent.getLogId())
             );
             return ArenaEventStatus.IGNORED;
         }
 
         log.info(
-            "Sak {} prosesseres med operasjon {}",
+            "{} prosesseres med operasjon {}",
             arenaEvent.getLogId(),
             arenaEvent.getOperation().name()
         );
 
         if (Operation.DELETE == arenaEvent.getOperation()) {
-            tiltaksakRepository
-                .findById(tiltaksak.getSakId())
-                .ifPresentOrElse(
-                    tiltaksakRepository::delete,
-                    () -> log.info("Sak {} ble ikke slettet fordi den ikke finnes i databasen", arenaEvent.getLogId())
-                );
-        } else {
-            tiltaksakRepository.save(tiltaksak);
+            delete(tiltaksak, () -> log.info("{} har operasjon DELETE og slettet", arenaEvent.getLogId()));
+            return ArenaEventStatus.DONE;
         }
 
+        tiltaksakRepository.save(tiltaksak);
+
+        log.info("{} er ferdig prossesert", arenaEvent.getLogId());
         return ArenaEventStatus.DONE;
+    }
+
+    private void delete(
+        ArenaTiltakssak arenaTiltakssak,
+        Runnable onBeforeDelete
+    ) {
+        tiltaksakRepository
+            .findById(arenaTiltakssak.getSakId())
+            .ifPresent(
+                (existingTiltaksak) -> {
+                    onBeforeDelete.run();
+                    tiltaksakRepository.delete(existingTiltaksak);
+                }
+            );
     }
 }
