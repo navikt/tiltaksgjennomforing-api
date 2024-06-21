@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaKafkaMessage;
-import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTable;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Operation;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEvent;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEventStatus;
@@ -94,22 +93,17 @@ public class ArenaProcessingService {
 
     private void process(ArenaEvent arenaEvent) {
         try {
-            ArenaTable arenaTable = arenaEvent.getArenaTable();
+            var result = switch (arenaEvent.getArenaTable()) {
+                case TILTAKGJENNOMFORING -> tiltakgjennomforingArenaEventService.process(arenaEvent);
+                case TILTAKSAK -> tiltaksakArenaEventService.process(arenaEvent);
+                case TILTAKDELTAKER -> tiltakdeltakerArenaEventService.process(arenaEvent);
+            };
 
-            switch (arenaTable) {
-                case TILTAKGJENNOMFORING: {
-                    tiltakgjennomforingArenaEventService.process(arenaEvent);
-                    break;
-                }
-                case TILTAKSAK: {
-                    tiltaksakArenaEventService.process(arenaEvent);
-                    break;
-                }
-                case TILTAKDELTAKER: {
-                    tiltakdeltakerArenaEventService.process(arenaEvent);
-                    break;
-                }
-            }
+            ArenaEvent update = arenaEvent.toBuilder()
+                .status(result)
+                .build();
+
+            arenaEventRepository.save(update);
         } catch (DataIntegrityViolationException e) {
             ArenaEventStatus status = arenaEvent.getRetryCount() < MAX_RETRY_COUNT
                 ? ArenaEventStatus.RETRY
