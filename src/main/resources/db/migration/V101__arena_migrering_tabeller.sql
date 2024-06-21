@@ -10,7 +10,8 @@ CREATE TABLE arena_event
     retry_count    int          not null,
     operation      varchar      not null,
     operation_time timestamp    not null,
-    payload        jsonb        not null
+    payload        jsonb        not null,
+    UNIQUE(arena_id, arena_table)
 );
 
 CREATE INDEX idx_arena_id_table ON arena_event (arena_id, arena_table);
