@@ -1,13 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erTom;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
@@ -19,8 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,6 +23,18 @@ import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erTom;
 
 // Lombok
 @Data
@@ -76,8 +81,8 @@ public class AvtaleInnhold {
     private Integer stillingKonseptId;
     private Integer antallDagerPerUke;
 
-     @Embedded
-     private RefusjonKontaktperson refusjonKontaktperson;
+    @Embedded
+    private RefusjonKontaktperson refusjonKontaktperson;
 
 
     // Mentor
@@ -118,6 +123,10 @@ public class AvtaleInnhold {
     @Fetch(FetchMode.SUBSELECT)
     private List<Inkluderingstilskuddsutgift> inkluderingstilskuddsutgift = new ArrayList<>();
     private String inkluderingstilskuddBegrunnelse;
+
+    // VTAO
+    @OneToOne(mappedBy = "avtaleInnhold", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private Vtao vtao;
 
     @JsonProperty
     public Integer inkluderingstilskuddTotalBeløp() {
@@ -179,14 +188,25 @@ public class AvtaleInnhold {
                 .journalpostId(null)
                 .versjon(versjon + 1)
                 .innholdType(innholdType)
+                .vtao(kopiAvVtao())
                 .build();
         nyVersjon.getMaal().forEach(m -> m.setAvtaleInnhold(nyVersjon));
+        if (nyVersjon.getVtao() != null) {
+            nyVersjon.getVtao().setAvtaleInnhold(nyVersjon);
+        }
         nyVersjon.getInkluderingstilskuddsutgift().forEach(i -> i.setAvtaleInnhold(nyVersjon));
         return nyVersjon;
     }
 
     private List<Maal> kopiAvMål() {
         return maal.stream().map(m -> new Maal(m)).collect(Collectors.toList());
+    }
+
+    private Vtao kopiAvVtao() {
+        if (vtao != null) {
+            return new Vtao(vtao);
+        }
+        return null;
     }
 
     private List<Inkluderingstilskuddsutgift> kopiAvInkluderingstilskuddsutgifer() {
@@ -245,6 +265,11 @@ public class AvtaleInnhold {
         setArbeidsgiverEtternavn(endreKontaktInformasjon.getArbeidsgiverEtternavn());
         setArbeidsgiverTlf(endreKontaktInformasjon.getArbeidsgiverTlf());
         setRefusjonKontaktperson(endreKontaktInformasjon.getRefusjonKontaktperson());
+        if (endreKontaktInformasjon.getVtao() != null) {
+            getVtao().setFadderFornavn(endreKontaktInformasjon.getVtao().fadderFornavn());
+            getVtao().setFadderEtternavn(endreKontaktInformasjon.getVtao().fadderEtternavn());
+            getVtao().setFadderTlf(endreKontaktInformasjon.getVtao().fadderTlf());
+        }
     }
 
     public void endreStillingsInfo(EndreStillingsbeskrivelse endreStillingsbeskrivelse) {

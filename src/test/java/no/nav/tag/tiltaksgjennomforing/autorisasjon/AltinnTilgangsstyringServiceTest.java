@@ -87,8 +87,9 @@ public class AltinnTilgangsstyringServiceTest {
         assertThat(tilganger).doesNotContainKey(new BedriftNr("910825555"));
 
         // Virksomheter skal være i tilgang-map
-        assertThat(tilganger.get(new BedriftNr("999999999"))).containsOnly(Tiltakstype.ARBEIDSTRENING, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB, Tiltakstype.MENTOR, Tiltakstype.INKLUDERINGSTILSKUDD); // TODO: Tilgangsstyring skal skille på midlertidig lønnstilskudd og sommerjobb
-
+        assertThat(tilganger.get(new BedriftNr("999999999"))).containsOnly(
+                Tiltakstype.ARBEIDSTRENING, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD,
+                Tiltakstype.SOMMERJOBB, Tiltakstype.MENTOR, Tiltakstype.INKLUDERINGSTILSKUDD); // TODO: Tilgangsstyring skal skille på midlertidig lønnstilskudd og sommerjobb
     }
 
     @Test

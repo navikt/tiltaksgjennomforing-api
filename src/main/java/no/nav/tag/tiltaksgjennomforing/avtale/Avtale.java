@@ -962,6 +962,18 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         return tilskuddsperioder;
     }
 
+    private List<TilskuddPeriode> beregnTilskuddsperioderForVTAO(LocalDate startDato, LocalDate sluttDato){
+        List<TilskuddPeriode> tilskuddsperioder = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForVTAOAvtale(
+                id,
+                tiltakstype,
+                startDato,
+                sluttDato);
+        tilskuddsperioder.forEach(t -> t.setAvtale(this));
+        tilskuddsperioder.forEach(t -> t.setEnhet(gjeldendeInnhold.getEnhetKostnadssted()));
+        tilskuddsperioder.forEach(t -> t.setEnhetsnavn(gjeldendeInnhold.getEnhetsnavnKostnadssted()));
+        return tilskuddsperioder;
+    }
+
     private void nyeTilskuddsperioder() {
         if (erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LAGE_NYE_TILSKUDDSPRIODER_INNGAATT_AVTALE);
@@ -981,6 +993,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
                     }
                 });
             }
+            fikseLøpenumre(tilskuddsperioder, 1);
+            tilskuddPeriode.addAll(tilskuddsperioder);
+        }
+        if(Utils.erIkkeTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato()) && tiltakstype.equals(Tiltakstype.VTAO)){
+            List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioderForVTAO(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
             fikseLøpenumre(tilskuddsperioder, 1);
             tilskuddPeriode.addAll(tilskuddsperioder);
         }

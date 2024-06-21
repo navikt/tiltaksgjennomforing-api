@@ -6,6 +6,8 @@ import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.Protected;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditLogging;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.dokgen.DokgenService;
@@ -77,6 +79,7 @@ public class AvtaleController {
     private final FilterSokRepository filterSokRepository;
     private final MeterRegistry meterRegistry;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final FeatureToggleService featureToggleService;
 
     @AuditLogging("Hent detaljer for avtale om arbeidsmarkedstiltak")
     @GetMapping("/{avtaleId}")
@@ -401,6 +404,9 @@ public class AvtaleController {
     @PostMapping("/opprett-som-arbeidsgiver")
     @Transactional
     public ResponseEntity<?> opprettAvtaleSomArbeidsgiver(@RequestBody OpprettAvtale opprettAvtale) {
+        if (opprettAvtale.getTiltakstype().equals(Tiltakstype.VTAO) && !featureToggleService.isEnabled(FeatureToggle.VTAO_TILTAK_TOGGLE)) {
+            throw new FeilkodeException(Feilkode.IKKE_ADMIN_TILGANG);
+        }
         Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
@@ -461,6 +467,9 @@ public class AvtaleController {
     public ResponseEntity<?> opprettAvtaleSomVeileder(
             @RequestBody OpprettAvtale opprettAvtale
     ) {
+        if (opprettAvtale.getTiltakstype().equals(Tiltakstype.VTAO) && !featureToggleService.isEnabled(FeatureToggle.VTAO_TILTAK_TOGGLE)) {
+            throw new FeilkodeException(Feilkode.IKKE_ADMIN_TILGANG);
+        }
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());

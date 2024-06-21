@@ -6,7 +6,11 @@ import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnrettigheterProxy
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.AltinnrettigheterProxyKlientConfig;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.ProxyConfig;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.error.exceptions.AltinnrettigheterProxyKlientFallbackException;
-import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.*;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.SelvbetjeningToken;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.ServiceCode;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.ServiceEdition;
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.Subject;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
@@ -16,11 +20,16 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.utils.MultiValueMap;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
-@Component
+@Service
 @Slf4j
 public class AltinnTilgangsstyringService {
     private final AltinnTilgangsstyringProperties altinnTilgangsstyringProperties;
@@ -38,7 +47,9 @@ public class AltinnTilgangsstyringService {
                 altinnTilgangsstyringProperties.getLtsVarigServiceCode(),
                 altinnTilgangsstyringProperties.getLtsVarigServiceEdition(),
                 altinnTilgangsstyringProperties.getSommerjobbServiceCode(),
-                altinnTilgangsstyringProperties.getSommerjobbServiceEdition())) {
+                altinnTilgangsstyringProperties.getSommerjobbServiceEdition(),
+                altinnTilgangsstyringProperties.getVtaoServiceCode(),
+                altinnTilgangsstyringProperties.getVtaoServiceEdition())) {
             throw new TiltaksgjennomforingException("Altinn konfigurasjon ikke komplett");
         }
         this.altinnTilgangsstyringProperties = altinnTilgangsstyringProperties;
@@ -55,7 +66,6 @@ public class AltinnTilgangsstyringService {
                 )
         );
         this.klient = new AltinnrettigheterProxyKlient(proxyKlientConfig);
-
     }
 
     public Map<BedriftNr, Collection<Tiltakstype>> hentTilganger(Fnr fnr, HentArbeidsgiverToken hentArbeidsgiverToken) {
@@ -80,6 +90,12 @@ public class AltinnTilgangsstyringService {
         AltinnReportee[] inkluderingstilskuddOrger = kallAltinn(altinnTilgangsstyringProperties.getInkluderingstilskuddServiceCode(), altinnTilgangsstyringProperties.getInkluderingstilskuddServiceEdition(), fnr,
                 arbeidsgiverToken);
         leggTil(tilganger, inkluderingstilskuddOrger, Tiltakstype.INKLUDERINGSTILSKUDD);
+
+        if (Objects.equals(altinnTilgangsstyringProperties.getVtaoAktiv(), Boolean.TRUE)) {
+            AltinnReportee[] vtaoOrger = kallAltinn(altinnTilgangsstyringProperties.getVtaoServiceCode(), altinnTilgangsstyringProperties.getVtaoServiceEdition(), fnr,
+                    arbeidsgiverToken);
+            leggTil(tilganger, vtaoOrger, Tiltakstype.VTAO);
+        }
 
         return tilganger.toMap();
     }

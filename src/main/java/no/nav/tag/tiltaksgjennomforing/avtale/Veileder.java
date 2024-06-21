@@ -209,7 +209,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
-        if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
+        if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB && avtale.getTiltakstype() != Tiltakstype.VTAO) {
             veilarbArenaClient.sjekkOppfølgingStatus(avtale);
         }
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);

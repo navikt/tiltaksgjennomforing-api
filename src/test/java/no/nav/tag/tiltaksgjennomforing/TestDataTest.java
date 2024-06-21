@@ -13,8 +13,9 @@ class TestDataTest {
     TestData.endreMaalInfo(endreAvtale);
     TestData.endreMentorInfo(endreAvtale);
     TestData.endreInkluderingstilskuddInfo(endreAvtale);
+    TestData.endreFadderInfo(endreAvtale);
     assertThat(endreAvtale.getMaal()).isNotEmpty();
     assertThat(endreAvtale.getInkluderingstilskuddsutgift()).isNotEmpty();
-    assertThat(endreAvtale).hasNoNullFieldsOrProperties();
+    assertThat(endreAvtale).hasNoNullFieldsOrPropertiesExcept("vtao");
   }
 }

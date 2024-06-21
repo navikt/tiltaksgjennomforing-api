@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.response.MutationStatus;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -189,7 +190,7 @@ public class NotifikasjonHendelseLytter {
     }
 
     private boolean smsMinSideArbeidsgiverToggleErPå() {
-        Boolean smsMinSideArbeidsgiverTogglePå = featureToggleService.isEnabled("arbeidsgivernotifikasjon-med-sak-og-sms");
+        Boolean smsMinSideArbeidsgiverTogglePå = featureToggleService.isEnabled(FeatureToggle.ARBEIDSGIVERNOTIFIKASJON_MED_SAK_OG_SMS);
         if (smsMinSideArbeidsgiverTogglePå) {
             log.info("Toggle arbeidsgivernotifikasjon-med-sak-og-sms er PÅ: oppretter ikke notifikasjon til arbeidsgiver");
             return true;

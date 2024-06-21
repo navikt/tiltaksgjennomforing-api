@@ -14,13 +14,16 @@ import org.springframework.stereotype.Component;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Data
 @Slf4j
 @Component
 public class ByOrgnummerStrategy implements Strategy {
 
-     static final String UNLEASH_PARAMETER_ORGNUMRE = "orgnumre";
-     private final AltinnTilgangsstyringService altinnTilgangsstyringService;
+    static final String UNLEASH_PARAMETER_ORGNUMRE = "orgnumre";
+    private final AltinnTilgangsstyringService altinnTilgangsstyringService;
+
+    public ByOrgnummerStrategy(AltinnTilgangsstyringService altinnTilgangsstyringService) {
+        this.altinnTilgangsstyringService = altinnTilgangsstyringService;
+    }
 
     @Override
     public String getName() {
@@ -41,17 +44,17 @@ public class ByOrgnummerStrategy implements Strategy {
                 .orElse(false);
     }
 
-     private List<String> brukersOrganisasjoner(String currentUserId){
-         if (NavIdent.erNavIdent(currentUserId)) {
-             return List.of();
-         }
-         try {
-             //TODO: Fungerer pt. ikke. bruker kun dummy hentArbeidsgivrtoken.
-             Set<AltinnReportee> altinnOrganisasjoner = altinnTilgangsstyringService.hentAltinnOrganisasjoner(new Fnr(currentUserId), () -> "");
-             return altinnOrganisasjoner.stream().map(org -> org.getOrganizationNumber()).collect(Collectors.toList());
-         }catch (Exception e){
-             log.error("Feil ved oppslag på brukers organisasjoner i Altinn: {}", e.getMessage());
-             return List.of();
-         }
-     }
+    private List<String> brukersOrganisasjoner(String currentUserId) {
+        if (NavIdent.erNavIdent(currentUserId)) {
+            return List.of();
+        }
+        try {
+            //TODO: Fungerer pt. ikke. bruker kun dummy hentArbeidsgivrtoken.
+            Set<AltinnReportee> altinnOrganisasjoner = altinnTilgangsstyringService.hentAltinnOrganisasjoner(new Fnr(currentUserId), () -> "");
+            return altinnOrganisasjoner.stream().map(AltinnReportee::getOrganizationNumber).toList();
+        } catch (Exception e) {
+            log.error("Feil ved oppslag på brukers organisasjoner i Altinn: {}", e.getMessage());
+            return List.of();
+        }
+    }
 }

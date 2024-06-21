@@ -67,6 +67,14 @@ public class RegnUtTilskuddsperioderForAvtale {
 
     }
 
+    public static List<TilskuddPeriode>  beregnTilskuddsperioderForVTAOAvtale(UUID id, Tiltakstype tiltakstype, LocalDate datoFraOgMed, LocalDate datoTilOgMed) {
+        List<TilskuddPeriode> tilskuddperioder = lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
+            Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), 6808);
+            return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), 0);
+        }).toList();
+        return tilskuddperioder;
+    }
+
     private static int getLonnstilskuddProsent(Tiltakstype tiltakstype, Integer lonnstilskuddprosent) {
         if(tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD){
             if(lonnstilskuddprosent >= 68) return 67;

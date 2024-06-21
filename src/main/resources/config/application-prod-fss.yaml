@@ -106,8 +106,8 @@ tiltaksgjennomforing:
     mentorServiceEdition: 4
     inkluderingstilskuddServiceCode: 5516
     inkluderingstilskuddServiceEdition: 5
-    vtaoServiceCode: 1234
-    vtaoServiceEdition: 1
+    vtaoServiceCode: 5516
+    vtaoServiceEdition: 5 # TODO: Finn riktig service edition
 
   ereg:
     uri: https://ereg-services.intern.nav.no/api/v2/organisasjon
