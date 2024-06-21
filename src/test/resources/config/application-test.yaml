@@ -101,5 +101,8 @@ tiltaksgjennomforing:
     uri: http://localhost:8090/api/graphql
     lenke: http://localhost:3000/tiltaksgjennomforing/avtale/
     enabled: false
+  arena:
+    ords-proxy:
+      url: http://localhost:8090/arena-ords-proxy
 
 ELECTOR_PATH: null
