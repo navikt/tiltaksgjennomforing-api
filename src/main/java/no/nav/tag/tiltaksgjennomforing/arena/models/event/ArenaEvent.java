@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTable;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Operation;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -64,5 +66,17 @@ public class ArenaEvent {
             .retryCount(0)
             .status(status)
             .build();
+    }
+
+    public ArenaTable getArenaTable() {
+        return ArenaTable.parse(this.arenaTable);
+    }
+
+    public Operation getOperation() {
+        return Operation.parse(this.operation);
+    }
+
+    public String getLogId() {
+        return this.getArenaTable() + ":" + this.getArenaId();
     }
 }

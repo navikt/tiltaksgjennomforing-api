@@ -10,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Operation;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEvent;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEventStatus;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaEventRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -17,6 +18,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class ArenaProcessingService {
+    private final static int MAX_RETRY_COUNT = 3;
 
     private final ObjectMapper objectMapper;
     private final ArenaEventRepository arenaEventRepository;
@@ -92,7 +94,7 @@ public class ArenaProcessingService {
 
     private void process(ArenaEvent arenaEvent) {
         try {
-            ArenaTable arenaTable = ArenaTable.parse(arenaEvent.getArenaTable());
+            ArenaTable arenaTable = arenaEvent.getArenaTable();
 
             switch (arenaTable) {
                 case TILTAKGJENNOMFORING: {
@@ -108,8 +110,30 @@ public class ArenaProcessingService {
                     break;
                 }
             }
+        } catch (DataIntegrityViolationException e) {
+            ArenaEventStatus status = arenaEvent.getRetryCount() < MAX_RETRY_COUNT
+                ? ArenaEventStatus.RETRY
+                : ArenaEventStatus.FAILED;
+
+            ArenaEvent update = arenaEvent.toBuilder()
+                .status(status)
+                .retryCount(arenaEvent.getRetryCount() + 1)
+                .build();
+
+            if (status == ArenaEventStatus.RETRY) {
+                String retries = Integer.toString(arenaEvent.getRetryCount());
+                log.info(
+                    "Feil ved opprettelse av Arena-event: {}. Antall forsøk: {}. Forsøker på nytt.",
+                    arenaEvent.getLogId(),
+                    retries
+                );
+            } else {
+                log.error("Arena-event {} har blitt forsøkt max antall ganger. Avbryter.", arenaEvent.getLogId());
+            }
+
+            arenaEventRepository.save(update);
         } catch (Exception e) {
-            log.error("Feil ved prosessering av Arena-event", e);
+            log.error("Feil ved prosessering av Arena-event: {}", arenaEvent.getLogId(), e);
 
             ArenaEvent update = arenaEvent.toBuilder()
                 .status(ArenaEventStatus.FAILED)
