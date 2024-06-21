@@ -27,7 +27,7 @@ CREATE TABLE arena_ords_arbeidsgiver
 (
     arbgiv_id_arrangor            int primary key,
     virksomhetsnummer             varchar,
-    organisasjonsnummerMorselskap varchar
+    organisasjonsnummer_morselskap varchar
 );
 
 CREATE TABLE arena_tiltakssak
@@ -99,7 +99,7 @@ CREATE TABLE arena_tiltakgjennomforing
     maalform_kravbrev              varchar,
     ekstern_id                     varchar,
     FOREIGN KEY (sak_id) REFERENCES arena_tiltakssak (sak_id) ON DELETE CASCADE,
-    FOREIGN KEY (arbgiv_id_arrangor) REFERENCES arena_ords_arbeidsgiver (arbgiv_id_arrangor) ON DELETE CASCADE
+    FOREIGN KEY (arbgiv_id_arrangor) REFERENCES arena_ords_arbeidsgiver (arbgiv_id_arrangor)
 );
 
 CREATE TABLE arena_tiltakdeltaker
@@ -136,5 +136,5 @@ CREATE TABLE arena_tiltakdeltaker
     begrunnelse_bestilling        varchar,
     antall_dager_pr_uke           varchar,
     FOREIGN KEY (tiltakgjennomforing_id) REFERENCES arena_tiltakgjennomforing (tiltakgjennomforing_id) ON DELETE CASCADE,
-    FOREIGN KEY (person_id) REFERENCES arena_ords_fnr (person_id) ON DELETE CASCADE
+    FOREIGN KEY (person_id) REFERENCES arena_ords_fnr (person_id)
 );
