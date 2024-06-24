@@ -109,8 +109,9 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
         }
     }
 
-    private static LocalDate tidligstI2025(LocalDate dato) {
-        return dato.isBefore(TilskuddPeriode.START_2025) ? TilskuddPeriode.START_2025 : dato;
+    private LocalDate tidligstI2025() {
+        var startDatoMinus3Mnd = startDato.minusMonths(3);
+        return startDatoMinus3Mnd.isBefore(TilskuddPeriode.START_2025) ? TilskuddPeriode.START_2025 : startDatoMinus3Mnd;
     }
     private boolean startDatoErI2025() {
         return startDato.isAfter(START_2025.minusDays(1));
@@ -123,7 +124,7 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
         // Ikke tillat godkjenning av tilskuddsperioder etter 2025 før budsjettet er vedtatt
         // TODO: Må oppdateres før årsskifte 2024/2025
         if (startDatoErI2025()) {
-            return tidligstI2025(startDato.minusMonths(3));
+            return tidligstI2025();
         }
         if (løpenummer == 1) {
             return LocalDate.MIN;
