@@ -111,13 +111,13 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
 
     private LocalDate tidligstI2025() {
         var startDatoMinus3Mnd = startDato.minusMonths(3);
-        return startDatoMinus3Mnd.isBefore(TilskuddPeriode.START_2025) ? TilskuddPeriode.START_2025 : startDatoMinus3Mnd;
+        return startDatoMinus3Mnd.isBefore(TilskuddPeriode.JAN_2025) ? TilskuddPeriode.JAN_2025 : startDatoMinus3Mnd;
     }
     private boolean startDatoErI2025() {
-        return startDato.isAfter(START_2025.minusDays(1));
+        return startDato.isAfter(JAN_2025.minusDays(1));
     }
 
-    private static final LocalDate START_2025 = LocalDate.of(2025, 1, 1);
+    private static final LocalDate JAN_2025 = LocalDate.of(2025, 1, 1);
 
     @JsonProperty
     private LocalDate kanBesluttesFom() {
