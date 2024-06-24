@@ -1,9 +1,9 @@
 {
   "request": {
     "method": "GET",
-    "urlPathPattern": "/arena-ords-proxy/api/ords/arbeidsgiver",
-    "queryParameters": {
-      "arbeidsgiverId": {
+    "urlPathPattern": "/arena-ords/arena/api/v1/arbeidsgiver/ident",
+    "headers": {
+      "arbgivId": {
         "matches": "[\\d\\D]*"
       }
     }
@@ -11,8 +11,8 @@
   "response": {
     "status": 200,
     "jsonBody": {
-      "virksomhetsnummer": "123456789",
-      "organisasjonsnummerMorselskap": "9876543121"
+      "bedriftsnr": 123456789,
+      "orgnrMorselskap": 987654312
     },
     "headers": {
       "Content-Type": "application/json"

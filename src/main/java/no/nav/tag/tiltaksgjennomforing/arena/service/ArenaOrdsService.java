@@ -3,7 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.arena.service;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.arena.client.ArenaOrdsArbeidsgiverResponse;
 import no.nav.tag.tiltaksgjennomforing.arena.client.ArenaOrdsFnrResponse;
-import no.nav.tag.tiltaksgjennomforing.arena.client.ArenaOrdsProxyClient;
+import no.nav.tag.tiltaksgjennomforing.arena.client.ArenaOrdsClient;
 import no.nav.tag.tiltaksgjennomforing.arena.models.ords.ArenaOrdsArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.arena.models.ords.ArenaOrdsFnr;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaOrdsArbeidsgiverRepository;
@@ -16,12 +16,12 @@ import org.springframework.stereotype.Service;
 public class ArenaOrdsService {
     private final ArenaOrdsFnrRepository fnrRepository;
     private final ArenaOrdsArbeidsgiverRepository arbeidsgiverRepository;
-    private final ArenaOrdsProxyClient arenaOrdsClient;
+    private final ArenaOrdsClient arenaOrdsClient;
 
     public ArenaOrdsService(
         ArenaOrdsFnrRepository fnrRepository,
         ArenaOrdsArbeidsgiverRepository arbeidsgiverRepository,
-        ArenaOrdsProxyClient arenaOrdsClient
+        ArenaOrdsClient arenaOrdsClient
     ) {
         this.fnrRepository = fnrRepository;
         this.arbeidsgiverRepository = arbeidsgiverRepository;
@@ -41,7 +41,7 @@ public class ArenaOrdsService {
 
         ArenaOrdsFnr arenaOrdsFnr = ArenaOrdsFnr.builder()
             .personId(personId)
-            .fnr(response.fnr())
+            .fnr(response.personListe().getFirst().fnr())
             .build();
 
         fnrRepository.save(arenaOrdsFnr);
@@ -69,8 +69,8 @@ public class ArenaOrdsService {
 
         ArenaOrdsArbeidsgiver arenaOrdsArbeidsgiver = ArenaOrdsArbeidsgiver.builder()
             .arbgivIdArrangor(arbeidsgiverId)
-            .virksomhetsnummer(response.virksomhetsnummer())
-            .organisasjonsnummerMorselskap(response.organisasjonsnummerMorselskap())
+            .virksomhetsnummer(response.bedriftsnr().toString())
+            .organisasjonsnummerMorselskap(response.orgnrMorselskap().toString())
             .build();
 
         arbeidsgiverRepository.save(arenaOrdsArbeidsgiver);

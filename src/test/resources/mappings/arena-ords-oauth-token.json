@@ -1,0 +1,22 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPathPattern": "/arena-ords/arena/api/oauth/token",
+    "headers": {
+      "Authorization": {
+        "matches": "Basic .*"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "access_token": "Token",
+      "token_type": "Bearer",
+      "expires_in": 3600
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

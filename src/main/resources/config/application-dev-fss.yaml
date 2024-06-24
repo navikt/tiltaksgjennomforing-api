@@ -76,14 +76,6 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
-      arena-ords:
-        token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
-        grant-type: client_credentials
-        scope: api://dev-fss.amt.amt-arena-ords-proxy/.default
-        authentication:
-          client-id: ${AZURE_APP_CLIENT_ID}
-          client-secret: ${AZURE_APP_CLIENT_SECRET}
-          client-auth-method: client_secret_basic
 
 tiltaksgjennomforing:
   persondata:
@@ -156,5 +148,7 @@ tiltaksgjennomforing:
   utvikler-tilgang:
     gruppe-tilgang: ${beslutter.ad.gruppe}
   arena:
-    ords-proxy:
-      url: https://amt-arena-ords-proxy.dev-fss-pub.nais.io
+    ords:
+      url: https://arena-ords-q2.nais.preprod.local
+      client-id: tbd
+      client-secret: tbd

@@ -1,0 +1,23 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPathPattern": "/arena-ords/arena/api/v1/person/identListe",
+    "bodyPatterns": [{
+      "matches": "\\{\"personListe\":\\[\\d*\\]\\}"
+    }]
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "personListe": [
+        {
+          "personId": "1",
+          "fnr": "12345678910"
+        }
+      ]
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

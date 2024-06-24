@@ -102,7 +102,9 @@ tiltaksgjennomforing:
     lenke: http://localhost:3000/tiltaksgjennomforing/avtale/
     enabled: false
   arena:
-    ords-proxy:
-      url: http://localhost:8090/arena-ords-proxy
+    ords:
+      url: http://localhost:8090/arena-ords
+      client-id: client
+      client-secret: secret
 
 ELECTOR_PATH: null
