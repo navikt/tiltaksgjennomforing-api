@@ -102,7 +102,7 @@ class TilskuddPeriodeTest {
 
     @Test
     void kan_ikke_godkjenne_for_neste_aar() {
-        // Alle tilskuddsperioder etter første kan godkjennes tidligere enn 3 mnd før startdato,
+        // Alle tilskuddsperioder etter første kan godkjennes innen 3 mnd før startdato,
         // men det er ikke ønskelig å åpne for dette for tilskuddsperioder som starter "neste år" grunnet
         // uavklart budsjett.
         Now.fixedDate(LocalDate.of(NAAVAERENDE_AAR, 9, 1));
