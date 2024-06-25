@@ -135,6 +135,7 @@ CREATE TABLE arena_tiltakdeltaker
     partisjon                     varchar,
     begrunnelse_bestilling        varchar,
     antall_dager_pr_uke           varchar,
+    ekstern_id                    varchar,
     FOREIGN KEY (tiltakgjennomforing_id) REFERENCES arena_tiltakgjennomforing (tiltakgjennomforing_id) ON DELETE CASCADE,
     FOREIGN KEY (person_id) REFERENCES arena_ords_fnr (person_id)
 );
