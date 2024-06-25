@@ -118,4 +118,7 @@ public class ArenaTiltakdeltaker {
 
     @JsonProperty("ANTALL_DAGER_PR_UKE")
     private String antallDagerPrUke;
+
+    @JsonProperty("EKSTERN_ID")
+    private String eksternId;
 }
