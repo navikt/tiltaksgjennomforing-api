@@ -378,7 +378,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     private boolean skalBesluttes() {
-        return tiltakstype == Tiltakstype.SOMMERJOBB || tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD || tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD;
+        return tiltakstype == Tiltakstype.SOMMERJOBB || tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD || tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || tiltakstype == Tiltakstype.VTAO;
     }
 
     private void sjekkOmAvtalenKanEndres() {

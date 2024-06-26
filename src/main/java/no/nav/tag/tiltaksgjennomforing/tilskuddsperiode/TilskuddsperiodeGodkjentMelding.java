@@ -72,9 +72,9 @@ public class TilskuddsperiodeGodkjentMelding {
                 tilskuddsperiode.getBeløp(),
                 tilskuddsperiode.getStartDato(),
                 tilskuddsperiode.getSluttDato(),
-                avtale.getGjeldendeInnhold().getFeriepengesats().doubleValue(),
-                avtale.getGjeldendeInnhold().getOtpSats(),
-                avtale.getGjeldendeInnhold().getArbeidsgiveravgift().doubleValue(),
+                avtale.getGjeldendeInnhold().getFeriepengesats() != null ? avtale.getGjeldendeInnhold().getFeriepengesats().doubleValue() : 0,
+                avtale.getGjeldendeInnhold().getOtpSats() != null ? avtale.getGjeldendeInnhold().getOtpSats() : 0,
+                avtale.getGjeldendeInnhold().getArbeidsgiveravgift() != null ? avtale.getGjeldendeInnhold().getArbeidsgiveravgift().doubleValue() : 0,
                 tilskuddsperiode.getLonnstilskuddProsent(),
                 avtale.getAvtaleNr(),
                 tilskuddsperiode.getLøpenummer(),
@@ -84,6 +84,8 @@ public class TilskuddsperiodeGodkjentMelding {
                 avtale.getGjeldendeInnhold().getVeilederFornavn(),
                 avtale.getGjeldendeInnhold().getVeilederEtternavn(),
                 tilskuddsperiode.getGodkjentTidspunkt()
+//                avtale.getGjeldendeInnhold().getVtao().getFadderFornavn(),
+//                avtale.getGjeldendeInnhold().getVtao().getFadderEtternavn()
         );
     }
 }
