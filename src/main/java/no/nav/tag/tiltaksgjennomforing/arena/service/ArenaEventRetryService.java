@@ -1,9 +1,11 @@
 package no.nav.tag.tiltaksgjennomforing.arena.service;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEvent;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEventStatus;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaEventRepository;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +14,7 @@ import java.util.List;
 
 @Slf4j
 @Service
+@Profile(Miljø.NOT_LOCAL)
 public class ArenaEventRetryService {
     private final ArenaEventRepository arenaEventRepository;
     private final ArenaProcessingService arenaProcessingService;
@@ -26,7 +29,7 @@ public class ArenaEventRetryService {
 
     @Transactional
     public List<ArenaEvent> getRetryEvents() {
-        return arenaEventRepository.findByStatusForUpdate(ArenaEventStatus.RETRY)
+        return arenaEventRepository.findByStatusForUpdate(ArenaEventStatus.RETRY.name().toUpperCase())
             .stream()
             .filter(this::isReadyForRetry)
             .map(arenaEvent ->

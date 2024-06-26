@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.datavarehus;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.leader.LeaderPodCheck;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-@Profile("!local")
+@Profile(Miljø.NOT_LOCAL)
 @Component
 @RequiredArgsConstructor
 @Slf4j

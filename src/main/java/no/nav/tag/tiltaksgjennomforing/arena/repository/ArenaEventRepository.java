@@ -2,10 +2,10 @@ package no.nav.tag.tiltaksgjennomforing.arena.repository;
 
 import jakarta.persistence.LockModeType;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEvent;
-import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEventStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +17,6 @@ public interface ArenaEventRepository extends JpaRepository<ArenaEvent, UUID> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT ae FROM ArenaEvent ae WHERE ae.status = :status")
-    List<ArenaEvent> findByStatusForUpdate(ArenaEventStatus status);
+    List<ArenaEvent> findByStatusForUpdate(@Param("status") String status);
 
 }
