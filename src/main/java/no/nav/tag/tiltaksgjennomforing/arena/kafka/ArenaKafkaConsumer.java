@@ -21,19 +21,19 @@ public class ArenaKafkaConsumer {
 
     @KafkaListener(topics = Topics.ARENA_TILTAKGJENNOMFORING_ENDRET)
     public void arenaTiltakgjennomforingEndret(ConsumerRecord<String, String> record) {
-        log.info("Mottatt melding for " + Topics.ARENA_TILTAKGJENNOMFORING_ENDRET + ": {}", record.key());
+        log.info("Mottatt melding for {}: {}", Topics.ARENA_TILTAKGJENNOMFORING_ENDRET, record.key());
         arenaProcessingService.process(record.key(), record.value());
     }
 
     @KafkaListener(topics = Topics.ARENA_TILTAKDELTAKER_ENDRET)
     public void arenaTiltakdeltakerEndret(ConsumerRecord<String, String> record) {
-        log.info("Mottatt melding for " + Topics.ARENA_TILTAKDELTAKER_ENDRET + ": {}", record.key());
+        log.info("Mottatt melding for {}: {}", Topics.ARENA_TILTAKDELTAKER_ENDRET, record.key());
         arenaProcessingService.process(record.key(), record.value());
     }
 
     @KafkaListener(topics = Topics.ARENA_TILTAKSSAK_ENDRET)
     public void arenaTiltaksakEndret(ConsumerRecord<String, String> record) {
-        log.info("Mottatt melding for " + Topics.ARENA_TILTAKSSAK_ENDRET + ": {}", record.key());
+        log.info("Mottatt melding for {}: {}", Topics.ARENA_TILTAKSSAK_ENDRET, record.key());
         arenaProcessingService.process(record.key(), record.value());
     }
 }

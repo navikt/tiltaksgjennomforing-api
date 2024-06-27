@@ -12,8 +12,6 @@ import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaEventRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Slf4j
 @Service
 public class ArenaProcessingService {
@@ -57,44 +55,47 @@ public class ArenaProcessingService {
                 ? message.before()
                 : message.after();
 
-            Optional<ArenaEvent> arenaEventOpt = arenaEventRepository.findByArenaIdAndArenaTable(key, table);
-            ArenaEvent arenaEvent = arenaEventOpt.orElse(ArenaEvent.create(
-                key,
-                table,
-                operation,
-                message.opTimestamp(),
-                payload
-            ));
-
-            if (arenaEventOpt.isPresent()) {
-                arenaEvent = arenaEvent.toBuilder()
-                    .operation(operation)
-                    .payload(payload)
-                    .status(ArenaEventStatus.PENDING)
-                    .retryCount(0)
-                    .build();
-            }
+            ArenaEvent arenaEvent = arenaEventRepository.findByArenaIdAndArenaTable(key, table)
+                .map(exisitingArenaEvent ->
+                    exisitingArenaEvent.toBuilder()
+                        .operation(operation)
+                        .payload(payload)
+                        .status(ArenaEventStatus.PENDING)
+                        .retryCount(0)
+                        .build()
+                )
+                .orElse(
+                    ArenaEvent.create(
+                        key,
+                        table,
+                        operation,
+                        message.opTimestamp(),
+                        payload
+                    )
+                );
 
             arenaEventRepository.save(arenaEvent);
             process(arenaEvent);
         } catch (Exception e) {
             log.error("Kunne ikke opprette arena-event. Feil operasjon: {}.", operation, e);
 
-            Optional<ArenaEvent> arenaEventOpt = arenaEventRepository.findByArenaIdAndArenaTable(key, table);
-            ArenaEvent arenaEvent = arenaEventOpt.orElse(ArenaEvent.create(
-                key,
-                table,
-                operation,
-                message.opTimestamp(),
-                message.after(),
-                ArenaEventStatus.FAILED
-            ));
+            ArenaEvent arenaEvent = arenaEventRepository.findByArenaIdAndArenaTable(key, table)
+                .map(exisitingArenaEvent ->
+                    exisitingArenaEvent.toBuilder()
+                        .status(ArenaEventStatus.FAILED)
+                        .build()
+                )
+                .orElse(
+                    ArenaEvent.create(
+                        key,
+                        table,
+                        operation,
+                        message.opTimestamp(),
+                        message.after(),
+                        ArenaEventStatus.FAILED
+                    )
+                );
 
-            if (arenaEventOpt.isPresent()) {
-                arenaEvent = arenaEvent.toBuilder()
-                    .status(ArenaEventStatus.FAILED)
-                    .build();
-            }
             arenaEventRepository.save(arenaEvent);
         }
     }

@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTable;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Operation;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -62,7 +63,7 @@ public class ArenaEvent {
             .operation(operation)
             .operationTime(operationTime)
             .payload(payload)
-            .created(LocalDateTime.now())
+            .created(Now.localDateTime())
             .retryCount(0)
             .status(status)
             .build();
