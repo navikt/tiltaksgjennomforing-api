@@ -14,7 +14,6 @@ CREATE TABLE arena_event
     UNIQUE(arena_id, arena_table)
 );
 
-CREATE INDEX idx_arena_id_table ON arena_event (arena_id, arena_table);
 CREATE INDEX idx_arena_status ON arena_event (status);
 
 CREATE TABLE arena_ords_fnr
