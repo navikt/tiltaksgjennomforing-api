@@ -1,13 +1,16 @@
 package no.nav.tag.tiltaksgjennomforing.arena.job;
 
+import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEvent;
 import no.nav.tag.tiltaksgjennomforing.arena.service.ArenaEventRetryService;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
+@Profile(Miljø.NOT_LOCAL)
 public class ArenaEventRetryJob {
     private final ArenaEventRetryService arenaEventRetryService;
 
