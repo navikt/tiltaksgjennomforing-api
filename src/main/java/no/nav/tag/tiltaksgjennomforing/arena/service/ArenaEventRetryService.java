@@ -29,7 +29,7 @@ public class ArenaEventRetryService {
 
     @Transactional
     public List<ArenaEvent> getRetryEvents() {
-        return arenaEventRepository.findByStatusForUpdate(ArenaEventStatus.RETRY)
+        return arenaEventRepository.findRetryEvents()
             .stream()
             .filter(this::isReadyForRetry)
             .map(arenaEvent ->
