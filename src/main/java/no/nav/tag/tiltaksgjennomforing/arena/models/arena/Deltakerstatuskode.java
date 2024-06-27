@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.arena.dto;
+package no.nav.tag.tiltaksgjennomforing.arena.models.arena;
 
 public enum Deltakerstatuskode {
     AKTUELL,

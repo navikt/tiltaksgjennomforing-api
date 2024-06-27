@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.arena.dto.ArenaKafkaMessage;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaKafkaMessage;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.NotifikasjonService;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -41,7 +41,7 @@ public class LokalConfiguration {
 
   @Bean
   @Profile(Miljø.LOCAL)
-  public KafkaTemplate<String, ArenaKafkaMessage<?>> arenaMockKafkaTemplate(EmbeddedKafkaBroker lokalKafkaBroker) {
+  public KafkaTemplate<String, ArenaKafkaMessage> arenaMockKafkaTemplate(EmbeddedKafkaBroker lokalKafkaBroker) {
     Map<String, Object> props = Map.of(
         ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, lokalKafkaBroker.getBrokersAsString(),
         ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class,

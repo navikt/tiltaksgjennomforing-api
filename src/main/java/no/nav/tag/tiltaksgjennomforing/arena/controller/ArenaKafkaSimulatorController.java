@@ -1,12 +1,15 @@
 package no.nav.tag.tiltaksgjennomforing.arena.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.Unprotected;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.arena.dto.ArenaKafkaMessage;
-import no.nav.tag.tiltaksgjennomforing.arena.dto.TiltakdeltakerEndretDto;
-import no.nav.tag.tiltaksgjennomforing.arena.dto.TiltakgjennomforingEndretDto;
-import no.nav.tag.tiltaksgjennomforing.arena.dto.TiltaksakEndretDto;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaKafkaMessage;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Operation;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.TiltakdeltakerEndret;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.TiltakgjennomforingEndret;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.TiltaksakEndret;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
@@ -22,18 +25,26 @@ import org.springframework.web.bind.annotation.RestController;
 @Profile(Miljø.LOCAL)
 @RequestMapping("/arena/simulator")
 public class ArenaKafkaSimulatorController {
-    private final KafkaTemplate<String, ArenaKafkaMessage<?>> arenaMockKafkaTemplate;
+    private final ObjectMapper objectMapper;
+    private final KafkaTemplate<String, ArenaKafkaMessage> arenaMockKafkaTemplate;
 
-    public ArenaKafkaSimulatorController(KafkaTemplate<String, ArenaKafkaMessage<?>> arenaMockKafkaTemplate) {
+    public ArenaKafkaSimulatorController(
+        ObjectMapper objectMapper,
+        KafkaTemplate<String, ArenaKafkaMessage> arenaMockKafkaTemplate
+    ) {
+        this.objectMapper = objectMapper;
         this.arenaMockKafkaTemplate = arenaMockKafkaTemplate;
     }
 
     @PostMapping("/tiltakgjennomforing-endret")
     public ResponseEntity<?> tiltakgjennomforingEndret(
-        @RequestBody ArenaKafkaMessage<TiltakgjennomforingEndretDto> melding
+        @RequestBody ArenaKafkaMessage melding
     ) {
         try {
-            String id = melding.after().tiltakgjennomforingId().toString();
+            JsonNode payload = Operation.DELETE.getOperation().equals(melding.opType()) ? melding.before() : melding.after();
+            TiltakgjennomforingEndret tiltakgjennomforingEndret =  objectMapper.treeToValue(payload, TiltakgjennomforingEndret.class);
+
+            String id = tiltakgjennomforingEndret.tiltakgjennomforingId().toString();
             arenaMockKafkaTemplate.send(Topics.ARENA_TILTAKGJENNOMFORING_ENDRET, id, melding);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
@@ -43,10 +54,13 @@ public class ArenaKafkaSimulatorController {
 
     @PostMapping("/tiltakssak-endret")
     public ResponseEntity<?> tiltakssakEndret(
-        @RequestBody ArenaKafkaMessage<TiltaksakEndretDto> melding
+        @RequestBody ArenaKafkaMessage melding
     ) {
         try {
-            String id = melding.after().sakId().toString();
+            JsonNode payload = Operation.DELETE.getOperation().equals(melding.opType()) ? melding.before() : melding.after();
+            TiltaksakEndret tiltaksakEndret =  objectMapper.treeToValue(payload, TiltaksakEndret.class);
+
+            String id = tiltaksakEndret.sakId().toString();
             arenaMockKafkaTemplate.send(Topics.ARENA_TILTAKSSAK_ENDRET, id, melding);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
@@ -56,10 +70,13 @@ public class ArenaKafkaSimulatorController {
 
     @PostMapping("/tiltakdeltaker-endret")
     public ResponseEntity<?> tiltakdeltakerEndret(
-        @RequestBody ArenaKafkaMessage<TiltakdeltakerEndretDto> melding
+        @RequestBody ArenaKafkaMessage melding
     ) {
         try {
-            String id = melding.after().tiltakdeltakerId().toString();
+            JsonNode payload = Operation.DELETE.getOperation().equals(melding.opType()) ? melding.before() : melding.after();
+            TiltakdeltakerEndret tiltakdeltakerEndret =  objectMapper.treeToValue(payload, TiltakdeltakerEndret.class);
+
+            String id = tiltakdeltakerEndret.tiltakdeltakerId().toString();
             arenaMockKafkaTemplate.send(Topics.ARENA_TILTAKDELTAKER_ENDRET, id, melding);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {

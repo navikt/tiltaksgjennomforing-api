@@ -1,11 +1,12 @@
-package no.nav.tag.tiltaksgjennomforing.arena.dto;
+package no.nav.tag.tiltaksgjennomforing.arena.models.arena;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import java.time.LocalDateTime;
 
-public record ArenaKafkaMessage<T>(
+public record ArenaKafkaMessage(
     String table,
 
     @JsonProperty("op_type")
@@ -22,6 +23,6 @@ public record ArenaKafkaMessage<T>(
     @JsonProperty("pos")
     String pos,
 
-    T before,
-    T after
+    JsonNode before,
+    JsonNode after
 ){}

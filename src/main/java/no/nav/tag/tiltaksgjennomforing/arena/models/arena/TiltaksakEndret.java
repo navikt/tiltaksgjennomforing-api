@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.arena.dto;
+package no.nav.tag.tiltaksgjennomforing.arena.models.arena;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -7,7 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.arena.utils.ArenaBooleanDeserializer;
 
 import java.time.LocalDateTime;
 
-public record TiltaksakEndretDto(
+public record TiltaksakEndret(
 
     @JsonProperty("SAK_ID")
     Integer sakId,
