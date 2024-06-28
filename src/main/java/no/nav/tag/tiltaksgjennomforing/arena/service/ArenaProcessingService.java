@@ -137,7 +137,7 @@ public class ArenaProcessingService {
             if (status == ArenaEventStatus.RETRY) {
                 String retries = Integer.toString(arenaEvent.getRetryCount());
                 log.info(
-                    "Feil ved opprettelse av Arena-event: {}. Antall forsøk: {}. Forsøker på nytt.",
+                    "Feil ved opprettelse av Arena-event: {}. Antall gjentatte forsøk: {}. Forsøker på nytt.",
                     arenaEvent.getLogId(),
                     retries
                 );

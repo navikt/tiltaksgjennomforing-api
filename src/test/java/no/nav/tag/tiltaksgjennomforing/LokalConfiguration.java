@@ -1,8 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.arena.configuration.ArenaKafkaProperties;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaKafkaMessage;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.NotifikasjonService;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -27,15 +27,15 @@ public class LokalConfiguration {
 
   @Bean
   @Profile(Miljø.LOCAL)
-  public EmbeddedKafkaBroker lokalKafkaBroker() {
+  public EmbeddedKafkaBroker lokalKafkaBroker(ArenaKafkaProperties arenaKafkaProperties) {
     log.info("Starter lokal Kafka");
 
     return new EmbeddedKafkaZKBroker(
         1,
         true,
-        Topics.ARENA_TILTAKGJENNOMFORING_ENDRET,
-        Topics.ARENA_TILTAKDELTAKER_ENDRET,
-        Topics.ARENA_TILTAKSSAK_ENDRET
+        arenaKafkaProperties.getTiltakdeltakerEndretTopic(),
+        arenaKafkaProperties.getTiltakgjennomforingEndretTopic(),
+        arenaKafkaProperties.getTiltakssakEndretTopic()
     ).kafkaPorts(3333);
   }
 

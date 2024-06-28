@@ -148,6 +148,10 @@ tiltaksgjennomforing:
   utvikler-tilgang:
     gruppe-tilgang: ${beslutter.ad.gruppe}
   arena:
+    kafka:
+      tiltakdeltaker-endret-topic: 'teamarenanais.aapen-arena-tiltakdeltakerendret-v1-q2'
+      tiltakgjennomforing-endret-topic: 'teamarenanais.aapen-arena-tiltakgjennomforingendret-v1-q2'
+      tiltakssak-endret-topic: 'teamarenanais.aapen-arena-tiltakssakendret-v1-q2'
     ords:
       url: https://arena-ords-q2.nais.preprod.local
       client-id: tbd

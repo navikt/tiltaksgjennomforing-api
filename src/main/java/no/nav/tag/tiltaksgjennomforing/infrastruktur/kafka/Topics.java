@@ -16,8 +16,4 @@ public class Topics {
     public static final String AVTALE_HENDELSE_COMPACT = "arbeidsgiver.tiltak-avtale-hendelse-compact";
 
     public static final String AUDIT_HENDELSE = "arbeidsgiver.tiltak-audit-hendelse";
-
-    public static final String ARENA_TILTAKDELTAKER_ENDRET = "teamarenanais.aapen-arena-tiltakdeltakerendret-v1";
-    public static final String ARENA_TILTAKGJENNOMFORING_ENDRET = "teamarenanais.aapen-arena-tiltakgjennomforingendret-v1";
-    public static final String ARENA_TILTAKSSAK_ENDRET = "teamarenanais.aapen-arena-tiltakssakendret-v1";
 }
