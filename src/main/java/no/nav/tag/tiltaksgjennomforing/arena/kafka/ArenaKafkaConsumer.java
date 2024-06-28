@@ -24,19 +24,19 @@ public class ArenaKafkaConsumer {
         this.arenaKafkaProperties = arenaKafkaProperties;
     }
 
-    @KafkaListener(topics = "${tiltaksgjennomforing.arena.kafka.arena-tiltakgjennomforing-endret}")
+    @KafkaListener(topics = "${tiltaksgjennomforing.arena.kafka.tiltakgjennomforing-endret-topic}")
     public void arenaTiltakgjennomforingEndret(ConsumerRecord<String, String> record) {
         log.info("Mottatt melding for {}: {}", arenaKafkaProperties.getTiltakgjennomforingEndretTopic(), record.key());
         arenaProcessingService.process(record.key(), record.value());
     }
 
-    @KafkaListener(topics = "${tiltaksgjennomforing.arena.kafka.arena-tiltakdeltaker-endret}")
+    @KafkaListener(topics = "${tiltaksgjennomforing.arena.kafka.tiltakdeltaker-endret-topic}")
     public void arenaTiltakdeltakerEndret(ConsumerRecord<String, String> record) {
         log.info("Mottatt melding for {}: {}", arenaKafkaProperties.getTiltakdeltakerEndretTopic(), record.key());
         arenaProcessingService.process(record.key(), record.value());
     }
 
-    @KafkaListener(topics = "${tiltaksgjennomforing.arena.kafka.arena-tiltakssak-endret}")
+    @KafkaListener(topics = "${tiltaksgjennomforing.arena.kafka.tiltakssak-endret-topic}")
     public void arenaTiltaksakEndret(ConsumerRecord<String, String> record) {
         log.info("Mottatt melding for {}: {}", arenaKafkaProperties.getTiltakssakEndretTopic(), record.key());
         arenaProcessingService.process(record.key(), record.value());
