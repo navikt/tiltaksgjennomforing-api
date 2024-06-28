@@ -83,6 +83,11 @@ public class AvtaleTilJournalfoering {
     private Double mentorAntallTimer;
     private Integer mentorTimelonn;
 
+    // fadder
+    private String fadderFornavn;
+    private String fadderEtternavn;
+    private String fadderTlf;
+
     private List<MaalTilJournalfoering> maal = new ArrayList<>();
     private List<OppgaveTilJournalFoering> oppgaver = new ArrayList<>();
 
