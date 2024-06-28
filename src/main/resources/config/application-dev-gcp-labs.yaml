@@ -85,5 +85,10 @@ tiltaksgjennomforing:
     enabled: false
   tilskuddsperioder:
     tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD
+  arena:
+    ords:
+      url: http://tiltaksgjennomforing-wiremock/arena-ords
+      client-id: client
+      client-secret: secret
 
 ELECTOR_PATH: null

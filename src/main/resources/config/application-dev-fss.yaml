@@ -147,3 +147,8 @@ tiltaksgjennomforing:
     gruppe-tilgang: ${beslutter.ad.gruppe}
   utvikler-tilgang:
     gruppe-tilgang: ${beslutter.ad.gruppe}
+  arena:
+    ords:
+      url: https://arena-ords-q2.nais.preprod.local
+      client-id: tbd
+      client-secret: tbd
