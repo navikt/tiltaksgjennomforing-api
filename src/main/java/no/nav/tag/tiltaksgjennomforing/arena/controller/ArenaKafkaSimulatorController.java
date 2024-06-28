@@ -7,7 +7,7 @@ import no.nav.security.token.support.core.api.Unprotected;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaKafkaMessage;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Operation;
-import no.nav.tag.tiltaksgjennomforing.arena.models.arena.TiltakdeltakerEndret;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakdeltaker;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakgjennomforing;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakssak;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
@@ -74,9 +74,9 @@ public class ArenaKafkaSimulatorController {
     ) {
         try {
             JsonNode payload = Operation.DELETE.getOperation().equals(melding.opType()) ? melding.before() : melding.after();
-            TiltakdeltakerEndret tiltakdeltakerEndret =  objectMapper.treeToValue(payload, TiltakdeltakerEndret.class);
+            ArenaTiltakdeltaker tiltakdeltakerEndret =  objectMapper.treeToValue(payload, ArenaTiltakdeltaker.class);
 
-            String id = tiltakdeltakerEndret.tiltakdeltakerId().toString();
+            String id = tiltakdeltakerEndret.getTiltakdeltakerId().toString();
             arenaMockKafkaTemplate.send(Topics.ARENA_TILTAKDELTAKER_ENDRET, id, melding);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
