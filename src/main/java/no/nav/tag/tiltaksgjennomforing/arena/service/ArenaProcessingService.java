@@ -10,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEvent;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEventStatus;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaEventRepository;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -37,6 +38,7 @@ public class ArenaProcessingService {
         this.tiltakdeltakerArenaEventService = tiltakdeltakerArenaEventService;
     }
 
+    @Async("arenaThreadPoolExecutor")
     public void process(String key, String value) {
         try {
             ArenaKafkaMessage message = this.objectMapper.readValue(value, ArenaKafkaMessage.class);
@@ -44,6 +46,16 @@ public class ArenaProcessingService {
         } catch (JsonProcessingException e) {
             log.error("Feil ved prosessering av Arena-event", e);
         }
+    }
+
+    @Async("arenaThreadPoolExecutor")
+    public void process(ArenaEvent arenaEvent) {
+        ArenaEvent processingEvent = arenaEvent.toBuilder()
+            .status(ArenaEventStatus.PROCESSING)
+            .build();
+
+        arenaEventRepository.save(processingEvent);
+        run(processingEvent);
     }
 
     private void process(String key, ArenaKafkaMessage message) {
@@ -100,7 +112,7 @@ public class ArenaProcessingService {
         }
     }
 
-    private void process(ArenaEvent arenaEvent) {
+    private void run(ArenaEvent arenaEvent) {
         try {
             var result = switch (arenaEvent.getArenaTable()) {
                 case TILTAKGJENNOMFORING -> tiltakgjennomforingArenaEventService.process(arenaEvent);
@@ -108,11 +120,11 @@ public class ArenaProcessingService {
                 case TILTAKDELTAKER -> tiltakdeltakerArenaEventService.process(arenaEvent);
             };
 
-            ArenaEvent update = arenaEvent.toBuilder()
+            ArenaEvent completedEvent = arenaEvent.toBuilder()
                 .status(result)
                 .build();
 
-            arenaEventRepository.save(update);
+            arenaEventRepository.save(completedEvent);
         } catch (DataIntegrityViolationException e) {
             ArenaEventStatus status = arenaEvent.getRetryCount() < MAX_RETRY_COUNT
                 ? ArenaEventStatus.RETRY
@@ -120,7 +132,6 @@ public class ArenaProcessingService {
 
             ArenaEvent update = arenaEvent.toBuilder()
                 .status(status)
-                .retryCount(arenaEvent.getRetryCount() + 1)
                 .build();
 
             if (status == ArenaEventStatus.RETRY) {
