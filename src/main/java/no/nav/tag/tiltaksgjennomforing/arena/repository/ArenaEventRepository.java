@@ -15,7 +15,7 @@ public interface ArenaEventRepository extends JpaRepository<ArenaEvent, UUID> {
     Optional<ArenaEvent> findByArenaIdAndArenaTable(String arenaId, String arenaTable);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT ae FROM ArenaEvent ae WHERE ae.status = 'RETRY'")
+    @Query("SELECT ae FROM ArenaEvent ae WHERE ae.status = 'RETRY' ORDER BY random() LIMIT 100")
     List<ArenaEvent> findRetryEvents();
 
 }

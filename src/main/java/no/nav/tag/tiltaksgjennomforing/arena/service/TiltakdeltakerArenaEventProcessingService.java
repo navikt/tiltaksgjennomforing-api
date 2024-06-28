@@ -10,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEvent;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEventStatus;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaEventRepository;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaTiltakdeltakerRepository;
+import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaTiltakgjennomforingRepository;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -17,19 +18,22 @@ import org.springframework.stereotype.Service;
 public class TiltakdeltakerArenaEventProcessingService implements ArenaEventProcessingService {
     private final ObjectMapper objectMapper;
     private final ArenaTiltakdeltakerRepository tiltakdeltakerRepository;
+    private final ArenaTiltakgjennomforingRepository tiltakgjennomforingRepository;
     private final ArenaEventRepository eventRepository;
     private final ArenaOrdsService ordsService;
 
     public TiltakdeltakerArenaEventProcessingService(
-        ObjectMapper objectMapper,
-        ArenaTiltakdeltakerRepository tiltakdeltakerRepository,
         ArenaEventRepository eventRepository,
-        ArenaOrdsService ordsService
+        ObjectMapper objectMapper,
+        ArenaOrdsService ordsService,
+        ArenaTiltakdeltakerRepository tiltakdeltakerRepository,
+        ArenaTiltakgjennomforingRepository tiltakgjennomforingRepository
     ) {
-        this.objectMapper = objectMapper;
-        this.tiltakdeltakerRepository = tiltakdeltakerRepository;
         this.eventRepository = eventRepository;
+        this.objectMapper = objectMapper;
         this.ordsService = ordsService;
+        this.tiltakdeltakerRepository = tiltakdeltakerRepository;
+        this.tiltakgjennomforingRepository = tiltakgjennomforingRepository;
     }
 
     public ArenaEventStatus process(ArenaEvent arenaEvent) throws JsonProcessingException {
@@ -47,10 +51,13 @@ public class TiltakdeltakerArenaEventProcessingService implements ArenaEventProc
                 "{} ignorert fordi tilhørende tiltakgjennomføring er ignorert",
                 arenaEvent.getLogId()
             );
+
             delete(
                 tiltakdeltaker,
                 () -> log.info("Sletter tidligere håndtert deltaker {} som nå skal ignoreres", arenaEvent.getLogId())
             );
+            ordsService.attemptDeleteFnr(tiltakdeltaker.getPersonId()) ;
+
             return ArenaEventStatus.IGNORED;
         }
 
@@ -64,6 +71,12 @@ public class TiltakdeltakerArenaEventProcessingService implements ArenaEventProc
             delete(tiltakdeltaker, () -> log.info("{} har operasjon DELETE og slettet", arenaEvent.getLogId()));
             ordsService.attemptDeleteFnr(tiltakdeltaker.getPersonId()) ;
             return ArenaEventStatus.DONE;
+        }
+
+        boolean tiltakgjennomforingExists = tiltakgjennomforingRepository.existsById(tiltakdeltaker.getTiltakgjennomforingId());
+        if (!tiltakgjennomforingExists) {
+            log.info("{} settes på vent; tilhørende tiltakgjennomforing er ikke prossesert ennå", arenaEvent.getLogId());
+            return ArenaEventStatus.RETRY;
         }
 
         ordsService.fetchPerson(tiltakdeltaker.getPersonId());

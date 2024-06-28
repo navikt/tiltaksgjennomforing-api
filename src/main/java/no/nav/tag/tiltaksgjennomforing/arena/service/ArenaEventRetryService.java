@@ -13,6 +13,8 @@ import java.util.List;
 @Slf4j
 @Service
 public class ArenaEventRetryService {
+    public final static int MAX_RETRY_COUNT = 4;
+
     private final ArenaEventRepository arenaEventRepository;
     private final ArenaProcessingService arenaProcessingService;
 
@@ -51,10 +53,11 @@ public class ArenaEventRetryService {
         LocalDateTime created = arenaEvent.getCreated();
 
         return switch (arenaEvent.getRetryCount()) {
-            case 0 -> LocalDateTime.now().minusMinutes(1).isBefore(created);
-            case 1 -> LocalDateTime.now().minusMinutes(5).isBefore(created);
-            case 2 -> LocalDateTime.now().minusMinutes(15).isBefore(created);
-            case 3 -> LocalDateTime.now().minusMinutes(30).isBefore(created);
+            case 0 -> LocalDateTime.now().minusMinutes(5).isAfter(created);
+            case 1 -> LocalDateTime.now().minusMinutes(10).isAfter(created);
+            case 2 -> LocalDateTime.now().minusMinutes(15).isAfter(created);
+            case 3 -> LocalDateTime.now().minusHours(30).isAfter(created);
+            case 4 -> LocalDateTime.now().minusHours(1).isAfter(created);
             default -> false;
         };
     }

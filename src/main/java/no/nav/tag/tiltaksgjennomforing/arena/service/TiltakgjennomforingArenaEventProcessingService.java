@@ -8,6 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Operation;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEvent;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEventStatus;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaTiltakgjennomforingRepository;
+import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaTiltakssakRepository;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -16,16 +17,19 @@ public class TiltakgjennomforingArenaEventProcessingService implements ArenaEven
 
     private final ObjectMapper objectMapper;
     private final ArenaTiltakgjennomforingRepository tiltakgjennomforingRepository;
+    private final ArenaTiltakssakRepository tiltakssakRepository;
     private final ArenaOrdsService ordsService;
 
     public TiltakgjennomforingArenaEventProcessingService(
         ObjectMapper objectMapper,
+        ArenaOrdsService ordsService,
         ArenaTiltakgjennomforingRepository tiltakgjennomforingRepository,
-        ArenaOrdsService ordsService
+        ArenaTiltakssakRepository tiltakssakRepository
     ) {
         this.objectMapper = objectMapper;
-        this.tiltakgjennomforingRepository = tiltakgjennomforingRepository;
         this.ordsService = ordsService;
+        this.tiltakgjennomforingRepository = tiltakgjennomforingRepository;
+        this.tiltakssakRepository = tiltakssakRepository;
     }
 
     public ArenaEventStatus process(ArenaEvent arenaEvent) throws JsonProcessingException {
@@ -65,9 +69,15 @@ public class TiltakgjennomforingArenaEventProcessingService implements ArenaEven
         );
 
         if (Operation.DELETE == arenaEvent.getOperation()) {
-            ordsService.attemptDeleteArbeidsgiver(tiltakgjennomforing.getArbgivIdArrangor());
             delete(tiltakgjennomforing, () -> log.info("{} har operasjon DELETE og slettet", arenaEvent.getLogId()));
+            ordsService.attemptDeleteArbeidsgiver(tiltakgjennomforing.getArbgivIdArrangor());
             return ArenaEventStatus.DONE;
+        }
+
+        boolean tiltakssakExists = tiltakssakRepository.existsById(tiltakgjennomforing.getSakId());
+        if (!tiltakssakExists) {
+            log.info("{} settes på vent; tilhørende tiltakssak er ikke prossesert ennå", arenaEvent.getLogId());
+            return ArenaEventStatus.RETRY;
         }
 
         ordsService.fetchArbeidsgiver(tiltakgjennomforing.getArbgivIdArrangor());
