@@ -1,8 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka;
 
-import org.springframework.stereotype.Component;
-
-@Component
 public class Topics {
     //Tilskuddsperioder
     public static final String TILSKUDDSPERIODE_GODKJENT = "arbeidsgiver.tiltak-tilskuddsperiode-godkjent";
@@ -19,5 +16,4 @@ public class Topics {
     public static final String AVTALE_HENDELSE_COMPACT = "arbeidsgiver.tiltak-avtale-hendelse-compact";
 
     public static final String AUDIT_HENDELSE = "arbeidsgiver.tiltak-audit-hendelse";
-
 }
