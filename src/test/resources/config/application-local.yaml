@@ -92,6 +92,7 @@ tiltaksgjennomforing:
     vtaoServiceEdition: 5 # TODO: Finn riktig service edition
     altinnApiKey: foo
     apiGwApiKey: foo
+    vtaoAktiv: true
   ereg:
     uri: http://localhost:8090/ereg
   sts:
