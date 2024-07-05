@@ -74,7 +74,6 @@ no.nav.security.jwt:
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
 
-
 tiltaksgjennomforing:
   persondata:
     uri: https://pdl-api.intern.nav.no/graphql
@@ -145,3 +144,12 @@ tiltaksgjennomforing:
     gruppe-tilgang: fb516b74-0f2e-4b62-bad8-d70b82c3ae0b
   utvikler-tilgang:
     gruppe-tilgang: fb516b74-0f2e-4b62-bad8-d70b82c3ae0b
+  arena:
+    kafka:
+      tiltakdeltaker-endret-topic: 'teamarenanais.aapen-arena-tiltakdeltakerendret-v1'
+      tiltakgjennomforing-endret-topic: 'teamarenanais.aapen-arena-tiltakgjennomforingendret-v1'
+      tiltakssak-endret-topic: 'teamarenanais.aapen-arena-tiltakssakendret-v1'
+    ords:
+      url: https://arena-ords.nais.adeo.no
+      client-id: tbd
+      client-secret: tbd
