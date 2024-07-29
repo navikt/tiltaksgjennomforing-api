@@ -5,12 +5,14 @@ import io.getunleash.DefaultUnleash;
 import io.getunleash.Unleash;
 import io.getunleash.util.UnleashConfig;
 import jakarta.servlet.http.HttpServletRequest;
+import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.ByEnhetStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.context.annotation.RequestScope;
 
 
@@ -43,8 +45,8 @@ public class FeatureToggleConfig {
     }
 
     @Bean
-    @ConditionalOnProperty("tiltaksgjennomforing.unleash.mock")
     @RequestScope
+    @Profile({ Miljø.LOCAL, Miljø.DOCKER_COMPOSE, Miljø.DEV_GCP_LABS })
     public Unleash unleashMock(@Autowired HttpServletRequest request) {
         FakeFakeUnleash fakeUnleash = new FakeFakeUnleash();
         boolean allEnabled = "enabled".equals(request.getHeader("features"));
@@ -53,6 +55,14 @@ public class FeatureToggleConfig {
         } else {
             fakeUnleash.disableAll();
         }
+        return fakeUnleash;
+    }
+
+    @Bean
+    @Profile(Miljø.TEST)
+    public Unleash unleashTestMock() {
+        FakeFakeUnleash fakeUnleash = new FakeFakeUnleash();
+        fakeUnleash.enable(FeatureToggle.SMS_TIL_MOBILNUMMER.getToggleNavn());
         return fakeUnleash;
     }
 }

@@ -75,8 +75,6 @@ tiltaksgjennomforing:
       id: testsystem
   persondata:
     uri: http://tiltaksgjennomforing-wiremock/persondata
-  unleash:
-    mock: true
   dokgen:
     uri: http://tiltak-dokgen/template/tiltak-avtale/create-pdf
   notifikasjoner:
