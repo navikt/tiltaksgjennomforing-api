@@ -154,7 +154,7 @@ public class LagSmsFraAvtaleHendelse {
             return false;
         }
     }
-    private boolean smsTilMobilWhitelistToggleErPå(String tlfNr) {
+    private boolean skalSendeSmsTilTlfNr(String tlfNr) {
         UnleashContext unleashContext = UnleashContext.builder().addProperty("tlfNr", tlfNr).build();
         Boolean smsTogglePå = featureToggleService.isEnabled(FeatureToggle.SMS_TIL_MOBILNUMMER, unleashContext);
         if (smsTogglePå) {
@@ -167,7 +167,7 @@ public class LagSmsFraAvtaleHendelse {
     }
 
     private void lagreOgSendKafkaMelding(Sms sms) {
-        if (!smsTilMobilWhitelistToggleErPå(sms.getTelefonnummer())) {
+        if (!skalSendeSmsTilTlfNr(sms.getTelefonnummer())) {
             return;
         }
         try {

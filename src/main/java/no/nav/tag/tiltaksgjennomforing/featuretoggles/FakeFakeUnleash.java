@@ -13,8 +13,8 @@ import java.util.function.BiPredicate;
 public final class FakeFakeUnleash implements Unleash {
     private boolean enableAll = false;
     private boolean disableAll = false;
-    private Map<String, Boolean> features = new HashMap<>();
-    private Map<String, Variant> variants = new HashMap<>();
+    private final Map<String, Boolean> features = new HashMap<>();
+    private final Map<String, Variant> variants = new HashMap<>();
 
     @Override
     public boolean isEnabled(String toggleName) {
@@ -32,6 +32,11 @@ public final class FakeFakeUnleash implements Unleash {
         } else {
             return defaultSetting;
         }
+    }
+
+    @Override
+    public boolean isEnabled(String toggleName, UnleashContext context) {
+        return isEnabled(toggleName, false);
     }
 
     @Override

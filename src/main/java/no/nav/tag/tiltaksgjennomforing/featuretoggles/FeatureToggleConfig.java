@@ -47,6 +47,7 @@ public class FeatureToggleConfig {
     @RequestScope
     public Unleash unleashMock(@Autowired HttpServletRequest request) {
         FakeFakeUnleash fakeUnleash = new FakeFakeUnleash();
+        fakeUnleash.enable(FeatureToggle.SMS_TIL_MOBILNUMMER.getToggleNavn());
         boolean allEnabled = "enabled".equals(request.getHeader("features"));
         if (allEnabled) {
             fakeUnleash.enableAll();
