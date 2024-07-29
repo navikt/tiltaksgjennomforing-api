@@ -36,12 +36,12 @@ public class RegnUtTilskuddsperioderForAvtale {
             if (datoFraOgMed.isBefore(datoForRedusertProsent.plusDays(1)) && datoTilOgMed.isAfter(datoForRedusertProsent.minusDays(1))) {
                 // Både ikke reduserte og reduserte   ---60---60-----50----|--50----50-----
                 List<TilskuddPeriode> tilskuddperioderFørRedusering = lagPeriode(datoFraOgMed, datoForRedusertProsent.minusDays(1)).stream().map(datoPar -> {
-                    Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMåned);
+                    Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMåned);// TODO: IKKE TESTET
                     return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), lonnstilskuddprosent);
                 }).toList();
 
                 List<TilskuddPeriode> tilskuddperioderEtterRedusering = lagPeriode(datoForRedusertProsent, datoTilOgMed).stream().map(datoPar -> {
-                    Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMånedRedusert);
+                    Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMånedRedusert);// TODO: IKKE TESTET
                     return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), getLonnstilskuddProsent(tiltakstype, lonnstilskuddprosent));
                 }).toList();
 
@@ -123,9 +123,9 @@ public class RegnUtTilskuddsperioderForAvtale {
 
     private static List<Periode> splittHvisNyttÅr (LocalDate fraDato, LocalDate tilDato) {
         if (fraDato.getYear() != tilDato.getYear()) {
-            Periode datoPar1 = new Periode(fraDato, fraDato.withMonth(12).withDayOfMonth(31));
-            Periode datoPar2 = new Periode(tilDato.withMonth(1).withDayOfMonth(1), tilDato);
-            return List.of(datoPar1, datoPar2);
+            Periode datoPar1 = new Periode(fraDato, fraDato.withMonth(12).withDayOfMonth(31)); //TODO IKKE TESTET
+            Periode datoPar2 = new Periode(tilDato.withMonth(1).withDayOfMonth(1), tilDato); //TODO IKKE TESTET
+            return List.of(datoPar1, datoPar2);//TODO IKKE TESTET
         } else {
             return List.of(new Periode(fraDato, tilDato));
         }
