@@ -25,9 +25,6 @@ public class RegnUtTilskuddsperioderForAvtale {
     private final static BigDecimal DAGER_I_MÅNED = new BigDecimal("30.4375");
     private final static int ANTALL_MÅNEDER_I_EN_PERIODE = 1;
 
-    /**
-        TODO: Kalkulering av redusert prosent og redusert dato bør kun skje i {@link VarigLonnstilskuddAvtaleInnholdStrategy} og heller ikke i frontend
-     */
     public static List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(UUID id, Tiltakstype tiltakstype, Integer sumLønnstilskuddPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed, Integer lonnstilskuddprosent, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMånedRedusert) {
         if (datoForRedusertProsent == null) {
             // Ingen reduserte peridoder   -----60-----60------60------ |

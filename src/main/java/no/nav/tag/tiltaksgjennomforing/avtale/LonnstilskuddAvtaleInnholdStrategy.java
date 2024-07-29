@@ -1,18 +1,21 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+import no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.GenerellLonnstilskuddAvtaleBeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.LonnstilskuddAvtaleBeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
 public class LonnstilskuddAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
+
+    private LonnstilskuddAvtaleBeregningStrategy avtaleBeregningStrategy;
+
     public LonnstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
+        avtaleBeregningStrategy = new GenerellLonnstilskuddAvtaleBeregningStrategy().create(avtaleInnhold.getAvtale().getTiltakstype());
     }
 
     @Override
@@ -47,18 +50,8 @@ public class LonnstilskuddAvtaleInnholdStrategy extends BaseAvtaleInnholdStrateg
 
     @Override
     public void regnUtTotalLonnstilskudd() {
-        LonnstilskuddAvtaleBeregningStrategy.create(avtaleInnhold.getAvtale().getTiltakstype()).total(avtaleInnhold.getAvtale());
+        avtaleBeregningStrategy.beregnTotal(avtaleInnhold.getAvtale());
     }
-
-    //TODO: Denne metoden finnes i LonnstilskuddAvtaleBeregningStrategy. Finn ut om du bør kalle beregningstrategy direkte.
-    Integer getSumLonnsTilskudd(Integer sumLonnsutgifter, Integer lonnstilskuddProsent) {
-        if (sumLonnsutgifter == null || lonnstilskuddProsent == null) {
-            return null;
-        }
-        double lonnstilskuddProsentSomDecimal = lonnstilskuddProsent != null ? (lonnstilskuddProsent.doubleValue() / 100) : 0;
-        return (int) Math.round(sumLonnsutgifter * lonnstilskuddProsentSomDecimal);
-    }
-
 
     @Override
     public Map<String, Object> alleFelterSomMåFyllesUt() {

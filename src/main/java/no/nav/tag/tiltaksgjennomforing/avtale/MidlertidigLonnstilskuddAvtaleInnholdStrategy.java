@@ -1,7 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.MidlertidigLonnstilskuddAvtaleBeregningStrategy;
-import no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.LonnstilskuddAvtaleBeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 
 import java.time.LocalDate;
@@ -13,7 +12,7 @@ public class MidlertidigLonnstilskuddAvtaleInnholdStrategy extends Lonnstilskudd
 
     public MidlertidigLonnstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
-        midlertidigLonnstilskuddAvtaleBeregningStrategy = (MidlertidigLonnstilskuddAvtaleBeregningStrategy) LonnstilskuddAvtaleBeregningStrategy.create(this.avtaleInnhold.getAvtale().getTiltakstype());
+        midlertidigLonnstilskuddAvtaleBeregningStrategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy().create(this.avtaleInnhold.getAvtale().getTiltakstype());
     }
 
     @Override
@@ -36,7 +35,7 @@ public class MidlertidigLonnstilskuddAvtaleInnholdStrategy extends Lonnstilskudd
     @Override
     public void regnUtTotalLonnstilskudd() {
         Avtale avtale = this.avtaleInnhold.getAvtale();
-        LonnstilskuddAvtaleBeregningStrategy.create(avtale.getTiltakstype()).total(avtale);
+        midlertidigLonnstilskuddAvtaleBeregningStrategy.beregnTotal(avtale);
     }
 
     private void sjekktilskuddsprosentSats(EndreAvtale endreAvtale) {

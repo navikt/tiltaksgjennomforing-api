@@ -1,14 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import java.time.LocalDate;
-
-import no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.LonnstilskuddAvtaleBeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.VarigLonnstilskuddAvtaleBeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
 
 import java.util.Map;
-
-import static no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.VarigLonnstilskuddAvtaleBeregningStrategy.GRENSE_68_PROSENT_ETTER_12_MND;
 
 public class VarigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrategy {
 
@@ -16,7 +11,7 @@ public class VarigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtale
 
     public VarigLonnstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold){
         super(avtaleInnhold);
-        varigLonnstilskuddAvtaleBeregningStrategy =  (VarigLonnstilskuddAvtaleBeregningStrategy) LonnstilskuddAvtaleBeregningStrategy.create(this.avtaleInnhold.getAvtale().getTiltakstype());
+        varigLonnstilskuddAvtaleBeregningStrategy =  new VarigLonnstilskuddAvtaleBeregningStrategy().create(this.avtaleInnhold.getAvtale().getTiltakstype());
     }
 
     @Override
@@ -39,7 +34,7 @@ public class VarigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtale
     @Override
     public void regnUtTotalLonnstilskudd() {
         Avtale avtale = avtaleInnhold.getAvtale();
-        LonnstilskuddAvtaleBeregningStrategy.create(avtale.getTiltakstype()).total(avtale);
+        varigLonnstilskuddAvtaleBeregningStrategy.beregnTotal(avtale);
     }
 
     @Override
@@ -47,15 +42,6 @@ public class VarigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtale
         regnUtDatoOgSumRedusert();
     }
 
-    private LocalDate getDatoForRedusertProsent(LocalDate startDato, LocalDate sluttDato, Integer lonnstilskuddprosent) {
-        if (startDato == null || sluttDato == null || lonnstilskuddprosent == null) {
-            return null;
-        }
-        if (startDato.plusYears(1).minusDays(1).isBefore(sluttDato)) {
-            return startDato.plusYears(1);
-        }
-        return null;
-    }
     private void regnUtDatoOgSumRedusert() {
         varigLonnstilskuddAvtaleBeregningStrategy.regnUtDatoOgSumRedusert(avtaleInnhold.getAvtale());
     }
