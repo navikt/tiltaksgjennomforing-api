@@ -108,8 +108,6 @@ tiltaksgjennomforing:
     uri: http://localhost:8090/persondata
   oppgave:
     oppgave-uri: http://localhost:8090/api/v1/oppgaver
-  unleash:
-    mock: true
   veilarbarena:
     url: http://localhost:8090/veilarbarena/api/arena/status
     nav-consumer-id: tiltaksgjennomforing-api

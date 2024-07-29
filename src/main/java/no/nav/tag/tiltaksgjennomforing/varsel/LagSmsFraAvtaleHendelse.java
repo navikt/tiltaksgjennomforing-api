@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import io.getunleash.UnleashContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
@@ -153,14 +154,29 @@ public class LagSmsFraAvtaleHendelse {
             return false;
         }
     }
+    private boolean skalSendeSmsTilTlfNr(String tlfNr) {
+        UnleashContext unleashContext = UnleashContext.builder().addProperty("tlfNr", tlfNr).build();
+        Boolean smsTogglePå = featureToggleService.isEnabled(FeatureToggle.SMS_TIL_MOBILNUMMER, unleashContext);
+        if (smsTogglePå) {
+            log.info("Toggle sms-mobil-whitelist er på: sender bare sms for white-listed nummer");
+            return true;
+        } else {
+            log.info("Toggle sms-mobil-whitelist er av: sender sms til alle mobilnummere");
+            return false;
+        }
+    }
 
     private void lagreOgSendKafkaMelding(Sms sms) {
+        if (!skalSendeSmsTilTlfNr(sms.getTelefonnummer())) {
+            return;
+        }
         try {
             smsRepository.save(sms);
             smsProducer.sendSmsVarselMeldingTilKafka(sms);
         } catch (JsonProcessingException e) {
             log.error("Feil ved sending av sms", e);
         }
+
     }
 
     private static Sms smsTilDeltaker(Avtale avtale, HendelseType hendelse) {
