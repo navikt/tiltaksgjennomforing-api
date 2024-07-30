@@ -15,7 +15,7 @@ public class LonnstilskuddAvtaleInnholdStrategy extends BaseAvtaleInnholdStrateg
 
     public LonnstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
-        avtaleBeregningStrategy = new GenerellLonnstilskuddAvtaleBeregningStrategy().create(avtaleInnhold.getAvtale().getTiltakstype());
+        avtaleBeregningStrategy = new GenerellLonnstilskuddAvtaleBeregningStrategy();
     }
 
     @Override

@@ -16,12 +16,7 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
     public static final int GRENSE_68_PROSENT_ETTER_12_MND = 68;
     public static final int MAX_67_PROSENT_ETTER_12_MND = 67;
 
-    @Override
-    public GenerellLonnstilskuddAvtaleBeregningStrategy create(Tiltakstype tiltakstype) {
-        return new GenerellLonnstilskuddAvtaleBeregningStrategy();
-    }
-
-    public void genererPerioder(Avtale avtale){
+    public void genererNyeTilskuddsperioder(Avtale avtale){
         if (avtale.erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LAGE_NYE_TILSKUDDSPRIODER_INNGAATT_AVTALE);
         }

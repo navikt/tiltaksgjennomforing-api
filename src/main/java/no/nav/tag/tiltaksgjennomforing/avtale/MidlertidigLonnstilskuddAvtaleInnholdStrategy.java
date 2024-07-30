@@ -12,7 +12,7 @@ public class MidlertidigLonnstilskuddAvtaleInnholdStrategy extends Lonnstilskudd
 
     public MidlertidigLonnstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
-        midlertidigLonnstilskuddAvtaleBeregningStrategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy().create(this.avtaleInnhold.getAvtale().getTiltakstype());
+        midlertidigLonnstilskuddAvtaleBeregningStrategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy();
     }
 
     @Override

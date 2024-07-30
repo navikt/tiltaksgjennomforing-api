@@ -11,7 +11,7 @@ public class VarigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtale
 
     public VarigLonnstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold){
         super(avtaleInnhold);
-        varigLonnstilskuddAvtaleBeregningStrategy =  new VarigLonnstilskuddAvtaleBeregningStrategy().create(this.avtaleInnhold.getAvtale().getTiltakstype());
+        varigLonnstilskuddAvtaleBeregningStrategy =  new VarigLonnstilskuddAvtaleBeregningStrategy();
     }
 
     @Override

@@ -14,12 +14,8 @@ import static no.nav.tag.tiltaksgjennomforing.utils.DatoUtils.sisteDatoIMnd;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
 public class MidlertidigLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddAvtaleBeregningStrategy<MidlertidigLonnstilskuddAvtaleBeregningStrategy> {
-    @Override
-    public MidlertidigLonnstilskuddAvtaleBeregningStrategy create(Tiltakstype tiltakstype) {
-        return new MidlertidigLonnstilskuddAvtaleBeregningStrategy();
-    }
 
-    public void genererPerioder(Avtale avtale){
+    public void genererNyeTilskuddsperioder(Avtale avtale){
         if (avtale.erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LAGE_NYE_TILSKUDDSPRIODER_INNGAATT_AVTALE);
         }

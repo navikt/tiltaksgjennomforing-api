@@ -17,10 +17,10 @@ public class VarigLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddA
     public static final int GRENSE_68_PROSENT_ETTER_12_MND = 68;
     public static final int MAX_67_PROSENT_ETTER_12_MND = 67;
 
-    public VarigLonnstilskuddAvtaleBeregningStrategy create(Tiltakstype tiltakstype) {
+    public VarigLonnstilskuddAvtaleBeregningStrategy create() {
         return new VarigLonnstilskuddAvtaleBeregningStrategy();
     }
-    public void genererPerioder(Avtale avtale){
+    public void genererNyeTilskuddsperioder(Avtale avtale){
         if (avtale.erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LAGE_NYE_TILSKUDDSPRIODER_INNGAATT_AVTALE);
         }

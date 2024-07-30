@@ -961,7 +961,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     private void nyeTilskuddsperioder() {
         LonnstilskuddAvtaleBeregningStrategy lonnstilskuddBeregningStrategy = TilskuddsperioderBeregningStrategyFactory.create(this.getTiltakstype());
-        if(lonnstilskuddBeregningStrategy != null) lonnstilskuddBeregningStrategy.genererPerioder(this);
+        if(lonnstilskuddBeregningStrategy != null) lonnstilskuddBeregningStrategy.genererNyeTilskuddsperioder(this);
     }
 
     private boolean sjekkRyddingAvTilskuddsperioder() {

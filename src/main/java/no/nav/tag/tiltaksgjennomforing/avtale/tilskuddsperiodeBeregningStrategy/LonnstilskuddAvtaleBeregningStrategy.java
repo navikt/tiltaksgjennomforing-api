@@ -7,8 +7,7 @@ import java.util.List;
 
 
 public interface LonnstilskuddAvtaleBeregningStrategy<T> {
-    T create(Tiltakstype tiltakstype);
-    void genererPerioder(Avtale avtale);
+    void genererNyeTilskuddsperioder(Avtale avtale);
     List<TilskuddPeriode> beregnForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato);
     void endre(Avtale avtale,EndreTilskuddsberegning endreTilskuddsberegning);
     void beregnTotal(Avtale avtale);

@@ -18,6 +18,10 @@ import java.util.stream.Collectors;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.DatoUtils.sisteDatoIMnd;
 
+/**
+ *
+ * TODO: BØR DEN SPLITTES OG FLYTTES OVER TIL HVER {@link no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.LonnstilskuddAvtaleBeregningStrategy} ? !!!! ?????
+ */
 @Slf4j
 @UtilityClass
 public class RegnUtTilskuddsperioderForAvtale {

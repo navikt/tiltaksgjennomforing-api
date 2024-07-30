@@ -11,12 +11,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
 public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilskuddAvtaleBeregningStrategy {
 
-    @Override
-    public VTAOLonnstilskuddAvtaleBeregningStrategy create(Tiltakstype tiltakstype) {
-        return new VTAOLonnstilskuddAvtaleBeregningStrategy();
-    }
-
-    public void genererPerioder(Avtale avtale){
+    public void genererNyeTilskuddsperioder(Avtale avtale){
         if (avtale.erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LAGE_NYE_TILSKUDDSPRIODER_INNGAATT_AVTALE);
         }
