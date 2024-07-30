@@ -44,6 +44,7 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         avtale.leggtilNyeTilskuddsperioder(tilskuddsperioder);
     }
 
+    //TODO: IKKE TESTET
     public void forleng(Avtale avtale, LocalDate gammelSluttDato, LocalDate nySluttDato) {
         Set<TilskuddPeriode> tilskuddPeriode = avtale.hentTilskuddsperioder();
 
