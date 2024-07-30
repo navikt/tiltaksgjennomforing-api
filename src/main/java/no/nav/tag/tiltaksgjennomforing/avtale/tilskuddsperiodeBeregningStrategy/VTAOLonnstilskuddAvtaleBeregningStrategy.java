@@ -27,7 +27,7 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilsk
     }
 
     public void forleng(Avtale avtale, LocalDate gammelSluttDato, LocalDate nySluttDato) {
-        this.forleng(avtale, gammelSluttDato, nySluttDato);
+        super.forleng(avtale, gammelSluttDato, nySluttDato);
     }
 
     /* Default */
