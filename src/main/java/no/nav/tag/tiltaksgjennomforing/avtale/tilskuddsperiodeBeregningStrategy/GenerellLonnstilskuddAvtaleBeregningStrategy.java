@@ -76,10 +76,10 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         avtaleInnhold.setOtpSats(endreTilskuddsberegning.getOtpSats());
         avtaleInnhold.setManedslonn(endreTilskuddsberegning.getManedslonn());
         avtaleInnhold.setFeriepengesats(endreTilskuddsberegning.getFeriepengesats());
-        beregnTotal(avtale);
+        reberegnTotal(avtale);
     }
 
-    public void beregnTotal(Avtale avtale ) {
+    public void reberegnTotal(Avtale avtale ) {
         AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
         BigDecimal feriepengerBelop = getFeriepengerBelop(avtaleInnhold.getFeriepengesats(), avtaleInnhold.getManedslonn());
         BigDecimal obligTjenestepensjon = getBeregnetOtpBelop(toBigDecimal(avtaleInnhold.getOtpSats()), avtaleInnhold.getManedslonn(), feriepengerBelop);

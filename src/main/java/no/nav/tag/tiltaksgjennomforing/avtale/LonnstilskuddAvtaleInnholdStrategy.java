@@ -50,7 +50,7 @@ public class LonnstilskuddAvtaleInnholdStrategy extends BaseAvtaleInnholdStrateg
 
     @Override
     public void regnUtTotalLonnstilskudd() {
-        avtaleBeregningStrategy.beregnTotal(avtaleInnhold.getAvtale());
+        avtaleBeregningStrategy.reberegnTotal(avtaleInnhold.getAvtale());
     }
 
     @Override

@@ -75,7 +75,7 @@ public class MidlertidigLonnstilskuddAvtaleBeregningStrategy implements Lonnstil
         avtaleInnhold.setOtpSats(endreTilskuddsberegning.getOtpSats());
         avtaleInnhold.setManedslonn(endreTilskuddsberegning.getManedslonn());
         avtaleInnhold.setFeriepengesats(endreTilskuddsberegning.getFeriepengesats());
-        beregnTotal(avtale);
+        reberegnTotal(avtale);
         regnUtDatoOgSumRedusert(avtale);
         avtale.sendTilbakeTilBeslutter();
         avtale.hentTilskuddsperioder().stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET)
@@ -93,7 +93,7 @@ public class MidlertidigLonnstilskuddAvtaleBeregningStrategy implements Lonnstil
                 gjeldendeInnhold.getSumLønnstilskuddRedusert());
     }
 
-    public void beregnTotal(Avtale avtale) {
+    public void reberegnTotal(Avtale avtale) {
         AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
         BigDecimal feriepengerBelop = getFeriepengerBelop(avtaleInnhold.getFeriepengesats(), avtaleInnhold.getManedslonn());
         BigDecimal obligTjenestepensjon = getBeregnetOtpBelop(toBigDecimal(avtaleInnhold.getOtpSats()), avtaleInnhold.getManedslonn(), feriepengerBelop);

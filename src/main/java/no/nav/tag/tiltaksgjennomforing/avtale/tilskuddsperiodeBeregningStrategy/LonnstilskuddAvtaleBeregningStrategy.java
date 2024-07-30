@@ -10,6 +10,6 @@ public interface LonnstilskuddAvtaleBeregningStrategy<T> {
     void genererNyeTilskuddsperioder(Avtale avtale);
     List<TilskuddPeriode> beregnForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato);
     void endre(Avtale avtale,EndreTilskuddsberegning endreTilskuddsberegning);
-    void beregnTotal(Avtale avtale);
+    void reberegnTotal(Avtale avtale);
     void forleng(Avtale avtale, LocalDate gammelSluttDato, LocalDate nySluttDato);
 }
