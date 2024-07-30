@@ -66,8 +66,8 @@ public class RegnUtTilskuddsperioderForAvtale {
 
     public static List<TilskuddPeriode>  beregnTilskuddsperioderForVTAOAvtale(UUID id, Tiltakstype tiltakstype, LocalDate datoFraOgMed, LocalDate datoTilOgMed) {
         List<TilskuddPeriode> tilskuddperioder = lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
-            Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), 6808);
-            return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), 0);
+            Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), 6808);//TODO IKKE TESTET
+            return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), 0);//TODO IKKE TESTET
         }).toList();
         return tilskuddperioder;
     }
