@@ -7,8 +7,8 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import java.time.LocalDate;
 import java.util.*;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.TilskuddsperioderBeregningStrategyFactory.fikseLøpenumre;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 
 public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilskuddAvtaleBeregningStrategy {
 

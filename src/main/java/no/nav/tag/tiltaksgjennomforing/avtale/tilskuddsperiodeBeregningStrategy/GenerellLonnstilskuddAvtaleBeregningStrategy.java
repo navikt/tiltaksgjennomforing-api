@@ -9,9 +9,8 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.*;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.TilskuddsperioderBeregningStrategyFactory.fikseLøpenumre;
-import static no.nav.tag.tiltaksgjennomforing.utils.DatoUtils.sisteDatoIMnd;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 
 public class GenerellLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddAvtaleBeregningStrategy<GenerellLonnstilskuddAvtaleBeregningStrategy> {
     public static final int GRENSE_68_PROSENT_ETTER_12_MND = 68;

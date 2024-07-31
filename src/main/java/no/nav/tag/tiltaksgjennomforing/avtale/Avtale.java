@@ -65,8 +65,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.TilskuddsperioderBeregningStrategyFactory.fikseLøpenumre;
 import static no.nav.tag.tiltaksgjennomforing.utils.DatoUtils.sisteDatoIMnd;
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 
 @Slf4j
@@ -860,8 +860,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     void forlengTilskuddsperioder(LocalDate gammelSluttDato, LocalDate nySluttDato) {
-        LonnstilskuddAvtaleBeregningStrategy lonnstilskuddBeregningStrategy = TilskuddsperioderBeregningStrategyFactory.create(this.getTiltakstype());
-        if(lonnstilskuddBeregningStrategy != null) lonnstilskuddBeregningStrategy.forleng(this,gammelSluttDato, nySluttDato);
+        TilskuddsperioderBeregningStrategyFactory.create(this.getTiltakstype()).ifPresent(lonnstilskuddAvtaleBeregningStrategy -> lonnstilskuddAvtaleBeregningStrategy.forleng(this, gammelSluttDato, nySluttDato));
     }
 
     private void annullerTilskuddsperioder() {
@@ -931,12 +930,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     private List<TilskuddPeriode> beregnTilskuddsperioder(LocalDate startDato, LocalDate sluttDato) {
-        return TilskuddsperioderBeregningStrategyFactory.create(tiltakstype).beregnForPeriode(this, startDato, sluttDato);
+        if(TilskuddsperioderBeregningStrategyFactory.create(tiltakstype).isPresent()) return TilskuddsperioderBeregningStrategyFactory.create(tiltakstype).get().beregnForPeriode(this, startDato, sluttDato);
+        return List.of();
     }
 
     private void nyeTilskuddsperioder() {
-        LonnstilskuddAvtaleBeregningStrategy lonnstilskuddBeregningStrategy = TilskuddsperioderBeregningStrategyFactory.create(this.getTiltakstype());
-        if(lonnstilskuddBeregningStrategy != null) lonnstilskuddBeregningStrategy.genererNyeTilskuddsperioder(this);
+       TilskuddsperioderBeregningStrategyFactory.create(this.getTiltakstype()).ifPresent(lonnstilskuddBeregningStrategy -> lonnstilskuddBeregningStrategy.genererNyeTilskuddsperioder(this));
     }
 
     private boolean sjekkRyddingAvTilskuddsperioder() {
@@ -1157,7 +1156,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
         }
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_TILSKUDDSBEREGNING);
-        TilskuddsperioderBeregningStrategyFactory.create(tiltakstype).endre(this, tilskuddsberegning);
+        TilskuddsperioderBeregningStrategyFactory.create(tiltakstype).ifPresent(strategy -> strategy.endre(this, tilskuddsberegning));
         sistEndretNå();
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         registerEvent(new TilskuddsberegningEndret(this, utførtAv));

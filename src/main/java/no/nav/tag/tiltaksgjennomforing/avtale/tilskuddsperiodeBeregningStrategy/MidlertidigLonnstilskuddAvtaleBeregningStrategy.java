@@ -10,9 +10,8 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.*;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.TilskuddsperioderBeregningStrategyFactory.fikseLøpenumre;
-import static no.nav.tag.tiltaksgjennomforing.utils.DatoUtils.sisteDatoIMnd;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 
 public class MidlertidigLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddAvtaleBeregningStrategy<MidlertidigLonnstilskuddAvtaleBeregningStrategy> {
 

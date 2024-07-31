@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.TilskuddsperioderBeregningStrategyFactory.fikseLøpenumre;
 import static no.nav.tag.tiltaksgjennomforing.utils.DatoUtils.sisteDatoIMnd;
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 
 
 public interface LonnstilskuddAvtaleBeregningStrategy<T> {
@@ -43,5 +43,6 @@ public interface LonnstilskuddAvtaleBeregningStrategy<T> {
             tilskuddPeriode.addAll(nyeTilskuddperioder);
         }
     }
+
 
 }

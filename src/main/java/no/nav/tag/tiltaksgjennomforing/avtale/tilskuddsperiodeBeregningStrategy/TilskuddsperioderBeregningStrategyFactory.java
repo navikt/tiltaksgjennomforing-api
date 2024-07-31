@@ -7,27 +7,19 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.*;
 
 
 public interface TilskuddsperioderBeregningStrategyFactory {
-    static LonnstilskuddAvtaleBeregningStrategy create(Tiltakstype tiltakstype){
-        if (erEnTiltakstypeSomIkkeStotterTilskuddsperioder(tiltakstype)) return null;
+    static Optional<LonnstilskuddAvtaleBeregningStrategy> create(Tiltakstype tiltakstype){
         return switch (tiltakstype) {
-            default -> throw new FeilkodeException(Feilkode.AVTALE_STOTTER_IKKE_TILSKUDDSPERIODER);
-            case MIDLERTIDIG_LONNSTILSKUDD -> new MidlertidigLonnstilskuddAvtaleBeregningStrategy();
-            case VARIG_LONNSTILSKUDD -> new VarigLonnstilskuddAvtaleBeregningStrategy();
-            case SOMMERJOBB -> new GenerellLonnstilskuddAvtaleBeregningStrategy();
-            case VTAO -> new VTAOLonnstilskuddAvtaleBeregningStrategy();
+            default -> Optional.empty();
+            case MIDLERTIDIG_LONNSTILSKUDD -> Optional.of(new MidlertidigLonnstilskuddAvtaleBeregningStrategy());
+            case VARIG_LONNSTILSKUDD -> Optional.of(new VarigLonnstilskuddAvtaleBeregningStrategy());
+            case SOMMERJOBB -> Optional.of(new GenerellLonnstilskuddAvtaleBeregningStrategy());
+            case VTAO -> Optional.of(new VTAOLonnstilskuddAvtaleBeregningStrategy());
         };
-    }
-    private static boolean erEnTiltakstypeSomIkkeStotterTilskuddsperioder(Tiltakstype tiltakstype){
-        return EnumSet.of(ARBEIDSTRENING, MENTOR,INKLUDERINGSTILSKUDD).contains(tiltakstype);
-    }
-    static void fikseLøpenumre(List<TilskuddPeriode> tilskuddperioder, int startPåLøpenummer) {
-        for (int i = 0; i < tilskuddperioder.size(); i++) {
-            tilskuddperioder.get(i).setLøpenummer(startPåLøpenummer + i);
-        }
     }
 }
