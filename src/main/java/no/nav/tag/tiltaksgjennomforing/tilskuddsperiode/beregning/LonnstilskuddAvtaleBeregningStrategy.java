@@ -12,7 +12,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.DatoUtils.sisteDatoIMnd;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 
 
-public interface LonnstilskuddAvtaleBeregningStrategy<T> {
+public interface LonnstilskuddAvtaleBeregningStrategy {
     void genererNyeTilskuddsperioder(Avtale avtale);
     List<TilskuddPeriode> beregnForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato);
     void endre(Avtale avtale,EndreTilskuddsberegning endreTilskuddsberegning);
