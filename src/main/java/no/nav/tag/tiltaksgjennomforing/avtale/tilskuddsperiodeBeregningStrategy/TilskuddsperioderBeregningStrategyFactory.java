@@ -1,10 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy;
 
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
 import java.util.EnumSet;
+import java.util.List;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.*;
 
@@ -22,5 +24,10 @@ public interface TilskuddsperioderBeregningStrategyFactory {
     }
     private static boolean erEnTiltakstypeSomIkkeStotterTilskuddsperioder(Tiltakstype tiltakstype){
         return EnumSet.of(ARBEIDSTRENING, MENTOR,INKLUDERINGSTILSKUDD).contains(tiltakstype);
+    }
+    static void fikseLøpenumre(List<TilskuddPeriode> tilskuddperioder, int startPåLøpenummer) {
+        for (int i = 0; i < tilskuddperioder.size(); i++) {
+            tilskuddperioder.get(i).setLøpenummer(startPåLøpenummer + i);
+        }
     }
 }

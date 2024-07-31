@@ -7,6 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import java.time.LocalDate;
 import java.util.*;
 
+import static no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.TilskuddsperioderBeregningStrategyFactory.fikseLøpenumre;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 
 public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilskuddAvtaleBeregningStrategy {
@@ -25,11 +26,6 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilsk
         fikseLøpenumre(tilskuddsperioder, 1);
         avtale.leggtilNyeTilskuddsperioder(tilskuddsperioder);
     }
-
-    public void forleng(Avtale avtale, LocalDate gammelSluttDato, LocalDate nySluttDato) {
-        super.forleng(avtale, gammelSluttDato, nySluttDato);
-    }
-
     /* Default */
     public List<TilskuddPeriode> beregnForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
         List<TilskuddPeriode> tilskuddsperioder = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForVTAOAvtale(
@@ -58,12 +54,5 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilsk
         tilskuddsperioder.forEach(t -> t.setEnhet(gjeldendeInnhold.getEnhetKostnadssted()));
         tilskuddsperioder.forEach(t -> t.setEnhetsnavn(gjeldendeInnhold.getEnhetsnavnKostnadssted()));
         return tilskuddsperioder;
-    }
-
-    /* Reducer? */
-    static void fikseLøpenumre(List<TilskuddPeriode> tilskuddperioder, int startPåLøpenummer) {
-        for (int i = 0; i < tilskuddperioder.size(); i++) {
-            tilskuddperioder.get(i).setLøpenummer(startPåLøpenummer + i);
-        }
     }
 }

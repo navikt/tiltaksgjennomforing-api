@@ -9,17 +9,14 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.*;
 
-import static no.nav.tag.tiltaksgjennomforing.utils.DatoUtils.sisteDatoIMnd;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
+import static no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.TilskuddsperioderBeregningStrategyFactory.fikseLøpenumre;
 
 public class VarigLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddAvtaleBeregningStrategy<VarigLonnstilskuddAvtaleBeregningStrategy> {
 
     public static final int GRENSE_68_PROSENT_ETTER_12_MND = 68;
     public static final int MAX_67_PROSENT_ETTER_12_MND = 67;
 
-    public VarigLonnstilskuddAvtaleBeregningStrategy create() {
-        return new VarigLonnstilskuddAvtaleBeregningStrategy();
-    }
     public void genererNyeTilskuddsperioder(Avtale avtale){
         if (avtale.erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LAGE_NYE_TILSKUDDSPRIODER_INNGAATT_AVTALE);
@@ -48,32 +45,6 @@ public class VarigLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddA
         avtale.leggtilNyeTilskuddsperioder(tilskuddsperioder);
     }
 
-    public void forleng(Avtale avtale, LocalDate gammelSluttDato, LocalDate nySluttDato) {
-        Set<TilskuddPeriode> tilskuddPeriode = avtale.hentTilskuddsperioder();
-
-        if (avtale.hentTilskuddsperioder().isEmpty()) {
-            return;
-        }
-        Optional<TilskuddPeriode> periodeMedHøyestLøpenummer = tilskuddPeriode.stream().max(Comparator.comparing(TilskuddPeriode::getLøpenummer));
-        TilskuddPeriode sisteTilskuddsperiode = periodeMedHøyestLøpenummer.get();
-        if (sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) {
-            // Kan utvide siste tilskuddsperiode hvis den er ubehandlet
-            tilskuddPeriode.remove(sisteTilskuddsperiode);
-            List<TilskuddPeriode> nyeTilskuddperioder = beregnForPeriode(avtale,sisteTilskuddsperiode.getStartDato(), nySluttDato);
-            fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer());
-            tilskuddPeriode.addAll(nyeTilskuddperioder);
-        } else if (sisteTilskuddsperiode.getSluttDato().isBefore(sisteDatoIMnd(sisteTilskuddsperiode.getSluttDato())) && sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.GODKJENT && (!sisteTilskuddsperiode.erRefusjonGodkjent() && !sisteTilskuddsperiode.erUtbetalt())) {
-            avtale.annullerTilskuddsperiode(sisteTilskuddsperiode);
-            List<TilskuddPeriode> nyeTilskuddperioder = beregnForPeriode(avtale,sisteTilskuddsperiode.getStartDato(), nySluttDato);
-            fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer() + 1);
-            tilskuddPeriode.addAll(nyeTilskuddperioder);
-        } else {
-            // Regner ut nye perioder fra gammel avtaleslutt til ny avtaleslutt
-            List<TilskuddPeriode> nyeTilskuddperioder = beregnForPeriode(avtale,gammelSluttDato.plusDays(1), nySluttDato);
-            fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer() + 1);
-            tilskuddPeriode.addAll(nyeTilskuddperioder);
-        }
-    }
     public void endre(Avtale avtale,EndreTilskuddsberegning endreTilskuddsberegning) {
         AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
         avtaleInnhold.setArbeidsgiveravgift(endreTilskuddsberegning.getArbeidsgiveravgift());
@@ -133,15 +104,6 @@ public class VarigLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddA
         tilskuddsperioder.forEach(t -> t.setEnhetsnavn(gjeldendeInnhold.getEnhetsnavnKostnadssted()));
         return tilskuddsperioder;
     }
-
-
-    /* Reducer? */
-    static void fikseLøpenumre(List<TilskuddPeriode> tilskuddperioder, int startPåLøpenummer) {
-        for (int i = 0; i < tilskuddperioder.size(); i++) {
-            tilskuddperioder.get(i).setLøpenummer(startPåLøpenummer + i);
-        }
-    }
-
 
     private Integer convertBigDecimalToInt(BigDecimal value){
         return value == null ? null : value.setScale(0, RoundingMode.HALF_UP).intValue();
