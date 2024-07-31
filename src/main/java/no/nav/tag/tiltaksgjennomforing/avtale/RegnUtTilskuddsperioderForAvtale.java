@@ -4,6 +4,7 @@ import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.LonnstilskuddAvtaleBeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 
 import java.math.BigDecimal;
@@ -20,7 +21,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.DatoUtils.sisteDatoIMnd;
 
 /**
  *
- * TODO: BØR DEN SPLITTES OG FLYTTES OVER TIL HVER {@link no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy.LonnstilskuddAvtaleBeregningStrategy} ? !!!! ?????
+ * TODO: BØR DEN SPLITTES OG FLYTTES OVER TIL HVER {@link LonnstilskuddAvtaleBeregningStrategy} ? !!!! ?????
  */
 @Slf4j
 @UtilityClass

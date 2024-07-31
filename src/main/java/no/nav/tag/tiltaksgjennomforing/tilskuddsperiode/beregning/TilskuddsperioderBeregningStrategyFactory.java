@@ -1,15 +1,8 @@
-package no.nav.tag.tiltaksgjennomforing.avtale.tilskuddsperiodeBeregningStrategy;
+package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
-import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
-import java.util.EnumSet;
-import java.util.List;
 import java.util.Optional;
-
-import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.*;
 
 
 public interface TilskuddsperioderBeregningStrategyFactory {
