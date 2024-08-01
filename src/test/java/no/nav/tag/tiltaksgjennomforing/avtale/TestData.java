@@ -402,6 +402,14 @@ public class TestData {
         return avtale;
     }
 
+    public static Avtale enVtaoAvtaleIKKEGodkjentAvArbeidsgiver() {
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO), new NavIdent("Z123456"));
+        setOppfølgingPåAvtale(avtale);
+        EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+        return avtale;
+    }
+
     public static EndreAvtale endringPåAlleVTAOFelter() {
         EndreAvtale endreAvtale = new EndreAvtale();
         endreKontaktInfo(endreAvtale);
