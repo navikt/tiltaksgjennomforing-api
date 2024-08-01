@@ -28,7 +28,7 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilsk
     }
     /* Default */
     public List<TilskuddPeriode> beregnForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
-        List<TilskuddPeriode> tilskuddsperioder = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForVTAOAvtale(
+        List<TilskuddPeriode> tilskuddsperioder = TilskuddsperioderKalkulator.beregnTilskuddsperioderForVTAOAvtale(
                 avtale.getId(),
                 avtale.getTiltakstype(),
                 startDato,
@@ -45,7 +45,7 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilsk
         LocalDate startDato = gjeldendeInnhold.getStartDato();
         LocalDate sluttDato = gjeldendeInnhold.getSluttDato();
 
-        List<TilskuddPeriode> tilskuddsperioder = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForVTAOAvtale(
+        List<TilskuddPeriode> tilskuddsperioder = TilskuddsperioderKalkulator.beregnTilskuddsperioderForVTAOAvtale(
                 avtale.getId(),
                 avtale.getTiltakstype(),
                 startDato,

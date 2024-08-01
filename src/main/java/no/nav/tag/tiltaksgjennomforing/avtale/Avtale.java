@@ -23,6 +23,7 @@ import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttDatoStrategyFactory;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.TilskuddsperioderKalkulator;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.TilskuddsperioderBeregningStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
@@ -920,7 +921,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     private Integer beregnTilskuddsbeløp(LocalDate startDato, LocalDate sluttDato) {
-        return RegnUtTilskuddsperioderForAvtale.beløpForPeriode(startDato,
+        return TilskuddsperioderKalkulator.beløpForPeriode(startDato,
                 sluttDato,
                 gjeldendeInnhold.getDatoForRedusertProsent(),
                 gjeldendeInnhold.getSumLonnstilskudd(),

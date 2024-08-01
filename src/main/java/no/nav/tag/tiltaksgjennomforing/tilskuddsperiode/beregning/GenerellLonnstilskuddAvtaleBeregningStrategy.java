@@ -73,7 +73,7 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
     public List<TilskuddPeriode> beregnForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
         AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
 
-        List<TilskuddPeriode> tilskuddsperioder = RegnUtTilskuddsperioderForAvtale.beregnTilskuddsperioderForAvtale(
+        List<TilskuddPeriode> tilskuddsperioder = TilskuddsperioderKalkulator.beregnTilskuddsperioderForAvtale(
                 avtale.getId(),
                 avtale.getTiltakstype(),
                 gjeldendeInnhold.getSumLonnstilskudd(),

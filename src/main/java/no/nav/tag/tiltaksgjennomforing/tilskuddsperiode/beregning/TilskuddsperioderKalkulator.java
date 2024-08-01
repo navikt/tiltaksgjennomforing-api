@@ -1,10 +1,11 @@
-package no.nav.tag.tiltaksgjennomforing.avtale;
+package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.LonnstilskuddAvtaleBeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.utils.Periode;
 
 import java.math.BigDecimal;
@@ -25,7 +26,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.DatoUtils.sisteDatoIMnd;
  */
 @Slf4j
 @UtilityClass
-public class RegnUtTilskuddsperioderForAvtale {
+public class TilskuddsperioderKalkulator {
 
     private final static BigDecimal DAGER_I_MÅNED = new BigDecimal("30.4375");
     private final static int ANTALL_MÅNEDER_I_EN_PERIODE = 1;
