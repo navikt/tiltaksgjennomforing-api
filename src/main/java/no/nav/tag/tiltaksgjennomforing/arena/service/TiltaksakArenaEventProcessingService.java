@@ -58,7 +58,7 @@ public class TiltaksakArenaEventProcessingService implements ArenaEventProcessin
         );
 
         if (Operation.DELETE == arenaEvent.getOperation()) {
-            delete(tiltaksak, () -> log.info("{} har operasjon DELETE og slettet", arenaEvent.getLogId()));
+            delete(tiltaksak, () -> log.info("{} har operasjon DELETE og slettes", arenaEvent.getLogId()));
             return ArenaEventStatus.DONE;
         }
 

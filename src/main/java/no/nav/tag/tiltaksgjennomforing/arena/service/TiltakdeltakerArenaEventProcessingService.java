@@ -68,7 +68,7 @@ public class TiltakdeltakerArenaEventProcessingService implements ArenaEventProc
         );
 
         if (Operation.DELETE == arenaEvent.getOperation()) {
-            delete(tiltakdeltaker, () -> log.info("{} har operasjon DELETE og slettet", arenaEvent.getLogId()));
+            delete(tiltakdeltaker, () -> log.info("{} har operasjon DELETE og slettes", arenaEvent.getLogId()));
             ordsService.attemptDeleteFnr(tiltakdeltaker.getPersonId()) ;
             return ArenaEventStatus.DONE;
         }

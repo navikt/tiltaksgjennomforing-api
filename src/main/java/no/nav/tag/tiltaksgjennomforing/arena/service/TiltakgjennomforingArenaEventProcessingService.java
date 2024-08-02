@@ -69,7 +69,7 @@ public class TiltakgjennomforingArenaEventProcessingService implements ArenaEven
         );
 
         if (Operation.DELETE == arenaEvent.getOperation()) {
-            delete(tiltakgjennomforing, () -> log.info("{} har operasjon DELETE og slettet", arenaEvent.getLogId()));
+            delete(tiltakgjennomforing, () -> log.info("{} har operasjon DELETE og slettes", arenaEvent.getLogId()));
             ordsService.attemptDeleteArbeidsgiver(tiltakgjennomforing.getArbgivIdArrangor());
             return ArenaEventStatus.DONE;
         }

@@ -20,7 +20,7 @@ public class ArenaKafkaConsumerConfig {
 
     public ConsumerFactory<String, String> consumerFactory(KafkaProperties kafkaProperties) {
         Map<String, Object> props = kafkaProperties.buildConsumerProperties(null);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "tiltaksgjennomforing-api-2030");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "tiltaksgjennomforing-api-2031");
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
