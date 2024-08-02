@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-@Profile(Miljø.LOCAL)
+@Profile({ Miljø.LOCAL, Miljø.DEV_FSS })
 public class ArenaKafkaConsumer {
     private final ArenaKafkaProperties arenaKafkaProperties;
     private final ArenaProcessingService arenaProcessingService;
@@ -24,19 +24,19 @@ public class ArenaKafkaConsumer {
         this.arenaKafkaProperties = arenaKafkaProperties;
     }
 
-    @KafkaListener(topics = "${tiltaksgjennomforing.arena.kafka.tiltakgjennomforing-endret-topic}")
+    @KafkaListener(topics = "${tiltaksgjennomforing.arena.kafka.tiltakgjennomforing-endret-topic}", containerFactory = "arenaContainerFactory")
     public void arenaTiltakgjennomforingEndret(ConsumerRecord<String, String> record) {
         log.info("Mottatt melding for {}: {}", arenaKafkaProperties.getTiltakgjennomforingEndretTopic(), record.key());
         arenaProcessingService.process(record.key(), record.value());
     }
 
-    @KafkaListener(topics = "${tiltaksgjennomforing.arena.kafka.tiltakdeltaker-endret-topic}")
+    @KafkaListener(topics = "${tiltaksgjennomforing.arena.kafka.tiltakdeltaker-endret-topic}", containerFactory = "arenaContainerFactory")
     public void arenaTiltakdeltakerEndret(ConsumerRecord<String, String> record) {
         log.info("Mottatt melding for {}: {}", arenaKafkaProperties.getTiltakdeltakerEndretTopic(), record.key());
         arenaProcessingService.process(record.key(), record.value());
     }
 
-    @KafkaListener(topics = "${tiltaksgjennomforing.arena.kafka.tiltakssak-endret-topic}")
+    @KafkaListener(topics = "${tiltaksgjennomforing.arena.kafka.tiltakssak-endret-topic}", containerFactory = "arenaContainerFactory")
     public void arenaTiltaksakEndret(ConsumerRecord<String, String> record) {
         log.info("Mottatt melding for {}: {}", arenaKafkaProperties.getTiltakssakEndretTopic(), record.key());
         arenaProcessingService.process(record.key(), record.value());

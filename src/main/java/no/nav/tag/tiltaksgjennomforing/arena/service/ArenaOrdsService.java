@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.arena.service;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.arena.client.ArenaOrdsArbeidsgiverResponse;
 import no.nav.tag.tiltaksgjennomforing.arena.client.ArenaOrdsClient;
 import no.nav.tag.tiltaksgjennomforing.arena.client.ArenaOrdsFnrResponse;
@@ -8,6 +9,7 @@ import no.nav.tag.tiltaksgjennomforing.arena.models.ords.ArenaOrdsArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.arena.models.ords.ArenaOrdsFnr;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaOrdsArbeidsgiverRepository;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaOrdsFnrRepository;
+import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -17,15 +19,18 @@ public class ArenaOrdsService {
     private final ArenaOrdsFnrRepository fnrRepository;
     private final ArenaOrdsArbeidsgiverRepository arbeidsgiverRepository;
     private final ArenaOrdsClient arenaOrdsClient;
+    private final Environment env;
 
     public ArenaOrdsService(
         ArenaOrdsFnrRepository fnrRepository,
         ArenaOrdsArbeidsgiverRepository arbeidsgiverRepository,
-        ArenaOrdsClient arenaOrdsClient
+        ArenaOrdsClient arenaOrdsClient,
+        Environment env
     ) {
         this.fnrRepository = fnrRepository;
         this.arbeidsgiverRepository = arbeidsgiverRepository;
         this.arenaOrdsClient = arenaOrdsClient;
+        this.env = env;
     }
 
     public void fetchPerson(int personId) {
@@ -34,6 +39,18 @@ public class ArenaOrdsService {
 
         if (deltakerFnrExist) {
             log.info("Fnr med id {} finnes allerede", personId);
+            return;
+        }
+
+        if (env.matchesProfiles(Miljø.DEV_FSS)) {
+            log.info("Mocker kall til ORDS i dev-fss");
+
+            fnrRepository.save(
+                ArenaOrdsFnr.builder()
+                    .personId(personId)
+                    .fnr("12345678901")
+                    .build()
+            );
             return;
         }
 
@@ -62,6 +79,19 @@ public class ArenaOrdsService {
 
         if (arbeidsgiverExist) {
             log.info("Arbeidsgiver med id {} finnes allerede", arbeidsgiverId);
+            return;
+        }
+
+        if (env.matchesProfiles(Miljø.DEV_FSS)) {
+            log.info("Mocker kall til ORDS i dev-fss");
+
+            arbeidsgiverRepository.save(
+                ArenaOrdsArbeidsgiver.builder()
+                    .arbgivIdArrangor(arbeidsgiverId)
+                    .virksomhetsnummer("123456789")
+                    .organisasjonsnummerMorselskap("123456789")
+                    .build()
+            );
             return;
         }
 
