@@ -29,7 +29,7 @@ public class ArenaTiltakdeltaker {
     private Integer tiltakgjennomforingId;
 
     @JsonProperty("DELTAKERSTATUSKODE")
-    private Deltakerstatuskode deltakerstatuskode;
+    private String deltakerstatuskode;
 
     @JsonProperty("DELTAKERTYPEKODE")
     private String deltakertypekode;

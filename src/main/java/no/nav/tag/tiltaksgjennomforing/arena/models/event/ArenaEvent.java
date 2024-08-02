@@ -43,16 +43,6 @@ public class ArenaEvent {
         String arenaTable,
         String operation,
         LocalDateTime operationTime,
-        JsonNode payload
-    ) {
-        return create(id, arenaTable, operation, operationTime, payload, ArenaEventStatus.PENDING);
-    }
-
-    public static ArenaEvent create(
-        String id,
-        String arenaTable,
-        String operation,
-        LocalDateTime operationTime,
         JsonNode payload,
         ArenaEventStatus status
     ) {

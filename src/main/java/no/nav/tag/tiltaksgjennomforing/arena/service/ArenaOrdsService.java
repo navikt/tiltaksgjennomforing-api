@@ -2,8 +2,8 @@ package no.nav.tag.tiltaksgjennomforing.arena.service;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.arena.client.ArenaOrdsArbeidsgiverResponse;
-import no.nav.tag.tiltaksgjennomforing.arena.client.ArenaOrdsFnrResponse;
 import no.nav.tag.tiltaksgjennomforing.arena.client.ArenaOrdsClient;
+import no.nav.tag.tiltaksgjennomforing.arena.client.ArenaOrdsFnrResponse;
 import no.nav.tag.tiltaksgjennomforing.arena.models.ords.ArenaOrdsArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.arena.models.ords.ArenaOrdsFnr;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaOrdsArbeidsgiverRepository;

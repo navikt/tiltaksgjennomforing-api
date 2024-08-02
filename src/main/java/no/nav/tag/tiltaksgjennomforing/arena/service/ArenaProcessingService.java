@@ -13,10 +13,15 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 @Slf4j
 @Service
 public class ArenaProcessingService {
-    private final static int MAX_RETRY_COUNT = 3;
+    private final ConcurrentHashMap<String, Lock> locks = new ConcurrentHashMap<>();
 
     private final ObjectMapper objectMapper;
     private final ArenaEventRepository arenaEventRepository;
@@ -54,6 +59,7 @@ public class ArenaProcessingService {
             .status(ArenaEventStatus.PROCESSING)
             .build();
 
+        log.info("Starter prosessering av arena-event {}", processingEvent.getLogId());
         arenaEventRepository.save(processingEvent);
         run(processingEvent);
     }
@@ -61,6 +67,9 @@ public class ArenaProcessingService {
     private void process(String key, ArenaKafkaMessage message) {
         String operation = message.opType();
         String table = message.table();
+
+        Lock lock = locks.computeIfAbsent(key + table, k -> new ReentrantLock());
+        lock.lock();
 
         try {
             JsonNode payload = Operation.parse(operation) == Operation.DELETE
@@ -82,17 +91,24 @@ public class ArenaProcessingService {
                         table,
                         operation,
                         message.opTimestamp(),
-                        payload
+                        payload,
+                        ArenaEventStatus.PENDING
                     )
                 );
+
+            log.info(
+                "Oppretter arena-event {} med id {} og operasjon {}",
+                arenaEvent.getLogId(),
+                arenaEvent.getId(),
+                arenaEvent.getOperation().name()
+            );
 
             arenaEventRepository.save(arenaEvent);
             process(arenaEvent);
         } catch (Exception e) {
-            log.error("Kunne ikke opprette arena-event. Feil operasjon: {}.", operation, e);
+            Optional<ArenaEvent> arenaEventOpt = arenaEventRepository.findByArenaIdAndArenaTable(key, table);
 
-            ArenaEvent arenaEvent = arenaEventRepository.findByArenaIdAndArenaTable(key, table)
-                .map(exisitingArenaEvent ->
+            ArenaEvent arenaEvent = arenaEventOpt.map(exisitingArenaEvent ->
                     exisitingArenaEvent.toBuilder()
                         .status(ArenaEventStatus.FAILED)
                         .build()
@@ -108,7 +124,17 @@ public class ArenaProcessingService {
                     )
                 );
 
-            arenaEventRepository.save(arenaEvent);
+            log.error(
+                "FAILED: Kunne ikke opprette arena-event {} med id {}.",
+                arenaEvent.getLogId(),
+                arenaEvent.getId(),
+                e
+            );
+
+            saveExceptionally(arenaEvent);
+        } finally {
+            lock.unlock();
+            locks.remove(key + table);
         }
     }
 
@@ -124,9 +150,18 @@ public class ArenaProcessingService {
                 .status(result)
                 .build();
 
+            if (completedEvent.getStatus() == ArenaEventStatus.RETRY) {
+                String retries = Integer.toString(completedEvent.getRetryCount());
+                log.info(
+                    "RETRY: Arena-event {} satt på vent. Antall gjentatte forsøk: {}. Forsøker på nytt.",
+                    completedEvent.getLogId(),
+                    retries
+                );
+            }
+
             arenaEventRepository.save(completedEvent);
         } catch (DataIntegrityViolationException e) {
-            ArenaEventStatus status = arenaEvent.getRetryCount() < MAX_RETRY_COUNT
+            ArenaEventStatus status = arenaEvent.getRetryCount() < ArenaEventRetryService.MAX_RETRY_COUNT
                 ? ArenaEventStatus.RETRY
                 : ArenaEventStatus.FAILED;
 
@@ -137,23 +172,39 @@ public class ArenaProcessingService {
             if (status == ArenaEventStatus.RETRY) {
                 String retries = Integer.toString(arenaEvent.getRetryCount());
                 log.info(
-                    "Feil ved opprettelse av Arena-event: {}. Antall gjentatte forsøk: {}. Forsøker på nytt.",
+                    "RETRY: Feil ved opprettelse av Arena-event {}. Antall gjentatte forsøk: {}. Forsøker på nytt.",
                     arenaEvent.getLogId(),
                     retries
                 );
             } else {
-                log.error("Arena-event {} har blitt forsøkt max antall ganger. Avbryter.", arenaEvent.getLogId());
+                log.error(
+                    "FAILED: Arena-event {} har blitt forsøkt max antall ganger. Avbryter.",
+                    arenaEvent.getLogId(),
+                    e
+                );
             }
 
-            arenaEventRepository.save(update);
+            saveExceptionally(update);
         } catch (Exception e) {
-            log.error("Feil ved prosessering av Arena-event: {}", arenaEvent.getLogId(), e);
+            log.error(
+                "FAILED: Feil ved prosessering av Arena-event {}",
+                arenaEvent.getLogId(),
+                e
+            );
 
             ArenaEvent update = arenaEvent.toBuilder()
                 .status(ArenaEventStatus.FAILED)
                 .build();
 
-            arenaEventRepository.save(update);
+            saveExceptionally(update);
+        }
+    }
+
+    private void saveExceptionally(ArenaEvent arenaEvent) {
+        try {
+            arenaEventRepository.save(arenaEvent);
+        } catch (Exception e) {
+            log.error("Feil ved lagring av arena-event {}", arenaEvent.getLogId(), e);
         }
     }
 }
