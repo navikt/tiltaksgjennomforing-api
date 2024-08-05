@@ -104,7 +104,7 @@ public class AvtaleControllerTest {
     }
 
     @Test
-    public void skalTesteSokIdHappyPath() {
+    public void skalReturnereRiktigAvtaleForPåloggetVeileder_HappyPath() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         Veileder veileder = TestData.enVeileder(avtale);
         værInnloggetSom(veileder);
