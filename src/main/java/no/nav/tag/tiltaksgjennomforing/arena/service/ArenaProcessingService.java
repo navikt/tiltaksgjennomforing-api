@@ -161,28 +161,15 @@ public class ArenaProcessingService {
 
             arenaEventRepository.save(completedEvent);
         } catch (DataIntegrityViolationException e) {
-            ArenaEventStatus status = arenaEvent.getRetryCount() < ArenaEventRetryService.MAX_RETRY_COUNT
-                ? ArenaEventStatus.RETRY
-                : ArenaEventStatus.FAILED;
-
             ArenaEvent update = arenaEvent.toBuilder()
-                .status(status)
+                .status(ArenaEventStatus.RETRY)
                 .build();
 
-            if (status == ArenaEventStatus.RETRY) {
-                String retries = Integer.toString(arenaEvent.getRetryCount());
-                log.info(
-                    "RETRY: Feil ved opprettelse av Arena-event {}. Antall gjentatte forsøk: {}. Forsøker på nytt.",
-                    arenaEvent.getLogId(),
-                    retries
-                );
-            } else {
-                log.error(
-                    "FAILED: Arena-event {} har blitt forsøkt max antall ganger. Avbryter.",
-                    arenaEvent.getLogId(),
-                    e
-                );
-            }
+            log.info(
+                "RETRY: Feil ved opprettelse av Arena-event {}. Antall gjentatte forsøk: {}. Forsøker på nytt.",
+                arenaEvent.getLogId(),
+                arenaEvent.getRetryCount()
+            );
 
             saveExceptionally(update);
         } catch (Exception e) {
