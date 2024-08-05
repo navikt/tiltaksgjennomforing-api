@@ -47,8 +47,7 @@ import java.util.Set;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enArbeidstreningAvtale;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enNavIdent;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -102,6 +101,15 @@ public class AvtaleControllerTest {
         assertThatThrownBy(
                 () -> avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER, null)
         ).isExactlyInstanceOf(RessursFinnesIkkeException.class);
+    }
+
+    @Test
+    public void skalTesteSokIdHappyPath() {
+        Avtale avtale = TestData.enArbeidstreningAvtale();
+        Veileder veileder = TestData.enVeileder(avtale);
+        værInnloggetSom(veileder);
+        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
+        assertThat(avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER, null)).isEqualTo(avtale);
     }
 
     @Test
