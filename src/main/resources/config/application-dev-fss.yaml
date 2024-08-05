@@ -154,5 +154,5 @@ tiltaksgjennomforing:
       tiltakssak-endret-topic: 'teamarenanais.aapen-arena-tiltakssakendret-v1-q2'
     ords:
       url: https://arena-ords-q2.nais.preprod.local
-      client-id: tbd
-      client-secret: tbd
+      client-id: ${ARENA_ORDS_CLIENT_ID}
+      client-secret: ${ARENA_ORDS_CLIENT_SECRET}
