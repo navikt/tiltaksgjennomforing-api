@@ -13,7 +13,7 @@ import java.util.List;
 @Slf4j
 @Service
 public class ArenaEventRetryService {
-    public final static int MAX_RETRY_COUNT = 4;
+    private final static int MAX_RETRY_COUNT = 4;
 
     private final ArenaEventRepository arenaEventRepository;
     private final ArenaProcessingService arenaProcessingService;
@@ -27,8 +27,11 @@ public class ArenaEventRetryService {
     }
 
     @Transactional
-    public List<ArenaEvent> getRetryEvents() {
-        return arenaEventRepository.findRetryEvents()
+    public List<ArenaEvent> getAndUpdateRetryEvents() {
+        List<ArenaEvent> retryEvents = arenaEventRepository.findRetryEvents();
+        failEventsThatHaveReachedMaxRetryCount(retryEvents);
+
+        return retryEvents
             .stream()
             .filter(this::isReadyForRetry)
             .map(arenaEvent ->
@@ -47,6 +50,28 @@ public class ArenaEventRetryService {
         for (ArenaEvent arenaEvent : arenaEvents) {
             arenaProcessingService.process(arenaEvent);
         }
+    }
+
+    private void failEventsThatHaveReachedMaxRetryCount(List<ArenaEvent> arenaEvents) {
+        arenaEvents
+            .stream()
+            .filter(this::isMaxRetry)
+            .map(arenaEvent ->
+                arenaEvent.toBuilder()
+                    .status(ArenaEventStatus.FAILED)
+                    .build()
+            )
+            .peek(arenaEvent ->
+                log.error(
+                    "FAILED: Arena-event {} har blitt forsøkt max antall ganger. Avbryter.",
+                    arenaEvent.getLogId()
+                )
+            )
+            .forEach(arenaEventRepository::save);
+    }
+
+    private boolean isMaxRetry(ArenaEvent arenaEvent) {
+        return arenaEvent.getRetryCount() > MAX_RETRY_COUNT;
     }
 
     private boolean isReadyForRetry(ArenaEvent arenaEvent) {
