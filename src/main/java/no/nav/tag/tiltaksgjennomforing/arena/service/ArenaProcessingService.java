@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.arena.logging.ArenaEventLogging;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaKafkaMessage;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Operation;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEvent;
@@ -53,13 +54,14 @@ public class ArenaProcessingService {
         }
     }
 
+    @ArenaEventLogging
     @Async("arenaThreadPoolExecutor")
     public void process(ArenaEvent arenaEvent) {
         ArenaEvent processingEvent = arenaEvent.toBuilder()
             .status(ArenaEventStatus.PROCESSING)
             .build();
 
-        log.info("Starter prosessering av arena-event {}", processingEvent.getLogId());
+        log.info("Starter prosessering av arena-event");
         arenaEventRepository.save(processingEvent);
         run(processingEvent);
     }
@@ -125,7 +127,7 @@ public class ArenaProcessingService {
                 );
 
             log.error(
-                "FAILED: Kunne ikke opprette arena-event {} med id {}.",
+                "Kunne ikke opprette arena-event {} med id {}.",
                 arenaEvent.getLogId(),
                 arenaEvent.getId(),
                 e
@@ -153,8 +155,7 @@ public class ArenaProcessingService {
             if (completedEvent.getStatus() == ArenaEventStatus.RETRY) {
                 String retries = Integer.toString(completedEvent.getRetryCount());
                 log.info(
-                    "RETRY: Arena-event {} satt på vent. Antall gjentatte forsøk: {}. Forsøker på nytt.",
-                    completedEvent.getLogId(),
+                    "Arena-event satt på vent. Antall gjentatte forsøk: {}. Forsøker på nytt.",
                     retries
                 );
             }
@@ -166,18 +167,13 @@ public class ArenaProcessingService {
                 .build();
 
             log.info(
-                "RETRY: Feil ved opprettelse av Arena-event {}. Antall gjentatte forsøk: {}. Forsøker på nytt.",
-                arenaEvent.getLogId(),
+                "Feil ved opprettelse av Arena-event. Antall gjentatte forsøk: {}. Forsøker på nytt.",
                 arenaEvent.getRetryCount()
             );
 
             saveExceptionally(update);
         } catch (Exception e) {
-            log.error(
-                "FAILED: Feil ved prosessering av Arena-event {}",
-                arenaEvent.getLogId(),
-                e
-            );
+            log.error("Feil ved prosessering av Arena-event", e);
 
             ArenaEvent update = arenaEvent.toBuilder()
                 .status(ArenaEventStatus.FAILED)
@@ -191,7 +187,7 @@ public class ArenaProcessingService {
         try {
             arenaEventRepository.save(arenaEvent);
         } catch (Exception e) {
-            log.error("Feil ved lagring av arena-event {}", arenaEvent.getLogId(), e);
+            log.error("Feil ved lagring av arena-event", e);
         }
     }
 }

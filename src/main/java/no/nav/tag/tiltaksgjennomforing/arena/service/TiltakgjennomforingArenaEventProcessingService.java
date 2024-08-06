@@ -36,54 +36,53 @@ public class TiltakgjennomforingArenaEventProcessingService implements ArenaEven
         ArenaTiltakgjennomforing tiltakgjennomforing = this.objectMapper.treeToValue(arenaEvent.getPayload(), ArenaTiltakgjennomforing.class);
 
         if (!tiltakgjennomforing.isArbeidstrening()) {
-            log.info("{} ignorert fordi den ikke er arbeidstrening", arenaEvent.getLogId());
+            log.info("Arena-event ignorert fordi den ikke er arbeidstrening");
             delete(
                 tiltakgjennomforing,
-                () -> log.info("Sletter tidligere håndtert tiltak {} som nå skal ignoreres", arenaEvent.getLogId())
+                () -> log.info("Sletter tidligere håndtert tiltak som nå skal ignoreres")
             );
             return ArenaEventStatus.IGNORED;
         }
 
         if (tiltakgjennomforing.getDatoFra() == null) {
-            log.info("{} ignorert; fra-dato er null", arenaEvent.getLogId());
+            log.info("Arena-event ignorert; fra-dato er null");
             delete(
                 tiltakgjennomforing,
-                () -> log.info("Sletter tidligere håndtert tiltak {} som nå skal ignoreres", arenaEvent.getLogId())
+                () -> log.info("Sletter tidligere håndtert tiltak som nå skal ignoreres")
             );
             return ArenaEventStatus.IGNORED;
         }
 
         if (tiltakgjennomforing.getArbgivIdArrangor() == null) {
-            log.info("{} ignorert; ArbGivIdArrangor er null", arenaEvent.getLogId());
+            log.info("Arena-event ignorert; ArbGivIdArrangor er null");
             delete(
                 tiltakgjennomforing,
-                () -> log.info("Sletter tidligere håndtert tiltak {} som nå skal ignoreres", arenaEvent.getLogId())
+                () -> log.info("Sletter tidligere håndtert tiltak som nå skal ignoreres")
             );
             return ArenaEventStatus.IGNORED;
         }
 
         log.info(
-            "{} prosesseres med operasjon {}",
-            arenaEvent.getLogId(),
+            "Arena-event prosesseres med operasjon {}",
             arenaEvent.getOperation().name()
         );
 
         if (Operation.DELETE == arenaEvent.getOperation()) {
-            delete(tiltakgjennomforing, () -> log.info("{} har operasjon DELETE og slettet", arenaEvent.getLogId()));
+            delete(tiltakgjennomforing, () -> log.info("Arena-event har operasjon DELETE og slettet"));
             ordsService.attemptDeleteArbeidsgiver(tiltakgjennomforing.getArbgivIdArrangor());
             return ArenaEventStatus.DONE;
         }
 
         boolean tiltakssakExists = tiltakssakRepository.existsById(tiltakgjennomforing.getSakId());
         if (!tiltakssakExists) {
-            log.info("{} settes på vent; tilhørende tiltakssak er ikke prossesert ennå", arenaEvent.getLogId());
+            log.info("Arena-event settes på vent; tilhørende tiltakssak er ikke prossesert ennå");
             return ArenaEventStatus.RETRY;
         }
 
         ordsService.fetchArbeidsgiver(tiltakgjennomforing.getArbgivIdArrangor());
         tiltakgjennomforingRepository.save(tiltakgjennomforing);
 
-        log.info("{} er ferdig prossesert", arenaEvent.getLogId());
+        log.info("Arena-event er ferdig prossesert");
         return ArenaEventStatus.DONE;
     }
 
