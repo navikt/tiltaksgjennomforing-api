@@ -107,7 +107,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     private boolean slettemerket;
     private LocalDate avbruttDato;
     private String avbruttGrunn;
-    private boolean opprettetAvArbeidsgiver;
     private String enhetGeografisk;
     private String enhetsnavnGeografisk;
     private String enhetOppfolging;
@@ -206,7 +205,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     public static Avtale arbeidsgiverOppretterAvtale(OpprettAvtale opprettAvtale) {
         Avtale avtale = new Avtale(opprettAvtale);
         avtale.opphav = Avtaleopphav.ARBEIDSGIVER;
-        avtale.opprettetAvArbeidsgiver = true;
         avtale.registerEvent(new AvtaleOpprettetAvArbeidsgiver(avtale));
         return avtale;
     }
@@ -214,7 +212,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     public static Avtale arbeidsgiverOppretterAvtale(OpprettMentorAvtale opprettMentorAvtale) {
         Avtale avtale = new Avtale(opprettMentorAvtale);
         avtale.opphav = Avtaleopphav.ARBEIDSGIVER;
-        avtale.opprettetAvArbeidsgiver = true;
         avtale.registerEvent(new AvtaleOpprettetAvArbeidsgiver(avtale));
         return avtale;
     }
