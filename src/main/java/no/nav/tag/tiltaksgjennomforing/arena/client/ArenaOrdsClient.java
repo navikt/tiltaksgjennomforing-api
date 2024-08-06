@@ -50,7 +50,7 @@ public class ArenaOrdsClient {
         }
 
         ArenaOrdsFnrResponse body = response.getBody();
-        if (body == null || body.personListe().isEmpty()) {
+        if (body == null || body.personListe() == null || body.personListe().isEmpty()) {
             throw new RuntimeException("Fikk ingen respons fra Arena ORDS");
         }
 
