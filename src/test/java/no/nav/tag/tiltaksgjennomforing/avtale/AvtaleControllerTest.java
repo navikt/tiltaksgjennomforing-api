@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
@@ -38,6 +39,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -77,6 +79,8 @@ public class AvtaleControllerTest {
     private KontoregisterService kontoregisterService;
 
     private Pageable pageable = PageRequest.of(0, 100);
+    @Autowired
+    private FilterSokRepository filterSokRepository;
 
     private static List<Avtale> lagListeMedAvtaler(Avtale avtale, int antall) {
         List<Avtale> avtaler = new ArrayList<>();
@@ -110,6 +114,27 @@ public class AvtaleControllerTest {
         værInnloggetSom(veileder);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         assertThat(avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER, null)).isEqualTo(avtale);
+    }
+
+    @Test
+    public void skalReturnereRiktigAvtaleForPåloggetVeileder_HappyPath_med_sokID() {
+        Avtale avtale = TestData.enArbeidstreningAvtale();
+        avtale.setAvtaleNr(192);
+        Veileder veileder = TestData.enVeileder(avtale);
+        værInnloggetSom(veileder);
+        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
+
+        FilterSok filterSok = new FilterSok();
+        String filterSokId_tom = "192";
+        filterSok.setSokId(filterSokId_tom);
+        filterSok.setSistSoktTidspunkt(LocalDateTime.now());
+        var queryParametreSomString = "{\"veilederNavIdent\":null,\"bedriftNr\":null,\"deltakerFnr\":null,\"tiltakstype\":null,\"status\":null,\"erUfordelt\":null,\"tilskuddPeriodeStatus\":null,\"navEnhet\":null,\"avtaleNr\":"+ avtale.getAvtaleNr()+"}";
+        filterSok.setQueryParametre(queryParametreSomString);
+        filterSok.setAntallGangerSokt(0);
+        filterSokRepository.save(filterSok);
+
+        Map<String, Object> svar = avtaleController.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListeForBeslutterMedSokId(filterSokId_tom,Avtalerolle.VEILEDER, Avtale.Fields.sistEndret,1,1,"desc");
+        assertThat(svar.get("avtaler")).isEqualTo(List.of(avtale));
     }
 
     @Test

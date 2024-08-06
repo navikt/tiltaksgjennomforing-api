@@ -295,6 +295,61 @@ public class AvtaleController {
         );
     }
 
+    //TODO: SOKID - Beslutter
+    @AuditLogging("Hent liste over avtaler om arbeidsmarkedstiltak")
+    @GetMapping("/beslutter-liste_sokid")
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    public Map<String, Object> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListeForBeslutterMedSokId(
+            @RequestParam(value = "sokId") String filterSokId,
+            @CookieValue("innlogget-part") Avtalerolle innloggetPart,
+            @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
+            @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") Integer size,
+            @RequestParam(value = "sorteringOrder", required = false, defaultValue = "DESC") String sorteringOrder
+    ) {
+        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
+
+        FilterSok filterSok = filterSokRepository.findFilterSokBySokId(filterSokId).orElse(null);
+        if (filterSok != null) {
+            filterSok.setAntallGangerSokt(filterSok.getAntallGangerSokt() + 1);
+            filterSok.setSistSoktTidspunkt(LocalDateTime.now());
+            filterSokRepository.save(filterSok);
+            AvtalePredicate avtalePredicate = filterSok.getAvtalePredicate();
+
+            Pageable pageable = PageRequest.of(
+                    Math.abs(page),
+                    Math.abs(size),
+                    Sort.by(getSortingOrderForPageableVeileder(sorteringskolonne, sorteringOrder))
+            );
+            Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
+                    avtaleRepository,
+                    avtalePredicate,
+                    sorteringskolonne,
+                    pageable
+
+            );
+            HashMap<String, Object> stringObjectHashMap = new HashMap<>(avtaler);
+            stringObjectHashMap.put("sokeParametere", avtalePredicate);
+            stringObjectHashMap.put("sokId", filterSok.getSokId());
+            stringObjectHashMap.put("sorteringskolonne", sorteringskolonne);
+            stringObjectHashMap.put("sorteringOrder", sorteringOrder);
+            return stringObjectHashMap;
+
+        } else {
+            return Map.ofEntries(
+                    entry("avtaler", List.of()),
+                    entry("size", 0),
+                    entry("currentPage", 0),
+                    entry("totalItems", 0),
+                    entry("totalPages", 0),
+                    entry("sokeParametere", new AvtalePredicate()),
+                    entry("sorteringskolonne", "sistEndret"),
+                    entry("sorteringOrder", "DESC"),
+                    entry("sokId", "")
+            );
+        }
+    }
+
     @GetMapping("/{avtaleId}/pdf")
     public HttpEntity<?> hentAvtalePdf(
             @PathVariable("avtaleId") UUID avtaleId,
