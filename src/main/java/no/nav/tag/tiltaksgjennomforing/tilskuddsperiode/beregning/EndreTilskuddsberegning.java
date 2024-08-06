@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.avtale;
+package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
 import lombok.Builder;
 import lombok.Value;
