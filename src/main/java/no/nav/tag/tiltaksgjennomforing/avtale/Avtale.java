@@ -113,6 +113,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     private String enhetOppfolging;
     private String enhetsnavnOppfolging;
 
+    @Enumerated(EnumType.STRING)
+    private Avtaleopphav opphav;
 
     private boolean godkjentForEtterregistrering;
 
@@ -182,6 +184,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     public static Avtale veilederOppretterAvtale(OpprettAvtale opprettAvtale, NavIdent navIdent) {
         Avtale avtale = new Avtale(opprettAvtale);
         avtale.veilederNavIdent = sjekkAtIkkeNull(navIdent, "Veileders NAV-ident må være satt.");
+        avtale.opphav = Avtaleopphav.VEILEDER;
         avtale.registerEvent(new AvtaleOpprettetAvVeileder(avtale, navIdent));
         return avtale;
     }
@@ -195,12 +198,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     public static Avtale veilederOppretterAvtale(OpprettMentorAvtale opprettMentorAvtale, NavIdent navIdent) {
         Avtale avtale = new Avtale(opprettMentorAvtale);
         avtale.veilederNavIdent = sjekkAtIkkeNull(navIdent, "Veileders NAV-ident må være satt.");
+        avtale.opphav = Avtaleopphav.VEILEDER;
         avtale.registerEvent(new AvtaleOpprettetAvVeileder(avtale, navIdent));
         return avtale;
     }
 
     public static Avtale arbeidsgiverOppretterAvtale(OpprettAvtale opprettAvtale) {
         Avtale avtale = new Avtale(opprettAvtale);
+        avtale.opphav = Avtaleopphav.ARBEIDSGIVER;
         avtale.opprettetAvArbeidsgiver = true;
         avtale.registerEvent(new AvtaleOpprettetAvArbeidsgiver(avtale));
         return avtale;
@@ -208,6 +213,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     public static Avtale arbeidsgiverOppretterAvtale(OpprettMentorAvtale opprettMentorAvtale) {
         Avtale avtale = new Avtale(opprettMentorAvtale);
+        avtale.opphav = Avtaleopphav.ARBEIDSGIVER;
         avtale.opprettetAvArbeidsgiver = true;
         avtale.registerEvent(new AvtaleOpprettetAvArbeidsgiver(avtale));
         return avtale;
