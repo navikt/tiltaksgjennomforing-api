@@ -46,7 +46,7 @@ public class AlleredeRegistrertAvtale implements AvtaleMedFnrOgBedriftNr {
         alleredeRegistrertAvtale.setBedriftNr(avtale.getBedriftNr());
         alleredeRegistrertAvtale.setStatus(avtale.statusSomEnum());
         alleredeRegistrertAvtale.setVeilederNavIdent(avtale.getVeilederNavIdent());
-        alleredeRegistrertAvtale.setOpprettetAvArbeidsgiver(avtale.isOpprettetAvArbeidsgiver());
+        alleredeRegistrertAvtale.setOpprettetAvArbeidsgiver(Avtaleopphav.ARBEIDSGIVER.equals(avtale.getOpphav()));
         alleredeRegistrertAvtale.setStartDato(avtale.getGjeldendeInnhold().getStartDato());
         alleredeRegistrertAvtale.setSluttDato(avtale.getGjeldendeInnhold().getSluttDato());
         alleredeRegistrertAvtale.setGodkjentAvVeileder(avtale.getGjeldendeInnhold().getGodkjentAvVeileder());
