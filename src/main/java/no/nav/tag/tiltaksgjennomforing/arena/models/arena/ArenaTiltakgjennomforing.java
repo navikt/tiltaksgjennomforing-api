@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -83,6 +85,7 @@ public class ArenaTiltakgjennomforing {
     private String lokaltnavn;
 
     @JsonProperty("TILTAKSTATUSKODE")
+    @Enumerated(EnumType.STRING)
     private Tiltakstatuskode tiltakstatuskode;
 
     @JsonProperty("PROSENT_DELTID")
