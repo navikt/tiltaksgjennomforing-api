@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttDatoStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.LonnstilskuddAvtaleBeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.TilskuddsperioderKalkulator;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.TilskuddsperioderBeregningStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
@@ -930,7 +931,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     private List<TilskuddPeriode> beregnTilskuddsperioder(LocalDate startDato, LocalDate sluttDato) {
-        if(TilskuddsperioderBeregningStrategyFactory.create(tiltakstype).isPresent()) return TilskuddsperioderBeregningStrategyFactory.create(tiltakstype).get().beregnForPeriode(this, startDato, sluttDato);
+        Optional<LonnstilskuddAvtaleBeregningStrategy> muligStrategi = TilskuddsperioderBeregningStrategyFactory.create(tiltakstype);
+        if(muligStrategi.isPresent()) return muligStrategi.get().beregnForPeriode(this, startDato, sluttDato);
         return List.of();
     }
 
