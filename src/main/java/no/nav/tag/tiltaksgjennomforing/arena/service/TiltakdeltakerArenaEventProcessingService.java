@@ -47,14 +47,11 @@ public class TiltakdeltakerArenaEventProcessingService implements ArenaEventProc
             .orElse(false);
 
         if (isTiltakgjennomforingIgnored) {
-            log.info(
-                "{} ignorert fordi tilhørende tiltakgjennomføring er ignorert",
-                arenaEvent.getLogId()
-            );
+            log.info("Arena-event ignorert fordi tilhørende tiltakgjennomføring er ignorert");
 
             delete(
                 tiltakdeltaker,
-                () -> log.info("Sletter tidligere håndtert deltaker {} som nå skal ignoreres", arenaEvent.getLogId())
+                () -> log.info("Sletter tidligere håndtert deltaker som nå skal ignoreres")
             );
             ordsService.attemptDeleteFnr(tiltakdeltaker.getPersonId()) ;
 
@@ -62,27 +59,26 @@ public class TiltakdeltakerArenaEventProcessingService implements ArenaEventProc
         }
 
         log.info(
-            "{} prosesseres med operasjon {}",
-            arenaEvent.getLogId(),
+            "Arena-event prosesseres med operasjon {}",
             arenaEvent.getOperation().name()
         );
 
         if (Operation.DELETE == arenaEvent.getOperation()) {
-            delete(tiltakdeltaker, () -> log.info("{} har operasjon DELETE og slettet", arenaEvent.getLogId()));
+            delete(tiltakdeltaker, () -> log.info("Arena-event har operasjon DELETE og blir slettes"));
             ordsService.attemptDeleteFnr(tiltakdeltaker.getPersonId()) ;
             return ArenaEventStatus.DONE;
         }
 
         boolean tiltakgjennomforingExists = tiltakgjennomforingRepository.existsById(tiltakdeltaker.getTiltakgjennomforingId());
         if (!tiltakgjennomforingExists) {
-            log.info("{} settes på vent; tilhørende tiltakgjennomforing er ikke prossesert ennå", arenaEvent.getLogId());
+            log.info(" settes på vent; tilhørende tiltakgjennomforing er ikke prossesert ennå");
             return ArenaEventStatus.RETRY;
         }
 
         ordsService.fetchPerson(tiltakdeltaker.getPersonId());
         tiltakdeltakerRepository.save(tiltakdeltaker);
 
-        log.info("{} er ferdig prossesert", arenaEvent.getLogId());
+        log.info("Arena-event er ferdig prossesert");
         return ArenaEventStatus.DONE;
     }
 

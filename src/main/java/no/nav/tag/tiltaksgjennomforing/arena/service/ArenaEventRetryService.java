@@ -63,7 +63,7 @@ public class ArenaEventRetryService {
             )
             .peek(arenaEvent ->
                 log.warn(
-                    "FAILED: Arena-event {} har blitt forsøkt max antall ganger. Avbryter.",
+                    "Arena-event {} har blitt forsøkt max antall ganger. Avbryter.",
                     arenaEvent.getLogId()
                 )
             )
