@@ -44,5 +44,13 @@ public interface LonnstilskuddAvtaleBeregningStrategy {
         }
     }
 
+    default Integer beregnTilskuddsbeløpForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
+        return TilskuddsperioderKalkulator.beløpForPeriode(startDato,
+                sluttDato,
+                avtale.getGjeldendeInnhold().getDatoForRedusertProsent(),
+                avtale.getGjeldendeInnhold().getSumLonnstilskudd(),
+                avtale.getGjeldendeInnhold().getSumLønnstilskuddRedusert());
+    }
+
 
 }
