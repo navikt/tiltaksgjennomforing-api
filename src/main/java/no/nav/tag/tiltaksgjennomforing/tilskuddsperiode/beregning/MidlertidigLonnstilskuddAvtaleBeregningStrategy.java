@@ -86,7 +86,7 @@ public class MidlertidigLonnstilskuddAvtaleBeregningStrategy implements Lonnstil
     public List<TilskuddPeriode> hentBeregnetTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
         AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
 
-        List<TilskuddPeriode> tilskuddsperioder = TilskuddsperioderKalkulator.beregnTilskuddsperioderForAvtale(
+        List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioderForAvtale(
                 avtale.getId(),
                 avtale.getTiltakstype(),
                 gjeldendeInnhold.getSumLonnstilskudd(),
