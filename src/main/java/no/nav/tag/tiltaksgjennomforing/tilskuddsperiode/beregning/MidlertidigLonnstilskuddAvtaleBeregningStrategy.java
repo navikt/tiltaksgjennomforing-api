@@ -53,20 +53,10 @@ public class MidlertidigLonnstilskuddAvtaleBeregningStrategy implements Lonnstil
         regnUtDatoOgSumRedusert(avtale);
         avtale.sendTilbakeTilBeslutter();
         avtale.hentTilskuddsperioder().stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET)
-                .forEach(t -> t.setBeløp(beregnTilskuddsbeløp(avtale,t.getStartDato(), t.getSluttDato())));
+                .forEach(t -> t.setBeløp(beregnTilskuddsbeløpForPeriode(avtale,t.getStartDato(), t.getSluttDato())));
 
 
     }
-
-    private Integer beregnTilskuddsbeløp(Avtale avtale,LocalDate startDato, LocalDate sluttDato) {
-        AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
-        return TilskuddsperioderKalkulator.beløpForPeriode(startDato,
-                sluttDato,
-                gjeldendeInnhold.getDatoForRedusertProsent(),
-                gjeldendeInnhold.getSumLonnstilskudd(),
-                gjeldendeInnhold.getSumLønnstilskuddRedusert());
-    }
-
     public void reberegnTotalIAvtale(Avtale avtale) {
         AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
         BigDecimal feriepengerBelop = getFeriepengerBelop(avtaleInnhold.getFeriepengesats(), avtaleInnhold.getManedslonn());
