@@ -23,7 +23,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.DatoUtils.sisteDatoIMnd;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class TilskuddsperioderKalkulatorTest {
+public class LonnstilskuddAvtaleBeregningStrategyTest {
 
     @Test
     public void en_tilskuddsperiode() {
