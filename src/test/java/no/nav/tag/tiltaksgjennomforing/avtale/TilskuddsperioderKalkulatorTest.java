@@ -30,7 +30,7 @@ public class TilskuddsperioderKalkulatorTest {
         Now.fixedDate(LocalDate.of(2021, 1, 1));
         LocalDate fra = LocalDate.of(2021, 1, 1);
         LocalDate til = LocalDate.of(2021, 3, 31);
-
+        final int forventetBeløpForPeriode = 48960;
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(fra);
@@ -39,6 +39,7 @@ public class TilskuddsperioderKalkulatorTest {
 
 
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(3);
+        assertThat(avtale.beregnTilskuddsbeløpForPeriode(fra,til)).isEqualTo(forventetBeløpForPeriode);
         assertThat(avtale.getTilskuddPeriode().first().getBeløp()).isEqualTo(avtale.getGjeldendeInnhold().getSumLonnstilskudd());
         harRiktigeEgenskaper(avtale);
         Now.resetClock();
