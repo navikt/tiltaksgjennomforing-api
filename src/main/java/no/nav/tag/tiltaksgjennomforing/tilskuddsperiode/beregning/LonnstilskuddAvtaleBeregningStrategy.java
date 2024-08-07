@@ -100,14 +100,6 @@ public interface LonnstilskuddAvtaleBeregningStrategy {
 
     }
 
-    static List<TilskuddPeriode>  beregnTilskuddsperioderForVTAOAvtale(LocalDate datoFraOgMed, LocalDate datoTilOgMed) {
-        List<TilskuddPeriode> tilskuddperioder = lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
-            Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), 6808);
-            return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), 0);
-        }).toList();
-        return tilskuddperioder;
-    }
-
     private static int getLonnstilskuddProsent(Tiltakstype tiltakstype, Integer lonnstilskuddprosent) {
         if(tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD){
             if(lonnstilskuddprosent >= 68) return 67;
@@ -124,7 +116,7 @@ public interface LonnstilskuddAvtaleBeregningStrategy {
         }
     }
 
-    private static Integer beløpForPeriode(LocalDate fra, LocalDate til, Integer sumLønnstilskuddPerMåned) {
+    static Integer beløpForPeriode(LocalDate fra, LocalDate til, Integer sumLønnstilskuddPerMåned) {
         Period period = Period.between(fra, til.plusDays(1));
         Integer sumHeleMåneder = period.getMonths() * sumLønnstilskuddPerMåned;
         BigDecimal dagsats = new BigDecimal(sumLønnstilskuddPerMåned).divide(DAGER_I_MÅNED, 10, RoundingMode.HALF_UP);
@@ -132,7 +124,7 @@ public interface LonnstilskuddAvtaleBeregningStrategy {
         return sumHeleMåneder + sumEnkeltdager;
     }
 
-    private static List<Periode> lagPeriode(LocalDate datoFraOgMed, LocalDate datoTilOgMed) {
+    static List<Periode> lagPeriode(LocalDate datoFraOgMed, LocalDate datoTilOgMed) {
         if (datoFraOgMed.isAfter(datoTilOgMed)) {
             return List.of();
         }
