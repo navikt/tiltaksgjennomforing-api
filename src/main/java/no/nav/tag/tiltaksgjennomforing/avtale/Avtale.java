@@ -903,7 +903,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             } else if (tilskuddsperiode.getSluttDato().isAfter(nySluttDato)) {
                 if (status == TilskuddPeriodeStatus.UBEHANDLET || status == TilskuddPeriodeStatus.GODKJENT) {
                     tilskuddsperiode.setSluttDato(nySluttDato);
-                    tilskuddsperiode.setBeløp(beregnTilskuddsbeløp(tilskuddsperiode.getStartDato(), tilskuddsperiode.getSluttDato()));
+                    tilskuddsperiode.setBeløp(beregnTilskuddsbeløpForPeriode(tilskuddsperiode.getStartDato(), tilskuddsperiode.getSluttDato()));
                     if (status == TilskuddPeriodeStatus.GODKJENT) {
                         registerEvent(new TilskuddsperiodeForkortet(this, tilskuddsperiode));
                     }
@@ -915,7 +915,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     void endreBeløpITilskuddsperioder() {
         sendTilbakeTilBeslutter();
         tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET)
-                .forEach(t -> t.setBeløp(beregnTilskuddsbeløp(t.getStartDato(), t.getSluttDato())));
+                .forEach(t -> t.setBeløp(beregnTilskuddsbeløpForPeriode(t.getStartDato(), t.getSluttDato())));
     }
 
     public void sendTilbakeTilBeslutter() {
@@ -938,7 +938,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         return isAvbrutt() || annullertTidspunkt != null;
     }
 
-    private Integer beregnTilskuddsbeløp(LocalDate startDato, LocalDate sluttDato) {
+    protected Integer beregnTilskuddsbeløpForPeriode(LocalDate startDato, LocalDate sluttDato) {
         return RegnUtTilskuddsperioderForAvtale.beløpForPeriode(startDato,
                 sluttDato,
                 gjeldendeInnhold.getDatoForRedusertProsent(),
