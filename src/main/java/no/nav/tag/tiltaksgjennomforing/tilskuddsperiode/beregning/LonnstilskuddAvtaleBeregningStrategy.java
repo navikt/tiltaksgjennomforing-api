@@ -14,9 +14,9 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 
 public interface LonnstilskuddAvtaleBeregningStrategy {
     void genererNyeTilskuddsperioder(Avtale avtale);
-    List<TilskuddPeriode> beregnForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato);
+    List<TilskuddPeriode> hentBeregnetTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato);
     void endre(Avtale avtale,EndreTilskuddsberegning endreTilskuddsberegning);
-    void reberegnTotal(Avtale avtale);
+    void reberegnTotalIAvtale(Avtale avtale);
     default void forleng(Avtale avtale, LocalDate gammelSluttDato, LocalDate nySluttDato){
         Set<TilskuddPeriode> tilskuddPeriode = avtale.hentTilskuddsperioder();
 
@@ -28,17 +28,17 @@ public interface LonnstilskuddAvtaleBeregningStrategy {
         if (sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) {
             // Kan utvide siste tilskuddsperiode hvis den er ubehandlet
             tilskuddPeriode.remove(sisteTilskuddsperiode);
-            List<TilskuddPeriode> nyeTilskuddperioder = beregnForPeriode(avtale,sisteTilskuddsperiode.getStartDato(), nySluttDato);
+            List<TilskuddPeriode> nyeTilskuddperioder = hentBeregnetTilskuddsperioderForPeriode(avtale,sisteTilskuddsperiode.getStartDato(), nySluttDato);
             fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer());
             tilskuddPeriode.addAll(nyeTilskuddperioder);
         } else if (sisteTilskuddsperiode.getSluttDato().isBefore(sisteDatoIMnd(sisteTilskuddsperiode.getSluttDato())) && sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.GODKJENT && (!sisteTilskuddsperiode.erRefusjonGodkjent() && !sisteTilskuddsperiode.erUtbetalt())) {
             avtale.annullerTilskuddsperiode(sisteTilskuddsperiode);
-            List<TilskuddPeriode> nyeTilskuddperioder = beregnForPeriode(avtale,sisteTilskuddsperiode.getStartDato(), nySluttDato);
+            List<TilskuddPeriode> nyeTilskuddperioder = hentBeregnetTilskuddsperioderForPeriode(avtale,sisteTilskuddsperiode.getStartDato(), nySluttDato);
             fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer() + 1);
             tilskuddPeriode.addAll(nyeTilskuddperioder);
         } else {
             // Regner ut nye perioder fra gammel avtaleslutt til ny avtaleslutt
-            List<TilskuddPeriode> nyeTilskuddperioder = beregnForPeriode(avtale,gammelSluttDato.plusDays(1), nySluttDato);
+            List<TilskuddPeriode> nyeTilskuddperioder = hentBeregnetTilskuddsperioderForPeriode(avtale,gammelSluttDato.plusDays(1), nySluttDato);
             fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer() + 1);
             tilskuddPeriode.addAll(nyeTilskuddperioder);
         }

@@ -34,7 +34,7 @@ public class VarigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtale
     @Override
     public void regnUtTotalLonnstilskudd() {
         Avtale avtale = avtaleInnhold.getAvtale();
-        varigLonnstilskuddAvtaleBeregningStrategy.reberegnTotal(avtale);
+        varigLonnstilskuddAvtaleBeregningStrategy.reberegnTotalIAvtale(avtale);
     }
 
     @Override

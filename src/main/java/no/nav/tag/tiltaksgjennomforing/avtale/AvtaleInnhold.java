@@ -249,7 +249,7 @@ public class AvtaleInnhold {
     }
 
     public void reberegnLønnstilskudd() {
-        TilskuddsperioderBeregningStrategyFactory.create(avtale.getTiltakstype()).ifPresent(strategy -> strategy.reberegnTotal(avtale));
+        TilskuddsperioderBeregningStrategyFactory.create(avtale.getTiltakstype()).ifPresent(strategy -> strategy.reberegnTotalIAvtale(avtale));
     }
 
     public void reberegnRedusertProsentOgRedusertLonnstilskudd() {
