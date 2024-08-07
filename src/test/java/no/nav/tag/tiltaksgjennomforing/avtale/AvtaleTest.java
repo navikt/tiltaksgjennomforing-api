@@ -13,6 +13,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangArbeidstreningException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Disabled;
@@ -770,6 +771,7 @@ public class AvtaleTest {
 
     @Test
     public void endre_tilskuddsberegning_setter_riktige_felter() {
+        Now.fixedDate(LocalDate.of(2024,7,29));
         Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
         double otpSats = 0.048;
         BigDecimal feriepengesats = new BigDecimal("0.166");
@@ -786,6 +788,23 @@ public class AvtaleTest {
         assertThat(avtale.getGjeldendeInnhold().getFeriepengesats()).isEqualTo(feriepengesats);
         assertThat(avtale.getGjeldendeInnhold().getArbeidsgiveravgift()).isEqualTo(arbeidsgiveravgift);
         assertThat(avtale.getGjeldendeInnhold().getManedslonn()).isEqualTo(manedslonn);
+
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(2141,
+                21724,
+                21724,
+                21724,
+                21724,
+                21724,
+                19984,
+                1606,
+                16293,
+                16293,
+                16293,
+                16293,
+                16293,
+                14988));
+
+        Now.resetClock();
     }
 
     @Test

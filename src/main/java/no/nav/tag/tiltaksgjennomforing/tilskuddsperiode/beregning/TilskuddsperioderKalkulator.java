@@ -1,7 +1,9 @@
-package no.nav.tag.tiltaksgjennomforing.avtale;
+package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Periode;
@@ -18,16 +20,17 @@ import java.util.stream.Collectors;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.DatoUtils.sisteDatoIMnd;
 
+/**
+ *
+ * TODO: BØR DEN SPLITTES OG FLYTTES OVER TIL HVER {@link LonnstilskuddAvtaleBeregningStrategy} ? !!!! ?????
+ */
 @Slf4j
 @UtilityClass
-public class RegnUtTilskuddsperioderForAvtale {
+public class TilskuddsperioderKalkulator {
 
     private final static BigDecimal DAGER_I_MÅNED = new BigDecimal("30.4375");
     private final static int ANTALL_MÅNEDER_I_EN_PERIODE = 1;
 
-    /**
-        TODO: Kalkulering av redusert prosent og redusert dato bør kun skje i {@link no.nav.tag.tiltaksgjennomforing.avtale.VarigLonnstilskuddStrategy} og heller ikke i frontend
-     */
     public static List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(UUID id, Tiltakstype tiltakstype, Integer sumLønnstilskuddPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed, Integer lonnstilskuddprosent, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMånedRedusert) {
         if (datoForRedusertProsent == null) {
             // Ingen reduserte peridoder   -----60-----60------60------ |
@@ -39,12 +42,12 @@ public class RegnUtTilskuddsperioderForAvtale {
             if (datoFraOgMed.isBefore(datoForRedusertProsent.plusDays(1)) && datoTilOgMed.isAfter(datoForRedusertProsent.minusDays(1))) {
                 // Både ikke reduserte og reduserte   ---60---60-----50----|--50----50-----
                 List<TilskuddPeriode> tilskuddperioderFørRedusering = lagPeriode(datoFraOgMed, datoForRedusertProsent.minusDays(1)).stream().map(datoPar -> {
-                    Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMåned);
+                    Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMåned);// TODO: IKKE TESTET
                     return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), lonnstilskuddprosent);
                 }).toList();
 
                 List<TilskuddPeriode> tilskuddperioderEtterRedusering = lagPeriode(datoForRedusertProsent, datoTilOgMed).stream().map(datoPar -> {
-                    Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMånedRedusert);
+                    Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sumLønnstilskuddPerMånedRedusert);// TODO: IKKE TESTET
                     return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), getLonnstilskuddProsent(tiltakstype, lonnstilskuddprosent));
                 }).toList();
 
@@ -126,9 +129,9 @@ public class RegnUtTilskuddsperioderForAvtale {
 
     private static List<Periode> splittHvisNyttÅr (LocalDate fraDato, LocalDate tilDato) {
         if (fraDato.getYear() != tilDato.getYear()) {
-            Periode datoPar1 = new Periode(fraDato, fraDato.withMonth(12).withDayOfMonth(31));
-            Periode datoPar2 = new Periode(tilDato.withMonth(1).withDayOfMonth(1), tilDato);
-            return List.of(datoPar1, datoPar2);
+            Periode datoPar1 = new Periode(fraDato, fraDato.withMonth(12).withDayOfMonth(31)); //TODO IKKE TESTET
+            Periode datoPar2 = new Periode(tilDato.withMonth(1).withDayOfMonth(1), tilDato); //TODO IKKE TESTET
+            return List.of(datoPar1, datoPar2);//TODO IKKE TESTET
         } else {
             return List.of(new Periode(fraDato, tilDato));
         }

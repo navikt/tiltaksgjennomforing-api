@@ -16,7 +16,8 @@ class BeregningLonnstilskuddTest {
 
     @BeforeEach
     public void setUp() {
-        avtaleInnhold = new AvtaleInnhold();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        avtaleInnhold = avtale.getGjeldendeInnhold();
         strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, MIDLERTIDIG_LONNSTILSKUDD);
     }
 

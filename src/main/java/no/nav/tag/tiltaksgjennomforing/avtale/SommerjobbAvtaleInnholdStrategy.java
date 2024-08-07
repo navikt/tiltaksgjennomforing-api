@@ -3,9 +3,9 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
 
-public class SommerjobbStrategy extends LonnstilskuddStrategy {
+public class SommerjobbAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrategy {
 
-    public SommerjobbStrategy(AvtaleInnhold avtaleInnhold) {
+    public SommerjobbAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
     }
 

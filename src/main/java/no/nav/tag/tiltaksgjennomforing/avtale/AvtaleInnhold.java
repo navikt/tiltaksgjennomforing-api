@@ -21,6 +21,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.FieldNameConstants;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.TilskuddsperioderBeregningStrategyFactory;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -247,7 +249,7 @@ public class AvtaleInnhold {
     }
 
     public void reberegnLønnstilskudd() {
-        innholdStrategi().regnUtTotalLonnstilskudd();
+        TilskuddsperioderBeregningStrategyFactory.create(avtale.getTiltakstype()).ifPresent(strategy -> strategy.reberegnTotal(avtale));
     }
 
     public void reberegnRedusertProsentOgRedusertLonnstilskudd() {

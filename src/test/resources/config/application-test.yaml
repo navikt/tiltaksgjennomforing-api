@@ -47,6 +47,8 @@ no.nav.security.jwt:
       accepted_audience: fake-tokenx
 
 tiltaksgjennomforing:
+  tilskuddsperioder:
+    tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, VTAO
   kontoregister:
     uri: http://localhost:8090/kontoregister/api/v1/hent-kontonr-org
     consumerId: tiltak-refusjon-api

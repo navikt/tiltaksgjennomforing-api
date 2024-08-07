@@ -25,6 +25,7 @@ import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.sporingslogg.Sporingslogg;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
 import java.math.BigDecimal;
@@ -399,6 +400,14 @@ public class TestData {
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        return avtale;
+    }
+
+    public static Avtale enVtaoAvtaleIKKEGodkjentAvArbeidsgiver() {
+        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO), new NavIdent("Z123456"));
+        setOppfølgingPåAvtale(avtale);
+        EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
         return avtale;
     }
 

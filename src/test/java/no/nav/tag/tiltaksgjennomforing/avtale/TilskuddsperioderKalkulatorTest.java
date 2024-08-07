@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +23,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.DatoUtils.sisteDatoIMnd;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class RegnUtTilskuddsperioderForAvtaleTest {
+public class TilskuddsperioderKalkulatorTest {
 
     @Test
     public void en_tilskuddsperiode() {
@@ -39,6 +40,28 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(3);
         assertThat(avtale.getTilskuddPeriode().first().getBeløp()).isEqualTo(avtale.getGjeldendeInnhold().getSumLonnstilskudd());
+        harRiktigeEgenskaper(avtale);
+        Now.resetClock();
+    }
+
+    @Test
+    public void en_VTAO_Avtale_Med_fast_beløp_for_tilskuddsperioder() {
+        Now.fixedDate(LocalDate.of(2024, 7, 1));
+        final int fastBeløpPerMånedForPeriode = 6808;
+        LocalDate fra = LocalDate.of(2024, 7, 1);
+        LocalDate til = LocalDate.of(2024, 9, 1);
+
+        Avtale avtale = TestData.enVtaoAvtaleIKKEGodkjentAvArbeidsgiver();
+
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
+        endreAvtale.setStartDato(fra);
+        endreAvtale.setSluttDato(til);
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+
+
+        assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(3);
+        assertThat(avtale.getTilskuddPeriode().first().getBeløp()).isEqualTo(fastBeløpPerMånedForPeriode);
+        assertThat(avtale.getTilskuddPeriode().first().getLonnstilskuddProsent()).isEqualTo(0);
         harRiktigeEgenskaper(avtale);
         Now.resetClock();
     }
