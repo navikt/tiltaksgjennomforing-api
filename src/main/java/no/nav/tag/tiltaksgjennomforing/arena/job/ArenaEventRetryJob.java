@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-@Profile(Miljø.NOT_LOCAL)
+@Profile({ Miljø.DEV_FSS, Miljø.PROD_FSS })
 public class ArenaEventRetryJob {
     private static final int ONE_MIN_IN_MS = 60 * 1000;
 
