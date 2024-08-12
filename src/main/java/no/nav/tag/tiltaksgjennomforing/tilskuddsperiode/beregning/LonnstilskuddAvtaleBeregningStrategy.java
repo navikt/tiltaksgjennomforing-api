@@ -1,7 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
-import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Periode;
@@ -23,11 +25,11 @@ public interface LonnstilskuddAvtaleBeregningStrategy {
     int ANTALL_MÅNEDER_I_EN_PERIODE = 1;
 
     void genererNyeTilskuddsperioder(Avtale avtale);
-    List<TilskuddPeriode> hentBeregnetTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato);
+    List<TilskuddPeriode> opprettTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato);
     void endre(Avtale avtale,EndreTilskuddsberegning endreTilskuddsberegning);
     void reberegnTotalIAvtale(Avtale avtale);
     default void forleng(Avtale avtale, LocalDate gammelSluttDato, LocalDate nySluttDato){
-        Set<TilskuddPeriode> tilskuddPeriode = avtale.hentTilskuddsperioder();
+        Set<TilskuddPeriode> tilskuddPeriode = avtale.getTilskuddPeriode();
 
         if (tilskuddPeriode.isEmpty()) {
             return;
@@ -37,17 +39,17 @@ public interface LonnstilskuddAvtaleBeregningStrategy {
         if (sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) {
             // Kan utvide siste tilskuddsperiode hvis den er ubehandlet
             tilskuddPeriode.remove(sisteTilskuddsperiode);
-            List<TilskuddPeriode> nyeTilskuddperioder = hentBeregnetTilskuddsperioderForPeriode(avtale,sisteTilskuddsperiode.getStartDato(), nySluttDato);
+            List<TilskuddPeriode> nyeTilskuddperioder = opprettTilskuddsperioderForPeriode(avtale,sisteTilskuddsperiode.getStartDato(), nySluttDato);
             fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer());
             tilskuddPeriode.addAll(nyeTilskuddperioder);
         } else if (sisteTilskuddsperiode.getSluttDato().isBefore(sisteDatoIMnd(sisteTilskuddsperiode.getSluttDato())) && sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.GODKJENT && (!sisteTilskuddsperiode.erRefusjonGodkjent() && !sisteTilskuddsperiode.erUtbetalt())) {
             avtale.annullerTilskuddsperiode(sisteTilskuddsperiode);
-            List<TilskuddPeriode> nyeTilskuddperioder = hentBeregnetTilskuddsperioderForPeriode(avtale,sisteTilskuddsperiode.getStartDato(), nySluttDato);
+            List<TilskuddPeriode> nyeTilskuddperioder = opprettTilskuddsperioderForPeriode(avtale,sisteTilskuddsperiode.getStartDato(), nySluttDato);
             fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer() + 1);
             tilskuddPeriode.addAll(nyeTilskuddperioder);
         } else {
             // Regner ut nye perioder fra gammel avtaleslutt til ny avtaleslutt
-            List<TilskuddPeriode> nyeTilskuddperioder = hentBeregnetTilskuddsperioderForPeriode(avtale,gammelSluttDato.plusDays(1), nySluttDato);
+            List<TilskuddPeriode> nyeTilskuddperioder = opprettTilskuddsperioderForPeriode(avtale,gammelSluttDato.plusDays(1), nySluttDato);
             fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer() + 1);
             tilskuddPeriode.addAll(nyeTilskuddperioder);
         }
@@ -93,7 +95,6 @@ public interface LonnstilskuddAvtaleBeregningStrategy {
                 }).toList();
                 return new ArrayList<>(tilskuddperioderEtterRedusering);
             } else {
-                //log.error("Uventet feil i utregning av tilskuddsperioder med startdato: {}, sluttdato: {}, datoForRedusertProsent: {}, avtaleId: {}", datoFraOgMed, datoTilOgMed, datoForRedusertProsent, id);
                 throw new FeilkodeException(Feilkode.FORLENG_MIDLERTIDIG_IKKE_TILGJENGELIG);
             }
         }

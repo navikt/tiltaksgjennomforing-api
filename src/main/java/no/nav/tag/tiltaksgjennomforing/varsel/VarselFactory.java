@@ -1,12 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
-import java.util.List;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
-import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
-import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
-import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import java.util.List;
 
 public class VarselFactory {
     private final Avtale avtale;

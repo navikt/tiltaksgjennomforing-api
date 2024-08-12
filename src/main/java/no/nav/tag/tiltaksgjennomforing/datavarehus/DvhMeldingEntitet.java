@@ -1,11 +1,11 @@
 package no.nav.tag.tiltaksgjennomforing.datavarehus;
 
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 

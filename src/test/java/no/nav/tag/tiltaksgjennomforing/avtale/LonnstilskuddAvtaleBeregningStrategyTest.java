@@ -5,17 +5,12 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
@@ -42,6 +37,27 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
         assertThat(avtale.beregnTilskuddsbeløpForPeriode(fra,til)).isEqualTo(forventetBeløpForPeriode);
         assertThat(avtale.getTilskuddPeriode().first().getBeløp()).isEqualTo(avtale.getGjeldendeInnhold().getSumLonnstilskudd());
         harRiktigeEgenskaper(avtale);
+        Now.resetClock();
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"MENTOR", "ARBEIDSTRENING", "INKLUDERINGSTILSKUDD"})
+    public void en_avtaletype_som_ikke_stotter_tilskuddsperioder_skal_ikke_generere_perioder_i_beregning_strategi(String tiltakstypeString) {
+        final Tiltakstype tiltakstype = Tiltakstype.valueOf(tiltakstypeString);
+        Now.fixedDate(LocalDate.of(2021, 1, 1));
+        LocalDate fra = LocalDate.of(2021, 1, 1);
+        LocalDate til = LocalDate.of(2021, 3, 31);
+        final int forventetBeløpForPeriode = 0;
+        Avtale avtale = TestData.enAvtale(tiltakstype);
+        EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
+        endreAvtale.setStartDato(fra);
+        endreAvtale.setSluttDato(til);
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+
+
+        assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(0);
+        assertThat(avtale.beregnTilskuddsbeløpForPeriode(fra,til)).isEqualTo(forventetBeløpForPeriode);
+        assertThat(avtale.getTilskuddPeriode()).isEmpty();
         Now.resetClock();
     }
 

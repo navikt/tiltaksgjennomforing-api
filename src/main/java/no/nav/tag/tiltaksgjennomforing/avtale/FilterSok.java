@@ -4,12 +4,12 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import java.time.LocalDateTime;
 
 @Data

@@ -2,45 +2,21 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.PostLoad;
-import jakarta.persistence.Transient;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttDatoStrategyFactory;
-import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
-import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.LonnstilskuddAvtaleBeregningStrategy;
-import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.TilskuddsperioderBeregningStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AltMåVæreFyltUtException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørVeilederException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AvtaleErIkkeFordeltException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.DeltakerHarGodkjentException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AvtaleMedFnrOgBedriftNr;
 import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.TilskuddsperioderBeregningStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
@@ -55,14 +31,7 @@ import org.springframework.data.domain.AbstractAggregateRoot;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -138,10 +107,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     @JsonIgnore
     @Transient
     private FnrOgBedrift fnrOgBedrift;
-
-    public Set<TilskuddPeriode> hentTilskuddsperioder(){
-        return  this.tilskuddPeriode;
-    }
 
     public void leggtilNyeTilskuddsperioder(List<TilskuddPeriode> tilskuddsperioder){
         this.tilskuddPeriode.addAll(tilskuddsperioder);
@@ -860,7 +825,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     void forlengTilskuddsperioder(LocalDate gammelSluttDato, LocalDate nySluttDato) {
-        TilskuddsperioderBeregningStrategyFactory.create(this.getTiltakstype()).ifPresent(lonnstilskuddAvtaleBeregningStrategy -> lonnstilskuddAvtaleBeregningStrategy.forleng(this, gammelSluttDato, nySluttDato));
+        TilskuddsperioderBeregningStrategyFactory.create(this.getTiltakstype()).forleng(this, gammelSluttDato, nySluttDato);
     }
 
     private void annullerTilskuddsperioder() {
@@ -922,19 +887,15 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     protected Integer beregnTilskuddsbeløpForPeriode(LocalDate startDato, LocalDate sluttDato) {
-        Optional<LonnstilskuddAvtaleBeregningStrategy> muligStrategi = TilskuddsperioderBeregningStrategyFactory.create(tiltakstype);
-        if(muligStrategi.isPresent()) return muligStrategi.get().beregnTilskuddsbeløpForPeriode(this, startDato, sluttDato);
-        return 0;
+        return TilskuddsperioderBeregningStrategyFactory.create(tiltakstype).beregnTilskuddsbeløpForPeriode(this, startDato, sluttDato);
     }
 
     private List<TilskuddPeriode> beregnTilskuddsperioder(LocalDate startDato, LocalDate sluttDato) {
-        Optional<LonnstilskuddAvtaleBeregningStrategy> muligStrategi = TilskuddsperioderBeregningStrategyFactory.create(tiltakstype);
-        if(muligStrategi.isPresent()) return muligStrategi.get().hentBeregnetTilskuddsperioderForPeriode(this, startDato, sluttDato);
-        return List.of();
+        return TilskuddsperioderBeregningStrategyFactory.create(tiltakstype).opprettTilskuddsperioderForPeriode(this, startDato, sluttDato);
     }
 
     private void nyeTilskuddsperioder() {
-       TilskuddsperioderBeregningStrategyFactory.create(this.getTiltakstype()).ifPresent(lonnstilskuddBeregningStrategy -> lonnstilskuddBeregningStrategy.genererNyeTilskuddsperioder(this));
+        TilskuddsperioderBeregningStrategyFactory.create(this.getTiltakstype()).genererNyeTilskuddsperioder(this);
     }
 
     private boolean sjekkRyddingAvTilskuddsperioder() {
@@ -1155,7 +1116,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
         }
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_TILSKUDDSBEREGNING);
-        TilskuddsperioderBeregningStrategyFactory.create(tiltakstype).ifPresent(strategy -> strategy.endre(this, tilskuddsberegning));
+        TilskuddsperioderBeregningStrategyFactory.create(tiltakstype).endre(this, tilskuddsberegning);
         sistEndretNå();
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         registerEvent(new TilskuddsberegningEndret(this, utførtAv));

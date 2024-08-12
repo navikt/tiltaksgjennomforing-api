@@ -1,8 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AvtaleMedFnrOgBedriftNr;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AvtaleMedFnrOgBedriftNr;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -10,5 +10,5 @@ import java.util.EnumSet;
 @Component
 @ConfigurationProperties(prefix = "tiltaksgjennomforing.tilskuddsperioder")
 public class TilskuddsperiodeConfig {
-    private EnumSet<Tiltakstype> tiltakstyper = EnumSet.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB,Tiltakstype.VTAO);
+    private EnumSet<Tiltakstype> tiltakstyper = EnumSet.noneOf(Tiltakstype.class);
 }

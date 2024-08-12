@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -8,7 +9,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;

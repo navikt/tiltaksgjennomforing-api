@@ -1,11 +1,15 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
@@ -17,7 +21,7 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilsk
             throw new FeilkodeException(Feilkode.KAN_IKKE_LAGE_NYE_TILSKUDDSPRIODER_INNGAATT_AVTALE);
         }
         List<TilskuddPeriode> tilskuddsperioder = new ArrayList<>();
-        avtale.hentTilskuddsperioder().removeIf(t -> (t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) || (t.getStatus() == TilskuddPeriodeStatus.BEHANDLET_I_ARENA));
+        avtale.getTilskuddPeriode().removeIf(t -> (t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) || (t.getStatus() == TilskuddPeriodeStatus.BEHANDLET_I_ARENA));
         AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
 
         if(erIkkeTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato())){
@@ -26,8 +30,7 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilsk
         fikseLøpenumre(tilskuddsperioder, 1);
         avtale.leggtilNyeTilskuddsperioder(tilskuddsperioder);
     }
-    /* Default */
-    public List<TilskuddPeriode> hentBeregnetTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
+    public List<TilskuddPeriode> opprettTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
         List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioderForVTAOAvtale(
                 startDato,
                 sluttDato);
@@ -45,7 +48,6 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilsk
         return tilskuddperioder;
     }
 
-    /* VTAO */
     public static List<TilskuddPeriode> beregnTilskuddsperioderForVTAO(Avtale avtale){
         AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
         LocalDate startDato = gjeldendeInnhold.getStartDato();

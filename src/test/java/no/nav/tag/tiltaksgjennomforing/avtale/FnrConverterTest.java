@@ -1,8 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class FnrConverterTest {
 

@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet;
 import io.getunleash.UnleashContext;
 import io.getunleash.strategy.Strategy;
 import lombok.RequiredArgsConstructor;
-
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import org.springframework.stereotype.Component;
 

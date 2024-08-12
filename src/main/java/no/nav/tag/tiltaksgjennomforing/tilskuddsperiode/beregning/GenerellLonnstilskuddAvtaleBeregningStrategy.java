@@ -7,7 +7,8 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
@@ -21,12 +22,12 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
             throw new FeilkodeException(Feilkode.KAN_IKKE_LAGE_NYE_TILSKUDDSPRIODER_INNGAATT_AVTALE);
         }
         List<TilskuddPeriode> tilskuddsperioder = new ArrayList<>();
-        avtale.hentTilskuddsperioder().removeIf(t -> (t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) || (t.getStatus() == TilskuddPeriodeStatus.BEHANDLET_I_ARENA));
+        avtale.getTilskuddPeriode().removeIf(t -> (t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) || (t.getStatus() == TilskuddPeriodeStatus.BEHANDLET_I_ARENA));
         AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
         Tiltakstype tiltakstype = avtale.getTiltakstype();
 
         if (erIkkeTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato(), gjeldendeInnhold.getSumLonnstilskudd())) {
-            tilskuddsperioder = hentBeregnetTilskuddsperioderForPeriode(avtale,gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
+            tilskuddsperioder = opprettTilskuddsperioderForPeriode(avtale,gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
             if (avtale.getArenaRyddeAvtale() != null) {
                 LocalDate standardMigreringsdato = LocalDate.of(2023, 02, 01);
                 LocalDate migreringsdato = avtale.getArenaRyddeAvtale().getMigreringsdato() != null ? avtale.getArenaRyddeAvtale().getMigreringsdato() : standardMigreringsdato;
@@ -69,8 +70,7 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         avtaleInnhold.setManedslonn100pst(månedslønnFullStilling);
     }
 
-    /* Default */
-    public List<TilskuddPeriode> hentBeregnetTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
+    public List<TilskuddPeriode> opprettTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
         AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
 
         List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioderForAvtale(
@@ -168,7 +168,7 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         }
     }
 
-    private LocalDate getDatoForRedusertProsent(LocalDate startDato, LocalDate sluttDato, Integer lonnstilskuddprosent) {
+    public LocalDate getDatoForRedusertProsent(LocalDate startDato, LocalDate sluttDato, Integer lonnstilskuddprosent) {
         if (startDato == null || sluttDato == null || lonnstilskuddprosent == null) {
             return null;
         }

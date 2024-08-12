@@ -2,24 +2,8 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
 import lombok.experimental.FieldNameConstants;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.TilskuddsperioderBeregningStrategyFactory;
@@ -29,11 +13,7 @@ import org.hibernate.annotations.FetchMode;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erTom;
@@ -249,7 +229,7 @@ public class AvtaleInnhold {
     }
 
     public void reberegnLønnstilskudd() {
-        TilskuddsperioderBeregningStrategyFactory.create(avtale.getTiltakstype()).ifPresent(strategy -> strategy.reberegnTotalIAvtale(avtale));
+        TilskuddsperioderBeregningStrategyFactory.create(avtale.getTiltakstype()).reberegnTotalIAvtale(avtale);
     }
 
     public void reberegnRedusertProsentOgRedusertLonnstilskudd() {

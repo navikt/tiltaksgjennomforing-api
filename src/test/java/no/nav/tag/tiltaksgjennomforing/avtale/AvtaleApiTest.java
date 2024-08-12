@@ -22,11 +22,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleApiTestUtil.*;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.*;

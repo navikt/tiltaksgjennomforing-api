@@ -1,8 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import java.time.LocalDate;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+
+import java.time.LocalDate;
 
 public class Fnr extends Identifikator {
 

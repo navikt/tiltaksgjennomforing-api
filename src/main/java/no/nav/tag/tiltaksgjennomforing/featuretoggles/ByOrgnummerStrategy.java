@@ -2,9 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 
 import io.getunleash.UnleashContext;
 import io.getunleash.strategy.Strategy;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
@@ -12,7 +10,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
