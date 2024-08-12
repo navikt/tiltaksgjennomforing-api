@@ -1,11 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
+import java.util.Set;
 import lombok.Value;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
-
-import java.util.Set;
 
 @Value
 public class InnloggetVeileder implements InnloggetBruker {

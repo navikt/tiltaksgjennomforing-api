@@ -1,9 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy;
 
+import java.time.LocalDate;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-
-import java.time.LocalDate;
 
 public class SommerjobbStartOgSluttDatoStrategy implements StartOgSluttDatoStrategy {
     @Override

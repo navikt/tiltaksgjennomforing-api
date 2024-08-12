@@ -1,9 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.journalfoering;
 
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 
 public class AvtaleTilJournalfoeringMapper {
 

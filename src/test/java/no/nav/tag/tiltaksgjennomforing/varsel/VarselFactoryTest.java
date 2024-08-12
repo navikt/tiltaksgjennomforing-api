@@ -1,13 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.time.format.DateTimeFormatter;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
 
 class VarselFactoryTest {
 

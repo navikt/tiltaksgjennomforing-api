@@ -1,9 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold.Fields;
-
 import java.util.HashMap;
 import java.util.Map;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold.Fields;
 
 public class MentorStrategy extends BaseAvtaleInnholdStrategy {
 

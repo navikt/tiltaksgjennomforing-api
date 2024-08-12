@@ -1,12 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import lombok.Data;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
+
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.Data;
-import no.nav.tag.tiltaksgjennomforing.utils.Now;
-
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;

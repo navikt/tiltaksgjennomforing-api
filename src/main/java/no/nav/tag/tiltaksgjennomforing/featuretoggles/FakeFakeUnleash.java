@@ -4,7 +4,6 @@ import io.getunleash.MoreOperations;
 import io.getunleash.Unleash;
 import io.getunleash.UnleashContext;
 import io.getunleash.Variant;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

@@ -1,11 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy;
 
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import org.junit.jupiter.api.Test;
+import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 
 import java.time.LocalDate;
-
-import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import org.junit.jupiter.api.Test;
 
 public class SommerjobbStartOgSluttDatoStrategyTest {
 

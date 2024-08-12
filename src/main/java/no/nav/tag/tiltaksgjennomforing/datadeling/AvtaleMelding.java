@@ -4,7 +4,6 @@ import lombok.Data;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
-
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
