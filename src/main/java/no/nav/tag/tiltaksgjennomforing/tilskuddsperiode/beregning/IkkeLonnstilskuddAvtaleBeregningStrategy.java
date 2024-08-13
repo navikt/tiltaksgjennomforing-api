@@ -15,30 +15,21 @@ import java.util.UUID;
 public class IkkeLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddAvtaleBeregningStrategy {
 
     @Override
-    public void genererNyeTilskuddsperioder(Avtale avtale) {
-
-    }
+    public void genererNyeTilskuddsperioder(Avtale avtale) {}
 
     @Override
-    public List<TilskuddPeriode> opprettTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
-        return List.of();
-    }
+    public List<TilskuddPeriode> opprettTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {return List.of(); }
 
     @Override
-    public void endre(Avtale avtale, EndreTilskuddsberegning endreTilskuddsberegning) {
-
-    }
+    public void endre(Avtale avtale, EndreTilskuddsberegning endreTilskuddsberegning) {}
 
     @Override
-    public void reberegnTotalIAvtale(Avtale avtale) {
-
-    }
+    public void reberegnTotalIAvtale(Avtale avtale) {}
     public Integer beregnTilskuddsbeløpForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
         return 0;
     }
 
-    public void forleng(Avtale avtale, LocalDate gammelSluttDato, LocalDate nySluttDato){
-    }
+    public void forleng(Avtale avtale, LocalDate gammelSluttDato, LocalDate nySluttDato){}
 
     public List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(UUID id, Tiltakstype tiltakstype, Integer sumLønnstilskuddPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed, Integer lonnstilskuddprosent, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMånedRedusert) {
         log.error("Uventet feil i utregning av tilskuddsperioder med startdato: {}, sluttdato: {}, datoForRedusertProsent: {}, avtaleId: {}", datoFraOgMed, datoTilOgMed, datoForRedusertProsent, id);

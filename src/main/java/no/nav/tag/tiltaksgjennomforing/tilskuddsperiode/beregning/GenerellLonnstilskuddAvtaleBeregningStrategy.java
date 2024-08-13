@@ -15,7 +15,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 
 public class GenerellLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddAvtaleBeregningStrategy {
     public static final int GRENSE_68_PROSENT_ETTER_12_MND = 68;
-    public static final int MAX_67_PROSENT_ETTER_12_MND = 67;
+    public static final int MAX_67_PROSENT_ETTER_12_MND = 67; // TODO: IKKE TESTET = SE HVOR DEN BRUKES NEDE
 
     public void genererNyeTilskuddsperioder(Avtale avtale){
         if (avtale.erAvtaleInngått()) {
@@ -161,7 +161,7 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
         if (avtaleInnhold.getDatoForRedusertProsent() != null && avtaleInnhold.getLonnstilskuddProsent() != null) {
             int lonnstilskuddProsent = avtaleInnhold.getLonnstilskuddProsent();
-            if(lonnstilskuddProsent >= GRENSE_68_PROSENT_ETTER_12_MND) lonnstilskuddProsent = MAX_67_PROSENT_ETTER_12_MND;
+            if(lonnstilskuddProsent >= GRENSE_68_PROSENT_ETTER_12_MND) lonnstilskuddProsent = MAX_67_PROSENT_ETTER_12_MND; // TODO IKKE TESTET
             return getSumLonnsTilskudd(avtaleInnhold.getSumLonnsutgifter(), lonnstilskuddProsent);
         } else {
             return null;

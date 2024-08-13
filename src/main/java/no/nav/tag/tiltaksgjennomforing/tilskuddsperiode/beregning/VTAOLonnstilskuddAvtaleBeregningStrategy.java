@@ -48,7 +48,7 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilsk
         return tilskuddperioder;
     }
 
-    public static List<TilskuddPeriode> beregnTilskuddsperioderForVTAO(Avtale avtale){
+    public List<TilskuddPeriode> beregnTilskuddsperioderForVTAO(Avtale avtale){
         AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
         LocalDate startDato = gjeldendeInnhold.getStartDato();
         LocalDate sluttDato = gjeldendeInnhold.getSluttDato();
