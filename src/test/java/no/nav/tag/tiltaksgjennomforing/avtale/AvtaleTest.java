@@ -769,6 +769,7 @@ public class AvtaleTest {
                 .isInstanceOf(FeilLonnstilskuddsprosentException.class);
     }
 
+    //TODO: FLERE SLIKE TESTER FOR ULIKE TILTAKSTYPE VIA MASTER FØRST.
     @Test
     public void endre_tilskuddsberegning_setter_riktige_felter() {
         Now.fixedDate(LocalDate.of(2024,7,29));
