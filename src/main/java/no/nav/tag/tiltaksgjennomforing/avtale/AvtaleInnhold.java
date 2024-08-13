@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldNameConstants;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
-import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.TilskuddsperioderBeregningStrategyFactory;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -229,7 +228,7 @@ public class AvtaleInnhold {
     }
 
     public void reberegnLønnstilskudd() {
-        TilskuddsperioderBeregningStrategyFactory.create(avtale.getTiltakstype()).reberegnTotal(avtale);
+        avtale.hentBeregningStrategi().reberegnTotal(avtale);
     }
 
     public void reberegnRedusertProsentOgRedusertLonnstilskudd() {

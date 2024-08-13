@@ -16,6 +16,7 @@ import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AvtaleMedFnrOgBedr
 import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.LonnstilskuddAvtaleBeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.TilskuddsperioderBeregningStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
@@ -32,6 +33,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -107,6 +109,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     @JsonIgnore
     @Transient
     private FnrOgBedrift fnrOgBedrift;
+
+    @JsonIgnore
+    @Transient
+    private AtomicReference<LonnstilskuddAvtaleBeregningStrategy> lonnstilskuddAvtaleBeregningStrategy = new AtomicReference<>();
 
     public void leggtilNyeTilskuddsperioder(List<TilskuddPeriode> tilskuddsperioder){
         this.tilskuddPeriode.addAll(tilskuddsperioder);
@@ -825,7 +831,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     void forlengTilskuddsperioder(LocalDate gammelSluttDato, LocalDate nySluttDato) {
-        TilskuddsperioderBeregningStrategyFactory.create(this.getTiltakstype()).forleng(this, gammelSluttDato, nySluttDato);
+        hentBeregningStrategi().forleng(this, gammelSluttDato, nySluttDato);
     }
 
     private void annullerTilskuddsperioder() {
@@ -887,15 +893,15 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     protected Integer beregnTilskuddsbeløpForPeriode(LocalDate startDato, LocalDate sluttDato) {
-        return TilskuddsperioderBeregningStrategyFactory.create(tiltakstype).beregnTilskuddsbeløpForPeriode(this, startDato, sluttDato);
+        return this.hentBeregningStrategi().beregnTilskuddsbeløpForPeriode(this, startDato, sluttDato);
     }
 
     private List<TilskuddPeriode> beregnTilskuddsperioder(LocalDate startDato, LocalDate sluttDato) {
-        return TilskuddsperioderBeregningStrategyFactory.create(tiltakstype).hentTilskuddsperioderForPeriode(this, startDato, sluttDato);
+        return this.hentBeregningStrategi().hentTilskuddsperioderForPeriode(this, startDato, sluttDato);
     }
 
     private void nyeTilskuddsperioder() {
-        TilskuddsperioderBeregningStrategyFactory.create(this.getTiltakstype()).genererNyeTilskuddsperioder(this);
+        this.hentBeregningStrategi().genererNyeTilskuddsperioder(this);
     }
 
     private boolean sjekkRyddingAvTilskuddsperioder() {
@@ -1115,7 +1121,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
         }
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_TILSKUDDSBEREGNING);
-        TilskuddsperioderBeregningStrategyFactory.create(tiltakstype).endre(this, tilskuddsberegning);
+        this.hentBeregningStrategi().endre(this, tilskuddsberegning);
         sistEndretNå();
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         registerEvent(new TilskuddsberegningEndret(this, utførtAv));
@@ -1336,5 +1342,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     @Override
     public FnrOgBedrift getFnrOgBedrift() {
         return this.fnrOgBedrift;
+    }
+
+    protected LonnstilskuddAvtaleBeregningStrategy hentBeregningStrategi(){
+        return this.lonnstilskuddAvtaleBeregningStrategy.updateAndGet(strategy -> strategy == null ? TilskuddsperioderBeregningStrategyFactory.create(tiltakstype) : strategy);
     }
 }
