@@ -963,7 +963,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
 
-    //TODO: Flytt til TilskuddAvtaleBeregningStrategy?
     public void reberegnUbehandledeTilskuddsperioder() {
         krevEnAvTiltakstyper(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
 
