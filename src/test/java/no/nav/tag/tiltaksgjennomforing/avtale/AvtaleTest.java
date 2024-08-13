@@ -39,6 +39,42 @@ import static org.mockito.Mockito.when;
 public class AvtaleTest {
 
     @Test
+    public void endre_tilskuddsberegning_setter_riktige_felter_MidlertidigLonnstilskudd_Avtale() {
+        Now.fixedDate(LocalDate.of(2024,7,29));
+        Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
+        double otpSats = 0.048;
+        BigDecimal feriepengesats = new BigDecimal("0.166");
+        BigDecimal arbeidsgiveravgift = BigDecimal.ZERO;
+        int manedslonn = 44444;
+
+        assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(1);
+        avtale.endreTilskuddsberegning(EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).build(), TestData.enNavIdent());
+
+        assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(2);
+        assertThat(avtale.erGodkjentAvVeileder()).isTrue();
+        assertThat(avtale.getGjeldendeInnhold().getSumLonnstilskudd()).isPositive();
+        assertThat(avtale.getGjeldendeInnhold().getOtpSats()).isEqualTo(otpSats);
+        assertThat(avtale.getGjeldendeInnhold().getFeriepengesats()).isEqualTo(feriepengesats);
+        assertThat(avtale.getGjeldendeInnhold().getArbeidsgiveravgift()).isEqualTo(arbeidsgiveravgift);
+        assertThat(avtale.getGjeldendeInnhold().getManedslonn()).isEqualTo(manedslonn);
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(2141,
+                21724,
+                21724,
+                21724,
+                21724,
+                21724,
+                19984,
+                1606,
+                16293,
+                16293,
+                16293,
+                16293,
+                16293,
+                14988));
+        Now.resetClock();
+    }
+
+    @Test
     public void nyAvtaleFactorySkalReturnereRiktigeStandardverdier() {
         Fnr deltakerFnr = new Fnr("23078637692");
 
@@ -766,26 +802,6 @@ public class AvtaleTest {
         endreAvtale.setLonnstilskuddProsent(100);
         assertThatThrownBy(() -> avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder))
                 .isInstanceOf(FeilLonnstilskuddsprosentException.class);
-    }
-
-    @Test
-    public void endre_tilskuddsberegning_setter_riktige_felter() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
-        double otpSats = 0.048;
-        BigDecimal feriepengesats = new BigDecimal("0.166");
-        BigDecimal arbeidsgiveravgift = BigDecimal.ZERO;
-        int manedslonn = 44444;
-
-        assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(1);
-        avtale.endreTilskuddsberegning(EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).build(), TestData.enNavIdent());
-
-        assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(2);
-        assertThat(avtale.erGodkjentAvVeileder()).isTrue();
-        assertThat(avtale.getGjeldendeInnhold().getSumLonnstilskudd()).isPositive();
-        assertThat(avtale.getGjeldendeInnhold().getOtpSats()).isEqualTo(otpSats);
-        assertThat(avtale.getGjeldendeInnhold().getFeriepengesats()).isEqualTo(feriepengesats);
-        assertThat(avtale.getGjeldendeInnhold().getArbeidsgiveravgift()).isEqualTo(arbeidsgiveravgift);
-        assertThat(avtale.getGjeldendeInnhold().getManedslonn()).isEqualTo(manedslonn);
     }
 
     @Test
