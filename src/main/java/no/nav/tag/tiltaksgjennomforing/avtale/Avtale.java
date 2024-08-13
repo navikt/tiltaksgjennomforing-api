@@ -891,7 +891,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     private List<TilskuddPeriode> beregnTilskuddsperioder(LocalDate startDato, LocalDate sluttDato) {
-        return TilskuddsperioderBeregningStrategyFactory.create(tiltakstype).opprettTilskuddsperioderForPeriode(this, startDato, sluttDato);
+        return TilskuddsperioderBeregningStrategyFactory.create(tiltakstype).hentTilskuddsperioderForPeriode(this, startDato, sluttDato);
     }
 
     private void nyeTilskuddsperioder() {

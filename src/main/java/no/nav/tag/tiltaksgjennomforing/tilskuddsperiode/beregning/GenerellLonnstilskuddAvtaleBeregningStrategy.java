@@ -27,7 +27,7 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         Tiltakstype tiltakstype = avtale.getTiltakstype();
 
         if (erIkkeTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato(), gjeldendeInnhold.getSumLonnstilskudd())) {
-            tilskuddsperioder = opprettTilskuddsperioderForPeriode(avtale,gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
+            tilskuddsperioder = hentTilskuddsperioderForPeriode(avtale,gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
             if (avtale.getArenaRyddeAvtale() != null) {
                 LocalDate standardMigreringsdato = LocalDate.of(2023, 02, 01);
                 LocalDate migreringsdato = avtale.getArenaRyddeAvtale().getMigreringsdato() != null ? avtale.getArenaRyddeAvtale().getMigreringsdato() : standardMigreringsdato;
@@ -50,10 +50,10 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         avtaleInnhold.setOtpSats(endreTilskuddsberegning.getOtpSats());
         avtaleInnhold.setManedslonn(endreTilskuddsberegning.getManedslonn());
         avtaleInnhold.setFeriepengesats(endreTilskuddsberegning.getFeriepengesats());
-        reberegnTotalIAvtale(avtale);
+        reberegnTotal(avtale);
     }
 
-    public void reberegnTotalIAvtale(Avtale avtale ) {
+    public void reberegnTotal(Avtale avtale ) {
         AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
         BigDecimal feriepengerBelop = getFeriepengerBelop(avtaleInnhold.getFeriepengesats(), avtaleInnhold.getManedslonn());
         BigDecimal obligTjenestepensjon = getBeregnetOtpBelop(toBigDecimal(avtaleInnhold.getOtpSats()), avtaleInnhold.getManedslonn(), feriepengerBelop);
@@ -70,7 +70,7 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         avtaleInnhold.setManedslonn100pst(månedslønnFullStilling);
     }
 
-    public List<TilskuddPeriode> opprettTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
+    public List<TilskuddPeriode> hentTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
         AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
 
         List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioderForAvtale(

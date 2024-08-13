@@ -18,13 +18,13 @@ public class IkkeLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddAv
     public void genererNyeTilskuddsperioder(Avtale avtale) {}
 
     @Override
-    public List<TilskuddPeriode> opprettTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {return List.of(); }
+    public List<TilskuddPeriode> hentTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {return List.of(); }
 
     @Override
     public void endre(Avtale avtale, EndreTilskuddsberegning endreTilskuddsberegning) {}
 
     @Override
-    public void reberegnTotalIAvtale(Avtale avtale) {}
+    public void reberegnTotal(Avtale avtale) {}
     public Integer beregnTilskuddsbeløpForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
         return 0;
     }

@@ -35,7 +35,7 @@ public class MidlertidigLonnstilskuddAvtaleInnholdStrategy extends Lonnstilskudd
     @Override
     public void regnUtTotalLonnstilskudd() {
         Avtale avtale = this.avtaleInnhold.getAvtale();
-        midlertidigLonnstilskuddAvtaleBeregningStrategy.reberegnTotalIAvtale(avtale);
+        midlertidigLonnstilskuddAvtaleBeregningStrategy.reberegnTotal(avtale);
     }
 
     private void sjekktilskuddsprosentSats(EndreAvtale endreAvtale) {

@@ -4,8 +4,8 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 
 public class VarigLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilskuddAvtaleBeregningStrategy {
 
-    public void reberegnTotalIAvtale(Avtale avtale) {
-        super.reberegnTotalIAvtale(avtale);
+    public void reberegnTotal(Avtale avtale) {
+        super.reberegnTotal(avtale);
        regnUtDatoOgSumRedusert(avtale);
     }
 

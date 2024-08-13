@@ -17,8 +17,8 @@ public class MidlertidigLonnstilskuddAvtaleBeregningStrategy extends GenerellLon
 
 
     }
-    public void reberegnTotalIAvtale(Avtale avtale) {
-        super.reberegnTotalIAvtale(avtale);
+    public void reberegnTotal(Avtale avtale) {
+        super.reberegnTotal(avtale);
         regnUtDatoOgSumRedusert(avtale);
     }
     public void regnUtDatoOgSumRedusert(Avtale avtale) {
