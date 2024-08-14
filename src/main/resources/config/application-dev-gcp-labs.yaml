@@ -75,8 +75,6 @@ tiltaksgjennomforing:
       id: testsystem
   persondata:
     uri: http://tiltaksgjennomforing-wiremock/persondata
-  unleash:
-    mock: true
   dokgen:
     uri: http://tiltak-dokgen/template/tiltak-avtale/create-pdf
   notifikasjoner:
@@ -85,5 +83,14 @@ tiltaksgjennomforing:
     enabled: false
   tilskuddsperioder:
     tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD
+  arena:
+    kafka:
+      tiltakdeltaker-endret-topic: 'teamarenanais.aapen-arena-tiltakdeltakerendret-v1-q2'
+      tiltakgjennomforing-endret-topic: 'teamarenanais.aapen-arena-tiltakgjennomforingendret-v1-q2'
+      tiltakssak-endret-topic: 'teamarenanais.aapen-arena-tiltakssakendret-v1-q2'
+    ords:
+      url: http://tiltaksgjennomforing-wiremock/arena-ords
+      client-id: client
+      client-secret: secret
 
 ELECTOR_PATH: null

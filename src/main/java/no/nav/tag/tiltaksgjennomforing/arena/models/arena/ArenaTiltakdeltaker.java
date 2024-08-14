@@ -1,107 +1,124 @@
-package no.nav.tag.tiltaksgjennomforing.arena.dto;
+package no.nav.tag.tiltaksgjennomforing.arena.models.arena;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-public record TiltakdeltakerEndretDto(
+@Getter
+@Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class ArenaTiltakdeltaker {
+    @Id
     @JsonProperty("TILTAKDELTAKER_ID")
-    Integer tiltakdeltakerId,
+    private Integer tiltakdeltakerId;
 
     @JsonProperty("PERSON_ID")
-    Integer personId,
+    private Integer personId;
 
     @JsonProperty("TILTAKGJENNOMFORING_ID")
-    Integer tiltakgjennomforingId,
+    private Integer tiltakgjennomforingId;
 
     @JsonProperty("DELTAKERSTATUSKODE")
-    Deltakerstatuskode deltakerstatuskode,
+    private String deltakerstatuskode;
 
     @JsonProperty("DELTAKERTYPEKODE")
-    String deltakertypekode,
+    private String deltakertypekode;
 
     @JsonProperty("AARSAKVERDIKODE_STATUS")
-    String aarsakverdikodeStatus,
+    private String aarsakverdikodeStatus;
 
     @JsonProperty("OPPMOTETYPEKODE")
-    String oppmotetypekode,
+    private String oppmotetypekode;
 
     @JsonProperty("PRIORITET")
-    String prioritet,
+    private String prioritet;
 
     @JsonProperty("BEGRUNNELSE_INNSOKT")
-    String begrunnelseInnsokt,
+    private String begrunnelseInnsokt;
 
     @JsonProperty("BEGRUNNELSE_PRIORITERING")
-    String begrunnelsePrioritering,
+    private String begrunnelsePrioritering;
 
     @JsonProperty("REG_DATO")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime regDato,
+    private LocalDateTime regDato;
 
     @JsonProperty("REG_USER")
-    String regUser,
+    private String regUser;
 
     @JsonProperty("MOD_DATO")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    String modDato,
+    private LocalDateTime modDato;
 
     @JsonProperty("MOD_USER")
-    String modUser,
+    private String modUser;
 
     @JsonProperty("DATO_SVARFRIST")
-    String datoSvarfrist,
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime datoSvarfrist;
 
     @JsonProperty("DATO_FRA")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime datoFra,
+    private LocalDateTime datoFra;
 
     @JsonProperty("DATO_TIL")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime datoTil,
+    private LocalDateTime datoTil;
 
     @JsonProperty("BEGRUNNELSE_STATUS")
-    String begrunnelseStatus,
+    private String begrunnelseStatus;
 
     @JsonProperty("PROSENT_DELTID")
-    Integer prosentDeltid,
+    private Integer prosentDeltid;
 
     @JsonProperty("BRUKERID_STATUSENDRING")
-    String brukeridStatusendring,
+    private String brukeridStatusendring;
 
     @JsonProperty("DATO_STATUSENDRING")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime datoStatusendring,
+    private LocalDateTime datoStatusendring;
 
     @JsonProperty("AKTIVITET_ID")
-    Integer aktivitetId,
+    private Integer aktivitetId;
 
     @JsonProperty("BRUKERID_ENDRING_PRIORITERING")
-    String brukeridEndringPrioritering,
+    private String brukeridEndringPrioritering;
 
     @JsonProperty("DATO_ENDRING_PRIORITERING")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime datoEndringPrioritering,
+    private LocalDateTime datoEndringPrioritering;
 
     @JsonProperty("DOKUMENTKODE_SISTE_BREV")
-    String dokumentkodeSisteBrev,
+    private String dokumentkodeSisteBrev;
 
     @JsonProperty("STATUS_INNSOK_PAKKE")
-    String statusInnsokPakke,
+    private String statusInnsokPakke;
 
     @JsonProperty("STATUS_OPPTAK_PAKKE")
-    String statusOpptakPakke,
+    private String statusOpptakPakke;
 
     @JsonProperty("OPPLYSNINGER_INNSOK")
-    String opplysningerInnsok,
+    private String opplysningerInnsok;
 
     @JsonProperty("PARTISJON")
-    String partisjon,
+    private String partisjon;
 
     @JsonProperty("BEGRUNNELSE_BESTILLING")
-    String begrunnelseBestilling,
+    private String begrunnelseBestilling;
 
     @JsonProperty("ANTALL_DAGER_PR_UKE")
-    String antallDagerPrUke
-) {}
+    private String antallDagerPrUke;
+
+    @JsonProperty("EKSTERN_ID")
+    private String eksternId;
+}

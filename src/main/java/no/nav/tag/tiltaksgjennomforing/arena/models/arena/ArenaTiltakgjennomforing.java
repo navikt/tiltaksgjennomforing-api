@@ -1,139 +1,163 @@
-package no.nav.tag.tiltaksgjennomforing.arena.dto;
+package no.nav.tag.tiltaksgjennomforing.arena.models.arena;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.arena.utils.ArenaBooleanDeserializer;
 
 import java.time.LocalDateTime;
 
-public record TiltakgjennomforingEndretDto(
+@Getter
+@Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class ArenaTiltakgjennomforing {
+    private static final String ARBEIDSTRENING = "ARBTREN";
+
+    @Id
     @JsonProperty("TILTAKGJENNOMFORING_ID")
-    Integer tiltakgjennomforingId,
+    private Integer tiltakgjennomforingId;
 
     @JsonProperty("SAK_ID")
-    Integer sakId,
+    private Integer sakId;
 
     @JsonProperty("TILTAKSKODE")
-    String tiltakskode,
+    private String tiltakskode;
 
     @JsonProperty("ANTALL_DELTAKERE")
-    Integer antallDeltakere,
+    private Integer antallDeltakere;
 
     @JsonProperty("ANTALL_VARIGHET")
-    Integer antallVarighet,
+    private Integer antallVarighet;
 
     @JsonProperty("DATO_FRA")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime datoFra,
+    private LocalDateTime datoFra;
 
     @JsonProperty("DATO_TIL")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime datoTil,
+    private LocalDateTime datoTil;
 
     @JsonProperty("FAGPLANKODE")
-    String fagplankode,
+    private String fagplankode;
 
     @JsonProperty("MAALEENHET_VARIGHET")
-    String maaleenhetVarighet,
+    private String maaleenhetVarighet;
 
     @JsonProperty("TEKST_FAGBESKRIVELSE")
-    String tekstFagbeskrivelse,
+    private String tekstFagbeskrivelse;
 
     @JsonProperty("TEKST_KURSSTED")
-    String tekstKurssted,
+    private String tekstKurssted;
 
     @JsonProperty("TEKST_MAALGRUPPE")
-    String tekstMaalgruppe,
+    private String tekstMaalgruppe;
 
     @JsonProperty("STATUS_TREVERDIKODE_INNSOKNING")
     @JsonDeserialize(using = ArenaBooleanDeserializer.class)
-    Boolean statusTreverdikodeInnsokning,
+    private Boolean statusTreverdikodeInnsokning;
 
     @JsonProperty("REG_DATO")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime regDato,
+    private LocalDateTime regDato;
 
     @JsonProperty("REG_USER")
-    String regUser,
+    private String regUser;
 
     @JsonProperty("MOD_DATO")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime modDato,
+    private LocalDateTime modDato;
 
     @JsonProperty("MOD_USER")
-    String modUser,
+    private String modUser;
 
     @JsonProperty("LOKALTNAVN")
-    String lokaltnavn,
+    private String lokaltnavn;
 
     @JsonProperty("TILTAKSTATUSKODE")
-    Tiltakstatuskode tiltakstatuskode,
+    @Enumerated(EnumType.STRING)
+    private Tiltakstatuskode tiltakstatuskode;
 
     @JsonProperty("PROSENT_DELTID")
-    Integer prosentDeltid,
+    private Integer prosentDeltid;
 
     @JsonProperty("KOMMENTAR")
-    String kommentar,
+    private String kommentar;
 
     @JsonProperty("ARBGIV_ID_ARRANGOR")
-    Integer arbgivIdArrangor,
+    private Integer arbgivIdArrangor;
 
     @JsonProperty("PROFILELEMENT_ID_GEOGRAFI")
-    String profilelementIdGeografi,
+    private String profilelementIdGeografi;
 
     @JsonProperty("KLOKKETID_FREMMOTE")
-    String klokketidFremmote,
+    private String klokketidFremmote;
 
     @JsonProperty("DATO_FREMMOTE")
-    String datoFremmote,
+    private String datoFremmote;
 
     @JsonProperty("BEGRUNNELSE_STATUS")
-    String begrunnelseStatus,
+    private String begrunnelseStatus;
 
     @JsonProperty("AVTALE_ID")
-    Integer avtaleId,
+    private Integer avtaleId;
 
     @JsonProperty("AKTIVITET_ID")
-    Integer aktivitetId,
+    private Integer aktivitetId;
 
     @JsonProperty("DATO_INNSOKNINGSTART")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    LocalDateTime datoInnsokningstart,
+    private LocalDateTime datoInnsokningstart;
 
     @JsonProperty("GML_FRA_DATO")
-    String gmlFraDato,
+    private String gmlFraDato;
 
     @JsonProperty("GML_TIL_DATO")
-    String gmlTilDato,
+    private String gmlTilDato;
 
     @JsonProperty("AETAT_FREMMOTEREG")
-    String aetatFremmotereg,
+    private String aetatFremmotereg;
 
     @JsonProperty("AETAT_KONTERINGSSTED")
-    String aetatKonteringssted,
+    private String aetatKonteringssted;
 
     @JsonProperty("OPPLAERINGNIVAAKODE")
-    String opplaeringnivaakode,
+    private String opplaeringnivaakode;
 
     @JsonProperty("TILTAKGJENNOMFORING_ID_REL")
-    String tiltakgjennomforingIdRel,
+    private String tiltakgjennomforingIdRel;
 
     @JsonProperty("VURDERING_GJENNOMFORING")
-    String vurderingGjennomforing,
+    private String vurderingGjennomforing;
 
     @JsonProperty("PROFILELEMENT_ID_OPPL_TILTAK")
-    Integer profilelementIdOpplTiltak,
+    private Integer profilelementIdOpplTiltak;
 
     @JsonProperty("DATO_OPPFOLGING_OK")
-    String datoOppfolgingOk,
+    private String datoOppfolgingOk;
 
     @JsonProperty("PARTISJON")
-    String partisasjon,
+    private String partisjon;
 
     @JsonProperty("MAALFORM_KRAVBREV")
-    String maalformKravbrev,
+    private String maalformKravbrev;
 
     @JsonProperty("EKSTERN_ID")
-    String eksternId
-){}
+    private String eksternId;
+
+    public boolean isArbeidstrening() {
+        return ARBEIDSTRENING.equals(tiltakskode);
+    }
+
+
+}

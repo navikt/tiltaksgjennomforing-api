@@ -1,0 +1,21 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/arena-ords/arena/api/v1/arbeidsgiver/ident",
+    "headers": {
+      "arbgivId": {
+        "matches": "[\\d\\D]*"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "bedriftsnr": 123456789,
+      "orgnrMorselskap": 987654312
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

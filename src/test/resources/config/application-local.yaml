@@ -107,8 +107,6 @@ tiltaksgjennomforing:
     uri: http://localhost:8090/persondata
   oppgave:
     oppgave-uri: http://localhost:8090/api/v1/oppgaver
-  unleash:
-    mock: true
   veilarbarena:
     url: http://localhost:8090/veilarbarena/api/arena/status
     nav-consumer-id: tiltaksgjennomforing-api
@@ -132,5 +130,14 @@ tiltaksgjennomforing:
     enheter: 0906
   utvikler-tilgang:
     gruppe-tilgang: 1a1d2745-952f-4a0f-839f-9530145b1d4a
+  arena:
+    kafka:
+      tiltakdeltaker-endret-topic: 'teamarenanais.aapen-arena-tiltakdeltakerendret-v1'
+      tiltakgjennomforing-endret-topic: 'teamarenanais.aapen-arena-tiltakgjennomforingendret-v1'
+      tiltakssak-endret-topic: 'teamarenanais.aapen-arena-tiltakssakendret-v1'
+    ords:
+      url: http://localhost:8090/arena-ords
+      client-id: client
+      client-secret: secret
 
 ELECTOR_PATH: null

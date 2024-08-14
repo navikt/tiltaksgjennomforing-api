@@ -2,15 +2,38 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.Transient;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttDatoStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
-import no.nav.tag.tiltaksgjennomforing.exceptions.*;
+import no.nav.tag.tiltaksgjennomforing.exceptions.AltMåVæreFyltUtException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørVeilederException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.AvtaleErIkkeFordeltException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.DeltakerHarGodkjentException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AvtaleMedFnrOgBedriftNr;
 import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
@@ -81,12 +104,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     private boolean slettemerket;
     private LocalDate avbruttDato;
     private String avbruttGrunn;
-    private boolean opprettetAvArbeidsgiver;
     private String enhetGeografisk;
     private String enhetsnavnGeografisk;
     private String enhetOppfolging;
     private String enhetsnavnOppfolging;
 
+    @Enumerated(EnumType.STRING)
+    private Avtaleopphav opphav;
 
     private boolean godkjentForEtterregistrering;
 
@@ -163,6 +187,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     public static Avtale veilederOppretterAvtale(OpprettAvtale opprettAvtale, NavIdent navIdent) {
         Avtale avtale = new Avtale(opprettAvtale);
         avtale.veilederNavIdent = sjekkAtIkkeNull(navIdent, "Veileders NAV-ident må være satt.");
+        avtale.opphav = Avtaleopphav.VEILEDER;
         avtale.registerEvent(new AvtaleOpprettetAvVeileder(avtale, navIdent));
         return avtale;
     }
@@ -176,20 +201,21 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     public static Avtale veilederOppretterAvtale(OpprettMentorAvtale opprettMentorAvtale, NavIdent navIdent) {
         Avtale avtale = new Avtale(opprettMentorAvtale);
         avtale.veilederNavIdent = sjekkAtIkkeNull(navIdent, "Veileders NAV-ident må være satt.");
+        avtale.opphav = Avtaleopphav.VEILEDER;
         avtale.registerEvent(new AvtaleOpprettetAvVeileder(avtale, navIdent));
         return avtale;
     }
 
     public static Avtale arbeidsgiverOppretterAvtale(OpprettAvtale opprettAvtale) {
         Avtale avtale = new Avtale(opprettAvtale);
-        avtale.opprettetAvArbeidsgiver = true;
+        avtale.opphav = Avtaleopphav.ARBEIDSGIVER;
         avtale.registerEvent(new AvtaleOpprettetAvArbeidsgiver(avtale));
         return avtale;
     }
 
     public static Avtale arbeidsgiverOppretterAvtale(OpprettMentorAvtale opprettMentorAvtale) {
         Avtale avtale = new Avtale(opprettMentorAvtale);
-        avtale.opprettetAvArbeidsgiver = true;
+        avtale.opphav = Avtaleopphav.ARBEIDSGIVER;
         avtale.registerEvent(new AvtaleOpprettetAvArbeidsgiver(avtale));
         return avtale;
     }
@@ -967,7 +993,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             return false;
         }
     }
-
 
     public void reberegnUbehandledeTilskuddsperioder() {
         krevEnAvTiltakstyper(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);

@@ -25,7 +25,7 @@ public class AlleredeRegistrertAvtale implements AvtaleMedFnrOgBedriftNr {
     private BedriftNr bedriftNr;
     private NavIdent veilederNavIdent;
     private Status status;
-    private boolean opprettetAvArbeidsgiver;
+    private Avtaleopphav opphav;
 
     private LocalDate startDato;
     private LocalDate sluttDato;
@@ -46,7 +46,7 @@ public class AlleredeRegistrertAvtale implements AvtaleMedFnrOgBedriftNr {
         alleredeRegistrertAvtale.setBedriftNr(avtale.getBedriftNr());
         alleredeRegistrertAvtale.setStatus(avtale.statusSomEnum());
         alleredeRegistrertAvtale.setVeilederNavIdent(avtale.getVeilederNavIdent());
-        alleredeRegistrertAvtale.setOpprettetAvArbeidsgiver(avtale.isOpprettetAvArbeidsgiver());
+        alleredeRegistrertAvtale.setOpphav(avtale.getOpphav());
         alleredeRegistrertAvtale.setStartDato(avtale.getGjeldendeInnhold().getStartDato());
         alleredeRegistrertAvtale.setSluttDato(avtale.getGjeldendeInnhold().getSluttDato());
         alleredeRegistrertAvtale.setGodkjentAvVeileder(avtale.getGjeldendeInnhold().getGodkjentAvVeileder());

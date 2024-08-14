@@ -13,7 +13,6 @@ import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import no.nav.tag.tiltaksgjennomforing.leader.LeaderPodCheck;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 @Profile({ Miljø.LOCAL, Miljø.DEV_FSS, Miljø.PROD_FSS })
 @Component
 @RequiredArgsConstructor
-@EnableScheduling
 @Slf4j
 public class AvtaleHendelseStatusendringJobb {
     private final AvtaleMeldingEntitetRepository avtaleMeldingEntitetRepository;

@@ -32,7 +32,7 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
         endreAvtale.setSluttDato(til);
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
 
-
+        assertThat(avtale.beregnTilskuddsbeløpForPeriode(fra,til)).isEqualTo(forventetBeløpForPeriode);
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(3);
         assertThat(avtale.beregnTilskuddsbeløpForPeriode(fra,til)).isEqualTo(forventetBeløpForPeriode);
         assertThat(avtale.getTilskuddPeriode().first().getBeløp()).isEqualTo(avtale.getGjeldendeInnhold().getSumLonnstilskudd());
@@ -422,7 +422,7 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
 
     @Test
     public void sjekk_at_godkjent_perioder_beholdes_ved_endring_som_påvirker_økonomi() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder();
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
         Integer beløpFørEndring = avtale.tilskuddsperiode(0).getBeløp();
 

@@ -7,6 +7,8 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableJwtTokenValidation(ignore = {
@@ -18,6 +20,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableConfigurationProperties
 @EnableJpaRepositories
 @EnableCaching
+@EnableAsync
+@EnableScheduling
 @OpenAPIDefinition
 public class TiltaksgjennomforingApplication {
     public static void main(String[] args) {
