@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 public class AvtaleTest {
 
     @Test
-    public void endre_tilskuddsberegning_setter_riktige_felter_Varig_Lonnstilskudd_Avtale_som_varer_i_mange_aar() {
+    public void test_riktig_beregning_Varig_Lonnstilskudd_Avtale_som_varer_i_mange_aar() {
         Now.fixedDate(LocalDate.of(2024,7,29));
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfylt();
         EndreAvtale endreAvtale = new EndreAvtale();
@@ -141,7 +141,7 @@ public class AvtaleTest {
     }
 
     @Test
-    public void endre_tilskuddsberegning_setter_riktige_felter_75_prosent_Varig_Lonnstilskudd_Avtale_som_varer_i_ett_aar() {
+    public void test_riktig_beregning_75_prosent_Varig_Lonnstilskudd_Avtale_som_varer_i_ett_aar() {
         Now.fixedDate(LocalDate.of(2024,7,29));
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfylt();
         EndreAvtale endreAvtale = new EndreAvtale();
@@ -214,7 +214,7 @@ public class AvtaleTest {
     }
 
     @Test
-    public void endre_tilskuddsberegning_setter_riktige_felter_Midlertidig_Lonnstilskudd_Avtale() {
+    public void test_riktig_beregning_Midlertidig_Lonnstilskudd_Avtale() {
         Now.fixedDate(LocalDate.of(2024,7,29));
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder();
         double otpSats = 0.048;
@@ -250,7 +250,7 @@ public class AvtaleTest {
     }
 
     @Test
-    public void endre_tilskuddsberegning_setter_riktige_felter_SOMMERJOBB_50_prosent_Lonnstilskudd_Avtale() {
+    public void test_riktig_beregning_SOMMERJOBB_50_prosent_Lonnstilskudd_Avtale() {
         Now.fixedDate(LocalDate.of(2024,6,1));
         Avtale avtale = TestData.enSommerjobbLonnstilskuddAvtaleGodkjentAvVeileder(50);
 
@@ -274,7 +274,7 @@ public class AvtaleTest {
     }
 
     @Test
-    public void endre_tilskuddsberegning_setter_riktige_felter_SOMMERJOBB_75_prosent_Lonnstilskudd_Avtale() {
+    public void test_riktig_beregning_SOMMERJOBB_75_prosent_Lonnstilskudd_Avtale() {
         Now.fixedDate(LocalDate.of(2024,6,1));
         Avtale avtale = TestData.enSommerjobbLonnstilskuddAvtaleGodkjentAvVeileder(75);
 
