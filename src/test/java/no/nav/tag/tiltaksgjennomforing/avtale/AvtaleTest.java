@@ -183,6 +183,37 @@ public class AvtaleTest {
     }
 
     @Test
+    public void test_riktig_beregning_VTAO_Lonnstilskudd_Avtale() {
+        Now.fixedDate(LocalDate.of(2024,7,29));
+        Avtale avtale = TestData.enVtaoAvtaleGodkjentAvArbeidsgiver();
+        avtale.opphevGodkjenningerSomVeileder();
+        EndreAvtale endreAvtale = new EndreAvtale();
+        endreAvtale.setOppfolging("Telefon hver uke");
+        endreAvtale.setTilrettelegging("Ingen");
+        endreAvtale.setStartDato(Now.localDate());
+        endreAvtale.setSluttDato(endreAvtale.getStartDato().plusYears(1).minusDays(1));
+        endreAvtale.setStillingprosent(100);
+        endreAvtale.setArbeidsoppgaver("Butikkarbeid");
+        endreAvtale.setArbeidsgiverKontonummer("000111222");
+        endreAvtale.setStillingstittel("Butikkbetjent");
+        endreAvtale.setStillingStyrk08(5223);
+        endreAvtale.setStillingKonseptId(112968);
+        endreAvtale.setLonnstilskuddProsent(75);
+        endreAvtale.setManedslonn(10000);
+        endreAvtale.setFeriepengesats(BigDecimal.ONE);
+        endreAvtale.setArbeidsgiveravgift(BigDecimal.ONE);
+        endreAvtale.setOtpSats(0.02);
+        endreAvtale.setStillingstype(Stillingstype.FAST);
+        endreAvtale.setAntallDagerPerUke(5);
+        endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678", true));
+       avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+       final int FORVENTETN_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE = 13;
+       assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList().size()).isEqualTo(FORVENTETN_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE);
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(671, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6263));
+        Now.resetClock();
+    }
+
+    @Test
     public void endre_tilskuddsberegning_setter_riktige_felter_Midlertidig_Lonnstilskudd_Avtale() {
         Now.fixedDate(LocalDate.of(2024,7,29));
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder();
