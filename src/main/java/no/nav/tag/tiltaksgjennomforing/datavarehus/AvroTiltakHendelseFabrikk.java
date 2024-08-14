@@ -1,12 +1,14 @@
 package no.nav.tag.tiltaksgjennomforing.datavarehus;
 
+import lombok.experimental.UtilityClass;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.UUID;
-import lombok.experimental.UtilityClass;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 
 @UtilityClass
 public class AvroTiltakHendelseFabrikk {
@@ -58,7 +60,7 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setUtfortAv(utførtAv);
         hendelse.setEnhetOppfolging(avtale.getEnhetOppfolging());
         hendelse.setEnhetGeografisk(avtale.getEnhetGeografisk());
-        hendelse.setOpprettetAvArbeidsgiver(avtale.isOpprettetAvArbeidsgiver());
+        hendelse.setOpprettetAvArbeidsgiver(Avtaleopphav.ARBEIDSGIVER.equals(avtale.getOpphav()));
         hendelse.setAnnullertTidspunkt(avtale.getAnnullertTidspunkt());
         hendelse.setAnnullertGrunn(avtale.getAnnullertGrunn());
         hendelse.setMaster(erMaster(avtale));

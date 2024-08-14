@@ -716,7 +716,7 @@ public class AvtaleTest {
     @Test
     public void avtale_opprettet_av_arbedsgiver_skal_være_ufordelt() {
         Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
-        assertThat(avtale.isOpprettetAvArbeidsgiver()).isTrue();
+        assertThat(avtale.getOpphav()).isEqualTo(Avtaleopphav.ARBEIDSGIVER);
         assertThat(avtale.erUfordelt()).isTrue();
     }
 
