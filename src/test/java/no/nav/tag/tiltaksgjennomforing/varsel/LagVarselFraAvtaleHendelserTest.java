@@ -251,7 +251,7 @@ class LagVarselFraAvtaleHendelserTest {
 
     @Test
     void forleng_avtale() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder();
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
         avtale = avtaleRepository.save(avtale);
         Veileder veileder = TestData.enVeileder(avtale);
@@ -266,7 +266,7 @@ class LagVarselFraAvtaleHendelserTest {
 
     @Test
     void endre_tilskuddsberegning() {
-        Avtale avtale = avtaleRepository.save(TestData.enLonnstilskuddAvtaleGodkjentAvVeileder());
+        Avtale avtale = avtaleRepository.save(TestData.enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder());
         Veileder veileder = TestData.enVeileder(avtale);
 
         veileder.endreTilskuddsberegning(TestData.enEndreTilskuddsberegning(), avtale);

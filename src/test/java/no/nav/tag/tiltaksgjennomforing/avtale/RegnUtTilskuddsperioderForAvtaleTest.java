@@ -382,7 +382,7 @@ public class RegnUtTilskuddsperioderForAvtaleTest {
 
     @Test
     public void sjekk_at_godkjent_perioder_beholdes_ved_endring_som_påvirker_økonomi() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder();
         avtale.tilskuddsperiode(0).setStatus(TilskuddPeriodeStatus.GODKJENT);
         Integer beløpFørEndring = avtale.tilskuddsperiode(0).getBeløp();
 

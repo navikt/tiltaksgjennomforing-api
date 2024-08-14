@@ -143,7 +143,7 @@ public class AvtaleTest {
     @Test
     public void endre_tilskuddsberegning_setter_riktige_felter_Midlertidig_Lonnstilskudd_Avtale() {
         Now.fixedDate(LocalDate.of(2024,7,29));
-        Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder();
         double otpSats = 0.048;
         BigDecimal feriepengesats = new BigDecimal("0.166");
         BigDecimal arbeidsgiveravgift = BigDecimal.ZERO;
@@ -173,6 +173,54 @@ public class AvtaleTest {
                 16293,
                 16293,
                 14988));
+        Now.resetClock();
+    }
+
+    @Test
+    public void endre_tilskuddsberegning_setter_riktige_felter_SOMMERJOBB_50_prosent_Lonnstilskudd_Avtale() {
+        Now.fixedDate(LocalDate.of(2024,6,1));
+        Avtale avtale = TestData.enSommerjobbLonnstilskuddAvtaleGodkjentAvVeileder(50);
+
+        double otpSats = 0.048;
+        BigDecimal feriepengesats = new BigDecimal("0.166");
+        BigDecimal arbeidsgiveravgift = BigDecimal.ZERO;
+        int manedslonn = 44444;
+
+        assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(1);
+        avtale.endreTilskuddsberegning(EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).build(), TestData.enNavIdent());
+
+        assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(2);
+        assertThat(avtale.erGodkjentAvVeileder()).isTrue();
+        assertThat(avtale.getGjeldendeInnhold().getSumLonnstilskudd()).isPositive();
+        assertThat(avtale.getGjeldendeInnhold().getOtpSats()).isEqualTo(otpSats);
+        assertThat(avtale.getGjeldendeInnhold().getFeriepengesats()).isEqualTo(feriepengesats);
+        assertThat(avtale.getGjeldendeInnhold().getArbeidsgiveravgift()).isEqualTo(arbeidsgiveravgift);
+        assertThat(avtale.getGjeldendeInnhold().getManedslonn()).isEqualTo(manedslonn);
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(24980));
+        Now.resetClock();
+    }
+
+    @Test
+    public void endre_tilskuddsberegning_setter_riktige_felter_SOMMERJOBB_75_prosent_Lonnstilskudd_Avtale() {
+        Now.fixedDate(LocalDate.of(2024,6,1));
+        Avtale avtale = TestData.enSommerjobbLonnstilskuddAvtaleGodkjentAvVeileder(75);
+
+        double otpSats = 0.048;
+        BigDecimal feriepengesats = new BigDecimal("0.166");
+        BigDecimal arbeidsgiveravgift = BigDecimal.ZERO;
+        int manedslonn = 44444;
+
+        assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(1);
+        avtale.endreTilskuddsberegning(EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).build(), TestData.enNavIdent());
+
+        assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(2);
+        assertThat(avtale.erGodkjentAvVeileder()).isTrue();
+        assertThat(avtale.getGjeldendeInnhold().getSumLonnstilskudd()).isPositive();
+        assertThat(avtale.getGjeldendeInnhold().getOtpSats()).isEqualTo(otpSats);
+        assertThat(avtale.getGjeldendeInnhold().getFeriepengesats()).isEqualTo(feriepengesats);
+        assertThat(avtale.getGjeldendeInnhold().getArbeidsgiveravgift()).isEqualTo(arbeidsgiveravgift);
+        assertThat(avtale.getGjeldendeInnhold().getManedslonn()).isEqualTo(manedslonn);
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(37470));
         Now.resetClock();
     }
 
@@ -908,7 +956,7 @@ public class AvtaleTest {
 
     @Test
     public void endre_stillingsbeskrivelse_setter_riktige_felter() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder();
         String stillingstittel = "Kokk";
         String arbeidsoppgaver = "Lage mat";
         Integer stillingStyrk08 = 1234;
@@ -937,7 +985,7 @@ public class AvtaleTest {
 
     @Test
     public void endre_tilskuddsberegning_ugyldig_input() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder();
         assertFeilkode(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT, () -> avtale.endreTilskuddsberegning(TestData.enEndreTilskuddsberegning().toBuilder().manedslonn(null).build(), TestData.enNavIdent()));
     }
 
@@ -975,7 +1023,7 @@ public class AvtaleTest {
 
     @Test
     public void forleng_kun_fremover() {
-        Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeileder();
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder();
         assertFeilkode(Feilkode.KAN_IKKE_FORLENGE_FEIL_SLUTTDATO, () -> avtale.forlengAvtale(avtale.getGjeldendeInnhold().getStartDato().minusDays(1), TestData.enNavIdent()));
     }
 
