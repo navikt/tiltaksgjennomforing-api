@@ -273,6 +273,27 @@ public class TestData {
         return avtale;
     }
 
+    public static Avtale enMidLonnstilskuddAvtaleMedVarigTilpassetSatsMedAltUtfylt() {
+        NavIdent veilderNavIdent = new NavIdent("Z123456");
+        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), veilderNavIdent);
+        setOppfølgingPåAvtale(avtale);
+         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+         EndreAvtale endreAvtale = endringPåAlleLønnstilskuddFelter();
+        endreAvtale.setSluttDato(LocalDate.now().plusMonths(23).minusDays(2));
+        avtale.endreAvtale(avtale.getSistEndret(),endreAvtale , Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+        avtale.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+        avtale.getGjeldendeInnhold().setDeltakerFornavn("Lilly");
+        avtale.getGjeldendeInnhold().setDeltakerEtternavn("Lønning");
+        avtale.getGjeldendeInnhold().setArbeidsgiverKontonummer("22222222222");
+        avtale.getGjeldendeInnhold().setManedslonn(20000);
+        avtale.getGjeldendeInnhold().setFeriepengesats(BigDecimal.valueOf(0.12));
+        avtale.getGjeldendeInnhold().setArbeidsgiveravgift(BigDecimal.valueOf(0.141));
+        avtale.getGjeldendeInnhold().setVersjon(1);
+        avtale.getGjeldendeInnhold().setJournalpostId(null);
+        avtale.getGjeldendeInnhold().setMaal(List.of());
+        return avtale;
+    }
+
     public static Avtale enMidlertidigLonnstilskuddAvtaleMedSpesieltTilpassetInnsatsOgAltUtfylt(Tiltakstype tiltakstype) {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(tiltakstype), veilderNavIdent);

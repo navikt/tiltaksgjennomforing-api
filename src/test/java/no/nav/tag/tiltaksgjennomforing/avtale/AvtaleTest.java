@@ -248,6 +248,60 @@ public class AvtaleTest {
                 14988));
         Now.resetClock();
     }
+    @Test
+    public void test_riktig_beregning_NEDSATT_ARBEIDSEVNE_Midlertidig_Lonnstilskudd_Avtale_som_varer_i_2_aar() {
+        Now.fixedDate(LocalDate.of(2024,7,29));
+        Avtale avtale = TestData.enMidLonnstilskuddAvtaleMedVarigTilpassetSatsMedAltUtfylt();
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent());
+        avtale.getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setJournalpostId("1");
+        double otpSats = 0.048;
+        BigDecimal feriepengesats = new BigDecimal("0.166");
+        BigDecimal arbeidsgiveravgift = BigDecimal.ZERO;
+        int manedslonn = 44444;
+
+        assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(1);
+        avtale.endreTilskuddsberegning(EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).build(), TestData.enNavIdent());
+
+        assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(2);
+        assertThat(avtale.erGodkjentAvVeileder()).isTrue();
+        assertThat(avtale.getGjeldendeInnhold().getSumLonnstilskudd()).isPositive();
+        assertThat(avtale.getGjeldendeInnhold().getOtpSats()).isEqualTo(otpSats);
+        assertThat(avtale.getGjeldendeInnhold().getFeriepengesats()).isEqualTo(feriepengesats);
+        assertThat(avtale.getGjeldendeInnhold().getArbeidsgiveravgift()).isEqualTo(arbeidsgiveravgift);
+        assertThat(avtale.getGjeldendeInnhold().getManedslonn()).isEqualTo(manedslonn);
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(3212,
+                32585,
+                32585,
+                32585,
+                32585,
+                32585,
+                32585,
+                32585,
+                32585,
+                32585,
+                32585,
+                32585,
+                29976,
+                2676,
+                27155,
+                27155,
+                27155,
+                27155,
+                27155,
+                27155,
+                27155,
+                27155,
+                27155,
+                27155,
+                27155,
+                10706));
+        Now.resetClock();
+    }
 
     @Test
     public void test_riktig_beregning_SOMMERJOBB_50_prosent_Lonnstilskudd_Avtale() {
