@@ -141,7 +141,7 @@ public class AvtaleTest {
     }
 
     @Test
-    public void endre_tilskuddsberegning_setter_riktige_felter_Varig_Lonnstilskudd_Avtale_som_varer_i_ett_aar() {
+    public void endre_tilskuddsberegning_setter_riktige_felter_75_prosent_Varig_Lonnstilskudd_Avtale_som_varer_i_ett_aar() {
         Now.fixedDate(LocalDate.of(2024,7,29));
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfylt();
         EndreAvtale endreAvtale = new EndreAvtale();
@@ -155,7 +155,7 @@ public class AvtaleTest {
         endreAvtale.setStillingstittel("Butikkbetjent");
         endreAvtale.setStillingStyrk08(5223);
         endreAvtale.setStillingKonseptId(112968);
-        endreAvtale.setLonnstilskuddProsent(60);
+        endreAvtale.setLonnstilskuddProsent(75);
         endreAvtale.setManedslonn(10000);
         endreAvtale.setFeriepengesats(BigDecimal.ONE);
         endreAvtale.setArbeidsgiveravgift(BigDecimal.ONE);
@@ -166,19 +166,19 @@ public class AvtaleTest {
        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
        final int FORVENTETN_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE = 13;
        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList().size()).isEqualTo(FORVENTETN_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE);
-        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(2413,
-                24480,
-                24480,
-                24480,
-                24480,
-                24480,
-                24480,
-                24480,
-                24480,
-                24480,
-                24480,
-                24480,
-                22520));
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(3016,
+                30600,
+                30600,
+                30600,
+                30600,
+                30600,
+                30600,
+                30600,
+                30600,
+                30600,
+                30600,
+                30600,
+                28149));
         Now.resetClock();
     }
 
