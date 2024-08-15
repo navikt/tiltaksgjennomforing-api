@@ -3,7 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.arena.kafka;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.arena.configuration.ArenaKafkaProperties;
-import no.nav.tag.tiltaksgjennomforing.arena.service.ArenaProcessingService;
+import no.nav.tag.tiltaksgjennomforing.arena.service.ArenaEventProcessingService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -14,10 +14,10 @@ import org.springframework.stereotype.Component;
 @Profile(Miljø.LOCAL)
 public class ArenaKafkaConsumer {
     private final ArenaKafkaProperties arenaKafkaProperties;
-    private final ArenaProcessingService arenaProcessingService;
+    private final ArenaEventProcessingService arenaProcessingService;
 
     public ArenaKafkaConsumer(
-        ArenaProcessingService arenaProcessingService,
+        ArenaEventProcessingService arenaProcessingService,
         ArenaKafkaProperties arenaKafkaProperties
     ) {
         this.arenaProcessingService = arenaProcessingService;

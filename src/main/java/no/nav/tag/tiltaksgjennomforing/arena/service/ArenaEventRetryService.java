@@ -16,11 +16,11 @@ public class ArenaEventRetryService {
     private final static int MAX_RETRY_COUNT = 4;
 
     private final ArenaEventRepository arenaEventRepository;
-    private final ArenaProcessingService arenaProcessingService;
+    private final ArenaEventProcessingService arenaProcessingService;
 
     public ArenaEventRetryService(
         ArenaEventRepository arenaEventRepository,
-        ArenaProcessingService arenaProcessingService
+        ArenaEventProcessingService arenaProcessingService
     ) {
         this.arenaEventRepository = arenaEventRepository;
         this.arenaProcessingService = arenaProcessingService;

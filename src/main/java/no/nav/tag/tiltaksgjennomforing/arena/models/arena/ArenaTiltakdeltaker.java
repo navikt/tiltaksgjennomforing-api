@@ -3,6 +3,8 @@ package no.nav.tag.tiltaksgjennomforing.arena.models.arena;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -28,8 +30,9 @@ public class ArenaTiltakdeltaker {
     @JsonProperty("TILTAKGJENNOMFORING_ID")
     private Integer tiltakgjennomforingId;
 
+    @Enumerated(EnumType.STRING)
     @JsonProperty("DELTAKERSTATUSKODE")
-    private String deltakerstatuskode;
+    private Deltakerstatuskode deltakerstatuskode;
 
     @JsonProperty("DELTAKERTYPEKODE")
     private String deltakertypekode;

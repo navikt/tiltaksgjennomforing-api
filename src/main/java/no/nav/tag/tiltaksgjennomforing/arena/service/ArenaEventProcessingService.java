@@ -1,11 +1,193 @@
 package no.nav.tag.tiltaksgjennomforing.arena.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.arena.logging.ArenaEventLogging;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaKafkaMessage;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Operation;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEvent;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEventStatus;
+import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaEventRepository;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 
-public interface ArenaEventProcessingService {
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
-    ArenaEventStatus process(ArenaEvent arenaEvent) throws JsonProcessingException;
+@Slf4j
+@Service
+public class ArenaEventProcessingService {
+    private final ConcurrentHashMap<String, Lock> locks = new ConcurrentHashMap<>();
 
+    private final ObjectMapper objectMapper;
+    private final ArenaEventRepository arenaEventRepository;
+    private final TiltakgjennomforingArenaEventProcessingService tiltakgjennomforingArenaEventService;
+    private final TiltaksakArenaEventProcessingService tiltaksakArenaEventService;
+    private final TiltakdeltakerArenaEventProcessingService tiltakdeltakerArenaEventService;
+
+    public ArenaEventProcessingService(
+        ObjectMapper objectMapper,
+        ArenaEventRepository arenaEventRepository,
+        TiltakgjennomforingArenaEventProcessingService tiltakgjennomforingArenaEventService,
+        TiltaksakArenaEventProcessingService tiltaksakArenaEventService,
+        TiltakdeltakerArenaEventProcessingService tiltakdeltakerArenaEventService
+    ) {
+        this.objectMapper = objectMapper;
+        this.arenaEventRepository = arenaEventRepository;
+        this.tiltakgjennomforingArenaEventService = tiltakgjennomforingArenaEventService;
+        this.tiltaksakArenaEventService = tiltaksakArenaEventService;
+        this.tiltakdeltakerArenaEventService = tiltakdeltakerArenaEventService;
+    }
+
+    @Async("arenaThreadPoolExecutor")
+    public void process(String key, String value) {
+        try {
+            ArenaKafkaMessage message = this.objectMapper.readValue(value, ArenaKafkaMessage.class);
+            process(key, message);
+        } catch (JsonProcessingException e) {
+            log.error("Feil ved prosessering av Arena-event", e);
+        }
+    }
+
+    @ArenaEventLogging
+    @Async("arenaThreadPoolExecutor")
+    public void process(ArenaEvent arenaEvent) {
+        ArenaEvent processingEvent = arenaEvent.toBuilder()
+            .status(ArenaEventStatus.PROCESSING)
+            .build();
+
+        log.info("Starter prosessering av arena-event");
+        arenaEventRepository.save(processingEvent);
+        run(processingEvent);
+    }
+
+    private void process(String key, ArenaKafkaMessage message) {
+        String operation = message.opType();
+        String table = message.table();
+
+        Lock lock = locks.computeIfAbsent(key + table, k -> new ReentrantLock());
+        lock.lock();
+
+        try {
+            JsonNode payload = Operation.parse(operation) == Operation.DELETE
+                ? message.before()
+                : message.after();
+
+            ArenaEvent arenaEvent = arenaEventRepository.findByArenaIdAndArenaTable(key, table)
+                .map(exisitingArenaEvent ->
+                    exisitingArenaEvent.toBuilder()
+                        .operation(operation)
+                        .payload(payload)
+                        .status(ArenaEventStatus.PENDING)
+                        .retryCount(0)
+                        .build()
+                )
+                .orElse(
+                    ArenaEvent.create(
+                        key,
+                        table,
+                        operation,
+                        message.opTimestamp(),
+                        payload,
+                        ArenaEventStatus.PENDING
+                    )
+                );
+
+            log.info(
+                "Oppretter arena-event {} med id {} og operasjon {}",
+                arenaEvent.getLogId(),
+                arenaEvent.getId(),
+                arenaEvent.getOperation().name()
+            );
+
+            arenaEventRepository.save(arenaEvent);
+            process(arenaEvent);
+        } catch (Exception e) {
+            Optional<ArenaEvent> arenaEventOpt = arenaEventRepository.findByArenaIdAndArenaTable(key, table);
+
+            ArenaEvent arenaEvent = arenaEventOpt.map(exisitingArenaEvent ->
+                    exisitingArenaEvent.toBuilder()
+                        .status(ArenaEventStatus.FAILED)
+                        .build()
+                )
+                .orElse(
+                    ArenaEvent.create(
+                        key,
+                        table,
+                        operation,
+                        message.opTimestamp(),
+                        message.after(),
+                        ArenaEventStatus.FAILED
+                    )
+                );
+
+            log.error(
+                "Kunne ikke opprette arena-event {} med id {}.",
+                arenaEvent.getLogId(),
+                arenaEvent.getId(),
+                e
+            );
+
+            saveExceptionally(arenaEvent);
+        } finally {
+            lock.unlock();
+            locks.remove(key + table);
+        }
+    }
+
+    private void run(ArenaEvent arenaEvent) {
+        try {
+            var result = switch (arenaEvent.getArenaTable()) {
+                case TILTAKGJENNOMFORING -> tiltakgjennomforingArenaEventService.process(arenaEvent);
+                case TILTAKSAK -> tiltaksakArenaEventService.process(arenaEvent);
+                case TILTAKDELTAKER -> tiltakdeltakerArenaEventService.process(arenaEvent);
+            };
+
+            ArenaEvent completedEvent = arenaEvent.toBuilder()
+                .status(result)
+                .build();
+
+            if (completedEvent.getStatus() == ArenaEventStatus.RETRY) {
+                String retries = Integer.toString(completedEvent.getRetryCount());
+                log.info(
+                    "Arena-event satt på vent. Antall gjentatte forsøk: {}. Forsøker på nytt.",
+                    retries
+                );
+            }
+
+            arenaEventRepository.save(completedEvent);
+        } catch (DataIntegrityViolationException e) {
+            ArenaEvent update = arenaEvent.toBuilder()
+                .status(ArenaEventStatus.RETRY)
+                .build();
+
+            log.info(
+                "Feil ved opprettelse av Arena-event. Antall gjentatte forsøk: {}. Forsøker på nytt.",
+                arenaEvent.getRetryCount()
+            );
+
+            saveExceptionally(update);
+        } catch (Exception e) {
+            log.error("Feil ved prosessering av Arena-event", e);
+
+            ArenaEvent update = arenaEvent.toBuilder()
+                .status(ArenaEventStatus.FAILED)
+                .build();
+
+            saveExceptionally(update);
+        }
+    }
+
+    private void saveExceptionally(ArenaEvent arenaEvent) {
+        try {
+            arenaEventRepository.save(arenaEvent);
+        } catch (Exception e) {
+            log.error("Feil ved lagring av arena-event", e);
+        }
+    }
 }
