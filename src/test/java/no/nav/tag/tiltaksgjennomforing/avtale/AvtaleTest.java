@@ -45,6 +45,19 @@ public class AvtaleTest {
     public void test_riktig_beregning_Varig_Lonnstilskudd_Avtale_som_varer_i_mange_aar() {
         Now.fixedDate(LocalDate.of(2024, 7, 29));
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfylt();
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(2413,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                22520));
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setOppfolging("Telefon hver uke");
         endreAvtale.setTilrettelegging("Ingen");
@@ -146,6 +159,20 @@ public class AvtaleTest {
     public void test_riktig_beregning_75_prosent_Varig_Lonnstilskudd_Avtale_som_varer_i_ett_aar() {
         Now.fixedDate(LocalDate.of(2024, 7, 29));
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfylt();
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(2413,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                22520));
+
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setOppfolging("Telefon hver uke");
         endreAvtale.setTilrettelegging("Ingen");
@@ -187,6 +214,7 @@ public class AvtaleTest {
     public void test_riktig_beregning_VTAO_Lonnstilskudd_Avtale() {
         Now.fixedDate(LocalDate.of(2024, 7, 29));
         Avtale avtale = TestData.enVtaoAvtaleGodkjentAvArbeidsgiver();
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(671, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6263));
         avtale.opphevGodkjenningerSomVeileder();
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setOppfolging("Telefon hver uke");
