@@ -11,9 +11,7 @@ import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -74,7 +72,7 @@ public class VeilederTest {
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setAvtaleInngått(LocalDateTime.now());
+        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
         Veileder veileder = TestData.enVeileder(avtale);
         assertFeilkode(
                 Feilkode.KAN_IKKE_OPPHEVE_GODKJENNINGER_VED_INNGAATT_AVTALE,
@@ -109,12 +107,12 @@ public class VeilederTest {
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         Veileder veileder = TestData.enVeileder(avtale);
         avtale.endreAvtale(
-                Instant.now(),
+                Now.instant(),
                 TestData.endringPåAlleArbeidstreningFelter(),
                 Avtalerolle.VEILEDER,
                 avtalerMedTilskuddsperioder
         );
-        arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
+        arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
 
         assertFeilkode(
@@ -144,18 +142,18 @@ public class VeilederTest {
                 .thenReturn(true);
 
         avtale.endreAvtale(
-                Instant.now(),
+                Now.instant(),
                 TestData.endringPåAlleLønnstilskuddFelter(),
                 Avtalerolle.VEILEDER,
                 avtalerMedTilskuddsperioder
         );
-        arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
+        arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
 
         assertThat(avtale.erAvtaleInngått()).isFalse();
 
         veileder.opphevGodkjenninger(avtale);
-        arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
+        arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
 
         Beslutter beslutter = TestData.enBeslutter(avtale);
@@ -270,7 +268,7 @@ public class VeilederTest {
         Avtale avtale = TestData.enAvtaleOpprettetAvArbeidsgiver(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         arbeidsgiver.endreAvtale(
-                Instant.now(),
+                Now.instant(),
                 TestData.endringPåAlleLønnstilskuddFelter(),
                 avtale,
                 EnumSet.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD)

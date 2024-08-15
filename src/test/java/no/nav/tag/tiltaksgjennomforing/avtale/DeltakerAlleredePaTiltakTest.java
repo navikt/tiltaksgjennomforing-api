@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.datavarehus.DvhMeldingEntitetRepository;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.SmsRepository;
 import no.nav.tag.tiltaksgjennomforing.varsel.VarselRepository;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.ArbeidsgiverNotifikasjonRepository;
@@ -64,23 +65,23 @@ public class DeltakerAlleredePaTiltakTest {
         settAvtaleInformasjon(
                 TestData.enArbeidstreningAvtale(),
                 new Fnr("00000000000"),
-                LocalDate.now(),
-                LocalDate.now().plusMonths(2),
-                LocalDateTime.now()
+                Now.localDate(),
+                Now.localDate().plusMonths(2),
+                Now.localDateTime()
         );
         settAvtaleInformasjon(
                 TestData.enMentorAvtaleUsignert(),
                 new Fnr("00000000000"),
-                LocalDate.now(),
-                LocalDate.now().plusMonths(2),
-                LocalDateTime.now()
+                Now.localDate(),
+                Now.localDate().plusMonths(2),
+                Now.localDateTime()
         );
         settAvtaleInformasjon(
                 TestData.enInkluderingstilskuddAvtale(),
                 new Fnr("00000000000"),
-                LocalDate.now(),
-                LocalDate.now().plusMonths(2),
-                LocalDateTime.now()
+                Now.localDate(),
+                Now.localDate().plusMonths(2),
+                Now.localDateTime()
         );
     }
 
@@ -100,8 +101,8 @@ public class DeltakerAlleredePaTiltakTest {
         List<Avtale> avtaleAlleredeRegistrertPaDeltaker = avtaleRepository.finnAvtalerSomOverlapperForDeltakerVedGodkjenningAvAvtale(
                 "00000000000",
                 UUID.randomUUID().toString(),
-                Date.valueOf(LocalDate.now()),
-                Date.valueOf(LocalDate.now().plusMonths(1))
+                Date.valueOf(Now.localDate()),
+                Date.valueOf(Now.localDate().plusMonths(1))
         );
         Assertions.assertEquals(3, avtaleAlleredeRegistrertPaDeltaker.size());
     }
@@ -111,7 +112,7 @@ public class DeltakerAlleredePaTiltakTest {
         initAvtalerTilDBTest();
         List<Avtale> avtalePaDeltakerUtenNoenAvtaleIdOgSluttdato = avtaleRepository.finnAvtalerSomOverlapperForDeltakerVedOpprettelseAvAvtale(
                 "00000000000",
-                Date.valueOf(LocalDate.now())
+                Date.valueOf(Now.localDate())
         );
         Assertions.assertEquals(3, avtalePaDeltakerUtenNoenAvtaleIdOgSluttdato.size());
     }
@@ -122,8 +123,8 @@ public class DeltakerAlleredePaTiltakTest {
         List<Avtale> avtalePaDeltakerMedKunOverlappendeStartdato = avtaleRepository.finnAvtalerSomOverlapperForDeltakerVedGodkjenningAvAvtale(
                 "00000000000",
                 UUID.randomUUID().toString(),
-                Date.valueOf(LocalDate.now()),
-                Date.valueOf(LocalDate.now().plusMonths(3))
+                Date.valueOf(Now.localDate()),
+                Date.valueOf(Now.localDate().plusMonths(3))
         );
         Assertions.assertEquals(3, avtalePaDeltakerMedKunOverlappendeStartdato.size());
     }
@@ -134,8 +135,8 @@ public class DeltakerAlleredePaTiltakTest {
         List<Avtale> avtalePaDeltakerMedKunOverlappendeSluttdato = avtaleRepository.finnAvtalerSomOverlapperForDeltakerVedGodkjenningAvAvtale(
                 "00000000000",
                 UUID.randomUUID().toString(),
-                Date.valueOf(LocalDate.now().minusMonths(1)),
-                Date.valueOf(LocalDate.now().plusMonths(1))
+                Date.valueOf(Now.localDate().minusMonths(1)),
+                Date.valueOf(Now.localDate().plusMonths(1))
         );
         Assertions.assertEquals(3, avtalePaDeltakerMedKunOverlappendeSluttdato.size());
     }
@@ -149,8 +150,8 @@ public class DeltakerAlleredePaTiltakTest {
                 new Fnr("00000000000"),
                 Tiltakstype.ARBEIDSTRENING,
                 null,
-                LocalDate.now(),
-                LocalDate.now().plusMonths(1),
+                Now.localDate(),
+                Now.localDate().plusMonths(1),
                 avtaleRepository
         );
         Assertions.assertEquals(1, treffPaAvtalerSomErUlovligMatch.size());
@@ -162,30 +163,30 @@ public class DeltakerAlleredePaTiltakTest {
         settAvtaleInformasjon(
                 TestData.enArbeidstreningAvtale(),
                 new Fnr("00000000000"),
-                LocalDate.now().plusMonths(1).plusDays(1),
-                LocalDate.now().plusMonths(3),
-                LocalDateTime.now()
+                Now.localDate().plusMonths(1).plusDays(1),
+                Now.localDate().plusMonths(3),
+                Now.localDateTime()
         );
         settAvtaleInformasjon(
                 TestData.enMentorAvtaleUsignert(),
                 new Fnr("00000000000"),
-                LocalDate.now(),
-                LocalDate.now().plusMonths(2),
-                LocalDateTime.now()
+                Now.localDate(),
+                Now.localDate().plusMonths(2),
+                Now.localDateTime()
         );
         settAvtaleInformasjon(
                 TestData.enInkluderingstilskuddAvtale(),
                 new Fnr("00000000000"),
-                LocalDate.now(),
-                LocalDate.now().plusMonths(2),
-                LocalDateTime.now()
+                Now.localDate(),
+                Now.localDate().plusMonths(2),
+                Now.localDateTime()
         );
         List<AlleredeRegistrertAvtale> treffPaAvtalerSomErUlovligMatch = veileder_z123456.hentAvtaleDeltakerAlleredeErRegistrertPaa(
                 new Fnr("00000000000"),
                 Tiltakstype.ARBEIDSTRENING,
                 null,
-                LocalDate.now(),
-                LocalDate.now().plusMonths(1),
+                Now.localDate(),
+                Now.localDate().plusMonths(1),
                 avtaleRepository
         );
         Assertions.assertEquals(0, treffPaAvtalerSomErUlovligMatch.size());
@@ -197,30 +198,30 @@ public class DeltakerAlleredePaTiltakTest {
         settAvtaleInformasjon(
                 TestData.enArbeidstreningAvtale(),
                 new Fnr("00000000000"),
-                LocalDate.now().plusMonths(1).plusDays(1),
-                LocalDate.now().plusMonths(3),
-                LocalDateTime.now()
+                Now.localDate().plusMonths(1).plusDays(1),
+                Now.localDate().plusMonths(3),
+                Now.localDateTime()
         );
         settAvtaleInformasjon(
                 TestData.enMentorAvtaleUsignert(),
                 new Fnr("00000000000"),
-                LocalDate.now(),
-                LocalDate.now().plusMonths(2),
-                LocalDateTime.now()
+                Now.localDate(),
+                Now.localDate().plusMonths(2),
+                Now.localDateTime()
         );
         settAvtaleInformasjon(
                 TestData.enInkluderingstilskuddAvtale(),
                 new Fnr("00000000000"),
-                LocalDate.now(),
-                LocalDate.now().plusMonths(2),
-                LocalDateTime.now()
+                Now.localDate(),
+                Now.localDate().plusMonths(2),
+                Now.localDateTime()
         );
         List<AlleredeRegistrertAvtale> treffPaAvtalerSomErUlovligMatch = veileder_z123456.hentAvtaleDeltakerAlleredeErRegistrertPaa(
                 new Fnr("00000000000"),
                 Tiltakstype.MENTOR,
                 null,
-                LocalDate.now(),
-                LocalDate.now().plusMonths(1),
+                Now.localDate(),
+                Now.localDate().plusMonths(1),
                 avtaleRepository
         );
         Assertions.assertEquals(1, treffPaAvtalerSomErUlovligMatch.size());
@@ -232,9 +233,9 @@ public class DeltakerAlleredePaTiltakTest {
         settAvtaleInformasjon(
                 TestData.enArbeidstreningAvtale(),
                 new Fnr("00000000000"),
-                LocalDate.now().plusMonths(1).plusDays(1),
-                LocalDate.now().plusMonths(3),
-                LocalDateTime.now()
+                Now.localDate().plusMonths(1).plusDays(1),
+                Now.localDate().plusMonths(3),
+                Now.localDateTime()
         );
         settAvtaleInformasjon(
                 TestData.enArbeidstreningAvtale(),
@@ -246,23 +247,23 @@ public class DeltakerAlleredePaTiltakTest {
         settAvtaleInformasjon(
                 TestData.enMentorAvtaleUsignert(),
                 new Fnr("00000000000"),
-                LocalDate.now(),
-                LocalDate.now().plusMonths(2),
-                LocalDateTime.now()
+                Now.localDate(),
+                Now.localDate().plusMonths(2),
+                Now.localDateTime()
         );
         settAvtaleInformasjon(
                 TestData.enInkluderingstilskuddAvtale(),
                 new Fnr("00000000000"),
-                LocalDate.now(),
-                LocalDate.now().plusMonths(2),
-                LocalDateTime.now()
+                Now.localDate(),
+                Now.localDate().plusMonths(2),
+                Now.localDateTime()
         );
         List<AlleredeRegistrertAvtale> treffPaAvtalerSomErUlovligMatch = veileder_z123456.hentAvtaleDeltakerAlleredeErRegistrertPaa(
                 new Fnr("00000000000"),
                 Tiltakstype.ARBEIDSTRENING,
                 null,
-                LocalDate.now(),
-                LocalDate.now().plusMonths(1),
+                Now.localDate(),
+                Now.localDate().plusMonths(1),
                 avtaleRepository
         );
         Assertions.assertEquals(1, treffPaAvtalerSomErUlovligMatch.size());

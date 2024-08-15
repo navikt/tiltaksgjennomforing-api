@@ -249,8 +249,8 @@ public class AvtaleRepositoryTest {
         Set<Tiltakstype> tiltakstype = Set.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD);
         Sort by = Sort.by(Sort.Order.asc("startDato"));
         Pageable pageable = PageRequest.of(0, 10, by);
-        long plussDato = ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3));
-        LocalDate decisiondate = LocalDate.now().plusDays(plussDato);
+        long plussDato = ChronoUnit.DAYS.between(Now.localDate(), Now.localDate().plusMonths(3));
+        LocalDate decisiondate = Now.localDate().plusDays(plussDato);
 
         Page<BeslutterOversiktDTO> beslutterOversikt = avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
                 TilskuddPeriodeStatus.UBEHANDLET,

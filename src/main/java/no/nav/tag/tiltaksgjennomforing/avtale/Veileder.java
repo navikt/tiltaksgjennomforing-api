@@ -10,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.data.domain.*;
 
 import java.sql.Date;
@@ -488,7 +489,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     private LocalDate settStartDato(LocalDate startdato) {
-        return startdato != null ? startdato : LocalDate.now();
+        return startdato != null ? startdato : Now.localDate();
     }
 
     protected List<AlleredeRegistrertAvtale> hentAvtaleDeltakerAlleredeErRegistrertPaa(

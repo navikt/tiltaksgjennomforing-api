@@ -10,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +21,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -175,14 +175,14 @@ public class CachingConfigTest {
         )).thenReturn(true, true, true);
 
         veileder.endreAvtale(
-                Instant.now(),
+                Now.instant(),
                 TestData.endringPåAlleLønnstilskuddFelter(),
                 avtale,
                 TestData.avtalerMedTilskuddsperioder
         );
 
         veileder.endreAvtale(
-                Instant.now(),
+                Now.instant(),
                 TestData.endringPåAlleLønnstilskuddFelter(),
                 avtale,
                 TestData.avtalerMedTilskuddsperioder

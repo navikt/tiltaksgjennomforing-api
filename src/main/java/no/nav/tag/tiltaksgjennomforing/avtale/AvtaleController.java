@@ -19,6 +19,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -46,7 +47,6 @@ import java.net.URI;
 import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -182,7 +182,7 @@ public class AvtaleController {
         FilterSok filterSok = filterSokRepository.findFilterSokBySokId(filterSokId).orElse(null);
         if (filterSok != null) {
             filterSok.setAntallGangerSokt(filterSok.getAntallGangerSokt() + 1);
-            filterSok.setSistSoktTidspunkt(LocalDateTime.now());
+            filterSok.setSistSoktTidspunkt(Now.localDateTime());
             filterSokRepository.save(filterSok);
             AvtalePredicate avtalePredicate = filterSok.getAvtalePredicate();
 
@@ -250,7 +250,7 @@ public class AvtaleController {
         if (filterSokiDb != null) {
             stringObjectHashMap.put("sokId", filterSokiDb.getSokId());
             filterSokiDb.setAntallGangerSokt(filterSokiDb.getAntallGangerSokt() + 1);
-            filterSokiDb.setSistSoktTidspunkt(LocalDateTime.now());
+            filterSokiDb.setSistSoktTidspunkt(Now.localDateTime());
             filterSokRepository.save(filterSokiDb);
             if (!filterSokiDb.erLik(queryParametre)) {
                 log.error("Kollisjon i søkId: {}", filterSokiDb.getSokId());
