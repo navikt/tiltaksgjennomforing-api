@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.arena.client;
 
 import no.nav.tag.tiltaksgjennomforing.arena.configuration.ArenaOrdsProperties;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -64,7 +65,7 @@ public class ArenaOrdsTokenClient {
             .plusSeconds(token.getToken().expiresIn())
             .minusSeconds(expireEarlySeconds);
 
-        return LocalDateTime.now().isAfter(expiresAt);
+        return Now.localDateTime().isAfter(expiresAt);
     }
 
 
