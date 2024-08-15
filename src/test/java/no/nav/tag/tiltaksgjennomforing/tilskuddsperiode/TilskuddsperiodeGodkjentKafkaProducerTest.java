@@ -26,7 +26,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
@@ -88,7 +87,7 @@ class TilskuddsperiodeGodkjentKafkaProducerTest {
         final TilskuddsperiodeGodkjentMelding tilskuddMelding = new TilskuddsperiodeGodkjentMelding(avtaleId,
                 tilskuddPeriodeId, avtaleInnholdId, avtaleFom, avtaleTom, tiltakstype, deltakerFornavn, deltakerEtternavn,
                 deltakerFnr, arbeidsgiverFornavn, arbeidsgiverEtternavn, arbeidsgiverTlf, veilederNavIdent, bedriftNavn, bedriftnummer, tilskuddBeløp, tilskuddFraDato, tilskuddTilDato, 10.6, 0.02, 14.1, 60, avtaleNr, løpenummer, 0,
-            "4808", beslutterNavIdent, veilederFornavn, veilederEtternavn, LocalDateTime.now());
+            "4808", beslutterNavIdent, veilederFornavn, veilederEtternavn, Now.localDateTime());
 
         //NÅR
         tilskuddsperiodeKafkaProducer.publiserTilskuddsperiodeGodkjentMelding(tilskuddMelding);

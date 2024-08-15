@@ -10,6 +10,8 @@ import lombok.SneakyThrows;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
+
 import java.time.LocalDateTime;
 
 @Data
@@ -25,7 +27,7 @@ public class FilterSok {
 
     @SneakyThrows
     public FilterSok(AvtalePredicate queryParametre) {
-        this.sistSoktTidspunkt = LocalDateTime.now();
+        this.sistSoktTidspunkt = Now.localDateTime();
         this.antallGangerSokt = 1;
         this.sokId = queryParametre.generateHash();
         ObjectMapper mapper = new ObjectMapper();
