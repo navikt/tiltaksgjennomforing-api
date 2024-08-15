@@ -22,6 +22,7 @@ import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -256,7 +257,7 @@ public class AvtaleControllerTest {
         værInnloggetSom(veileder);
 
         assertThatThrownBy(() ->
-                avtaleController.mentorGodkjennTaushetserklæring(enMentorAvtale.getId(), Instant.now(), Avtalerolle.DELTAKER)).isExactlyInstanceOf(TiltaksgjennomforingException.class);
+                avtaleController.mentorGodkjennTaushetserklæring(enMentorAvtale.getId(), Now.instant(), Avtalerolle.DELTAKER)).isExactlyInstanceOf(TiltaksgjennomforingException.class);
     }
 
     @Test
@@ -267,7 +268,7 @@ public class AvtaleControllerTest {
 
         when(avtaleRepository.findById(enMentorAvtale.getId())).thenReturn(Optional.of(enMentorAvtale));
 
-        avtaleController.mentorGodkjennTaushetserklæring(enMentorAvtale.getId(), Instant.now(), Avtalerolle.DELTAKER);
+        avtaleController.mentorGodkjennTaushetserklæring(enMentorAvtale.getId(), Now.instant(), Avtalerolle.DELTAKER);
     }
 
     @Test

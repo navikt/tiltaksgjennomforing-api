@@ -21,6 +21,7 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 
 class BeslutterTest {
@@ -41,7 +42,7 @@ class BeslutterTest {
         tilskuddPeriode.setAvtale(avtale);
         avtale.setTilskuddPeriode(new TreeSet<>(List.of(tilskuddPeriode)));
         Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService, norg2Client);
-        Integer plussDato = ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
+        Integer plussDato = ((int) ChronoUnit.DAYS.between(Now.localDate(), Now.localDate().plusMonths(3)));
         AvtalePredicate avtalePredicate = new AvtalePredicate();
         avtalePredicate.setTilskuddPeriodeStatus(TilskuddPeriodeStatus.UBEHANDLET);
         Pageable pageable = PageRequest.of(0, 100);
@@ -100,12 +101,12 @@ class BeslutterTest {
                 .thenReturn(true);
 
         avtale.endreAvtale(
-                Instant.now(),
+                Now.instant(),
                 TestData.endringPåAlleLønnstilskuddFelter(),
                 Avtalerolle.VEILEDER,
                 avtalerMedTilskuddsperioder
         );
-        arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
+        arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
         assertThat(avtale.erAvtaleInngått()).isFalse();
         Beslutter beslutter = TestData.enBeslutter(avtale);

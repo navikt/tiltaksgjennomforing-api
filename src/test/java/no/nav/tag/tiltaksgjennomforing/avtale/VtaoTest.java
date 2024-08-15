@@ -8,6 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,8 +99,8 @@ public class VtaoTest {
         var hentetAvtale = avtaleController.hent(lagretAvtale.getId(), Avtalerolle.VEILEDER, null);
 
         // Ingrid Espelid: "Så juksar me lite"
-        hentetAvtale.getGjeldendeInnhold().setGodkjentAvDeltaker(LocalDateTime.now());
-        hentetAvtale.getGjeldendeInnhold().setGodkjentAvVeileder(LocalDateTime.now());
+        hentetAvtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        hentetAvtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         avtaleRepository.save(hentetAvtale);
 
         avtaleController.endreKontaktinfo(lagretAvtale.getId(), new EndreKontaktInformasjon(

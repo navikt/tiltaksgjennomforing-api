@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -126,7 +127,7 @@ public class MentorTest {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         Veileder veileder = TestData.enVeileder(avtale);
-        arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
+        arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
         EndreOmMentor endreOmMentor = new EndreOmMentor("Per", "Persen", "12345678", "litt mentorering", 5.0, 500);
         assertFeilkode(Feilkode.KAN_IKKE_ENDRE_FEIL_TILTAKSTYPE, () -> veileder.endreOmMentor(endreOmMentor, avtale));
@@ -137,7 +138,7 @@ public class MentorTest {
         Avtale avtale = TestData.enMentorAvtaleSignert();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         Veileder veileder = TestData.enVeileder(avtale);
-        arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
+        arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
 
         assertThat(avtale.getGjeldendeInnhold().getInnholdType()).isEqualTo(AvtaleInnholdType.INNGÅ);
@@ -157,7 +158,7 @@ public class MentorTest {
         Avtale avtale = TestData.enMentorAvtaleSignert();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         Veileder veileder = TestData.enVeileder(avtale);
-        arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
+        arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
         assertThat(avtale.erAvtaleInngått()).isFalse();
         assertFeilkode(
                 Feilkode.KAN_IKKE_ENDRE_OM_MENTOR_IKKE_INNGAATT_AVTALE,

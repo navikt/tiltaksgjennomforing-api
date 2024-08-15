@@ -52,7 +52,7 @@ public class DeltakerTest {
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
         endreAvtale.setSluttDato(LocalDate.of(2027, 1, 30));
-        avtale.endreAvtale(Instant.now(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
         assertFeilkode(Feilkode.DELTAKER_72_AAR, () -> avtale.godkjennForVeilederOgDeltaker(TestData.enNavIdent(), TestData.enGodkjentPaVegneGrunn()));
 

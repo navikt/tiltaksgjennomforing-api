@@ -9,6 +9,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -77,13 +78,13 @@ class VeilarbArenaClientTest {
         avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
         avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
         avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
-        avtale.endreAvtale(Instant.now(),new EndreAvtale(), Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+        avtale.endreAvtale(Now.instant(),new EndreAvtale(), Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
 
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isNotNull();
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(60);
 
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
-        avtale.endreAvtale(Instant.now(),new EndreAvtale(), Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+        avtale.endreAvtale(Now.instant(),new EndreAvtale(), Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
 
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(40);
     }

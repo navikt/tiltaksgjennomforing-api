@@ -8,6 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;
 import no.nav.tag.tiltaksgjennomforing.persondata.*;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -270,13 +271,13 @@ public class CachingConfigMockTest {
         );
 
         veileder.endreAvtale(
-                Instant.now(),
+                Now.instant(),
                 TestData.endringPåAlleLønnstilskuddFelter(),
                 avtale,
                 TestData.avtalerMedTilskuddsperioder
         );
         veileder.endreAvtale(
-                Instant.now(),
+                Now.instant(),
                 TestData.endringPåAlleLønnstilskuddFelter(),
                 avtale,
                 TestData.avtalerMedTilskuddsperioder

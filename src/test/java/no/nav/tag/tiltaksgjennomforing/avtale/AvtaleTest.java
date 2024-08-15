@@ -46,7 +46,7 @@ public class AvtaleTest {
 
     @Test
     public void test_riktig_beregning_Varig_Lonnstilskudd_Avtale_som_varer_i_mange_aar() {
-        Now.fixedDate(LocalDate.of(2024,7,29));
+        Now.fixedDate(LocalDate.of(2024, 7, 29));
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfylt();
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setOppfolging("Telefon hver uke");
@@ -67,9 +67,9 @@ public class AvtaleTest {
         endreAvtale.setStillingstype(Stillingstype.FAST);
         endreAvtale.setAntallDagerPerUke(5);
         endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678", true));
-       avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
-       final int FORVENTETN_ANTALL_TILSKUDDSPERIODER_FOR_6_AAR_VARIG_AVTALE = 73;
-       assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList().size()).isEqualTo(FORVENTETN_ANTALL_TILSKUDDSPERIODER_FOR_6_AAR_VARIG_AVTALE);
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+        final int FORVENTETN_ANTALL_TILSKUDDSPERIODER_FOR_6_AAR_VARIG_AVTALE = 73;
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList().size()).isEqualTo(FORVENTETN_ANTALL_TILSKUDDSPERIODER_FOR_6_AAR_VARIG_AVTALE);
         assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(2413,
                 24480,
                 24480,
@@ -148,7 +148,7 @@ public class AvtaleTest {
 
     @Test
     public void test_riktig_beregning_75_prosent_Varig_Lonnstilskudd_Avtale_som_varer_i_ett_aar() {
-        Now.fixedDate(LocalDate.of(2024,7,29));
+        Now.fixedDate(LocalDate.of(2024, 7, 29));
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfylt();
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setOppfolging("Telefon hver uke");
@@ -169,9 +169,9 @@ public class AvtaleTest {
         endreAvtale.setStillingstype(Stillingstype.FAST);
         endreAvtale.setAntallDagerPerUke(5);
         endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678", true));
-       avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
-       final int FORVENTETN_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE = 13;
-       assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList().size()).isEqualTo(FORVENTETN_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE);
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+        final int FORVENTETN_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE = 13;
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList().size()).isEqualTo(FORVENTETN_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE);
         assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(3016,
                 30600,
                 30600,
@@ -190,7 +190,7 @@ public class AvtaleTest {
 
     @Test
     public void test_riktig_beregning_VTAO_Lonnstilskudd_Avtale() {
-        Now.fixedDate(LocalDate.of(2024,7,29));
+        Now.fixedDate(LocalDate.of(2024, 7, 29));
         Avtale avtale = TestData.enVtaoAvtaleGodkjentAvArbeidsgiver();
         avtale.opphevGodkjenningerSomVeileder();
         EndreAvtale endreAvtale = new EndreAvtale();
@@ -212,16 +212,16 @@ public class AvtaleTest {
         endreAvtale.setStillingstype(Stillingstype.FAST);
         endreAvtale.setAntallDagerPerUke(5);
         endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678", true));
-       avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
-       final int FORVENTETN_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE = 13;
-       assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList().size()).isEqualTo(FORVENTETN_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE);
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+        final int FORVENTETN_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE = 13;
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList().size()).isEqualTo(FORVENTETN_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE);
         assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(671, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6263));
         Now.resetClock();
     }
 
     @Test
     public void test_riktig_beregning_Midlertidig_Lonnstilskudd_Avtale() {
-        Now.fixedDate(LocalDate.of(2024,7,29));
+        Now.fixedDate(LocalDate.of(2024, 7, 29));
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder();
         double otpSats = 0.048;
         BigDecimal feriepengesats = new BigDecimal("0.166");
@@ -254,9 +254,10 @@ public class AvtaleTest {
                 14988));
         Now.resetClock();
     }
+
     @Test
     public void test_riktig_beregning_NEDSATT_ARBEIDSEVNE_Midlertidig_Lonnstilskudd_Avtale_som_varer_i_2_aar() {
-        Now.fixedDate(LocalDate.of(2024,7,29));
+        Now.fixedDate(LocalDate.of(2024, 7, 29));
         Avtale avtale = TestData.enMidLonnstilskuddAvtaleMedVarigTilpassetSatsMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
@@ -310,7 +311,7 @@ public class AvtaleTest {
 
     @Test
     public void test_riktig_beregning_SOMMERJOBB_50_prosent_Lonnstilskudd_Avtale() {
-        Now.fixedDate(LocalDate.of(2024,6,1));
+        Now.fixedDate(LocalDate.of(2024, 6, 1));
         Avtale avtale = TestData.enSommerjobbLonnstilskuddAvtaleGodkjentAvVeileder(50);
 
         double otpSats = 0.048;
@@ -333,7 +334,7 @@ public class AvtaleTest {
 
     @Test
     public void test_riktig_beregning_SOMMERJOBB_75_prosent_Lonnstilskudd_Avtale() {
-        Now.fixedDate(LocalDate.of(2024,6,1));
+        Now.fixedDate(LocalDate.of(2024, 6, 1));
         Avtale avtale = TestData.enSommerjobbLonnstilskuddAvtaleGodkjentAvVeileder(75);
 
         double otpSats = 0.048;

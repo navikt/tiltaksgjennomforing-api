@@ -237,13 +237,13 @@ public class TestData {
 
     public static Avtale enVarigLonnstilskuddAvtaleMedBehandletIArenaPerioder() {
         Avtale avtale = enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
-        avtale.getGjeldendeInnhold().setStartDato(LocalDate.now().minusYears(1));
-        avtale.getGjeldendeInnhold().setSluttDato(LocalDate.now().plusYears(1));
+        avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusYears(1));
+        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().plusYears(1));
         avtale.nyeTilskuddsperioderEtterMigreringFraArena(LocalDate.of(2023, 2, 1), false);
 
         // Godkjenning
         Arbeidsgiver arbeidsgiver = enArbeidsgiver(avtale);
-        arbeidsgiver.godkjennAvtale(Instant.now(), avtale);
+        arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
         Veileder veileder = enVeileder(avtale);
         veileder.godkjennForVeilederOgDeltaker(enGodkjentPaVegneGrunn(), avtale);
 
@@ -277,10 +277,10 @@ public class TestData {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), veilderNavIdent);
         setOppfølgingPåAvtale(avtale);
-         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
-         EndreAvtale endreAvtale = endringPåAlleLønnstilskuddFelter();
-        endreAvtale.setSluttDato(LocalDate.now().plusMonths(23).minusDays(2));
-        avtale.endreAvtale(avtale.getSistEndret(),endreAvtale , Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        EndreAvtale endreAvtale = endringPåAlleLønnstilskuddFelter();
+        endreAvtale.setSluttDato(Now.localDate().plusMonths(23).minusDays(2));
+        avtale.endreAvtale(avtale.getSistEndret(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
         avtale.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         avtale.getGjeldendeInnhold().setDeltakerFornavn("Lilly");
         avtale.getGjeldendeInnhold().setDeltakerEtternavn("Lønning");
