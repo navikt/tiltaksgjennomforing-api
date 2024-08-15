@@ -6,11 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangArbeidstreningException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -211,9 +207,19 @@ public class AvtaleTest {
         endreAvtale.setAntallDagerPerUke(5);
         endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678", true));
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+
         final int FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE = 13;
         assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList().size()).isEqualTo(FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE);
         assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(671, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6263));
+
+        double otpSats = 0.048;
+        BigDecimal feriepengesats = new BigDecimal("0.166");
+        BigDecimal arbeidsgiveravgift = BigDecimal.ZERO;
+        int manedslonn = 44444;
+
+        assertThatThrownBy(() -> avtale.endreTilskuddsberegning(EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).build(), TestData.enNavIdent()))
+                .isInstanceOf(FeilkodeException.class);
+
     }
 
     @Test
