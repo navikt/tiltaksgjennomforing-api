@@ -6,11 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangArbeidstreningException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
@@ -69,8 +65,8 @@ public class AvtaleTest {
         endreAvtale.setAntallDagerPerUke(5);
         endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678", true));
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
-        final int FORVENTETN_ANTALL_TILSKUDDSPERIODER_FOR_6_AAR_VARIG_AVTALE = 73;
-        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList().size()).isEqualTo(FORVENTETN_ANTALL_TILSKUDDSPERIODER_FOR_6_AAR_VARIG_AVTALE);
+        final int FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_6_AAR_VARIG_AVTALE = 73;
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList().size()).isEqualTo(FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_6_AAR_VARIG_AVTALE);
         assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(2413,
                 24480,
                 24480,
@@ -144,7 +140,6 @@ public class AvtaleTest {
                 24480,
                 24480,
                 22520));
-        Now.resetClock();
     }
 
     @Test
@@ -171,8 +166,8 @@ public class AvtaleTest {
         endreAvtale.setAntallDagerPerUke(5);
         endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678", true));
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
-        final int FORVENTETN_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE = 13;
-        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList().size()).isEqualTo(FORVENTETN_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE);
+        final int FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE = 13;
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList().size()).isEqualTo(FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE);
         assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(3016,
                 30600,
                 30600,
@@ -186,7 +181,6 @@ public class AvtaleTest {
                 30600,
                 30600,
                 28149));
-        Now.resetClock();
     }
 
     @Test
@@ -214,10 +208,19 @@ public class AvtaleTest {
         endreAvtale.setAntallDagerPerUke(5);
         endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678", true));
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
-        final int FORVENTETN_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE = 13;
-        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList().size()).isEqualTo(FORVENTETN_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE);
+
+        final int FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE = 13;
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList().size()).isEqualTo(FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE);
         assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(671, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6263));
-        Now.resetClock();
+
+        double otpSats = 0.048;
+        BigDecimal feriepengesats = new BigDecimal("0.166");
+        BigDecimal arbeidsgiveravgift = BigDecimal.ZERO;
+        int manedslonn = 44444;
+
+        assertThatThrownBy(() -> avtale.endreTilskuddsberegning(EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).build(), TestData.enNavIdent()))
+                .isInstanceOf(FeilkodeException.class);
+
     }
 
     @Test
@@ -230,6 +233,20 @@ public class AvtaleTest {
         int manedslonn = 44444;
 
         assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(1);
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(1609,
+                16320,
+                16320,
+                16320,
+                16320,
+                16320,
+                15013,
+                1206,
+                12240,
+                12240,
+                12240,
+                12240,
+                12240,
+                11260));
         avtale.endreTilskuddsberegning(EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).build(), TestData.enNavIdent());
 
         assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(2);
@@ -253,7 +270,6 @@ public class AvtaleTest {
                 16293,
                 16293,
                 14988));
-        Now.resetClock();
     }
 
     @Test
@@ -273,6 +289,31 @@ public class AvtaleTest {
         int manedslonn = 44444;
 
         assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(1);
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(2413,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                22520,
+                2011,
+                20400,
+                20400,
+                20400,
+                20400,
+                20400,
+                20400,
+                20400,
+                20400,
+                20400,
+                20400,
+                18096));
         avtale.endreTilskuddsberegning(EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).build(), TestData.enNavIdent());
 
         assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(2);
@@ -320,6 +361,7 @@ public class AvtaleTest {
         int manedslonn = 44444;
 
         assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(1);
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(18766));
         avtale.endreTilskuddsberegning(EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).build(), TestData.enNavIdent());
 
         assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(2);
@@ -343,6 +385,7 @@ public class AvtaleTest {
         int manedslonn = 44444;
 
         assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(1);
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(28149));
         avtale.endreTilskuddsberegning(EndreTilskuddsberegning.builder().otpSats(otpSats).feriepengesats(feriepengesats).arbeidsgiveravgift(arbeidsgiveravgift).manedslonn(manedslonn).build(), TestData.enNavIdent());
 
         assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(2);
