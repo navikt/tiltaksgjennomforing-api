@@ -1147,6 +1147,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         }
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_TILSKUDDSBEREGNING);
         this.hentBeregningStrategi().endre(this, tilskuddsberegning);
+        endreBeløpITilskuddsperioder();
         sistEndretNå();
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         registerEvent(new TilskuddsberegningEndret(this, utførtAv));
