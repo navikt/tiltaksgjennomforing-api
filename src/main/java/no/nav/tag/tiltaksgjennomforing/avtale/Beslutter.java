@@ -11,6 +11,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.NavEnhetIkkeFunnetException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -81,7 +82,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     private Integer getPlussdato() {
-        return ((int) ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusMonths(3)));
+        return ((int) ChronoUnit.DAYS.between(Now.localDate(), Now.localDate().plusMonths(3)));
     }
 
     Page<BeslutterOversiktDTO> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
@@ -107,7 +108,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
         Integer avtaleNr = queryParametre.getAvtaleNr();
         String filtrertNavEnhet = queryParametre.getNavEnhet();
         Integer plussDato = getPlussdato();
-        LocalDate decisiondate = LocalDate.now().plusDays(plussDato);
+        LocalDate decisiondate = Now.localDate().plusDays(plussDato);
 
         if (status == null) {
             status = TilskuddPeriodeStatus.UBEHANDLET;
