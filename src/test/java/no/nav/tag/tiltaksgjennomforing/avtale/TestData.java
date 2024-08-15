@@ -28,7 +28,6 @@ import no.nav.tag.tiltaksgjennomforing.sporingslogg.Sporingslogg;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
 import java.math.BigDecimal;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
