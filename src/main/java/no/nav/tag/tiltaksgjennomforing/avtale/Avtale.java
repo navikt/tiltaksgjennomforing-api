@@ -180,39 +180,32 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         this.gjeldendeInnhold.setAvtale(this);
     }
 
-    public static Avtale veilederOppretterAvtale(OpprettAvtale opprettAvtale, NavIdent navIdent) {
-        Avtale avtale = new Avtale(opprettAvtale);
-        avtale.veilederNavIdent = sjekkAtIkkeNull(navIdent, "Veileders NAV-ident må være satt.");
-        avtale.opphav = Avtaleopphav.VEILEDER;
-        avtale.registerEvent(new AvtaleOpprettetAvVeileder(avtale, navIdent));
-        return avtale;
-    }
-
     protected boolean harOppfølgingsStatus() {
         return (this.getEnhetOppfolging() != null ||
                 this.getKvalifiseringsgruppe() != null ||
                 this.getFormidlingsgruppe() != null);
     }
 
-    public static Avtale veilederOppretterAvtale(OpprettMentorAvtale opprettMentorAvtale, NavIdent navIdent) {
-        Avtale avtale = new Avtale(opprettMentorAvtale);
-        avtale.veilederNavIdent = sjekkAtIkkeNull(navIdent, "Veileders NAV-ident må være satt.");
-        avtale.opphav = Avtaleopphav.VEILEDER;
-        avtale.registerEvent(new AvtaleOpprettetAvVeileder(avtale, navIdent));
-        return avtale;
+    public static Avtale opprett(OpprettAvtale opprettAvtale, Avtaleopphav opphav) {
+        return opprett(opprettAvtale, opphav, null);
     }
 
-    public static Avtale arbeidsgiverOppretterAvtale(OpprettAvtale opprettAvtale) {
-        Avtale avtale = new Avtale(opprettAvtale);
-        avtale.opphav = Avtaleopphav.ARBEIDSGIVER;
-        avtale.registerEvent(new AvtaleOpprettetAvArbeidsgiver(avtale));
-        return avtale;
-    }
+    public static Avtale opprett(OpprettAvtale opprettAvtale, Avtaleopphav opphav, NavIdent navIdent) {
+        Avtale avtale = (opprettAvtale instanceof OpprettMentorAvtale)
+                ? new Avtale((OpprettMentorAvtale) opprettAvtale)
+                : new Avtale(opprettAvtale);
 
-    public static Avtale arbeidsgiverOppretterAvtale(OpprettMentorAvtale opprettMentorAvtale) {
-        Avtale avtale = new Avtale(opprettMentorAvtale);
-        avtale.opphav = Avtaleopphav.ARBEIDSGIVER;
-        avtale.registerEvent(new AvtaleOpprettetAvArbeidsgiver(avtale));
+        switch (opphav) {
+            case VEILEDER -> {
+                avtale.veilederNavIdent = sjekkAtIkkeNull(navIdent, "Veileders NAV-ident må være satt.");
+                avtale.registerEvent(new AvtaleOpprettetAvVeileder(avtale, navIdent));
+            }
+            case ARBEIDSGIVER -> {
+                avtale.registerEvent(new AvtaleOpprettetAvArbeidsgiver(avtale));
+            }
+        }
+
+        avtale.setOpphav(opphav);
         return avtale;
     }
 
