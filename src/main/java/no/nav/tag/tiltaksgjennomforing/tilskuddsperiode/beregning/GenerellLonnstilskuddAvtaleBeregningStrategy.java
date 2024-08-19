@@ -15,7 +15,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 
 public class GenerellLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddAvtaleBeregningStrategy {
     public static final int GRENSE_68_PROSENT_ETTER_12_MND = 68;
-    public static final int MAX_67_PROSENT_ETTER_12_MND = 67; // TODO: IKKE TESTET = SE HVOR DEN BRUKES NEDE
+    public static final int MAX_67_PROSENT_ETTER_12_MND = 67;
 
     public void genererNyeTilskuddsperioder(Avtale avtale){
         if (avtale.erAvtaleInngått()) {
