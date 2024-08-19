@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,6 +39,30 @@ public class AvtaleTest {
     @BeforeEach
     public void setup() {
         Now.resetClock();
+    }
+
+    @Test
+    public void test_riktig_beregning_SOMMERJOBB_50_prosent_Lonnstilskudd_Avtale_hvor_periode_er_mellom_to_maneder() {
+        Now.fixedDate(LocalDate.of(2024, 6, 21));
+        Avtale avtale = enSommerjobbAvtale();
+        setOppfølgingPåAvtale(avtale);
+        EndreAvtale endreAvtale = endringPåAlleLønnstilskuddFelterForSommerjobb(50);
+        endreAvtale.setStartDato(LocalDate.of(2024, 6, 23));
+        endreAvtale.setSluttDato(LocalDate.of(2024, 7, 20));
+        avtale.endreAvtale(avtale.getSistEndret(), endreAvtale, Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
+        avtale.getGjeldendeInnhold().setDeltakerFornavn("Lilly");
+        avtale.getGjeldendeInnhold().setDeltakerEtternavn("Lønning");
+        avtale.getGjeldendeInnhold().setArbeidsgiverKontonummer("22222222222");
+        avtale.getGjeldendeInnhold().setManedslonn(20000);
+        avtale.getGjeldendeInnhold().setFeriepengesats(BigDecimal.valueOf(0.12));
+        avtale.getGjeldendeInnhold().setArbeidsgiveravgift(BigDecimal.valueOf(0.141));
+        avtale.getGjeldendeInnhold().setVersjon(1);
+        avtale.getGjeldendeInnhold().setJournalpostId(null);
+        avtale.getGjeldendeInnhold().setMaal(List.of());
+
+        assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(1);
+        assertThat(avtale.getTiltakstype()).isEqualTo(Tiltakstype.SOMMERJOBB);
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(5362, 13405));
     }
 
     @Test
