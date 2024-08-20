@@ -4,7 +4,8 @@ public enum FeatureToggle {
     VTAO_TILTAK_TOGGLE("vtaoTiltakToggle"),
     SMS_MIN_SIDE_DELTAKER("sms-min-side-deltaker"),
     ARBEIDSGIVERNOTIFIKASJON_MED_SAK_OG_SMS("arbeidsgivernotifikasjon-med-sak-og-sms"),
-    SMS_TIL_MOBILNUMMER("sms-til-mobilnummer");
+    SMS_TIL_MOBILNUMMER("sms-til-mobilnummer"),
+    ARENA_AVTALE_SYNC("arena-avtale-sync");
 
     private String toggleNavn;
 

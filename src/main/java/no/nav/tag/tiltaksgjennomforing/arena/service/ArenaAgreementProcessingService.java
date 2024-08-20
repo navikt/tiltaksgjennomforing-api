@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.arena.service;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.arena.logging.ArenaAgreementLogging;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaAgreementAggregate;
-import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaAgreementAggregateRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.enhet.*;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
@@ -21,7 +20,7 @@ import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentN
 @Service
 public class ArenaAgreementProcessingService {
 
-    private final ArenaAgreementAggregateRepository arenaAgreementAggregateRepository;
+    private final TilskuddsperiodeConfig tilskuddsperiodeConfig;
     private final AvtaleRepository avtaleRepository;
     private final EregService eregService;
     private final PersondataService persondataService;
@@ -29,32 +28,67 @@ public class ArenaAgreementProcessingService {
     private final VeilarbArenaClient veilarbArenaClient;
 
     public ArenaAgreementProcessingService(
-            ArenaAgreementAggregateRepository arenaAgreementAggregateRepository,
             AvtaleRepository avtaleRepository,
             EregService eregService,
             PersondataService persondataService,
             Norg2Client norg2Client,
-            VeilarbArenaClient veilarbArenaClient
+            VeilarbArenaClient veilarbArenaClient,
+            TilskuddsperiodeConfig tilskuddsperiodeConfig
     ) {
-        this.arenaAgreementAggregateRepository = arenaAgreementAggregateRepository;
         this.avtaleRepository = avtaleRepository;
         this.eregService = eregService;
         this.persondataService = persondataService;
         this.norg2Client = norg2Client;
         this.veilarbArenaClient = veilarbArenaClient;
+        this.tilskuddsperiodeConfig = tilskuddsperiodeConfig;
     }
 
     @ArenaAgreementLogging
     @Async("arenaThreadPoolExecutor")
     public void process(ArenaAgreementAggregate agreementAggregate) {
-        Optional<Avtale> exisitingAvtaleOpt = agreementAggregate.getEksternIdAsUuid()
-                .flatMap(avtaleRepository::findById);
+        Avtale avtale = agreementAggregate.getEksternIdAsUuid()
+                .flatMap(avtaleRepository::findById)
+                .map((existingAvtale) -> updateAvtale(existingAvtale, agreementAggregate))
+                .orElseGet(() -> createAvtale(agreementAggregate));
 
-        Avtale avtale = exisitingAvtaleOpt.orElseGet(() -> createAvtale(agreementAggregate));
-        if (exisitingAvtaleOpt.isPresent()) {
-            // Oppdater avtale
-            return;
+        avtaleRepository.save(avtale);
+    }
+
+    private Avtale updateAvtale(Avtale avtale, ArenaAgreementAggregate agreementAggregate) {
+        if (!avtale.getDeltakerFnr().equals(new Fnr(agreementAggregate.getFnr()))) {
+            throw new IllegalArgumentException("Fnr i avtale matcher ikke fnr fra Arena");
         }
+
+        if (!avtale.getBedriftNr().equals(new BedriftNr(agreementAggregate.getVirksomhetsnummer()))) {
+            throw new IllegalArgumentException("Virksomhetsnummer i avtale matcher ikke virksomhetsnummer fra Arena");
+        }
+
+        EndreAvtale endreAvtale = new EndreAvtale(avtale);
+
+        Optional.ofNullable(agreementAggregate.getDatoFra() != null ? agreementAggregate.getDatoFra().toLocalDate() : null)
+                .ifPresent(endreAvtale::setStartDato);
+        Optional.ofNullable(agreementAggregate.getDatoTil() != null ? agreementAggregate.getDatoTil().toLocalDate() : null)
+                .ifPresent(endreAvtale::setSluttDato);
+        Optional.ofNullable(agreementAggregate.getAntallDagerPrUke() != null ? Integer.parseInt(agreementAggregate.getAntallDagerPrUke()) : null)
+                .ifPresent(endreAvtale::setAntallDagerPerUke);
+        Optional.ofNullable(agreementAggregate.getProsentDeltid())
+                .ifPresent(endreAvtale::setStillingprosent);
+
+        avtale.endreAvtaleArena(endreAvtale, tilskuddsperiodeConfig.getTiltakstyper());
+
+        log.info("Oppdatert avtale med id: {}", avtale.getId());
+
+        return avtale;
+    }
+
+    private Avtale createAvtale(ArenaAgreementAggregate agreementAggregate) {
+        OpprettAvtale opprettAvtale = OpprettAvtale.builder()
+                .bedriftNr(new BedriftNr(agreementAggregate.getVirksomhetsnummer()))
+                .deltakerFnr(new Fnr(agreementAggregate.getFnr()))
+                .tiltakstype(Tiltakstype.ARBEIDSTRENING)
+                .build();
+
+        Avtale avtale = Avtale.opprett(opprettAvtale, Avtalerolle.ARENA);
 
         Organisasjon org = getOrgFromEreg(avtale.getBedriftNr());
         avtale.leggTilBedriftNavn(org.getBedriftNavn());
@@ -67,22 +101,31 @@ public class ArenaAgreementProcessingService {
             avtale.setEnhetsnavnGeografisk(norg2GeoResponse.getNavn());
         });
 
-        getOppfolgingsstatusFromVeilarbarena(avtale.getDeltakerFnr()).ifPresent((oppfølgingsstatus) -> {
-            avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
-            avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
-            avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
+        getOppfolgingsstatusFromVeilarbarena(avtale.getDeltakerFnr()).ifPresent((status) -> {
+            avtale.setEnhetOppfolging(status.getOppfolgingsenhet());
+            avtale.setKvalifiseringsgruppe(status.getKvalifiseringsgruppe());
+            avtale.setFormidlingsgruppe(status.getFormidlingsgruppe());
         });
 
-        getOppfolgingsenhetFromNorg2(avtale.getEnhetOppfolging(), avtale.getEnhetGeografisk())
-                .ifPresent(avtale::setEnhetOppfolging);
+        getOppfolgingsenhetnavnFromNorg2(avtale.getEnhetOppfolging()).ifPresent(avtale::setEnhetsnavnOppfolging);
 
-        avtaleRepository.save(avtale);
+        AvtaleInnhold avtaleinnhold = avtale.getGjeldendeInnhold();
 
-        // 1. Sjekk om avtalen skal opprettes eller oppdaterees
-        // 2. Hent enhet (kun for nye avtaler)
-        // 3. Oppdater eller opprett avtale
-        // 4. Hent ID fra aktivitetsplan ACL og lagre ID i egen tabell?
-        // 5. Meld fra til GoSys (kun for nye avtaler)
+        Optional.ofNullable(agreementAggregate.getRegDato())
+                .ifPresent(avtale::setOpprettetTidspunkt);
+        Optional.ofNullable(agreementAggregate.getDatoFra() != null ? agreementAggregate.getDatoFra().toLocalDate() : null)
+                .ifPresent(avtaleinnhold::setStartDato);
+        Optional.ofNullable(agreementAggregate.getDatoTil() != null ? agreementAggregate.getDatoTil().toLocalDate() : null)
+                .ifPresent(avtaleinnhold::setSluttDato);
+        Optional.ofNullable(agreementAggregate.getAntallDagerPrUke() != null ? Integer.parseInt(agreementAggregate.getAntallDagerPrUke()) : null)
+                .ifPresent(avtaleinnhold::setAntallDagerPerUke);
+        Optional.ofNullable(agreementAggregate.getProsentDeltid())
+                .ifPresent(avtaleinnhold::setStillingprosent);
+
+        avtale.setGodkjentForEtterregistrering(true);
+        log.info("Opprettet avtale med id: {}", avtale.getId());
+
+        return avtale;
     }
 
     private Organisasjon getOrgFromEreg(BedriftNr bedriftNr) {
@@ -102,26 +145,9 @@ public class ArenaAgreementProcessingService {
         return Optional.ofNullable(veilarbArenaClient.HentOppfølgingsenhetFraCacheEllerArena(fnr.asString()));
     }
 
-    private Optional<String> getOppfolgingsenhetFromNorg2(String oppfolgingsenhet, String geografiskEnhet) {
-        if (oppfolgingsenhet == null) {
-            return Optional.empty();
-        }
-        if (oppfolgingsenhet.equals(geografiskEnhet)) {
-            return Optional.of(geografiskEnhet);
-        }
-
-        return Optional.ofNullable(norg2Client.hentOppfølgingsEnhet(oppfolgingsenhet))
+    private Optional<String> getOppfolgingsenhetnavnFromNorg2(String oppfolgingsenhet) {
+        return Optional.ofNullable(oppfolgingsenhet != null ? norg2Client.hentOppfølgingsEnhet(oppfolgingsenhet) : null)
                 .map(Norg2OppfølgingResponse::getNavn);
-    }
-
-    private Avtale createAvtale(ArenaAgreementAggregate agreementAggregate) {
-        OpprettAvtale opprettAvtale = OpprettAvtale.builder()
-                .bedriftNr(new BedriftNr(agreementAggregate.getVirksomhetsnummer()))
-                .deltakerFnr(new Fnr(agreementAggregate.getFnr()))
-                .tiltakstype(Tiltakstype.ARBEIDSTRENING)
-                .build();
-
-        return Avtale.opprett(opprettAvtale, Avtaleopphav.ARENA);
     }
 
 }

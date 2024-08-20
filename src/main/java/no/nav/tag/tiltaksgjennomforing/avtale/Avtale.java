@@ -2,38 +2,15 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.PostLoad;
-import jakarta.persistence.Transient;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttDatoStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AltMåVæreFyltUtException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørVeilederException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.AvtaleErIkkeFordeltException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.DeltakerHarGodkjentException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AvtaleMedFnrOgBedriftNr;
 import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
@@ -52,14 +29,7 @@ import org.springframework.data.domain.AbstractAggregateRoot;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -113,7 +83,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     private String enhetsnavnOppfolging;
 
     @Enumerated(EnumType.STRING)
-    private Avtaleopphav opphav;
+    private Avtalerolle opphav;
 
     private boolean godkjentForEtterregistrering;
 
@@ -186,11 +156,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
                 this.getFormidlingsgruppe() != null);
     }
 
-    public static Avtale opprett(OpprettAvtale opprettAvtale, Avtaleopphav opphav) {
+    public static Avtale opprett(OpprettAvtale opprettAvtale, Avtalerolle opphav) {
         return opprett(opprettAvtale, opphav, null);
     }
 
-    public static Avtale opprett(OpprettAvtale opprettAvtale, Avtaleopphav opphav, NavIdent navIdent) {
+    public static Avtale opprett(OpprettAvtale opprettAvtale, Avtalerolle opphav, NavIdent navIdent) {
         Avtale avtale = (opprettAvtale instanceof OpprettMentorAvtale)
                 ? new Avtale((OpprettMentorAvtale) opprettAvtale)
                 : new Avtale(opprettAvtale);
@@ -200,9 +170,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
                 avtale.veilederNavIdent = sjekkAtIkkeNull(navIdent, "Veileders NAV-ident må være satt.");
                 avtale.registerEvent(new AvtaleOpprettetAvVeileder(avtale, navIdent));
             }
-            case ARBEIDSGIVER -> {
-                avtale.registerEvent(new AvtaleOpprettetAvArbeidsgiver(avtale));
-            }
+            case ARBEIDSGIVER -> avtale.registerEvent(new AvtaleOpprettetAvArbeidsgiver(avtale));
+            case ARENA -> avtale.registerEvent(new AvtaleOpprettetAvArena(avtale));
+            default -> throw new IllegalArgumentException(opphav.name() + " kan ikke opprette avtale.");
         }
 
         avtale.setOpphav(opphav);
@@ -235,6 +205,23 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder
     ) {
         endreAvtale(sistEndret, nyAvtale, utfortAv, tiltakstyperMedTilskuddsperioder, null);
+    }
+
+    public void endreAvtaleArena(
+            EndreAvtale nyAvtale,
+            EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder
+    ) {
+        if (erGodkjentAvDeltaker() || erGodkjentAvArbeidsgiver() || erGodkjentAvVeileder()) {
+            gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRET_AV_ARENA);
+            getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
+        }
+
+        getGjeldendeInnhold().endreAvtale(nyAvtale);
+        if (tiltakstyperMedTilskuddsperioder != null && tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
+            nyeTilskuddsperioder();
+        }
+        sistEndretNå();
+        registerEvent(new AvtaleEndret(this, Avtalerolle.ARENA, null));
     }
 
     public void delMedAvtalepart(Avtalerolle avtalerolle) {

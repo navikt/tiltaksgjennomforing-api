@@ -1,24 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avslagsårsak;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnholdRepository;
-import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
-import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
-import no.nav.tag.tiltaksgjennomforing.avtale.Beslutter;
-import no.nav.tag.tiltaksgjennomforing.avtale.Deltaker;
-import no.nav.tag.tiltaksgjennomforing.avtale.EndreStillingsbeskrivelse;
-import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
-import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
-import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.OpprettMentorAvtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
-import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.datavarehus.DvhMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
@@ -100,7 +83,7 @@ class LagVarselFraAvtaleHendelserTest {
 
     @Test
     void test_alt() {
-        Avtale avtale = avtaleRepository.save(Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent()));
+        Avtale avtale = avtaleRepository.save(Avtale.opprett(new OpprettAvtale(new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtalerolle.VEILEDER, TestData.enNavIdent()));
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
 
         assertHendelse(OPPRETTET, VEILEDER, VEILEDER, false);
@@ -197,7 +180,7 @@ class LagVarselFraAvtaleHendelserTest {
 
     @Test
     void test_for_arbeidsgiver_oppretter() {
-        Avtale avtale = avtaleRepository.save(Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD)));
+        Avtale avtale = avtaleRepository.save(Avtale.opprett(new OpprettAvtale(new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtalerolle.ARBEIDSGIVER));
 
         assertHendelse(OPPRETTET_AV_ARBEIDSGIVER, ARBEIDSGIVER, VEILEDER, true);
         assertHendelse(OPPRETTET_AV_ARBEIDSGIVER, ARBEIDSGIVER, ARBEIDSGIVER, false);
@@ -213,7 +196,7 @@ class LagVarselFraAvtaleHendelserTest {
 
     @Test
     void test_for_arbeidsgiver_oppretter_mentor_avtale() {
-        Avtale avtale = avtaleRepository.save(Avtale.arbeidsgiverOppretterAvtale(new OpprettMentorAvtale(new Fnr("00000000000"),new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MENTOR, ARBEIDSGIVER)));
+        Avtale avtale = avtaleRepository.save(Avtale.opprett(new OpprettMentorAvtale(new Fnr("00000000000"),new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MENTOR, ARBEIDSGIVER), Avtalerolle.ARBEIDSGIVER));
 
         assertHendelse(OPPRETTET_AV_ARBEIDSGIVER, ARBEIDSGIVER, VEILEDER, true);
         assertHendelse(OPPRETTET_AV_ARBEIDSGIVER, ARBEIDSGIVER, ARBEIDSGIVER, false);
@@ -230,7 +213,7 @@ class LagVarselFraAvtaleHendelserTest {
 
     @Test
     void test_for_delt_med_mentor() {
-        Avtale avtale = avtaleRepository.save(Avtale.veilederOppretterAvtale(new OpprettMentorAvtale(new Fnr("00000000000") , new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MENTOR, VEILEDER), TestData.enNavIdent()));
+        Avtale avtale = avtaleRepository.save(Avtale.opprett(new OpprettMentorAvtale(new Fnr("00000000000") , new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MENTOR, VEILEDER), Avtalerolle.VEILEDER, TestData.enNavIdent()));
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
         avtale.endreAvtale(Now.instant(), TestData.endringPåAlleMentorFelter(), VEILEDER, avtalerMedTilskuddsperioder);
         avtale = avtaleRepository.save(avtale);
