@@ -68,7 +68,7 @@ public class ArbeidsgiverTest {
                 norg2Client);
 
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
-        assertThat(avtale.getOpphav()).isEqualTo(Avtaleopphav.ARBEIDSGIVER);
+        assertThat(avtale.getOpphav()).isEqualTo(Avtalerolle.ARBEIDSGIVER);
         assertThat(avtale.getGjeldendeInnhold().getDeltakerFornavn()).isNotNull();
         assertThat(avtale.getGjeldendeInnhold().getDeltakerEtternavn()).isNotNull();
         assertThat(avtale.getEnhetGeografisk()).isEqualTo(navEnhet.getEnhetNr());

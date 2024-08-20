@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.varsel.oppgave;
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArena;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -20,6 +21,11 @@ public class LagGosysVarselLytter {
 
     @TransactionalEventListener
     public void opprettGosysVarsel(AvtaleOpprettetAvArbeidsgiver event) {
+        varsleGosys(event.getAvtale());
+    }
+
+    @TransactionalEventListener
+    public void opprettGosysVarsel(AvtaleOpprettetAvArena event) {
         varsleGosys(event.getAvtale());
     }
 }

@@ -47,7 +47,7 @@ public class DeltakerTest {
     @Test
     public void deltaker_alder_ikke_eldre_enn_72() {
         Now.fixedDate(LocalDate.of(2021, 1, 20));
-        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("30015521534"), TestData.etBedriftNr(), Tiltakstype.VARIG_LONNSTILSKUDD), TestData.enNavIdent());
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(new Fnr("30015521534"), TestData.etBedriftNr(), Tiltakstype.VARIG_LONNSTILSKUDD), Avtalerolle.VEILEDER, TestData.enNavIdent());
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
         endreAvtale.setSluttDato(LocalDate.of(2027, 1, 30));

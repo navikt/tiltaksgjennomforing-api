@@ -1,5 +1,17 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
+import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
@@ -8,19 +20,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-
-import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
-import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
-import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
-import no.nav.tag.tiltaksgjennomforing.utils.Now;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
@@ -200,7 +199,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
     public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
         this.tilgangTilBedriftVedOpprettelseAvAvtale(opprettAvtale.getBedriftNr(), opprettAvtale.getTiltakstype());
-        Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(opprettAvtale);
+        Avtale avtale = Avtale.opprett(opprettAvtale, Avtalerolle.ARBEIDSGIVER);
         leggEnheterVedOpprettelseAvAvtale(avtale);
 
         return avtale;
@@ -211,7 +210,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
                 opprettMentorAvtale.getBedriftNr(),
                 opprettMentorAvtale.getTiltakstype()
         );
-        Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(opprettMentorAvtale);
+        Avtale avtale = Avtale.opprett(opprettMentorAvtale, Avtalerolle.ARBEIDSGIVER);
         leggEnheterVedOpprettelseAvAvtale(avtale);
 
         return avtale;

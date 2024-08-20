@@ -100,7 +100,7 @@ class LagVarselFraAvtaleHendelserTest {
 
     @Test
     void test_alt() {
-        Avtale avtale = avtaleRepository.save(Avtale.veilederOppretterAvtale(new OpprettAvtale(new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent()));
+        Avtale avtale = avtaleRepository.save(Avtale.opprett(new OpprettAvtale(new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtalerolle.VEILEDER, TestData.enNavIdent()));
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
 
         assertHendelse(OPPRETTET, VEILEDER, VEILEDER, false);
@@ -197,7 +197,7 @@ class LagVarselFraAvtaleHendelserTest {
 
     @Test
     void test_for_arbeidsgiver_oppretter() {
-        Avtale avtale = avtaleRepository.save(Avtale.arbeidsgiverOppretterAvtale(new OpprettAvtale(new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD)));
+        Avtale avtale = avtaleRepository.save(Avtale.opprett(new OpprettAvtale(new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtalerolle.ARBEIDSGIVER));
 
         assertHendelse(OPPRETTET_AV_ARBEIDSGIVER, ARBEIDSGIVER, VEILEDER, true);
         assertHendelse(OPPRETTET_AV_ARBEIDSGIVER, ARBEIDSGIVER, ARBEIDSGIVER, false);
@@ -213,7 +213,7 @@ class LagVarselFraAvtaleHendelserTest {
 
     @Test
     void test_for_arbeidsgiver_oppretter_mentor_avtale() {
-        Avtale avtale = avtaleRepository.save(Avtale.arbeidsgiverOppretterAvtale(new OpprettMentorAvtale(new Fnr("00000000000"),new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MENTOR, ARBEIDSGIVER)));
+        Avtale avtale = avtaleRepository.save(Avtale.opprett(new OpprettMentorAvtale(new Fnr("00000000000"),new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MENTOR, ARBEIDSGIVER), Avtalerolle.ARBEIDSGIVER));
 
         assertHendelse(OPPRETTET_AV_ARBEIDSGIVER, ARBEIDSGIVER, VEILEDER, true);
         assertHendelse(OPPRETTET_AV_ARBEIDSGIVER, ARBEIDSGIVER, ARBEIDSGIVER, false);
@@ -230,7 +230,7 @@ class LagVarselFraAvtaleHendelserTest {
 
     @Test
     void test_for_delt_med_mentor() {
-        Avtale avtale = avtaleRepository.save(Avtale.veilederOppretterAvtale(new OpprettMentorAvtale(new Fnr("00000000000") , new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MENTOR, VEILEDER), TestData.enNavIdent()));
+        Avtale avtale = avtaleRepository.save(Avtale.opprett(new OpprettMentorAvtale(new Fnr("00000000000") , new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MENTOR, VEILEDER), Avtalerolle.VEILEDER, TestData.enNavIdent()));
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
         avtale.endreAvtale(Now.instant(), TestData.endringPåAlleMentorFelter(), VEILEDER, avtalerMedTilskuddsperioder);
         avtale = avtaleRepository.save(avtale);

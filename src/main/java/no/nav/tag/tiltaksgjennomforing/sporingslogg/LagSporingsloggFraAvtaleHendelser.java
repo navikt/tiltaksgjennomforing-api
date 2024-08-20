@@ -12,6 +12,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleLåstOpp;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiverErFordelt;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
@@ -64,6 +65,11 @@ public class LagSporingsloggFraAvtaleHendelser {
     @EventListener
     public void avtaleOpprettetAvArbeidsgiver(AvtaleOpprettetAvArbeidsgiver event) {
         sporingsloggRepository.save(Sporingslogg.nyHendelse(event.getAvtale(), HendelseType.OPPRETTET_AV_ARBEIDSGIVER));
+    }
+
+    @EventListener
+    public void avtaleOpprettetAvArena(AvtaleOpprettetAvArena event) {
+        sporingsloggRepository.save(Sporingslogg.nyHendelse(event.getAvtale(), HendelseType.OPPRETTET_AV_ARENA));
     }
 
     @EventListener

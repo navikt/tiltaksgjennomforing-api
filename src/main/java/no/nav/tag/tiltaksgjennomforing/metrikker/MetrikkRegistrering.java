@@ -12,6 +12,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleLåstOpp;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleSlettemerket;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvArbeidsgiver;
@@ -52,6 +53,13 @@ public class MetrikkRegistrering {
         Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
         log.info("Avtale opprettet av arbeidsgiver, avtaleId={}, tiltakstype={}", event.getAvtale().getId(), tiltakstype);
         counter("avtale.opprettet", Avtalerolle.ARBEIDSGIVER, tiltakstype).increment();
+    }
+
+    @EventListener
+    public void avtaleOpprettetAvArbeidsgiver(AvtaleOpprettetAvArena event) {
+        Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
+        log.info("Avtale opprettet av Arena, avtaleId={}, tiltakstype={}", event.getAvtale().getId(), tiltakstype);
+        counter("avtale.opprettet", Avtalerolle.ARENA, tiltakstype).increment();
     }
 
     @EventListener

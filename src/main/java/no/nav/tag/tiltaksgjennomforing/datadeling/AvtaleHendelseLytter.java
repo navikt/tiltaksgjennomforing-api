@@ -28,6 +28,12 @@ public class AvtaleHendelseLytter {
     }
 
     @EventListener
+    public void avtaleOpprettetAvArena(AvtaleOpprettetAvArena event) {
+        Avtale avtale = event.getAvtale();
+        lagHendelse(avtale, HendelseType.OPPRETTET_AV_ARENA, avtale.getBedriftNr(), Avtalerolle.ARENA);
+    }
+
+    @EventListener
     public void avtaleOpprettetAvVeileder(AvtaleOpprettetAvVeileder event) {
         Avtale avtale = event.getAvtale();
         lagHendelse(avtale, HendelseType.OPPRETTET, event.getUtfortAv(), Avtalerolle.VEILEDER);

@@ -21,7 +21,48 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.ArbeidsgiversGodkjenningOpphevetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortet;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlenget;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiverErFordelt;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArena;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleSlettemerket;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.DeltakersGodkjenningOpphevetAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.DeltakersGodkjenningOpphevetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.FjernetEtterregistrering;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GamleVerdier;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvDeltaker;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentForEtterregistrering;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltaker;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltakerOgArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.InkluderingstilskuddEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.KontaktinformasjonEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.MålEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.OmMentorEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.OppfølgingOgTilretteleggingEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonFristForlenget;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKlar;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKlarRevarsel;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKorrigert;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.SignertAvMentor;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.StillingsbeskrivelseEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsberegningEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAnnullert;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAvslått;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeForkortet;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeGodkjent;
 import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttDatoStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
@@ -113,7 +154,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     private String enhetsnavnOppfolging;
 
     @Enumerated(EnumType.STRING)
-    private Avtaleopphav opphav;
+    private Avtalerolle opphav;
 
     private boolean godkjentForEtterregistrering;
 
@@ -180,39 +221,32 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         this.gjeldendeInnhold.setAvtale(this);
     }
 
-    public static Avtale veilederOppretterAvtale(OpprettAvtale opprettAvtale, NavIdent navIdent) {
-        Avtale avtale = new Avtale(opprettAvtale);
-        avtale.veilederNavIdent = sjekkAtIkkeNull(navIdent, "Veileders NAV-ident må være satt.");
-        avtale.opphav = Avtaleopphav.VEILEDER;
-        avtale.registerEvent(new AvtaleOpprettetAvVeileder(avtale, navIdent));
-        return avtale;
-    }
-
     protected boolean harOppfølgingsStatus() {
         return (this.getEnhetOppfolging() != null ||
                 this.getKvalifiseringsgruppe() != null ||
                 this.getFormidlingsgruppe() != null);
     }
 
-    public static Avtale veilederOppretterAvtale(OpprettMentorAvtale opprettMentorAvtale, NavIdent navIdent) {
-        Avtale avtale = new Avtale(opprettMentorAvtale);
-        avtale.veilederNavIdent = sjekkAtIkkeNull(navIdent, "Veileders NAV-ident må være satt.");
-        avtale.opphav = Avtaleopphav.VEILEDER;
-        avtale.registerEvent(new AvtaleOpprettetAvVeileder(avtale, navIdent));
-        return avtale;
+    public static Avtale opprett(OpprettAvtale opprettAvtale, Avtalerolle opphav) {
+        return opprett(opprettAvtale, opphav, null);
     }
 
-    public static Avtale arbeidsgiverOppretterAvtale(OpprettAvtale opprettAvtale) {
-        Avtale avtale = new Avtale(opprettAvtale);
-        avtale.opphav = Avtaleopphav.ARBEIDSGIVER;
-        avtale.registerEvent(new AvtaleOpprettetAvArbeidsgiver(avtale));
-        return avtale;
-    }
+    public static Avtale opprett(OpprettAvtale opprettAvtale, Avtalerolle opphav, NavIdent navIdent) {
+        Avtale avtale = (opprettAvtale instanceof OpprettMentorAvtale)
+                ? new Avtale((OpprettMentorAvtale) opprettAvtale)
+                : new Avtale(opprettAvtale);
 
-    public static Avtale arbeidsgiverOppretterAvtale(OpprettMentorAvtale opprettMentorAvtale) {
-        Avtale avtale = new Avtale(opprettMentorAvtale);
-        avtale.opphav = Avtaleopphav.ARBEIDSGIVER;
-        avtale.registerEvent(new AvtaleOpprettetAvArbeidsgiver(avtale));
+        switch (opphav) {
+            case VEILEDER -> {
+                avtale.veilederNavIdent = sjekkAtIkkeNull(navIdent, "Veileders NAV-ident må være satt.");
+                avtale.registerEvent(new AvtaleOpprettetAvVeileder(avtale, navIdent));
+            }
+            case ARBEIDSGIVER -> avtale.registerEvent(new AvtaleOpprettetAvArbeidsgiver(avtale));
+            case ARENA -> avtale.registerEvent(new AvtaleOpprettetAvArena(avtale));
+            default -> throw new IllegalArgumentException(opphav.name() + " kan ikke opprette avtale.");
+        }
+
+        avtale.setOpphav(opphav);
         return avtale;
     }
 
@@ -242,6 +276,23 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder
     ) {
         endreAvtale(sistEndret, nyAvtale, utfortAv, tiltakstyperMedTilskuddsperioder, null);
+    }
+
+    public void endreAvtaleArena(
+            EndreAvtale nyAvtale,
+            EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder
+    ) {
+        if (erGodkjentAvDeltaker() || erGodkjentAvArbeidsgiver() || erGodkjentAvVeileder()) {
+            gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRET_AV_ARENA);
+            getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
+        }
+
+        getGjeldendeInnhold().endreAvtale(nyAvtale);
+        if (tiltakstyperMedTilskuddsperioder != null && tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
+            nyeTilskuddsperioder();
+        }
+        sistEndretNå();
+        registerEvent(new AvtaleEndret(this, Avtalerolle.ARENA, null));
     }
 
     public void delMedAvtalepart(Avtalerolle avtalerolle) {
