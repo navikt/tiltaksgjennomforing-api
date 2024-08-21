@@ -26,6 +26,7 @@ import java.util.Set;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.*;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,6 +39,122 @@ public class AvtaleTest {
     @BeforeEach
     public void setup() {
         Now.resetClock();
+    }
+
+    @Test
+    public void test_riktig_beregning_Varig_Lonnstilskudd_Avtale_som_varer_i_mange_aar_tilbake_i_tid_med_send_tilbake_til_beslutter_og_avslåt_tilskuddperiode() {
+        Now.fixedDate(LocalDate.of(2024, 7, 29));
+        Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.godkjennForArbeidsgiver(enIdentifikator());
+        GodkjentPaVegneGrunn godkjentPaVegneGrunn = new GodkjentPaVegneGrunn();
+        godkjentPaVegneGrunn.setIkkeBankId(true);
+        godkjentPaVegneGrunn.setDigitalKompetanse(true);
+        avtale.godkjennForVeilederOgDeltaker(avtale.getVeilederNavIdent(),godkjentPaVegneGrunn);
+
+        avtale.avslåTilskuddsperiode(avtale.getVeilederNavIdent(),EnumSet.of(Avslagsårsak.ANNET),"Kommentar");
+        avtale.sendTilbakeTilBeslutter();
+        avtale.godkjennTilskuddsperiode(enBeslutter(avtale).getNavIdent(), TestData.ENHET_OPPFØLGING.getVerdi());
+        assertThat(avtale.getGjeldendeInnhold().getSumLonnstilskudd()).isEqualTo(24480);
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getStatus).toList()).isEqualTo(List.of(AVSLÅTT,
+                GODKJENT,
+                UBEHANDLET,
+                UBEHANDLET,
+                UBEHANDLET,
+                UBEHANDLET,
+                UBEHANDLET,
+                UBEHANDLET,
+                UBEHANDLET,
+                UBEHANDLET,
+                UBEHANDLET,
+                UBEHANDLET,
+                UBEHANDLET,
+                UBEHANDLET));
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(2413,
+                2413,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                22520));
+        EndreAvtale endreAvtale = new EndreAvtale();
+        endreAvtale.setOppfolging("Telefon hver uke");
+        endreAvtale.setTilrettelegging("Ingen");
+        endreAvtale.setStartDato(Now.localDate());
+        endreAvtale.setSluttDato(endreAvtale.getStartDato().plusYears(6).minusDays(1));
+        endreAvtale.setStillingprosent(50);
+        endreAvtale.setArbeidsoppgaver("Butikkarbeid");
+        endreAvtale.setArbeidsgiverKontonummer("000111222");
+        endreAvtale.setStillingstittel("Butikkbetjent");
+        endreAvtale.setStillingStyrk08(5223);
+        endreAvtale.setStillingKonseptId(112968);
+        endreAvtale.setLonnstilskuddProsent(60);
+        endreAvtale.setManedslonn(10000);
+        endreAvtale.setFeriepengesats(BigDecimal.ONE);
+        endreAvtale.setArbeidsgiveravgift(BigDecimal.ONE);
+        endreAvtale.setOtpSats(0.02);
+        endreAvtale.setStillingstype(Stillingstype.FAST);
+        endreAvtale.setAntallDagerPerUke(5);
+        endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678", true));
+        avtale.opphevGodkjenningerSomVeileder();
+        final int FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_6_AAR_VARIG_AVTALE = 14;
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList().size()).isEqualTo(FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_6_AAR_VARIG_AVTALE);
+        assertThat(avtale.getGjeldendeInnhold().getSumLonnstilskudd()).isEqualTo(24480);
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::isAktiv).toList()).isEqualTo(List.of(false,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true,
+                true));
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(2413,
+                2413,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                24480,
+                22520));
+
+        avtale.godkjennForArbeidsgiver(enIdentifikator());
+        avtale.godkjennForVeilederOgDeltaker(avtale.getVeilederNavIdent(),godkjentPaVegneGrunn);
+        EndreTilskuddsberegning endreTilskuddsberegning = new EndreTilskuddsberegning(1000, BigDecimal.valueOf(20), BigDecimal.valueOf(20), 0.23);
+        avtale.endreTilskuddsberegning(endreTilskuddsberegning, TestData.enNavIdent());
+
+        assertThat(avtale.getGjeldendeInnhold().getSumLonnstilskudd()).isEqualTo(325458);
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(2413,
+                2413,
+                325458,
+                325458,
+                325458,
+                325458,
+                325458,
+                325458,
+                325458,
+                325458,
+                325458,
+                325458,
+                325458,
+                299395));
     }
 
     @Test
@@ -1548,7 +1665,7 @@ public class AvtaleTest {
         assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(LocalDate.of(2023, 2, 28));
         assertFeilkode(Feilkode.KAN_IKKE_FORKORTE_FOR_UTBETALT_TILSKUDDSPERIODE, () -> avtale.forkortAvtale(LocalDate.of(2023, 2, 27), "Grunn", "Grunn2", veileder.getNavIdent()));
 
-        assertThat(avtale.getGjeldendeTilskuddsperiodestatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
+        assertThat(avtale.getGjeldendeTilskuddsperiodestatus()).isEqualTo(GODKJENT);
     }
 
     // Man skal ikke kunne forkorte en avtale sånn at man får en sluttdato som er før en godkjent/utbetalt tilskuddsperide (refusjon)
