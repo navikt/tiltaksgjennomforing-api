@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.Unprotected;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.arena.configuration.ArenaKafkaProperties;
-import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaAgreementAggregate;
+import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementAggregate;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaKafkaMessage;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakdeltaker;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakgjennomforing;
