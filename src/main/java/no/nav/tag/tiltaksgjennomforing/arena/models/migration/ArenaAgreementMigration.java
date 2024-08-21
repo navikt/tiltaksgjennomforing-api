@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -20,4 +21,6 @@ public class ArenaAgreementMigration {
     @Enumerated(EnumType.STRING)
     private ArenaAgreementMigrationStatus status;
     private UUID agreementId;
+    private LocalDateTime created;
+    private LocalDateTime modified;
 }

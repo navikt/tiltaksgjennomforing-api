@@ -29,6 +29,7 @@ import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -101,6 +102,7 @@ public class ArenaAgreementProcessingService {
                     .tiltakgjennomforingId(id)
                     .status(status)
                     .agreementId(agreementId)
+                    .modified(LocalDateTime.now())
                     .build()
             );
         };

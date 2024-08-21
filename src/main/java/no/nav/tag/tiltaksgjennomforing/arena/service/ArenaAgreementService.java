@@ -8,6 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaAgreementMigrationR
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -33,6 +34,7 @@ public class ArenaAgreementService {
             ArenaAgreementMigration migration = ArenaAgreementMigration.builder()
                     .tiltakgjennomforingId(aggregate.getTiltakgjennomforingId())
                     .status(ArenaAgreementMigrationStatus.PENDING)
+                    .modified(LocalDateTime.now())
                     .build();
 
             arenaAgreementAggregateRepository.save(migration);
