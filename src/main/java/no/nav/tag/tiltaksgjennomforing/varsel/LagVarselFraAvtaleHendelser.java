@@ -62,7 +62,7 @@ public class LagVarselFraAvtaleHendelser {
     @EventListener
     public void avtaleOpprettetAvArena(AvtaleOpprettetAvArena event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), Avtalerolle.ARENA, event.getAvtale().getBedriftNr(), HendelseType.OPPRETTET_AV_ARENA);
-        varselRepository.saveAll(factory.veileder());
+        varselRepository.save(factory.veileder());
     }
 
     @EventListener
