@@ -16,7 +16,7 @@ public class LagGosysVarselLytter {
 
     private void varsleGosys (Avtale avtale) {
         final String aktørid = persondataService.hentAktørId(avtale.getDeltakerFnr());
-        oppgaveVarselService.opprettOppgave(aktørid, avtale.getTiltakstype(), avtale.getId());
+        oppgaveVarselService.opprettOppgave(aktørid, avtale);
     }
 
     @TransactionalEventListener

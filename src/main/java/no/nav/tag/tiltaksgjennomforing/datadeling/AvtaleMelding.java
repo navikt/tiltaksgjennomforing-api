@@ -135,7 +135,7 @@ public class AvtaleMelding {
         avtaleMelding.setAnnullertTidspunkt(avtale.getAnnullertTidspunkt());
         avtaleMelding.setAnnullertGrunn(avtale.getAnnullertGrunn());
         avtaleMelding.setSlettemerket(avtale.isSlettemerket());
-        avtaleMelding.setOpprettetAvArbeidsgiver(Avtalerolle.ARBEIDSGIVER.equals(avtale.getOpphav()));
+        avtaleMelding.setOpprettetAvArbeidsgiver(Avtaleopphav.ARBEIDSGIVER.equals(avtale.getOpphav()));
         avtaleMelding.setEnhetGeografisk(avtale.getEnhetGeografisk());
         avtaleMelding.setEnhetsnavnGeografisk(avtale.getEnhetsnavnGeografisk());
         avtaleMelding.setEnhetOppfolging(avtale.getEnhetOppfolging());

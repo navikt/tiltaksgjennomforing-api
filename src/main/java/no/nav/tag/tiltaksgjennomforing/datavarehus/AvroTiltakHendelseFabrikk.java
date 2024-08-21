@@ -2,7 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.datavarehus;
 
 import lombok.experimental.UtilityClass;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 
 import java.time.Instant;
@@ -60,7 +60,7 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setUtfortAv(utførtAv);
         hendelse.setEnhetOppfolging(avtale.getEnhetOppfolging());
         hendelse.setEnhetGeografisk(avtale.getEnhetGeografisk());
-        hendelse.setOpprettetAvArbeidsgiver(Avtalerolle.ARBEIDSGIVER.equals(avtale.getOpphav()));
+        hendelse.setOpprettetAvArbeidsgiver(Avtaleopphav.ARBEIDSGIVER.equals(avtale.getOpphav()));
         hendelse.setAnnullertTidspunkt(avtale.getAnnullertTidspunkt());
         hendelse.setAnnullertGrunn(avtale.getAnnullertGrunn());
         hendelse.setMaster(erMaster(avtale));

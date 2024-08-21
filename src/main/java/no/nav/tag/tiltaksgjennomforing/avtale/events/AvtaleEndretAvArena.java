@@ -5,7 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 
 @Value
-public class AvtaleOpprettetAvArena {
+public class AvtaleEndretAvArena {
     Avtale avtale;
     Identifikator utfortAv = new Identifikator("Arena");
 }

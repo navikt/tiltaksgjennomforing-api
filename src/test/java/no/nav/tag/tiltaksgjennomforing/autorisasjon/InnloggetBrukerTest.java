@@ -37,7 +37,7 @@ public class InnloggetBrukerTest {
         deltaker = new Fnr("00000000000");
         navIdent = new NavIdent("X100000");
         bedriftNr = new BedriftNr("12345678901");
-        avtale = Avtale.opprett(new OpprettAvtale(deltaker, bedriftNr, Tiltakstype.ARBEIDSTRENING), Avtalerolle.VEILEDER, navIdent);
+        avtale = Avtale.opprett(new OpprettAvtale(deltaker, bedriftNr, Tiltakstype.ARBEIDSTRENING), Avtaleopphav.VEILEDER, navIdent);
         tilgangskontrollService = mock(TilgangskontrollService.class);
         persondataService = mock(PersondataService.class);
         kontoregisterService = mock(KontoregisterService.class);

@@ -5,10 +5,12 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAvRolle;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
@@ -36,7 +38,7 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
     @Enumerated(EnumType.STRING)
     private Avtalerolle mottaker;
     @Enumerated(EnumType.STRING)
-    private Avtalerolle utførtAv;
+    private AvtaleHendelseUtførtAvRolle utførtAv;
 
     private static String tilskuddsperiodeAvslåttTekst(Avtale avtale, String hendelseTypeTekst) {
         TilskuddPeriode gjeldendePeriode = avtale.gjeldendeTilskuddsperiode();
@@ -53,13 +55,13 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
     private static String lagVarselTekst(Avtale avtale, HendelseType hendelseType) {
         return switch (hendelseType) {
             case TILSKUDDSPERIODE_AVSLATT -> tilskuddsperiodeAvslåttTekst(avtale, hendelseType.getTekst());
-            case TILSKUDDSPERIODE_GODKJENT ->{
-                if(avtale.gjeldendeTilskuddsperiode() != null
+            case TILSKUDDSPERIODE_GODKJENT -> {
+                if (avtale.gjeldendeTilskuddsperiode() != null
                         && avtale.gjeldendeTilskuddsperiode().getStartDato() != null
                         && avtale.gjeldendeTilskuddsperiode().getSluttDato() != null) {
                     DateTimeFormatter norskDatoformat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
                     yield hendelseType.getTekst() + "\n(" + avtale.gjeldendeTilskuddsperiode().getStartDato().format(norskDatoformat) + " til " + avtale.gjeldendeTilskuddsperiode().getSluttDato().format(norskDatoformat) + ")";
-                }else{
+                } else {
                     yield hendelseType.getTekst();
                 }
             }
@@ -71,7 +73,16 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
         };
     }
 
-    public static Varsel nyttVarsel(Identifikator identifikator, boolean bjelle, Avtale avtale, Avtalerolle mottaker, Avtalerolle utførtAv, Identifikator utførtAvIdentifikator, HendelseType hendelseType, UUID avtaleId) {
+    public static Varsel nyttVarsel(
+            Identifikator identifikator,
+            boolean bjelle,
+            Avtale avtale,
+            Avtalerolle mottaker,
+            AvtaleHendelseUtførtAvRolle utførtAv,
+            Identifikator utførtAvIdentifikator,
+            HendelseType hendelseType,
+            UUID avtaleId
+    ) {
         Varsel varsel = new Varsel();
         varsel.id = UUID.randomUUID();
         varsel.tidspunkt = Now.localDateTime();

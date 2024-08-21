@@ -503,7 +503,7 @@ public class AvtaleTest {
 
         NavIdent veilederNavIdent = new NavIdent("X123456");
         BedriftNr bedriftNr = new BedriftNr("000111222");
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(deltakerFnr, bedriftNr, Tiltakstype.ARBEIDSTRENING), Avtalerolle.VEILEDER, veilederNavIdent);
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(deltakerFnr, bedriftNr, Tiltakstype.ARBEIDSTRENING), Avtaleopphav.VEILEDER, veilederNavIdent);
         SoftAssertions.assertSoftly(softly -> {
             softly.assertThat(avtale.getOpprettetTidspunkt()).isNotNull();
             softly.assertThat(avtale.getDeltakerFnr()).isEqualTo(deltakerFnr);
@@ -533,27 +533,27 @@ public class AvtaleTest {
 
     @Test
     public void nyAvtaleSkalFeileHvisManglerDeltaker() {
-        assertThatThrownBy(() -> Avtale.opprett(new OpprettAvtale(null, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), Avtalerolle.VEILEDER, new NavIdent("X123456"))).isInstanceOf(TiltaksgjennomforingException.class);
+        assertThatThrownBy(() -> Avtale.opprett(new OpprettAvtale(null, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), Avtaleopphav.VEILEDER, new NavIdent("X123456"))).isInstanceOf(TiltaksgjennomforingException.class);
     }
 
     @Test
     public void nyAvtaleSkalFeileHvisManglerArbeidsgiver() {
-        assertThatThrownBy(() -> Avtale.opprett(new OpprettAvtale(new Fnr("23078637692"), null, Tiltakstype.ARBEIDSTRENING), Avtalerolle.VEILEDER, new NavIdent("X123456"))).isInstanceOf(TiltaksgjennomforingException.class);
+        assertThatThrownBy(() -> Avtale.opprett(new OpprettAvtale(new Fnr("23078637692"), null, Tiltakstype.ARBEIDSTRENING), Avtaleopphav.VEILEDER, new NavIdent("X123456"))).isInstanceOf(TiltaksgjennomforingException.class);
     }
 
     @Test
     public void nyAvtaleSkalFeileHvisManglerVeileder() {
-        assertThatThrownBy(() -> Avtale.opprett(new OpprettAvtale(new Fnr("23078637692"), new BedriftNr("000111222"), Tiltakstype.ARBEIDSTRENING), Avtalerolle.VEILEDER, null)).isInstanceOf(TiltaksgjennomforingException.class);
+        assertThatThrownBy(() -> Avtale.opprett(new OpprettAvtale(new Fnr("23078637692"), new BedriftNr("000111222"), Tiltakstype.ARBEIDSTRENING), Avtaleopphav.VEILEDER, null)).isInstanceOf(TiltaksgjennomforingException.class);
     }
 
     @Test
     public void nyAvtaleSkalFeileHvisDeltakerErForUng() {
-        assertFeilkode(Feilkode.SOMMERJOBB_IKKE_GAMMEL_NOK, () -> Avtale.opprett(new OpprettAvtale(new Fnr("24010970772"), new BedriftNr("000111222"), Tiltakstype.ARBEIDSTRENING), Avtalerolle.VEILEDER, null));
+        assertFeilkode(Feilkode.SOMMERJOBB_IKKE_GAMMEL_NOK, () -> Avtale.opprett(new OpprettAvtale(new Fnr("24010970772"), new BedriftNr("000111222"), Tiltakstype.ARBEIDSTRENING), Avtaleopphav.VEILEDER, null));
     }
 
     @Test
     public void nyAvtaleSkalFeileHvisDeltakerErForGammelForSommerjobb() {
-        assertFeilkode(Feilkode.SOMMERJOBB_FOR_GAMMEL, () -> Avtale.opprett(new OpprettAvtale(new Fnr("08098114468"), new BedriftNr("000111222"), Tiltakstype.SOMMERJOBB), Avtalerolle.VEILEDER, null));
+        assertFeilkode(Feilkode.SOMMERJOBB_FOR_GAMMEL, () -> Avtale.opprett(new OpprettAvtale(new Fnr("08098114468"), new BedriftNr("000111222"), Tiltakstype.SOMMERJOBB), Avtaleopphav.VEILEDER, null));
     }
 
     @Test
@@ -715,7 +715,7 @@ public class AvtaleTest {
                 AvtaleInnhold.Fields.oppfolging
         );
 
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.ARBEIDSTRENING), Avtalerolle.VEILEDER, TestData.enNavIdent());
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.ARBEIDSTRENING), Avtaleopphav.VEILEDER, TestData.enNavIdent());
 
         testAtAlleFelterMangler(avtale, arbeidstreningsfelter);
         testAtHvertEnkeltFeltMangler(avtale, arbeidstreningsfelter, avtale.getTiltakstype());
@@ -751,7 +751,7 @@ public class AvtaleTest {
                 AvtaleInnhold.Fields.harFamilietilknytning
         );
 
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtalerolle.VEILEDER, TestData.enNavIdent());
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent());
 
         testAtAlleFelterMangler(avtale, lønnstilskuddfelter);
         testAtHvertEnkeltFeltMangler(avtale, lønnstilskuddfelter, avtale.getTiltakstype());
@@ -789,7 +789,7 @@ public class AvtaleTest {
                 Fields.refusjonKontaktpersonFornavn
         );
 
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.VARIG_LONNSTILSKUDD), Avtalerolle.VEILEDER, TestData.enNavIdent());
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.VARIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent());
         avtale.getGjeldendeInnhold().setRefusjonKontaktperson(new RefusjonKontaktperson(null, "Duck", "12345678", true));
         testAtAlleFelterMangler(avtale, lønnstilskuddfelter);
         testAtHvertEnkeltFeltMangler(avtale, lønnstilskuddfelter, avtale.getTiltakstype());
@@ -821,7 +821,7 @@ public class AvtaleTest {
                 AvtaleInnhold.Fields.harFamilietilknytning
         );
 
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), Avtalerolle.VEILEDER, TestData.enNavIdent());
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MENTOR), Avtaleopphav.VEILEDER, TestData.enNavIdent());
 
         testAtAlleFelterMangler(avtale, mentorfelter);
         testAtHvertEnkeltFeltMangler(avtale, mentorfelter, avtale.getTiltakstype());
@@ -867,7 +867,7 @@ public class AvtaleTest {
 
     @Test
     public void kan_ikke_godkjennes_når_alt_er_utfylt_men_beregning_mangler() {
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtalerolle.VEILEDER, TestData.enNavIdent());
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent());
         avtale.setEnhetOppfolging("0000");
         avtale.setEnhetsnavnOppfolging("0000");
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
@@ -1138,21 +1138,21 @@ public class AvtaleTest {
 
     @Test
     public void avtale_opprettet_av_arbedsgiver_skal_være_ufordelt() {
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtalerolle.ARBEIDSGIVER);
-        assertThat(avtale.getOpphav()).isEqualTo(Avtalerolle.ARBEIDSGIVER);
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.ARBEIDSGIVER);
+        assertThat(avtale.getOpphav()).isEqualTo(Avtaleopphav.ARBEIDSGIVER);
         assertThat(avtale.erUfordelt()).isTrue();
     }
 
     @Test
     public void avtale_kan_være_ufordelt_selv_om_alt_er_utfylt() {
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtalerolle.ARBEIDSGIVER);
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.ARBEIDSGIVER);
         avtale.endreAvtale(Now.instant(), TestData.endringPåAlleLønnstilskuddFelter(), Avtalerolle.ARBEIDSGIVER, avtalerMedTilskuddsperioder);
         assertThat(avtale.erUfordelt()).isTrue();
     }
 
     @Test
     public void avtale_skal_ikke_kunne_godkjennes_uten_navident() {
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtalerolle.ARBEIDSGIVER);
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.ARBEIDSGIVER);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.endreAvtale(Now.instant(), TestData.endringPåAlleLønnstilskuddFelter(), Avtalerolle.ARBEIDSGIVER, avtalerMedTilskuddsperioder);
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
@@ -1161,7 +1161,7 @@ public class AvtaleTest {
 
     @Test
     public void ufordelt_avtale_ikke_klar_for_godkjenning() {
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.ARBEIDSTRENING), Avtalerolle.ARBEIDSGIVER);
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.ARBEIDSTRENING), Avtaleopphav.ARBEIDSGIVER);
         avtale.endreAvtale(Now.instant(), TestData.endringPåAlleArbeidstreningFelter(), Avtalerolle.ARBEIDSGIVER, avtalerMedTilskuddsperioder);
         assertFeilkode(Feilkode.MANGLER_VEILEDER_PÅ_AVTALE, () -> avtale.sjekkOmAltErKlarTilGodkjenning());
     }
@@ -1170,7 +1170,7 @@ public class AvtaleTest {
     public void ufordelt_avtale_må_tildeles_veileder_før_den_kan_godkjennes() {
         Avtale avtale = Avtale.opprett(
                 new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD),
-                Avtalerolle.ARBEIDSGIVER
+                Avtaleopphav.ARBEIDSGIVER
         );
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.endreAvtale(Now.instant(), TestData.endringPåAlleLønnstilskuddFelter(), Avtalerolle.ARBEIDSGIVER, avtalerMedTilskuddsperioder);
@@ -1186,7 +1186,7 @@ public class AvtaleTest {
     public void ufordelt_midlertidig_lts_avtale_endrer_avtale_med_lavere_lønnstilskuddprosent_enn_mellom_kun_40_60_prosent() {
         Avtale avtale = Avtale.opprett(
                 new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD),
-                        Avtalerolle.VEILEDER,
+                Avtaleopphav.VEILEDER,
                 new NavIdent("Z123456"));
         avtale.setKvalifiseringsgruppe(null);
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
@@ -1199,7 +1199,7 @@ public class AvtaleTest {
     public void ufordelt_midlertidig_lts_avtale_endrer_avtale_med_høyere_enn_maks_lønnstilskuddprosent_enn_60_prosent() {
         Avtale avtale = Avtale.opprett(
                 new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD),
-                Avtalerolle.VEILEDER,
+                Avtaleopphav.VEILEDER,
                 new NavIdent("Z123456")
         );
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
@@ -1214,7 +1214,7 @@ public class AvtaleTest {
     public void ufordelt_varig_lts_avtale_endrer_avtale_med_lavere_lønnstilskuddprosent_enn_0_prosent() {
         Avtale avtale = Avtale.opprett(
                 new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.VARIG_LONNSTILSKUDD),
-                Avtalerolle.VEILEDER,
+                Avtaleopphav.VEILEDER,
                 new NavIdent("Z123456")
         );
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
@@ -1227,7 +1227,7 @@ public class AvtaleTest {
     public void ufordelt_varig_lts_avtale_endrer_avtale_med_høyere_enn_maks_lønnstilskuddprosent_enn_75_prosent() {
         Avtale avtale = Avtale.opprett(
                 new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.VARIG_LONNSTILSKUDD),
-                Avtalerolle.VEILEDER,
+                Avtaleopphav.VEILEDER,
                 new NavIdent("Z123456")
         );
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
@@ -1488,7 +1488,7 @@ public class AvtaleTest {
 
     @Test
     public void forleng_og_forkort_skal_redusere_prosent() {
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtalerolle.VEILEDER, TestData.enNavIdent());
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent());
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(Now.localDate());
@@ -1606,7 +1606,7 @@ public class AvtaleTest {
     //40%
     @Test
     public void beregning_av_lønnstilskudd_ut_ifra_kvalifiseringsgruppe_SITUASJONSBESTEMT_INNSATS_og_MIDLERTIDIG_LONNSTILSKUDD() {
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtalerolle.VEILEDER, TestData.enNavIdent());
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent());
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.setGodkjentForEtterregistrering(true);
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
@@ -1617,7 +1617,7 @@ public class AvtaleTest {
     //60%
     @Test
     public void beregning_av_lønnstilskudd_ut_ifra_kvalifiseringsgruppe_SPESIELT_TILPASSET_INNSATS_og_MIDLERTIDIG_LONNSTILSKUDD() {
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtalerolle.VEILEDER, TestData.enNavIdent());
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent());
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS);
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
@@ -1628,7 +1628,7 @@ public class AvtaleTest {
     @Test
     @Disabled("Utleding av lønnstilskuddprosent er skrudd av på sommerjobb inntil videre for å tilltate etterregistrering")
     public void beregning_av_lønnstilskudd_ut_ifra_kvalifiseringsgruppe_SITUASJONSBESTEMT_INNSATS_og_SOMMERJOBB() {
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.SOMMERJOBB), Avtalerolle.VEILEDER, TestData.enNavIdent());
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.SOMMERJOBB), Avtaleopphav.VEILEDER, TestData.enNavIdent());
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
@@ -1641,7 +1641,7 @@ public class AvtaleTest {
     @Test
     @Disabled("Utleding av lønnstilskuddprosent er skrudd av på sommerjobb inntil videre for å tilltate etterregistrering")
     public void beregning_av_lønnstilskudd_ut_ifra_kvalifiseringsgruppe_SPESIELT_TILPASSET_INNSATS_og_SOMMERJOBB() {
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.SOMMERJOBB), Avtalerolle.VEILEDER, TestData.enNavIdent());
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.SOMMERJOBB), Avtaleopphav.VEILEDER, TestData.enNavIdent());
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS);
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(LocalDate.of(2021, 6, 1));
@@ -1652,13 +1652,13 @@ public class AvtaleTest {
 
     @Test
     public void godkjent_for_etterregistrering_starter_som_false() {
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtalerolle.VEILEDER, TestData.enNavIdent());
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent());
         assertThat(avtale.isGodkjentForEtterregistrering()).isFalse();
     }
 
     @Test
     public void avtale_setter_godkjent_for_etterregistrering() {
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtalerolle.VEILEDER, TestData.enNavIdent());
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent());
         avtale.togglegodkjennEtterregistrering(TestData.enNavIdent());
         assertThat(avtale.isGodkjentForEtterregistrering()).isTrue();
     }
@@ -1666,7 +1666,7 @@ public class AvtaleTest {
     @Test
     public void avtale_kan_etterregistreres() {
         Now.fixedDate(LocalDate.of(2021, 12, 20));
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtalerolle.VEILEDER, TestData.enNavIdent());
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent());
         avtale.togglegodkjennEtterregistrering(TestData.enNavIdent());
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(LocalDate.of(2021, 12, 12));
@@ -1680,7 +1680,7 @@ public class AvtaleTest {
     @Test
     public void avtale_FORTIDLIG_STARTDATO() {
         Now.fixedDate(LocalDate.of(2021, 12, 20));
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtalerolle.VEILEDER, TestData.enNavIdent());
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent());
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(LocalDate.of(2021, 12, 12));
         endreAvtale.setSluttDato(LocalDate.of(2021, 12, 1).plusYears(1));

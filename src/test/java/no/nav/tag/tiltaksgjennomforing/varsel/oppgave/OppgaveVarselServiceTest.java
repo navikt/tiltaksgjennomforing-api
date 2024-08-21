@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.oppgave;
 
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.GosysFeilException;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,8 +52,11 @@ public class OppgaveVarselServiceTest {
     @EnumSource(Tiltakstype.class)
     public void oppretterOppgaveRequestForTiltak(Tiltakstype tiltakstype) {
         when(stsRestTemplate.postForObject(any(URI.class), any(), any(Class.class))).thenReturn(oppgaveResponse);
+        Avtale avtale = new Avtale();
+        avtale.setTiltakstype(tiltakstype);
+        avtale.setId(UUID.randomUUID());
 
-        oppgaveVarselService.opprettOppgave("aktørId", tiltakstype, UUID.randomUUID());
+        oppgaveVarselService.opprettOppgave("aktørId", avtale);
         verify(stsRestTemplate).postForObject(eq(uri), requestCaptor.capture(), eq(OppgaveVarselService.OppgaveResponse.class));
         OppgaveRequest request = requestCaptor.getValue().getBody();
 
@@ -70,8 +74,11 @@ public class OppgaveVarselServiceTest {
     @Test
     public void oppretterOppgaveRequestFeiler() {
         when(stsRestTemplate.postForObject(any(URI.class), any(), any(Class.class))).thenThrow(RuntimeException.class);
+        Avtale avtale = new Avtale();
+        avtale.setTiltakstype(VARIG_LONNSTILSKUDD);
+        avtale.setId(UUID.randomUUID());
 
         assertThrows(GosysFeilException.class, () ->
-                oppgaveVarselService.opprettOppgave("aktørId", VARIG_LONNSTILSKUDD, UUID.randomUUID()));
+                oppgaveVarselService.opprettOppgave("aktørId", avtale));
     }
 }

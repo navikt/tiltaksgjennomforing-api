@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvbruttAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndretAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleGjenopprettet;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleLåstOpp;
@@ -70,6 +71,11 @@ public class LagSporingsloggFraAvtaleHendelser {
     @EventListener
     public void avtaleOpprettetAvArena(AvtaleOpprettetAvArena event) {
         sporingsloggRepository.save(Sporingslogg.nyHendelse(event.getAvtale(), HendelseType.OPPRETTET_AV_ARENA));
+    }
+
+    @EventListener
+    public void avtaleEndrettAvArena(AvtaleEndretAvArena event) {
+        sporingsloggRepository.save(Sporingslogg.nyHendelse(event.getAvtale(), HendelseType.ENDRET_AV_ARENA));
     }
 
     @EventListener

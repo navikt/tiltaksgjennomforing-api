@@ -25,6 +25,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.ArbeidsgiversGodkjenningOpphevetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndretAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortet;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlenget;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
@@ -64,6 +65,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAvslått;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeForkortet;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeGodkjent;
 import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttDatoStrategyFactory;
+import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAvRolle;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.exceptions.AltMåVæreFyltUtException;
@@ -154,7 +156,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     private String enhetsnavnOppfolging;
 
     @Enumerated(EnumType.STRING)
-    private Avtalerolle opphav;
+    private Avtaleopphav opphav;
 
     private boolean godkjentForEtterregistrering;
 
@@ -227,11 +229,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
                 this.getFormidlingsgruppe() != null);
     }
 
-    public static Avtale opprett(OpprettAvtale opprettAvtale, Avtalerolle opphav) {
+    public static Avtale opprett(OpprettAvtale opprettAvtale, Avtaleopphav opphav) {
         return opprett(opprettAvtale, opphav, null);
     }
 
-    public static Avtale opprett(OpprettAvtale opprettAvtale, Avtalerolle opphav, NavIdent navIdent) {
+    public static Avtale opprett(OpprettAvtale opprettAvtale, Avtaleopphav opphav, NavIdent navIdent) {
         Avtale avtale = (opprettAvtale instanceof OpprettMentorAvtale)
                 ? new Avtale((OpprettMentorAvtale) opprettAvtale)
                 : new Avtale(opprettAvtale);
@@ -266,7 +268,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             nyeTilskuddsperioder();
         }
         sistEndretNå();
-        registerEvent(new AvtaleEndret(this, utfortAvRolle, identifikator));
+        registerEvent(new AvtaleEndret(this, AvtaleHendelseUtførtAvRolle.fraAvtalerolle(utfortAvRolle), identifikator));
     }
 
     public void endreAvtale(
@@ -279,20 +281,26 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     public void endreAvtaleArena(
-            EndreAvtale nyAvtale,
+            EndreAvtaleArena endreAvtaleArena,
             EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder
     ) {
-        if (erGodkjentAvDeltaker() || erGodkjentAvArbeidsgiver() || erGodkjentAvVeileder()) {
-            gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRET_AV_ARENA);
-            getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
+        if (!erGodkjentAvVeileder()) {
+            throw new IllegalStateException("Dette skal ikke kunne skje. Avtale fra Arena skal være inngått og godkjent.");
         }
 
-        getGjeldendeInnhold().endreAvtale(nyAvtale);
+        gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRET_AV_ARENA);
+        getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
+
+        Optional.ofNullable(endreAvtaleArena.getStartDato()).ifPresent(getGjeldendeInnhold()::setStartDato);
+        Optional.ofNullable(endreAvtaleArena.getSluttDato()).ifPresent(getGjeldendeInnhold()::setSluttDato);
+        Optional.ofNullable(endreAvtaleArena.getStillingprosent()).ifPresent(getGjeldendeInnhold()::setStillingprosent);
+        Optional.ofNullable(endreAvtaleArena.getAntallDagerPerUke()).ifPresent(getGjeldendeInnhold()::setAntallDagerPerUke);
+
         if (tiltakstyperMedTilskuddsperioder != null && tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
             nyeTilskuddsperioder();
         }
         sistEndretNå();
-        registerEvent(new AvtaleEndret(this, Avtalerolle.ARENA, null));
+        registerEvent(new AvtaleEndretAvArena(this));
     }
 
     public void delMedAvtalepart(Avtalerolle avtalerolle) {
@@ -530,7 +538,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     private void avtaleInngått(LocalDateTime tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
         gjeldendeInnhold.setAvtaleInngått(tidspunkt);
-        registerEvent(new AvtaleInngått(this, utførtAvRolle, utførtAv));
+        registerEvent(new AvtaleInngått(this, AvtaleHendelseUtførtAvRolle.fraAvtalerolle(utførtAvRolle), utførtAv));
     }
 
     void godkjennForVeilederOgDeltaker(NavIdent utfortAv, GodkjentPaVegneGrunn paVegneAvGrunn) {

@@ -1,20 +1,24 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
-
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
+import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
+import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAvRolle;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.time.format.DateTimeFormatter;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 class VarselFactoryTest {
 
   @Test
   public void skal_returnere_tilskuddsperiode_verdi_i_teksten_naar_beslutter_godkjenner_periode(){
     Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedSpesieltTilpassetInnsatsGodkjentAvVeileder();
-    VarselFactory factory = new VarselFactory(avtale, Avtalerolle.BESLUTTER, TestData.enNavIdent() , HendelseType.TILSKUDDSPERIODE_GODKJENT);
+    VarselFactory factory = new VarselFactory(avtale, AvtaleHendelseUtførtAvRolle.BESLUTTER, TestData.enNavIdent() , HendelseType.TILSKUDDSPERIODE_GODKJENT);
     DateTimeFormatter norskDatoformat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     assertEquals("Tilskuddsperiode har blitt godkjent av beslutter\n(" + avtale.gjeldendeTilskuddsperiode().getStartDato().format(norskDatoformat) + " til " + avtale.gjeldendeTilskuddsperiode().getSluttDato().format(norskDatoformat) + ")",factory.veileder().getTekst());
   }
@@ -26,25 +30,25 @@ class VarselFactoryTest {
     when(tilskuddPeriode.getStartDato()).thenReturn(null);
     when(tilskuddPeriode.getSluttDato()).thenReturn(null);
     when(avtale.gjeldendeTilskuddsperiode()).thenReturn(tilskuddPeriode);
-    VarselFactory factory = new VarselFactory(avtale, Avtalerolle.BESLUTTER, TestData.enNavIdent() , HendelseType.TILSKUDDSPERIODE_GODKJENT);
+    VarselFactory factory = new VarselFactory(avtale, AvtaleHendelseUtførtAvRolle.BESLUTTER, TestData.enNavIdent() , HendelseType.TILSKUDDSPERIODE_GODKJENT);
     assertEquals("Tilskuddsperiode har blitt godkjent av beslutter",factory.veileder().getTekst());
   }
   @Test
   public void skal_returnere_tilskuddsperiode_er_null(){
     Avtale avtale = Mockito.mock(Avtale.class);
     when(avtale.gjeldendeTilskuddsperiode()).thenReturn(null);
-    VarselFactory factory = new VarselFactory(avtale, Avtalerolle.BESLUTTER, TestData.enNavIdent() , HendelseType.TILSKUDDSPERIODE_GODKJENT);
+    VarselFactory factory = new VarselFactory(avtale, AvtaleHendelseUtførtAvRolle.BESLUTTER, TestData.enNavIdent() , HendelseType.TILSKUDDSPERIODE_GODKJENT);
     assertEquals("Tilskuddsperiode har blitt godkjent av beslutter",factory.veileder().getTekst());
   }
   @Test
   public void skal_returnere_4_parter_Mentor_Deltaker_Arbeidsgiver_Veileder_Ventor_I_VarselListe(){
-    VarselFactory factory = new VarselFactory(TestData.enMentorAvtaleUsignert(), Avtalerolle.MENTOR, TestData.enNavIdent() , HendelseType.OPPRETTET);
+    VarselFactory factory = new VarselFactory(TestData.enMentorAvtaleUsignert(), AvtaleHendelseUtførtAvRolle.MENTOR, TestData.enNavIdent() , HendelseType.OPPRETTET);
     assertEquals(4,factory.alleParter().toArray().length);
   }
 
   @Test
   public void skal_returnere_3_parter_Deltaker_Arbeidsgiver_Veileder_Ventor_I_VarselListe(){
-    VarselFactory factory = new VarselFactory(TestData.enArbeidstreningAvtale(), Avtalerolle.ARBEIDSGIVER, TestData.enNavIdent(), HendelseType.OPPRETTET);
+    VarselFactory factory = new VarselFactory(TestData.enArbeidstreningAvtale(), AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, TestData.enNavIdent(), HendelseType.OPPRETTET);
     assertEquals(3,factory.alleParter().toArray().length);
   }
 

@@ -25,7 +25,7 @@ public class AlleredeRegistrertAvtale implements AvtaleMedFnrOgBedriftNr {
     private BedriftNr bedriftNr;
     private NavIdent veilederNavIdent;
     private Status status;
-    private Avtalerolle opphav;
+    private Avtaleopphav opphav;
 
     private LocalDate startDato;
     private LocalDate sluttDato;

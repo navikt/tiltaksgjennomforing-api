@@ -238,7 +238,7 @@ public class VeilederTest {
                         TestData.etBedriftNr(),
                         Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD
                 ),
-                Avtalerolle.ARBEIDSGIVER
+                Avtaleopphav.ARBEIDSGIVER
         );
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setLonnstilskuddProsent(null);

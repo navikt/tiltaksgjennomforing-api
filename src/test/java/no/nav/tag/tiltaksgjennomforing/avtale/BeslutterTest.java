@@ -63,7 +63,7 @@ class BeslutterTest {
     public void toggle_godkjent_for_etterregistrering() {
 
         //GITT
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtalerolle.VEILEDER, TestData.enNavIdent());
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent());
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setStartDato(LocalDate.of(2021, 12, 12));
         endreAvtale.setSluttDato(LocalDate.of(2021, 12, 1).plusYears(1));

@@ -199,7 +199,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
     public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
         this.tilgangTilBedriftVedOpprettelseAvAvtale(opprettAvtale.getBedriftNr(), opprettAvtale.getTiltakstype());
-        Avtale avtale = Avtale.opprett(opprettAvtale, Avtalerolle.ARBEIDSGIVER);
+        Avtale avtale = Avtale.opprett(opprettAvtale, Avtaleopphav.ARBEIDSGIVER);
         leggEnheterVedOpprettelseAvAvtale(avtale);
 
         return avtale;
@@ -210,7 +210,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
                 opprettMentorAvtale.getBedriftNr(),
                 opprettMentorAvtale.getTiltakstype()
         );
-        Avtale avtale = Avtale.opprett(opprettMentorAvtale, Avtalerolle.ARBEIDSGIVER);
+        Avtale avtale = Avtale.opprett(opprettMentorAvtale, Avtaleopphav.ARBEIDSGIVER);
         leggEnheterVedOpprettelseAvAvtale(avtale);
 
         return avtale;
