@@ -42,7 +42,7 @@ public class AvtaleTest {
     }
 
     @Test
-    public void test_riktig_beregning_Varig_Lonnstilskudd_Avtale_som_varer_i_mange_aar_tilbake_i_tid_med_send_tilbake_til_beslutter_og_avslåt_tilskuddperiode() {
+    public void test_riktig_beregning_Varig_Lonnstilskudd_Avtale_som_varer_i_mange_aar_med_periode_litt_tilbake_i_tid_og_med_send_tilbake_til_beslutter_og_avslåt_forste_tilskuddperiode() {
         Now.fixedDate(LocalDate.of(2024, 7, 29));
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.godkjennForArbeidsgiver(enIdentifikator());
