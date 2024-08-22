@@ -138,7 +138,7 @@ public class AvtaleTest {
 
         avtale.godkjennForArbeidsgiver(enIdentifikator());
         avtale.godkjennForVeilederOgDeltaker(avtale.getVeilederNavIdent(),godkjentPaVegneGrunn);
-        EndreTilskuddsberegning endreTilskuddsberegning = new EndreTilskuddsberegning(1000, BigDecimal.valueOf(20), BigDecimal.valueOf(20), 0.23);
+        EndreTilskuddsberegning endreTilskuddsberegning = EndreTilskuddsberegning.builder().otpSats(0.23).feriepengesats(BigDecimal.valueOf(20)).arbeidsgiveravgift(BigDecimal.valueOf(20)).manedslonn(1000).build();
         avtale.endreTilskuddsberegning(endreTilskuddsberegning, TestData.enNavIdent());
 
         assertThat(avtale.getGjeldendeInnhold().getSumLonnstilskudd()).isEqualTo(325458);
