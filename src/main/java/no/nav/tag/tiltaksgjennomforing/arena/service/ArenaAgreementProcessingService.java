@@ -63,16 +63,12 @@ public class ArenaAgreementProcessingService {
             throw new IllegalArgumentException("Virksomhetsnummer i avtale matcher ikke virksomhetsnummer fra Arena");
         }
 
-        EndreAvtale endreAvtale = new EndreAvtale(avtale);
-
-        Optional.ofNullable(agreementAggregate.getDatoFra() != null ? agreementAggregate.getDatoFra().toLocalDate() : null)
-                .ifPresent(endreAvtale::setStartDato);
-        Optional.ofNullable(agreementAggregate.getDatoTil() != null ? agreementAggregate.getDatoTil().toLocalDate() : null)
-                .ifPresent(endreAvtale::setSluttDato);
-        Optional.ofNullable(agreementAggregate.getAntallDagerPrUke() != null ? Integer.parseInt(agreementAggregate.getAntallDagerPrUke()) : null)
-                .ifPresent(endreAvtale::setAntallDagerPerUke);
-        Optional.ofNullable(agreementAggregate.getProsentDeltid())
-                .ifPresent(endreAvtale::setStillingprosent);
+        EndreAvtaleArena endreAvtale = EndreAvtaleArena.builder()
+                .startDato(agreementAggregate.getDatoFra() != null ? agreementAggregate.getDatoFra().toLocalDate() : null)
+                .sluttDato(agreementAggregate.getDatoTil() != null ? agreementAggregate.getDatoTil().toLocalDate() : null)
+                .antallDagerPerUke(agreementAggregate.getAntallDagerPrUke() != null ? Integer.parseInt(agreementAggregate.getAntallDagerPrUke()) : null)
+                .stillingprosent(agreementAggregate.getProsentDeltid())
+                .build();
 
         avtale.endreAvtaleArena(endreAvtale, tilskuddsperiodeConfig.getTiltakstyper());
 
@@ -88,7 +84,7 @@ public class ArenaAgreementProcessingService {
                 .tiltakstype(Tiltakstype.ARBEIDSTRENING)
                 .build();
 
-        Avtale avtale = Avtale.opprett(opprettAvtale, Avtalerolle.ARENA);
+        Avtale avtale = Avtale.opprett(opprettAvtale, Avtaleopphav.ARENA);
 
         Organisasjon org = getOrgFromEreg(avtale.getBedriftNr());
         avtale.leggTilBedriftNavn(org.getBedriftNavn());
