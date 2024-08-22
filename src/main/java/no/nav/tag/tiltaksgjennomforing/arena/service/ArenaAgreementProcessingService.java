@@ -10,9 +10,9 @@ import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaAgreementMigrationR
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
-import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtaleArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddsperiodeConfig;
@@ -114,7 +114,7 @@ public class ArenaAgreementProcessingService {
         }
 
         if (!avtale.getBedriftNr().equals(new BedriftNr(agreementAggregate.getVirksomhetsnummer()))) {
-            throw new IllegalArgumentException("Virksomhetsnummer i avtale matcher ikke virksomhetsnummer fra Arena");
+            throw new IllegalArgumentException("Virksomhetsnummer i avtale stemmer ikke med virksomhetsnummer fra Arena");
         }
 
         EndreAvtaleArena endreAvtale = EndreAvtaleArena.builder()

@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,7 @@ public class ArenaAgreementMigration {
     @Enumerated(EnumType.STRING)
     private ArenaAgreementMigrationStatus status;
     private UUID agreementId;
+    @Transient
     private LocalDateTime created;
     private LocalDateTime modified;
 }
