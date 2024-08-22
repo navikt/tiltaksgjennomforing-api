@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class TiltakdeltakerArenaEventProcessingService implements ArenaEventProcessingService {
+public class TiltakdeltakerArenaEventProcessingService implements IArenaEventProcessingService {
     private final ObjectMapper objectMapper;
     private final ArenaTiltakdeltakerRepository tiltakdeltakerRepository;
     private final ArenaTiltakgjennomforingRepository tiltakgjennomforingRepository;

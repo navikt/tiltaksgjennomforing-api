@@ -17,14 +17,14 @@ public class ArenaEventRetryService {
     private final static int MAX_RETRY_COUNT = 4;
 
     private final ArenaEventRepository arenaEventRepository;
-    private final ArenaProcessingService arenaProcessingService;
+    private final ArenaEventProcessingService arenaEventProcessingService;
 
     public ArenaEventRetryService(
         ArenaEventRepository arenaEventRepository,
-        ArenaProcessingService arenaProcessingService
+        ArenaEventProcessingService arenaEventProcessingService
     ) {
         this.arenaEventRepository = arenaEventRepository;
-        this.arenaProcessingService = arenaProcessingService;
+        this.arenaEventProcessingService = arenaEventProcessingService;
     }
 
     @Transactional
@@ -49,7 +49,7 @@ public class ArenaEventRetryService {
         log.info("Kjører retry på {} eventer", arenaEvents.size());
 
         for (ArenaEvent arenaEvent : arenaEvents) {
-            arenaProcessingService.process(arenaEvent);
+            arenaEventProcessingService.process(arenaEvent);
         }
     }
 
