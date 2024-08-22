@@ -10,12 +10,6 @@ public class MidlertidigLonnstilskuddAvtaleBeregningStrategy extends GenerellLon
 
     public void endre(Avtale avtale,EndreTilskuddsberegning endreTilskuddsberegning) {
        super.endre(avtale,endreTilskuddsberegning);
-        regnUtDatoOgSumRedusert(avtale);//TODO IKKE TESTET
-        avtale.sendTilbakeTilBeslutter(); //TODO IKKE TESTET
-        avtale.getTilskuddPeriode().stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET)
-                .forEach(t -> t.setBeløp(beregnTilskuddsbeløpForPeriode(avtale,t.getStartDato(), t.getSluttDato())));
-
-
     }
     public void reberegnTotal(Avtale avtale) {
         super.reberegnTotal(avtale);
