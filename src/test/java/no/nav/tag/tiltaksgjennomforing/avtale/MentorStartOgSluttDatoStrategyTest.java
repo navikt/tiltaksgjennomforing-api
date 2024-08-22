@@ -18,7 +18,7 @@ public class MentorStartOgSluttDatoStrategyTest {
 
     @BeforeEach
     public void setUp() {
-        avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), MENTOR), TestData.enNavIdent());
+        avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), MENTOR), Avtaleopphav.VEILEDER, TestData.enNavIdent());
     }
 
     @Test

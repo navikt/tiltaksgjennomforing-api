@@ -129,7 +129,7 @@ public class AvtaleControllerTest {
     @Test
     public void hentAvtalerOpprettetAvVeileder_skal_returnere_tom_liste_dersom_veileder_ikke_har_tilgang() {
         NavIdent veilederNavIdent = new NavIdent("Z222222");
-        Avtale avtaleForVeilederSomSøkesEtter = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), veilederNavIdent);
+        Avtale avtaleForVeilederSomSøkesEtter = Avtale.opprett(lagOpprettAvtale(), Avtaleopphav.VEILEDER, veilederNavIdent);
         NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
         Veileder veileder = new Veileder(
                 identTilInnloggetVeileder,
@@ -405,8 +405,9 @@ public class AvtaleControllerTest {
     @Test
     public void hentAlleAvtalerInnloggetBrukerHarTilgangTilSkalIkkeReturnereAvtalerManIkkeHarTilgangTil() {
         Avtale avtaleMedTilgang = TestData.enArbeidstreningAvtale();
-        Avtale avtaleUtenTilgang = Avtale.veilederOppretterAvtale(
+        Avtale avtaleUtenTilgang = Avtale.opprett(
                 new OpprettAvtale(new Fnr("01039513753"), new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING),
+                Avtaleopphav.VEILEDER,
                 new NavIdent("X643564")
         );
         Deltaker deltaker = TestData.enDeltaker(avtaleMedTilgang);
@@ -540,7 +541,7 @@ public class AvtaleControllerTest {
     @Test
     public void hentBedriftKontonummer_skal_returnere_nytt_bedriftKontonummer() {
         NavIdent veilederNavIdent = new NavIdent("Z222222");
-        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), veilederNavIdent);
+        Avtale avtale = Avtale.opprett(lagOpprettAvtale(), Avtaleopphav.VEILEDER, veilederNavIdent);
         NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
         Veileder veileder = new Veileder(
                 identTilInnloggetVeileder,
@@ -568,7 +569,7 @@ public class AvtaleControllerTest {
     @Test
     public void hentBedriftKontonummer_skal_kaste_en_feil_når_innlogget_part_ikke_har_tilgang_til_Avtale() throws TilgangskontrollException {
         NavIdent veilederNavIdent = new NavIdent("Z222222");
-        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), veilederNavIdent);
+        Avtale avtale = Avtale.opprett(lagOpprettAvtale(), Avtaleopphav.VEILEDER, veilederNavIdent);
         NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
         Veileder veileder = new Veileder(
                 identTilInnloggetVeileder,
@@ -594,7 +595,7 @@ public class AvtaleControllerTest {
     @Test
     public void hentBedriftKontonummer_skal_kaste_en_feil_når_kontonummer_rest_service_svarer_med_feil_response_status_og_kaster_en_exception() {
         NavIdent veilederNavIdent = new NavIdent("Z222222");
-        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(), veilederNavIdent);
+        Avtale avtale = Avtale.opprett(lagOpprettAvtale(), Avtaleopphav.VEILEDER, veilederNavIdent);
         NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
         Veileder veileder = new Veileder(
                 identTilInnloggetVeileder,

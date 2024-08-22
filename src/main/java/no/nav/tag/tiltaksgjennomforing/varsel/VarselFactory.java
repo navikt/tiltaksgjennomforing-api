@@ -7,14 +7,15 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAvRolle;
 
 public class VarselFactory {
     private final Avtale avtale;
-    private final Avtalerolle utførtAv;
+    private final AvtaleHendelseUtførtAvRolle utførtAv;
     private final Identifikator utførtAvIdentifikator;
     private final HendelseType hendelseType;
 
-    public VarselFactory(Avtale avtale, Avtalerolle utførtAv, Identifikator utførtAvIdentifikator, HendelseType hendelseType) {
+    public VarselFactory(Avtale avtale, AvtaleHendelseUtførtAvRolle utførtAv, Identifikator utførtAvIdentifikator, HendelseType hendelseType) {
         this.avtale = avtale;
         this.hendelseType = hendelseType;
         this.utførtAv = utførtAv;
@@ -22,21 +23,21 @@ public class VarselFactory {
     }
 
     public Varsel deltaker() {
-        return Varsel.nyttVarsel(avtale.getDeltakerFnr(), utførtAv != Avtalerolle.DELTAKER, avtale, Avtalerolle.DELTAKER, utførtAv, utførtAvIdentifikator, hendelseType, avtale.getId());
+        return Varsel.nyttVarsel(avtale.getDeltakerFnr(), utførtAv != AvtaleHendelseUtførtAvRolle.DELTAKER, avtale, Avtalerolle.DELTAKER, utførtAv, utførtAvIdentifikator, hendelseType, avtale.getId());
     }
 
     public Varsel arbeidsgiver() {
-        return Varsel.nyttVarsel(avtale.getBedriftNr(), utførtAv != Avtalerolle.ARBEIDSGIVER, avtale, Avtalerolle.ARBEIDSGIVER, utførtAv, utførtAvIdentifikator, hendelseType, avtale.getId());
+        return Varsel.nyttVarsel(avtale.getBedriftNr(), utførtAv != AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, avtale, Avtalerolle.ARBEIDSGIVER, utførtAv, utførtAvIdentifikator, hendelseType, avtale.getId());
     }
 
 
     //TODO: Hent IDENTEN til beslutter her og ikke bare veileder
     public Varsel veileder() {
-        return Varsel.nyttVarsel(avtale.getVeilederNavIdent(), utførtAv != Avtalerolle.VEILEDER, avtale, Avtalerolle.VEILEDER, utførtAv, utførtAvIdentifikator, hendelseType, avtale.getId());
+        return Varsel.nyttVarsel(avtale.getVeilederNavIdent(), utførtAv != AvtaleHendelseUtførtAvRolle.VEILEDER, avtale, Avtalerolle.VEILEDER, utførtAv, utførtAvIdentifikator, hendelseType, avtale.getId());
     }
 
     public Varsel mentor() {
-        return Varsel.nyttVarsel(avtale.getMentorFnr(), utførtAv != Avtalerolle.MENTOR, avtale, Avtalerolle.MENTOR, utførtAv, utførtAvIdentifikator, hendelseType, avtale.getId());
+        return Varsel.nyttVarsel(avtale.getMentorFnr(), utførtAv != AvtaleHendelseUtførtAvRolle.MENTOR, avtale, Avtalerolle.MENTOR, utførtAv, utførtAvIdentifikator, hendelseType, avtale.getId());
     }
 
     public List<Varsel> alleParter() {

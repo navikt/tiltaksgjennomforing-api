@@ -232,12 +232,13 @@ public class VeilederTest {
 
     @Test
     public void overtarAvtale_uten_tilskuddsprosent__verifiser_blir_satt_og_beregnet() {
-        Avtale avtale = Avtale.arbeidsgiverOppretterAvtale(
+        Avtale avtale = Avtale.opprett(
                 new OpprettAvtale(
                         TestData.etFodselsnummer(),
                         TestData.etBedriftNr(),
                         Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD
-                )
+                ),
+                Avtaleopphav.ARBEIDSGIVER
         );
         EndreAvtale endreAvtale = TestData.endringPåAlleLønnstilskuddFelter();
         endreAvtale.setLonnstilskuddProsent(null);
