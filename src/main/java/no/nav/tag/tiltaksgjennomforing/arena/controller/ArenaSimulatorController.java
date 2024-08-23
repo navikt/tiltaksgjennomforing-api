@@ -6,37 +6,45 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.Unprotected;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.arena.configuration.ArenaKafkaProperties;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaAgreementAggregate;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaKafkaMessage;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakdeltaker;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakgjennomforing;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakssak;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Operation;
+import no.nav.tag.tiltaksgjennomforing.arena.service.ArenaAgreementService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @Slf4j
 @Unprotected
 @RestController
 @Profile(Miljø.LOCAL)
 @RequestMapping("/arena/simulator")
-public class ArenaKafkaSimulatorController {
+public class ArenaSimulatorController {
     private final ObjectMapper objectMapper;
     private final KafkaTemplate<String, ArenaKafkaMessage> arenaMockKafkaTemplate;
     private final ArenaKafkaProperties arenaKafkaProperties;
+    private final ArenaAgreementService arenaAgreementService;
 
-    public ArenaKafkaSimulatorController(
-        ObjectMapper objectMapper,
-        KafkaTemplate<String, ArenaKafkaMessage> arenaMockKafkaTemplate,
-        ArenaKafkaProperties arenaKafkaProperties
+    public ArenaSimulatorController(
+            ObjectMapper objectMapper,
+            KafkaTemplate<String, ArenaKafkaMessage> arenaMockKafkaTemplate,
+            ArenaKafkaProperties arenaKafkaProperties,
+            ArenaAgreementService arenaAgreementService
     ) {
         this.objectMapper = objectMapper;
         this.arenaMockKafkaTemplate = arenaMockKafkaTemplate;
         this.arenaKafkaProperties = arenaKafkaProperties;
+        this.arenaAgreementService = arenaAgreementService;
     }
 
     @PostMapping("/tiltakgjennomforing-endret")
@@ -85,5 +93,16 @@ public class ArenaKafkaSimulatorController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getCause().getMessage());
         }
+    }
+
+    @GetMapping("/trigger")
+    public ResponseEntity<?> trigger() {
+        List<ArenaAgreementAggregate> arenaAgreements = arenaAgreementService.getArenaAgreementsForProcessing();
+
+        if (!arenaAgreements.isEmpty()) {
+            arenaAgreementService.processAgreements(arenaAgreements);
+        }
+
+        return ResponseEntity.noContent().build();
     }
 }

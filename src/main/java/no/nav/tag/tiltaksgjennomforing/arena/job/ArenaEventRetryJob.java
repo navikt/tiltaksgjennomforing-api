@@ -21,7 +21,7 @@ public class ArenaEventRetryJob {
     }
 
     @Scheduled(fixedDelay = ONE_MIN_IN_MS)
-    public void updateArenaEventStatus() {
+    public void run() {
         List<ArenaEvent> arenaEvents = arenaEventRetryService.getAndUpdateRetryEvents();
 
         if (!arenaEvents.isEmpty()) {
