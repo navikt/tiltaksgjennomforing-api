@@ -5,10 +5,6 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentExcep
 
 import java.util.Map;
 
-/**
- * TODO: Kalkulering av redusert prosent og redusert dato bør kun skje her og ikke i @see avtale.java og heller ikke i frontend
- *
- */
 public class VarigLonnstilskuddStrategy extends LonnstilskuddStrategy {
 
     public static final int GRENSE_68_PROSENT_ETTER_12_MND = 68;
