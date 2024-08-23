@@ -42,7 +42,7 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         fikseLøpenumre(tilskuddsperioder, 1);
         avtale.leggtilNyeTilskuddsperioder(tilskuddsperioder);
     }
-    public void endre(Avtale avtale,EndreTilskuddsberegning endreTilskuddsberegning) {
+    public void endreBeregning(Avtale avtale, EndreTilskuddsberegning endreTilskuddsberegning) {
         AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
         avtaleInnhold.setArbeidsgiveravgift(endreTilskuddsberegning.getArbeidsgiveravgift());
         avtaleInnhold.setOtpSats(endreTilskuddsberegning.getOtpSats());

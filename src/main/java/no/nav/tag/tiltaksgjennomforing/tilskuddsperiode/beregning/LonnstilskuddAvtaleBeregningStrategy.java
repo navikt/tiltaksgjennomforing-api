@@ -26,7 +26,7 @@ public interface LonnstilskuddAvtaleBeregningStrategy {
 
     void genererNyeTilskuddsperioder(Avtale avtale);
     List<TilskuddPeriode> hentTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato);
-    void endre(Avtale avtale,EndreTilskuddsberegning endreTilskuddsberegning);
+    void endreBeregning(Avtale avtale, EndreTilskuddsberegning endreTilskuddsberegning);
     void reberegnTotal(Avtale avtale);
     default void forleng(Avtale avtale, LocalDate gammelSluttDato, LocalDate nySluttDato){
         Set<TilskuddPeriode> tilskuddPeriode = avtale.getTilskuddPeriode();

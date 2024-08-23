@@ -2,14 +2,13 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
-import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
 
 import java.time.LocalDate;
 public class MidlertidigLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilskuddAvtaleBeregningStrategy {
 
-    public void endre(Avtale avtale,EndreTilskuddsberegning endreTilskuddsberegning) {
-       super.endre(avtale,endreTilskuddsberegning);
+    public void endreBeregning(Avtale avtale, EndreTilskuddsberegning endreTilskuddsberegning) {
+       super.endreBeregning(avtale,endreTilskuddsberegning);
     }
     public void reberegnTotal(Avtale avtale) {
         super.reberegnTotal(avtale);

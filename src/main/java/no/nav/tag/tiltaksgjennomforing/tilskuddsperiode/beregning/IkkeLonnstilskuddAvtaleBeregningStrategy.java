@@ -21,7 +21,7 @@ public class IkkeLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddAv
     public List<TilskuddPeriode> hentTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {return List.of(); }
 
     @Override
-    public void endre(Avtale avtale, EndreTilskuddsberegning endreTilskuddsberegning) {}
+    public void endreBeregning(Avtale avtale, EndreTilskuddsberegning endreTilskuddsberegning) {}
 
     @Override
     public void reberegnTotal(Avtale avtale) {}

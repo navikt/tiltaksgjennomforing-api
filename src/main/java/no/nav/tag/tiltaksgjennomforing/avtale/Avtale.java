@@ -1131,22 +1131,22 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         StartOgSluttDatoStrategyFactory.create(getTiltakstype(), getKvalifiseringsgruppe()).sjekkStartOgSluttDato(startDato, sluttDato, isGodkjentForEtterregistrering(), erAvtaleInngått());
     }
 
-    public void endreTilskuddsberegning(EndreTilskuddsberegning tilskuddsberegning, NavIdent utførtAv) {
+    public void endreTilskuddsberegning(EndreTilskuddsberegning endreTilskuddsberegning, NavIdent utførtAv) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
 
         krevEnAvTiltakstyper(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_IKKE_GODKJENT_AVTALE);
         }
-        if (Utils.erNoenTomme(tilskuddsberegning.getArbeidsgiveravgift(),
-                tilskuddsberegning.getFeriepengesats(),
-                tilskuddsberegning.getManedslonn(),
-                tilskuddsberegning.getOtpSats())) {
+        if (Utils.erNoenTomme(endreTilskuddsberegning.getArbeidsgiveravgift(),
+                endreTilskuddsberegning.getFeriepengesats(),
+                endreTilskuddsberegning.getManedslonn(),
+                endreTilskuddsberegning.getOtpSats())) {
 
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
         }
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_TILSKUDDSBEREGNING);
-        this.hentBeregningStrategi().endre(this, tilskuddsberegning);
+        this.hentBeregningStrategi().endreBeregning(this, endreTilskuddsberegning);
         endreBeløpITilskuddsperioder();
         sistEndretNå();
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
