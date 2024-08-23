@@ -14,8 +14,6 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 
 public class GenerellLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddAvtaleBeregningStrategy {
-    public static final int GRENSE_68_PROSENT_ETTER_12_MND = 68;
-    public static final int MAX_67_PROSENT_ETTER_12_MND = 67;
 
     public void genererNyeTilskuddsperioder(Avtale avtale){
         if (avtale.erAvtaleInngått()) {
@@ -143,30 +141,7 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         return (int) Math.round(sumLonnsutgifter * lonnstilskuddProsentSomDecimal);
     }
 
-    public void regnUtDatoOgSumRedusert(Avtale avtale) {
-        AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
-        if(avtaleInnhold.getLonnstilskuddProsent() == null || avtaleInnhold.getLonnstilskuddProsent() < GRENSE_68_PROSENT_ETTER_12_MND) {
-            avtaleInnhold.setDatoForRedusertProsent(null);
-            avtaleInnhold.setSumLønnstilskuddRedusert(null);
-            return;
-        }
-        LocalDate datoForRedusertProsent = getDatoForRedusertProsent(avtaleInnhold.getStartDato(), avtaleInnhold.getSluttDato(), avtaleInnhold.getLonnstilskuddProsent());
-        avtaleInnhold.setDatoForRedusertProsent(datoForRedusertProsent);
-        Integer sumLønnstilskuddRedusert = regnUtRedusertLønnstilskudd(avtale);
-        avtaleInnhold.setSumLønnstilskuddRedusert(sumLønnstilskuddRedusert);
 
-    }
-
-    public Integer regnUtRedusertLønnstilskudd(Avtale avtale) {
-        AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
-        if (avtaleInnhold.getDatoForRedusertProsent() != null && avtaleInnhold.getLonnstilskuddProsent() != null) {
-            int lonnstilskuddProsent = avtaleInnhold.getLonnstilskuddProsent();
-            if(lonnstilskuddProsent >= GRENSE_68_PROSENT_ETTER_12_MND) lonnstilskuddProsent = MAX_67_PROSENT_ETTER_12_MND; // TODO IKKE TESTET
-            return getSumLonnsTilskudd(avtaleInnhold.getSumLonnsutgifter(), lonnstilskuddProsent);
-        } else {
-            return null;
-        }
-    }
 
     public LocalDate getDatoForRedusertProsent(LocalDate startDato, LocalDate sluttDato, Integer lonnstilskuddprosent) {
         if (startDato == null || sluttDato == null || lonnstilskuddprosent == null) {
