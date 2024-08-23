@@ -12,11 +12,11 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
 public class LonnstilskuddAvtaleInnholdStrategy extends BaseAvtaleInnholdStrategy {
 
-    private LonnstilskuddAvtaleBeregningStrategy avtaleBeregningStrategy;
+    private LonnstilskuddAvtaleBeregningStrategy beregningStrategy;
 
     public LonnstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
-        avtaleBeregningStrategy = new GenerellLonnstilskuddAvtaleBeregningStrategy();
+        beregningStrategy = new GenerellLonnstilskuddAvtaleBeregningStrategy();
     }
 
     @Override
@@ -51,7 +51,7 @@ public class LonnstilskuddAvtaleInnholdStrategy extends BaseAvtaleInnholdStrateg
 
     @Override
     public void regnUtTotalLonnstilskudd() {
-        avtaleBeregningStrategy.reberegnTotal(avtaleInnhold.getAvtale());
+        beregningStrategy.reberegnTotal(avtaleInnhold.getAvtale());
     }
 
     @Override
