@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.arena.models.arena;
+package no.nav.tag.tiltaksgjennomforing.arena.models.migration;
 
 import com.google.common.base.Strings;
 import jakarta.persistence.Entity;
@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Tiltakstatuskode;
 
 import java.time.LocalDateTime;
 import java.util.Optional;

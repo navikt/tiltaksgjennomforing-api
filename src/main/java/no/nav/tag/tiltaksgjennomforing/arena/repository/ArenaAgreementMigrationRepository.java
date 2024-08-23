@@ -1,14 +1,15 @@
 package no.nav.tag.tiltaksgjennomforing.arena.repository;
 
 import jakarta.persistence.LockModeType;
-import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaAgreementAggregate;
+import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementAggregate;
+import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigration;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface ArenaAgreementAggregateRepository  extends JpaRepository<ArenaAgreementAggregate, Integer> {
+public interface ArenaAgreementMigrationRepository extends JpaRepository<ArenaAgreementMigration, Integer> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
@@ -39,9 +40,10 @@ public interface ArenaAgreementAggregateRepository  extends JpaRepository<ArenaA
             ats.sakId = atg.sakId AND
             atd.tiltakgjennomforingId = atg.tiltakgjennomforingId AND
             atd.personId = aof.personId AND
-            atg.arbgivIdArrangor = aoa.arbgivIdArrangor
-        ORDER BY random() LIMIT 100
+            atg.arbgivIdArrangor = aoa.arbgivIdArrangor AND
+            atg.tiltakgjennomforingId NOT IN (SELECT tiltakgjennomforingId FROM ArenaAgreementMigration)
+        ORDER BY atd.tiltakgjennomforingId LIMIT 100
     """)
-    List<ArenaAgreementAggregate> findAgreements();
+    List<ArenaAgreementAggregate> findMigrationAgreementAggregates();
 
 }

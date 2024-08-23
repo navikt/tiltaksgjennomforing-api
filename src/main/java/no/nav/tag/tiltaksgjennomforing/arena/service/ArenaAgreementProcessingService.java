@@ -1,10 +1,27 @@
 package no.nav.tag.tiltaksgjennomforing.arena.service;
 
+import kotlin.Pair;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.arena.logging.ArenaAgreementLogging;
-import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaAgreementAggregate;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
-import no.nav.tag.tiltaksgjennomforing.enhet.*;
+import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementAggregate;
+import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigration;
+import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigrationStatus;
+import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaAgreementMigrationRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
+import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtaleArena;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddsperiodeConfig;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
+import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
+import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
@@ -12,7 +29,9 @@ import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
@@ -20,6 +39,7 @@ import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentN
 @Service
 public class ArenaAgreementProcessingService {
 
+    private final ArenaAgreementMigrationRepository agreementMigrationRepository;
     private final TilskuddsperiodeConfig tilskuddsperiodeConfig;
     private final AvtaleRepository avtaleRepository;
     private final EregService eregService;
@@ -28,6 +48,7 @@ public class ArenaAgreementProcessingService {
     private final VeilarbArenaClient veilarbArenaClient;
 
     public ArenaAgreementProcessingService(
+            ArenaAgreementMigrationRepository agreementMigrationRepository,
             AvtaleRepository avtaleRepository,
             EregService eregService,
             PersondataService persondataService,
@@ -35,6 +56,7 @@ public class ArenaAgreementProcessingService {
             VeilarbArenaClient veilarbArenaClient,
             TilskuddsperiodeConfig tilskuddsperiodeConfig
     ) {
+        this.agreementMigrationRepository = agreementMigrationRepository;
         this.avtaleRepository = avtaleRepository;
         this.eregService = eregService;
         this.persondataService = persondataService;
@@ -46,12 +68,45 @@ public class ArenaAgreementProcessingService {
     @ArenaAgreementLogging
     @Async("arenaThreadPoolExecutor")
     public void process(ArenaAgreementAggregate agreementAggregate) {
-        Avtale avtale = agreementAggregate.getEksternIdAsUuid()
-                .flatMap(avtaleRepository::findById)
-                .map((existingAvtale) -> updateAvtale(existingAvtale, agreementAggregate))
-                .orElseGet(() -> createAvtale(agreementAggregate));
+        Integer tiltaksgjennomforingId = agreementAggregate.getTiltakgjennomforingId();
+        updateMigrationStatus(tiltaksgjennomforingId, ArenaAgreementMigrationStatus.PROCESSING, null);
 
-        avtaleRepository.save(avtale);
+        try {
+            Pair<Avtale, ArenaAgreementMigrationStatus> result = agreementAggregate.getEksternIdAsUuid()
+                    .flatMap(avtaleRepository::findById)
+                    .map((existingAvtale) -> {
+                        Avtale updatedAvtale = updateAvtale(existingAvtale, agreementAggregate);
+                        return new Pair<>(updatedAvtale, ArenaAgreementMigrationStatus.UPDATED);
+                    })
+                    .orElseGet(() -> {
+                        Avtale createdAvtale = createAvtale(agreementAggregate);
+                        return new Pair<>(createdAvtale, ArenaAgreementMigrationStatus.CREATED);
+                    });
+
+            Avtale avtale = result.getFirst();
+            ArenaAgreementMigrationStatus status = result.getSecond();
+
+            avtaleRepository.save(avtale);
+            updateMigrationStatus(tiltaksgjennomforingId, status, avtale.getId());
+        } catch(Exception e) {
+            log.error("Feil ved prossesering av avtale fra Arena", e);
+            updateMigrationStatus(tiltaksgjennomforingId, ArenaAgreementMigrationStatus.FAILED, null);
+        }
+    }
+
+    private void updateMigrationStatus(
+            Integer id,
+            ArenaAgreementMigrationStatus status,
+            UUID agreementId
+    ) {
+        agreementMigrationRepository.save(
+            ArenaAgreementMigration.builder()
+                .tiltakgjennomforingId(id)
+                .status(status)
+                .agreementId(agreementId)
+                .modified(LocalDateTime.now())
+                .build()
+        );
     }
 
     private Avtale updateAvtale(Avtale avtale, ArenaAgreementAggregate agreementAggregate) {
@@ -60,7 +115,7 @@ public class ArenaAgreementProcessingService {
         }
 
         if (!avtale.getBedriftNr().equals(new BedriftNr(agreementAggregate.getVirksomhetsnummer()))) {
-            throw new IllegalArgumentException("Virksomhetsnummer i avtale matcher ikke virksomhetsnummer fra Arena");
+            throw new IllegalArgumentException("Virksomhetsnummer i avtale stemmer ikke med virksomhetsnummer fra Arena");
         }
 
         EndreAvtaleArena endreAvtale = EndreAvtaleArena.builder()
@@ -73,7 +128,6 @@ public class ArenaAgreementProcessingService {
         avtale.endreAvtaleArena(endreAvtale, tilskuddsperiodeConfig.getTiltakstyper());
 
         log.info("Oppdatert avtale med id: {}", avtale.getId());
-
         return avtale;
     }
 
@@ -120,7 +174,6 @@ public class ArenaAgreementProcessingService {
 
         avtale.setGodkjentForEtterregistrering(true);
         log.info("Opprettet avtale med id: {}", avtale.getId());
-
         return avtale;
     }
 

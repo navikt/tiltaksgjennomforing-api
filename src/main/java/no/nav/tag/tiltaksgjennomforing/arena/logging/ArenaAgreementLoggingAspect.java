@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.arena.logging;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaAgreementAggregate;
+import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementAggregate;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
