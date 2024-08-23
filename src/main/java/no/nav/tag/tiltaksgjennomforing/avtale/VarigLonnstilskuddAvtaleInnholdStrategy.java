@@ -7,11 +7,11 @@ import java.util.Map;
 
 public class VarigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrategy {
 
-    private VarigLonnstilskuddAvtaleBeregningStrategy varigLonnstilskuddAvtaleBeregningStrategy;
+    private VarigLonnstilskuddAvtaleBeregningStrategy beregningStrategy;
 
     public VarigLonnstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold){
         super(avtaleInnhold);
-        varigLonnstilskuddAvtaleBeregningStrategy =  new VarigLonnstilskuddAvtaleBeregningStrategy();
+        beregningStrategy =  new VarigLonnstilskuddAvtaleBeregningStrategy();
     }
 
     @Override
@@ -34,7 +34,7 @@ public class VarigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtale
     @Override
     public void regnUtTotalLonnstilskudd() {
         Avtale avtale = avtaleInnhold.getAvtale();
-        varigLonnstilskuddAvtaleBeregningStrategy.reberegnTotal(avtale);
+        beregningStrategy.reberegnTotal(avtale);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class VarigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtale
     }
 
     private void regnUtDatoOgSumRedusert() {
-        varigLonnstilskuddAvtaleBeregningStrategy.regnUtDatoOgSumRedusert(avtaleInnhold.getAvtale());
+        beregningStrategy.regnUtDatoOgSumRedusert(avtaleInnhold.getAvtale());
     }
 
 }
