@@ -44,7 +44,7 @@ public class ArenaAgreementService {
     }
 
     public void processAgreements(List<ArenaAgreementAggregate> agreements) {
-        log.info("Oppretter {} avtaler fra Arena", agreements.size());
+        log.info("Prosseserer {} avtaler fra Arena", agreements.size());
 
         for (ArenaAgreementAggregate agreement : agreements) {
             arenaAgreementProcessingService.process(agreement);

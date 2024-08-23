@@ -42,7 +42,7 @@ public interface ArenaAgreementMigrationRepository extends JpaRepository<ArenaAg
             atd.personId = aof.personId AND
             atg.arbgivIdArrangor = aoa.arbgivIdArrangor AND
             atg.tiltakgjennomforingId NOT IN (SELECT tiltakgjennomforingId FROM ArenaAgreementMigration)
-        ORDER BY random() LIMIT 100
+        ORDER BY atd.tiltakgjennomforingId LIMIT 100
     """)
     List<ArenaAgreementAggregate> findMigrationAgreementAggregates();
 

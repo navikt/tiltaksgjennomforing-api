@@ -32,7 +32,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.BiConsumer;
 
 import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
@@ -69,8 +68,8 @@ public class ArenaAgreementProcessingService {
     @ArenaAgreementLogging
     @Async("arenaThreadPoolExecutor")
     public void process(ArenaAgreementAggregate agreementAggregate) {
-        BiConsumer<ArenaAgreementMigrationStatus, UUID> updateMigrationStatus = updateMigrationStatus(agreementAggregate.getTiltakgjennomforingId());
-        updateMigrationStatus.accept(ArenaAgreementMigrationStatus.PROCESSING, null);
+        Integer tiltaksgjennomforingId = agreementAggregate.getTiltakgjennomforingId();
+        updateMigrationStatus(tiltaksgjennomforingId, ArenaAgreementMigrationStatus.PROCESSING, null);
 
         try {
             Pair<Avtale, ArenaAgreementMigrationStatus> result = agreementAggregate.getEksternIdAsUuid()
@@ -88,24 +87,26 @@ public class ArenaAgreementProcessingService {
             ArenaAgreementMigrationStatus status = result.getSecond();
 
             avtaleRepository.save(avtale);
-            updateMigrationStatus.accept(status, avtale.getId());
+            updateMigrationStatus(tiltaksgjennomforingId, status, avtale.getId());
         } catch(Exception e) {
             log.error("Feil ved prossesering av avtale fra Arena", e);
-            updateMigrationStatus.accept(ArenaAgreementMigrationStatus.FAILED, null);
+            updateMigrationStatus(tiltaksgjennomforingId, ArenaAgreementMigrationStatus.FAILED, null);
         }
     }
 
-    private BiConsumer<ArenaAgreementMigrationStatus, UUID> updateMigrationStatus(Integer id) {
-        return (status, agreementId) -> {
-            agreementMigrationRepository.save(
-                ArenaAgreementMigration.builder()
-                    .tiltakgjennomforingId(id)
-                    .status(status)
-                    .agreementId(agreementId)
-                    .modified(LocalDateTime.now())
-                    .build()
-            );
-        };
+    private void updateMigrationStatus(
+            Integer id,
+            ArenaAgreementMigrationStatus status,
+            UUID agreementId
+    ) {
+        agreementMigrationRepository.save(
+            ArenaAgreementMigration.builder()
+                .tiltakgjennomforingId(id)
+                .status(status)
+                .agreementId(agreementId)
+                .modified(LocalDateTime.now())
+                .build()
+        );
     }
 
     private Avtale updateAvtale(Avtale avtale, ArenaAgreementAggregate agreementAggregate) {
@@ -127,7 +128,6 @@ public class ArenaAgreementProcessingService {
         avtale.endreAvtaleArena(endreAvtale, tilskuddsperiodeConfig.getTiltakstyper());
 
         log.info("Oppdatert avtale med id: {}", avtale.getId());
-
         return avtale;
     }
 
@@ -174,7 +174,6 @@ public class ArenaAgreementProcessingService {
 
         avtale.setGodkjentForEtterregistrering(true);
         log.info("Opprettet avtale med id: {}", avtale.getId());
-
         return avtale;
     }
 
