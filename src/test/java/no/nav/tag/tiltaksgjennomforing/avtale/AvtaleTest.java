@@ -43,7 +43,7 @@ public class AvtaleTest {
     }
 
     @Test
-    public void test_riktig_beregning_Varig_Lonnstilskudd_Avtale_som_varer_i_mange_aar_tilbake_i_tid_med_send_tilbake_til_beslutter_og_avslåt_tilskuddperiode() {
+    public void test_riktig_beregning_Varig_Lonnstilskudd_Avtale_som_varer_i_mange_aar_med_en_periode_tilbake_i_tid_og_med_send_tilbake_til_beslutter_og_en_avslåt_tilskuddperiode() {
         Now.fixedDate(LocalDate.of(2024, 7, 29));
         Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.godkjennForArbeidsgiver(enIdentifikator());
@@ -104,8 +104,8 @@ public class AvtaleTest {
         endreAvtale.setAntallDagerPerUke(5);
         endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678", true));
         avtale.opphevGodkjenningerSomVeileder();
-        final int FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_6_AAR_VARIG_AVTALE = 14;
-        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList().size()).isEqualTo(FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_6_AAR_VARIG_AVTALE);
+        final int FORVENTET_ANTALL_TILSKUDDSPERIODER = 14;
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList().size()).isEqualTo(FORVENTET_ANTALL_TILSKUDDSPERIODER);
         assertThat(avtale.getGjeldendeInnhold().getSumLonnstilskudd()).isEqualTo(24480);
         assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::isAktiv).toList()).isEqualTo(List.of(false,
                 true,
