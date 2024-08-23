@@ -8,11 +8,11 @@ import java.time.LocalDate;
 public class MidlertidigLonnstilskuddAvtaleInnholdStrategy extends LonnstilskuddAvtaleInnholdStrategy {
 
 
-    private MidlertidigLonnstilskuddAvtaleBeregningStrategy midlertidigLonnstilskuddAvtaleBeregningStrategy;
+    private MidlertidigLonnstilskuddAvtaleBeregningStrategy beregningStrategy;
 
     public MidlertidigLonnstilskuddAvtaleInnholdStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
-        midlertidigLonnstilskuddAvtaleBeregningStrategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy();
+        beregningStrategy = new MidlertidigLonnstilskuddAvtaleBeregningStrategy();
     }
 
     @Override
@@ -35,11 +35,11 @@ public class MidlertidigLonnstilskuddAvtaleInnholdStrategy extends Lonnstilskudd
     @Override
     public void regnUtTotalLonnstilskudd() {
         Avtale avtale = this.avtaleInnhold.getAvtale();
-        midlertidigLonnstilskuddAvtaleBeregningStrategy.reberegnTotal(avtale);
+        beregningStrategy.reberegnTotal(avtale);
     }
 
     private void sjekktilskuddsprosentSats(EndreAvtale endreAvtale) {
-        midlertidigLonnstilskuddAvtaleBeregningStrategy.sjekktilskuddsprosentSats(endreAvtale.getLonnstilskuddProsent());
+        beregningStrategy.sjekktilskuddsprosentSats(endreAvtale.getLonnstilskuddProsent());
     }
 
     private void settTilskuddsprosentSats(Kvalifiseringsgruppe kvalifiseringsgruppe) {
@@ -48,9 +48,9 @@ public class MidlertidigLonnstilskuddAvtaleInnholdStrategy extends Lonnstilskudd
     }
 
     private void regnUtDatoOgSumRedusert() {
-       LocalDate datoForRedusertProsent = midlertidigLonnstilskuddAvtaleBeregningStrategy.getDatoForRedusertProsent(avtaleInnhold.getStartDato(), avtaleInnhold.getSluttDato(), avtaleInnhold.getLonnstilskuddProsent());
+       LocalDate datoForRedusertProsent = beregningStrategy.getDatoForRedusertProsent(avtaleInnhold.getStartDato(), avtaleInnhold.getSluttDato(), avtaleInnhold.getLonnstilskuddProsent());
         avtaleInnhold.setDatoForRedusertProsent(datoForRedusertProsent);
-        Integer sumLønnstilskuddRedusert = midlertidigLonnstilskuddAvtaleBeregningStrategy.regnUtRedusertLønnstilskudd(avtaleInnhold.getAvtale());
+        Integer sumLønnstilskuddRedusert = beregningStrategy.regnUtRedusertLønnstilskudd(avtaleInnhold.getAvtale());
         avtaleInnhold.setSumLønnstilskuddRedusert(sumLønnstilskuddRedusert);
     }
 
