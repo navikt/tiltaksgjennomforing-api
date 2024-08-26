@@ -21,6 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.ArbeidsgiversGodkjenningOpphevetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
@@ -296,7 +297,18 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         Optional.ofNullable(endreAvtaleArena.getStillingprosent()).ifPresent(getGjeldendeInnhold()::setStillingprosent);
         Optional.ofNullable(endreAvtaleArena.getAntallDagerPerUke()).ifPresent(getGjeldendeInnhold()::setAntallDagerPerUke);
 
-        if (tiltakstyperMedTilskuddsperioder != null && tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
+        if (!endreAvtaleArena.isActive() && this.annullertTidspunkt == null && this.gjeldendeInnhold.getSluttDato().isAfter(LocalDate.now())) {
+            annullerTilskuddsperioder();
+            annullertTidspunkt = Now.instant();
+            annullertGrunn = "Avtalen er ikke aktiv i Arena";
+            sistEndretNå();
+            registerEvent(new AnnullertAvArena(this));
+            return;
+        }
+
+        annullertTidspunkt = null;
+        annullertGrunn = null;
+                if (tiltakstyperMedTilskuddsperioder != null && tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
             nyeTilskuddsperioder();
         }
         sistEndretNå();
@@ -727,7 +739,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         if (erUfordelt()) {
             setVeilederNavIdent(veileder.getIdentifikator());
         }
-        if ("Feilregistrering".equals(annullerGrunn)) {
+        if (AnnullertGrunn.FEILREGISTRERING.equals(annullerGrunn)) {
             setFeilregistrert(true);
         }
         sistEndretNå();

@@ -3,10 +3,12 @@ package no.nav.tag.tiltaksgjennomforing.arena.service;
 import kotlin.Pair;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.arena.logging.ArenaAgreementLogging;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Deltakerstatuskode;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementAggregate;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigration;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigrationStatus;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaAgreementMigrationRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.AnnullertGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
@@ -30,6 +32,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,6 +41,14 @@ import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentN
 @Slf4j
 @Service
 public class ArenaAgreementProcessingService {
+
+    private static final List<String> GYLDIGE_ANNULERT_GRUNNER = List.of(
+            AnnullertGrunn.FEILREGISTRERING,
+            AnnullertGrunn.BEGYNT_I_ARBEID,
+            AnnullertGrunn.FÅTT_TILBUD_OM_ANNET_TILTAK,
+            AnnullertGrunn.SYK,
+            AnnullertGrunn.IKKE_MØTT
+    );
 
     private final ArenaAgreementMigrationRepository agreementMigrationRepository;
     private final TilskuddsperiodeConfig tilskuddsperiodeConfig;
@@ -72,22 +83,16 @@ public class ArenaAgreementProcessingService {
         updateMigrationStatus(tiltaksgjennomforingId, ArenaAgreementMigrationStatus.PROCESSING, null);
 
         try {
-            Pair<Avtale, ArenaAgreementMigrationStatus> result = agreementAggregate.getEksternIdAsUuid()
+            Pair<Optional<Avtale>, ArenaAgreementMigrationStatus> result = agreementAggregate.getEksternIdAsUuid()
                     .flatMap(avtaleRepository::findById)
-                    .map((existingAvtale) -> {
-                        Avtale updatedAvtale = updateAvtale(existingAvtale, agreementAggregate);
-                        return new Pair<>(updatedAvtale, ArenaAgreementMigrationStatus.UPDATED);
-                    })
-                    .orElseGet(() -> {
-                        Avtale createdAvtale = createAvtale(agreementAggregate);
-                        return new Pair<>(createdAvtale, ArenaAgreementMigrationStatus.CREATED);
-                    });
+                    .map((existingAvtale) -> updateAvtale(existingAvtale, agreementAggregate))
+                    .orElseGet(() -> createAvtale(agreementAggregate));
 
-            Avtale avtale = result.getFirst();
+            Optional<Avtale> avtaleOpt = result.getFirst();
             ArenaAgreementMigrationStatus status = result.getSecond();
 
-            avtaleRepository.save(avtale);
-            updateMigrationStatus(tiltaksgjennomforingId, status, avtale.getId());
+            avtaleOpt.ifPresent(avtaleRepository::save);
+            updateMigrationStatus(tiltaksgjennomforingId, status, avtaleOpt.map(Avtale::getId).orElse(null));
         } catch(Exception e) {
             log.error("Feil ved prossesering av avtale fra Arena", e);
             updateMigrationStatus(tiltaksgjennomforingId, ArenaAgreementMigrationStatus.FAILED, null);
@@ -109,13 +114,29 @@ public class ArenaAgreementProcessingService {
         );
     }
 
-    private Avtale updateAvtale(Avtale avtale, ArenaAgreementAggregate agreementAggregate) {
+    private Pair<Optional<Avtale>, ArenaAgreementMigrationStatus> updateAvtale(Avtale avtale, ArenaAgreementAggregate agreementAggregate) {
         if (!avtale.getDeltakerFnr().equals(new Fnr(agreementAggregate.getFnr()))) {
-            throw new IllegalArgumentException("Fnr i avtale matcher ikke fnr fra Arena");
+            log.error("Fnr i avtale matcher ikke fnr fra Arena");
+            return new Pair<>(Optional.empty(), ArenaAgreementMigrationStatus.FAILED);
         }
 
         if (!avtale.getBedriftNr().equals(new BedriftNr(agreementAggregate.getVirksomhetsnummer()))) {
-            throw new IllegalArgumentException("Virksomhetsnummer i avtale stemmer ikke med virksomhetsnummer fra Arena");
+            log.error("Virksomhetsnummer i avtale stemmer ikke med virksomhetsnummer fra Arena");
+            return new Pair<>(Optional.empty(), ArenaAgreementMigrationStatus.FAILED);
+        }
+
+        boolean isAktivInArena = isActive(agreementAggregate);
+        boolean isAvtaleAnnullertWithStatusAnnet = avtale.getAnnullertTidspunkt() != null
+                && !GYLDIGE_ANNULERT_GRUNNER.contains(avtale.getAnnullertGrunn());
+        boolean isAvtaleFeilregistrertOrAnnulertWithStatusAnnet = avtale.isFeilregistrert()
+                || isAvtaleAnnullertWithStatusAnnet;
+
+        if (isAktivInArena && isAvtaleFeilregistrertOrAnnulertWithStatusAnnet) {
+            log.info(
+                "Avtale med id {} er aktiv i Arena, men er annulert ugyldig hos oss. Opprettet ny avtale",
+                avtale.getId()
+            );
+            return createAvtale(agreementAggregate);
         }
 
         EndreAvtaleArena endreAvtale = EndreAvtaleArena.builder()
@@ -123,15 +144,27 @@ public class ArenaAgreementProcessingService {
                 .sluttDato(agreementAggregate.getDatoTil() != null ? agreementAggregate.getDatoTil().toLocalDate() : null)
                 .antallDagerPerUke(agreementAggregate.getAntallDagerPrUke() != null ? Integer.parseInt(agreementAggregate.getAntallDagerPrUke()) : null)
                 .stillingprosent(agreementAggregate.getProsentDeltid())
+                .active(isAktivInArena)
                 .build();
 
         avtale.endreAvtaleArena(endreAvtale, tilskuddsperiodeConfig.getTiltakstyper());
 
-        log.info("Oppdatert avtale med id: {}", avtale.getId());
-        return avtale;
+        if (!isAktivInArena) {
+            log.info("Avtale med id {} er ikke aktiv i Arena. Avtalen annulleres.", avtale.getId());
+        } else {
+            log.info("Oppdatert avtale med id: {}", avtale.getId());
+        }
+
+        return new Pair<>(Optional.of(avtale), ArenaAgreementMigrationStatus.UPDATED);
     }
 
-    private Avtale createAvtale(ArenaAgreementAggregate agreementAggregate) {
+    private Pair<Optional<Avtale>, ArenaAgreementMigrationStatus> createAvtale(ArenaAgreementAggregate agreementAggregate) {
+        boolean isAktivInArena = isActive(agreementAggregate);
+        if (!isAktivInArena) {
+            log.info("Avtale er ikke aktiv i Arena. Avtalen opprettes ikke.");
+            return new Pair<>(Optional.empty(), ArenaAgreementMigrationStatus.IGNORED);
+        }
+
         OpprettAvtale opprettAvtale = OpprettAvtale.builder()
                 .bedriftNr(new BedriftNr(agreementAggregate.getVirksomhetsnummer()))
                 .deltakerFnr(new Fnr(agreementAggregate.getFnr()))
@@ -174,7 +207,7 @@ public class ArenaAgreementProcessingService {
 
         avtale.setGodkjentForEtterregistrering(true);
         log.info("Opprettet avtale med id: {}", avtale.getId());
-        return avtale;
+        return new Pair<>(Optional.of(avtale), ArenaAgreementMigrationStatus.CREATED);
     }
 
     private Organisasjon getOrgFromEreg(BedriftNr bedriftNr) {
@@ -197,6 +230,16 @@ public class ArenaAgreementProcessingService {
     private Optional<String> getOppfolgingsenhetnavnFromNorg2(String oppfolgingsenhet) {
         return Optional.ofNullable(oppfolgingsenhet != null ? norg2Client.hentOppfølgingsEnhet(oppfolgingsenhet) : null)
                 .map(Norg2OppfølgingResponse::getNavn);
+    }
+
+    private boolean isActive(ArenaAgreementAggregate agreementAggregate) {
+        return switch (agreementAggregate.getTiltakstatuskode()) {
+            case GJENNOMFOR -> true;
+            case PLANLAGT -> List.of(Deltakerstatuskode.GJENN, Deltakerstatuskode.AKTUELL)
+                    .contains(agreementAggregate.getDeltakerstatuskode());
+            default -> false;
+        };
+
     }
 
 }

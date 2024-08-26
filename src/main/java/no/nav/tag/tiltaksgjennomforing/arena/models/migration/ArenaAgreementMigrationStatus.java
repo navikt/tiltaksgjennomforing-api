@@ -6,4 +6,5 @@ public enum ArenaAgreementMigrationStatus {
     UPDATED,
     CREATED,
     FAILED,
+    IGNORED,
 }

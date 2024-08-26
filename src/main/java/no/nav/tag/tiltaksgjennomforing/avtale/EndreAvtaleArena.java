@@ -16,4 +16,5 @@ public class EndreAvtaleArena {
     private LocalDate sluttDato;
     private Integer stillingprosent;
     private Integer antallDagerPerUke;
+    private boolean active;
 }
