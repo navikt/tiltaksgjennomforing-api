@@ -81,12 +81,21 @@ public class AvtaleController {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final FeatureToggleService featureToggleService;
 
+    private void sjekkArbeidstreningToggle(Avtale avtale) {
+        if (!featureToggleService.isEnabled(FeatureToggle.ARBEIDSTRENING_ARENA) &&
+                avtale.getTiltakstype() == Tiltakstype.ARBEIDSTRENING) {
+            throw new FeilkodeException(Feilkode.IKKE_ADMIN_TILGANG);
+        }
+    }
+
     @AuditLogging("Hent detaljer for avtale om arbeidsmarkedstiltak")
     @GetMapping("/{avtaleId}")
     public Avtale hent(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart, @RequestHeader(value = "referer", required = false) final String referer) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         sendMetrikkPåPage(referer);
-        return avtalepart.hentAvtale(avtaleRepository, id);
+        Avtale avtale = avtalepart.hentAvtale(avtaleRepository, id);
+//        sjekkArbeidstreningToggle(avtale); // ska få hente men ikke endre
+        return avtale;
     }
 
     private void sendMetrikkPåPage(String referer) {
@@ -363,6 +372,7 @@ public class AvtaleController {
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        sjekkArbeidstreningToggle(avtale);
         avtalepart.godkjennAvtale(sistEndret, avtale);
         avtaleRepository.save(avtale);
     }
@@ -410,6 +420,7 @@ public class AvtaleController {
         Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
+        sjekkArbeidstreningToggle(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
     }
@@ -512,6 +523,7 @@ public class AvtaleController {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
+        sjekkArbeidstreningToggle(avtale);
         veileder.forkortAvtale(avtale, forkortAvtale.getSluttDato(), forkortAvtale.getGrunn(), forkortAvtale.getAnnetGrunn());
         avtaleRepository.save(avtale);
     }
@@ -527,6 +539,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
         // Er ikke nødvending med en reell grunn siden det ikke påvirker tilskuddsperioder
+        sjekkArbeidstreningToggle(avtale);
         veileder.forkortAvtale(avtale, forkortAvtale.getSluttDato(), "dry run", "");
         return avtale;
     }
@@ -541,6 +554,7 @@ public class AvtaleController {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
+        sjekkArbeidstreningToggle(avtale);
         veileder.forlengAvtale(forlengAvtale.getSluttDato(), avtale);
         avtaleRepository.save(avtale);
     }
@@ -555,6 +569,7 @@ public class AvtaleController {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
+        sjekkArbeidstreningToggle(avtale);
         veileder.forlengAvtale(forlengAvtale.getSluttDato(), avtale);
         return avtale;
     }
@@ -567,6 +582,7 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        sjekkArbeidstreningToggle(avtale);
         veileder.endreMål(endreMål, avtale);
         avtaleRepository.save(avtale);
     }
@@ -577,6 +593,7 @@ public class AvtaleController {
                                           @RequestBody EndreInkluderingstilskudd endreInkluderingstilskudd) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        sjekkArbeidstreningToggle(avtale);
         veileder.endreInkluderingstilskudd(endreInkluderingstilskudd, avtale);
         avtaleRepository.save(avtale);
     }
@@ -589,6 +606,7 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        sjekkArbeidstreningToggle(avtale);
         veileder.endreStillingbeskrivelse(endreStillingsbeskrivelse, avtale);
         avtaleRepository.save(avtale);
     }
@@ -601,6 +619,7 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        sjekkArbeidstreningToggle(avtale);
         veileder.endreOppfølgingOgTilrettelegging(endreOppfølgingOgTilrettelegging, avtale);
         avtaleRepository.save(avtale);
     }
@@ -625,6 +644,7 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        sjekkArbeidstreningToggle(avtale);
         veileder.endreKontaktinfo(endreKontaktInformasjon, avtale);
         avtaleRepository.save(avtale);
     }
@@ -636,6 +656,7 @@ public class AvtaleController {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
+        sjekkArbeidstreningToggle(avtale);
         veileder.endreTilskuddsberegning(endreTilskuddsberegning, avtale);
         avtaleRepository.save(avtale);
     }
@@ -649,6 +670,7 @@ public class AvtaleController {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .orElseThrow(RessursFinnesIkkeException::new);
+        sjekkArbeidstreningToggle(avtale);
         veileder.endreTilskuddsberegning(endreTilskuddsberegning, avtale);
         return avtale;
     }
@@ -671,6 +693,7 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        sjekkArbeidstreningToggle(avtale);
         veileder.godkjennForVeilederOgDeltaker(paVegneAvGrunn, avtale);
         avtaleRepository.save(avtale);
     }
@@ -683,6 +706,7 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        sjekkArbeidstreningToggle(avtale);
         veileder.godkjennForVeilederOgArbeidsgiver(paVegneAvGrunn, avtale);
         avtaleRepository.save(avtale);
     }
@@ -695,6 +719,7 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        sjekkArbeidstreningToggle(avtale);
         veileder.godkjennForVeilederOgDeltakerOgArbeidsgiver(paVegneAvGrunn, avtale);
         avtaleRepository.save(avtale);
     }
@@ -708,6 +733,7 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        sjekkArbeidstreningToggle(avtale);
         veileder.annullerAvtale(sistEndret, annullertInfo.getAnnullertGrunn(), avtale);
         avtaleRepository.save(avtale);
     }
@@ -717,6 +743,7 @@ public class AvtaleController {
     public void slettemerk(@PathVariable("avtaleId") UUID avtaleId) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        sjekkArbeidstreningToggle(avtale);
         veileder.slettemerk(avtale);
         avtaleRepository.save(avtale);
     }
@@ -735,6 +762,7 @@ public class AvtaleController {
     public void settNyVeilederPåAvtale(@PathVariable("avtaleId") UUID avtaleId) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        sjekkArbeidstreningToggle(avtale);
         veileder.hentOppfølgingFraArena(avtale, veilarbArenaClient);
         veileder.overtaAvtale(avtale);
         avtaleRepository.save(avtale);
@@ -745,6 +773,7 @@ public class AvtaleController {
     public void justerArenaMigreringsdato(@PathVariable("avtaleId") UUID avtaleId, @RequestBody JusterArenaMigreringsdato justerArenaMigreringsdato) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        sjekkArbeidstreningToggle(avtale);
         if (avtale.erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_ARENA_MIGRERINGSDATO_INNGAATT_AVTALE);
         }
@@ -770,6 +799,7 @@ public class AvtaleController {
     public Avtale justerArenaMigreringsdatoDryRun(@PathVariable("avtaleId") UUID avtaleId, @RequestBody JusterArenaMigreringsdato justerArenaMigreringsdato) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        sjekkArbeidstreningToggle(avtale);
         veileder.sjekkTilgang(avtale);
         avtale.nyeTilskuddsperioderEtterMigreringFraArena(justerArenaMigreringsdato.getMigreringsdato(), false);
         return avtale;
@@ -783,6 +813,7 @@ public class AvtaleController {
     ) {
         Beslutter beslutter = innloggingService.hentBeslutter();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        sjekkArbeidstreningToggle(avtale);
         beslutter.godkjennTilskuddsperiode(avtale, godkjennTilskuddsperiodeRequest.getEnhet());
         avtaleRepository.save(avtale);
     }
@@ -793,6 +824,7 @@ public class AvtaleController {
     public Avtale setOmAvtalenKanEtterregistreres(@PathVariable("avtaleId") UUID avtaleId) {
         Beslutter beslutter = innloggingService.hentBeslutter();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        sjekkArbeidstreningToggle(avtale);
         beslutter.setOmAvtalenKanEtterregistreres(avtale);
         var oppdatertAvtale = avtaleRepository.save(avtale);
         return oppdatertAvtale;
@@ -807,6 +839,7 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        sjekkArbeidstreningToggle(avtale);
         veileder.oppdatereKostnadssted(avtale, norg2Client, endreKostnadsstedRequest.getEnhet());
         var oppdatertAvtale = avtaleRepository.save(avtale);
         return oppdatertAvtale;
@@ -828,6 +861,7 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = veileder.hentAvtale(avtaleRepository, avtaleId);
+        sjekkArbeidstreningToggle(avtale);
         veileder.oppdatereEnheterEtterForespørsel(avtale);
         var oppdatertAvtale = avtaleRepository.save(avtale);
 
