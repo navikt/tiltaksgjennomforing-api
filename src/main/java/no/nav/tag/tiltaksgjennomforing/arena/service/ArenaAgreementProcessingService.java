@@ -30,6 +30,7 @@ import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -76,6 +77,7 @@ public class ArenaAgreementProcessingService {
         this.tilskuddsperiodeConfig = tilskuddsperiodeConfig;
     }
 
+    @Transactional
     @ArenaAgreementLogging
     @Async("arenaThreadPoolExecutor")
     public void process(ArenaAgreementAggregate agreementAggregate) {
@@ -108,7 +110,7 @@ public class ArenaAgreementProcessingService {
             ArenaAgreementMigration.builder()
                 .tiltakgjennomforingId(id)
                 .status(status)
-                .agreementId(agreementId)
+                .avtaleId(agreementId)
                 .modified(LocalDateTime.now())
                 .build()
         );
@@ -116,7 +118,7 @@ public class ArenaAgreementProcessingService {
 
     private Pair<Optional<Avtale>, ArenaAgreementMigrationStatus> updateAvtale(Avtale avtale, ArenaAgreementAggregate agreementAggregate) {
         if (!avtale.getDeltakerFnr().equals(new Fnr(agreementAggregate.getFnr()))) {
-            log.error("Fnr i avtale matcher ikke fnr fra Arena");
+            log.error("Fnr i avtale stemmer ikke med fnr fra Arena");
             return new Pair<>(Optional.empty(), ArenaAgreementMigrationStatus.FAILED);
         }
 
@@ -126,14 +128,31 @@ public class ArenaAgreementProcessingService {
         }
 
         boolean isAktivInArena = isActive(agreementAggregate);
-        boolean isAvtaleAnnullertWithStatusAnnet = avtale.getAnnullertTidspunkt() != null
-                && !GYLDIGE_ANNULERT_GRUNNER.contains(avtale.getAnnullertGrunn());
-        boolean isAvtaleFeilregistrertOrAnnulertWithStatusAnnet = avtale.isFeilregistrert()
-                || isAvtaleAnnullertWithStatusAnnet;
+        boolean isAnnullert = avtale.getAnnullertTidspunkt() != null;
+        boolean isFeilregistrert = avtale.isFeilregistrert();
 
-        if (isAktivInArena && isAvtaleFeilregistrertOrAnnulertWithStatusAnnet) {
+        if (!isAktivInArena && (isAnnullert || isFeilregistrert)) {
             log.info(
-                "Avtale med id {} er aktiv i Arena, men er annulert ugyldig hos oss. Opprettet ny avtale",
+                "Avtale med id {} er inaktiv i Arena og annullert eller feilregistrert hos oss. Avslutter videre prossessering.",
+                avtale.getId()
+            );
+            return new Pair<>(Optional.empty(), ArenaAgreementMigrationStatus.IGNORED);
+        }
+
+        if (isAktivInArena && isFeilregistrert) {
+            log.info(
+                "Avtale med id {} er aktiv i Arena, men er satt som feilregistrert hos oss. Opprettet ny avtale.",
+                avtale.getId()
+            );
+            return createAvtale(agreementAggregate);
+        }
+
+        boolean isAvtaleAnnullertWithStatusAnnet = isAnnullert
+                && !GYLDIGE_ANNULERT_GRUNNER.contains(avtale.getAnnullertGrunn());
+
+        if (isAktivInArena && isAvtaleAnnullertWithStatusAnnet) {
+            log.info(
+                "Avtale med id {} er aktiv i Arena, men er annullert med status 'ANNET' hos oss. Opprettet ny avtale.",
                 avtale.getId()
             );
             return createAvtale(agreementAggregate);
@@ -150,7 +169,7 @@ public class ArenaAgreementProcessingService {
         avtale.endreAvtaleArena(endreAvtale, tilskuddsperiodeConfig.getTiltakstyper());
 
         if (!isAktivInArena) {
-            log.info("Avtale med id {} er ikke aktiv i Arena. Avtalen annulleres.", avtale.getId());
+            log.info("Avtale med id {} er ikke aktiv i Arena. Avtalen har blitt annullert.", avtale.getId());
         } else {
             log.info("Oppdatert avtale med id: {}", avtale.getId());
         }
