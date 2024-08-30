@@ -35,9 +35,7 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        if (!isLastInnTestdata()) {
-            return;
-        }
+        if (!isLastInnTestdata()) return;
 
         log.info("Laster testdata");
 

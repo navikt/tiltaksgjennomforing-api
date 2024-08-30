@@ -82,6 +82,7 @@ import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AvtaleMedFnrOgBedriftNr;
 import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
+import no.nav.tag.tiltaksgjennomforing.utils.Either;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
@@ -289,15 +290,32 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             throw new IllegalStateException("Dette skal ikke kunne skje. Avtale fra Arena skal være inngått og godkjent.");
         }
 
+        EndreAvtaleArena.Action action = endreAvtaleArena.getAction();
+
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRET_AV_ARENA);
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
 
-        Optional.ofNullable(endreAvtaleArena.getStartDato()).ifPresent(getGjeldendeInnhold()::setStartDato);
-        Optional.ofNullable(endreAvtaleArena.getSluttDato()).ifPresent(getGjeldendeInnhold()::setSluttDato);
         Optional.ofNullable(endreAvtaleArena.getStillingprosent()).ifPresent(getGjeldendeInnhold()::setStillingprosent);
         Optional.ofNullable(endreAvtaleArena.getAntallDagerPerUke()).ifPresent(getGjeldendeInnhold()::setAntallDagerPerUke);
+        Optional.ofNullable(endreAvtaleArena.getStartDato()).ifPresent(getGjeldendeInnhold()::setStartDato);
 
-        if (!endreAvtaleArena.isActive() && this.annullertTidspunkt == null && this.gjeldendeInnhold.getSluttDato().isAfter(LocalDate.now())) {
+        if (EndreAvtaleArena.Action.AVSLUTT == action) {
+            LocalDate sluttDato = Either.of(endreAvtaleArena.getSluttDato(), gjeldendeInnhold.getSluttDato())
+                .whereFirst(dato -> dato.isBefore(LocalDate.now()))
+                .orElse(LocalDate.now().minusDays(1));
+
+            LocalDate startDato = Either.of(endreAvtaleArena.getStartDato(), gjeldendeInnhold.getStartDato())
+                .whereFirst(dato -> dato.isEqual(sluttDato) || dato.isBefore(sluttDato))
+                .orElse(LocalDate.now().minusDays(1));
+
+            getGjeldendeInnhold().setStartDato(startDato);
+            getGjeldendeInnhold().setSluttDato(sluttDato);
+        } else {
+            Optional.ofNullable(endreAvtaleArena.getStartDato()).ifPresent(getGjeldendeInnhold()::setStartDato);
+            Optional.ofNullable(endreAvtaleArena.getSluttDato()).ifPresent(getGjeldendeInnhold()::setSluttDato);
+        }
+
+        if (EndreAvtaleArena.Action.ANNULLER == action) {
             annullerTilskuddsperioder();
             annullertTidspunkt = Now.instant();
             annullertGrunn = "Avtalen er ikke aktiv i Arena";
@@ -308,7 +326,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
         annullertTidspunkt = null;
         annullertGrunn = null;
-                if (tiltakstyperMedTilskuddsperioder != null && tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
+        if (tiltakstyperMedTilskuddsperioder != null && tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
             nyeTilskuddsperioder();
         }
         sistEndretNå();
