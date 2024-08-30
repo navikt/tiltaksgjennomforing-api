@@ -12,5 +12,5 @@ import java.util.List;
 @ConfigurationProperties(prefix = "tiltaksgjennomforing.salesforcekontorer")
 public class SalesforceKontorerConfig {
     private List<String> enheter = Collections.emptyList();
-    public final static List<Tiltakstype> PILOT_TILTAKSTYPER = List.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.ARBEIDSTRENING);
+    public static final List<Tiltakstype> PILOT_TILTAKSTYPER = List.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.ARBEIDSTRENING);
 }
