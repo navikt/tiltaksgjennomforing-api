@@ -117,9 +117,8 @@ public class AvtaleController {
     public Boolean visSalesforceDialog(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtalepart.hentAvtale(avtaleRepository, id);
-        List<Tiltakstype> pilotTiltakstyper = List.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.ARBEIDSTRENING);
         return salesforceKontorerConfig.getEnheter().contains(avtale.getEnhetOppfolging()) &&
-                pilotTiltakstyper.contains(avtale.getTiltakstype()) &&
+                SalesforceKontorerConfig.PILOT_TILTAKSTYPER.contains(avtale.getTiltakstype()) &&
                 (avtale.statusSomEnum() == Status.GJENNOMFØRES || avtale.statusSomEnum() == Status.AVSLUTTET);
     }
 
