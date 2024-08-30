@@ -118,7 +118,7 @@ public class AvtaleController {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtalepart.hentAvtale(avtaleRepository, id);
         return salesforceKontorerConfig.getEnheter().contains(avtale.getEnhetOppfolging()) &&
-                avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD &&
+                SalesforceKontorerConfig.PILOT_TILTAKSTYPER.contains(avtale.getTiltakstype()) &&
                 (avtale.statusSomEnum() == Status.GJENNOMFØRES || avtale.statusSomEnum() == Status.AVSLUTTET);
     }
 
