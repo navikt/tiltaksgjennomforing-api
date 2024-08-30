@@ -121,6 +121,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
             tiltakstyper.add(Tiltakstype.SOMMERJOBB);
             tiltakstyper.add(Tiltakstype.VARIG_LONNSTILSKUDD);
             tiltakstyper.add(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+            tiltakstyper.add(Tiltakstype.VTAO);
         }
 
         return avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(

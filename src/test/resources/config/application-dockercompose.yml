@@ -58,6 +58,9 @@ tiltaksgjennomforing:
     sommerjobbServiceEdition: 3
     arbtreningServiceCode: 5332
     arbtreningServiceEdition: 1
+    vtaoServiceCode: 5516
+    vtaoServiceEdition: 5 # TODO: Finn riktig service edition
+    vtaoAktiv: true
     altinnApiKey: foo
     apiGwApiKey: foo
   ereg:
@@ -91,7 +94,7 @@ tiltaksgjennomforing:
   avtale-hendelse-melding:
     fixed-delay: 120
   tilskuddsperioder:
-    tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD
+    tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, VTAO
 
 no.nav.security.jwt:
   issuer:
