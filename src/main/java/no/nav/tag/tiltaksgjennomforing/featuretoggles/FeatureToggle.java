@@ -6,7 +6,7 @@ public enum FeatureToggle {
     ARBEIDSGIVERNOTIFIKASJON_MED_SAK_OG_SMS("arbeidsgivernotifikasjon-med-sak-og-sms"),
     SMS_TIL_MOBILNUMMER("sms-til-mobilnummer"),
     ARENA_AVTALE_SYNC("arena-avtale-sync"),
-    ARBEIDSTRENING_ARENA("arbeidstrening-arena");
+    ARBEIDSTRENING_READ_ONLY("arbeidstrening-read-only"),;
 
     private String toggleNavn;
 
