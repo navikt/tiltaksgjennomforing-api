@@ -106,18 +106,16 @@ public class ArenaAgreementProcessingService {
 
     private Pair<Optional<Avtale>, ArenaAgreementMigrationStatus> updateAvtale(Avtale avtale, ArenaAgreementAggregate agreementAggregate) {
         if (!avtale.getDeltakerFnr().equals(new Fnr(agreementAggregate.getFnr()))) {
-            log.error("Fnr i avtale stemmer ikke med fnr fra Arena");
-            return new Pair<>(Optional.empty(), ArenaAgreementMigrationStatus.FAILED);
+            throw new IllegalStateException("Fnr i avtale stemmer ikke med fnr fra Arena");
         }
 
         if (!avtale.getBedriftNr().equals(new BedriftNr(agreementAggregate.getVirksomhetsnummer()))) {
-            log.error("Virksomhetsnummer i avtale stemmer ikke med virksomhetsnummer fra Arena");
-            return new Pair<>(Optional.empty(), ArenaAgreementMigrationStatus.FAILED);
+            throw new IllegalStateException("Virksomhetsnummer i avtale stemmer ikke med virksomhetsnummer fra Arena");
         }
 
         ArenaMigrationAction action = ArenaMigrationAction.map(agreementAggregate, avtale);
         switch (action) {
-            case OPPRETT -> {
+            case CREATE -> {
                 log.info(
                     "Avtale med id {} er aktiv i Arena, men er satt som feilregistrert eller " +
                     "annullert med status 'ANNET' hos oss. Opprettet ny avtale.",
@@ -125,20 +123,20 @@ public class ArenaAgreementProcessingService {
                 );
                 return createAvtale(agreementAggregate);
             }
-            case OPPDATER, AVSLUTT, ANNULLER -> {
+            case UPDATE, END, TERMINATE -> {
                 EndreAvtaleArena endreAvtale = EndreAvtaleArena.builder()
                     .startDato(agreementAggregate.getDatoFra() != null ? agreementAggregate.getDatoFra().toLocalDate() : null)
                     .sluttDato(agreementAggregate.getDatoTil() != null ? agreementAggregate.getDatoTil().toLocalDate() : null)
                     .antallDagerPerUke(agreementAggregate.getAntallDagerPrUke() != null ? Integer.parseInt(agreementAggregate.getAntallDagerPrUke()) : null)
                     .stillingprosent(agreementAggregate.getProsentDeltid())
-                    .action(EndreAvtaleArena.Action.map(action))
+                    .handling(EndreAvtaleArena.Handling.map(action))
                     .build();
 
                 switch (action) {
-                    case AVSLUTT ->
+                    case END ->
                         log.info("Avtale med id {} har status AVSLUTT eller AVBRUTT i Arena. Avtalen avsluttes/forkortes.", avtale.getId());
-                    case ANNULLER ->
-                        log.info("Avtale med id {} har status AVLYST i ARena. Annullerer avtalen.", avtale.getId());
+                    case TERMINATE ->
+                        log.info("Avtale med id {} har status AVLYST i Arena. Annullerer avtalen.", avtale.getId());
                     default ->
                         log.info("Oppdatert avtale med id: {}", avtale.getId());
                 }
@@ -146,25 +144,22 @@ public class ArenaAgreementProcessingService {
                 avtale.endreAvtaleArena(endreAvtale, tilskuddsperiodeConfig.getTiltakstyper());
                 return new Pair<>(Optional.of(avtale), ArenaAgreementMigrationStatus.UPDATED);
             }
-            default -> {
-                log.error("Virksomhetsnummer i avtale stemmer ikke med virksomhetsnummer fra Arena");
-                return new Pair<>(Optional.empty(), ArenaAgreementMigrationStatus.FAILED);
-            }
+            default -> throw new IllegalStateException("Ugyldig handling " + action + " for oppdatering av avtale");
         }
     }
 
     private Pair<Optional<Avtale>, ArenaAgreementMigrationStatus> createAvtale(ArenaAgreementAggregate agreementAggregate) {
-        boolean isAktivInArena = isActive(agreementAggregate);
-        if (!isAktivInArena) {
-            log.info("Avtale er ikke aktiv i Arena. Avtalen opprettes ikke.");
+        ArenaMigrationAction action = ArenaMigrationAction.map(agreementAggregate);
+        if (ArenaMigrationAction.IGNORE == action) {
+            log.info("Avtale er ikke aktiv i Arena. Ignorerer avtalen.");
             return new Pair<>(Optional.empty(), ArenaAgreementMigrationStatus.IGNORED);
         }
 
         OpprettAvtale opprettAvtale = OpprettAvtale.builder()
-                .bedriftNr(new BedriftNr(agreementAggregate.getVirksomhetsnummer()))
-                .deltakerFnr(new Fnr(agreementAggregate.getFnr()))
-                .tiltakstype(Tiltakstype.ARBEIDSTRENING)
-                .build();
+            .bedriftNr(new BedriftNr(agreementAggregate.getVirksomhetsnummer()))
+            .deltakerFnr(new Fnr(agreementAggregate.getFnr()))
+            .tiltakstype(Tiltakstype.ARBEIDSTRENING)
+            .build();
 
         Avtale avtale = Avtale.opprett(opprettAvtale, Avtaleopphav.ARENA);
 
@@ -190,15 +185,15 @@ public class ArenaAgreementProcessingService {
         AvtaleInnhold avtaleinnhold = avtale.getGjeldendeInnhold();
 
         Optional.ofNullable(agreementAggregate.getRegDato())
-                .ifPresent(avtale::setOpprettetTidspunkt);
+            .ifPresent(avtale::setOpprettetTidspunkt);
         Optional.ofNullable(agreementAggregate.getDatoFra() != null ? agreementAggregate.getDatoFra().toLocalDate() : null)
-                .ifPresent(avtaleinnhold::setStartDato);
+            .ifPresent(avtaleinnhold::setStartDato);
         Optional.ofNullable(agreementAggregate.getDatoTil() != null ? agreementAggregate.getDatoTil().toLocalDate() : null)
-                .ifPresent(avtaleinnhold::setSluttDato);
+            .ifPresent(avtaleinnhold::setSluttDato);
         Optional.ofNullable(agreementAggregate.getAntallDagerPrUke() != null ? Integer.parseInt(agreementAggregate.getAntallDagerPrUke()) : null)
-                .ifPresent(avtaleinnhold::setAntallDagerPerUke);
+            .ifPresent(avtaleinnhold::setAntallDagerPerUke);
         Optional.ofNullable(agreementAggregate.getProsentDeltid())
-                .ifPresent(avtaleinnhold::setStillingprosent);
+            .ifPresent(avtaleinnhold::setStillingprosent);
 
         avtale.setGodkjentForEtterregistrering(true);
         log.info("Opprettet avtale med id: {}", avtale.getId());

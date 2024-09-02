@@ -1,17 +1,18 @@
 package no.nav.tag.tiltaksgjennomforing.arena.models.migration;
 
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Deltakerstatuskode;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Tiltakstatuskode;
 import no.nav.tag.tiltaksgjennomforing.avtale.AnnullertGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 
 import java.util.List;
 
 public enum ArenaMigrationAction {
-    OPPRETT,
-    OPPDATER,
-    IGNORER,
-    ANNULLER,
-    AVSLUTT,
-    IKKE_MULIG;
+    CREATE,
+    UPDATE,
+    IGNORE,
+    TERMINATE,
+    END;
 
     private static final List<String> GYLDIGE_ANNULERT_GRUNNER = List.of(
         AnnullertGrunn.FEILREGISTRERING,
@@ -23,32 +24,56 @@ public enum ArenaMigrationAction {
 
     public static ArenaMigrationAction map(ArenaAgreementAggregate agreementAggregate) {
         return switch (agreementAggregate.getTiltakstatuskode()) {
-            case GJENNOMFOR -> OPPRETT;
-            case PLANLAGT ->
-                switch (agreementAggregate.getDeltakerstatuskode()) {
-                    case GJENN, AKTUELL, TILBUD -> OPPRETT;
-                    default -> IKKE_MULIG;
+            case GJENNOMFOR, PLANLAGT -> switch (agreementAggregate.getDeltakerstatuskode()) {
+                case AKTUELL, FULLF, GJENN, IKKAKTUELL, IKKEM, TILBUD -> CREATE;
+                default -> throw new IllegalStateException(formatExceptionMsg(agreementAggregate));
             };
-            default -> IGNORER;
+            case AVBRUTT -> switch (agreementAggregate.getDeltakerstatuskode()) {
+                case AKTUELL, DELAVB, FULLF, GJENN_AVB, IKKAKTUELL, IKKEM, TILBUD -> IGNORE;
+                default -> throw new IllegalStateException(formatExceptionMsg(agreementAggregate));
+            };
+            case AVLYST -> switch (agreementAggregate.getDeltakerstatuskode()) {
+                case AKTUELL, FULLF, GJENN_AVL, IKKAKTUELL, IKKEM -> IGNORE;
+                default -> throw new IllegalStateException(formatExceptionMsg(agreementAggregate));
+            };
+            case AVSLUTT -> switch (agreementAggregate.getDeltakerstatuskode()) {
+                case AKTUELL, FULLF, GJENN, GJENN_AVB, IKKAKTUELL, IKKEM, TILBUD -> IGNORE;
+                default -> throw new IllegalStateException(formatExceptionMsg(agreementAggregate));
+            };
         };
     }
 
     public static ArenaMigrationAction map(ArenaAgreementAggregate agreementAggregate, Avtale avtale) {
         boolean isFeilregistrert = avtale.isFeilregistrert();
-        boolean isAnnullertWithStatusAnnet = avtale.getAnnullertTidspunkt() != null
-            && !GYLDIGE_ANNULERT_GRUNNER.contains(avtale.getAnnullertGrunn());
+        boolean isAnnullert = avtale.getAnnullertTidspunkt() != null &&
+            !GYLDIGE_ANNULERT_GRUNNER.contains(avtale.getAnnullertGrunn());
+        boolean isFeilregOrAnnullert = isFeilregistrert || isAnnullert;
 
-        return switch (agreementAggregate.getTiltakstatuskode()) {
-            case GJENNOMFOR -> isFeilregistrert || isAnnullertWithStatusAnnet ? OPPRETT : OPPDATER;
-            case AVSLUTT, AVBRUTT -> AVSLUTT;
-            case AVLYST -> ANNULLER;
-            case PLANLAGT ->
-                switch (agreementAggregate.getDeltakerstatuskode()) {
-                    case GJENN, FULLF, AKTUELL, TILBUD -> isFeilregistrert || isAnnullertWithStatusAnnet
-                        ? OPPRETT
-                        : OPPDATER;
-                    default -> IKKE_MULIG;
+        Tiltakstatuskode tiltakstatuskode = agreementAggregate.getTiltakstatuskode();
+        Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
+
+        return switch (tiltakstatuskode) {
+            case GJENNOMFOR, PLANLAGT -> switch (deltakerstatuskode) {
+                case AKTUELL, FULLF, GJENN, IKKAKTUELL, IKKEM, TILBUD -> isFeilregOrAnnullert ? CREATE : UPDATE;
+                default -> throw new IllegalStateException(formatExceptionMsg(agreementAggregate));
+            };
+            case AVBRUTT -> switch (deltakerstatuskode) {
+                case AKTUELL, DELAVB, FULLF, GJENN_AVB, IKKAKTUELL, IKKEM, TILBUD -> END;
+                default -> throw new IllegalStateException(formatExceptionMsg(agreementAggregate));
+            };
+            case AVLYST -> switch (deltakerstatuskode) {
+                case AKTUELL, FULLF, GJENN_AVL, IKKAKTUELL, IKKEM -> TERMINATE;
+                default -> throw new IllegalStateException(formatExceptionMsg(agreementAggregate));
+            };
+            case AVSLUTT -> switch (deltakerstatuskode) {
+                case AKTUELL, FULLF, GJENN, GJENN_AVB, IKKAKTUELL, IKKEM, TILBUD -> END;
+                default -> throw new IllegalStateException(formatExceptionMsg(agreementAggregate));
             };
         };
+    }
+
+    private static String formatExceptionMsg(ArenaAgreementAggregate agreementAggregate) {
+        return "Fikk ugyldig kombinasjon av tiltakstatuskode" + agreementAggregate.getTiltakstatuskode() +
+               " og deltakerstatuskode" + agreementAggregate.getDeltakerstatuskode() + " fra Arena";
     }
 }

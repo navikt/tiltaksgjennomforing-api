@@ -13,16 +13,16 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EndreAvtaleArena {
-    public enum Action{
+    public enum Handling {
         OPPDATER,
         AVSLUTT,
         ANNULLER;
 
-        public static Action map(ArenaMigrationAction arenaMigrationAction) {
+        public static Handling map(ArenaMigrationAction arenaMigrationAction) {
             return switch (arenaMigrationAction) {
-                case OPPDATER -> OPPDATER;
-                case ANNULLER -> ANNULLER;
-                case AVSLUTT -> AVSLUTT;
+                case UPDATE -> OPPDATER;
+                case TERMINATE -> ANNULLER;
+                case END -> AVSLUTT;
                 default -> throw new IllegalArgumentException("Ugyldig handling: " + arenaMigrationAction);
             };
         }
@@ -32,5 +32,5 @@ public class EndreAvtaleArena {
     private LocalDate sluttDato;
     private Integer stillingprosent;
     private Integer antallDagerPerUke;
-    private Action action;
+    private Handling handling;
 }
