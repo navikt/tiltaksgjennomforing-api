@@ -290,13 +290,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         }
 
         EndreAvtaleArena.Handling action = endreAvtaleArena.getHandling();
-
-        gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRET_AV_ARENA);
-        getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
-
-        Optional.ofNullable(endreAvtaleArena.getStillingprosent()).ifPresent(getGjeldendeInnhold()::setStillingprosent);
-        Optional.ofNullable(endreAvtaleArena.getAntallDagerPerUke()).ifPresent(getGjeldendeInnhold()::setAntallDagerPerUke);
-        Optional.ofNullable(endreAvtaleArena.getStartDato()).ifPresent(getGjeldendeInnhold()::setStartDato);
+        if (EndreAvtaleArena.Handling.OPPDATER == action && endreAvtaleArena.compareTo(this) == 0) {
+            log.info("Endringer fra Arena er lik innholdet i avtalen. Beholder avtalen uendret.");
+            return;
+        }
 
         if (EndreAvtaleArena.Handling.AVSLUTT == action) {
             LocalDate sluttDato = Stream.of(endreAvtaleArena.getSluttDato(), gjeldendeInnhold.getSluttDato())
@@ -315,6 +312,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             Optional.ofNullable(endreAvtaleArena.getStartDato()).ifPresent(getGjeldendeInnhold()::setStartDato);
             Optional.ofNullable(endreAvtaleArena.getSluttDato()).ifPresent(getGjeldendeInnhold()::setSluttDato);
         }
+
+        gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRET_AV_ARENA);
+        getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
+
+        Optional.ofNullable(endreAvtaleArena.getStillingprosent()).ifPresent(getGjeldendeInnhold()::setStillingprosent);
+        Optional.ofNullable(endreAvtaleArena.getAntallDagerPerUke()).ifPresent(getGjeldendeInnhold()::setAntallDagerPerUke);
+        Optional.ofNullable(endreAvtaleArena.getStartDato()).ifPresent(getGjeldendeInnhold()::setStartDato);
 
         if (EndreAvtaleArena.Handling.ANNULLER == action) {
             annullerTilskuddsperioder();
