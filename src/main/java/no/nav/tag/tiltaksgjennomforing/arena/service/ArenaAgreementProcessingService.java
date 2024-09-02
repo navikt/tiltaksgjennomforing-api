@@ -113,7 +113,11 @@ public class ArenaAgreementProcessingService {
             throw new IllegalStateException("Virksomhetsnummer i avtale stemmer ikke med virksomhetsnummer fra Arena");
         }
 
-        ArenaMigrationAction action = ArenaMigrationAction.map(agreementAggregate, avtale);
+        ArenaMigrationAction action = ArenaMigrationAction.map(
+            avtale,
+            agreementAggregate.getTiltakstatuskode(),
+            agreementAggregate.getDeltakerstatuskode()
+        );
         switch (action) {
             case CREATE -> {
                 log.info(
@@ -149,7 +153,11 @@ public class ArenaAgreementProcessingService {
     }
 
     private Pair<Optional<Avtale>, ArenaAgreementMigrationStatus> createAvtale(ArenaAgreementAggregate agreementAggregate) {
-        ArenaMigrationAction action = ArenaMigrationAction.map(agreementAggregate);
+        ArenaMigrationAction action = ArenaMigrationAction.map(
+            agreementAggregate.getTiltakstatuskode(),
+            agreementAggregate.getDeltakerstatuskode()
+        );
+
         if (ArenaMigrationAction.IGNORE == action) {
             log.info("Avtale er ikke aktiv i Arena. Ignorerer avtalen.");
             return new Pair<>(Optional.empty(), ArenaAgreementMigrationStatus.IGNORED);
