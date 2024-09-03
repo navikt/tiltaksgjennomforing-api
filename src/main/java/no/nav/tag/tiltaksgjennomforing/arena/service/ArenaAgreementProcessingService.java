@@ -3,6 +3,8 @@ package no.nav.tag.tiltaksgjennomforing.arena.service;
 import kotlin.Pair;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.arena.logging.ArenaAgreementLogging;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Deltakerstatuskode;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Tiltakstatuskode;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementAggregate;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigration;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigrationStatus;
@@ -113,17 +115,19 @@ public class ArenaAgreementProcessingService {
             throw new IllegalStateException("Virksomhetsnummer i avtale stemmer ikke med virksomhetsnummer fra Arena");
         }
 
-        ArenaMigrationAction action = ArenaMigrationAction.map(
-            avtale,
-            agreementAggregate.getTiltakstatuskode(),
-            agreementAggregate.getDeltakerstatuskode()
-        );
+        Tiltakstatuskode tiltakstatuskode = agreementAggregate.getTiltakstatuskode();
+        Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
+
+        ArenaMigrationAction action = ArenaMigrationAction.map(avtale, tiltakstatuskode, deltakerstatuskode);
         switch (action) {
             case CREATE -> {
                 log.info(
-                    "Avtale med id {} er aktiv i Arena, men er satt som feilregistrert eller " +
-                    "annullert med status 'ANNET' hos oss. Opprettet ny avtale.",
-                    avtale.getId()
+                    "Avtale med id {} har tiltakstatus {} og deltakerstatus {} i Arena, " +
+                    "men er satt som feilregistrert eller annullert med status 'ANNET' hos oss. " +
+                    "Opprettet ny avtale.",
+                    avtale.getId(),
+                    tiltakstatuskode,
+                    deltakerstatuskode
                 );
                 return createAvtale(agreementAggregate);
             }
@@ -136,14 +140,17 @@ public class ArenaAgreementProcessingService {
                     .handling(EndreAvtaleArena.Handling.map(action))
                     .build();
 
-                switch (action) {
-                    case END ->
-                        log.info("Avtale med id {} har status AVSLUTT eller AVBRUTT i Arena. Avtalen avsluttes/forkortes.", avtale.getId());
-                    case TERMINATE ->
-                        log.info("Avtale med id {} har status AVLYST i Arena. Annullerer avtalen.", avtale.getId());
-                    default ->
-                        log.info("Oppdatert avtale med id: {}", avtale.getId());
-                }
+                log.info(
+                    "Avtale med id {} har tiltakstatus {} og deltakerstatus {} i Arena. {}.",
+                    avtale.getId(),
+                    tiltakstatuskode,
+                    deltakerstatuskode,
+                    switch (action) {
+                        case END -> "Avtalen avsluttes/forkortes";
+                        case TERMINATE -> "Annullerer avtalen";
+                        default -> "Oppdatert avtalen";
+                    }
+                );
 
                 avtale.endreAvtaleArena(endreAvtale, tilskuddsperiodeConfig.getTiltakstyper());
                 return new Pair<>(Optional.of(avtale), ArenaAgreementMigrationStatus.UPDATED);
@@ -153,13 +160,20 @@ public class ArenaAgreementProcessingService {
     }
 
     private Pair<Optional<Avtale>, ArenaAgreementMigrationStatus> createAvtale(ArenaAgreementAggregate agreementAggregate) {
+        Tiltakstatuskode tiltakstatuskode = agreementAggregate.getTiltakstatuskode();
+        Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
+
         ArenaMigrationAction action = ArenaMigrationAction.map(
-            agreementAggregate.getTiltakstatuskode(),
-            agreementAggregate.getDeltakerstatuskode()
+            tiltakstatuskode,
+            deltakerstatuskode
         );
 
         if (ArenaMigrationAction.IGNORE == action) {
-            log.info("Avtale er ikke aktiv i Arena. Ignorerer avtalen.");
+            log.info(
+                "Avtale har tiltaksstatus {} og deltakerstatus {} i Arena. Ignorerer avtalen.",
+                tiltakstatuskode,
+                deltakerstatuskode
+            );
             return new Pair<>(Optional.empty(), ArenaAgreementMigrationStatus.IGNORED);
         }
 
