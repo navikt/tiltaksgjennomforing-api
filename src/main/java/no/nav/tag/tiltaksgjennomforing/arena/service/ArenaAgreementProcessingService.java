@@ -148,7 +148,7 @@ public class ArenaAgreementProcessingService {
                     switch (action) {
                         case END -> "Avtalen avsluttes/forkortes";
                         case TERMINATE -> "Annullerer avtalen";
-                        default -> "Oppdatert avtalen";
+                        default -> "Oppdaterer avtalen";
                     }
                 );
 
