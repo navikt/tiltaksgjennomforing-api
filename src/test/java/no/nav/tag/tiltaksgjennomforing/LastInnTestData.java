@@ -28,7 +28,8 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
             UUID.fromString("5019be60-7604-4a2c-bae0-47b1780ab139"),
             UUID.fromString("e0619f5a-c2eb-4149-9803-f77eca4cf343"),
             UUID.fromString("206cb3fa-f1f2-4da5-ab6b-0caf847fbf1c"),
-            UUID.fromString("89d671cc-0edf-464a-9e59-b5c7473242b9")
+            UUID.fromString("89d671cc-0edf-464a-9e59-b5c7473242b9"),
+            UUID.fromString("7950419a-8730-4ad9-8a14-b99590ff15f0")
     );
 
     private final AvtaleRepository avtaleRepository;
