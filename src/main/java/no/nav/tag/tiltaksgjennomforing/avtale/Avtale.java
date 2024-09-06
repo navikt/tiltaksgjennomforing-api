@@ -21,6 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.ArbeidsgiversGodkjenningOpphevetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
@@ -288,19 +289,52 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             throw new IllegalStateException("Dette skal ikke kunne skje. Avtale fra Arena skal være inngått og godkjent.");
         }
 
+        EndreAvtaleArena.Handling action = endreAvtaleArena.getHandling();
+        if (EndreAvtaleArena.Handling.OPPDATER == action && endreAvtaleArena.compareTo(this) == 0) {
+            log.info("Endringer fra Arena er lik innholdet i avtalen. Beholder avtalen uendret.");
+            return;
+        }
+
+        if (EndreAvtaleArena.Handling.AVSLUTT == action) {
+            LocalDate sluttDato = Stream.of(endreAvtaleArena.getSluttDato(), gjeldendeInnhold.getSluttDato())
+                .filter(dato -> dato.isBefore(LocalDate.now()))
+                .findFirst()
+                .orElse(LocalDate.now().minusDays(1));
+
+            LocalDate startDato = Stream.of(endreAvtaleArena.getStartDato(), gjeldendeInnhold.getStartDato())
+                .filter(dato -> dato.isEqual(sluttDato) || dato.isBefore(sluttDato))
+                .findFirst()
+                .orElse(LocalDate.now().minusDays(1));
+
+            getGjeldendeInnhold().setStartDato(startDato);
+            getGjeldendeInnhold().setSluttDato(sluttDato);
+        } else {
+            Optional.ofNullable(endreAvtaleArena.getStartDato()).ifPresent(getGjeldendeInnhold()::setStartDato);
+            Optional.ofNullable(endreAvtaleArena.getSluttDato()).ifPresent(getGjeldendeInnhold()::setSluttDato);
+        }
+
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRET_AV_ARENA);
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
 
-        Optional.ofNullable(endreAvtaleArena.getStartDato()).ifPresent(getGjeldendeInnhold()::setStartDato);
-        Optional.ofNullable(endreAvtaleArena.getSluttDato()).ifPresent(getGjeldendeInnhold()::setSluttDato);
         Optional.ofNullable(endreAvtaleArena.getStillingprosent()).ifPresent(getGjeldendeInnhold()::setStillingprosent);
         Optional.ofNullable(endreAvtaleArena.getAntallDagerPerUke()).ifPresent(getGjeldendeInnhold()::setAntallDagerPerUke);
+        Optional.ofNullable(endreAvtaleArena.getStartDato()).ifPresent(getGjeldendeInnhold()::setStartDato);
 
-        if (tiltakstyperMedTilskuddsperioder != null && tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
-            nyeTilskuddsperioder();
+        if (EndreAvtaleArena.Handling.ANNULLER == action) {
+            annullerTilskuddsperioder();
+            annullertTidspunkt = Now.instant();
+            annullertGrunn = "Avtalen er annullert i Arena";
+            sistEndretNå();
+            registerEvent(new AnnullertAvArena(this));
+        } else {
+            annullertTidspunkt = null;
+            annullertGrunn = null;
+            if (tiltakstyperMedTilskuddsperioder != null && tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
+                nyeTilskuddsperioder();
+            }
+            sistEndretNå();
+            registerEvent(new AvtaleEndretAvArena(this));
         }
-        sistEndretNå();
-        registerEvent(new AvtaleEndretAvArena(this));
     }
 
     public void delMedAvtalepart(Avtalerolle avtalerolle) {
@@ -727,7 +761,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         if (erUfordelt()) {
             setVeilederNavIdent(veileder.getIdentifikator());
         }
-        if ("Feilregistrering".equals(annullerGrunn)) {
+        if (AnnullertGrunn.FEILREGISTRERING.equals(annullerGrunn)) {
             setFeilregistrert(true);
         }
         sistEndretNå();

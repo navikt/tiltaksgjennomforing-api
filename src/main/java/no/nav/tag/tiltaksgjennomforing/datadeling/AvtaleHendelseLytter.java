@@ -73,6 +73,12 @@ public class AvtaleHendelseLytter {
     }
 
     @EventListener
+    public void avtaleAnnullert(AnnullertAvArena event) {
+        lagHendelse(event.getAvtale(), HendelseType.ANNULLERT, event.getUtfortAv(), AvtaleHendelseUtførtAvRolle.SYSTEM);
+    }
+
+
+    @EventListener
     public void tilskuddsberegningEndret(TilskuddsberegningEndret event) {
         lagHendelse(event.getAvtale(), HendelseType.TILSKUDDSBEREGNING_ENDRET, event.getUtførtAv(), AvtaleHendelseUtførtAvRolle.VEILEDER);
     }

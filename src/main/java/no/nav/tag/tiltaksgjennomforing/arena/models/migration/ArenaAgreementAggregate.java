@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Deltakerstatuskode;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Tiltakstatuskode;
 
 import java.time.LocalDateTime;
@@ -49,6 +50,7 @@ public class ArenaAgreementAggregate {
     private String eksternId;
     private Integer prosentDeltid;
     private Tiltakstatuskode tiltakstatuskode;
+    private Deltakerstatuskode deltakerstatuskode;
     private LocalDateTime regDato;
 
     public Optional<UUID> getEksternIdAsUuid() throws IllegalArgumentException {

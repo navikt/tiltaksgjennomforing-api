@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing;
 
-import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -13,16 +12,33 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
 @Profile({ Miljø.TESTDATA, Miljø.DEV_GCP_LABS })
 public class LastInnTestData implements ApplicationListener<ApplicationReadyEvent> {
+    private final static List<UUID> AFTER_MIGRATE_MOCK_AVTALER = List.of(
+            UUID.fromString("16ba7ded-8b14-4972-9394-389d513eda91"),
+            UUID.fromString("76ef4c0f-1ca4-4433-8313-09e6db8f5493"),
+            UUID.fromString("4a9bd80b-9a72-41a9-8e0e-83cd53a5ffad"),
+            UUID.fromString("5019be60-7604-4a2c-bae0-47b1780ab139"),
+            UUID.fromString("e0619f5a-c2eb-4149-9803-f77eca4cf343"),
+            UUID.fromString("206cb3fa-f1f2-4da5-ab6b-0caf847fbf1c"),
+            UUID.fromString("89d671cc-0edf-464a-9e59-b5c7473242b9")
+    );
+
     private final AvtaleRepository avtaleRepository;
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        if (avtaleRepository.count() > 0) return;
+        if (!isLastInnTestdata()) {
+            return;
+        }
+
         log.info("Laster testdata");
 
         avtaleRepository.save(TestData.enLonnstilskuddAvtaleGodkjentAvVeilederUtenTilskuddsperioder());
@@ -56,9 +72,10 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         avtaleRepository.save(TestData.enAvtaleOpprettetAvArbeidsgiver(Tiltakstype.VARIG_LONNSTILSKUDD));
         avtaleRepository.save(TestData.enVarigLonnstilskuddAvtaleMedBehandletIArenaPerioder());
         avtaleRepository.save(TestData.enVtaoAvtaleGodkjentAvArbeidsgiver());
+    }
 
-
-
-
+    private boolean isLastInnTestdata() {
+        return avtaleRepository.count() == AFTER_MIGRATE_MOCK_AVTALER.size()
+                && AFTER_MIGRATE_MOCK_AVTALER.stream().allMatch(avtaleRepository::existsById);
     }
 }
