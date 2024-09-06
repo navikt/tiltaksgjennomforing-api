@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.arena.service;
 
-import kotlin.Pair;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.arena.logging.ArenaAgreementLogging;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Deltakerstatuskode;
@@ -9,6 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementAggr
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigration;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigrationStatus;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaMigrationAction;
+import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaMigrationProcessResult;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaAgreementMigrationRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
@@ -75,16 +75,19 @@ public class ArenaAgreementProcessingService {
         updateMigrationStatus(tiltaksgjennomforingId, ArenaAgreementMigrationStatus.PROCESSING, null);
 
         try {
-            Pair<Optional<Avtale>, ArenaAgreementMigrationStatus> result = agreementAggregate.getEksternIdAsUuid()
+            ArenaMigrationProcessResult result = agreementAggregate.getEksternIdAsUuid()
                     .flatMap(avtaleRepository::findById)
                     .map((existingAvtale) -> updateAvtale(existingAvtale, agreementAggregate))
                     .orElseGet(() -> createAvtale(agreementAggregate));
 
-            Optional<Avtale> avtaleOpt = result.getFirst();
-            ArenaAgreementMigrationStatus status = result.getSecond();
-
-            avtaleOpt.ifPresent(avtaleRepository::save);
-            updateMigrationStatus(tiltaksgjennomforingId, status, avtaleOpt.map(Avtale::getId).orElse(null));
+            switch (result) {
+                case ArenaMigrationProcessResult.Completed completed -> {
+                    avtaleRepository.save(completed.avtale());
+                    updateMigrationStatus(tiltaksgjennomforingId, completed.status() , completed.avtale().getId());
+                }
+                case ArenaMigrationProcessResult.Ignored ignored ->
+                    updateMigrationStatus(tiltaksgjennomforingId, ArenaAgreementMigrationStatus.IGNORED, null);
+            }
         } catch(Exception e) {
             log.error("Feil ved prossesering av avtale fra Arena", e);
             updateMigrationStatus(tiltaksgjennomforingId, ArenaAgreementMigrationStatus.FAILED, null);
@@ -106,7 +109,7 @@ public class ArenaAgreementProcessingService {
         );
     }
 
-    private Pair<Optional<Avtale>, ArenaAgreementMigrationStatus> updateAvtale(Avtale avtale, ArenaAgreementAggregate agreementAggregate) {
+    private ArenaMigrationProcessResult updateAvtale(Avtale avtale, ArenaAgreementAggregate agreementAggregate) {
         if (!avtale.getDeltakerFnr().equals(new Fnr(agreementAggregate.getFnr()))) {
             throw new IllegalStateException("Fnr i avtale stemmer ikke med fnr fra Arena");
         }
@@ -153,13 +156,13 @@ public class ArenaAgreementProcessingService {
                 );
 
                 avtale.endreAvtaleArena(endreAvtale, tilskuddsperiodeConfig.getTiltakstyper());
-                return new Pair<>(Optional.of(avtale), ArenaAgreementMigrationStatus.UPDATED);
+                return new ArenaMigrationProcessResult.Completed(ArenaAgreementMigrationStatus.UPDATED, avtale);
             }
             default -> throw new IllegalStateException("Ugyldig handling " + action + " for oppdatering av avtale");
         }
     }
 
-    private Pair<Optional<Avtale>, ArenaAgreementMigrationStatus> createAvtale(ArenaAgreementAggregate agreementAggregate) {
+    private ArenaMigrationProcessResult createAvtale(ArenaAgreementAggregate agreementAggregate) {
         Tiltakstatuskode tiltakstatuskode = agreementAggregate.getTiltakstatuskode();
         Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
 
@@ -174,7 +177,7 @@ public class ArenaAgreementProcessingService {
                 tiltakstatuskode,
                 deltakerstatuskode
             );
-            return new Pair<>(Optional.empty(), ArenaAgreementMigrationStatus.IGNORED);
+            return new ArenaMigrationProcessResult.Ignored();
         }
 
         OpprettAvtale opprettAvtale = OpprettAvtale.builder()
@@ -219,7 +222,7 @@ public class ArenaAgreementProcessingService {
 
         avtale.setGodkjentForEtterregistrering(true);
         log.info("Opprettet avtale med id: {}", avtale.getId());
-        return new Pair<>(Optional.of(avtale), ArenaAgreementMigrationStatus.CREATED);
+        return new ArenaMigrationProcessResult.Completed(ArenaAgreementMigrationStatus.CREATED, avtale);
     }
 
     private Organisasjon getOrgFromEreg(BedriftNr bedriftNr) {

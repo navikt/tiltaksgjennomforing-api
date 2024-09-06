@@ -235,8 +235,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     public static Avtale opprett(OpprettAvtale opprettAvtale, Avtaleopphav opphav, NavIdent navIdent) {
-        Avtale avtale = (opprettAvtale instanceof OpprettMentorAvtale)
-                ? new Avtale((OpprettMentorAvtale) opprettAvtale)
+        Avtale avtale = (opprettAvtale instanceof OpprettMentorAvtale opprettMetorAvtale)
+                ? new Avtale(opprettMetorAvtale)
                 : new Avtale(opprettAvtale);
 
         switch (opphav) {
