@@ -75,7 +75,7 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
     }
 
     private boolean isLastInnTestdata() {
-        return avtaleRepository.count() == AFTER_MIGRATE_MOCK_AVTALER.size()
-                && AFTER_MIGRATE_MOCK_AVTALER.stream().allMatch(avtaleRepository::existsById);
+        return avtaleRepository.count() == 0 || (avtaleRepository.count() == AFTER_MIGRATE_MOCK_AVTALER.size()
+            && AFTER_MIGRATE_MOCK_AVTALER.stream().allMatch(avtaleRepository::existsById));
     }
 }
