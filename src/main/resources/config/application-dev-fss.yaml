@@ -112,7 +112,7 @@ tiltaksgjennomforing:
     vtaoServiceEdition: 5 # TODO: Finn riktig service edition
     vtaoAktiv: true
   ereg:
-    uri: https://ereg-services-q1.dev.intern.nav.no/api/v2/organisasjon
+    uri: https://ereg-services.dev.intern.nav.no/api/v2/organisasjon
   sts:
     username: ${tiltaksgjennomforing.serviceuser.username}
     password: ${tiltaksgjennomforing.serviceuser.password}
