@@ -75,6 +75,25 @@ public class VtaoTest {
     }
 
     @Test
+    public void OppretteVtaoAvtaleMedFeilInsatsbehovTest() {
+        var navIdent = TestData.enNavIdent();
+        Veileder veileder = new Veileder(
+                navIdent,
+                tilgangskontrollService,
+                persondataService,
+                norg2Client,
+                Collections.emptySet(),
+                new SlettemerkeProperties(),
+                false,
+                veilarbArenaClient
+        );
+        værInnloggetSom(veileder);
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
+
+        // TODO: opprett avtale via endepunkt avtaleController.opprettAvtaleSomVeileder()
+    }
+
+    @Test
     public void kanOppretteOgEndreKontaktInfoForVtaoTest() {
         // Lagre en ny VTAO-avtale
         Avtale avtale = TestData.enVtaoAvtaleGodkjentAvArbeidsgiver();
@@ -325,6 +344,9 @@ public class VtaoTest {
                 endretVtao
         );
 
+
+
+
         avtaleController.endreAvtale(lagretAvtale.getId(), hentetAvtale.getSistEndret(), endretData, Avtalerolle.VEILEDER);
         var endretAvtale = avtaleController.hent(lagretAvtale.getId(), Avtalerolle.VEILEDER, null);
 
@@ -347,6 +369,17 @@ public class VtaoTest {
                 .filter(x -> avtaleInnholdIdSet.contains(x.getAvtaleInnhold().getId()))
                 .toList()
                 .size());
+    }
+
+    @Test
+    public void måBesluttesForåGodkjennes() {
+        Avtale avtale = TestData.enVtaoAvtaleGodkjentAvArbeidsgiver();
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(null);
+        var navIdent = avtale.getVeilederNavIdent();
+        GodkjentPaVegneGrunn godkjentPaVegneGrunn = new GodkjentPaVegneGrunn();
+        godkjentPaVegneGrunn.setDigitalKompetanse(true);
+        avtale.godkjennForVeilederOgDeltaker(navIdent, godkjentPaVegneGrunn);
+        assertEquals(avtale.status(), Status.MANGLER_GODKJENNING.getBeskrivelse());
     }
 
     private void værInnloggetSom(Avtalepart<?> avtalepart) {
