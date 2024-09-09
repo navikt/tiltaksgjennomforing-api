@@ -120,12 +120,6 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 @Builder
 public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFnrOgBedriftNr {
 
-    public static final List<Tiltakstype> TILTAK_SOM_KAN_GODKJENNES_PA_VEGNE_AV = List.of(
-        Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
-        Tiltakstype.VARIG_LONNSTILSKUDD,
-        Tiltakstype.SOMMERJOBB
-    );
-
     @Convert(converter = FnrConverter.class)
     private Fnr deltakerFnr;
     @Convert(converter = FnrConverter.class)
@@ -621,8 +615,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     void godkjennForVeilederOgArbeidsgiver(NavIdent utfortAv, GodkjentPaVegneAvArbeidsgiverGrunn godkjentPaVegneAvArbeidsgiverGrunn) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErKlarTilGodkjenning();
-        if (!isKanGodkjennesPaVegneAv()) {
-            throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_TILTAKSTYPE);
+        if (Avtaleopphav.ARENA != opphav) {
+            throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_OPPHAV);
         }
         if (erGodkjentAvArbeidsgiver()) {
             throw new FeilkodeException(Feilkode.ARBEIDSGIVER_HAR_GODKJENT);
@@ -654,8 +648,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     public void godkjennForVeilederOgDeltakerOgArbeidsgiver(NavIdent utfortAv, GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn paVegneAvDeltakerOgArbeidsgiverGrunn) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErKlarTilGodkjenning();
-        if (!isKanGodkjennesPaVegneAv()) {
-            throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_TILTAKSTYPE);
+        if (Avtaleopphav.ARENA != opphav) {
+            throw new FeilkodeException(Feilkode.GODKJENN_PAA_VEGNE_AV_FEIL_OPPHAV);
         }
         if (erGodkjentAvDeltaker()) {
             throw new DeltakerHarGodkjentException();
@@ -1543,9 +1537,5 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     @Override
     public FnrOgBedrift getFnrOgBedrift() {
         return this.fnrOgBedrift;
-    }
-
-    private boolean isKanGodkjennesPaVegneAv() {
-        return Avtaleopphav.ARENA == opphav || TILTAK_SOM_KAN_GODKJENNES_PA_VEGNE_AV.contains(tiltakstype);
     }
 }
