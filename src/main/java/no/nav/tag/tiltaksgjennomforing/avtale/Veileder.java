@@ -339,14 +339,14 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
         this.sjekkTilgangskontroll(opprettAvtale.getDeltakerFnr());
-        Avtale avtale = Avtale.veilederOppretterAvtale(opprettAvtale, getIdentifikator());
+        Avtale avtale = Avtale.opprett(opprettAvtale, Avtaleopphav.VEILEDER, getIdentifikator());
         leggTilEnheter(avtale);
         return avtale;
     }
 
     public Avtale opprettMentorAvtale(OpprettMentorAvtale opprettMentorAvtale) {
         this.sjekkTilgangskontroll(opprettMentorAvtale.getDeltakerFnr());
-        Avtale avtale = Avtale.veilederOppretterAvtale(opprettMentorAvtale, getIdentifikator());
+        Avtale avtale = Avtale.opprett(opprettMentorAvtale, Avtaleopphav.VEILEDER, getIdentifikator());
         leggTilEnheter(avtale);
         return avtale;
     }

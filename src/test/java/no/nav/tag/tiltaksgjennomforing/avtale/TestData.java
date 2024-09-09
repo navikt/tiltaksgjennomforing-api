@@ -47,19 +47,19 @@ public class TestData {
 
     public static Avtale enArbeidstreningAvtale() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        return Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING), veilderNavIdent);
+        return Avtale.opprett(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING), Avtaleopphav.VEILEDER, veilderNavIdent);
     }
 
     public static Avtale enInkluderingstilskuddAvtale() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.INKLUDERINGSTILSKUDD), veilderNavIdent);
+        Avtale avtale = Avtale.opprett(lagOpprettAvtale(Tiltakstype.INKLUDERINGSTILSKUDD), Avtaleopphav.VEILEDER, veilderNavIdent);
         avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleInkluderingstilskuddFelter(), Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
         return avtale;
     }
 
     public static Avtale enInkluderingstilskuddAvtaleUtfyltOgGodkjentAvArbeidsgiver() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.INKLUDERINGSTILSKUDD), veilderNavIdent);
+        Avtale avtale = Avtale.opprett(lagOpprettAvtale(Tiltakstype.INKLUDERINGSTILSKUDD), Avtaleopphav.VEILEDER, veilderNavIdent);
         avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleInkluderingstilskuddFelter(), Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         return avtale;
@@ -67,22 +67,22 @@ public class TestData {
 
     public static Avtale enSommerjobbAvtale() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        return Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.SOMMERJOBB), veilderNavIdent);
+        return Avtale.opprett(lagOpprettAvtale(Tiltakstype.SOMMERJOBB), Avtaleopphav.VEILEDER, veilderNavIdent);
     }
 
     public static Avtale enMidlertidigLonnstilskuddsjobbAvtale() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        return Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), veilderNavIdent);
+        return Avtale.opprett(lagOpprettAvtale(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, veilderNavIdent);
     }
 
     public static Avtale enVarigLonnstilskuddsjobbAvtale() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        return Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.VARIG_LONNSTILSKUDD), veilderNavIdent);
+        return Avtale.opprett(lagOpprettAvtale(Tiltakstype.VARIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, veilderNavIdent);
     }
 
     public static Avtale enMentorAvtale() {
         NavIdent veilederNavIdent = new NavIdent("Z123456");
-        return Avtale.veilederOppretterAvtale(lagOpprettMentorAvtale(Tiltakstype.MENTOR), veilederNavIdent);
+        return Avtale.opprett(lagOpprettMentorAvtale(Tiltakstype.MENTOR), Avtaleopphav.VEILEDER, veilederNavIdent);
     }
 
     public static Avtale enMentorAvtaleUsignert() {
@@ -101,11 +101,11 @@ public class TestData {
     }
 
     public static Avtale enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt() {
-        return Avtale.arbeidsgiverOppretterAvtale(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING));
+        return Avtale.opprett(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING), Avtaleopphav.ARBEIDSGIVER);
     }
 
     public static Avtale enAvtaleOpprettetAvArbeidsgiver(Tiltakstype tiltakstype) {
-        return Avtale.arbeidsgiverOppretterAvtale(lagOpprettAvtale(tiltakstype));
+        return Avtale.opprett(lagOpprettAvtale(tiltakstype), Avtaleopphav.ARBEIDSGIVER);
     }
 
     public static Avtale setOppfølgingPåAvtale(Avtale avtale) {
@@ -152,7 +152,7 @@ public class TestData {
 
     public static Avtale enAvtaleMedAltUtfylt() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING), veilderNavIdent);
+        Avtale avtale = Avtale.opprett(lagOpprettAvtale(Tiltakstype.ARBEIDSTRENING), Avtaleopphav.VEILEDER, veilderNavIdent);
         avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
         return avtale;
     }
@@ -208,7 +208,7 @@ public class TestData {
 
     public static Avtale enSommerjobbLonnstilskuddAvtaleMedAltUtfylt(int lonnstilskuddProsent) {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.SOMMERJOBB), veilderNavIdent);
+        Avtale avtale = Avtale.opprett(lagOpprettAvtale(Tiltakstype.SOMMERJOBB), Avtaleopphav.VEILEDER, veilderNavIdent);
         setOppfølgingPåAvtale(avtale);
         avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleLønnstilskuddFelterForSommerjobb(lonnstilskuddProsent), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
         avtale.setTiltakstype(Tiltakstype.SOMMERJOBB);
@@ -249,7 +249,7 @@ public class TestData {
 
     public static Avtale enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype tiltakstype) {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(tiltakstype), veilderNavIdent);
+        Avtale avtale = Avtale.opprett(lagOpprettAvtale(tiltakstype), Avtaleopphav.VEILEDER, veilderNavIdent);
         setOppfølgingPåAvtale(avtale);
         if (tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD) {
             avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
@@ -272,7 +272,7 @@ public class TestData {
 
     public static Avtale enMidLonnstilskuddAvtaleMedVarigTilpassetSatsMedAltUtfylt() {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), veilderNavIdent);
+        Avtale avtale = Avtale.opprett(lagOpprettAvtale(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, veilderNavIdent);
         setOppfølgingPåAvtale(avtale);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
         EndreAvtale endreAvtale = endringPåAlleLønnstilskuddFelter();
@@ -293,7 +293,7 @@ public class TestData {
 
     public static Avtale enMidlertidigLonnstilskuddAvtaleMedSpesieltTilpassetInnsatsOgAltUtfylt(Tiltakstype tiltakstype) {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
-        Avtale avtale = Avtale.veilederOppretterAvtale(lagOpprettAvtale(tiltakstype), veilderNavIdent);
+        Avtale avtale = Avtale.opprett(lagOpprettAvtale(tiltakstype), Avtaleopphav.VEILEDER, veilderNavIdent);
         setOppfølgingPåAvtale(avtale);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SPESIELT_TILPASSET_INNSATS);
         avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleLønnstilskuddFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
@@ -377,7 +377,7 @@ public class TestData {
     }
 
     public static Avtale enSommerjobbAvtaleGodkjentAvVeileder() {
-        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), new NavIdent("Z123456"));
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
         setOppfølgingPåAvtale(avtale);
         EndreAvtale endreAvtale = endringPåAlleLønnstilskuddFelter();
         endreAvtale.setLonnstilskuddProsent(50);
@@ -396,7 +396,7 @@ public class TestData {
     }
 
     public static Avtale enSommerjobbAvtaleGodkjentAvBeslutter() {
-        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), new NavIdent("Z123456"));
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
         setOppfølgingPåAvtale(avtale);
         avtale.setAvtaleNr(1);
         EndreAvtale endreAvtale = endringPåAlleLønnstilskuddFelter();
@@ -418,7 +418,7 @@ public class TestData {
     }
 
     public static Avtale enSommerjobbAvtaleGodkjentAvArbeidsgiver() {
-        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), new NavIdent("Z123456"));
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.SOMMERJOBB), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
         setOppfølgingPåAvtale(avtale);
         EndreAvtale endreAvtale = endringPåAlleLønnstilskuddFelter();
         endreAvtale.setLonnstilskuddProsent(50);
@@ -445,7 +445,7 @@ public class TestData {
     }
 
     public static Avtale enVtaoAvtaleGodkjentAvArbeidsgiver() {
-        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO), new NavIdent("Z123456"));
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
         setOppfølgingPåAvtale(avtale);
         EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);

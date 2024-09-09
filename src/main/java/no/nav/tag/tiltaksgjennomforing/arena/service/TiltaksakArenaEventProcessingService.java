@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class TiltaksakArenaEventProcessingService implements ArenaEventProcessingService {
+public class TiltaksakArenaEventProcessingService implements IArenaEventProcessingService {
     private final ObjectMapper objectMapper;
     private final ArenaTiltakssakRepository tiltaksakRepository;
 

@@ -15,11 +15,11 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.VARIG_LONNSTILS
 class LonnstilskuddStartOgSluttDatoStrategyTest {
 
     private static Avtale enMidlertidig() {
-        return Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), MIDLERTIDIG_LONNSTILSKUDD), TestData.enNavIdent());
+        return Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), MIDLERTIDIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent());
     }
 
     private static Avtale enVarig() {
-        return Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), VARIG_LONNSTILSKUDD), TestData.enNavIdent());
+        return Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), VARIG_LONNSTILSKUDD), Avtaleopphav.VEILEDER, TestData.enNavIdent());
     }
 
     private void endreAvtale(Avtale avtale, EndreAvtale endreAvtale) {

@@ -1,6 +1,8 @@
 spring:
   datasource:
     url: "jdbc:postgresql://localhost:6432/sample?user=sample&password=sample"
+  flyway:
+    locations: classpath:db/migration,classpath:db/callbacks
   kafka:
     bootstrap-servers: localhost:9092
     security:

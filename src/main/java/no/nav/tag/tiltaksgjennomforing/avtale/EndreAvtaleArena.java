@@ -5,12 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OpprettAvtale {
-    private Fnr deltakerFnr;
-    private BedriftNr bedriftNr;
-    private Tiltakstype tiltakstype;
+public class EndreAvtaleArena {
+    private LocalDate startDato;
+    private LocalDate sluttDato;
+    private Integer stillingprosent;
+    private Integer antallDagerPerUke;
 }
