@@ -9,6 +9,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -137,7 +138,7 @@ public class AvtaleTest {
 
         avtale.godkjennForArbeidsgiver(enIdentifikator());
         avtale.godkjennForVeilederOgDeltaker(avtale.getVeilederNavIdent(),godkjentPaVegneGrunn);
-        EndreTilskuddsberegning endreTilskuddsberegning = new EndreTilskuddsberegning(1000, BigDecimal.valueOf(20), BigDecimal.valueOf(20), 0.23);
+        EndreTilskuddsberegning endreTilskuddsberegning = EndreTilskuddsberegning.builder().manedslonn(1000).otpSats(0.23).feriepengesats(BigDecimal.valueOf(20)) .arbeidsgiveravgift(BigDecimal.valueOf(20)).build();
         avtale.endreTilskuddsberegning(endreTilskuddsberegning, TestData.enNavIdent());
 
         assertThat(avtale.getGjeldendeInnhold().getSumLonnstilskudd()).isEqualTo(325458);

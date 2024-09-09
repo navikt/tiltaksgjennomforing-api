@@ -455,7 +455,7 @@ public class TestData {
     }
 
     public static Avtale enVtaoAvtaleIKKEGodkjentAvArbeidsgiver() {
-        Avtale avtale = Avtale.veilederOppretterAvtale(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO), new NavIdent("Z123456"));
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO),Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
         setOppfølgingPåAvtale(avtale);
         EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
