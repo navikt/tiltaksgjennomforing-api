@@ -118,6 +118,12 @@ public class ArenaAgreementProcessingService {
             throw new IllegalStateException("Virksomhetsnummer i avtale stemmer ikke med virksomhetsnummer fra Arena");
         }
 
+        PdlRespons personalData = persondataService.hentPersondata(new Fnr(agreementAggregate.getFnr()));
+        if (persondataService.erKode6(personalData)) {
+            log.info("Ikke tilgang til deltaker. Ignorerer.");
+            return new ArenaMigrationProcessResult.Ignored();
+        }
+
         Tiltakstatuskode tiltakstatuskode = agreementAggregate.getTiltakstatuskode();
         Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
 
@@ -180,18 +186,23 @@ public class ArenaAgreementProcessingService {
             return new ArenaMigrationProcessResult.Ignored();
         }
 
+        Fnr deltakerFnr = new Fnr(agreementAggregate.getFnr());
+        PdlRespons personalData = persondataService.hentPersondata(deltakerFnr);
+        if (persondataService.erKode6(personalData)) {
+            log.info("Ikke tilgang til deltaker. Ignorerer.");
+            return new ArenaMigrationProcessResult.Ignored();
+        }
+
         OpprettAvtale opprettAvtale = OpprettAvtale.builder()
             .bedriftNr(new BedriftNr(agreementAggregate.getVirksomhetsnummer()))
-            .deltakerFnr(new Fnr(agreementAggregate.getFnr()))
+            .deltakerFnr(deltakerFnr)
             .tiltakstype(Tiltakstype.ARBEIDSTRENING)
             .build();
 
         Avtale avtale = Avtale.opprett(opprettAvtale, Avtaleopphav.ARENA);
 
-        Organisasjon org = getOrgFromEreg(avtale.getBedriftNr());
+        Organisasjon org = eregService.hentVirksomhet(avtale.getBedriftNr());
         avtale.leggTilBedriftNavn(org.getBedriftNavn());
-
-        PdlRespons personalData = getPersondataFromPdl(avtale.getDeltakerFnr());
         avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(personalData));
 
         getGeoEnhetFromNorg2(personalData).ifPresent((norg2GeoResponse) -> {
@@ -225,17 +236,8 @@ public class ArenaAgreementProcessingService {
         return new ArenaMigrationProcessResult.Completed(ArenaAgreementMigrationStatus.CREATED, avtale);
     }
 
-    private Organisasjon getOrgFromEreg(BedriftNr bedriftNr) {
-        return eregService.hentVirksomhet(bedriftNr);
-    }
-
-    private PdlRespons getPersondataFromPdl(Fnr fnr) {
-        return persondataService.hentPersondata(fnr);
-    }
-
     private Optional<Norg2GeoResponse> getGeoEnhetFromNorg2(PdlRespons pdlRespons) {
-        return PersondataService.hentGeoLokasjonFraPdlRespons(pdlRespons)
-                .map(norg2Client::hentGeografiskEnhet);
+        return PersondataService.hentGeoLokasjonFraPdlRespons(pdlRespons).map(norg2Client::hentGeografiskEnhet);
     }
 
     private Optional<Oppfølgingsstatus> getOppfolgingsstatusFromVeilarbarena(Fnr fnr) {
