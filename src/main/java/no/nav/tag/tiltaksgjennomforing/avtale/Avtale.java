@@ -292,6 +292,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         EndreAvtaleArena.Handling action = endreAvtaleArena.getHandling();
         if (EndreAvtaleArena.Handling.OPPDATER == action && endreAvtaleArena.compareTo(this) == 0) {
             log.info("Endringer fra Arena er lik innholdet i avtalen. Beholder avtalen uendret.");
+            registerEvent(new AvtaleEndretAvArena(this));
             return;
         }
 
