@@ -1,11 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.utils;
 
 import lombok.experimental.UtilityClass;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.Collection;
+import java.util.List;
 
 @UtilityClass
 public class Utils {
@@ -49,6 +51,12 @@ public class Utils {
     public static void sjekkAtTekstIkkeOverskrider1000Tegn(String tekst, String feilmelding) {
         if ((tekst != null) && tekst.length() > 1000) {
             throw new TiltaksgjennomforingException(feilmelding);
+        }
+    }
+
+    public static void fikseLøpenumre(List<TilskuddPeriode> tilskuddperioder, int startPåLøpenummer) {
+        for (int i = 0; i < tilskuddperioder.size(); i++) {
+            tilskuddperioder.get(i).setLøpenummer(startPåLøpenummer + i);
         }
     }
 }

@@ -21,7 +21,7 @@ public class ArenaAgreementMigration {
     private Integer tiltakgjennomforingId;
     @Enumerated(EnumType.STRING)
     private ArenaAgreementMigrationStatus status;
-    private UUID agreementId;
+    private UUID avtaleId;
     @Transient
     private LocalDateTime created;
     private LocalDateTime modified;

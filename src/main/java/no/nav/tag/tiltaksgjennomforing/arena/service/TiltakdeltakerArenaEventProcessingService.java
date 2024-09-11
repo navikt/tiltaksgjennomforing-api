@@ -71,7 +71,7 @@ public class TiltakdeltakerArenaEventProcessingService implements IArenaEventPro
 
         boolean tiltakgjennomforingExists = tiltakgjennomforingRepository.existsById(tiltakdeltaker.getTiltakgjennomforingId());
         if (!tiltakgjennomforingExists) {
-            log.info(" settes på vent; tilhørende tiltakgjennomforing er ikke prossesert ennå");
+            log.info("Arena-event settes på vent; tilhørende tiltakgjennomforing er ikke prossesert ennå");
             return ArenaEventStatus.RETRY;
         }
 

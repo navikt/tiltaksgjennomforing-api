@@ -1,7 +1,9 @@
-package no.nav.tag.tiltaksgjennomforing.avtale;
+package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
-import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Periode;
@@ -11,24 +13,57 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static no.nav.tag.tiltaksgjennomforing.utils.DatoUtils.sisteDatoIMnd;
+import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 
-@Slf4j
-@UtilityClass
-public class RegnUtTilskuddsperioderForAvtale {
+public interface LonnstilskuddAvtaleBeregningStrategy {
 
-    private final static BigDecimal DAGER_I_MÅNED = new BigDecimal("30.4375");
-    private final static int ANTALL_MÅNEDER_I_EN_PERIODE = 1;
+    BigDecimal DAGER_I_MÅNED = new BigDecimal("30.4375");
+    int ANTALL_MÅNEDER_I_EN_PERIODE = 1;
 
-    /**
-        TODO: Kalkulering av redusert prosent og redusert dato bør kun skje i {@link no.nav.tag.tiltaksgjennomforing.avtale.VarigLonnstilskuddStrategy} og heller ikke i frontend
-     */
-    public static List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(UUID id, Tiltakstype tiltakstype, Integer sumLønnstilskuddPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed, Integer lonnstilskuddprosent, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMånedRedusert) {
+    void genererNyeTilskuddsperioder(Avtale avtale);
+    List<TilskuddPeriode> hentTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato);
+    void endreBeregning(Avtale avtale, EndreTilskuddsberegning endreTilskuddsberegning);
+    void reberegnTotal(Avtale avtale);
+    default void forleng(Avtale avtale, LocalDate gammelSluttDato, LocalDate nySluttDato){
+        Set<TilskuddPeriode> tilskuddPeriode = avtale.getTilskuddPeriode();
+
+        if (tilskuddPeriode.isEmpty()) {
+            return;
+        }
+        Optional<TilskuddPeriode> periodeMedHøyestLøpenummer = tilskuddPeriode.stream().max(Comparator.comparing(TilskuddPeriode::getLøpenummer));
+        TilskuddPeriode sisteTilskuddsperiode = periodeMedHøyestLøpenummer.get();
+        if (sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) {
+            // Kan utvide siste tilskuddsperiode hvis den er ubehandlet
+            tilskuddPeriode.remove(sisteTilskuddsperiode);
+            List<TilskuddPeriode> nyeTilskuddperioder = hentTilskuddsperioderForPeriode(avtale,sisteTilskuddsperiode.getStartDato(), nySluttDato);
+            fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer());
+            tilskuddPeriode.addAll(nyeTilskuddperioder);
+        } else if (sisteTilskuddsperiode.getSluttDato().isBefore(sisteDatoIMnd(sisteTilskuddsperiode.getSluttDato())) && sisteTilskuddsperiode.getStatus() == TilskuddPeriodeStatus.GODKJENT && (!sisteTilskuddsperiode.erRefusjonGodkjent() && !sisteTilskuddsperiode.erUtbetalt())) {
+            avtale.annullerTilskuddsperiode(sisteTilskuddsperiode);
+            List<TilskuddPeriode> nyeTilskuddperioder = hentTilskuddsperioderForPeriode(avtale,sisteTilskuddsperiode.getStartDato(), nySluttDato);
+            fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer() + 1);
+            tilskuddPeriode.addAll(nyeTilskuddperioder);
+        } else {
+            // Regner ut nye perioder fra gammel avtaleslutt til ny avtaleslutt
+            List<TilskuddPeriode> nyeTilskuddperioder = hentTilskuddsperioderForPeriode(avtale,gammelSluttDato.plusDays(1), nySluttDato);
+            fikseLøpenumre(nyeTilskuddperioder, sisteTilskuddsperiode.getLøpenummer() + 1);
+            tilskuddPeriode.addAll(nyeTilskuddperioder);
+        }
+    }
+
+    default Integer beregnTilskuddsbeløpForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
+        return beløpForPeriode(startDato,
+                sluttDato,
+                avtale.getGjeldendeInnhold().getDatoForRedusertProsent(),
+                avtale.getGjeldendeInnhold().getSumLonnstilskudd(),
+                avtale.getGjeldendeInnhold().getSumLønnstilskuddRedusert());
+    }
+
+    default  List<TilskuddPeriode> beregnTilskuddsperioderForAvtale(UUID id, Tiltakstype tiltakstype, Integer sumLønnstilskuddPerMåned, LocalDate datoFraOgMed, LocalDate datoTilOgMed, Integer lonnstilskuddprosent, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMånedRedusert) {
         if (datoForRedusertProsent == null) {
             // Ingen reduserte peridoder   -----60-----60------60------ |
             return lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
@@ -60,19 +95,10 @@ public class RegnUtTilskuddsperioderForAvtale {
                 }).toList();
                 return new ArrayList<>(tilskuddperioderEtterRedusering);
             } else {
-                log.error("Uventet feil i utregning av tilskuddsperioder med startdato: {}, sluttdato: {}, datoForRedusertProsent: {}, avtaleId: {}", datoFraOgMed, datoTilOgMed, datoForRedusertProsent, id);
                 throw new FeilkodeException(Feilkode.FORLENG_MIDLERTIDIG_IKKE_TILGJENGELIG);
             }
         }
 
-    }
-
-    public static List<TilskuddPeriode>  beregnTilskuddsperioderForVTAOAvtale(UUID id, Tiltakstype tiltakstype, LocalDate datoFraOgMed, LocalDate datoTilOgMed) {
-        List<TilskuddPeriode> tilskuddperioder = lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
-            Integer beløp = beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), 6808);
-            return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), 0);
-        }).toList();
-        return tilskuddperioder;
     }
 
     private static int getLonnstilskuddProsent(Tiltakstype tiltakstype, Integer lonnstilskuddprosent) {
@@ -83,7 +109,7 @@ public class RegnUtTilskuddsperioderForAvtale {
         return lonnstilskuddprosent - 10;
     }
 
-    public static Integer beløpForPeriode(LocalDate datoFraOgMed, LocalDate datoTilOgMed, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMåned, Integer sumLønnstilskuddPerMånedRedusert) {
+    private static Integer beløpForPeriode(LocalDate datoFraOgMed, LocalDate datoTilOgMed, LocalDate datoForRedusertProsent, Integer sumLønnstilskuddPerMåned, Integer sumLønnstilskuddPerMånedRedusert) {
         if (datoForRedusertProsent == null || datoTilOgMed.isBefore(datoForRedusertProsent)) {
             return beløpForPeriode(datoFraOgMed, datoTilOgMed, sumLønnstilskuddPerMåned);
         } else {
@@ -91,7 +117,7 @@ public class RegnUtTilskuddsperioderForAvtale {
         }
     }
 
-    public static Integer beløpForPeriode(LocalDate fra, LocalDate til, Integer sumLønnstilskuddPerMåned) {
+    static Integer beløpForPeriode(LocalDate fra, LocalDate til, Integer sumLønnstilskuddPerMåned) {
         Period period = Period.between(fra, til.plusDays(1));
         Integer sumHeleMåneder = period.getMonths() * sumLønnstilskuddPerMåned;
         BigDecimal dagsats = new BigDecimal(sumLønnstilskuddPerMåned).divide(DAGER_I_MÅNED, 10, RoundingMode.HALF_UP);
@@ -99,7 +125,7 @@ public class RegnUtTilskuddsperioderForAvtale {
         return sumHeleMåneder + sumEnkeltdager;
     }
 
-    private static List<Periode> lagPeriode(LocalDate datoFraOgMed, LocalDate datoTilOgMed) {
+    static List<Periode> lagPeriode(LocalDate datoFraOgMed, LocalDate datoTilOgMed) {
         if (datoFraOgMed.isAfter(datoTilOgMed)) {
             return List.of();
         }
@@ -120,17 +146,19 @@ public class RegnUtTilskuddsperioderForAvtale {
         return datoPar;
     }
 
-    private LocalDate førsteDatoIMnd(LocalDate dato) {
+    private static LocalDate førsteDatoIMnd(LocalDate dato) {
         return LocalDate.of(dato.getYear(), dato.getMonth(), 01);
     }
 
     private static List<Periode> splittHvisNyttÅr (LocalDate fraDato, LocalDate tilDato) {
-        if (fraDato.getYear() != tilDato.getYear()) {
-            Periode datoPar1 = new Periode(fraDato, fraDato.withMonth(12).withDayOfMonth(31));
-            Periode datoPar2 = new Periode(tilDato.withMonth(1).withDayOfMonth(1), tilDato);
-            return List.of(datoPar1, datoPar2);
+        if (fraDato.getYear() != tilDato.getYear()) { //TODO IKKE I BRUK i Koden (også før refatktorisering)
+            Periode datoPar1 = new Periode(fraDato, fraDato.withMonth(12).withDayOfMonth(31)); //TODO IKKE TESTET
+            Periode datoPar2 = new Periode(tilDato.withMonth(1).withDayOfMonth(1), tilDato); //TODO IKKE TESTET
+            return List.of(datoPar1, datoPar2);//TODO IKKE TESTET
         } else {
             return List.of(new Periode(fraDato, tilDato));
         }
     }
+
+
 }
