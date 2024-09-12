@@ -323,6 +323,7 @@ public class AvtaleController {
             @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId)
+                .map(this::sjekkArbeidstreningToggle)
                 .orElseThrow(RessursFinnesIkkeException::new);
 
         avtalepart.endreAvtale(sistEndret, endreAvtale, avtale, tilskuddsperiodeConfig.getTiltakstyper());
@@ -339,6 +340,7 @@ public class AvtaleController {
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId)
+                .map(this::sjekkArbeidstreningToggle)
                 .orElseThrow(RessursFinnesIkkeException::new);
         avtalepart.endreAvtale(sistEndret, endreAvtale, avtale, tilskuddsperiodeConfig.getTiltakstyper());
         return avtale;
@@ -351,7 +353,9 @@ public class AvtaleController {
             @CookieValue("innlogget-part") Avtalerolle innloggetPart
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        Avtale avtale = avtaleRepository.findById(avtaleId)
+                .map(this::sjekkArbeidstreningToggle)
+                .orElseThrow(RessursFinnesIkkeException::new);
         avtalepart.opphevGodkjenninger(avtale);
         avtaleRepository.save(avtale);
     }
@@ -477,6 +481,7 @@ public class AvtaleController {
         }
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = veileder.opprettAvtale(opprettAvtale);
+        sjekkArbeidstreningToggle(avtale);
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
 
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
@@ -561,6 +566,7 @@ public class AvtaleController {
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
+                .map(this::sjekkArbeidstreningToggle)
                 .orElseThrow(RessursFinnesIkkeException::new);
         sjekkArbeidstreningToggle(avtale);
         veileder.forlengAvtale(forlengAvtale.getSluttDato(), avtale);
