@@ -141,5 +141,7 @@ tiltaksgjennomforing:
       url: http://localhost:8090/arena-ords
       client-id: client
       client-secret: secret
+    aktivitet-acl:
+      url: http://localhost:8090/aktivitet-arena-acl
 
 ELECTOR_PATH: null
