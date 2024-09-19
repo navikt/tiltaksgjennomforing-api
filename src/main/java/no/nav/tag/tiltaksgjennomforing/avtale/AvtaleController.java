@@ -885,7 +885,7 @@ public class AvtaleController {
     }
 
     private Avtale sjekkArbeidstreningToggle(Avtale avtale) {
-        if (featureToggleService.isEnabled(FeatureToggle.ARBEIDSTRENING_READ_ONLY) &&
+        if (featureToggleService.isEnabled(FeatureToggle.ARBEIDSTRENING_READONLY) &&
                 avtale.getTiltakstype() == Tiltakstype.ARBEIDSTRENING) {
             throw new FeilkodeException(Feilkode.IKKE_ADMIN_TILGANG);
         }
