@@ -92,5 +92,7 @@ tiltaksgjennomforing:
       url: http://tiltaksgjennomforing-wiremock/arena-ords
       client-id: client
       client-secret: secret
+    aktivitet-acl:
+      url: http://tiltaksgjennomforing-wiremock/aktivitet-arena-acl
 
 ELECTOR_PATH: null

@@ -5,7 +5,7 @@ VALUES ('d531488c-8a3d-4fcb-9d23-8cc52342d882', null, 'Geir', 'Geirsen', '400000
 ON CONFLICT DO NOTHING;
 
 INSERT INTO avtale (id, opprettet_tidspunkt, deltaker_fnr, bedrift_nr, arbeidsgiver_fnr, veileder_nav_ident, arbeidstrening_lengde, gammel_godkjent_av_deltaker, gammel_godkjent_av_arbeidsgiver, gammel_godkjent_av_veileder, avbrutt, tiltakstype, sist_endret, avbrutt_dato, avbrutt_grunn, enhet_oppfolging, enhet_geografisk, slettemerket, annullert_tidspunkt, annullert_grunn, feilregistrert, enhetsnavn_geografisk, enhetsnavn_oppfolging, kvalifiseringsgruppe, formidlingsgruppe, godkjent_for_etterregistrering, gjeldende_innhold_id, mentor_fnr, opphav)
-VALUES ('76ef4c0f-1ca4-4433-8313-09e6db8f5493', CURRENT_TIMESTAMP, '20087334985', '923229733', null, 'Z123456', null, null, null, null, false, 'ARBEIDSTRENING', CURRENT_TIMESTAMP, null, null, null, null, false, CURRENT_TIMESTAMP, 'Alt er feil', false, null, null, null, null, false, 'd531488c-8a3d-4fcb-9d23-8cc52342d882', null, 'VEILEDER')
+VALUES ('76ef4c0f-1ca4-4433-8313-09e6db8f5493', CURRENT_TIMESTAMP, '20087334985', '999999999', null, 'Z123456', null, null, null, null, false, 'ARBEIDSTRENING', CURRENT_TIMESTAMP, null, null, null, null, false, CURRENT_TIMESTAMP, 'Alt er feil', false, null, null, null, null, false, 'd531488c-8a3d-4fcb-9d23-8cc52342d882', null, 'VEILEDER')
 ON CONFLICT DO NOTHING;
 
 UPDATE avtale_innhold SET avtale='76ef4c0f-1ca4-4433-8313-09e6db8f5493' WHERE id='d531488c-8a3d-4fcb-9d23-8cc52342d882';
@@ -15,7 +15,7 @@ VALUES (1005, '20087334985')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO arena_ords_arbeidsgiver (arbgiv_id_arrangor, virksomhetsnummer, organisasjonsnummer_morselskap)
-VALUES (1005, '923229733', '123456789')
+VALUES (1005, '999999999', '123456789')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO arena_tiltakssak (sak_id, sakskode, reg_dato, reg_user, mod_dato, mod_user, tabellnavnalias, objekt_id, aar, lopenrsak, dato_avsluttet, sakstatuskode, arkivnokkel, aetatenhet_arkiv, arkivhenvisning, brukerid_ansvarlig, aetatenhet_ansvarlig, objekt_kode, status_endret, partisjon, er_utland)
