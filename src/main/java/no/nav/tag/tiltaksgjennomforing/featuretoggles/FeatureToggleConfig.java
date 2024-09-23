@@ -15,6 +15,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.context.annotation.RequestScope;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 
 @Configuration
 public class FeatureToggleConfig {
@@ -49,12 +53,30 @@ public class FeatureToggleConfig {
     @Profile({ Miljø.LOCAL, Miljø.DOCKER_COMPOSE, Miljø.DEV_GCP_LABS })
     public Unleash unleashMock(@Autowired HttpServletRequest request) {
         FakeFakeUnleash fakeUnleash = new FakeFakeUnleash();
-        boolean allEnabled = "enabled".equals(request.getHeader("features"));
-        if (allEnabled) {
+
+        List<String> headers = Optional.ofNullable(request.getHeader("features"))
+            .map(feature -> List.of(feature.split(",")))
+            .orElse(Collections.emptyList());
+
+        Optional<String> first = headers.stream().findFirst();
+        if (first.map("enabled"::equals).orElse(false)) {
             fakeUnleash.enableAll();
+            headers.forEach(header -> {
+                if (header.startsWith("!")) {
+                    fakeUnleash.disable(header.substring(1));
+                }
+            });
+        } else if(first.map("disabled"::equals).orElse(false)) {
+            fakeUnleash.disableAll();
+            headers.forEach(header -> {
+                if (header.startsWith("!")) {
+                    fakeUnleash.enable(header.substring(1));
+                }
+            });
         } else {
             fakeUnleash.disableAll();
         }
+
         return fakeUnleash;
     }
 
