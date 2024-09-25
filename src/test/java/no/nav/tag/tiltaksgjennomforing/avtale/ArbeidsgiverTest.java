@@ -54,14 +54,15 @@ public class ArbeidsgiverTest {
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
                 TestData.etFodselsnummer(),
                 Set.of(
-                        new AltinnReportee(
-                                "",
-                                "",
-                                null,
-                                TestData.etBedriftNr().asString(),
-                                null,
-                                null
-                        )
+                    new AltinnReportee(
+                        "",
+                        "",
+                        null,
+                        TestData.etBedriftNr().asString(),
+                        null,
+                        null,
+                        null
+                    )
                 ),
                 Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
                 persondataService,
