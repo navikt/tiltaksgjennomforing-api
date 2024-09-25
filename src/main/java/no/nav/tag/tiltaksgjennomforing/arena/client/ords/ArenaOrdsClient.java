@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.arena.client;
+package no.nav.tag.tiltaksgjennomforing.arena.client.ords;
 
 import no.nav.tag.tiltaksgjennomforing.arena.configuration.ArenaOrdsProperties;
 import org.springframework.http.HttpEntity;
