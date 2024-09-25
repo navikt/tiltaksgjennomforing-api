@@ -674,7 +674,7 @@ public class TestData {
     public static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
         return new Arbeidsgiver(
                 TestData.etFodselsnummer(),
-                Set.of(new AltinnReportee("Bedriftnavn", "", null, avtale.getBedriftNr().asString(), "", ""))
+                Set.of(new AltinnReportee("Bedriftnavn", "", null, avtale.getBedriftNr().asString(), "", "", null))
                 , Map.of(avtale.getBedriftNr(),
                 List.of(Tiltakstype.values())),
                 null,
@@ -861,7 +861,7 @@ public class TestData {
 
     public static InnloggetArbeidsgiver innloggetArbeidsgiver(Avtalepart<Fnr> avtalepartMedFnr, BedriftNr bedriftNr) {
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(bedriftNr, Set.of(Tiltakstype.values()));
-        AltinnReportee altinnOrganisasjon = new AltinnReportee("Bedriften AS", "Business", bedriftNr.asString(), "BEDR", "Active", null);
+        AltinnReportee altinnOrganisasjon = new AltinnReportee("Bedriften AS", "Business", bedriftNr.asString(), "BEDR", "Active", null, null);
         return new InnloggetArbeidsgiver(avtalepartMedFnr.getIdentifikator(), Set.of(altinnOrganisasjon), tilganger);
     }
 

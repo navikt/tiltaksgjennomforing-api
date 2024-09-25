@@ -28,7 +28,7 @@ public class ByOrgnummerStrategyTest {
     public void skal_være_enablet_hvis_bruker_tilhører_organisasjon() {
         Fnr fnr = new Fnr("12345678901");
         Set<AltinnReportee> orgSet = new HashSet<>();
-        orgSet.add(new AltinnReportee("", "AS", null, "999999999", "", ""));
+        orgSet.add(new AltinnReportee("", "AS", null, "999999999", "", "", null));
 
         when(altinnTilgangsstyringService.hentAltinnOrganisasjoner(eq(fnr), any())).thenReturn(orgSet);
         assertThat(new ByOrgnummerStrategy(altinnTilgangsstyringService).isEnabled(Map.of(ByOrgnummerStrategy.UNLEASH_PARAMETER_ORGNUMRE, "999999999"), unleashContext)).isTrue();
@@ -38,7 +38,7 @@ public class ByOrgnummerStrategyTest {
     public void skal_være_disablet_hvis_bruker_ikke_tilhører_organisasjon() {
         Fnr fnr = new Fnr("12345678901");
         Set<AltinnReportee> orgSet = new HashSet<>();
-        orgSet.add(new AltinnReportee("", "AS", null, "999999998", "", ""));
+        orgSet.add(new AltinnReportee("", "AS", null, "999999998", "", "", null));
 
         when(altinnTilgangsstyringService.hentAltinnOrganisasjoner(fnr, () -> "")).thenReturn(orgSet);
         assertThat(new ByOrgnummerStrategy(altinnTilgangsstyringService).isEnabled(Map.of(ByOrgnummerStrategy.UNLEASH_PARAMETER_ORGNUMRE, "999999999"), unleashContext)).isFalse();
@@ -48,7 +48,7 @@ public class ByOrgnummerStrategyTest {
     public void navIdent_skal_returnere_false() {
         UnleashContext unleashContext = UnleashContext.builder().userId("J154200").build();
         Set<AltinnReportee> orgSet = new HashSet<>();
-        orgSet.add(new AltinnReportee("", "AS", null, "999999998", "", ""));
+        orgSet.add(new AltinnReportee("", "AS", null, "999999998", "", "", null));
         assertThat(new ByOrgnummerStrategy(altinnTilgangsstyringService).isEnabled(Map.of(ByOrgnummerStrategy.UNLEASH_PARAMETER_ORGNUMRE, "999999999"), unleashContext)).isFalse();
         verify(altinnTilgangsstyringService, never()).hentAltinnOrganisasjoner(any(), any());
     }
@@ -57,7 +57,7 @@ public class ByOrgnummerStrategyTest {
     public void byOrgnummmer_strategy_håndterer_flere_orgnummer() {
         Fnr fnr = new Fnr("12345678901");
         Set<AltinnReportee> orgSet = new HashSet<>();
-        orgSet.add(new AltinnReportee("", "AS", null, "999999999", "", ""));
+        orgSet.add(new AltinnReportee("", "AS", null, "999999999", "", "", null));
 
         when(altinnTilgangsstyringService.hentAltinnOrganisasjoner(eq(fnr), any())).thenReturn(orgSet);
         assertThat(new ByOrgnummerStrategy(altinnTilgangsstyringService).isEnabled(Map.of(ByOrgnummerStrategy.UNLEASH_PARAMETER_ORGNUMRE, "910825526,999999999"), unleashContext)).isTrue();
@@ -67,7 +67,7 @@ public class ByOrgnummerStrategyTest {
     public void skal_være_disablet_hvis_feil_ved_oppslag_i_altinn() {
         Fnr fnr = new Fnr("12345678901");
         Set<AltinnReportee> orgSet = new HashSet<>();
-        orgSet.add(new AltinnReportee("", "AS", null, "999999998", "", ""));
+        orgSet.add(new AltinnReportee("", "AS", null, "999999998", "", "", null));
 
         when(altinnTilgangsstyringService.hentAltinnOrganisasjoner(fnr, () -> "")).thenThrow(RuntimeException.class);
         assertThat(new ByOrgnummerStrategy(altinnTilgangsstyringService).isEnabled(Map.of(ByOrgnummerStrategy.UNLEASH_PARAMETER_ORGNUMRE, "999999999"), unleashContext)).isFalse();
