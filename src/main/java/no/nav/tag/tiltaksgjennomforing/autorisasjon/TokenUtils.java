@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import no.nav.security.token.support.core.context.TokenValidationContext;
 import no.nav.security.token.support.core.context.TokenValidationContextHolder;
+import no.nav.security.token.support.core.jwt.JwtToken;
 import no.nav.security.token.support.core.jwt.JwtTokenClaims;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +12,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.*;
+import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISSUER_AAD;
+import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISSUER_SYSTEM;
+import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISSUER_TOKENX;
 
 @Component
 @RequiredArgsConstructor
@@ -59,6 +62,10 @@ public class TokenUtils {
         return roller.map(strings -> strings.contains(rolle)).orElse(false);
     }
 
+    public Optional<JwtToken> hentJwtToken() {
+        return hentToken(ISSUER_SYSTEM).or(() -> hentToken(ISSUER_AAD)).or(() -> hentToken(ISSUER_TOKENX));
+    }
+
     private Optional<List<String>> hentClaims(Issuer issuer, String claim) {
         return hentClaimSet(issuer).filter(jwtClaimsSet -> innloggingsNivaOK(issuer, jwtClaimsSet))
                 .map(jwtClaimsSet -> (List<String>) jwtClaimsSet.get(claim));
@@ -77,22 +84,27 @@ public class TokenUtils {
     }
 
     private Optional<JwtTokenClaims> hentClaimSet(Issuer issuer) {
-        TokenValidationContext tokenValidationContext;
         try {
-            tokenValidationContext = contextHolder.getTokenValidationContext();
-        } catch (IllegalStateException e) {
-            // Er ikke i kontekst av en request
-            return Optional.empty();
-        }
-        try {
-            return Optional.of(tokenValidationContext.getClaims(issuer.issuerName));
+            return hentTokenValidationContext().map(context -> context.getClaims(issuer.issuerName));
         } catch (IllegalArgumentException e) {
             return Optional.empty();
         }
     }
 
-    public String hentTokenx() {
-        return contextHolder.getTokenValidationContext().getJwtToken(ISSUER_TOKENX.issuerName).getTokenAsString();
+    private Optional<JwtToken> hentToken(Issuer issuer) {
+        try {
+            return hentTokenValidationContext().map(context -> context.getJwtToken(issuer.issuerName));
+        } catch (IllegalArgumentException e) {
+            return Optional.empty();
+        }
+    }
+
+    private Optional<TokenValidationContext> hentTokenValidationContext() {
+        try {
+            return Optional.of(contextHolder.getTokenValidationContext());
+        } catch (IllegalStateException e) {
+            return Optional.empty();
+        }
     }
 
 }
