@@ -2,11 +2,13 @@ package no.nav.tag.tiltaksgjennomforing.datadeling;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -29,13 +31,17 @@ public class AvtaleMeldingEntitet extends AbstractAggregateRoot<AvtaleMeldingEnt
     private boolean sendt;
     private boolean sendtCompacted;
 
-    public AvtaleMeldingEntitet(UUID meldingId, UUID avtaleId, LocalDateTime tidspunkt, HendelseType hendelseType, Status avtaleStatus, String meldingAsJson) {
+    @Enumerated(EnumType.STRING)
+    private Avtaleopphav opphav;
+
+    public AvtaleMeldingEntitet(UUID meldingId, UUID avtaleId, LocalDateTime tidspunkt, HendelseType hendelseType, Status avtaleStatus, String meldingAsJson, Avtaleopphav opphav) {
         this.meldingId = meldingId;
         this.avtaleId = avtaleId;
         this.hendelseType = hendelseType;
         this.tidspunkt = tidspunkt;
         this.json = meldingAsJson;
         this.avtaleStatus = avtaleStatus;
+        this.opphav = opphav;
 
         registerEvent(new AvtaleMeldingOpprettet(this));
     }

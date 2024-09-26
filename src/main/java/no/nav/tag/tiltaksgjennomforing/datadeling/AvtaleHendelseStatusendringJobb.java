@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
-import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.kafka.Topics;
 import no.nav.tag.tiltaksgjennomforing.leader.LeaderPodCheck;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -48,7 +45,7 @@ public class AvtaleHendelseStatusendringJobb {
                 AvtaleMelding avtaleMelding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), new Identifikator("tiltaksgjennomforing-api"), AvtaleHendelseUtførtAvRolle.SYSTEM, HendelseType.STATUSENDRING);
                 try {
                     String meldingSomString = objectMapper.writeValueAsString(avtaleMelding);
-                    AvtaleMeldingEntitet entitet = new AvtaleMeldingEntitet(UUID.randomUUID(), avtaleId, tidspunkt, HendelseType.STATUSENDRING, avtale.statusSomEnum(), meldingSomString);
+                    AvtaleMeldingEntitet entitet = new AvtaleMeldingEntitet(UUID.randomUUID(), avtaleId, tidspunkt, HendelseType.STATUSENDRING, avtale.statusSomEnum(), meldingSomString, Avtaleopphav.ARENA);
                     avtaleMeldingEntitetRepository.save(entitet);
                     log.info("Avtale med id {} har byttet status til {}, siste melding har status {}, så sender melding med den nye statusen på topic {}",
                             avtale.getId(), avtale.statusSomEnum(), avtaleMeldingEntitet.getAvtaleStatus(), Topics.AVTALE_HENDELSE);

@@ -33,6 +33,7 @@ public class AvtaleMeldingKafkaProdusent {
                         log.error("AvtaleHendelse med avtaleId {} kunne ikke sendes til Kafka topic {}", meldingId, Topics.AVTALE_HENDELSE);
                     } else {
                         log.info("AvtaleHendelse melding med avtaleId {} sendt til Kafka topic {}", meldingId, Topics.AVTALE_HENDELSE);
+                        log.info("AvtaleHendelse {} med event {} ", meldingId, event.getEntitet().getJson());
                         AvtaleMeldingEntitet entitet = event.getEntitet();
                         entitet.setSendt(true);
                         repository.save(entitet);
