@@ -1,1 +1,1 @@
-ALTER TABLE avtale ALTER COLUMN deltaker_fnr VARCHAR(11) NOT NULL;
+ALTER TABLE avtale ALTER COLUMN deltaker_fnr SET NOT NULL;
