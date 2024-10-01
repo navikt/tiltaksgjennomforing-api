@@ -26,7 +26,8 @@ public class Mentor extends Avtalepart<Fnr> {
         Avtale avtale = super.hentAvtale(avtaleRepository, avtaleId);
         if (!avtale.erGodkjentTaushetserklæringAvMentor())
             throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_AVTALE);
-        return skjulDeltakerFødselsnummer(avtale);
+        skjulSensitivData(avtale);
+        return avtale;
     }
 
     @Override
@@ -65,11 +66,6 @@ public class Mentor extends Avtalepart<Fnr> {
         throw new TilgangskontrollException("Deltaker kan ikke oppheve godkjenninger");
     }
 
-    private Avtale skjulDeltakerFødselsnummer(Avtale avtale) {
-        avtale.setDeltakerFnr(null);
-        return avtale;
-    }
-
     @Override
     protected Avtalerolle rolle() {
         return Avtalerolle.MENTOR;
@@ -78,5 +74,11 @@ public class Mentor extends Avtalepart<Fnr> {
     @Override
     public InnloggetBruker innloggetBruker() {
         return new InnloggetMentor(getIdentifikator());
+    }
+
+    private void skjulSensitivData(Avtale avtale) {
+        avtale.setAnnullertGrunn(null);
+        avtale.setAvbruttGrunn(null);
+        avtale.setDeltakerFnr(null);
     }
 }
