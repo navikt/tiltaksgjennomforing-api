@@ -115,18 +115,26 @@ public class ArenaAgreementProcessingService {
     }
 
     private ArenaMigrationProcessResult updateAvtale(Avtale avtale, ArenaAgreementAggregate agreementAggregate) {
-        if (!avtale.getDeltakerFnr().equals(new Fnr(agreementAggregate.getFnr()))) {
+        if (
+            agreementAggregate.getFnr() != null &&
+            !avtale.getDeltakerFnr().equals(new Fnr(agreementAggregate.getFnr()))
+        ) {
             throw new IllegalStateException("Fnr i avtale stemmer ikke med fnr fra Arena");
         }
 
-        if (!avtale.getBedriftNr().equals(new BedriftNr(agreementAggregate.getVirksomhetsnummer()))) {
+        if (
+            agreementAggregate.getVirksomhetsnummer() != null &&
+            !avtale.getBedriftNr().equals(new BedriftNr(agreementAggregate.getVirksomhetsnummer()))
+        ) {
             throw new IllegalStateException("Virksomhetsnummer i avtale stemmer ikke med virksomhetsnummer fra Arena");
         }
 
-        PdlRespons personalData = persondataService.hentPersondata(new Fnr(agreementAggregate.getFnr()));
-        if (persondataService.erKode6(personalData)) {
-            log.info("Ikke tilgang til deltaker. Ignorerer.");
-            return new ArenaMigrationProcessResult.Ignored();
+        if (agreementAggregate.getFnr() != null) {
+            PdlRespons personalData = persondataService.hentPersondata(new Fnr(agreementAggregate.getFnr()));
+            if (persondataService.erKode6(personalData)) {
+                log.info("Ikke tilgang til deltaker. Ignorerer.");
+                return new ArenaMigrationProcessResult.Ignored();
+            }
         }
 
         Tiltakstatuskode tiltakstatuskode = agreementAggregate.getTiltakstatuskode();
@@ -147,8 +155,8 @@ public class ArenaAgreementProcessingService {
             }
             case UPDATE, END, TERMINATE -> {
                 EndreAvtaleArena endreAvtale = EndreAvtaleArena.builder()
-                    .startDato(agreementAggregate.getDatoFra() != null ? agreementAggregate.getDatoFra().toLocalDate() : null)
-                    .sluttDato(agreementAggregate.getDatoTil() != null ? agreementAggregate.getDatoTil().toLocalDate() : null)
+                    .startdato(agreementAggregate.findStartdato().orElse(null))
+                    .sluttdato(agreementAggregate.findSluttdato().orElse(null))
                     .antallDagerPerUke(agreementAggregate.getAntallDagerPrUke() != null ? Integer.parseInt(agreementAggregate.getAntallDagerPrUke()) : null)
                     .stillingprosent(agreementAggregate.getProsentDeltid())
                     .handling(EndreAvtaleArena.Handling.map(action))
@@ -191,6 +199,11 @@ public class ArenaAgreementProcessingService {
             return new ArenaMigrationProcessResult.Ignored();
         }
 
+        if (agreementAggregate.getFnr() == null || agreementAggregate.getVirksomhetsnummer() == null) {
+            log.info("Avtale mangler fnr eller virksomhetsnummer og kan derfor ikke opprettes. Ignorerer avtalen.");
+            return new ArenaMigrationProcessResult.Ignored();
+        }
+
         Fnr deltakerFnr = new Fnr(agreementAggregate.getFnr());
         PdlRespons personalData = persondataService.hentPersondata(deltakerFnr);
         if (persondataService.erKode6(personalData)) {
@@ -227,9 +240,9 @@ public class ArenaAgreementProcessingService {
 
         Optional.ofNullable(agreementAggregate.getRegDato())
             .ifPresent(avtale::setOpprettetTidspunkt);
-        Optional.ofNullable(agreementAggregate.getDatoFra() != null ? agreementAggregate.getDatoFra().toLocalDate() : null)
+        agreementAggregate.findStartdato()
             .ifPresent(avtaleinnhold::setStartDato);
-        Optional.ofNullable(agreementAggregate.getDatoTil() != null ? agreementAggregate.getDatoTil().toLocalDate() : null)
+        agreementAggregate.findSluttdato()
             .ifPresent(avtaleinnhold::setSluttDato);
         Optional.ofNullable(agreementAggregate.getAntallDagerPrUke() != null ? Integer.parseInt(agreementAggregate.getAntallDagerPrUke()) : null)
             .ifPresent(avtaleinnhold::setAntallDagerPerUke);
