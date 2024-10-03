@@ -143,5 +143,7 @@ tiltaksgjennomforing:
       client-secret: secret
     aktivitet-acl:
       url: http://localhost:8090/aktivitet-arena-acl
+    hendelse-aktivitetsplan:
+      url: https://localhost:8090
 
 ELECTOR_PATH: null

@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.arena.client;
+package no.nav.tag.tiltaksgjennomforing.arena.client.ords;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;

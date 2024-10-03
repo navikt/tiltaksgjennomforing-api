@@ -1,7 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.arena.service;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.arena.client.AktivitetArenaAclClient;
+import no.nav.tag.tiltaksgjennomforing.arena.client.acl.AktivitetArenaAclClient;
+import no.nav.tag.tiltaksgjennomforing.arena.client.hendelse.HendelseAktivitetsplanClient;
 import no.nav.tag.tiltaksgjennomforing.arena.logging.ArenaAgreementLogging;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Deltakerstatuskode;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Tiltakstatuskode;
@@ -51,6 +52,7 @@ public class ArenaAgreementProcessingService {
     private final Norg2Client norg2Client;
     private final VeilarbArenaClient veilarbArenaClient;
     private final AktivitetArenaAclClient aktivitetArenaAclClient;
+    private final HendelseAktivitetsplanClient hendelseAktivitetsplanClient;
 
     public ArenaAgreementProcessingService(
             ArenaAgreementMigrationRepository agreementMigrationRepository,
@@ -60,7 +62,8 @@ public class ArenaAgreementProcessingService {
             Norg2Client norg2Client,
             VeilarbArenaClient veilarbArenaClient,
             TilskuddsperiodeConfig tilskuddsperiodeConfig,
-            AktivitetArenaAclClient aktivitetArenaAclClient) {
+            AktivitetArenaAclClient aktivitetArenaAclClient,
+            HendelseAktivitetsplanClient hendelseAktivitetsplanClient) {
         this.agreementMigrationRepository = agreementMigrationRepository;
         this.avtaleRepository = avtaleRepository;
         this.eregService = eregService;
@@ -69,6 +72,7 @@ public class ArenaAgreementProcessingService {
         this.veilarbArenaClient = veilarbArenaClient;
         this.tilskuddsperiodeConfig = tilskuddsperiodeConfig;
         this.aktivitetArenaAclClient = aktivitetArenaAclClient;
+        this.hendelseAktivitetsplanClient = hendelseAktivitetsplanClient;
     }
 
     @Transactional
@@ -86,7 +90,7 @@ public class ArenaAgreementProcessingService {
 
             switch (result) {
                 case ArenaMigrationProcessResult.Completed completed -> {
-                    transferAktivitetsplankort(agreementAggregate.getTiltakdeltakerId());
+                    transferAktivitetsplankort(completed.avtale(), agreementAggregate.getTiltakdeltakerId());
                     avtaleRepository.save(completed.avtale());
                     updateMigrationStatus(tiltaksgjennomforingId, completed.status() , completed.avtale().getId());
                 }
@@ -254,8 +258,9 @@ public class ArenaAgreementProcessingService {
             .map(Norg2OppfølgingResponse::getNavn);
     }
 
-    private void transferAktivitetsplankort(Integer deltakerId) {
+    private void transferAktivitetsplankort(Avtale avtale, Integer deltakerId) {
         UUID aktivitetsplanId = aktivitetArenaAclClient.getAktivitetsId(deltakerId);
+        hendelseAktivitetsplanClient.putAktivietsplanId(avtale.getId(), aktivitetsplanId);
     }
 
 }
