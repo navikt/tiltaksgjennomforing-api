@@ -3,8 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.arena.service;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.arena.client.AktivitetArenaAclClient;
 import no.nav.tag.tiltaksgjennomforing.arena.logging.ArenaAgreementLogging;
-import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Deltakerstatuskode;
-import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Tiltakstatuskode;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementAggregate;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigration;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigrationStatus;
@@ -137,10 +135,8 @@ public class ArenaAgreementProcessingService {
             }
         }
 
-        Tiltakstatuskode tiltakstatuskode = agreementAggregate.getTiltakstatuskode();
-        Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
+        ArenaMigrationAction action = ArenaMigrationAction.map(avtale, agreementAggregate);
 
-        ArenaMigrationAction action = ArenaMigrationAction.map(avtale, tiltakstatuskode, deltakerstatuskode);
         switch (action) {
             case CREATE -> {
                 log.info(
@@ -148,8 +144,8 @@ public class ArenaAgreementProcessingService {
                     "men er satt som feilregistrert eller annullert med status 'ANNET' hos oss. " +
                     "Opprettet ny avtale.",
                     avtale.getId(),
-                    tiltakstatuskode,
-                    deltakerstatuskode
+                    agreementAggregate.getTiltakstatuskode(),
+                    agreementAggregate.getDeltakerstatuskode()
                 );
                 return createAvtale(agreementAggregate);
             }
@@ -165,8 +161,8 @@ public class ArenaAgreementProcessingService {
                 log.info(
                     "Avtale med id {} har tiltakstatus {} og deltakerstatus {} i Arena. {}.",
                     avtale.getId(),
-                    tiltakstatuskode,
-                    deltakerstatuskode,
+                    agreementAggregate.getTiltakstatuskode(),
+                    agreementAggregate.getDeltakerstatuskode(),
                     switch (action) {
                         case END -> "Avtalen avsluttes/forkortes";
                         case TERMINATE -> "Annullerer avtalen";
@@ -182,19 +178,14 @@ public class ArenaAgreementProcessingService {
     }
 
     private ArenaMigrationProcessResult createAvtale(ArenaAgreementAggregate agreementAggregate) {
-        Tiltakstatuskode tiltakstatuskode = agreementAggregate.getTiltakstatuskode();
-        Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
-
-        ArenaMigrationAction action = ArenaMigrationAction.map(
-            tiltakstatuskode,
-            deltakerstatuskode
-        );
+        ArenaMigrationAction action = ArenaMigrationAction.map(agreementAggregate);
 
         if (ArenaMigrationAction.IGNORE == action) {
             log.info(
-                "Avtale har tiltaksstatus {} og deltakerstatus {} i Arena. Ignorerer avtalen.",
-                tiltakstatuskode,
-                deltakerstatuskode
+                "Avtale har tiltaksstatus {}, deltakerstatus {} og sluttdato {} i Arena. Ignorerer avtalen.",
+                agreementAggregate.getTiltakstatuskode(),
+                agreementAggregate.getDeltakerstatuskode(),
+                agreementAggregate.findSluttdato().orElse(null)
             );
             return new ArenaMigrationProcessResult.Ignored();
         }
