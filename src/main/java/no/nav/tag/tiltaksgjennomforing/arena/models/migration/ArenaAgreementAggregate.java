@@ -11,9 +11,12 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Deltakerstatuskode;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Tiltakstatuskode;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 class ArenaAgreementAggregateId {
@@ -45,13 +48,29 @@ public class ArenaAgreementAggregate {
     private String virksomhetsnummer;
     private String fnr;
     private String antallDagerPrUke;
-    private LocalDateTime datoFra;
-    private LocalDateTime datoTil;
+    private LocalDateTime tiltakStartdato;
+    private LocalDateTime tiltakSluttdato;
     private String eksternId;
     private Integer prosentDeltid;
     private Tiltakstatuskode tiltakstatuskode;
     private Deltakerstatuskode deltakerstatuskode;
+    private LocalDateTime deltakerStartdato;
+    private LocalDateTime deltakerSluttdato;
     private LocalDateTime regDato;
+
+    public Optional<LocalDate> findStartdato() {
+        return Stream.of(deltakerStartdato, tiltakStartdato)
+                .filter(Objects::nonNull)
+                .map(LocalDateTime::toLocalDate)
+                .findFirst();
+    }
+
+    public Optional<LocalDate> findSluttdato() {
+        return Stream.of(deltakerSluttdato, tiltakSluttdato)
+            .filter(Objects::nonNull)
+            .map(LocalDateTime::toLocalDate)
+            .findFirst();
+    }
 
     public Optional<UUID> getEksternIdAsUuid() throws IllegalArgumentException {
         try {

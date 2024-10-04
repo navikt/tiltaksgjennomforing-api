@@ -36,15 +36,6 @@ public class TiltaksakArenaEventProcessingService implements IArenaEventProcessi
             return ArenaEventStatus.IGNORED;
         }
 
-        if (!tiltaksak.hasEnhent()) {
-            log.info("Arena-event ignorert fordi den ikke har en tilhørende enhet (AETATENHET_ANSVARLIG = null)");
-            delete(
-                tiltaksak,
-                () -> log.info("Sletter tidligere håndtert sak som nå skal ignoreres")
-            );
-            return ArenaEventStatus.IGNORED;
-        }
-
         log.info(
             "Arena-event prosesseres med operasjon {}",
             arenaEvent.getOperation().name()
