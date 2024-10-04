@@ -52,7 +52,9 @@ public enum HendelseType {
     DELTAKERS_GODKJENNING_OPPHEVET_AV_ARBEIDSGIVER("Deltakers godkjenning opphevet av arbeidsgiver"),
     ARBEIDSGIVERS_GODKJENNING_OPPHEVET_AV_VEILEDER("Arbeidsgivers godkjenning opphevet av veileder"),
     ENDRET_AV_ARENA("Avtale synkronisert med fagsystem (Arena)"),
-    OPPRETTET_AV_ARENA("Avtale er opprettet av fagsystem (Arena)");
+    OPPRETTET_AV_ARENA("Avtale er opprettet av fagsystem (Arena)"),
+    UTLOPER_OM_1_UKE("Avtale vil utløpe om 1 uke dersom det ikke foretas noen endringer"),
+    UTLOPER_OM_24_TIMER("Avtale vil utløpe i dag kl 23:59 dersom det ikke foretas noen endringer");
 
     private final String tekst;
 }
