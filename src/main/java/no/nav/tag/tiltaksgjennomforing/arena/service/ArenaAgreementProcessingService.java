@@ -1,10 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.arena.service;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.arena.client.AktivitetArenaAclClient;
+import no.nav.tag.tiltaksgjennomforing.arena.client.acl.AktivitetArenaAclClient;
+import no.nav.tag.tiltaksgjennomforing.arena.client.hendelse.HendelseAktivitetsplanClient;
 import no.nav.tag.tiltaksgjennomforing.arena.logging.ArenaAgreementLogging;
-import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Deltakerstatuskode;
-import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Tiltakstatuskode;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementAggregate;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigration;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigrationStatus;
@@ -51,6 +50,7 @@ public class ArenaAgreementProcessingService {
     private final Norg2Client norg2Client;
     private final VeilarbArenaClient veilarbArenaClient;
     private final AktivitetArenaAclClient aktivitetArenaAclClient;
+    private final HendelseAktivitetsplanClient hendelseAktivitetsplanClient;
 
     public ArenaAgreementProcessingService(
             ArenaAgreementMigrationRepository agreementMigrationRepository,
@@ -60,7 +60,8 @@ public class ArenaAgreementProcessingService {
             Norg2Client norg2Client,
             VeilarbArenaClient veilarbArenaClient,
             TilskuddsperiodeConfig tilskuddsperiodeConfig,
-            AktivitetArenaAclClient aktivitetArenaAclClient) {
+            AktivitetArenaAclClient aktivitetArenaAclClient,
+            HendelseAktivitetsplanClient hendelseAktivitetsplanClient) {
         this.agreementMigrationRepository = agreementMigrationRepository;
         this.avtaleRepository = avtaleRepository;
         this.eregService = eregService;
@@ -69,6 +70,7 @@ public class ArenaAgreementProcessingService {
         this.veilarbArenaClient = veilarbArenaClient;
         this.tilskuddsperiodeConfig = tilskuddsperiodeConfig;
         this.aktivitetArenaAclClient = aktivitetArenaAclClient;
+        this.hendelseAktivitetsplanClient = hendelseAktivitetsplanClient;
     }
 
     @Transactional
@@ -86,7 +88,9 @@ public class ArenaAgreementProcessingService {
 
             switch (result) {
                 case ArenaMigrationProcessResult.Completed completed -> {
-                    transferAktivitetsplankort(agreementAggregate.getTiltakdeltakerId());
+                    if (agreementAggregate.getTiltakdeltakerId() != null) {
+                        transferAktivitetsplankort(completed.avtale(), agreementAggregate.getTiltakdeltakerId());
+                    }
                     avtaleRepository.save(completed.avtale());
                     updateMigrationStatus(tiltaksgjennomforingId, completed.status() , completed.avtale().getId());
                 }
@@ -115,24 +119,30 @@ public class ArenaAgreementProcessingService {
     }
 
     private ArenaMigrationProcessResult updateAvtale(Avtale avtale, ArenaAgreementAggregate agreementAggregate) {
-        if (!avtale.getDeltakerFnr().equals(new Fnr(agreementAggregate.getFnr()))) {
+        if (
+            agreementAggregate.getFnr() != null &&
+            !avtale.getDeltakerFnr().equals(new Fnr(agreementAggregate.getFnr()))
+        ) {
             throw new IllegalStateException("Fnr i avtale stemmer ikke med fnr fra Arena");
         }
 
-        if (!avtale.getBedriftNr().equals(new BedriftNr(agreementAggregate.getVirksomhetsnummer()))) {
+        if (
+            agreementAggregate.getVirksomhetsnummer() != null &&
+            !avtale.getBedriftNr().equals(new BedriftNr(agreementAggregate.getVirksomhetsnummer()))
+        ) {
             throw new IllegalStateException("Virksomhetsnummer i avtale stemmer ikke med virksomhetsnummer fra Arena");
         }
 
-        PdlRespons personalData = persondataService.hentPersondata(new Fnr(agreementAggregate.getFnr()));
-        if (persondataService.erKode6(personalData)) {
-            log.info("Ikke tilgang til deltaker. Ignorerer.");
-            return new ArenaMigrationProcessResult.Ignored();
+        if (agreementAggregate.getFnr() != null) {
+            PdlRespons personalData = persondataService.hentPersondata(new Fnr(agreementAggregate.getFnr()));
+            if (persondataService.erKode6(personalData)) {
+                log.info("Ikke tilgang til deltaker. Ignorerer.");
+                return new ArenaMigrationProcessResult.Ignored();
+            }
         }
 
-        Tiltakstatuskode tiltakstatuskode = agreementAggregate.getTiltakstatuskode();
-        Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
+        ArenaMigrationAction action = ArenaMigrationAction.map(avtale, agreementAggregate);
 
-        ArenaMigrationAction action = ArenaMigrationAction.map(avtale, tiltakstatuskode, deltakerstatuskode);
         switch (action) {
             case CREATE -> {
                 log.info(
@@ -140,15 +150,15 @@ public class ArenaAgreementProcessingService {
                     "men er satt som feilregistrert eller annullert med status 'ANNET' hos oss. " +
                     "Opprettet ny avtale.",
                     avtale.getId(),
-                    tiltakstatuskode,
-                    deltakerstatuskode
+                    agreementAggregate.getTiltakstatuskode(),
+                    agreementAggregate.getDeltakerstatuskode()
                 );
                 return createAvtale(agreementAggregate);
             }
             case UPDATE, END, TERMINATE -> {
                 EndreAvtaleArena endreAvtale = EndreAvtaleArena.builder()
-                    .startDato(agreementAggregate.getDatoFra() != null ? agreementAggregate.getDatoFra().toLocalDate() : null)
-                    .sluttDato(agreementAggregate.getDatoTil() != null ? agreementAggregate.getDatoTil().toLocalDate() : null)
+                    .startdato(agreementAggregate.findStartdato().orElse(null))
+                    .sluttdato(agreementAggregate.findSluttdato().orElse(null))
                     .antallDagerPerUke(agreementAggregate.getAntallDagerPrUke() != null ? Integer.parseInt(agreementAggregate.getAntallDagerPrUke()) : null)
                     .stillingprosent(agreementAggregate.getProsentDeltid())
                     .handling(EndreAvtaleArena.Handling.map(action))
@@ -157,8 +167,8 @@ public class ArenaAgreementProcessingService {
                 log.info(
                     "Avtale med id {} har tiltakstatus {} og deltakerstatus {} i Arena. {}.",
                     avtale.getId(),
-                    tiltakstatuskode,
-                    deltakerstatuskode,
+                    agreementAggregate.getTiltakstatuskode(),
+                    agreementAggregate.getDeltakerstatuskode(),
                     switch (action) {
                         case END -> "Avtalen avsluttes/forkortes";
                         case TERMINATE -> "Annullerer avtalen";
@@ -174,20 +184,20 @@ public class ArenaAgreementProcessingService {
     }
 
     private ArenaMigrationProcessResult createAvtale(ArenaAgreementAggregate agreementAggregate) {
-        Tiltakstatuskode tiltakstatuskode = agreementAggregate.getTiltakstatuskode();
-        Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
-
-        ArenaMigrationAction action = ArenaMigrationAction.map(
-            tiltakstatuskode,
-            deltakerstatuskode
-        );
+        ArenaMigrationAction action = ArenaMigrationAction.map(agreementAggregate);
 
         if (ArenaMigrationAction.IGNORE == action) {
             log.info(
-                "Avtale har tiltaksstatus {} og deltakerstatus {} i Arena. Ignorerer avtalen.",
-                tiltakstatuskode,
-                deltakerstatuskode
+                "Avtale har tiltaksstatus {}, deltakerstatus {} og sluttdato {} i Arena. Ignorerer avtalen.",
+                agreementAggregate.getTiltakstatuskode(),
+                agreementAggregate.getDeltakerstatuskode(),
+                agreementAggregate.findSluttdato().orElse(null)
             );
+            return new ArenaMigrationProcessResult.Ignored();
+        }
+
+        if (agreementAggregate.getFnr() == null || agreementAggregate.getVirksomhetsnummer() == null) {
+            log.info("Avtale mangler fnr eller virksomhetsnummer og kan derfor ikke opprettes. Ignorerer avtalen.");
             return new ArenaMigrationProcessResult.Ignored();
         }
 
@@ -227,9 +237,9 @@ public class ArenaAgreementProcessingService {
 
         Optional.ofNullable(agreementAggregate.getRegDato())
             .ifPresent(avtale::setOpprettetTidspunkt);
-        Optional.ofNullable(agreementAggregate.getDatoFra() != null ? agreementAggregate.getDatoFra().toLocalDate() : null)
+        agreementAggregate.findStartdato()
             .ifPresent(avtaleinnhold::setStartDato);
-        Optional.ofNullable(agreementAggregate.getDatoTil() != null ? agreementAggregate.getDatoTil().toLocalDate() : null)
+        agreementAggregate.findSluttdato()
             .ifPresent(avtaleinnhold::setSluttDato);
         Optional.ofNullable(agreementAggregate.getAntallDagerPrUke() != null ? Integer.parseInt(agreementAggregate.getAntallDagerPrUke()) : null)
             .ifPresent(avtaleinnhold::setAntallDagerPerUke);
@@ -254,8 +264,9 @@ public class ArenaAgreementProcessingService {
             .map(Norg2OppfølgingResponse::getNavn);
     }
 
-    private void transferAktivitetsplankort(Integer deltakerId) {
+    private void transferAktivitetsplankort(Avtale avtale, Integer deltakerId) {
         UUID aktivitetsplanId = aktivitetArenaAclClient.getAktivitetsId(deltakerId);
+        hendelseAktivitetsplanClient.putAktivietsplanId(avtale.getId(), aktivitetsplanId);
     }
 
 }

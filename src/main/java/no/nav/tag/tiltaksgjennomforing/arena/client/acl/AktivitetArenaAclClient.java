@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.arena.client;
+package no.nav.tag.tiltaksgjennomforing.arena.client.acl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -44,24 +44,6 @@ public class TiltakgjennomforingArenaEventProcessingService implements IArenaEve
             return ArenaEventStatus.IGNORED;
         }
 
-        if (tiltakgjennomforing.getDatoFra() == null) {
-            log.info("Arena-event ignorert; fra-dato er null");
-            delete(
-                tiltakgjennomforing,
-                () -> log.info("Sletter tidligere håndtert tiltak som nå skal ignoreres")
-            );
-            return ArenaEventStatus.IGNORED;
-        }
-
-        if (tiltakgjennomforing.getArbgivIdArrangor() == null) {
-            log.info("Arena-event ignorert; ArbGivIdArrangor er null");
-            delete(
-                tiltakgjennomforing,
-                () -> log.info("Sletter tidligere håndtert tiltak som nå skal ignoreres")
-            );
-            return ArenaEventStatus.IGNORED;
-        }
-
         log.info(
             "Arena-event prosesseres med operasjon {}",
             arenaEvent.getOperation().name()
@@ -79,7 +61,10 @@ public class TiltakgjennomforingArenaEventProcessingService implements IArenaEve
             return ArenaEventStatus.RETRY;
         }
 
-        ordsService.fetchArbeidsgiver(tiltakgjennomforing.getArbgivIdArrangor());
+        if (tiltakgjennomforing.getArbgivIdArrangor() != null) {
+            ordsService.fetchArbeidsgiver(tiltakgjennomforing.getArbgivIdArrangor());
+        }
+
         tiltakgjennomforingRepository.save(tiltakgjennomforing);
 
         log.info("Arena-event er ferdig prossesert");

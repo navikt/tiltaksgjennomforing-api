@@ -81,6 +81,14 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
+      tiltak-hendelse-aktivitetsplan:
+        token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
+        grant-type: client_credentials
+        scope: api://prod-gcp.team-tiltak.tiltak-hendelse-aktivitetsplan/.default
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_basic
 
 tiltaksgjennomforing:
   persondata:
@@ -163,3 +171,5 @@ tiltaksgjennomforing:
       client-secret: ${ARENA_ORDS_CLIENT_SECRET}
     aktivitet-acl:
       url: https://aktivitet-arena-acl.intern.nav.no
+    hendelse-aktivitetsplan:
+      url: https://tiltak-hendelse-aktivitetsplan.intern.nav.no

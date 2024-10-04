@@ -4,6 +4,8 @@ spring:
     username: sa
     password: sa
     driverClassName: org.h2.Driver
+  flyway:
+    locations: classpath:db/callbacks/labs
   h2:
     console:
       enabled: true
