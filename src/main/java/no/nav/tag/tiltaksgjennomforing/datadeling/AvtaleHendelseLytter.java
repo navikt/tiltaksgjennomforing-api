@@ -166,7 +166,7 @@ public class AvtaleHendelseLytter {
         var melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), utførtAv, utførtAvRolle, hendelseType);
         try {
             String meldingSomString = objectMapper.writeValueAsString(melding);
-            AvtaleMeldingEntitet entitet = new AvtaleMeldingEntitet(meldingId, avtale.getId(), tidspunkt, hendelseType, avtale.statusSomEnum(), meldingSomString, Avtaleopphav.ARENA);
+            AvtaleMeldingEntitet entitet = new AvtaleMeldingEntitet(meldingId, avtale.getId(), tidspunkt, hendelseType, avtale.statusSomEnum(), meldingSomString, avtale.getOpphav());
             avtaleMeldingEntitetRepository.save(entitet);
         } catch (JsonProcessingException e) {
             log.error("Feil ved parsing av AvtaleHendelseMelding til json for avtale med id: {}", avtale.getId());
