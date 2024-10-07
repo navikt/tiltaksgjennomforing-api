@@ -42,6 +42,18 @@ class VeilarbArenaClientTest {
         assertThat(oppfølgingsEnhet2).isNotEmpty();
     }
 
+    // TODO: INNSATS BEHOV endres under endre avtale (forlenge/forkorte) den skal ikke endre innsatsbehovet selvom innsatsbehovet er endret etter opprettelse av avtale.
+    @Test
+    public void sjekkAt_kvalifiseringsgruppe_som_faller_utenfor_kaster_exception_for_VTAO() {
+        String fnr_har_kvalifiseringsgruppe_med_kode_IVURD = "02104317386";
+        final Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setDeltakerFnr(new Fnr(fnr_har_kvalifiseringsgruppe_med_kode_IVURD));
+        avtale.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+
+        assertThatThrownBy(() -> veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale))
+                .isExactlyInstanceOf(FeilkodeException.class)
+                .hasMessage(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET.name());
+    }
     @Test
     public void sjekkAt_kvalifiseringsgruppe_som_faller_utenfor_kaster_exception() {
         String fnr_har_kvalifiseringsgruppe_med_kode_IVURD = "02104317386";
