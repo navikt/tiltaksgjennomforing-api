@@ -78,7 +78,21 @@ public class ArenaEventProcessingService {
                 ? message.before()
                 : message.after();
 
-            ArenaEvent arenaEvent = arenaEventRepository.findByArenaIdAndArenaTable(key, table)
+            Optional<ArenaEvent> existingArenaEventOpt = arenaEventRepository.findByArenaIdAndArenaTable(key, table);
+
+            boolean isAlreadyProcessed = existingArenaEventOpt
+                .map(e -> message.opTimestamp().isBefore(e.getOperationTime()))
+                .orElse(false);
+
+            if (isAlreadyProcessed) {
+                log.info(
+                    "Ignorerer arena-event {} som allerede er prossesert med et OP-tidspunkt fremover i tid.",
+                    existingArenaEventOpt.get().getLogId()
+                );
+                return;
+            }
+
+            ArenaEvent arenaEvent = existingArenaEventOpt
                 .map(exisitingArenaEvent ->
                     exisitingArenaEvent.toBuilder()
                         .operation(operation)

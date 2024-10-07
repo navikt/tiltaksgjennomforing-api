@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPathPattern": "/aktivitet-arena-acl/api/translation/arenaid"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": "066dd8a5-86e9-4b47-b3ae-5daa18ebfa54",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

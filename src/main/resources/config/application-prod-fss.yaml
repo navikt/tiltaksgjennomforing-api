@@ -73,6 +73,14 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
+      aktivitet-arena-acl:
+        token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
+        grant-type: client_credentials
+        scope: api://prod-gcp.dab.aktivitet-arena-acl/.default
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_basic
 
 tiltaksgjennomforing:
   persondata:
@@ -153,3 +161,5 @@ tiltaksgjennomforing:
       url: https://arena-ords.nais.adeo.no
       client-id: ${ARENA_ORDS_CLIENT_ID}
       client-secret: ${ARENA_ORDS_CLIENT_SECRET}
+    aktivitet-acl:
+      url: https://aktivitet-arena-acl.intern.nav.no
