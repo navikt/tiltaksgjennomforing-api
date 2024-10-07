@@ -55,6 +55,7 @@ public class VeilarbArenaClient {
         sjekkStatus(avtale, oppfølgingStatus);
     }
 
+    //TODO: Legg til if sjekk for VTAO avtaler
     private void sjekkStatus(Avtale avtale, Oppfølgingsstatus oppfølgingStatus) {
         if (
                 oppfølgingStatus == null ||
