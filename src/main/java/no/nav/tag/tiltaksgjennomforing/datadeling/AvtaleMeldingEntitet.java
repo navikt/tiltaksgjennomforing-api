@@ -31,17 +31,13 @@ public class AvtaleMeldingEntitet extends AbstractAggregateRoot<AvtaleMeldingEnt
     private boolean sendt;
     private boolean sendtCompacted;
 
-    @Enumerated(EnumType.STRING)
-    private Avtaleopphav opphav;
-
-    public AvtaleMeldingEntitet(UUID meldingId, UUID avtaleId, LocalDateTime tidspunkt, HendelseType hendelseType, Status avtaleStatus, String meldingAsJson, Avtaleopphav opphav) {
+    public AvtaleMeldingEntitet(UUID meldingId, UUID avtaleId, LocalDateTime tidspunkt, HendelseType hendelseType, Status avtaleStatus, String meldingAsJson) {
         this.meldingId = meldingId;
         this.avtaleId = avtaleId;
         this.hendelseType = hendelseType;
         this.tidspunkt = tidspunkt;
         this.json = meldingAsJson;
         this.avtaleStatus = avtaleStatus;
-        this.opphav = opphav;
 
         registerEvent(new AvtaleMeldingOpprettet(this));
     }
