@@ -398,6 +398,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
     }
 
+    //TODO: kun endre setEnhetOppfolging om veileder trykker på endre oppfølgningsenhet (ikke endre kvalifiseringsgruppe og formidlingsgruppe)
     protected void settOppfølgingsStatus(Avtale avtale, Oppfølgingsstatus oppfølgingsstatus) {
         avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
         avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
