@@ -17,8 +17,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @SpringBootTest
 @ActiveProfiles({ Miljø.TEST, Miljø.WIREMOCK })
@@ -45,14 +45,22 @@ class VeilarbArenaClientTest {
     // TODO: INNSATS BEHOV endres under endre avtale (forlenge/forkorte) den skal ikke endre innsatsbehovet selvom innsatsbehovet er endret etter opprettelse av avtale.
     @Test
     public void sjekkAt_kvalifiseringsgruppe_som_faller_utenfor_kaster_exception_for_VTAO() {
-        String fnr_har_kvalifiseringsgruppe_med_kode_IVURD = "02104317386";
-        final Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        String fnr_har_kvalifiseringsgruppe_med_kode_IVURD = "30109316144";
+        final Avtale avtale = TestData.enAvtale(Tiltakstype.VTAO);
         avtale.setDeltakerFnr(new Fnr(fnr_har_kvalifiseringsgruppe_med_kode_IVURD));
-        avtale.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
 
         assertThatThrownBy(() -> veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale))
                 .isExactlyInstanceOf(FeilkodeException.class)
-                .hasMessage(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET.name());
+                .hasMessage(Feilkode.KVALIFISERINGSGRUPPE_VTAO_FEIL.name());
+    }
+
+    @Test
+    public void sjekkAt_kvalifiseringsgruppe_som_faller_utenfor_kaster_ikke_exception_for_VTAO() {
+        String fnr_har_kvalifiseringsgruppe_med_kode_IVURD = "13016505786";
+        final Avtale avtale = TestData.enAvtale(Tiltakstype.VTAO);
+        avtale.setDeltakerFnr(new Fnr(fnr_har_kvalifiseringsgruppe_med_kode_IVURD));
+
+        assertDoesNotThrow(() -> veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale));
     }
     @Test
     public void sjekkAt_kvalifiseringsgruppe_som_faller_utenfor_kaster_exception() {

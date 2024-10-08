@@ -17,6 +17,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditConsoleLogger;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
@@ -29,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -45,8 +47,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enArbeidstreningAvtale;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enNavIdent;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
@@ -76,6 +77,8 @@ public class AvtaleControllerTest {
     private PersondataService persondataService;
     @MockBean
     private KontoregisterService kontoregisterService;
+    @MockBean
+    private AuditConsoleLogger auditConsoleLogger;
 
     private Pageable pageable = PageRequest.of(0, 100);
 
@@ -617,5 +620,20 @@ public class AvtaleControllerTest {
         assertThatThrownBy(
                 () -> avtaleController.hentBedriftKontonummer(avtale.getId(), Avtalerolle.VEILEDER)
         ).isInstanceOf(KontoregisterFeilException.class);
+    }
+    @Test
+    public void at_bare_oppfølgingsenhet_blit_oppdatert() {
+        NavIdent veilederNavIdent = new NavIdent("Z123456");
+        Avtale avtale = TestData.enVtaoAvtaleGodkjentAvArbeidsgiver();
+        værInnloggetSom(TestData.enVeileder(avtale));
+        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
+
+        Avtale oppdatertAvtale = avtaleController.oppdaterOppfølgingsEnhet(avtale.getId());
+
+        assertThat(avtale.getEnhetOppfolging()).isNotEqualTo(oppdatertAvtale.getEnhetOppfolging());
+        assertThat(avtale.getEnhetGeografisk()).isNotEqualTo(oppdatertAvtale.getEnhetGeografisk());
+        assertThat(avtale.kvalifiseringsgruppe).isEqualTo(oppdatertAvtale.kvalifiseringsgruppe);
+        assertThat(avtale.formidlingsgruppe).isEqualTo(oppdatertAvtale.formidlingsgruppe);
+
     }
 }

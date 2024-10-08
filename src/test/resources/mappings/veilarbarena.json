@@ -84,6 +84,46 @@
       "priority": 1,
       "request": {
         "method": "GET",
+        "urlPattern": "^.*\\/veilarbarena\\/api\\/arena\\/status\\?fnr=13016505786"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "rettighetsgruppe": "IYT",
+          "formidlingsgruppe": "ARBS",
+          "kvalifiseringsgruppe": "VARIG",
+          "oppfolgingsenhet": "0906",
+          "iservFraDato": null
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPattern": "^.*\\/veilarbarena\\/api\\/arena\\/status\\?fnr=30109316144"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "rettighetsgruppe": "IYT",
+          "formidlingsgruppe": "ARBS",
+          "kvalifiseringsgruppe": "BFORM",
+          "oppfolgingsenhet": "0906",
+          "iservFraDato": null
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
         "urlPattern": "/veilarbarena/api/arena/status?fnr=22222222222"
       },
       "response": {

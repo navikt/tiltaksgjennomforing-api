@@ -148,9 +148,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     private boolean slettemerket;
     private LocalDate avbruttDato;
     private String avbruttGrunn;
-    private String enhetGeografisk;
+    public String enhetGeografisk;
     private String enhetsnavnGeografisk;
-    private String enhetOppfolging;
+    public String enhetOppfolging;
     private String enhetsnavnOppfolging;
 
     @Enumerated(EnumType.STRING)
@@ -159,9 +159,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     private boolean godkjentForEtterregistrering;
 
     @Enumerated(EnumType.STRING)
-    private Kvalifiseringsgruppe kvalifiseringsgruppe;
+    public Kvalifiseringsgruppe kvalifiseringsgruppe;
     @Enumerated(EnumType.STRING)
-    private Formidlingsgruppe formidlingsgruppe;
+    public Formidlingsgruppe formidlingsgruppe;
 
 
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

@@ -41,6 +41,9 @@ public class VeilarbArenaClient {
     private boolean erVariglonnstilskudd(Tiltakstype tiltakstype) {
         return tiltakstype.equals(Tiltakstype.VARIG_LONNSTILSKUDD);
     }
+    private boolean erVTAO(Tiltakstype tiltakstype) {
+        return tiltakstype.equals(Tiltakstype.VTAO);
+    }
 
     public Oppfølgingsstatus sjekkOgHentOppfølgingStatus(Avtale avtale) {
         Oppfølgingsstatus oppfølgingStatus = hentOppfølgingStatus(avtale.getDeltakerFnr().asString());
@@ -55,7 +58,6 @@ public class VeilarbArenaClient {
         sjekkStatus(avtale, oppfølgingStatus);
     }
 
-    //TODO: Legg til if sjekk for VTAO avtaler
     private void sjekkStatus(Avtale avtale, Oppfølgingsstatus oppfølgingStatus) {
         if (
                 oppfølgingStatus == null ||
@@ -75,8 +77,12 @@ public class VeilarbArenaClient {
         }
 
         if (erVariglonnstilskudd(avtale.getTiltakstype()) &&
-                !Kvalifiseringsgruppe.kvalifisererTilVariglonnstilskudd(oppfølgingStatus.getKvalifiseringsgruppe())) {
+                !Kvalifiseringsgruppe.kvalifiseringVarigTilpassetInnsats(oppfølgingStatus.getKvalifiseringsgruppe())) {
             throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_VARIG_LONNTILSKUDD_FEIL);
+        }
+
+        if (erVTAO(avtale.getTiltakstype()) && !Kvalifiseringsgruppe.kvalifiseringVarigTilpassetInnsats(oppfølgingStatus.getKvalifiseringsgruppe())){
+            throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_VTAO_FEIL);
         }
     }
 

@@ -87,7 +87,7 @@ public class AuditLoggingAspect {
             // Responsen var en enkelt auditentitet
             entiteter.add(ae);
         } else {
-            log.error("AuditLoggingAspect støtter ikke denne typen responsobjekt: {}", resultatobjekt.getClass().getName());
+            log.error("AuditLoggingAspect støtter ikke denne typen responsobjekt: {}", resultatobjekt != null ? resultatobjekt.getClass().getName() : "null");
         }
         return hentOppslagsdata(entiteter);
     }

@@ -44,7 +44,9 @@ public enum Kvalifiseringsgruppe {
         };
     }
 
-    public static boolean kvalifisererTilVariglonnstilskudd(Kvalifiseringsgruppe kvalifiseringsgruppe) {
+
+
+    public static boolean kvalifiseringVarigTilpassetInnsats(Kvalifiseringsgruppe kvalifiseringsgruppe) {
         return kvalifiseringsgruppe == VARIG_TILPASSET_INNSATS;
     }
 
