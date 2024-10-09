@@ -257,6 +257,7 @@ public class TestData {
             avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
         } else {
             avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+            avtale.setFormidlingsgruppe(Formidlingsgruppe.ARBEIDSSOKER);
         }
         avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleLønnstilskuddFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
         avtale.setTiltakstype(tiltakstype);

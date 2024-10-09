@@ -19,6 +19,8 @@ import org.springframework.test.context.ActiveProfiles;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @ActiveProfiles({ Miljø.TEST, Miljø.WIREMOCK })
@@ -86,6 +88,7 @@ class VeilarbArenaClientTest {
         assertThat(oppfølgingsstatus.getOppfolgingsenhet()).isEqualTo(("0906"));
     }
 
+    //TODO: SKal ikke endre Kvalifiseringsgruppe om avtalen er inngått/gjennomføres/klar til start
     @Test
     public void sjekk_at_lonnstilskuddsprosent_blir_satt_paa_midlertidiglonnstilskudd_ved_AvtaleInnhold_constructor() {
         final Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
@@ -101,7 +104,7 @@ class VeilarbArenaClientTest {
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isNotNull();
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(60);
 
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);  // KAN IKKE ENDRE DENNE
         avtale.endreAvtale(Now.instant(),new EndreAvtale(), Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
 
         assertThat(avtale.getGjeldendeInnhold().getLonnstilskuddProsent()).isEqualTo(40);

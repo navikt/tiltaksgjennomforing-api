@@ -4,12 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
-import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
+import no.nav.tag.tiltaksgjennomforing.enhet.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6Exception;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KontoregisterFeilException;
@@ -21,8 +16,7 @@ import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditConsoleLogger
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
-import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
-import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.persondata.*;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -58,11 +52,11 @@ import static org.mockito.Mockito.*;
 public class AvtaleControllerTest {
 
     @Autowired
-    MockMvc mockMvc;
+    private MockMvc mockMvc;
     @MockBean
-    VeilarbArenaClient veilarbArenaClient;
+    private VeilarbArenaClient veilarbArenaClient;
     @MockBean
-    Norg2Client norg2Client;
+    private Norg2Client norg2Client;
     @Autowired
     private AvtaleController avtaleController;
     @MockBean
@@ -623,17 +617,41 @@ public class AvtaleControllerTest {
     }
     @Test
     public void at_bare_oppfølgingsenhet_blit_oppdatert() {
-        NavIdent veilederNavIdent = new NavIdent("Z123456");
+        // GITT
         Avtale avtale = TestData.enVtaoAvtaleGodkjentAvArbeidsgiver();
-        værInnloggetSom(TestData.enVeileder(avtale));
+        værInnloggetSom(
+                new Veileder(
+                        new NavIdent("Z333333"),
+                        tilgangskontrollService,
+                        persondataService,
+                        norg2Client,
+                        Collections.emptySet(),
+                        new SlettemerkeProperties(),
+                        false,
+                        veilarbArenaClient
+                )
+        );
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
+        when(norg2Client.hentGeografiskEnhet(anyString())).thenReturn(new Norg2GeoResponse("4603","Bergen"));
+        Norg2OppfølgingResponse norg2OppfølgingResponse = new Norg2OppfølgingResponse(1,"4606","Bergen", Norg2EnhetStatus.AKTIV);
+        when(norg2Client.hentOppfølgingsEnhet(anyString())).thenReturn(norg2OppfølgingResponse);
+        when(avtaleRepository.save(avtale)).thenReturn(avtale);
 
-        Avtale oppdatertAvtale = avtaleController.oppdaterOppfølgingsEnhet(avtale.getId());
+        PdlRespons pdlResponse = new PdlRespons(
+                new Data(
+                        new HentPerson(null, new Navn[]{new Navn("ola", "", "Norman")}),
+                        null,
+                        new HentGeografiskTilknytning("", "030202", "", "3")
+                ));
+        when(persondataService.hentPersondata(any())).thenReturn(pdlResponse);
 
-        assertThat(avtale.getEnhetOppfolging()).isNotEqualTo(oppdatertAvtale.getEnhetOppfolging());
-        assertThat(avtale.getEnhetGeografisk()).isNotEqualTo(oppdatertAvtale.getEnhetGeografisk());
-        assertThat(avtale.kvalifiseringsgruppe).isEqualTo(oppdatertAvtale.kvalifiseringsgruppe);
-        assertThat(avtale.formidlingsgruppe).isEqualTo(oppdatertAvtale.formidlingsgruppe);
+        // NÅR
+        avtaleController.oppdaterOppfølgingsEnhet(avtale.getId());
 
+        // SÅ
+        verify(norg2Client,times(1)).hentGeografiskEnhet(anyString());
+        verify(norg2Client,times(1)).hentOppfølgingsEnhet(anyString());
+        verify(veilarbArenaClient,times(0)).sjekkOgHentOppfølgingStatus(avtale);
     }
+
 }
