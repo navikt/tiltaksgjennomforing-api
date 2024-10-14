@@ -4,7 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
+import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -80,7 +83,6 @@ public class AvtaleHendelseService {
         LocalDateTime tidspunkt = Now.localDateTime();
         try {
             String meldingSomString = objectMapper.writeValueAsString(melding);
-            log.info("meldingsomstring {}", meldingSomString);
             AvtaleMeldingEntitet entitet = new AvtaleMeldingEntitet(meldingId, avtale.getId(), tidspunkt, HendelseType.STATUSENDRING, avtale.statusSomEnum(), meldingSomString);
             avtaleMeldingEntitetRepository.save(entitet);
         } catch (JsonProcessingException e) {
