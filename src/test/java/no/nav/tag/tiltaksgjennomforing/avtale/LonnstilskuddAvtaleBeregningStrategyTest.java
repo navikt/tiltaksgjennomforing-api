@@ -78,7 +78,7 @@ public class LonnstilskuddAvtaleBeregningStrategyTest {
 
         assertThat(avtale.getTilskuddPeriode().size()).isEqualTo(3);
         assertThat(avtale.getTilskuddPeriode().first().getBeløp()).isEqualTo(fastBeløpPerMånedForPeriode);
-        assertThat(avtale.getTilskuddPeriode().first().getLonnstilskuddProsent()).isEqualTo(0);
+        assertThat(avtale.getTilskuddPeriode().first().getLonnstilskuddProsent()).isEqualTo(null);
         harRiktigeEgenskaper(avtale);
         Now.resetClock();
     }

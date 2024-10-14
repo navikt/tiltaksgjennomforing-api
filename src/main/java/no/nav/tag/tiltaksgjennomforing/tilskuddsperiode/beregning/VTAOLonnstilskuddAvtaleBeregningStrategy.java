@@ -42,8 +42,14 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilsk
 
     private static List<TilskuddPeriode>  beregnTilskuddsperioderForVTAOAvtale(LocalDate datoFraOgMed, LocalDate datoTilOgMed) {
         List<TilskuddPeriode> tilskuddperioder = LonnstilskuddAvtaleBeregningStrategy.lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
-            Integer beløp = LonnstilskuddAvtaleBeregningStrategy.beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), 6808);
-            return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt(), 0);
+            Integer beløp;
+            // TODO: beløpet og "cut-off"-datoen" her er hardkodet og må byttes ut før prodsetting av VTAO
+            if (datoPar.getStart().isAfter(LocalDate.of(2024,12, 31))) {
+                beløp = null;
+            } else {
+                beløp = LonnstilskuddAvtaleBeregningStrategy.beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), 6808);
+            }
+            return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt());
         }).toList();
         return tilskuddperioder;
     }
