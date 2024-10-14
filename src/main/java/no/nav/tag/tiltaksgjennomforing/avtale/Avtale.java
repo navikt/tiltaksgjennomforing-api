@@ -182,9 +182,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     @Transient
     private AtomicReference<LonnstilskuddAvtaleBeregningStrategy> lonnstilskuddAvtaleBeregningStrategy = new AtomicReference<>();
 
-    public void leggtilNyeTilskuddsperioder(List<TilskuddPeriode> tilskuddsperioder){
+    public void leggtilNyeTilskuddsperioder(List<TilskuddPeriode> tilskuddsperioder) {
         this.tilskuddPeriode.addAll(tilskuddsperioder);
     }
+
     private Avtale(OpprettAvtale opprettAvtale) {
         sjekkAtIkkeNull(opprettAvtale.getDeltakerFnr(), "Deltakers fnr må være satt.");
         sjekkAtIkkeNull(opprettAvtale.getBedriftNr(), "Arbeidsgivers bedriftnr må være satt.");
@@ -305,14 +306,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
         if (EndreAvtaleArena.Handling.AVSLUTT == action) {
             LocalDate sluttDato = Stream.of(endreAvtaleArena.getSluttdato(), gjeldendeInnhold.getSluttDato())
-                .filter(dato -> dato.isBefore(LocalDate.now()))
-                .findFirst()
-                .orElse(LocalDate.now().minusDays(1));
+                    .filter(dato -> dato.isBefore(LocalDate.now()))
+                    .findFirst()
+                    .orElse(LocalDate.now().minusDays(1));
 
             LocalDate startDato = Stream.of(endreAvtaleArena.getStartdato(), gjeldendeInnhold.getStartDato())
-                .filter(dato -> dato.isEqual(sluttDato) || dato.isBefore(sluttDato))
-                .findFirst()
-                .orElse(LocalDate.now().minusDays(1));
+                    .filter(dato -> dato.isEqual(sluttDato) || dato.isBefore(sluttDato))
+                    .findFirst()
+                    .orElse(LocalDate.now().minusDays(1));
 
             getGjeldendeInnhold().setStartDato(startDato);
             getGjeldendeInnhold().setSluttDato(sluttDato);
@@ -484,7 +485,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     private boolean skalBesluttes() {
-        return tiltakstype == Tiltakstype.SOMMERJOBB || tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD || tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD;
+        return tiltakstype == Tiltakstype.SOMMERJOBB || tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD || tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || tiltakstype == Tiltakstype.VTAO;
     }
 
     private void sjekkOmAvtalenKanEndres() {
@@ -1469,7 +1470,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         return this.fnrOgBedrift;
     }
 
-    protected LonnstilskuddAvtaleBeregningStrategy hentBeregningStrategi(){
+    protected LonnstilskuddAvtaleBeregningStrategy hentBeregningStrategi() {
         return this.lonnstilskuddAvtaleBeregningStrategy.updateAndGet(strategy -> strategy == null ? TilskuddsperioderBeregningStrategyFactory.create(tiltakstype) : strategy);
     }
 }
