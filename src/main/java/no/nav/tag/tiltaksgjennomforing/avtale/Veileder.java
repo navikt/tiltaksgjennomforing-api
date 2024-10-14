@@ -398,7 +398,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
     }
 
-    //TODO: kun endre setEnhetOppfolging om veileder trykker på endre oppfølgningsenhet (ikke endre kvalifiseringsgruppe og formidlingsgruppe)
+    //TODO: LEGG TIL EN CHECK her -> kun endre setEnhetOppfolging om veileder trykker på endre oppfølgningsenhet (ikke endre kvalifiseringsgruppe og formidlingsgruppe)
     protected void settOppfølgingsStatus(Avtale avtale, Oppfølgingsstatus oppfølgingsstatus) {
         avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
         avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
@@ -431,7 +431,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     public void forlengAvtale(LocalDate sluttDato, Avtale avtale) {
         super.sjekkTilgang(avtale);
-        sjekkOgHentOppfølgingStatus(avtale, veilarbArenaClient);
+        sjekkOgHentOppfølgingStatus(avtale, veilarbArenaClient); // TODO: SKAL DENNE KALLES UNDER FORLENGING?
         avtale.forlengAvtale(sluttDato, getIdentifikator());
     }
 
