@@ -250,15 +250,24 @@ public class TestData {
     }
 
     public static Avtale enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype tiltakstype) {
+        Kvalifiseringsgruppe kvalifiseringsgruppe = null;
+        Formidlingsgruppe formidlingsgruppe = null;
+        if (tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD) {
+            kvalifiseringsgruppe = Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS;
+        } else {
+            kvalifiseringsgruppe = Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS;
+            formidlingsgruppe = Formidlingsgruppe.ARBEIDSSOKER;
+        }
+
+        return enLonnstilskuddAvtaleMedAltUtfylt(tiltakstype, kvalifiseringsgruppe, formidlingsgruppe);
+    }
+
+    public static Avtale enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype tiltakstype,Kvalifiseringsgruppe kvalifiseringsgruppe,Formidlingsgruppe formidlingsgruppe) {
         NavIdent veilderNavIdent = new NavIdent("Z123456");
         Avtale avtale = Avtale.opprett(lagOpprettAvtale(tiltakstype), Avtaleopphav.VEILEDER, veilderNavIdent);
         setOppfølgingPåAvtale(avtale);
-        if (tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD) {
-            avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
-        } else {
-            avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
-            avtale.setFormidlingsgruppe(Formidlingsgruppe.ARBEIDSSOKER);
-        }
+         avtale.setKvalifiseringsgruppe(kvalifiseringsgruppe);
+         avtale.setFormidlingsgruppe(formidlingsgruppe);
         avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleLønnstilskuddFelter(), Avtalerolle.VEILEDER, EnumSet.of(avtale.getTiltakstype()));
         avtale.setTiltakstype(tiltakstype);
         avtale.getGjeldendeInnhold().setDeltakerFornavn("Lilly");
@@ -316,6 +325,18 @@ public class TestData {
 
     public static Avtale enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder() {
         Avtale avtale = enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent());
+        avtale.getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setJournalpostId("1");
+        return avtale;
+    }
+
+    public static Avtale enMidlertidigLonnstilskuddAvtaleMedVarigSatsGodkjentAvVeileder() {
+        Avtale avtale = enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,Formidlingsgruppe.ARBEIDSSOKER);
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
