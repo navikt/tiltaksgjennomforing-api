@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
-import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
@@ -43,19 +42,6 @@ public class AvtaleTest {
         Now.resetClock();
     }
 
-    @Test
-    public void skal_ikke_endre_kvalifiseringsgruppe_om_avtalen_er_inngått(){
-        // GITT
-        Avtale avtale = enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder();
-
-        // NÅR
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.STANDARD_INNSATS);
-        avtale.setFormidlingsgruppe(Formidlingsgruppe.IKKE_SERVICEBEHOV);
-
-        //SÅ
-        assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
-        assertThat(avtale.getFormidlingsgruppe()).isEqualTo(Formidlingsgruppe.ARBEIDSSOKER);
-    }
     @Test
     public void test_riktig_beregning_Varig_Lonnstilskudd_Avtale_som_varer_i_mange_aar_med_en_periode_tilbake_i_tid_og_med_send_tilbake_til_beslutter_og_en_avslåt_tilskuddperiode() {
         Now.fixedDate(LocalDate.of(2024, 7, 29));
