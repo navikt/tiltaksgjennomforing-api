@@ -20,6 +20,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
@@ -403,7 +404,8 @@ public class AvtaleTest {
     public void test_riktig_beregning_VTAO_Lonnstilskudd_Avtale() {
         Now.fixedDate(LocalDate.of(2024, 7, 29));
         Avtale avtale = TestData.enVtaoAvtaleGodkjentAvArbeidsgiver();
-        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(671, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6263));
+        List<Integer> forventedeBelop = Arrays.asList(671, 6808, 6808, 6808, 6808, 6808, null, null, null, null, null, null, null);
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(forventedeBelop);
         avtale.opphevGodkjenningerSomVeileder();
         EndreAvtale endreAvtale = new EndreAvtale();
         endreAvtale.setOppfolging("Telefon hver uke");
@@ -428,7 +430,8 @@ public class AvtaleTest {
 
         final int FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE = 13;
         assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList().size()).isEqualTo(FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE);
-        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(List.of(671, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6808, 6263));
+        List<Integer> forventedeBelopEtterEndring = Arrays.asList(671, 6808, 6808, 6808, 6808, 6808, null, null, null, null, null, null, null);
+        assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(forventedeBelopEtterEndring);
 
         double otpSats = 0.048;
         BigDecimal feriepengesats = new BigDecimal("0.166");

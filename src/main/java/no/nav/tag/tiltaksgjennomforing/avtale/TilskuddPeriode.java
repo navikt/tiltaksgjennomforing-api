@@ -34,7 +34,6 @@ import java.util.UUID;
 @Entity
 @Data
 @NoArgsConstructor
-@RequiredArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
@@ -49,7 +48,6 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     @ToString.Exclude
     private Avtale avtale;
 
-    @NonNull
     private Integer beløp;
     @NonNull
     private LocalDate startDato;
@@ -64,7 +62,6 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     private String enhet;
     private String enhetsnavn;
 
-    @NonNull
     private Integer lonnstilskuddProsent;
 
     @Enumerated(EnumType.STRING)
@@ -84,6 +81,19 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     private RefusjonStatus refusjonStatus = null;
 
     private boolean aktiv = true;
+
+    public TilskuddPeriode(Integer beløp, @NonNull LocalDate start, @NonNull LocalDate slutt) {
+        this.beløp = beløp;
+        this.startDato = start;
+        this.sluttDato = slutt;
+    }
+
+    public TilskuddPeriode(Integer beløp, @NonNull LocalDate start, @NonNull LocalDate slutt, Integer lonnstilskuddProsent) {
+        this.beløp = beløp;
+        this.startDato = start;
+        this.sluttDato = slutt;
+        this.lonnstilskuddProsent = lonnstilskuddProsent;
+    }
 
     public TilskuddPeriode deaktiverOgLagNyUbehandlet() {
         this.aktiv = false;
