@@ -12,6 +12,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -36,17 +39,16 @@ public class PabegynteAvtalerRyddejobb {
             return;
         }
 
-        List<AvtaleUtlopHandling> handlinger = avtaler.stream()
-            .map(AvtaleUtlopHandling::parse)
-            .toList();
+        Map<AvtaleUtlopHandling, List<Avtale>> avtaleHandling = avtaler.stream()
+            .collect(Collectors.groupingBy(AvtaleUtlopHandling::parse));
 
         if (!featureToggleService.isEnabled(FeatureToggle.PABEGYNT_AVTALE_RYDDE_JOBB)) {
             log.info(
                 "Ryddejobben er skrudd av! Om den hadde vært på ville: " +
                 "{} avtale(r) utløpt, {} avtale(r) fått 24 timers varsel, {} avtale(r) fått 1 ukes varsel.",
-                handlinger.stream().filter(handling -> handling == AvtaleUtlopHandling.UTLOP).count(),
-                handlinger.stream().filter(handling -> handling == AvtaleUtlopHandling.VARSEL_24_TIMER).count(),
-                handlinger.stream().filter(handling -> handling == AvtaleUtlopHandling.VARSEL_EN_UKE).count()
+                Optional.ofNullable(avtaleHandling.get(AvtaleUtlopHandling.UTLOP)).map(List::size).orElse(0),
+                Optional.ofNullable(avtaleHandling.get(AvtaleUtlopHandling.VARSEL_24_TIMER)).map(List::size).orElse(0),
+                Optional.ofNullable(avtaleHandling.get(AvtaleUtlopHandling.VARSEL_EN_UKE)).map(List::size).orElse(0)
             );
             return;
         }
@@ -54,22 +56,22 @@ public class PabegynteAvtalerRyddejobb {
         log.info(
             "Rydder avtaler som er påbegynt eller mangler godkjenning: " +
             "{} avtale(r) utløper, {} avtale(r) får 24 timers varsel, {} avtale(r) får 1 ukes varsel.",
-            handlinger.stream().filter(handling -> handling == AvtaleUtlopHandling.UTLOP).count(),
-            handlinger.stream().filter(handling -> handling == AvtaleUtlopHandling.VARSEL_24_TIMER).count(),
-            handlinger.stream().filter(handling -> handling == AvtaleUtlopHandling.VARSEL_EN_UKE).count()
+            Optional.ofNullable(avtaleHandling.get(AvtaleUtlopHandling.UTLOP)).map(List::size).orElse(0),
+            Optional.ofNullable(avtaleHandling.get(AvtaleUtlopHandling.VARSEL_24_TIMER)).map(List::size).orElse(0),
+            Optional.ofNullable(avtaleHandling.get(AvtaleUtlopHandling.VARSEL_EN_UKE)).map(List::size).orElse(0)
         );
 
-        avtaler.forEach(avtale -> {
-            switch (AvtaleUtlopHandling.parse(avtale)) {
-                case VARSEL_EN_UKE -> {
+        avtaleHandling.forEach((key, value) -> {
+            switch (key) {
+                case VARSEL_EN_UKE -> value.forEach(avtale -> {
                     avtale.utlop(AvtaleUtlopHandling.VARSEL_EN_UKE);
                     avtaleRepository.save(avtale);
-                }
-                case VARSEL_24_TIMER -> {
+                });
+                case VARSEL_24_TIMER -> value.forEach(avtale -> {
                     avtale.utlop(AvtaleUtlopHandling.VARSEL_24_TIMER);
                     avtaleRepository.save(avtale);
-                }
-                case UTLOP -> {
+                });
+                case UTLOP -> value.forEach(avtale -> {
                     log.info(
                         "Utløper avtale {} med status {} som sist var endret {}",
                         avtale.getId(),
@@ -78,7 +80,7 @@ public class PabegynteAvtalerRyddejobb {
                     );
                     avtale.utlop(AvtaleUtlopHandling.UTLOP);
                     avtaleRepository.save(avtale);
-                }
+                });
             }
         });
     }
