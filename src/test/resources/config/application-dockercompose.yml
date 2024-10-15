@@ -59,7 +59,7 @@ tiltaksgjennomforing:
     altinnApiKey: foo
     apiGwApiKey: foo
     vtaoServiceCode: 5516
-    vtaoServiceEdition: 5 # TODO: Finn riktig service edition
+    vtaoServiceEdition: 5
     vtaoAktiv: true
   ereg:
     uri: http://localhost:8090/ereg
