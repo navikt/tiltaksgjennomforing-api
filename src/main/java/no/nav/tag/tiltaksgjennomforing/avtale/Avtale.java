@@ -1468,13 +1468,4 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         return this.lonnstilskuddAvtaleBeregningStrategy.updateAndGet(strategy -> strategy == null ? TilskuddsperioderBeregningStrategyFactory.create(tiltakstype) : strategy);
     }
 
-    public void setKvalifiseringsgruppe(Kvalifiseringsgruppe kvalifiseringsgruppe) {
-        if(this.kvalifiseringsgruppe  != null && Set.of(Status.GJENNOMFØRES,Status.PÅBEGYNT, Status.KLAR_FOR_OPPSTART).contains(statusSomEnum())) return;
-        this.kvalifiseringsgruppe = kvalifiseringsgruppe;
-    }
-
-    public void setFormidlingsgruppe(Formidlingsgruppe formidlingsgruppe) {
-        if(this.formidlingsgruppe != null && Set.of(Status.GJENNOMFØRES,Status.PÅBEGYNT, Status.KLAR_FOR_OPPSTART).contains(statusSomEnum())) return;
-        this.formidlingsgruppe = formidlingsgruppe;
-    }
 }
