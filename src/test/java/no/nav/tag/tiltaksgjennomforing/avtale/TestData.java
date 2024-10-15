@@ -468,11 +468,6 @@ public class TestData {
         return avtale;
     }
 
-    public static Avtale enVTAOAvtale() {
-        NavIdent veilederNavIdent = new NavIdent("Z123456");
-        return Avtale.opprett(lagOpprettMentorAvtale(Tiltakstype.VTAO), Avtaleopphav.VEILEDER, veilederNavIdent);
-    }
-
     public static Avtale enVtaoAvtaleGodkjentAvArbeidsgiver() {
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
         setOppfølgingPåAvtale(avtale);
@@ -484,14 +479,6 @@ public class TestData {
     }
 
     public static Avtale enVtaoAvtaleIKKEGodkjentAvArbeidsgiver() {
-        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO),Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
-        setOppfølgingPåAvtale(avtale);
-        EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
-        return avtale;
-    }
-
-    public static Avtale enVtaoAvtaleMedFeilInnsatsbehov() {
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO),Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
         setOppfølgingPåAvtale(avtale);
         EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
@@ -707,7 +694,6 @@ public class TestData {
     public static Mentor enMentor(Avtale avtale) {
         return new Mentor(avtale.getMentorFnr());
     }
-
 
     public static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
         return new Arbeidsgiver(
