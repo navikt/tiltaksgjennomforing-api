@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -71,8 +70,6 @@ public class AvtaleControllerTest {
     private PersondataService persondataService;
     @MockBean
     private KontoregisterService kontoregisterService;
-    @MockBean
-    private AuditConsoleLogger auditConsoleLogger;
 
     private Pageable pageable = PageRequest.of(0, 100);
 
@@ -616,7 +613,7 @@ public class AvtaleControllerTest {
         ).isInstanceOf(KontoregisterFeilException.class);
     }
     @Test
-    public void at_bare_oppfølgingsenhet_blit_oppdatert() {
+    public void oppdaterOppfølgingsEnhet__bare_oppfølgingsenhet_blir_oppdatert() {
         // GITT
         Avtale avtale = TestData.enVtaoAvtaleGodkjentAvArbeidsgiver();
         værInnloggetSom(
