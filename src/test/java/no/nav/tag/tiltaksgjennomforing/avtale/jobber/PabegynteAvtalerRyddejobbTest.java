@@ -144,7 +144,7 @@ class PabegynteAvtalerRyddejobbTest {
     }
 
     @Test
-    void skal_utlope_gamle_avtaler_etter_28_novemebr() {
+    void skal_utlope_gamle_avtaler_etter_28_novemeber() {
         Now.fixedDate(LocalDate.of(2024, 11, 29));
 
         Avtale skalUtlope1 = mockAvtale(LocalDateTime.of(1989, 10, 8, 12, 0));
