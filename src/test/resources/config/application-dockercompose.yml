@@ -1,6 +1,8 @@
 spring:
   datasource:
     url: "jdbc:postgresql://localhost:6432/sample?user=sample&password=sample"
+  flyway:
+    locations: classpath:db/migration,classpath:db/callbacks/local
   kafka:
     bootstrap-servers: localhost:9092
     security:
@@ -58,9 +60,6 @@ tiltaksgjennomforing:
     arbtreningServiceEdition: 1
     altinnApiKey: foo
     apiGwApiKey: foo
-    vtaoServiceCode: 5516
-    vtaoServiceEdition: 5 # TODO: Finn riktig service edition
-    vtaoAktiv: true
   ereg:
     uri: http://localhost:8090/ereg
   sts:
@@ -92,7 +91,7 @@ tiltaksgjennomforing:
   avtale-hendelse-melding:
     fixed-delay: 120
   tilskuddsperioder:
-    tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, VTAO
+    tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD
 
 no.nav.security.jwt:
   issuer:
