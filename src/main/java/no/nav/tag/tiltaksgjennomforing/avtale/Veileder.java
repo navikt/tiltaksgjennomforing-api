@@ -211,7 +211,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
-        if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB && avtale.getTiltakstype() != Tiltakstype.VTAO) {
+        if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB && avtale.getTiltakstype() != Tiltakstype.VTAO) { //TODO: VTAO ???
             veilarbArenaClient.sjekkOppfølgingStatus(avtale);
         }
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
@@ -424,7 +424,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         avtale.endreInkluderingstilskudd(endreInkluderingstilskudd, getIdentifikator());
     }
 
-    //TODO: DEN SJEKKER IKKE OPPFØLGNINGSSTATUS
     public void forkortAvtale(Avtale avtale, LocalDate sluttDato, String grunn, String annetGrunn) {
         super.sjekkTilgang(avtale);
         avtale.forkortAvtale(sluttDato, grunn, annetGrunn, getIdentifikator());

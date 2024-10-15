@@ -26,9 +26,7 @@ public class VeilederTest {
 
     @Test
     public void forlengAvtale__hvor_det_returneres_ny_uyldig_innsatsbehov_for_VTAO_skal_kaste_exception_ugyldig_VTAO_innsatsbehov(){
-            Avtale avtale = TestData.enVtaoAvtaleGodkjentAvArbeidsgiver();
-
-
+        Avtale avtale = TestData.enVtaoAvtaleGodkjentAvArbeidsgiver();
         VeilarbArenaClient veilarbArenaClient = Mockito.spy(new VeilarbArenaClient(null, null));
         Mockito.doReturn(new Oppfølgingsstatus(
                 Formidlingsgruppe.ARBEIDSSOKER,
@@ -41,7 +39,8 @@ public class VeilederTest {
         avtale.godkjennForVeileder(veileder.getNavIdent());
         assertThatThrownBy(() -> veileder.forlengAvtale(avtale.getGjeldendeInnhold().getSluttDato().plusMonths(2),avtale))
                 .isExactlyInstanceOf(FeilkodeException.class)
-                .hasMessage(Feilkode.KVALIFISERINGSGRUPPE_VTAO_FEIL.name()); }
+                .hasMessage(Feilkode.KVALIFISERINGSGRUPPE_VTAO_FEIL.name());
+    }
 
     @Test
     public void godkjennAvtale__kan_ikke_godkjenne_foerst() {
