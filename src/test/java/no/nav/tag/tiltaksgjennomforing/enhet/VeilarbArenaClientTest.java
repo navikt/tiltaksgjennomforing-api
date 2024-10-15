@@ -44,7 +44,6 @@ class VeilarbArenaClientTest {
         assertThat(oppfølgingsEnhet2).isNotEmpty();
     }
 
-    // TODO: INNSATS BEHOV endres under endre avtale (forlenge/forkorte) den skal ikke endre innsatsbehovet selvom innsatsbehovet er endret etter opprettelse av avtale.
     @Test
     public void sjekkAt_kvalifiseringsgruppe_som_faller_utenfor_kaster_exception_for_VTAO() {
         String fnr_har_kvalifiseringsgruppe_med_kode_IVURD = "30109316144";
@@ -57,7 +56,7 @@ class VeilarbArenaClientTest {
     }
 
     @Test
-    public void sjekkAt_kvalifiseringsgruppe_som_faller_utenfor_kaster_ikke_exception_for_VTAO() {
+    public void sjekkAt_riktig_kvalifiseringsgruppe_kaster_ikke_exception_for_VTAO() {
         String fnr_har_kvalifiseringsgruppe_med_kode_IVURD = "13016505786";
         final Avtale avtale = TestData.enAvtale(Tiltakstype.VTAO);
         avtale.setDeltakerFnr(new Fnr(fnr_har_kvalifiseringsgruppe_med_kode_IVURD));
@@ -88,7 +87,6 @@ class VeilarbArenaClientTest {
         assertThat(oppfølgingsstatus.getOppfolgingsenhet()).isEqualTo(("0906"));
     }
 
-    //TODO: SKal ikke endre Kvalifiseringsgruppe om avtalen er inngått/gjennomføres/klar til start
     @Test
     public void sjekk_at_lonnstilskuddsprosent_blir_satt_paa_midlertidiglonnstilskudd_ved_AvtaleInnhold_constructor() {
         final Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
