@@ -429,7 +429,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         avtale.forkortAvtale(sluttDato, grunn, annetGrunn, getIdentifikator());
     }
 
-    // TODO: VTAO TEST MEG - Skal sjekke og kaste en feil om det er feil kvalifiseringsgruppe for VTAO avtale til deltaker......
     public void forlengAvtale(LocalDate sluttDato, Avtale avtale) {
         super.sjekkTilgang(avtale);
         sjekkOgHentOppfølgingStatus(avtale, veilarbArenaClient);
