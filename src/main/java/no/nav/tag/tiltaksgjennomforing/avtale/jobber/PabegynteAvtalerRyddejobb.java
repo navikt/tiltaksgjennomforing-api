@@ -74,17 +74,17 @@ public class PabegynteAvtalerRyddejobb {
             Optional.ofNullable(avtaleHandling.get(AvtaleUtlopHandling.VARSEL_EN_UKE)).map(List::size).orElse(0)
         );
 
-        avtaleHandling.forEach((key, value) -> {
-            switch (key) {
-                case VARSEL_EN_UKE -> value.forEach(avtale -> {
+        avtaleHandling.forEach((handling, avtaleliste) -> {
+            switch (handling) {
+                case VARSEL_EN_UKE -> avtaleliste.forEach(avtale -> {
                     avtale.utlop(AvtaleUtlopHandling.VARSEL_EN_UKE);
                     avtaleRepository.save(avtale);
                 });
-                case VARSEL_24_TIMER -> value.forEach(avtale -> {
+                case VARSEL_24_TIMER -> avtaleliste.forEach(avtale -> {
                     avtale.utlop(AvtaleUtlopHandling.VARSEL_24_TIMER);
                     avtaleRepository.save(avtale);
                 });
-                case UTLOP -> value.forEach(avtale -> {
+                case UTLOP -> avtaleliste.forEach(avtale -> {
                     log.info(
                         "Utløper avtale {} med status {} som sist var endret {}",
                         avtale.getId(),

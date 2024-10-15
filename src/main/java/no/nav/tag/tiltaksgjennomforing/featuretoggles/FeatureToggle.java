@@ -7,7 +7,7 @@ public enum FeatureToggle {
     SMS_TIL_MOBILNUMMER("sms-til-mobilnummer"),
     ARENA_AVTALE_SYNC("arena-avtale-sync"),
     ARBEIDSTRENING_READONLY("arbeidstreningReadonly"),
-    PABEGYNT_AVTALE_RYDDE_JOBB("pabegynt-avtale-rydde-jobb"),;
+    PABEGYNT_AVTALE_RYDDE_JOBB("pabegyntAvtaleRyddeJobb"),;
 
     private String toggleNavn;
 

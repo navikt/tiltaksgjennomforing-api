@@ -30,7 +30,7 @@ public class AvtaleHendelseLytter {
     @EventListener
     public void avtaleOpprettetAvArena(AvtaleOpprettetAvArena event) {
         Avtale avtale = event.getAvtale();
-        lagHendelse(avtale, HendelseType.OPPRETTET_AV_ARENA, Identifikator.SYSTEM, AvtaleHendelseUtførtAvRolle.SYSTEM);
+        lagHendelse(avtale, HendelseType.OPPRETTET_AV_ARENA, Identifikator.ARENA, AvtaleHendelseUtførtAvRolle.SYSTEM);
     }
 
     @EventListener
