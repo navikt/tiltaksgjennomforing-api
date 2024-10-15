@@ -424,14 +424,16 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         avtale.endreInkluderingstilskudd(endreInkluderingstilskudd, getIdentifikator());
     }
 
+    //TODO: DEN SJEKKER IKKE OPPFØLGNINGSSTATUS
     public void forkortAvtale(Avtale avtale, LocalDate sluttDato, String grunn, String annetGrunn) {
         super.sjekkTilgang(avtale);
         avtale.forkortAvtale(sluttDato, grunn, annetGrunn, getIdentifikator());
     }
 
+    // TODO: VTAO TEST MEG - Skal sjekke og kaste en feil om det er feil kvalifiseringsgruppe for VTAO avtale til deltaker......
     public void forlengAvtale(LocalDate sluttDato, Avtale avtale) {
         super.sjekkTilgang(avtale);
-        sjekkOgHentOppfølgingStatus(avtale, veilarbArenaClient); // TODO: SKAL DENNE KALLES UNDER FORLENGING?
+        sjekkOgHentOppfølgingStatus(avtale, veilarbArenaClient);
         avtale.forlengAvtale(sluttDato, getIdentifikator());
     }
 
