@@ -7,14 +7,19 @@ import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleUtlopHandling;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleUtlopHandling.START_DATO_FOR_RYDDING;
 
 @Slf4j
 @Component
@@ -51,6 +56,14 @@ public class PabegynteAvtalerRyddejobb {
                 Optional.ofNullable(avtaleHandling.get(AvtaleUtlopHandling.VARSEL_EN_UKE)).map(List::size).orElse(0)
             );
             return;
+        }
+
+        if (START_DATO_FOR_RYDDING.isAfter(Now.instant())) {
+            log.info(
+                "Det står {} avtaler i kø til å utløpe {}.",
+                avtaler.stream().map(AvtaleUtlopHandling::parseDangerously).filter(AvtaleUtlopHandling.UTLOP::equals).count(),
+                START_DATO_FOR_RYDDING.atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_LOCAL_DATE)
+            );
         }
 
         log.info(
