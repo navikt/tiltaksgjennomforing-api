@@ -349,6 +349,17 @@ public class VtaoTest {
                 .size());
     }
 
+    @Test
+    public void måBesluttesForåGodkjennes() {
+        Avtale avtale = TestData.enVtaoAvtaleGodkjentAvArbeidsgiver();
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(null);
+        var navIdent = avtale.getVeilederNavIdent();
+        GodkjentPaVegneGrunn godkjentPaVegneGrunn = new GodkjentPaVegneGrunn();
+        godkjentPaVegneGrunn.setDigitalKompetanse(true);
+        avtale.godkjennForVeilederOgDeltaker(navIdent, godkjentPaVegneGrunn);
+        assertEquals(avtale.status(), Status.MANGLER_GODKJENNING.getBeskrivelse());
+    }
+
     private void værInnloggetSom(Avtalepart<?> avtalepart) {
         lenient().when(innloggingService.hentAvtalepart(any())).thenReturn(avtalepart);
         if (avtalepart instanceof Veileder veileder) {
