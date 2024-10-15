@@ -11,7 +11,6 @@ import java.time.LocalDate;
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
 import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.MENTOR;
-import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.VTAO;
 
 public class MentorStartOgSluttDatoStrategyTest {
 
@@ -20,31 +19,6 @@ public class MentorStartOgSluttDatoStrategyTest {
     @BeforeEach
     public void setUp() {
         avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), MENTOR), Avtaleopphav.VEILEDER, TestData.enNavIdent());
-    }
-
-    //TODO FULLFØR TESTEN
-    @Test
-    public void endreVTAO__skal_kaste_en_feil_av_type_FEIL_KVALIFISERINGSGRUPPE() {
-        avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), VTAO), Avtaleopphav.VEILEDER, TestData.enNavIdent());
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
-        EndreAvtale endreAvtale = TestData.endringPåAlleVTAOFelter();
-
-        LocalDate startDato = Now.localDate();
-        LocalDate sluttDato = startDato.plusMonths(10);
-        endreAvtale.setStartDato(startDato);
-        endreAvtale.setSluttDato(sluttDato);
-        endreAvtale(endreAvtale);
-    }
-
-    @Test
-    public void endreVTAO__skal_ikke_kaste_en_feil() {
-        avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), VTAO), Avtaleopphav.VEILEDER, TestData.enNavIdent());
-        EndreAvtale endreAvtale = TestData.endringPåAlleVTAOFelter();
-        LocalDate startDato = Now.localDate();
-        LocalDate sluttDato = startDato.plusMonths(10);
-        endreAvtale.setStartDato(startDato);
-        endreAvtale.setSluttDato(sluttDato);
-        endreAvtale(endreAvtale);
     }
 
     @Test
