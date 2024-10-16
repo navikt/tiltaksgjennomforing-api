@@ -7,6 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleUtlopHandling;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
+import no.nav.tag.tiltaksgjennomforing.leader.LeaderPodCheck;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -23,21 +24,28 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleUtlopHandling.START_D
 
 @Slf4j
 @Component
-@Profile({ Miljø.LOCAL, Miljø.DEV_FSS, Miljø.PROD_FSS })
+@Profile({ Miljø.DEV_FSS, Miljø.PROD_FSS })
 public class PabegynteAvtalerRyddejobb {
-    private final FeatureToggleService featureToggleService;
     private final AvtaleRepository avtaleRepository;
+    private final FeatureToggleService featureToggleService;
+    private final LeaderPodCheck leaderPodCheck;
 
     public PabegynteAvtalerRyddejobb(
+        AvtaleRepository avtaleRepository,
         FeatureToggleService featureToggleService,
-        AvtaleRepository avtaleRepository
+        LeaderPodCheck leaderPodCheck
     ) {
         this.featureToggleService = featureToggleService;
         this.avtaleRepository = avtaleRepository;
+        this.leaderPodCheck = leaderPodCheck;
     }
 
     @Scheduled(cron = "0 0 0 * * *")
     public void run() {
+        if (!leaderPodCheck.isLeaderPod()) {
+            return;
+        }
+
         List<Avtale> avtaler = avtaleRepository.findAvtalerSomErPabegyntEllerManglerGodkjenning();
 
         if (avtaler.isEmpty()) {
