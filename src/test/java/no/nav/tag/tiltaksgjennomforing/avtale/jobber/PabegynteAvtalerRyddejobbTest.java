@@ -5,6 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleUtlopHandling;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
+import no.nav.tag.tiltaksgjennomforing.leader.LeaderPodCheck;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,15 +28,20 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PabegynteAvtalerRyddejobbTest {
+
     @Mock
     private AvtaleRepository avtaleRepository;
 
     @Mock
     private FeatureToggleService featureToggleService;
 
+    @Mock
+    private LeaderPodCheck leaderPodCheck;
+
     @BeforeEach
     void beforeEach() {
         when(featureToggleService.isEnabled(FeatureToggle.PABEGYNT_AVTALE_RYDDE_JOBB)).thenReturn(true);
+        when(leaderPodCheck.isLeaderPod()).thenReturn(true);
     }
 
     @AfterEach
@@ -59,7 +65,11 @@ class PabegynteAvtalerRyddejobbTest {
 
         when(avtaleRepository.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(avtaler);
 
-        PabegynteAvtalerRyddejobb påbegynteAvtalerRyddejobb = new PabegynteAvtalerRyddejobb(featureToggleService, avtaleRepository);
+        PabegynteAvtalerRyddejobb påbegynteAvtalerRyddejobb = new PabegynteAvtalerRyddejobb(
+            avtaleRepository,
+            featureToggleService,
+            leaderPodCheck
+        );
         påbegynteAvtalerRyddejobb.run();
 
         verify(avtaleRepository, times(0)).save(any());
@@ -99,7 +109,11 @@ class PabegynteAvtalerRyddejobbTest {
 
         when(avtaleRepository.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(avtaler);
 
-        PabegynteAvtalerRyddejobb påbegynteAvtalerRyddejobb = new PabegynteAvtalerRyddejobb(featureToggleService, avtaleRepository);
+        PabegynteAvtalerRyddejobb påbegynteAvtalerRyddejobb = new PabegynteAvtalerRyddejobb(
+            avtaleRepository,
+            featureToggleService,
+            leaderPodCheck
+        );
         påbegynteAvtalerRyddejobb.run();
 
         verify(skalVarsle1, times(1)).utlop(AvtaleUtlopHandling.VARSEL_EN_UKE);
@@ -132,7 +146,11 @@ class PabegynteAvtalerRyddejobbTest {
 
         when(avtaleRepository.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(avtaler);
 
-        PabegynteAvtalerRyddejobb påbegynteAvtalerRyddejobb = new PabegynteAvtalerRyddejobb(featureToggleService, avtaleRepository);
+        PabegynteAvtalerRyddejobb påbegynteAvtalerRyddejobb = new PabegynteAvtalerRyddejobb(
+            avtaleRepository,
+            featureToggleService,
+            leaderPodCheck
+        );
         påbegynteAvtalerRyddejobb.run();
 
         verify(skalVarsle1, times(1)).utlop(AvtaleUtlopHandling.VARSEL_24_TIMER);
@@ -165,7 +183,11 @@ class PabegynteAvtalerRyddejobbTest {
 
         when(avtaleRepository.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(avtaler);
 
-        PabegynteAvtalerRyddejobb påbegynteAvtalerRyddejobb = new PabegynteAvtalerRyddejobb(featureToggleService, avtaleRepository);
+        PabegynteAvtalerRyddejobb påbegynteAvtalerRyddejobb = new PabegynteAvtalerRyddejobb(
+            avtaleRepository,
+            featureToggleService,
+            leaderPodCheck
+        );
         påbegynteAvtalerRyddejobb.run();
 
         verify(skalUtlope1, times(1)).utlop(AvtaleUtlopHandling.UTLOP);
@@ -202,7 +224,11 @@ class PabegynteAvtalerRyddejobbTest {
 
         when(avtaleRepository.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(avtaler);
 
-        PabegynteAvtalerRyddejobb påbegynteAvtalerRyddejobb = new PabegynteAvtalerRyddejobb(featureToggleService, avtaleRepository);
+        PabegynteAvtalerRyddejobb påbegynteAvtalerRyddejobb = new PabegynteAvtalerRyddejobb(
+            avtaleRepository,
+            featureToggleService,
+            leaderPodCheck
+        );
         påbegynteAvtalerRyddejobb.run();
 
         verify(skalUtlope, times(1)).utlop(AvtaleUtlopHandling.UTLOP);
