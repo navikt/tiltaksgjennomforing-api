@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 import static java.lang.String.format;
 
-class AvtaleApiTestUtil {
+public class AvtaleApiTestUtil {
 
     private static String tokenRequest(String url) {
         try {
@@ -40,7 +40,7 @@ class AvtaleApiTestUtil {
         return tokenRequest(format("https://tiltak-fakelogin.ekstern.dev.nav.no/token?pid=%s&aud=fake-tokenx&iss=tokenx&acr=Level4", fnr.asString()));
     }
 
-    static String lagTokenForNavIdent(NavIdent navIdent) {
+    public static String lagTokenForNavIdent(NavIdent navIdent) {
         return tokenRequest(format("https://tiltak-fakelogin.ekstern.dev.nav.no/token?NAVident=%s&aud=fake-aad&iss=aad&acr=Level4", navIdent.asString()));
     }
 
