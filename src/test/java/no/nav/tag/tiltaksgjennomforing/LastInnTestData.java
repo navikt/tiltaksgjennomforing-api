@@ -73,6 +73,30 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         avtaleRepository.save(TestData.enAvtaleOpprettetAvArbeidsgiver(Tiltakstype.VARIG_LONNSTILSKUDD));
         avtaleRepository.save(TestData.enVarigLonnstilskuddAvtaleMedBehandletIArenaPerioder());
         avtaleRepository.save(TestData.enVtaoAvtaleGodkjentAvArbeidsgiver());
+
+        Now.fixedDate(LocalDate.of(2024, 10, 1));
+        avtaleRepository.save(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
+        Now.resetClock();
+
+        Now.fixedDate(LocalDate.of(2024, 7, 23));
+        avtaleRepository.save(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
+        Now.resetClock();
+
+        Now.fixedDate(LocalDate.of(2024, 9, 6));
+        avtaleRepository.save(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
+        Now.resetClock();
+
+        Now.fixedDate(LocalDate.of(2024, 9, 5));
+        avtaleRepository.save(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
+        Now.resetClock();
+
+        Now.fixedDate(LocalDate.of(2024, 9, 4));
+        avtaleRepository.save(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
+        Now.resetClock();
+
+        Now.fixedDate(LocalDate.of(2024, 9, 3));
+        avtaleRepository.save(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
+        Now.resetClock();
     }
 
     private boolean isLastInnTestdata() {

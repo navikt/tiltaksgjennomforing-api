@@ -7,6 +7,9 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public class Identifikator {
+    public static final Identifikator ARENA = new Identifikator("Arena");
+    public static final Identifikator SYSTEM = new Identifikator("System");
+
     private final String verdi;
 
     public Identifikator(String verdi) {
