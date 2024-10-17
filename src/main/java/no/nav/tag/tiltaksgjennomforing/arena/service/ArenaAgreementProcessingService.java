@@ -144,7 +144,7 @@ public class ArenaAgreementProcessingService {
         ArenaMigrationAction action = ArenaMigrationAction.map(avtale, agreementAggregate);
 
         switch (action) {
-            case CREATE -> {
+            case OPPRETT -> {
                 log.info(
                     "Avtale med id {} har tiltakstatus {} og deltakerstatus {} i Arena, " +
                     "men er satt som feilregistrert eller annullert med status 'ANNET' hos oss. " +
@@ -155,7 +155,7 @@ public class ArenaAgreementProcessingService {
                 );
                 return createAvtale(agreementAggregate);
             }
-            case UPDATE, END, TERMINATE -> {
+            case OPPDATER, AVSLUTT, ANNULLER -> {
                 EndreAvtaleArena endreAvtale = EndreAvtaleArena.builder()
                     .startdato(agreementAggregate.findStartdato().orElse(null))
                     .sluttdato(agreementAggregate.findSluttdato().orElse(null))
@@ -170,8 +170,8 @@ public class ArenaAgreementProcessingService {
                     agreementAggregate.getTiltakstatuskode(),
                     agreementAggregate.getDeltakerstatuskode(),
                     switch (action) {
-                        case END -> "Avtalen avsluttes/forkortes";
-                        case TERMINATE -> "Annullerer avtalen";
+                        case AVSLUTT -> "Avtalen avsluttes/forkortes";
+                        case ANNULLER -> "Annullerer avtalen";
                         default -> "Oppdaterer avtalen";
                     }
                 );
@@ -186,7 +186,7 @@ public class ArenaAgreementProcessingService {
     private ArenaMigrationProcessResult createAvtale(ArenaAgreementAggregate agreementAggregate) {
         ArenaMigrationAction action = ArenaMigrationAction.map(agreementAggregate);
 
-        if (ArenaMigrationAction.IGNORE == action) {
+        if (ArenaMigrationAction.IGNORER == action) {
             log.info(
                 "Avtale har tiltaksstatus {}, deltakerstatus {} og sluttdato {} i Arena. Ignorerer avtalen.",
                 agreementAggregate.getTiltakstatuskode(),

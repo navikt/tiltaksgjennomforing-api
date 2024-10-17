@@ -8,12 +8,12 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import java.time.LocalDate;
 
 public enum ArenaMigrationAction {
-    CREATE,
-    UPDATE,
-    IGNORE,
-    TERMINATE,
+    OPPRETT,
+    OPPDATER,
+    IGNORER,
+    ANNULLER,
     TBD,
-    END;
+    AVSLUTT;
 
     public static ArenaMigrationAction map(ArenaAgreementAggregate agreementAggregate) {
         Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
@@ -21,8 +21,8 @@ public enum ArenaMigrationAction {
             .map(sluttdato -> sluttdato.isAfter(LocalDate.now())).orElse(false);
 
         return switch (deltakerstatuskode) {
-            case GJENN, TILBUD -> isSluttdatoInTheFuture ? CREATE : IGNORE;
-            default -> IGNORE;
+            case GJENN, TILBUD -> isSluttdatoInTheFuture ? OPPRETT : IGNORER;
+            default -> IGNORER;
         };
     }
 
@@ -33,62 +33,40 @@ public enum ArenaMigrationAction {
         Status avtalestatus = avtale.statusSomEnum();
         Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
         Tiltakstatuskode tiltakstatuskode = agreementAggregate.getTiltakstatuskode();
-        boolean isSluttdatoInTheFuture = agreementAggregate.findSluttdato()
+        boolean isFeilregistrert = avtale.isFeilregistrert();
+        boolean isSluttdatoIFremtiden = agreementAggregate.findSluttdato()
             .map(sluttdato -> sluttdato.isAfter(LocalDate.now())).orElse(false);
 
         return switch (avtalestatus) {
-            case ANNULLERT ->
-                switch (tiltakstatuskode) {
-                    case AVSLUTT -> switch (deltakerstatuskode) {
-                        case GJENN -> isSluttdatoInTheFuture ? TBD : IGNORE;
-                        default -> IGNORE;
-                    };
-                    case GJENNOMFOR -> switch (deltakerstatuskode) {
-                        case AKTUELL -> isSluttdatoInTheFuture ? TBD : IGNORE;
-                        case GJENN -> TBD;
-                        default -> IGNORE;
-                    };
-                    default -> IGNORE;
-                };
-            case AVSLUTTET -> switch (tiltakstatuskode) {
-                case AVBRUTT -> switch(deltakerstatuskode) {
-                    case TILBUD -> isSluttdatoInTheFuture ? IGNORE : TBD;
-                    default -> IGNORE;
-                };
-                case AVSLUTT -> switch(deltakerstatuskode) {
-                    case GJENN -> isSluttdatoInTheFuture ? TBD : IGNORE;
-                    default -> IGNORE;
-                };
-                case GJENNOMFOR -> switch(deltakerstatuskode) {
-                    case GJENN -> isSluttdatoInTheFuture ? UPDATE : TBD;
-                    default -> IGNORE;
-                };
-                default -> IGNORE;
+            case ANNULLERT, AVBRUTT -> switch (deltakerstatuskode) {
+                case GJENN, TILBUD -> isSluttdatoIFremtiden ? (isFeilregistrert ? OPPRETT : OPPDATER) : IGNORER;
+                default -> IGNORER;
+            };
+            case AVSLUTTET -> switch (deltakerstatuskode) {
+                case GJENN, TILBUD -> isSluttdatoIFremtiden ? OPPDATER : IGNORER;
+                default -> IGNORER;
+            };
+            case KLAR_FOR_OPPSTART -> switch(deltakerstatuskode) {
+                case GJENN, TILBUD -> OPPDATER;
+                default -> ANNULLER;
             };
             case GJENNOMFØRES -> switch (tiltakstatuskode) {
                 case AVBRUTT -> switch(deltakerstatuskode) {
-                    case AKTUELL -> TBD;
-                    case GJENN_AVB -> END;
-                    default -> TERMINATE;
+                    case GJENN_AVB -> AVSLUTT;
+                    default -> ANNULLER;
                 };
-                case AVLYST -> TERMINATE;
+                case AVLYST -> ANNULLER;
                 case AVSLUTT -> switch(deltakerstatuskode) {
-                    case FULLF, TILBUD -> END;
-                    case GJENN -> isSluttdatoInTheFuture ? TBD : END;
-                    default -> TERMINATE;
+                    case FULLF -> AVSLUTT;
+                    case GJENN, TILBUD -> isSluttdatoIFremtiden ? OPPDATER : AVSLUTT;
+                    default -> ANNULLER;
                 };
                 case GJENNOMFOR -> switch(deltakerstatuskode) {
-                    case AKTUELL -> TBD;
-                    case FULLF -> END;
-                    case GJENN, TILBUD -> UPDATE;
-                    case IKKAKTUELL, IKKEM -> TERMINATE;
-                    default -> TBD;
+                    case FULLF -> AVSLUTT;
+                    case GJENN, TILBUD -> OPPDATER;
+                    default -> ANNULLER;
                 };
                 default -> throw new IllegalStateException(formatExceptionMsg(tiltakstatuskode, deltakerstatuskode));
-            };
-            case KLAR_FOR_OPPSTART -> switch(deltakerstatuskode) {
-                case GJENN, TILBUD -> UPDATE;
-                default -> TBD;
             };
             default -> throw new IllegalStateException(formatExceptionMsg(tiltakstatuskode, deltakerstatuskode));
         };
