@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale.jobber;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleUtlopHandling;
+import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.leader.LeaderPodCheck;
@@ -14,6 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,6 +30,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 class PabegynteAvtalerRyddejobbTest {
 
     @Mock
@@ -237,9 +241,38 @@ class PabegynteAvtalerRyddejobbTest {
         verify(avtaleRepository, times(3)).save(any());
     }
 
+    @Test
+    void skal_bare_ta_avtaler_som_er_pabegynt_eller_mangler_godkjenning() {
+        Now.fixedDate(LocalDate.of(2025, 1, 1));
+
+        List<Avtale> avtaler = List.of(
+            mockAvtale(LocalDateTime.of(2024, 10, 8, 12, 0), Status.ANNULLERT),
+            mockAvtale(LocalDateTime.of(2024, 10, 7, 12, 0), Status.AVBRUTT),
+            mockAvtale(LocalDateTime.of(2024, 10, 6, 12, 0), Status.KLAR_FOR_OPPSTART),
+            mockAvtale(LocalDateTime.of(2024, 10, 5, 12, 0), Status.GJENNOMFØRES),
+            mockAvtale(LocalDateTime.of(2024, 10, 4, 12, 0), Status.AVSLUTTET)
+        );
+
+        when(avtaleRepository.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(avtaler);
+
+        PabegynteAvtalerRyddejobb påbegynteAvtalerRyddejobb = new PabegynteAvtalerRyddejobb(
+            avtaleRepository,
+            featureToggleService,
+            leaderPodCheck
+        );
+        påbegynteAvtalerRyddejobb.run();
+
+        verify(avtaleRepository, times(0)).save(any());
+    }
+
     private static Avtale mockAvtale(LocalDateTime sistEndret) {
+        return mockAvtale(sistEndret, Math.random() > 0.5 ? Status.PÅBEGYNT : Status.MANGLER_GODKJENNING);
+    }
+
+    private static Avtale mockAvtale(LocalDateTime sistEndret, Status status) {
         Avtale avtale = Mockito.mock(Avtale.class);
         when(avtale.getSistEndret()).thenReturn(ZonedDateTime.of(sistEndret, ZoneId.systemDefault()).toInstant());
+        when(avtale.statusSomEnum()).thenReturn(status);
         return avtale;
     }
 

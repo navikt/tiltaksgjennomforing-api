@@ -5,6 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleUtlopHandling;
+import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.leader.LeaderPodCheck;
@@ -26,6 +27,8 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleUtlopHandling.START_D
 @Component
 @Profile({ Miljø.DEV_FSS, Miljø.PROD_FSS })
 public class PabegynteAvtalerRyddejobb {
+    private List<Status> avtaleStatuserSomSkalRyddes = List.of(Status.PÅBEGYNT, Status.MANGLER_GODKJENNING);
+
     private final AvtaleRepository avtaleRepository;
     private final FeatureToggleService featureToggleService;
     private final LeaderPodCheck leaderPodCheck;
@@ -46,7 +49,9 @@ public class PabegynteAvtalerRyddejobb {
             return;
         }
 
-        List<Avtale> avtaler = avtaleRepository.findAvtalerSomErPabegyntEllerManglerGodkjenning();
+        List<Avtale> avtaler = avtaleRepository.findAvtalerSomErPabegyntEllerManglerGodkjenning().stream()
+            .filter(avtale -> avtaleStatuserSomSkalRyddes.contains(avtale.statusSomEnum()))
+            .toList();
 
         if (avtaler.isEmpty()) {
             return;
