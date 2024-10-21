@@ -4,8 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
-import no.nav.tag.tiltaksgjennomforing.enhet.*;
-import no.nav.tag.tiltaksgjennomforing.exceptions.*;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.data.domain.Page;
@@ -13,8 +20,11 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import static java.util.Map.entry;
 
@@ -23,13 +33,9 @@ import static java.util.Map.entry;
 @Data
 public abstract class Avtalepart<T extends Identifikator> {
     private final T identifikator;
-    static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd. MMMM yyyy");
 
-    public boolean harTilgang(Avtale avtale) {
-        if (avtale.isSlettemerket()) {
-            return false;
-        }
-        return harTilgangTilAvtale(avtale);
+    public boolean avtalenEksisterer(Avtale avtale) {
+        return !avtale.isFeilregistrert() && !avtale.isSlettemerket();
     }
 
     abstract boolean harTilgangTilAvtale(Avtale avtale);
@@ -42,8 +48,8 @@ public abstract class Avtalepart<T extends Identifikator> {
         Page<Avtale> avtaler = hentAlleAvtalerMedMuligTilgang(avtaleRepository, queryParametre, pageable);
 
         List<Avtale> avtalerMedTilgang = avtaler.getContent().stream()
-                .filter(avtale -> !avtale.isFeilregistrert())
-                .filter(this::harTilgang)
+                .filter(this::avtalenEksisterer)
+                .filter(this::harTilgangTilAvtale)
                 .toList();
 
         List<AvtaleMinimalListevisning> listMinimal = avtalerMedTilgang.stream().map(AvtaleMinimalListevisning::fromAvtale).toList();
@@ -62,8 +68,7 @@ public abstract class Avtalepart<T extends Identifikator> {
     }
 
     public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
-        Avtale avtale = avtaleRepository.findById(avtaleId)
-                .orElseThrow(RessursFinnesIkkeException::new);
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         sjekkTilgang(avtale);
         return avtale;
     }
@@ -85,8 +90,6 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     abstract boolean kanEndreAvtale();
 
-    public abstract boolean erGodkjentAvInnloggetBruker(Avtale avtale);
-
     abstract boolean kanOppheveGodkjenninger(Avtale avtale);
 
     abstract void opphevGodkjenningerSomAvtalepart(Avtale avtale);
@@ -98,7 +101,10 @@ public abstract class Avtalepart<T extends Identifikator> {
     }
 
     public void sjekkTilgang(Avtale avtale) {
-        if (!harTilgang(avtale)) {
+        if (!avtalenEksisterer(avtale)) {
+            throw new RessursFinnesIkkeException();
+        }
+        if (!harTilgangTilAvtale(avtale)) {
             throw new TilgangskontrollException("Ikke tilgang til avtale");
         }
     }

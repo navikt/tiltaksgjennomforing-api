@@ -197,11 +197,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     @Override
-    public boolean erGodkjentAvInnloggetBruker(Avtale avtale) {
-        return avtale.erGodkjentAvVeileder();
-    }
-
-    @Override
     boolean kanOppheveGodkjenninger(Avtale avtale) {
         return true;
     }
