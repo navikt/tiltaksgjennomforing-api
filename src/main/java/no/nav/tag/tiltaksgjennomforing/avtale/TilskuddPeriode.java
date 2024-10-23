@@ -167,6 +167,7 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
         setStatus(TilskuddPeriodeStatus.AVSLÅTT);
     }
 
+    @JsonProperty
     public boolean kanBehandles() {
         try {
             sjekkOmKanBehandles();
