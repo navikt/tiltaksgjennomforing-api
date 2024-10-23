@@ -437,11 +437,19 @@ public class VeilederTest {
     }
 
     @Test
-    public void slettemerket_ikke_tilgang_til_avtale() {
+    public void slettemerket_avtale_eksisterer_ikke() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setSlettemerket(true);
         Veileder veileder = TestData.enVeileder(avtale);
-        assertThat(veileder.harTilgang(avtale)).isFalse();
+        assertThat(veileder.avtalenEksisterer(avtale)).isFalse();
+    }
+
+    @Test
+    public void feilregistrerte_avtale_eksisterer_ikke() {
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setFeilregistrert(true);
+        Veileder veileder = TestData.enVeileder(avtale);
+        assertThat(veileder.avtalenEksisterer(avtale)).isFalse();
     }
 
     @Test

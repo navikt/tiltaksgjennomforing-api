@@ -733,7 +733,7 @@ public class AvtaleController {
 
     @PostMapping("/{avtaleId}/annuller")
     @Transactional
-    public void annuller(
+    public Avtale annuller(
             @PathVariable("avtaleId") UUID avtaleId,
             @RequestHeader(HttpHeaders.IF_UNMODIFIED_SINCE) Instant sistEndret,
             @RequestBody AnnullertInfo annullertInfo
@@ -744,6 +744,7 @@ public class AvtaleController {
                 .orElseThrow(RessursFinnesIkkeException::new);
         veileder.annullerAvtale(sistEndret, annullertInfo.getAnnullertGrunn(), avtale);
         avtaleRepository.save(avtale);
+        return avtale;
     }
 
     @PostMapping("/{avtaleId}/slettemerk")

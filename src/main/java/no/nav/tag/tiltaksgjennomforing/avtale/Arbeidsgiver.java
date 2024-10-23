@@ -101,11 +101,6 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     @Override
-    public boolean erGodkjentAvInnloggetBruker(Avtale avtale) {
-        return avtale.erGodkjentAvArbeidsgiver();
-    }
-
-    @Override
     boolean kanOppheveGodkjenninger(Avtale avtale) {
         return !avtale.erGodkjentAvVeileder();
     }
@@ -185,7 +180,8 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
     public List<Avtale> hentAvtalerForMinsideArbeidsgiver(AvtaleRepository avtaleRepository, BedriftNr bedriftNr) {
         return avtaleRepository.findAllByBedriftNrAndFeilregistrertIsFalse(bedriftNr).stream()
-                .filter(this::harTilgang)
+                .filter(this::avtalenEksisterer)
+                .filter(this::harTilgangTilAvtale)
                 .map(Arbeidsgiver::fjernAvbruttGrunn)
                 .map(Arbeidsgiver::fjernAnnullertGrunn)
                 .collect(Collectors.toList());
