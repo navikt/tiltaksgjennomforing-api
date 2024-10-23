@@ -5,15 +5,12 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvbruttAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndretAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortet;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlenget;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleGjenopprettet;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleLåstOpp;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiverErFordelt;
@@ -193,26 +190,8 @@ public class LagVarselFraAvtaleHendelser {
     }
 
     @EventListener
-    public void avbrutt(AvbruttAvVeileder event) {
-        VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.VEILEDER, event.getUtfortAv(), HendelseType.AVBRUTT);
-        varselRepository.saveAll(factory.alleParter());
-    }
-
-    @EventListener
     public void annullert(AnnullertAvVeileder event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.VEILEDER, event.getUtfortAv(), HendelseType.ANNULLERT);
-        varselRepository.saveAll(factory.alleParter());
-    }
-
-    @EventListener
-    public void låstOpp(AvtaleLåstOpp event) {
-        VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.VEILEDER, null, HendelseType.LÅST_OPP);
-        varselRepository.saveAll(factory.alleParter());
-    }
-
-    @EventListener
-    public void gjenopprettet(AvtaleGjenopprettet event) {
-        VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.VEILEDER, event.getUtfortAv(), HendelseType.GJENOPPRETTET);
         varselRepository.saveAll(factory.alleParter());
     }
 
