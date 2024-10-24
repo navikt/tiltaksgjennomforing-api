@@ -1,11 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.varsel;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avslagsårsak;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnholdRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
@@ -30,6 +32,7 @@ import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.ArbeidsgiverNotifikas
 import no.nav.tag.tiltaksgjennomforing.varsel.oppgave.LagGosysVarselLytter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -38,26 +41,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.EnumSet;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.AVTALE_FORDELT;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.AVTALE_FORLENGET;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.DELT_MED_ARBEIDSGIVER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.DELT_MED_DELTAKER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.DELT_MED_MENTOR;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.ENDRET;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.FJERNET_ETTERREGISTRERING;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.GODKJENT_AV_ARBEIDSGIVER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.GODKJENT_AV_DELTAKER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.GODKJENT_FOR_ETTERREGISTRERING;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.GODKJENT_PAA_VEGNE_AV;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.NY_VEILEDER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.OPPRETTET;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.OPPRETTET_AV_ARBEIDSGIVER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.STILLINGSBESKRIVELSE_ENDRET;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.TILSKUDDSBEREGNING_ENDRET;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.TILSKUDDSPERIODE_AVSLATT;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.TILSKUDDSPERIODE_GODKJENT;
+import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.*;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -67,6 +51,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LagVarselFraAvtaleHendelserTest {
     @Autowired
     AvtaleRepository avtaleRepository;
+    @Autowired
+    AvtaleService avtaleService;
     @Autowired
     AvtaleInnholdRepository avtaleInnholdRepository;
     @Autowired
@@ -79,6 +65,8 @@ class LagVarselFraAvtaleHendelserTest {
     AvtaleMeldingEntitetRepository avtaleMeldingEntitetRepository;
     @MockBean
     LagGosysVarselLytter lagGosysVarselLytter;
+    @MockBean
+    InnloggingService innloggingService;
     @Autowired
     VeilarbArenaClient veilarbArenaClient;
     @Autowired
@@ -265,9 +253,9 @@ class LagVarselFraAvtaleHendelserTest {
     void endre_tilskuddsberegning() {
         Avtale avtale = avtaleRepository.save(TestData.enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder());
         Veileder veileder = TestData.enVeileder(avtale);
+        Mockito.when(innloggingService.hentVeileder()).thenReturn(veileder);
 
-        veileder.endreTilskuddsberegning(TestData.enEndreTilskuddsberegning(), avtale);
-        avtaleRepository.save(avtale);
+        avtaleService.endreTilskuddsberegning(avtale.getId(), TestData.enEndreTilskuddsberegning(), false);
 
         assertHendelse(TILSKUDDSBEREGNING_ENDRET, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.VEILEDER, false);
         assertHendelse(TILSKUDDSBEREGNING_ENDRET, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);
