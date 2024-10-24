@@ -24,15 +24,13 @@ import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAvRolle;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.datavarehus.DvhMeldingEntitetRepository;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon.ArbeidsgiverNotifikasjonRepository;
-import no.nav.tag.tiltaksgjennomforing.varsel.oppgave.LagGosysVarselLytter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -77,10 +75,8 @@ class LagVarselFraAvtaleHendelserTest {
     DvhMeldingEntitetRepository dvhMeldingEntitetRepository;
     @Autowired
     AvtaleMeldingEntitetRepository avtaleMeldingEntitetRepository;
-    @MockBean
-    LagGosysVarselLytter lagGosysVarselLytter;
     @Autowired
-    VeilarbArenaClient veilarbArenaClient;
+    VeilarboppfolgingService veilarboppfolgingService;
     @Autowired
     SmsRepository smsRepository;
 

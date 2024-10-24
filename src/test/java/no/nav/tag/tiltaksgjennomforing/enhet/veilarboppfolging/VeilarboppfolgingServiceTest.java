@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.enhet;
+package no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -7,6 +7,8 @@ import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -23,24 +25,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SpringBootTest
 @ActiveProfiles({ Miljø.TEST, Miljø.WIREMOCK })
 @DirtiesContext
-class VeilarbArenaClientTest {
+class VeilarboppfolgingServiceTest {
 
     @Autowired
-    private VeilarbArenaClient veilarbArenaClient;
-
-    @Test
-    public void hent_oppfølingsEnhet_fra_arena() {
-        String oppfølgingsEnhet = veilarbArenaClient.hentOppfølgingsEnhet("22095923112");
-        assertThat(oppfølgingsEnhet).isEqualTo("0906");
-    }
-
-    @Test
-    public void finner_ikke_oppfølingsEnhet_for_fnr() {
-        String oppfølgingsEnhet = veilarbArenaClient.hentOppfølgingsEnhet("33333333333");
-        assertThat(oppfølgingsEnhet).isNull();
-        String oppfølgingsEnhet2 = veilarbArenaClient.hentOppfølgingsEnhet("11111111111");
-        assertThat(oppfølgingsEnhet2).isNotEmpty();
-    }
+    private VeilarboppfolgingService veilarboppfolgingService;
 
     @Test
     public void sjekkAt_kvalifiseringsgruppe_som_faller_utenfor_kaster_exception() {
@@ -49,7 +37,7 @@ class VeilarbArenaClientTest {
         avtale.setDeltakerFnr(new Fnr(fnr_har_kvalifiseringsgruppe_med_kode_IVURD));
         avtale.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
 
-        assertThatThrownBy(() -> veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale))
+        assertThatThrownBy(() -> veilarboppfolgingService.sjekkOgHentOppfølgingStatus(avtale))
                 .isExactlyInstanceOf(FeilkodeException.class)
                 .hasMessage(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET.name());
     }
@@ -60,7 +48,7 @@ class VeilarbArenaClientTest {
         final Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setDeltakerFnr(new Fnr(fnr_har_riktig_kvalifisering_og_formidlingskode));
 
-        Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
+        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.sjekkOgHentOppfølgingStatus(avtale);
         assertThat(oppfølgingsstatus.getFormidlingsgruppe().getKode()).isEqualTo(("ARBS"));
         assertThat(oppfølgingsstatus.getKvalifiseringsgruppe().getKvalifiseringskode()).isEqualTo(("VARIG"));
         assertThat(oppfølgingsstatus.getOppfolgingsenhet()).isEqualTo(("0906"));
@@ -72,7 +60,7 @@ class VeilarbArenaClientTest {
         avtale.getGjeldendeInnhold().setLonnstilskuddProsent(null);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
 
-        Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
+        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.sjekkOgHentOppfølgingStatus(avtale);
         avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
         avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
         avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
@@ -89,7 +77,7 @@ class VeilarbArenaClientTest {
 
     @Test
     public void hent_oppfølging_status() {
-        Oppfølgingsstatus oppfølgingStatus = veilarbArenaClient.hentOppfølgingStatus("01056210306");
+        Oppfølgingsstatus oppfølgingStatus = veilarboppfolgingService.hentOppfolgingsstatus("01056210306");
 
         assertThat(oppfølgingStatus.getFormidlingsgruppe().getKode()).isEqualTo(("ARBS"));
         assertThat(oppfølgingStatus.getKvalifiseringsgruppe().getKvalifiseringskode()).isEqualTo(("VARIG"));

@@ -21,7 +21,7 @@ public class CacheConfig {
 
     public static final String NORG_GEO_ENHET = "norggeoenhet_cache";
 
-    public static final String ARENA_CACHE = "arena_cache";
+    public static final String VEILARBOPPFOLGING_CACHE = "veilarboppfolging_cache";
 
     @Bean
     public CacheManager cacheManager(CacheDto cacheDto) {
