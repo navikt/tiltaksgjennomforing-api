@@ -30,13 +30,13 @@ public class AvtaleHendelseLytter {
     @EventListener
     public void avtaleOpprettetAvArena(AvtaleOpprettetAvArena event) {
         Avtale avtale = event.getAvtale();
-        lagHendelse(avtale, HendelseType.OPPRETTET_AV_ARENA, event.getUtfortAv(), AvtaleHendelseUtførtAvRolle.SYSTEM);
+        lagHendelse(avtale, HendelseType.OPPRETTET_AV_ARENA, Identifikator.ARENA, AvtaleHendelseUtførtAvRolle.SYSTEM);
     }
 
     @EventListener
     public void avtaleEndretAvArena(AvtaleEndretAvArena event) {
         Avtale avtale = event.getAvtale();
-        lagHendelse(avtale, HendelseType.ENDRET_AV_ARENA, event.getUtfortAv(), AvtaleHendelseUtførtAvRolle.SYSTEM);
+        lagHendelse(avtale, HendelseType.ENDRET_AV_ARENA, Identifikator.ARENA, AvtaleHendelseUtførtAvRolle.SYSTEM);
     }
 
     @EventListener
@@ -73,10 +73,9 @@ public class AvtaleHendelseLytter {
     }
 
     @EventListener
-    public void avtaleAnnullert(AnnullertAvArena event) {
+    public void avtaleAnnullert(AnnullertAvSystem event) {
         lagHendelse(event.getAvtale(), HendelseType.ANNULLERT, event.getUtfortAv(), AvtaleHendelseUtførtAvRolle.SYSTEM);
     }
-
 
     @EventListener
     public void tilskuddsberegningEndret(TilskuddsberegningEndret event) {
@@ -122,38 +121,47 @@ public class AvtaleHendelseLytter {
     public void godkjentAvArbeidsgiver(GodkjentAvArbeidsgiver event) {
         lagHendelse(event.getAvtale(), HendelseType.GODKJENT_AV_ARBEIDSGIVER, event.getUtfortAv(), AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER);
     }
+
     @EventListener
     public void godkjentAvVeileder(GodkjentAvVeileder event) {
         lagHendelse(event.getAvtale(), HendelseType.GODKJENT_AV_VEILEDER, event.getUtfortAv(), AvtaleHendelseUtførtAvRolle.VEILEDER);
     }
+
     @EventListener
     public void godkjentAvDeltaker(GodkjentAvDeltaker event) {
         lagHendelse(event.getAvtale(), HendelseType.GODKJENT_AV_DELTAKER, event.getUtfortAv(), AvtaleHendelseUtførtAvRolle.DELTAKER);
     }
+
     @EventListener
     public void godkjentPåVegneAvDeltaker(GodkjentPaVegneAvDeltaker event) {
         lagHendelse(event.getAvtale(), HendelseType.GODKJENT_PAA_VEGNE_AV, event.getUtfortAv(), AvtaleHendelseUtførtAvRolle.VEILEDER);
     }
+
     @EventListener
     public void godkjentPåVegneAvArbeidsgiver(GodkjentPaVegneAvArbeidsgiver event) {
         lagHendelse(event.getAvtale(), HendelseType.GODKJENT_PAA_VEGNE_AV_ARBEIDSGIVER, event.getUtfortAv(), AvtaleHendelseUtførtAvRolle.VEILEDER);
     }
+
     @EventListener
     public void godkjentPåVegneAvDeltakerOgArbeidsgiver(GodkjentPaVegneAvDeltakerOgArbeidsgiver event) {
         lagHendelse(event.getAvtale(), HendelseType.GODKJENT_PAA_VEGNE_AV_DELTAKER_OG_ARBEIDSGIVER, event.getUtfortAv(), AvtaleHendelseUtførtAvRolle.VEILEDER);
     }
+
     @EventListener
     public void signertAvMentor(SignertAvMentor event) {
         lagHendelse(event.getAvtale(), HendelseType.SIGNERT_AV_MENTOR, event.getUtfortAv(), AvtaleHendelseUtførtAvRolle.MENTOR);
     }
+
     @EventListener
     public void deltakersGodkjenningOpphevetAvVeileder(DeltakersGodkjenningOpphevetAvVeileder event) {
         lagHendelse(event.getAvtale(), HendelseType.DELTAKERS_GODKJENNING_OPPHEVET_AV_VEILEDER, event.getAvtale().getVeilederNavIdent(), AvtaleHendelseUtførtAvRolle.VEILEDER);
     }
+
     @EventListener
     public void deltakersGodkjenningOpphevetAvArbeidsgiver(DeltakersGodkjenningOpphevetAvArbeidsgiver event) {
         lagHendelse(event.getAvtale(), HendelseType.DELTAKERS_GODKJENNING_OPPHEVET_AV_ARBEIDSGIVER, event.getAvtale().getBedriftNr(), AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER);
     }
+
     @EventListener
     public void arbeidsgiversGodkjenningOpphevetAvVeileder(ArbeidsgiversGodkjenningOpphevetAvVeileder event) {
         lagHendelse(event.getAvtale(), HendelseType.ARBEIDSGIVERS_GODKJENNING_OPPHEVET_AV_VEILEDER, event.getAvtale().getVeilederNavIdent(), AvtaleHendelseUtførtAvRolle.VEILEDER);

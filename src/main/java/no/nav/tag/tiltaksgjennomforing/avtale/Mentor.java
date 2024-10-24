@@ -1,7 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import java.util.UUID;
-
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetMentor;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
@@ -9,6 +7,8 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.UUID;
 
 public class Mentor extends Avtalepart<Fnr> {
 
@@ -49,11 +49,6 @@ public class Mentor extends Avtalepart<Fnr> {
     @Override
     public boolean kanEndreAvtale() {
         return false;
-    }
-
-    @Override
-    public boolean erGodkjentAvInnloggetBruker(Avtale avtale) {
-        return avtale.getMentorFnr().equals(getIdentifikator()) && avtale.erGodkjentTaushetserklæringAvMentor();
     }
 
     @Override

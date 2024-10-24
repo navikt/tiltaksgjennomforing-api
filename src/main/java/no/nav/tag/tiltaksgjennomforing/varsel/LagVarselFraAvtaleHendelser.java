@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.varsel;
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
+import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvbruttAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
@@ -18,6 +19,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiv
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiverErFordelt;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleUtloperVarsel;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.FjernetEtterregistrering;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
@@ -63,13 +65,13 @@ public class LagVarselFraAvtaleHendelser {
 
     @EventListener
     public void avtaleOpprettetAvArena(AvtaleOpprettetAvArena event) {
-        VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.SYSTEM, event.getUtfortAv(), HendelseType.OPPRETTET_AV_ARENA);
+        VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.SYSTEM, Identifikator.ARENA, HendelseType.OPPRETTET_AV_ARENA);
         varselRepository.save(factory.veileder());
     }
 
     @EventListener
     public void avtaleEndretAvArena(AvtaleEndretAvArena event) {
-        VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.SYSTEM, event.getUtfortAv(), HendelseType.ENDRET_AV_ARENA);
+        VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.SYSTEM, Identifikator.ARENA, HendelseType.ENDRET_AV_ARENA);
         varselRepository.save(factory.veileder());
     }
 
@@ -266,5 +268,15 @@ public class LagVarselFraAvtaleHendelser {
     public void endreOppfølgingOgTilretteleggingInformasjon(OppfølgingOgTilretteleggingEndret event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.VEILEDER, event.getUtførtAv(), HendelseType.OPPFØLGING_OG_TILRETTELEGGING_ENDRET);
         varselRepository.saveAll(factory.alleParter());
+    }
+
+    @EventListener
+    public void avtaleUtloperVarsel(AvtaleUtloperVarsel event) {
+        HendelseType hendelseType = switch (event.getType()) {
+            case OM_24_TIMER -> HendelseType.UTLOPER_OM_24_TIMER;
+            case OM_EN_UKE -> HendelseType.UTLOPER_OM_1_UKE;
+        };
+        VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.SYSTEM, Identifikator.SYSTEM, hendelseType);
+        varselRepository.save(factory.veileder());
     }
 }

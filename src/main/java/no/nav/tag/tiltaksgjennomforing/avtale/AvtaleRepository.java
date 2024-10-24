@@ -1,6 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import io.micrometer.core.annotation.Timed;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -8,13 +14,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 
 public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecificationExecutor {
@@ -148,5 +147,14 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             @Param("bedriftNr") String bedriftNr,
             @Param("avtaleNr") Integer avtaleNr,
             Pageable pageable);
+
+    @Query(value = "SELECT avtale.* " +
+            "FROM avtale, avtale_innhold " +
+            "WHERE avtale.gjeldende_innhold_id = avtale_innhold.id " +
+            "AND avtale_innhold.avtale_inngått IS NULL " +
+            "AND avtale.annullert_tidspunkt IS NULL " +
+            "AND avtale.avbrutt IS FALSE",
+            nativeQuery = true)
+    List<Avtale> findAvtalerSomErPabegyntEllerManglerGodkjenning();
 
 }

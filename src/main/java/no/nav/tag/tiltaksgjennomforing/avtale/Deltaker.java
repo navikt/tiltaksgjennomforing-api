@@ -55,12 +55,6 @@ public class Deltaker extends Avtalepart<Fnr> {
     }
 
     @Override
-    public boolean erGodkjentAvInnloggetBruker(Avtale avtale) {
-        return avtale.erGodkjentAvDeltaker();
-    }
-
-
-    @Override
     boolean kanOppheveGodkjenninger(Avtale avtale) {
         return false;
     }

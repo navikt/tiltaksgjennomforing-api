@@ -22,9 +22,9 @@ public class EndreAvtaleArena implements Comparable<Avtale> {
 
         public static Handling map(ArenaMigrationAction arenaMigrationAction) {
             return switch (arenaMigrationAction) {
-                case UPDATE -> OPPDATER;
-                case TERMINATE -> ANNULLER;
-                case END -> AVSLUTT;
+                case OPPDATER -> OPPDATER;
+                case ANNULLER -> ANNULLER;
+                case AVSLUTT -> AVSLUTT;
                 default -> throw new IllegalArgumentException("Ugyldig handling: " + arenaMigrationAction);
             };
         }

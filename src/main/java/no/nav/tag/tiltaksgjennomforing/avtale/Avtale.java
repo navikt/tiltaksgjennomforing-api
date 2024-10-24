@@ -21,7 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvArena;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvSystem;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.ArbeidsgiversGodkjenningOpphevetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
@@ -36,6 +36,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiv
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleSlettemerket;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleUtloperVarsel;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.DeltakersGodkjenningOpphevetAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.DeltakersGodkjenningOpphevetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.FjernetEtterregistrering;
@@ -333,7 +334,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             avbruttDato = null;
             avbruttGrunn = null;
             sistEndretNå();
-            registerEvent(new AnnullertAvArena(this));
+            registerEvent(new AnnullertAvSystem(this, Identifikator.ARENA));
         } else {
             annullertTidspunkt = null;
             annullertGrunn = null;
@@ -777,6 +778,21 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         }
         sistEndretNå();
         registerEvent(new AnnullertAvVeileder(this, veileder.getIdentifikator()));
+    }
+
+    public void utlop(AvtaleUtlopHandling handling) {
+        switch (handling) {
+            case VARSEL_EN_UKE -> registerEvent(new AvtaleUtloperVarsel(this, AvtaleUtloperVarsel.Type.OM_EN_UKE));
+            case VARSEL_24_TIMER -> registerEvent(new AvtaleUtloperVarsel(this, AvtaleUtloperVarsel.Type.OM_24_TIMER));
+            case UTLOP -> {
+                annullerTilskuddsperioder();
+                setAnnullertTidspunkt(Now.instant());
+                setAnnullertGrunn(AnnullertGrunn.UTLØPT);
+                setFeilregistrert(true);
+                sistEndretNå();
+                registerEvent(new AnnullertAvSystem(this, Identifikator.SYSTEM));
+            }
+        }
     }
 
     private void sjekkAtIkkeAvtalenInneholderUtbetaltTilskuddsperiode() {
