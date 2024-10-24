@@ -3,7 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -29,7 +29,7 @@ public class InnloggetBrukerTest {
     private KontoregisterService kontoregisterService;
     private PersondataService persondataService;
     private Norg2Client norg2Client;
-    private VeilarbArenaClient veilarbArenaClient;
+    private VeilarboppfolgingService veilarboppfolgingService;
     private AvtaleRepository avtaleRepository;
 
     @BeforeEach
@@ -41,7 +41,7 @@ public class InnloggetBrukerTest {
         tilgangskontrollService = mock(TilgangskontrollService.class);
         persondataService = mock(PersondataService.class);
         kontoregisterService = mock(KontoregisterService.class);
-        veilarbArenaClient = mock(VeilarbArenaClient.class);
+        veilarboppfolgingService = mock(VeilarboppfolgingService.class);
         avtaleRepository = mock(AvtaleRepository.class);
     }
 
@@ -60,7 +60,7 @@ public class InnloggetBrukerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarbArenaClient
+                veilarboppfolgingService
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 veileder,
@@ -81,7 +81,7 @@ public class InnloggetBrukerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarbArenaClient
+                veilarboppfolgingService
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 veileder,
@@ -100,7 +100,8 @@ public class InnloggetBrukerTest {
                 norg2Client,
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
-                false, veilarbArenaClient
+                false,
+                veilarboppfolgingService
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 veileder,
@@ -121,7 +122,7 @@ public class InnloggetBrukerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarbArenaClient
+                veilarboppfolgingService
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 veileder,
@@ -154,7 +155,7 @@ public class InnloggetBrukerTest {
                         Collections.emptySet(),
                         new SlettemerkeProperties(),
                         false,
-                        veilarbArenaClient
+                        veilarboppfolgingService
                 ).harTilgangTilAvtale(avtale)
         ).isFalse();
     }
@@ -170,7 +171,7 @@ public class InnloggetBrukerTest {
                         Collections.emptySet(),
                         new SlettemerkeProperties(),
                         false,
-                        veilarbArenaClient
+                        veilarboppfolgingService
                 ).harTilgangTilAvtale(avtale)
         ).isFalse();
     }

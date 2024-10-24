@@ -2,6 +2,8 @@ package no.nav.tag.tiltaksgjennomforing.enhet;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import java.util.Arrays;
+
 public enum Formidlingsgruppe {
     ARBEIDSSOKER("ARBS"),            // Person er tilgjengelig for alt søk etter   arbeidskraft, ordinær og vikar
     IKKE_ARBEIDSSOKER("IARBS"),      // Person er ikke tilgjengelig for søk etter arbeidskraft
@@ -19,10 +21,10 @@ public enum Formidlingsgruppe {
         return formidlingskode;
     }
 
-    public static boolean ugyldigFormidlingsgruppe(Formidlingsgruppe formidlingsgruppe) {
-        return switch (formidlingsgruppe) {
-            case IKKE_ARBEIDSSOKER, INAKTIVERT_JOBBSKIFTER, IKKE_SERVICEBEHOV -> true;
-            case ARBEIDSSOKER, FRA_NAV_NO, PRE_ARBEIDSSOKER, PRE_REAKTIVERT_ARBEIDSSOKER -> false;
-        };
+    public static Formidlingsgruppe parse(String kode) {
+        return Arrays.stream(Formidlingsgruppe.values())
+            .filter(gruppe -> gruppe.getKode().equals(kode))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Ukjent formidlingsgruppe: " + kode));
     }
 }

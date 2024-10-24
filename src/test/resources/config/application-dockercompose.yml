@@ -76,9 +76,8 @@ tiltaksgjennomforing:
     uri: http://localhost:8090/persondata
   oppgave:
     oppgave-uri: http://localhost:8090/api/v1/oppgaver
-  veilarbarena:
-    url: http://localhost:8090/veilarbarena/api/arena/status
-    nav-consumer-id: tiltaksgjennomforing-api
+  veilarboppfolging:
+    url: http://localhost:8090
   norg2:
     geografisk:
       url: http://localhost:8090/norg2/api/v1/enhet/navkontor/

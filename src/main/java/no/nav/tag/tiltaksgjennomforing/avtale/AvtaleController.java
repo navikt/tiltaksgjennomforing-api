@@ -6,13 +6,13 @@ import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.Protected;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditLogging;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.dokgen.DokgenService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
@@ -76,7 +76,7 @@ public class AvtaleController {
     private final DokgenService dokgenService;
     private final TilskuddsperiodeConfig tilskuddsperiodeConfig;
     private final SalesforceKontorerConfig salesforceKontorerConfig;
-    private final VeilarbArenaClient veilarbArenaClient;
+    private final VeilarboppfolgingService veilarboppfolgingService;
     private final FilterSokRepository filterSokRepository;
     private final MeterRegistry meterRegistry;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -774,7 +774,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .map(this::sjekkArbeidstreningToggle)
                 .orElseThrow(RessursFinnesIkkeException::new);
-        veileder.hentOppfølgingFraArena(avtale, veilarbArenaClient);
+        veileder.hentOppfølgingFraArena(avtale, veilarboppfolgingService);
         veileder.overtaAvtale(avtale);
         avtaleRepository.save(avtale);
     }
