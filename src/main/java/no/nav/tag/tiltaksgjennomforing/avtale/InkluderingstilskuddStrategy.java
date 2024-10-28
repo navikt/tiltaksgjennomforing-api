@@ -7,21 +7,16 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-public class InkluderingstilskuddStrategy extends BaseAvtaleInnholdStrategy {
+import static no.nav.tag.tiltaksgjennomforing.satser.Sats.INKLUDERINGSTILSKUDD_SATS;
 
-    private final static LocalDate FØRSTE_JAN_2024 = LocalDate.of(2024, 1, 1);
-    private final static int INKLUDERINGSTILSKUDD_SATS_2024 = 149_100;
-    private final static int INKLUDERINGSTILSKUDD_SATS_2023 = 143_900;
+public class InkluderingstilskuddStrategy extends BaseAvtaleInnholdStrategy {
 
     public InkluderingstilskuddStrategy(AvtaleInnhold avtaleInnhold){
         super(avtaleInnhold);
     }
 
-    public static int getInkluderingstilskuddSats(LocalDate sluttDato) {
-        if (sluttDato != null && FØRSTE_JAN_2024.isAfter(sluttDato)) {
-            return INKLUDERINGSTILSKUDD_SATS_2023;
-        }
-        return INKLUDERINGSTILSKUDD_SATS_2024;
+    public static Integer getInkluderingstilskuddSats(LocalDate sluttDato) {
+        return INKLUDERINGSTILSKUDD_SATS.hentGjeldendeSats(sluttDato == null ? LocalDate.MAX : sluttDato);
     }
 
     @Override
