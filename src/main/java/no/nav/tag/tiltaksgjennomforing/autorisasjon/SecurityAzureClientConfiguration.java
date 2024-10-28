@@ -22,7 +22,7 @@ import java.util.Arrays;
 @Configuration
 @Slf4j
 public class SecurityAzureClientConfiguration {
-    
+
     @Bean
     public RestTemplate azureRestTemplate(
         RestTemplateBuilder restTemplateBuilder,
@@ -64,6 +64,7 @@ public class SecurityAzureClientConfiguration {
 
                 return switch (registration) {
                     case "sokos-kontoregister-q2" -> properties.getRegistration().get("sokos-kontoregister");
+                    case "veilarboppfolging-gcp" -> properties.getRegistration().get("veilarboppfolging");
                     default -> properties.getRegistration().get(registration);
                 };
             }

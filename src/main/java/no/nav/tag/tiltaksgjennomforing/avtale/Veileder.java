@@ -5,19 +5,36 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.enhet.*;
-import no.nav.tag.tiltaksgjennomforing.exceptions.*;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
+import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeAdminTilgangException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
+import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6Exception;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.UUID;
 
 import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
@@ -30,7 +47,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     private final boolean harAdGruppeForBeslutter;
     private final Norg2Client norg2Client;
     private final Set<NavEnhet> navEnheter;
-    private final VeilarbArenaClient veilarbArenaClient;
+    private final VeilarboppfolgingService veilarboppfolgingService;
     private final UUID azureOid;
 
     public Veileder(
@@ -42,7 +59,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             Set<NavEnhet> navEnheter,
             SlettemerkeProperties slettemerkeProperties,
             boolean harAdGruppeForBeslutter,
-            VeilarbArenaClient veilarbArenaClient
+            VeilarboppfolgingService veilarboppfolgingService
     ) {
 
         super(identifikator);
@@ -53,7 +70,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         this.navEnheter = navEnheter;
         this.slettemerkeProperties = slettemerkeProperties;
         this.harAdGruppeForBeslutter = harAdGruppeForBeslutter;
-        this.veilarbArenaClient = veilarbArenaClient;
+        this.veilarboppfolgingService = veilarboppfolgingService;
     }
 
     @Deprecated
@@ -65,9 +82,9 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             Set<NavEnhet> navEnheter,
             SlettemerkeProperties slettemerkeProperties,
             boolean harAdGruppeForBeslutter,
-            VeilarbArenaClient veilarbArenaClient
+            VeilarboppfolgingService veilarboppfolgingService
     ) {
-        this(identifikator, null, tilgangskontrollService, persondataService, norg2Client, navEnheter, slettemerkeProperties, harAdGruppeForBeslutter, veilarbArenaClient);
+        this(identifikator, null, tilgangskontrollService, persondataService, norg2Client, navEnheter, slettemerkeProperties, harAdGruppeForBeslutter, veilarboppfolgingService);
     }
 
     @Override
@@ -190,9 +207,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
-        if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
-            veilarbArenaClient.sjekkOppfølgingStatus(avtale);
-        }
+        veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
         avtale.godkjennForVeileder(getIdentifikator());
     }
 
@@ -206,9 +221,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
-        if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB && avtale.getTiltakstype() != Tiltakstype.VTAO) {
-            veilarbArenaClient.sjekkOppfølgingStatus(avtale);
-        }
+        veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
     }
 
@@ -218,19 +231,13 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         }
     }
 
-    private void sjekkOppfølgingStatusForTiltak(Avtale avtale) {
-        if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
-            veilarbArenaClient.sjekkOppfølgingStatus(avtale);
-        }
-    }
-
     public void godkjennForVeilederOgArbeidsgiver(
             GodkjentPaVegneAvArbeidsgiverGrunn paVegneAvArbeidsgiverGrunn,
             Avtale avtale
     ) {
         super.sjekkTilgang(avtale);
         this.blokkereKode6Prosessering(avtale.getDeltakerFnr());
-        this.sjekkOppfølgingStatusForTiltak(avtale);
+        veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
         avtale.godkjennForVeilederOgArbeidsgiver(getIdentifikator(), paVegneAvArbeidsgiverGrunn);
     }
 
@@ -240,7 +247,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     ) {
         super.sjekkTilgang(avtale);
         this.blokkereKode6Prosessering(avtale.getDeltakerFnr());
-        this.sjekkOppfølgingStatusForTiltak(avtale);
+        veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
         avtale.godkjennForVeilederOgDeltakerOgArbeidsgiver(getIdentifikator(), paVegneAvDeltakerOgArbeidsgiverGrunn);
     }
 
@@ -319,7 +326,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     public void oppdatereOppfølgingStatusVedEndreAvtale(Avtale avtale) {
-        Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.HentOppfølgingsenhetFraCacheEllerArena(
+        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOppfolgingsstatus(
                 avtale.getDeltakerFnr().asString()
         );
         if (oppfølgingsstatus == null) return;
@@ -354,7 +361,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     protected void leggTilEnheter(Avtale avtale){
         final PdlRespons persondata = this.hentPersonDataForOpprettelseAvAvtale(avtale);
-        this.hentOppfølgingFraArena(avtale, veilarbArenaClient);
+        this.hentOppfølgingFraArena(avtale, veilarboppfolgingService);
         super.hentGeoEnhetFraNorg2(avtale, persondata, norg2Client);
         this.hentOppfolgingEnhetsnavnFraNorg2(avtale, norg2Client);
     }
@@ -373,10 +380,10 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     public void hentOppfølgingFraArena(
             Avtale avtale,
-            VeilarbArenaClient veilarbArenaClient
+            VeilarboppfolgingService veilarboppfolgingService
     ) {
         if(avtale.harOppfølgingsStatus()) return;
-        Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
+        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
         if (oppfølgingsstatus == null) return;
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
         this.settLonntilskuddProsentsats(avtale);
@@ -388,8 +395,8 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         return persondata;
     }
 
-    public void sjekkOgHentOppfølgingStatus(Avtale avtale, VeilarbArenaClient veilarbArenaClient) {
-        Oppfølgingsstatus oppfølgingsstatus = veilarbArenaClient.sjekkOgHentOppfølgingStatus(avtale);
+    public void sjekkOgHentOppfølgingStatus(Avtale avtale, VeilarboppfolgingService veilarboppfolgingService) {
+        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
     }
 
@@ -425,13 +432,13 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     public void forlengAvtale(LocalDate sluttDato, Avtale avtale) {
         super.sjekkTilgang(avtale);
-        sjekkOgHentOppfølgingStatus(avtale, veilarbArenaClient);
+        sjekkOgHentOppfølgingStatus(avtale, veilarboppfolgingService);
         avtale.forlengAvtale(sluttDato, getIdentifikator());
     }
 
     protected void oppdatereEnheterEtterForespørsel(Avtale avtale) {
         final PdlRespons persondata = this.hentPersonDataForOpprettelseAvAvtale(avtale);
-        this.sjekkOgHentOppfølgingStatus(avtale, veilarbArenaClient);
+        this.sjekkOgHentOppfølgingStatus(avtale, veilarboppfolgingService);
         super.hentGeoEnhetFraNorg2(avtale, persondata, norg2Client);
         this.hentOppfolgingEnhetsnavnFraNorg2(avtale, norg2Client);
     }

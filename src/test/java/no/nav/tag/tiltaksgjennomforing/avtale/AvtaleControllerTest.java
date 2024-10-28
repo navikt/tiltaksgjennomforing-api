@@ -9,7 +9,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6Exception;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KontoregisterFeilException;
@@ -36,7 +36,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -49,17 +48,20 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enArbeidstreningAv
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enNavIdent;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles(Miljø.TEST)
 @AutoConfigureMockMvc
 public class AvtaleControllerTest {
 
-    @Autowired
-    MockMvc mockMvc;
     @MockBean
-    VeilarbArenaClient veilarbArenaClient;
+    VeilarboppfolgingService veilarboppfolgingService;
     @MockBean
     Norg2Client norg2Client;
     @Autowired
@@ -116,7 +118,7 @@ public class AvtaleControllerTest {
                         Collections.emptySet(),
                         new SlettemerkeProperties(),
                         false,
-                        veilarbArenaClient
+                    veilarboppfolgingService
                 )
         );
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
@@ -139,7 +141,7 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarbArenaClient
+            veilarboppfolgingService
         );
         værInnloggetSom(veileder);
         Avtale exampleAvtale = Avtale.builder()
@@ -178,7 +180,7 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarbArenaClient
+            veilarboppfolgingService
         );
         værInnloggetSom(veileder);
         Avtale nyAvtaleMedGeografiskEnhet = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhetOgGeografiskEnhet();
@@ -212,7 +214,7 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarbArenaClient
+            veilarboppfolgingService
         );
         værInnloggetSom(veileder);
 
@@ -251,7 +253,7 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarbArenaClient
+            veilarboppfolgingService
         );
         værInnloggetSom(veileder);
 
@@ -309,7 +311,7 @@ public class AvtaleControllerTest {
                 Set.of(navEnhet),
                 new SlettemerkeProperties(),
                 false,
-                veilarbArenaClient
+            veilarboppfolgingService
         );
         værInnloggetSom(veileder);
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
@@ -329,7 +331,7 @@ public class AvtaleControllerTest {
                                 TestData.ENHET_GEOGRAFISK.getVerdi()
                         )
                 );
-        when(veilarbArenaClient.sjekkOgHentOppfølgingStatus(any()))
+        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any()))
                 .thenReturn(
                         new Oppfølgingsstatus(
                                 Formidlingsgruppe.ARBEIDSSOKER,
@@ -369,7 +371,7 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarbArenaClient
+            veilarboppfolgingService
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
@@ -441,7 +443,7 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarbArenaClient
+            veilarboppfolgingService
         );
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = new Fnr("11111100000");
@@ -467,7 +469,7 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarbArenaClient
+            veilarboppfolgingService
         );
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = new Fnr("11111100000");
@@ -551,7 +553,7 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarbArenaClient
+            veilarboppfolgingService
         );
         værInnloggetSom(veileder);
         when(kontoregisterService.hentKontonummer(anyString())).thenReturn("990983666");
@@ -579,7 +581,7 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarbArenaClient
+            veilarboppfolgingService
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
@@ -605,7 +607,7 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarbArenaClient
+            veilarboppfolgingService
         );
         værInnloggetSom(veileder);
         when(kontoregisterService.hentKontonummer(anyString())).thenThrow(KontoregisterFeilException.class);

@@ -30,4 +30,18 @@ public enum Tiltakstype {
     public String getTiltakskodeArena() {
         return tiltakskodeArena;
     }
+
+    public boolean isMidlerTidiglonnstilskuddEllerSommerjobbEllerMentor() {
+        return this == Tiltakstype.SOMMERJOBB ||
+            this == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD ||
+            this == Tiltakstype.MENTOR;
+    }
+
+    public boolean isVariglonnstilskudd() {
+        return this == Tiltakstype.VARIG_LONNSTILSKUDD;
+    }
+
+    public boolean isSommerjobb() {
+        return this == Tiltakstype.SOMMERJOBB;
+    }
 }

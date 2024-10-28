@@ -24,7 +24,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
@@ -48,7 +48,7 @@ public class ArenaAgreementProcessingService {
     private final EregService eregService;
     private final PersondataService persondataService;
     private final Norg2Client norg2Client;
-    private final VeilarbArenaClient veilarbArenaClient;
+    private final VeilarboppfolgingService veilarboppfolgingService;
     private final AktivitetArenaAclClient aktivitetArenaAclClient;
     private final HendelseAktivitetsplanClient hendelseAktivitetsplanClient;
 
@@ -58,7 +58,7 @@ public class ArenaAgreementProcessingService {
             EregService eregService,
             PersondataService persondataService,
             Norg2Client norg2Client,
-            VeilarbArenaClient veilarbArenaClient,
+            VeilarboppfolgingService veilarboppfolgingService,
             TilskuddsperiodeConfig tilskuddsperiodeConfig,
             AktivitetArenaAclClient aktivitetArenaAclClient,
             HendelseAktivitetsplanClient hendelseAktivitetsplanClient) {
@@ -67,7 +67,7 @@ public class ArenaAgreementProcessingService {
         this.eregService = eregService;
         this.persondataService = persondataService;
         this.norg2Client = norg2Client;
-        this.veilarbArenaClient = veilarbArenaClient;
+        this.veilarboppfolgingService = veilarboppfolgingService;
         this.tilskuddsperiodeConfig = tilskuddsperiodeConfig;
         this.aktivitetArenaAclClient = aktivitetArenaAclClient;
         this.hendelseAktivitetsplanClient = hendelseAktivitetsplanClient;
@@ -256,7 +256,7 @@ public class ArenaAgreementProcessingService {
     }
 
     private Optional<Oppfølgingsstatus> getOppfolgingsstatusFromVeilarbarena(Fnr fnr) {
-        return Optional.ofNullable(veilarbArenaClient.HentOppfølgingsenhetFraCacheEllerArena(fnr.asString()));
+        return Optional.ofNullable(veilarboppfolgingService.hentOppfolgingsstatus(fnr.asString()));
     }
 
     private Optional<String> getOppfolgingsenhetnavnFromNorg2(String oppfolgingsenhet) {

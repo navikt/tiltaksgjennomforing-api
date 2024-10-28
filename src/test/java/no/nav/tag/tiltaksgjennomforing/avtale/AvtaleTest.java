@@ -5,7 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
@@ -1518,7 +1518,7 @@ public class AvtaleTest {
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
                 false,
-                mock(VeilarbArenaClient.class)
+                mock(VeilarboppfolgingService.class)
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 eq(veileder),
@@ -1555,7 +1555,7 @@ public class AvtaleTest {
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
                 false,
-                mock(VeilarbArenaClient.class)
+                mock(VeilarboppfolgingService.class)
         );
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
@@ -1661,7 +1661,7 @@ public class AvtaleTest {
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
                 false,
-                mock(VeilarbArenaClient.class)
+                mock(VeilarboppfolgingService.class)
         );
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
@@ -1699,7 +1699,7 @@ public class AvtaleTest {
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
                 false,
-                mock(VeilarbArenaClient.class)
+                mock(VeilarboppfolgingService.class)
         );
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
