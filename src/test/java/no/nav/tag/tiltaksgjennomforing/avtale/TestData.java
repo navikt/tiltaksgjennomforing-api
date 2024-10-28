@@ -714,7 +714,7 @@ public class TestData {
                 eq(avtale.getDeltakerFnr())
         )).thenReturn(true);
 
-        lenient().when(veilarboppfolgingService.sjekkOgHentOppfølgingStatus(any()))
+        lenient().when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any()))
                 .thenReturn(
                         new Oppfølgingsstatus(
                                 Formidlingsgruppe.ARBEIDSSOKER,
@@ -798,7 +798,7 @@ public class TestData {
                 )
         ).thenReturn(true);
 
-        lenient().when(veilarboppfolgingService.sjekkOgHentOppfølgingStatus(any()))
+        lenient().when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any()))
                 .thenReturn(
                         new Oppfølgingsstatus(
                                 Formidlingsgruppe.ARBEIDSSOKER,

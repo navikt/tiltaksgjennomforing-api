@@ -207,9 +207,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
-        if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
-            veilarboppfolgingService.sjekkOppfølgingStatus(avtale);
-        }
+        veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
         avtale.godkjennForVeileder(getIdentifikator());
     }
 
@@ -223,9 +221,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
-        if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB && avtale.getTiltakstype() != Tiltakstype.VTAO) {
-            veilarboppfolgingService.sjekkOppfølgingStatus(avtale);
-        }
+        veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
     }
 
@@ -235,19 +231,13 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         }
     }
 
-    private void sjekkOppfølgingStatusForTiltak(Avtale avtale) {
-        if (avtale.getTiltakstype() != Tiltakstype.SOMMERJOBB) {
-            veilarboppfolgingService.sjekkOppfølgingStatus(avtale);
-        }
-    }
-
     public void godkjennForVeilederOgArbeidsgiver(
             GodkjentPaVegneAvArbeidsgiverGrunn paVegneAvArbeidsgiverGrunn,
             Avtale avtale
     ) {
         super.sjekkTilgang(avtale);
         this.blokkereKode6Prosessering(avtale.getDeltakerFnr());
-        this.sjekkOppfølgingStatusForTiltak(avtale);
+        veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
         avtale.godkjennForVeilederOgArbeidsgiver(getIdentifikator(), paVegneAvArbeidsgiverGrunn);
     }
 
@@ -257,7 +247,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     ) {
         super.sjekkTilgang(avtale);
         this.blokkereKode6Prosessering(avtale.getDeltakerFnr());
-        this.sjekkOppfølgingStatusForTiltak(avtale);
+        veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
         avtale.godkjennForVeilederOgDeltakerOgArbeidsgiver(getIdentifikator(), paVegneAvDeltakerOgArbeidsgiverGrunn);
     }
 
@@ -393,7 +383,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             VeilarboppfolgingService veilarboppfolgingService
     ) {
         if(avtale.harOppfølgingsStatus()) return;
-        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.sjekkOgHentOppfølgingStatus(avtale);
+        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
         if (oppfølgingsstatus == null) return;
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
         this.settLonntilskuddProsentsats(avtale);
@@ -406,7 +396,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     public void sjekkOgHentOppfølgingStatus(Avtale avtale, VeilarboppfolgingService veilarboppfolgingService) {
-        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.sjekkOgHentOppfølgingStatus(avtale);
+        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
     }
 

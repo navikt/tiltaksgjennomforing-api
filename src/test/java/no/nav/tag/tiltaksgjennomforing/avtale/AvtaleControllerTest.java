@@ -331,7 +331,7 @@ public class AvtaleControllerTest {
                                 TestData.ENHET_GEOGRAFISK.getVerdi()
                         )
                 );
-        when(veilarboppfolgingService.sjekkOgHentOppfølgingStatus(any()))
+        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any()))
                 .thenReturn(
                         new Oppfølgingsstatus(
                                 Formidlingsgruppe.ARBEIDSSOKER,

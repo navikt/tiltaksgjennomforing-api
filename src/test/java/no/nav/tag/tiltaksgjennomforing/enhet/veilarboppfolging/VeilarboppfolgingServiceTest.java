@@ -37,7 +37,7 @@ class VeilarboppfolgingServiceTest {
         avtale.setDeltakerFnr(new Fnr(fnr_har_kvalifiseringsgruppe_med_kode_IVURD));
         avtale.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
 
-        assertThatThrownBy(() -> veilarboppfolgingService.sjekkOgHentOppfølgingStatus(avtale))
+        assertThatThrownBy(() -> veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale))
                 .isExactlyInstanceOf(FeilkodeException.class)
                 .hasMessage(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET.name());
     }
@@ -48,7 +48,7 @@ class VeilarboppfolgingServiceTest {
         final Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         avtale.setDeltakerFnr(new Fnr(fnr_har_riktig_kvalifisering_og_formidlingskode));
 
-        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.sjekkOgHentOppfølgingStatus(avtale);
+        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
         assertThat(oppfølgingsstatus.getFormidlingsgruppe().getKode()).isEqualTo(("ARBS"));
         assertThat(oppfølgingsstatus.getKvalifiseringsgruppe().getKvalifiseringskode()).isEqualTo(("VARIG"));
         assertThat(oppfølgingsstatus.getOppfolgingsenhet()).isEqualTo(("0906"));
@@ -60,7 +60,7 @@ class VeilarboppfolgingServiceTest {
         avtale.getGjeldendeInnhold().setLonnstilskuddProsent(null);
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
 
-        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.sjekkOgHentOppfølgingStatus(avtale);
+        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
         avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
         avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
         avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
