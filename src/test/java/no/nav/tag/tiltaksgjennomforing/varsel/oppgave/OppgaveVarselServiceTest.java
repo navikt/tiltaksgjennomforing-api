@@ -18,7 +18,9 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URI;
 import java.util.UUID;
 
+import static java.lang.String.format;
 import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.VARIG_LONNSTILSKUDD;
+import static no.nav.tag.tiltaksgjennomforing.varsel.oppgave.LagGosysVarselLytter.GOSYS_OPPRETTET_AVTALE_BESKRIVELSE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -56,7 +58,13 @@ public class OppgaveVarselServiceTest {
         avtale.setTiltakstype(tiltakstype);
         avtale.setId(UUID.randomUUID());
 
-        oppgaveVarselService.opprettOppgave("aktørId", avtale);
+        oppgaveVarselService.opprettOppgave(new OppgaveRequest(
+                "aktørId",
+                GosysTema.TILTAK,
+                GosysBehandlingstype.SOKNAD,
+                avtale.getTiltakstype(),
+                format(GOSYS_OPPRETTET_AVTALE_BESKRIVELSE, avtale.getTiltakstype().getBeskrivelse())
+        ));
         verify(stsRestTemplate).postForObject(eq(uri), requestCaptor.capture(), eq(OppgaveVarselService.OppgaveResponse.class));
         OppgaveRequest request = requestCaptor.getValue().getBody();
 
@@ -79,6 +87,8 @@ public class OppgaveVarselServiceTest {
         avtale.setId(UUID.randomUUID());
 
         assertThrows(GosysFeilException.class, () ->
-                oppgaveVarselService.opprettOppgave("aktørId", avtale));
+                oppgaveVarselService.opprettOppgave(new OppgaveRequest(
+                        "aktørId", GosysTema.TILTAK, GosysBehandlingstype.INGEN, Tiltakstype.INKLUDERINGSTILSKUDD, ""
+                )));
     }
 }

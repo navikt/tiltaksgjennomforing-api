@@ -2,8 +2,8 @@ package no.nav.tag.tiltaksgjennomforing.varsel.oppgave;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.exceptions.GosysFeilException;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.CorrelationIdSupplier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -30,14 +30,13 @@ public class OppgaveVarselService {
         this.azureRestTemplate = azureRestTemplate;
     }
 
-    public void opprettOppgave(String aktørId, Avtale avtale) {
-        OppgaveRequest oppgaveRequest = new OppgaveRequest(aktørId, avtale);
+    public void opprettOppgave(OppgaveRequest oppgaveRequest) {
         OppgaveResponse oppgaveResponse;
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set(CORR_ID, avtale.getId().toString());
+        headers.set(CORR_ID, CorrelationIdSupplier.get());
 
         try {
             oppgaveResponse = azureRestTemplate.postForObject(
@@ -46,10 +45,10 @@ public class OppgaveVarselService {
                 OppgaveResponse.class
             );
         } catch (Exception e2) {
-            log.error("Kall til Oppgave feilet, avtaleId={} : {}", avtale.getId(), e2.getMessage());
+            log.error("Kall til Oppgave feilet : {}", e2.getMessage(), e2);
             throw new GosysFeilException();
         }
-        log.info("Opprettet oppgave for tiltak {}. OppgaveId={}, avtaleId={}", avtale.getTiltakstype().getBeskrivelse(), oppgaveResponse.getId(), avtale.getId());
+        log.info("Opprettet oppgave for tiltak. OppgaveId={}", oppgaveResponse.getId());
     }
 
     @Data
