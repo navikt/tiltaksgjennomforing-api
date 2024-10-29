@@ -19,7 +19,7 @@ import static java.lang.String.format;
 
 @Component
 @RequiredArgsConstructor
-public class LagGosysVarselLytter {
+class LagGosysVarselLytter {
     private final OppgaveVarselService oppgaveVarselService;
     private final PersondataService persondataService;
 

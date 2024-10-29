@@ -8,7 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import java.time.LocalDate;
 
 @Data
-public class OppgaveRequest {
+class OppgaveRequest {
     private final static String HOY_PRI = "NORM";
     private final static String OPPG_TYPE = "VURD_HENV";
 

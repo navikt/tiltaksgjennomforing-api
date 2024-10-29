@@ -6,7 +6,7 @@ package no.nav.tag.tiltaksgjennomforing.varsel.oppgave;
  * <a href="https://kodeverk-web.intern.nav.no/kodeverksoversikt/kodeverk/Behandlingstyper">se kodeverk</a>
  * (krever tilgang til sikker sone).
  */
-public enum GosysBehandlingstype {
+enum GosysBehandlingstype {
     SOKNAD("ae0034"), INGEN(null);
 
     private final String behandlingstypekode;

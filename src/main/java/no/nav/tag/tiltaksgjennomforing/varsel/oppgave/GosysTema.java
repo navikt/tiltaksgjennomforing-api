@@ -6,7 +6,7 @@ package no.nav.tag.tiltaksgjennomforing.varsel.oppgave;
  * <a href="https://kodeverk-web.intern.nav.no/kodeverksoversikt/kodeverk/Tema">se kodeverk</a>
  * (krever tilgang til sikker sone).
  */
-public enum GosysTema {
+enum GosysTema {
     TILTAK("TIL"), UFORETRYGD("UFO");
 
     private final String temakode;

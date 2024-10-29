@@ -16,7 +16,7 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class OppgaveVarselService {
+class OppgaveVarselService {
 
     private static final String CORR_ID = "X-Correlation-ID";
     private final URI uri;
