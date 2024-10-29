@@ -139,6 +139,14 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         return harTilgangPåTiltakIBedrift(avtale.getBedriftNr(), avtale.getTiltakstype());
     }
 
+    @Override
+    public boolean avtalenEksisterer(Avtale avtale) {
+        if (avtale.getOpphav().equals(Avtaleopphav.ARENA) && !avtale.erAvtaleInngått()) {
+            return false;
+        }
+        return super.avtalenEksisterer(avtale);
+    }
+
     private boolean harTilgangPåTiltakIBedrift(BedriftNr bedriftNr, Tiltakstype tiltakstype) {
         if (!tilganger.containsKey(bedriftNr)) {
             return false;

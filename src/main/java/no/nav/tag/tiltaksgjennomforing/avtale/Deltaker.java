@@ -20,9 +20,18 @@ public class Deltaker extends Avtalepart<Fnr> {
         Avtale avtale = super.hentAvtale(avtaleRepository,avtaleId);
         return skjulMentorFødselsnummer(avtale);
     }
+
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
         return avtale.getDeltakerFnr().equals(getIdentifikator());
+    }
+
+    @Override
+    public boolean avtalenEksisterer(Avtale avtale) {
+        if (avtale.getOpphav().equals(Avtaleopphav.ARENA) && !avtale.erAvtaleInngått()) {
+            return false;
+        }
+        return super.avtalenEksisterer(avtale);
     }
 
     @Override
