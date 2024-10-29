@@ -23,12 +23,9 @@ class LagGosysVarselLytter {
     private final OppgaveVarselService oppgaveVarselService;
     private final PersondataService persondataService;
 
-    private static final DateTimeFormatter NORSK_DATO = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(
-            Locale.availableLocales()
-                    .filter(x -> x.toLanguageTag().equals("nb-NO"))
-                    .findFirst()
-                    .orElseThrow(() -> new RuntimeException("Fant ikke norsk lokalisering"))
-    );
+    private static final DateTimeFormatter NORSK_DATO = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
+            .withLocale(Locale.forLanguageTag("nb-NO"));
+    
     protected final static String GOSYS_OPPRETTET_AVTALE_BESKRIVELSE = "Avtale er opprettet av arbeidsgiver på tiltak %s. Se avtalen under filteret 'Ufordelte' i https://tiltaksgjennomforing.intern.nav.no/tiltaksgjennomforing";
     protected final static String GOSYS_AVTALE_HENTET_FRA_ARENA = "Avtale hentet fra Arena på tiltak %s. Se avtalen her: https://tiltaksgjennomforing.intern.nav.no/tiltaksgjennomforing/avtale/%s";
     protected final static String VTAO_INNGÅTT = "Brukeren har fått innvilget tiltaksplass og har startet på varig tilrettelagt arbeid i skjermet/ordinær bedrift %s.";
