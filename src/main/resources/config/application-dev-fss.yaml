@@ -71,7 +71,7 @@ no.nav.security.jwt:
       oppgave:
         token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
         grant-type: client_credentials
-        scope: api://dev-fss.oppgavehandtering.oppgave-q1/.default
+        scope: api://dev-fss.oppgavehandtering.oppgave/.default
         authentication:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
@@ -137,7 +137,7 @@ tiltaksgjennomforing:
     uri: https://axsys.nais.preprod.local/api/v1/tilgang
     nav-consumer-id: ${tiltaksgjennomforing.serviceuser.username}
   oppgave:
-    oppgave-uri: https://oppgave.nais.preprod.local/api/v1/oppgaver
+    oppgave-uri: https://oppgave.dev.intern.nav.no/api/v1/oppgaver
   unleash:
     enabled: true
     api-uri: ${UNLEASH_SERVER_API_URL}/api
