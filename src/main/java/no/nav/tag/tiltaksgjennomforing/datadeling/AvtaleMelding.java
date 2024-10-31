@@ -120,6 +120,10 @@ public class AvtaleMelding {
     String forkortetGrunn;
 
     public static AvtaleMelding create(Avtale avtale, AvtaleInnhold avtaleInnhold, Identifikator utførtAv, AvtaleHendelseUtførtAvRolle utførtAvAvtaleRolle, HendelseType hendelseType) {
+        return create(avtale, avtaleInnhold, utførtAv, utførtAvAvtaleRolle, hendelseType, null);
+    }
+
+    public static AvtaleMelding create(Avtale avtale, AvtaleInnhold avtaleInnhold, Identifikator utførtAv, AvtaleHendelseUtførtAvRolle utførtAvAvtaleRolle, HendelseType hendelseType, String forkortetGrunn) {
 
         AvtaleMelding avtaleMelding = new AvtaleMelding();
         avtaleMelding.setHendelseType(hendelseType);
@@ -211,6 +215,7 @@ public class AvtaleMelding {
         avtaleMelding.setInnholdType(avtaleInnhold.getInnholdType());
         avtaleMelding.setUtførtAv(utførtAv);
         avtaleMelding.setUtførtAvRolle(utførtAvAvtaleRolle);
+        avtaleMelding.setForkortetGrunn(forkortetGrunn);
 
         //Lister
         avtaleMelding.setTilskuddPeriode(Collections.emptySortedSet());
