@@ -117,6 +117,7 @@ public class AvtaleMelding {
     AvtaleInnholdType innholdType;
     Identifikator utførtAv;
     AvtaleHendelseUtførtAvRolle utførtAvRolle;
+    String forkortetGrunn;
 
     public static AvtaleMelding create(Avtale avtale, AvtaleInnhold avtaleInnhold, Identifikator utførtAv, AvtaleHendelseUtførtAvRolle utførtAvAvtaleRolle, HendelseType hendelseType) {
 

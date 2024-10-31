@@ -64,7 +64,8 @@ public class AvtaleHendelseLytter {
 
     @EventListener
     public void avtaleForkortet(AvtaleForkortet event) {
-        lagHendelse(event.getAvtale(), HendelseType.AVTALE_FORKORTET, event.getUtførtAv(), AvtaleHendelseUtførtAvRolle.VEILEDER);
+        String forkortetGrunn = event.getAnnetGrunn() != null ? event.getAnnetGrunn() : event.getGrunn();
+        lagHendelse(event.getAvtale(), HendelseType.AVTALE_FORKORTET, event.getUtførtAv(), AvtaleHendelseUtførtAvRolle.VEILEDER, forkortetGrunn);
     }
 
     @EventListener
@@ -168,10 +169,14 @@ public class AvtaleHendelseLytter {
     }
 
     private void lagHendelse(Avtale avtale, HendelseType hendelseType, Identifikator utførtAv, AvtaleHendelseUtførtAvRolle utførtAvRolle) {
+        lagHendelse(avtale, hendelseType, utførtAv, utførtAvRolle, null);
+    }
+    private void lagHendelse(Avtale avtale, HendelseType hendelseType, Identifikator utførtAv, AvtaleHendelseUtførtAvRolle utførtAvRolle, String forkortetGrunn) {
         LocalDateTime tidspunkt = Now.localDateTime();
         UUID meldingId = UUID.randomUUID();
 
         var melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), utførtAv, utførtAvRolle, hendelseType);
+        melding.setForkortetGrunn(forkortetGrunn);
         try {
             String meldingSomString = objectMapper.writeValueAsString(melding);
             AvtaleMeldingEntitet entitet = new AvtaleMeldingEntitet(meldingId, avtale.getId(), tidspunkt, hendelseType, avtale.statusSomEnum(), meldingSomString);
