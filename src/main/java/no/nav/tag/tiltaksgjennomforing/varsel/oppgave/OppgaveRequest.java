@@ -27,7 +27,7 @@ class OppgaveRequest {
         this.aktoerId = aktoerId;
         this.tema = tema.getTemakode();
         this.behandlingstype = behandlingstype.getBehandlingstypekode();
-        this.behandlingstema = tiltakstype.getBehandlingstema();
+        this.behandlingstema = tiltakstype == null ? null : tiltakstype.getBehandlingstema();
         this.beskrivelse = beskrivelse;
     }
 }

@@ -44,9 +44,9 @@ class LagGosysVarselLytter {
         }
         try {
             oppgaveVarselService.opprettOppgave(new OppgaveRequest(aktørid, GosysTema.TILTAK, GosysBehandlingstype.SOKNAD, tiltakstype, beskrivelse));
-            log.info("Opprettet gosys-oppgave for avtale opprettet (aktoer = {}, avtaleid = {})", aktørid, avtale.getId());
+            log.info("Opprettet gosys-oppgave for avtale opprettet (avtaleid = {})", avtale.getId());
         } catch (Exception e) {
-            log.error("Klarte ikke opprette oppgave for avtale opprettet (aktoer = {}, avtaleid = {})", aktørid, avtale.getId(), e);
+            log.error("Klarte ikke opprette oppgave for avtale opprettet (avtaleid = {})", avtale.getId(), e);
             throw e;
         }
     }
@@ -58,7 +58,7 @@ class LagGosysVarselLytter {
                     aktørid,
                     GosysTema.UFORETRYGD,
                     GosysBehandlingstype.INGEN,
-                    Tiltakstype.VTAO,
+                    null,
                     format(VTAO_INNGÅTT, NORSK_DATO.format(avtale.getGjeldendeInnhold().getStartDato())))
             );
             log.info("Opprettet oppgave for vtao-avtale inngått (avtaleid = {})", avtale.getId());
