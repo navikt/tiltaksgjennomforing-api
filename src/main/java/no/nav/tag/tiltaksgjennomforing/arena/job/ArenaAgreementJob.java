@@ -14,7 +14,7 @@ import java.util.List;
 @Component
 @Profile({ Miljø.DEV_FSS, Miljø.PROD_FSS })
 public class ArenaAgreementJob {
-    private static final int ONE_MIN_IN_MS = 60 * 1000;
+    private static final int TEN_SECONDS_IN_MS = 10 * 1000;
 
     private final ArenaAgreementService arenaAgreementService;
     private final FeatureToggleService featureToggleService;
@@ -27,7 +27,7 @@ public class ArenaAgreementJob {
         this.featureToggleService = featureToggleService;
     }
 
-    @Scheduled(fixedDelay = ONE_MIN_IN_MS)
+    @Scheduled(fixedDelay = TEN_SECONDS_IN_MS)
     public void run() {
         if (!featureToggleService.isEnabled(FeatureToggle.ARENA_AVTALE_SYNC)) {
             return;
