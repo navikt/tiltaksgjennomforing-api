@@ -1,29 +1,34 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.oppgave;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
+import lombok.Value;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDate;
 
-@Data
+@Value
 class OppgaveRequest {
-    private final static String HOY_PRI = "NORM";
-    private final static String OPPG_TYPE = "VURD_HENV";
-
-    private final String beskrivelse;
-    private final String tema;
-    private final String prioritet = HOY_PRI;
-    private final String oppgavetype = OPPG_TYPE;
-    private final String behandlingstype;
-    private final String behandlingstema;
+    String beskrivelse;
+    String tema;
+    String prioritet = "NORM";
+    String oppgavetype = "VURD_HENV";
+    String behandlingstype;
+    String behandlingstema;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private final LocalDate aktivDato = Now.localDate();
-    private final String aktoerId;
+    LocalDate aktivDato = Now.localDate();
+    String aktoerId;
 
-    public OppgaveRequest(String aktoerId, GosysTema tema, GosysBehandlingstype behandlingstype, Tiltakstype tiltakstype, String beskrivelse) {
+    public OppgaveRequest(
+            @NotNull String aktoerId,
+            @NotNull GosysTema tema,
+            @NotNull GosysBehandlingstype behandlingstype,
+            @Nullable Tiltakstype tiltakstype,
+            @NotNull String beskrivelse
+    ) {
         this.aktoerId = aktoerId;
         this.tema = tema.getTemakode();
         this.behandlingstype = behandlingstype.getBehandlingstypekode();
