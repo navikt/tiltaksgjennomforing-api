@@ -45,10 +45,10 @@ class OppgaveVarselService {
                 OppgaveResponse.class
             );
         } catch (Exception e2) {
-            log.error("Kall til Oppgave feilet : {}", e2.getMessage(), e2);
+            log.error("Klarte ikke opprette Oppgave i Gosys", e2);
             throw new GosysFeilException();
         }
-        log.info("Opprettet oppgave for tiltak. OppgaveId={}", oppgaveResponse.getId());
+        log.info("Opprettet Oppgave i Gosys. OppgaveId={}", oppgaveResponse.getId());
     }
 
     @Data
