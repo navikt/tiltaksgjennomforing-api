@@ -10,12 +10,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @Profile({ Miljø.DEV_FSS, Miljø.PROD_FSS })
 public class ArenaAgreementJob {
-    private static final int TEN_SECONDS_IN_MS = 10 * 1000;
-
     private final ArenaAgreementService arenaAgreementService;
     private final FeatureToggleService featureToggleService;
 
@@ -27,7 +26,7 @@ public class ArenaAgreementJob {
         this.featureToggleService = featureToggleService;
     }
 
-    @Scheduled(fixedDelay = TEN_SECONDS_IN_MS)
+    @Scheduled(fixedDelay = 10, timeUnit = TimeUnit.SECONDS)
     public void run() {
         if (!featureToggleService.isEnabled(FeatureToggle.ARENA_AVTALE_SYNC)) {
             return;
