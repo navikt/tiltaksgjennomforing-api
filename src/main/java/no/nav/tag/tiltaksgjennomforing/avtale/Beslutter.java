@@ -150,11 +150,6 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     @Override
-    public boolean erGodkjentAvInnloggetBruker(Avtale avtale) {
-        return false;
-    }
-
-    @Override
     boolean kanOppheveGodkjenninger(Avtale avtale) {
         return false;
     }

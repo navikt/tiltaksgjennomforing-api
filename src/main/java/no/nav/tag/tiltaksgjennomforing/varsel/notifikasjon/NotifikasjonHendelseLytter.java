@@ -123,6 +123,7 @@ public class NotifikasjonHendelseLytter {
 
     @EventListener
     public void avtaleAnnullert(AnnullertAvVeileder event) {
+        if (smsMinSideArbeidsgiverToggleErPå()) return; // notifikasjon henter alle notifikasjoner på avtalen og softdeleter de
         notifikasjonService.softDeleteNotifikasjoner(event.getAvtale());
     }
 

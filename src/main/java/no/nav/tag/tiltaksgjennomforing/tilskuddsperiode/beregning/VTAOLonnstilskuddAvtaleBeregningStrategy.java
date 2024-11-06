@@ -11,12 +11,13 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static no.nav.tag.tiltaksgjennomforing.satser.Sats.VTAO_SATS;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.erIkkeTomme;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 
 public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilskuddAvtaleBeregningStrategy {
 
-    public void genererNyeTilskuddsperioder(Avtale avtale){
+    public void genererNyeTilskuddsperioder(Avtale avtale) {
         if (avtale.erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LAGE_NYE_TILSKUDDSPRIODER_INNGAATT_AVTALE);
         }
@@ -24,12 +25,13 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilsk
         avtale.getTilskuddPeriode().removeIf(t -> (t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) || (t.getStatus() == TilskuddPeriodeStatus.BEHANDLET_I_ARENA));
         AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
 
-        if(erIkkeTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato())){
-           tilskuddsperioder = beregnTilskuddsperioderForVTAO(avtale);
+        if (erIkkeTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato())) {
+            tilskuddsperioder = beregnTilskuddsperioderForVTAO(avtale);
         }
         fikseLøpenumre(tilskuddsperioder, 1);
         avtale.leggtilNyeTilskuddsperioder(tilskuddsperioder);
     }
+
     public List<TilskuddPeriode> hentTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
         List<TilskuddPeriode> tilskuddsperioder = beregnTilskuddsperioderForVTAOAvtale(
                 startDato,
@@ -40,21 +42,20 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilsk
         return tilskuddsperioder;
     }
 
-    private static List<TilskuddPeriode>  beregnTilskuddsperioderForVTAOAvtale(LocalDate datoFraOgMed, LocalDate datoTilOgMed) {
-        List<TilskuddPeriode> tilskuddperioder = LonnstilskuddAvtaleBeregningStrategy.lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
+    private static List<TilskuddPeriode> beregnTilskuddsperioderForVTAOAvtale(LocalDate datoFraOgMed, LocalDate datoTilOgMed) {
+        return LonnstilskuddAvtaleBeregningStrategy.lagPeriode(datoFraOgMed, datoTilOgMed).stream().map(datoPar -> {
             Integer beløp;
-            // TODO: beløpet og "cut-off"-datoen" her er hardkodet og må byttes ut før prodsetting av VTAO
-            if (datoPar.getStart().isAfter(LocalDate.of(2024,12, 31))) {
+            var sats = VTAO_SATS.hentGjeldendeSats(datoPar.getStart());
+            if (sats == null) {
                 beløp = null;
             } else {
-                beløp = LonnstilskuddAvtaleBeregningStrategy.beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), 6808);
+                beløp = LonnstilskuddAvtaleBeregningStrategy.beløpForPeriode(datoPar.getStart(), datoPar.getSlutt(), sats);
             }
             return new TilskuddPeriode(beløp, datoPar.getStart(), datoPar.getSlutt());
         }).toList();
-        return tilskuddperioder;
     }
 
-    public List<TilskuddPeriode> beregnTilskuddsperioderForVTAO(Avtale avtale){
+    public List<TilskuddPeriode> beregnTilskuddsperioderForVTAO(Avtale avtale) {
         AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
         LocalDate startDato = gjeldendeInnhold.getStartDato();
         LocalDate sluttDato = gjeldendeInnhold.getSluttDato();

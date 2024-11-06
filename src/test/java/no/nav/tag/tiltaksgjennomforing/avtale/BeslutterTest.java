@@ -3,9 +3,8 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -23,41 +22,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class BeslutterTest {
-
-    private TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-    private AvtaleRepository avtaleRepository = mock(AvtaleRepository.class);
-    private AxsysService axsysService = mock(AxsysService.class);
-    private Norg2Client norg2Client = mock(Norg2Client.class);
-
-    /*@Test
-    public void hentAlleAvtalerMedMuligTilgang__hent_ingen_GODKJENTE_når_avtaler_har_gjeldende_tilskuddsperiodestatus_ubehandlet() {
-
-        // GITT
-        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        TilskuddPeriode tilskuddPeriode = new TilskuddPeriode();
-        tilskuddPeriode.setStatus(TilskuddPeriodeStatus.GODKJENT);
-        tilskuddPeriode.setBeløp(1200);
-        tilskuddPeriode.setAvtale(avtale);
-        avtale.setTilskuddPeriode(new TreeSet<>(List.of(tilskuddPeriode)));
-        Beslutter beslutter = new Beslutter(new NavIdent("J987654"), tilgangskontrollService, axsysService, norg2Client);
-        Integer plussDato = ((int) ChronoUnit.DAYS.between(Now.localDate(), Now.localDate().plusMonths(3)));
-        AvtalePredicate avtalePredicate = new AvtalePredicate();
-        avtalePredicate.setTilskuddPeriodeStatus(TilskuddPeriodeStatus.UBEHANDLET);
-        Pageable pageable = PageRequest.of(0, 100);
-
-        Page<AvtaleMinimal> avtalerMedTilskuddsperioder = avtaleRepository
-                .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandletMinimal(TilskuddPeriodeStatus.UBEHANDLET.name(), Set.of(TestData.ENHET_OPPFØLGING.getVerdi(), plussDato, Set.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD.name(), "", pageable);
-
-
-        // NÅR
-        when(axsysService.hentEnheterNavAnsattHarTilgangTil(beslutter.getIdentifikator())).thenReturn(List.of(TestData.ENHET_OPPFØLGING));
-        when(avtaleRepository
-                .finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterUbehandletMinimal(TilskuddPeriodeStatus.UBEHANDLET.name(), Set.of(TestData.ENHET_OPPFØLGING.getVerdi()), plussDato, Set.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD.name()), "", pageable))
-                .thenReturn(new PageImpl<AvtaleMinimal>(List.of(avtale)));
-        List<Avtale> avtaler = beslutter.hentAlleAvtalerMedMuligTilgang(avtaleRepository, avtalePredicate);
-
-        assertThat(avtaler).isEmpty();
-    }*/
 
     @Test
     public void toggle_godkjent_for_etterregistrering() {
@@ -93,7 +57,7 @@ class BeslutterTest {
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
                 false,
-                mock(VeilarbArenaClient.class));
+                mock(VeilarboppfolgingService.class));
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class)))
                 .thenReturn(true);

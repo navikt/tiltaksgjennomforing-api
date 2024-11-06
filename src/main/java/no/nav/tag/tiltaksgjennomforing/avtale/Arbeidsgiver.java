@@ -101,11 +101,6 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     @Override
-    public boolean erGodkjentAvInnloggetBruker(Avtale avtale) {
-        return avtale.erGodkjentAvArbeidsgiver();
-    }
-
-    @Override
     boolean kanOppheveGodkjenninger(Avtale avtale) {
         return !avtale.erGodkjentAvVeileder();
     }
@@ -142,6 +137,14 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
             return false;
         }
         return harTilgangPåTiltakIBedrift(avtale.getBedriftNr(), avtale.getTiltakstype());
+    }
+
+    @Override
+    public boolean avtalenEksisterer(Avtale avtale) {
+        if (avtale.getOpphav().equals(Avtaleopphav.ARENA) && !avtale.erAvtaleInngått()) {
+            return false;
+        }
+        return super.avtalenEksisterer(avtale);
     }
 
     private boolean harTilgangPåTiltakIBedrift(BedriftNr bedriftNr, Tiltakstype tiltakstype) {
@@ -185,7 +188,8 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
     public List<Avtale> hentAvtalerForMinsideArbeidsgiver(AvtaleRepository avtaleRepository, BedriftNr bedriftNr) {
         return avtaleRepository.findAllByBedriftNrAndFeilregistrertIsFalse(bedriftNr).stream()
-                .filter(this::harTilgang)
+                .filter(this::avtalenEksisterer)
+                .filter(this::harTilgangTilAvtale)
                 .map(Arbeidsgiver::fjernAvbruttGrunn)
                 .map(Arbeidsgiver::fjernAnnullertGrunn)
                 .collect(Collectors.toList());

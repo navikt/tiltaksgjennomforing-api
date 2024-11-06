@@ -7,6 +7,9 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.enhet.*;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.HentOppfolgingsstatusRequest;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.HentOppfolgingsstatusRespons;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
@@ -39,18 +42,18 @@ import static org.mockito.Mockito.mock;
 public class CachingConfigTest {
 
     private final CacheManager cacheManager;
-    private final VeilarbArenaClient veilarbArenaClient;
+    private final VeilarboppfolgingService veilarboppfolgingService;
     private final Norg2Client norg2Client;
     private final PersondataService persondataService;
 
     public CachingConfigTest(
             @Autowired CacheManager cacheManager,
-            @Autowired VeilarbArenaClient veilarbArenaClient,
+            @Autowired VeilarboppfolgingService veilarboppfolgingService,
             @Autowired Norg2Client norg2Client,
             @Autowired PersondataService persondataService
     ){
         this.cacheManager = cacheManager;
-        this.veilarbArenaClient = veilarbArenaClient;
+        this.veilarboppfolgingService = veilarboppfolgingService;
         this.norg2Client = norg2Client;
         this.persondataService = persondataService;
     }
@@ -71,15 +74,27 @@ public class CachingConfigTest {
         TestData.setGeoNavEnhet(avtale, oppfolgingNavEnhet);
         TestData.setOppfolgingNavEnhet(avtale, oppfolgingNavEnhet);
 
-        veilarbArenaClient.HentOppfølgingsenhetFraCacheEllerArena(avtale.getDeltakerFnr().asString());
-        veilarbArenaClient.HentOppfølgingsenhetFraCacheEllerArena(ETT_FNR_NR2);
-        veilarbArenaClient.HentOppfølgingsenhetFraCacheEllerArena(ETT_FNR_NR2);
-        veilarbArenaClient.HentOppfølgingsenhetFraCacheEllerArena(ETT_FNR_NR3);
-        veilarbArenaClient.HentOppfølgingsenhetFraCacheEllerArena(ETT_FNR_NR2);
+        veilarboppfolgingService.hentOppfolgingsstatus(avtale.getDeltakerFnr().asString());
+        veilarboppfolgingService.hentOppfolgingsstatus(ETT_FNR_NR2);
+        veilarboppfolgingService.hentOppfolgingsstatus(ETT_FNR_NR2);
+        veilarboppfolgingService.hentOppfolgingsstatus(ETT_FNR_NR3);
+        veilarboppfolgingService.hentOppfolgingsstatus(ETT_FNR_NR2);
 
-        Assertions.assertEquals("0906", getCacheValue(ARENA_CACHE, ETT_FNR_NR, Oppfølgingsstatus.class).getOppfolgingsenhet());
-        Assertions.assertEquals("0904", getCacheValue(ARENA_CACHE, ETT_FNR_NR2, Oppfølgingsstatus.class).getOppfolgingsenhet());
-        Assertions.assertEquals("0906", getCacheValue(ARENA_CACHE, ETT_FNR_NR3, Oppfølgingsstatus.class).getOppfolgingsenhet());
+        Assertions.assertEquals(
+            "0906",
+            getCacheValue(VEILARBOPPFOLGING_CACHE, new HentOppfolgingsstatusRequest(ETT_FNR_NR),
+            HentOppfolgingsstatusRespons.class
+        ).oppfolgingsenhet().enhetId());
+        Assertions.assertEquals(
+            "0904",
+            getCacheValue(VEILARBOPPFOLGING_CACHE, new HentOppfolgingsstatusRequest(ETT_FNR_NR2),
+            HentOppfolgingsstatusRespons.class
+        ).oppfolgingsenhet().enhetId());
+        Assertions.assertEquals(
+            "0906",
+            getCacheValue(VEILARBOPPFOLGING_CACHE, new HentOppfolgingsstatusRequest(ETT_FNR_NR3),
+            HentOppfolgingsstatusRespons.class
+        ).oppfolgingsenhet().enhetId());
     }
 
     @Test
@@ -166,7 +181,7 @@ public class CachingConfigTest {
                 Set.of(new NavEnhet(avtale.getEnhetOppfolging(), avtale.getEnhetsnavnOppfolging())),
                 new SlettemerkeProperties(),
                 false,
-                veilarbArenaClient
+            veilarboppfolgingService
         );
 
         lenient().when(mockTilgangskontrollService.harSkrivetilgangTilKandidat(
@@ -199,7 +214,11 @@ public class CachingConfigTest {
                 Norg2GeoResponse.class
         );
         PdlRespons pdlCache = getCacheValue(PDL_CACHE, avtale.getDeltakerFnr(), PdlRespons.class);
-        Oppfølgingsstatus arenaCache = getCacheValue(ARENA_CACHE, avtale.getDeltakerFnr().asString(), Oppfølgingsstatus.class);
+        HentOppfolgingsstatusRespons arenaCache = getCacheValue(
+            VEILARBOPPFOLGING_CACHE,
+            new HentOppfolgingsstatusRequest(avtale.getDeltakerFnr().asString()),
+            HentOppfolgingsstatusRespons.class
+        );
 
         Assertions.assertEquals("NAV St. Hanshaugen", norggeoenhetCacheForGeoEnhet.getNavn());
         Assertions.assertEquals("0313", norggeoenhetCacheForGeoEnhet.getEnhetNr());
@@ -212,6 +231,6 @@ public class CachingConfigTest {
         Assertions.assertEquals("Donald", persondataService.hentNavnFraPdlRespons(pdlCache).getFornavn());
         Assertions.assertEquals("Duck", persondataService.hentNavnFraPdlRespons(pdlCache).getEtternavn());
 
-        Assertions.assertEquals("0906", arenaCache.getOppfolgingsenhet());
+        Assertions.assertEquals("0906", arenaCache.oppfolgingsenhet().enhetId());
     }
 }

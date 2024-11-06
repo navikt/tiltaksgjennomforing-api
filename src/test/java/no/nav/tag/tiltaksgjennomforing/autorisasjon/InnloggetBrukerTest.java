@@ -3,7 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -29,7 +29,7 @@ public class InnloggetBrukerTest {
     private KontoregisterService kontoregisterService;
     private PersondataService persondataService;
     private Norg2Client norg2Client;
-    private VeilarbArenaClient veilarbArenaClient;
+    private VeilarboppfolgingService veilarboppfolgingService;
     private AvtaleRepository avtaleRepository;
 
     @BeforeEach
@@ -41,13 +41,13 @@ public class InnloggetBrukerTest {
         tilgangskontrollService = mock(TilgangskontrollService.class);
         persondataService = mock(PersondataService.class);
         kontoregisterService = mock(KontoregisterService.class);
-        veilarbArenaClient = mock(VeilarbArenaClient.class);
+        veilarboppfolgingService = mock(VeilarboppfolgingService.class);
         avtaleRepository = mock(AvtaleRepository.class);
     }
 
     @Test
     public void harTilgang__deltaker_skal_ha_tilgang_til_avtale() {
-        assertThat(new Deltaker(deltaker).harTilgang(avtale)).isTrue();
+        assertThat(new Deltaker(deltaker).harTilgangTilAvtale(avtale)).isTrue();
     }
 
     @Test
@@ -60,14 +60,14 @@ public class InnloggetBrukerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarbArenaClient
+                veilarboppfolgingService
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 veileder,
                 avtale.getDeltakerFnr())
         ).thenReturn(true);
 
-        assertThat(veileder.harTilgang(avtale)).isTrue();
+        assertThat(veileder.harTilgangTilAvtale(avtale)).isTrue();
         verify(tilgangskontrollService).harSkrivetilgangTilKandidat(veileder, avtale.getDeltakerFnr());
     }
 
@@ -81,14 +81,14 @@ public class InnloggetBrukerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarbArenaClient
+                veilarboppfolgingService
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 veileder,
                 avtale.getDeltakerFnr()
         )).thenReturn(false);
 
-        assertThat(veileder.harTilgang(avtale)).isFalse();
+        assertThat(veileder.harTilgangTilAvtale(avtale)).isFalse();
     }
 
     @Test
@@ -100,14 +100,15 @@ public class InnloggetBrukerTest {
                 norg2Client,
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
-                false, veilarbArenaClient
+                false,
+                veilarboppfolgingService
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 veileder,
                 avtale.getDeltakerFnr())
         ).thenReturn(true);
 
-        assertThat(veileder.harTilgang(avtale)).isTrue();
+        assertThat(veileder.harTilgangTilAvtale(avtale)).isTrue();
         verify(tilgangskontrollService).harSkrivetilgangTilKandidat(veileder, avtale.getDeltakerFnr());
     }
 
@@ -121,14 +122,14 @@ public class InnloggetBrukerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarbArenaClient
+                veilarboppfolgingService
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 veileder,
                 avtale.getDeltakerFnr())
         ).thenReturn(false);
 
-        assertThat(veileder.harTilgang(avtale)).isFalse();
+        assertThat(veileder.harTilgangTilAvtale(avtale)).isFalse();
     }
 
     @Test
@@ -139,7 +140,7 @@ public class InnloggetBrukerTest {
                         Map.of(),
                         null,
                         null
-                ).harTilgang(avtale)
+                ).harTilgangTilAvtale(avtale)
         ).isFalse();
     }
 
@@ -154,8 +155,8 @@ public class InnloggetBrukerTest {
                         Collections.emptySet(),
                         new SlettemerkeProperties(),
                         false,
-                        veilarbArenaClient
-                ).harTilgang(avtale)
+                        veilarboppfolgingService
+                ).harTilgangTilAvtale(avtale)
         ).isFalse();
     }
 
@@ -170,8 +171,8 @@ public class InnloggetBrukerTest {
                         Collections.emptySet(),
                         new SlettemerkeProperties(),
                         false,
-                        veilarbArenaClient
-                ).harTilgang(avtale)
+                        veilarboppfolgingService
+                ).harTilgangTilAvtale(avtale)
         ).isFalse();
     }
 
@@ -183,7 +184,7 @@ public class InnloggetBrukerTest {
                         Set.of(),
                         Map.of(),
                         null,
-                        null).harTilgang(avtale)
+                        null).harTilgangTilAvtale(avtale)
         ).isFalse();
     }
 
@@ -197,7 +198,7 @@ public class InnloggetBrukerTest {
                 null,
                 null
         );
-        assertThat(Arbeidsgiver.harTilgang(avtale)).isTrue();
+        assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale)).isTrue();
     }
 
     @Test
@@ -212,7 +213,7 @@ public class InnloggetBrukerTest {
         );
         avtale.setAvbrutt(true);
         avtale.setSistEndret(Now.instant().minus(84, ChronoUnit.DAYS).minusMillis(100));
-        assertThat(arbeidsgiver.harTilgang(avtale)).isFalse();
+        assertThat(arbeidsgiver.harTilgangTilAvtale(avtale)).isFalse();
     }
 
     @Test
@@ -227,7 +228,7 @@ public class InnloggetBrukerTest {
                 null,
                 null
         );
-        assertThat(Arbeidsgiver.harTilgang(avtale)).isFalse();
+        assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale)).isFalse();
     }
 
     @Test
@@ -242,7 +243,7 @@ public class InnloggetBrukerTest {
                 null,
                 null
         );
-        assertThat(Arbeidsgiver.harTilgang(avtale)).isTrue();
+        assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale)).isTrue();
     }
 
     @Test
@@ -256,6 +257,6 @@ public class InnloggetBrukerTest {
                 null,
                 null
         );
-        assertThat(arbeidsgiver.harTilgang(avtale)).isFalse();
+        assertThat(arbeidsgiver.harTilgangTilAvtale(avtale)).isFalse();
     }
 }

@@ -6,7 +6,7 @@ import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.UtviklerTilgangProperties;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
-import no.nav.tag.tiltaksgjennomforing.enhet.VeilarbArenaClient;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -33,7 +33,7 @@ public class AdminController {
     private final TilskuddPeriodeRepository tilskuddPeriodeRepository;
     private final UtviklerTilgangProperties utviklerTilgangProperties;
     private final TokenUtils tokenUtils;
-    private final VeilarbArenaClient veilarbArenaClient;
+    private final VeilarboppfolgingService veilarboppfolgingService;
 
     private void sjekkTilgang() {
         if (!tokenUtils.harAdGruppe(utviklerTilgangProperties.getGruppeTilgang())) {
@@ -207,7 +207,7 @@ public class AdminController {
         } else {
             throw new RessursFinnesIkkeException();
         }
-        return veilarbArenaClient.hentOppfølgingStatus(avtale.getDeltakerFnr().asString());
+        return veilarboppfolgingService.hentOppfolgingsstatus(avtale.getDeltakerFnr().asString());
     }
 
 }

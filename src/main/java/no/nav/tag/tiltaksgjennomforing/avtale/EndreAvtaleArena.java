@@ -16,15 +16,17 @@ import java.util.Optional;
 @AllArgsConstructor
 public class EndreAvtaleArena implements Comparable<Avtale> {
     public enum Handling {
+        GJENOPPRETT,
         OPPDATER,
         AVSLUTT,
         ANNULLER;
 
         public static Handling map(ArenaMigrationAction arenaMigrationAction) {
             return switch (arenaMigrationAction) {
-                case UPDATE -> OPPDATER;
-                case TERMINATE -> ANNULLER;
-                case END -> AVSLUTT;
+                case GJENOPPRETT -> GJENOPPRETT;
+                case OPPDATER -> OPPDATER;
+                case ANNULLER -> ANNULLER;
+                case AVSLUTT -> AVSLUTT;
                 default -> throw new IllegalArgumentException("Ugyldig handling: " + arenaMigrationAction);
             };
         }

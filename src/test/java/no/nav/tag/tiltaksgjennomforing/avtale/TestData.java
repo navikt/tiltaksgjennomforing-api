@@ -4,6 +4,7 @@ import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.*;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.*;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.*;
 import no.nav.tag.tiltaksgjennomforing.sporingslogg.Sporingslogg;
@@ -704,7 +705,7 @@ public class TestData {
             Avtalepart<NavIdent> veileder,
             PdlRespons pdlRespons,
             TilgangskontrollService tilgangskontrollService,
-            VeilarbArenaClient veilarbArenaClient,
+            VeilarboppfolgingService veilarboppfolgingService,
             PersondataService persondataService,
             Norg2Client norg2Client
     ) {
@@ -713,7 +714,7 @@ public class TestData {
                 eq(avtale.getDeltakerFnr())
         )).thenReturn(true);
 
-        lenient().when(veilarbArenaClient.sjekkOgHentOppfølgingStatus(any()))
+        lenient().when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any()))
                 .thenReturn(
                         new Oppfølgingsstatus(
                                 Formidlingsgruppe.ARBEIDSSOKER,
@@ -729,8 +730,6 @@ public class TestData {
                         avtale.getEnhetsnavnOppfolging(),
                         avtale.getEnhetOppfolging()
                 ));
-        when(veilarbArenaClient.hentOppfølgingsEnhet(avtale.getDeltakerFnr().asString()))
-                .thenReturn(avtale.getEnhetOppfolging());
 
         when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
                 .thenReturn(new Norg2GeoResponse(
@@ -750,7 +749,7 @@ public class TestData {
         final PersondataService persondataService = mock(PersondataService.class);
         final Norg2Client norg2Client = mock(Norg2Client.class);
         final PdlRespons pdlRespons = TestData.enPdlrespons(false);
-        final VeilarbArenaClient veilarbArenaClient = mock(VeilarbArenaClient.class);
+        final VeilarboppfolgingService veilarbArenaClient = mock(VeilarboppfolgingService.class);
         var veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
                 tilgangskontrollService,
@@ -779,7 +778,7 @@ public class TestData {
 
     public static Veileder enVeileder(Avtale avtale) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        VeilarbArenaClient veilarbArenaClient = mock(VeilarbArenaClient.class);
+        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
 
         var veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
@@ -789,7 +788,7 @@ public class TestData {
                 Set.of(new NavEnhet("4802", "Oslo gamlebyen")),
                 new SlettemerkeProperties(),
                 false,
-                veilarbArenaClient
+                veilarboppfolgingService
         );
 
         lenient().when(
@@ -799,7 +798,7 @@ public class TestData {
                 )
         ).thenReturn(true);
 
-        lenient().when(veilarbArenaClient.sjekkOgHentOppfølgingStatus(any()))
+        lenient().when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any()))
                 .thenReturn(
                         new Oppfølgingsstatus(
                                 Formidlingsgruppe.ARBEIDSSOKER,
@@ -921,10 +920,10 @@ public class TestData {
     }
 
     public static Veileder enVeileder(NavIdent navIdent) {
-        return enVeileder(navIdent, mock(VeilarbArenaClient.class));
+        return enVeileder(navIdent, mock(VeilarboppfolgingService.class));
     }
 
-    public static Veileder enVeileder(NavIdent navIdent, VeilarbArenaClient veilarbArenaClient) {
+    public static Veileder enVeileder(NavIdent navIdent, VeilarboppfolgingService veilarboppfolgingService) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         var veileder = new Veileder(
                 navIdent,
@@ -934,7 +933,7 @@ public class TestData {
                 Set.of(ENHET_OPPFØLGING),
                 new SlettemerkeProperties(),
                 false,
-                veilarbArenaClient
+                veilarboppfolgingService
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
         return veileder;
@@ -950,7 +949,7 @@ public class TestData {
                 Set.of(ENHET_OPPFØLGING),
                 new SlettemerkeProperties(),
                 false,
-                mock(VeilarbArenaClient.class)
+                mock(VeilarboppfolgingService.class)
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 veileder,

@@ -6,4 +6,5 @@ public class AnnullertGrunn {
     public static final String FÅTT_TILBUD_OM_ANNET_TILTAK = "Fått tilbud om annet tiltak";
     public static final String SYK = "Syk";
     public static final String IKKE_MØTT = "Ikke møtt";
+    public static final String UTLØPT = "Utløpt";
 }
