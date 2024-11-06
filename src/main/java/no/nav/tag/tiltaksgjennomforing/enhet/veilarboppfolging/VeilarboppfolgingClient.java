@@ -6,14 +6,18 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Optional;
+
 @Slf4j
 @Component
 class VeilarboppfolgingClient {
+    private static final HttpStatusCode NOT_FOUND = HttpStatusCode.valueOf(404);
 
     private final RestTemplate restTemplate;
     private final VeilarboppfolgingProperties properties;
@@ -27,7 +31,7 @@ class VeilarboppfolgingClient {
     }
 
     @Cacheable(CacheConfig.VEILARBOPPFOLGING_CACHE)
-    public HentOppfolgingsstatusRespons hentOppfolgingsstatus(HentOppfolgingsstatusRequest request) {
+    public Optional<HentOppfolgingsstatusRespons> hentOppfolgingsstatus(HentOppfolgingsstatusRequest request) {
         log.info("Henter oppfølgingenhet fra veilarboppfolging");
 
         HttpHeaders headers = new HttpHeaders();
@@ -41,6 +45,10 @@ class VeilarboppfolgingClient {
             HentOppfolgingsstatusRespons.class
         );
 
-        return response.getBody();
+        if (NOT_FOUND.isSameCodeAs(response.getStatusCode()) || response.getBody() == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(response.getBody());
     }
 }
