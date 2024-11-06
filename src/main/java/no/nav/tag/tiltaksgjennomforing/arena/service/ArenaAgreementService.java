@@ -16,19 +16,19 @@ import java.util.List;
 public class ArenaAgreementService {
 
     private final ArenaAgreementProcessingService arenaAgreementProcessingService;
-    private final ArenaAgreementMigrationRepository arenaAgreementAggregateRepository;
+    private final ArenaAgreementMigrationRepository arenaAgreementMigrationRepository;
 
     public ArenaAgreementService(
             ArenaAgreementProcessingService arenaAgreementProcessingService,
-            ArenaAgreementMigrationRepository arenaAgreementAggregateRepository
+            ArenaAgreementMigrationRepository arenaAgreementMigrationRepository
     ) {
         this.arenaAgreementProcessingService = arenaAgreementProcessingService;
-        this.arenaAgreementAggregateRepository = arenaAgreementAggregateRepository;
+        this.arenaAgreementMigrationRepository = arenaAgreementMigrationRepository;
     }
 
     @Transactional
     public List<ArenaAgreementAggregate> getArenaAgreementsForProcessing() {
-        List<ArenaAgreementAggregate> agreementAggregates = arenaAgreementAggregateRepository.findMigrationAgreementAggregates();
+        List<ArenaAgreementAggregate> agreementAggregates = arenaAgreementMigrationRepository.findMigrationAgreementAggregates();
 
         agreementAggregates.forEach(aggregate -> {
             ArenaAgreementMigration migration = ArenaAgreementMigration.builder()
@@ -37,7 +37,7 @@ public class ArenaAgreementService {
                     .modified(LocalDateTime.now())
                     .build();
 
-            arenaAgreementAggregateRepository.save(migration);
+            arenaAgreementMigrationRepository.save(migration);
         });
 
         return agreementAggregates;

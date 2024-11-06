@@ -8,6 +8,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Slf4j
 @Aspect
 @Component
@@ -32,9 +34,9 @@ public class ArenaAgreementLoggingAspect {
     }
 
     private void beforeProcess(ArenaAgreementAggregate agreement) {
-        MDC.put(ARENA_TILTAKGJENNOMFORING_ID, agreement.getTiltakgjennomforingId().toString());
-        MDC.put(ARENA_TILTAKDELTAKER_ID, agreement.getTiltakdeltakerId().toString());
-        MDC.put(ARENA_SAK_ID, agreement.getSakId().toString());
+        MDC.put(ARENA_TILTAKGJENNOMFORING_ID, Optional.ofNullable(agreement.getTiltakgjennomforingId()).map(Object::toString).orElse(null));
+        MDC.put(ARENA_TILTAKDELTAKER_ID, Optional.ofNullable(agreement.getTiltakdeltakerId()).map(Object::toString).orElse(null));
+        MDC.put(ARENA_SAK_ID, Optional.ofNullable(agreement.getSakId()).map(Object::toString).orElse(null));
     }
 
     private void afterProcess() {
