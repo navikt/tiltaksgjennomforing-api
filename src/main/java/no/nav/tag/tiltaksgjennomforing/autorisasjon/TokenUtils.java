@@ -62,10 +62,6 @@ public class TokenUtils {
         return roller.map(strings -> strings.contains(rolle)).orElse(false);
     }
 
-    public Optional<JwtToken> hentJwtToken() {
-        return hentToken(ISSUER_SYSTEM).or(() -> hentToken(ISSUER_AAD)).or(() -> hentToken(ISSUER_TOKENX));
-    }
-
     private Optional<List<String>> hentClaims(Issuer issuer, String claim) {
         return hentClaimSet(issuer).filter(jwtClaimsSet -> innloggingsNivaOK(issuer, jwtClaimsSet))
                 .map(jwtClaimsSet -> (List<String>) jwtClaimsSet.get(claim));
