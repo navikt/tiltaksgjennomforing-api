@@ -33,9 +33,15 @@ public class VeilarboppfolgingService {
             throw new FeilkodeException(Feilkode.HENTING_AV_INNSATSBEHOV_FEILET);
         }
 
-        HentOppfolgingsstatusRespons respons = responsOpt
-            .orElseThrow(() -> new FeilkodeException(Feilkode.FANT_IKKE_INNSATSBEHOV));
+        if (responsOpt.isEmpty()) {
+            log.info(
+                "Fant ikke innsatsbehov for id {}",
+                Hashing.sha256().hashString(fnr + VeilarboppfolgingService.class.getName(), StandardCharsets.UTF_8)
+            );
+            throw new FeilkodeException(Feilkode.FANT_IKKE_INNSATSBEHOV);
+        }
 
+        HentOppfolgingsstatusRespons respons = responsOpt.get();
         log.info("Hentet servicegruppe {} og formidlingsgruppe {} for id {}",
             respons.servicegruppe(),
             respons.formidlingsgruppe(),
