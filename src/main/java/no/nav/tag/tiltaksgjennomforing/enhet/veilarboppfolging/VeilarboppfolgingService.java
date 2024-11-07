@@ -11,6 +11,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -23,23 +24,39 @@ public class VeilarboppfolgingService {
     }
 
     public Oppfølgingsstatus hentOppfolgingsstatus(String fnr) {
-        try {
-            HentOppfolgingsstatusRespons respons = client.hentOppfolgingsstatus(new HentOppfolgingsstatusRequest(fnr));
+        Optional<HentOppfolgingsstatusRespons> responsOpt;
 
-            log.info("Hentet servicegruppe {} og formidlingsgruppe {} for id {}",
-                respons.servicegruppe(),
-                respons.formidlingsgruppe(),
+        try {
+            responsOpt = client.hentOppfolgingsstatus(new HentOppfolgingsstatusRequest(fnr));
+        } catch (Exception e) {
+            log.error("Feil ved henting av oppfølgingsstatus fra veilarboppfolging", e);
+            throw new FeilkodeException(Feilkode.HENTING_AV_INNSATSBEHOV_FEILET);
+        }
+
+        if (responsOpt.isEmpty()) {
+            log.info(
+                "Fant ikke innsatsbehov for id {}",
                 Hashing.sha256().hashString(fnr + VeilarboppfolgingService.class.getName(), StandardCharsets.UTF_8)
             );
+            throw new FeilkodeException(Feilkode.FANT_IKKE_INNSATSBEHOV);
+        }
 
+        HentOppfolgingsstatusRespons respons = responsOpt.get();
+        log.info("Hentet servicegruppe {} og formidlingsgruppe {} for id {}",
+            respons.servicegruppe(),
+            respons.formidlingsgruppe(),
+            Hashing.sha256().hashString(fnr + VeilarboppfolgingService.class.getName(), StandardCharsets.UTF_8)
+        );
+
+        try {
             return new Oppfølgingsstatus(
                 Formidlingsgruppe.parse(respons.formidlingsgruppe()),
                 Kvalifiseringsgruppe.parse(respons.servicegruppe()),
                 respons.oppfolgingsenhet().enhetId()
             );
         } catch (Exception e) {
-            log.error("Feil ved henting av oppfølgingsstatus fra veilarboppfolging", e);
-            throw new FeilkodeException(Feilkode.HENTING_AV_INNSATS_BEHOV_FEILET);
+            log.error("Feil ved parsing av oppfølgingsstatus", e);
+            throw new FeilkodeException(Feilkode.HENTING_AV_INNSATSBEHOV_FEILET);
         }
     }
 
@@ -47,14 +64,6 @@ public class VeilarboppfolgingService {
         Oppfølgingsstatus oppfølgingStatus = hentOppfolgingsstatus(avtale.getDeltakerFnr().asString());
         if (avtale.getTiltakstype().isSommerjobb()) {
             return oppfølgingStatus;
-        }
-
-        if (
-            oppfølgingStatus == null ||
-            oppfølgingStatus.getFormidlingsgruppe() == null ||
-            oppfølgingStatus.getKvalifiseringsgruppe() == null
-        ) {
-            throw new FeilkodeException(Feilkode.HENTING_AV_INNSATS_BEHOV_FEILET);
         }
 
         if (oppfølgingStatus.getKvalifiseringsgruppe().isUgyldigKvalifiseringsgruppe()) {
