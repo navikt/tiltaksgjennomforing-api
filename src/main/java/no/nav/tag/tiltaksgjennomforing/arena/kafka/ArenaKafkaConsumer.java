@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-@Profile(Miljø.LOCAL)
+@Profile({ Miljø.LOCAL, Miljø.DEV_FSS, Miljø.PROD_FSS })
 public class ArenaKafkaConsumer {
     private final ArenaKafkaProperties arenaKafkaProperties;
     private final ArenaEventProcessingService arenaEventProcessingService;
