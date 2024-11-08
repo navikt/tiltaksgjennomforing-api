@@ -9,6 +9,6 @@ import java.net.URI;
 @Data
 @Component
 @ConfigurationProperties(prefix = "tiltaksgjennomforing.oppgave")
-public class OppgaveProperties {
+class OppgaveProperties {
     private URI oppgaveUri;
 }
