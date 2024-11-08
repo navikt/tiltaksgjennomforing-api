@@ -45,28 +45,16 @@ public class ArenaEventProcessingService {
     }
 
     @Async("arenaThreadPoolExecutor")
-    public void process(String key, String value) {
+    public void create(String key, String value) {
         try {
             ArenaKafkaMessage message = this.objectMapper.readValue(value, ArenaKafkaMessage.class);
-            process(key, message);
+            create(key, message);
         } catch (JsonProcessingException e) {
             log.error("Feil ved prosessering av Arena-event", e);
         }
     }
 
-    @ArenaEventLogging
-    @Async("arenaThreadPoolExecutor")
-    public void process(ArenaEvent arenaEvent) {
-        ArenaEvent processingEvent = arenaEvent.toBuilder()
-            .status(ArenaEventStatus.PROCESSING)
-            .build();
-
-        log.info("Starter prosessering av arena-event");
-        arenaEventRepository.save(processingEvent);
-        run(processingEvent);
-    }
-
-    private void process(String key, ArenaKafkaMessage message) {
+    private void create(String key, ArenaKafkaMessage message) {
         String operation = message.opType();
         String table = message.table();
 
@@ -97,7 +85,7 @@ public class ArenaEventProcessingService {
                     exisitingArenaEvent.toBuilder()
                         .operation(operation)
                         .payload(payload)
-                        .status(ArenaEventStatus.PENDING)
+                        .status(ArenaEventStatus.CREATED)
                         .retryCount(0)
                         .build()
                 )
@@ -108,7 +96,7 @@ public class ArenaEventProcessingService {
                         operation,
                         message.opTimestamp(),
                         payload,
-                        ArenaEventStatus.PENDING
+                        ArenaEventStatus.CREATED
                     )
                 );
 
@@ -120,7 +108,6 @@ public class ArenaEventProcessingService {
             );
 
             arenaEventRepository.save(arenaEvent);
-            process(arenaEvent);
         } catch (Exception e) {
             Optional<ArenaEvent> arenaEventOpt = arenaEventRepository.findByArenaIdAndArenaTable(key, table);
 
@@ -154,7 +141,16 @@ public class ArenaEventProcessingService {
         }
     }
 
-    private void run(ArenaEvent arenaEvent) {
+    @ArenaEventLogging
+    @Async("arenaThreadPoolExecutor")
+    public void process(ArenaEvent arenaEvent) {
+        ArenaEvent processingEvent = arenaEvent.toBuilder()
+            .status(ArenaEventStatus.PROCESSING)
+            .build();
+
+        log.info("Starter prosessering av arena-event");
+        arenaEventRepository.save(processingEvent);
+
         try {
             var result = switch (arenaEvent.getArenaTable()) {
                 case TILTAKGJENNOMFORING -> tiltakgjennomforingArenaEventService.process(arenaEvent);

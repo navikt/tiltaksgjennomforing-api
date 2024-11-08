@@ -13,13 +13,13 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class ArenaEventRetryService {
+public class ArenaEventProcessingJobService {
     private final static int MAX_RETRY_COUNT = 4;
 
     private final ArenaEventRepository arenaEventRepository;
     private final ArenaEventProcessingService arenaEventProcessingService;
 
-    public ArenaEventRetryService(
+    public ArenaEventProcessingJobService(
         ArenaEventRepository arenaEventRepository,
         ArenaEventProcessingService arenaEventProcessingService
     ) {
@@ -28,8 +28,8 @@ public class ArenaEventRetryService {
     }
 
     @Transactional
-    public List<ArenaEvent> getAndUpdateRetryEvents() {
-        List<ArenaEvent> retryEvents = arenaEventRepository.findRetryEvents();
+    public List<ArenaEvent> getAndUpdateEvents() {
+        List<ArenaEvent> retryEvents = arenaEventRepository.findEventsToProcess();
         failEventsThatHaveReachedMaxRetryCount(retryEvents);
 
         return retryEvents
@@ -45,7 +45,7 @@ public class ArenaEventRetryService {
             .toList();
     }
 
-    public void retry(List<ArenaEvent> arenaEvents) {
+    public void process(List<ArenaEvent> arenaEvents) {
         log.info("Kjører retry på {} eventer", arenaEvents.size());
 
         for (ArenaEvent arenaEvent : arenaEvents) {

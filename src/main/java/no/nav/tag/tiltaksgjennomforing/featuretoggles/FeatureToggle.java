@@ -6,6 +6,7 @@ public enum FeatureToggle {
     ARBEIDSGIVERNOTIFIKASJON_MED_SAK_OG_SMS("arbeidsgivernotifikasjon-med-sak-og-sms"),
     SMS_TIL_MOBILNUMMER("sms-til-mobilnummer"),
     ARENA_AVTALE_JOBB("arenaAvtaleJobb"),
+    ARENA_PROSESSERINGS_JOBB("arenaProsesseringsJobb"),
     ARENA_KAFKA("arenaKafka"),
     ARBEIDSTRENING_READONLY("arbeidstreningReadonly"),
     PABEGYNT_AVTALE_RYDDE_JOBB("pabegyntAvtaleRyddeJobb"),;
