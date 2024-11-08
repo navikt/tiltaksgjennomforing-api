@@ -40,12 +40,13 @@ spec:
     failureThreshold: 10
   replicas:
     min: 3
+    max: 10
   resources:
     limits:
       cpu: 2000m
       memory: 12000Mi
     requests:
-      cpu: 500m
+      cpu: 1000m
       memory: 6000Mi
   ingresses:
     - https://arbeidsgiver.nais.adeo.no/tiltaksgjennomforing-api/
