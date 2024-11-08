@@ -26,7 +26,7 @@ public class ArenaAgreementJob {
         this.featureToggleService = featureToggleService;
     }
 
-    @Scheduled(fixedDelay = 10, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(fixedDelay = 30, timeUnit = TimeUnit.SECONDS)
     public void run() {
         if (!featureToggleService.isEnabled(FeatureToggle.ARENA_AVTALE_JOBB)) {
             return;
