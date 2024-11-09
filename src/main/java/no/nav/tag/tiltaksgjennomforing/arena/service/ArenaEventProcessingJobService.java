@@ -29,10 +29,10 @@ public class ArenaEventProcessingJobService {
 
     @Transactional
     public List<ArenaEvent> getAndUpdateEvents() {
-        List<ArenaEvent> retryEvents = arenaEventRepository.findEventsToProcess();
-        failEventsThatHaveReachedMaxRetryCount(retryEvents);
+        List<ArenaEvent> events = findEventsForProcessing();
+        failEventsThatHaveReachedMaxRetryCount(events);
 
-        return retryEvents
+        return events
             .stream()
             .filter(this::isReadyForRetry)
             .map(arenaEvent ->
@@ -51,6 +51,16 @@ public class ArenaEventProcessingJobService {
         for (ArenaEvent arenaEvent : arenaEvents) {
             arenaEventProcessingService.process(arenaEvent);
         }
+    }
+
+    private List<ArenaEvent> findEventsForProcessing() {
+        List<ArenaEvent> events = arenaEventRepository.findEventsToProcessByStatus(ArenaEventStatus.CREATED);
+
+        if (!events.isEmpty()) {
+            return events;
+        }
+
+        return arenaEventRepository.findEventsToProcessByStatus(ArenaEventStatus.RETRY);
     }
 
     private void failEventsThatHaveReachedMaxRetryCount(List<ArenaEvent> arenaEvents) {
