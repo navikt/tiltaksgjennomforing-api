@@ -15,7 +15,11 @@ class ArbeidstreningStrategyTest {
 
     @BeforeEach
     public void setUp() {
+        Avtale avtale = new Avtale();
+        avtale.setTiltakstype(Tiltakstype.ARBEIDSTRENING);
         avtaleInnhold = new AvtaleInnhold();
+        avtaleInnhold.setAvtale(avtale);
+
         strategy = AvtaleInnholdStrategyFactory.create(avtaleInnhold, Tiltakstype.ARBEIDSTRENING);
     }
 

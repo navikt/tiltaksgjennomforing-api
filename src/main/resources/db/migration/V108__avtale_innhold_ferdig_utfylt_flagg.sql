@@ -1,0 +1,1 @@
+ALTER TABLE avtale_innhold ADD COLUMN ferdig_utfylt BOOLEAN DEFAULT FALSE;

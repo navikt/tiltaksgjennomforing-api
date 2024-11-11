@@ -479,7 +479,8 @@ CREATE TABLE "AVTALE_INNHOLD"(
                                                  U&"GODKJENT_TAUSHETSERKL\00c6RING_AV_MENTOR" TIMESTAMP DEFAULT NULL,
                                                  "MENTOR_TLF" CHARACTER VARYING(255) DEFAULT NULL,
                                                  "ARENA_MIGRERING_DELTAKER" BOOLEAN,
-                                                 "ARENA_MIGRERING_ARBEIDSGIVER" BOOLEAN
+                                                 "ARENA_MIGRERING_ARBEIDSGIVER" BOOLEAN,
+                                                 "FERDIG_UTFYLT" BOOLEAN DEFAULT FALSE
 );
 ALTER TABLE "AVTALE_INNHOLD" ADD CONSTRAINT "CONSTRAINT_75" PRIMARY KEY("ID");
 -- 34 +/- SELECT COUNT(*) FROM PUBLIC.AVTALE_INNHOLD;

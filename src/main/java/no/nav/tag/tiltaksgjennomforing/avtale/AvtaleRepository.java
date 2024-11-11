@@ -154,7 +154,8 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                       WHEN a.gjeldendeInnhold.avtaleInngått IS NOT NULL AND a.gjeldendeInnhold.sluttDato < current_date THEN 'AVSLUTTET'
                       WHEN a.gjeldendeInnhold.avtaleInngått IS NOT NULL AND a.gjeldendeInnhold.startDato < current_date THEN 'GJENNOMFØRES'
                       WHEN a.gjeldendeInnhold.avtaleInngått IS NOT NULL THEN 'KLAR_FOR_OPPSTART'
-                      ELSE 'PÅBEGYNT_ELLER_MANGLER_GODKJENNING'
+                      WHEN a.gjeldendeInnhold.ferdigUtfylt = TRUE THEN 'MANGLER_GODKJENNING'
+                      ELSE 'PÅBEGYNT'
                     END = :status)
         """,
         countQuery = """
@@ -174,7 +175,8 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                       WHEN a.gjeldendeInnhold.avtaleInngått IS NOT NULL AND a.gjeldendeInnhold.sluttDato < current_date THEN 'AVSLUTTET'
                       WHEN a.gjeldendeInnhold.avtaleInngått IS NOT NULL AND a.gjeldendeInnhold.startDato < current_date THEN 'GJENNOMFØRES'
                       WHEN a.gjeldendeInnhold.avtaleInngått IS NOT NULL THEN 'KLAR_FOR_OPPSTART'
-                      ELSE 'PÅBEGYNT_ELLER_MANGLER_GODKJENNING'
+                      WHEN a.gjeldendeInnhold.ferdigUtfylt = TRUE THEN 'MANGLER_GODKJENNING'
+                      ELSE 'PÅBEGYNT'
                     END = :status)
         """
     )

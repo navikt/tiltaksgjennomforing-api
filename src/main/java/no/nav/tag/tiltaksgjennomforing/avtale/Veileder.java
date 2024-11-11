@@ -30,6 +30,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -104,11 +105,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             queryParametre.getBedriftNr(),
             queryParametre.getNavEnhet(),
             queryParametre.getTiltakstype(),
-            switch (queryParametre.getStatus()) {
-                case ANNULLERT, AVSLUTTET, KLAR_FOR_OPPSTART, GJENNOMFØRES, AVBRUTT -> queryParametre.getStatus().name();
-                case null -> null;
-                default -> "PÅBEGYNT_ELLER_MANGLER_GODKJENNING";
-            },
+            Optional.ofNullable(queryParametre.getStatus()).map(Status::name).orElse(null),
             pageable
         );
     }
