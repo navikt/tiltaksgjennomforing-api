@@ -8,7 +8,7 @@ public class BedriftNrConverter implements AttributeConverter<BedriftNr, String>
 
     @Override
     public String convertToDatabaseColumn(BedriftNr attribute) {
-        return attribute.asString();
+        return attribute != null ? attribute.asString() : null;
     }
 
     @Override

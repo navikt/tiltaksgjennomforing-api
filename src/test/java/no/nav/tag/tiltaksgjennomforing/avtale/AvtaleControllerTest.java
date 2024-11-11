@@ -168,40 +168,6 @@ public class AvtaleControllerTest {
         assertThat(avtaler).doesNotContain(avtaleForVeilederSomSøkesEtter);
     }
 
-    @Test
-    public void hentAvtaleOpprettetAvInnloggetVeileder_fordelt_oppfolgingsEnhet_og_geoEnhet() {
-        NavIdent navIdent = new NavIdent("Z123456");
-        String navEnhet = "0904";
-        Veileder veileder = new Veileder(
-                navIdent,
-                tilgangskontrollService,
-                persondataService,
-                norg2Client,
-                Collections.emptySet(),
-                new SlettemerkeProperties(),
-                false,
-            veilarboppfolgingService
-        );
-        værInnloggetSom(veileder);
-        Avtale nyAvtaleMedGeografiskEnhet = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhetOgGeografiskEnhet();
-        Avtale nyAvtaleMedOppfølgningsEnhet = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet();
-
-        when(
-                avtaleRepository.findAllByEnhetGeografiskAndFeilregistrertIsFalseOrEnhetOppfolgingAndFeilregistrertIsFalse(eq(navEnhet), eq(navEnhet), eq(pageable))
-        ).thenReturn(new PageImpl<>(List.of(nyAvtaleMedGeografiskEnhet, nyAvtaleMedOppfølgningsEnhet)));
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
-
-        Map<String, Object> avtalerPageResponse = veileder.hentAlleAvtalerMedLesetilgang(
-                avtaleRepository,
-                new AvtalePredicate().setNavEnhet(navEnhet),
-                Avtale.Fields.sistEndret,
-                pageable
-        );
-
-        List<AvtaleMinimalListevisning> avtaler = (List<AvtaleMinimalListevisning>) avtalerPageResponse.get("avtaler");
-        assertThat(avtaler).isNotNull();
-    }
-
     @Disabled("må skrives om")
     @Test
     public void hentAvtaleOpprettetAvInnloggetVeileder_pa_avtaleNr() {
