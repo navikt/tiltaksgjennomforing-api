@@ -3,10 +3,12 @@ package no.nav.tag.tiltaksgjennomforing.arena.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTable;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakgjennomforing;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Operation;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEvent;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEventStatus;
+import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaEventRepository;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaTiltakgjennomforingRepository;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaTiltakssakRepository;
 import org.springframework.stereotype.Service;
@@ -19,13 +21,16 @@ public class TiltakgjennomforingArenaEventProcessingService implements IArenaEve
     private final ArenaTiltakgjennomforingRepository tiltakgjennomforingRepository;
     private final ArenaTiltakssakRepository tiltakssakRepository;
     private final ArenaOrdsService ordsService;
+    private final ArenaEventRepository eventRepository;
 
     public TiltakgjennomforingArenaEventProcessingService(
-        ObjectMapper objectMapper,
+        ArenaEventRepository eventRepository,
         ArenaOrdsService ordsService,
         ArenaTiltakgjennomforingRepository tiltakgjennomforingRepository,
-        ArenaTiltakssakRepository tiltakssakRepository
+        ArenaTiltakssakRepository tiltakssakRepository,
+        ObjectMapper objectMapper
     ) {
+        this.eventRepository = eventRepository;
         this.objectMapper = objectMapper;
         this.ordsService = ordsService;
         this.tiltakgjennomforingRepository = tiltakgjennomforingRepository;
@@ -34,6 +39,25 @@ public class TiltakgjennomforingArenaEventProcessingService implements IArenaEve
 
     public ArenaEventStatus process(ArenaEvent arenaEvent) throws JsonProcessingException {
         ArenaTiltakgjennomforing tiltakgjennomforing = this.objectMapper.treeToValue(arenaEvent.getPayload(), ArenaTiltakgjennomforing.class);
+
+        boolean isTiltaksakIgnored = eventRepository.findByArenaIdAndArenaTable(
+                tiltakgjennomforing.getSakId().toString(),
+                ArenaTable.TILTAKSAK.getTable()
+            )
+            .map((tiltak) -> ArenaEventStatus.IGNORED == tiltak.getStatus())
+            .orElse(false);
+
+        if (isTiltaksakIgnored) {
+            log.info("Arena-event ignorert fordi tilhørende tiltaksak er ignorert");
+
+            delete(
+                tiltakgjennomforing,
+                () -> log.info("Sletter tidligere håndtert tiltak som nå skal ignoreres")
+            );
+            ordsService.attemptDeleteArbeidsgiver(tiltakgjennomforing.getArbgivIdArrangor());
+
+            return ArenaEventStatus.IGNORED;
+        }
 
         if (!tiltakgjennomforing.isArbeidstrening()) {
             log.info("Arena-event ignorert fordi den ikke er arbeidstrening");
