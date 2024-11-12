@@ -92,6 +92,7 @@ import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.Formula;
 import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.SortNatural;
 import org.hibernate.generator.EventType;
@@ -171,12 +172,27 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     @Enumerated(EnumType.STRING)
     private Formidlingsgruppe formidlingsgruppe;
 
-
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
     @SortNatural
     private SortedSet<TilskuddPeriode> tilskuddPeriode = new TreeSet<>();
     private boolean feilregistrert;
+
+    @Formula("""
+        (SELECT CASE
+            WHEN a.annullert_tidspunkt IS NOT NULL THEN 'ANNULLERT'
+            WHEN a.avbrutt = TRUE THEN 'AVBRUTT'
+            WHEN ai.avtale_inngått IS NOT NULL AND ai.slutt_dato < current_date THEN 'AVSLUTTET'
+            WHEN ai.avtale_inngått IS NOT NULL AND ai.start_dato < current_date THEN 'GJENNOMFØRES'
+            WHEN ai.avtale_inngått IS NOT NULL THEN 'KLAR_FOR_OPPSTART'
+            WHEN ai.ferdig_utfylt = TRUE THEN 'MANGLER_GODKJENNING'
+            ELSE 'PÅBEGYNT'
+        END
+        FROM avtale a, avtale_innhold ai
+        WHERE a.gjeldende_innhold_id = ai.id AND a.id = id)
+    """)
+    @Convert(converter = StatusConverter.class)
+    private Status status;
 
     @JsonIgnore
     @OneToOne(mappedBy = "avtale", fetch = FetchType.EAGER)

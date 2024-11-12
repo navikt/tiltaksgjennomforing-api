@@ -44,7 +44,7 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     abstract AvtaleMinimalListevisning skjulData(AvtaleMinimalListevisning avtaleMinimalListevisning);
 
-    public Map<String, Object> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, String sorteringskolonne, Pageable pageable) {
+    public Map<String, Object> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, Pageable pageable) {
         Page<Avtale> avtaler = hentAlleAvtalerMedMuligTilgang(avtaleRepository, queryParametre, pageable);
 
         List<Avtale> avtalerMedTilgang = avtaler.getContent().stream()

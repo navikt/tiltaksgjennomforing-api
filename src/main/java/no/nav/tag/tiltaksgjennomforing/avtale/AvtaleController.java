@@ -161,9 +161,7 @@ public class AvtaleController {
         Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,
                 queryParametre,
-                sorteringskolonne,
                 pageable
-
         );
         return avtaler;
     }
@@ -196,7 +194,6 @@ public class AvtaleController {
             Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
                     avtaleRepository,
                     avtalePredicate,
-                    sorteringskolonne,
                     pageable
 
             );
@@ -238,7 +235,6 @@ public class AvtaleController {
         Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,
                 queryParametre,
-                sorteringskolonne,
                 pageable
 
         );

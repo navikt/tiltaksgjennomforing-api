@@ -160,7 +160,6 @@ public class AvtaleControllerTest {
         Map<String, Object> avtalerPageResponse = veileder.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,
                 avtalePredicate.setVeilederNavIdent(veilederNavIdent),
-                Avtale.Fields.sistEndret,
                 pageable
         );
 
@@ -198,7 +197,6 @@ public class AvtaleControllerTest {
         Map<String, Object> avtalerPageResponse = veileder.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,
                 new AvtalePredicate().setAvtaleNr(TestData.ET_AVTALENR),
-                Avtale.Fields.sistEndret,
                 pageable
         );
 
@@ -389,7 +387,6 @@ public class AvtaleControllerTest {
         Map<String, Object> avtalerPageResponse = deltaker.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,
                 new AvtalePredicate(),
-                Avtale.Fields.sistEndret,
                 pageable
         );
 

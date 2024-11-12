@@ -65,37 +65,54 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     @Override
     Avtale save(Avtale entity);
 
-    @Query(value = "SELECT AVTALE.* FROM AVTALE LEFT JOIN AVTALE_INNHOLD " +
-            "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
-            "WHERE :deltakerFnr = AVTALE.deltaker_fnr and " +
-            "AVTALE.annullert_tidspunkt is null and " +
-            "AVTALE.avbrutt is false and " +
-            "AVTALE.slettemerket is false and " +
-            "((CAST(:startDato as date) is not null and AVTALE_INNHOLD.start_dato is not null and AVTALE_INNHOLD.slutt_dato is not null and" +
-            " (CAST(:startDato as date) >= AVTALE_INNHOLD.start_dato and CAST(:startDato as date) <= AVTALE_INNHOLD.slutt_dato)) " +
-            "or " +
-            "AVTALE_INNHOLD.godkjent_av_veileder is null)"
-            , nativeQuery = true)
+    @Query(
+        value = """
+            SELECT avtale.* FROM avtale
+            LEFT JOIN avtale_innhold
+            ON avtale.ID = avtale_innhold.AVTALE
+            WHERE :deltakerFnr = avtale.deltaker_fnr AND
+                  avtale.annullert_tidspunkt IS NULL AND
+                  avtale.avbrutt IS FALSE AND
+                  avtale.slettemerket IS FALSE AND
+                  (
+                      (
+                          CAST(:startDato AS DATE) IS NOT NULL AND avtale_innhold.start_dato IS NOT NULL AND avtale_innhold.slutt_dato IS NOT NULL AND
+                          (CAST(:startDato AS DATE) >= avtale_innhold.start_dato AND CAST(:startDato AS DATE) <= avtale_innhold.slutt_dato)
+                      )
+                      OR AVTALE_INNHOLD.godkjent_av_veileder IS NULL
+                  )
+        """,
+        nativeQuery = true
+    )
     List<Avtale> finnAvtalerSomOverlapperForDeltakerVedOpprettelseAvAvtale(
             @Param("deltakerFnr") String deltakerFnr,
             @Param("startDato") Date startDato
     );
 
-    @Query(value = "SELECT AVTALE.* FROM AVTALE LEFT JOIN AVTALE_INNHOLD " +
-            "ON AVTALE.ID = AVTALE_INNHOLD.AVTALE " +
-            "WHERE :deltakerFnr = AVTALE.deltaker_fnr and " +
-            "(:avtaleId is not null and :avtaleId NOT LIKE CAST(AVTALE.id as text)) and " +
-            "AVTALE.annullert_tidspunkt is null and " +
-            "AVTALE.avbrutt is false and " +
-            "AVTALE.slettemerket is false and " +
-            "((CAST(:startDato as date) is not null and AVTALE_INNHOLD.start_dato is not null and AVTALE_INNHOLD.slutt_dato is not null and" +
-            " (CAST(:startDato as date) >= AVTALE_INNHOLD.start_dato and CAST(:startDato as date) <= AVTALE_INNHOLD.slutt_dato)) " +
-            "or " +
-            "(CAST(:sluttDato as date) is not null and AVTALE_INNHOLD.start_dato is not null and AVTALE_INNHOLD.slutt_dato is not null and " +
-            "(CAST(:sluttDato as date) >= AVTALE_INNHOLD.start_dato and CAST(:sluttDato as date) <= AVTALE_INNHOLD.slutt_dato)) " +
-            "or " +
-            "AVTALE_INNHOLD.godkjent_av_veileder is null)"
-            , nativeQuery = true)
+    @Query(
+        value = """
+            SELECT avtale.* FROM avtale LEFT JOIN avtale_innhold
+            ON avtale.ID = avtale_innhold.AVTALE
+            WHERE :deltakerFnr = AVTALE.deltaker_fnr AND
+                  (:avtaleId IS NOT NULL AND :avtaleId NOT LIKE CAST(avtale.id as text)) AND
+                  AVTALE.annullert_tidspunkt is null and
+                  AVTALE.avbrutt is false and
+                  AVTALE.slettemerket is false and
+                  (
+                      (
+                          CAST(:startDato AS DATE) IS NOT NULL AND avtale_innhold.start_dato IS NOT NULL AND avtale_innhold.slutt_dato IS NOT NULL AND
+                          (CAST(:startDato AS DATE) >= avtale_innhold.start_dato AND CAST(:startDato AS DATE) <= avtale_innhold.slutt_dato)
+                      )
+                      OR
+                      (
+                          CAST(:sluttDato AS DATE) IS NOT NULL AND avtale_innhold.start_dato IS NOT NULL AND avtale_innhold.slutt_dato IS NOT NULL AND
+                          (CAST(:sluttDato AS DATE) >= avtale_innhold.start_dato AND CAST(:sluttDato AS DATE) <= avtale_innhold.slutt_dato)
+                      )
+                      OR AVTALE_INNHOLD.godkjent_av_veileder is null
+                  )
+        """,
+        nativeQuery = true
+    )
     List<Avtale> finnAvtalerSomOverlapperForDeltakerVedGodkjenningAvAvtale(
             @Param("deltakerFnr") String deltakerFnr,
             @Param("avtaleId") String avtaleId,
@@ -103,20 +120,31 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             @Param("sluttDato") Date sluttDato
     );
 
-    @Query(value = "SELECT a.id as id, a.avtaleNr as avtaleNr, a.tiltakstype as tiltakstype, a.veilederNavIdent as veilederNavIdent, a.gjeldendeInnhold.deltakerFornavn as deltakerFornavn, " +
-            "a.opprettetTidspunkt as opprettetTidspunkt, a.sistEndret as sistEndret, a.gjeldendeInnhold.deltakerEtternavn as deltakerEtternavn, " +
-            "a.deltakerFnr as deltakerFnr, a.gjeldendeInnhold.bedriftNavn as bedriftNavn, a.bedriftNr as bedriftNr, min(t.startDato) as startDato, " +
-            " t.status as status, count(t.id) as antallUbehandlet " +
-            "from Avtale a " +
-            "left join AvtaleInnhold i on i.id = a.gjeldendeInnhold.id " +
-            "left join TilskuddPeriode t on (t.avtale.id = a.id and t.status = :tilskuddsperiodestatus and t.startDato <= :decisiondate) " +
-            "where a.gjeldendeInnhold.godkjentAvVeileder is not null " +
-            "and a.tiltakstype in (:tiltakstype) " +
-            "and exists (select distinct p.avtale.id, p.status, p.løpenummer, p.startDato from TilskuddPeriode p where p.avtale.id = a.id " +
-            "and ((:tilskuddsperiodestatus = p.status and p.startDato <= :decisiondate) or (:tilskuddsperiodestatus = p.status AND p.løpenummer = 1))) " +
-            "and a.enhetOppfolging IN (:navEnheter) AND (:avtaleNr is null or a.avtaleNr = :avtaleNr) AND (:bedriftNr is null or cast(a.bedriftNr as text) = :bedriftNr) " +
-            "GROUP BY a.id, a.gjeldendeInnhold.deltakerFornavn, a.gjeldendeInnhold.deltakerEtternavn, a.veilederNavIdent, a.gjeldendeInnhold.bedriftNavn, status ",
-            nativeQuery = false)
+    @Query(value = """
+        SELECT a.id as id,
+               a.avtaleNr as avtaleNr,
+               a.tiltakstype as tiltakstype,
+               a.veilederNavIdent as veilederNavIdent,
+               a.gjeldendeInnhold.deltakerFornavn as deltakerFornavn,
+               a.opprettetTidspunkt as opprettetTidspunkt,
+               a.sistEndret as sistEndret,
+               a.gjeldendeInnhold.deltakerEtternavn as deltakerEtternavn,
+               a.deltakerFnr as deltakerFnr,
+               a.gjeldendeInnhold.bedriftNavn as bedriftNavn,
+               a.bedriftNr as bedriftNr,
+               min(t.startDato) as startDato,
+               t.status,
+               count(t.id) as antallUbehandlet
+        FROM Avtale a
+        LEFT JOIN AvtaleInnhold i ON i.id = a.gjeldendeInnhold.id
+        LEFT JOIN TilskuddPeriode t ON (t.avtale.id = a.id AND t.status = :tilskuddsperiodestatus AND t.startDato <= :decisiondate)
+        WHERE a.gjeldendeInnhold.godkjentAvVeileder IS NOT NULL AND
+              a.tiltakstype in (:tiltakstype) AND
+              EXISTS (SELECT DISTINCT p.avtale.id, p.status, p.løpenummer, p.startDato FROM TilskuddPeriode p WHERE p.avtale.id = a.id AND
+              ((:tilskuddsperiodestatus = p.status AND p.startDato <= :decisiondate) OR (:tilskuddsperiodestatus = p.status AND p.løpenummer = 1))) AND
+              a.enhetOppfolging IN (:navEnheter) AND (:avtaleNr IS NULL OR a.avtaleNr = :avtaleNr) AND (:bedriftNr IS NULL OR cast(a.bedriftNr AS text) = :bedriftNr)
+        GROUP BY a.id, a.gjeldendeInnhold.deltakerFornavn, a.gjeldendeInnhold.deltakerEtternavn, a.veilederNavIdent, a.gjeldendeInnhold.bedriftNavn, t.status
+    """)
     Page<BeslutterOversiktDTO> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
             @Param("tilskuddsperiodestatus") TilskuddPeriodeStatus tilskuddsperiodestatus,
             @Param("decisiondate") LocalDate decisiondate,
@@ -126,13 +154,17 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             @Param("avtaleNr") Integer avtaleNr,
             Pageable pageable);
 
-    @Query(value = "SELECT avtale.* " +
-            "FROM avtale, avtale_innhold " +
-            "WHERE avtale.gjeldende_innhold_id = avtale_innhold.id " +
-            "AND avtale_innhold.avtale_inngått IS NULL " +
-            "AND avtale.annullert_tidspunkt IS NULL " +
-            "AND avtale.avbrutt IS FALSE",
-            nativeQuery = true)
+    @Query(
+        value = """
+            SELECT avtale.*
+            FROM avtale, avtale_innhold
+            WHERE avtale.gjeldende_innhold_id = avtale_innhold.id
+              AND avtale_innhold.avtale_inngått IS NULL
+              AND avtale.annullert_tidspunkt IS NULL
+              AND avtale.avbrutt IS FALSE
+        """,
+        nativeQuery = true
+    )
     List<Avtale> findAvtalerSomErPabegyntEllerManglerGodkjenning();
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
@@ -147,19 +179,10 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                   (:deltakerFnr IS NULL OR a.deltakerFnr = :deltakerFnr) AND
                   (:bedriftNr IS NULL OR a.bedriftNr = :bedriftNr) AND
                   (:enhet IS NULL OR a.enhetGeografisk = :enhet OR a.enhetOppfolging = :enhet) AND
-                  (:status IS NULL OR
-                    CASE
-                      WHEN a.annullertTidspunkt IS NOT NULL THEN 'ANNULLERT'
-                      WHEN a.avbrutt = TRUE THEN 'AVBRUTT'
-                      WHEN a.gjeldendeInnhold.avtaleInngått IS NOT NULL AND a.gjeldendeInnhold.sluttDato < current_date THEN 'AVSLUTTET'
-                      WHEN a.gjeldendeInnhold.avtaleInngått IS NOT NULL AND a.gjeldendeInnhold.startDato < current_date THEN 'GJENNOMFØRES'
-                      WHEN a.gjeldendeInnhold.avtaleInngått IS NOT NULL THEN 'KLAR_FOR_OPPSTART'
-                      WHEN a.gjeldendeInnhold.ferdigUtfylt = TRUE THEN 'MANGLER_GODKJENNING'
-                      ELSE 'PÅBEGYNT'
-                    END = :status)
+                  (:status IS NULL OR a.status = :status)
         """,
         countQuery = """
-            SELECT COUNT (a)
+            SELECT COUNT(a)
             FROM Avtale a
             WHERE a.feilregistrert = FALSE AND
                   a.veilederNavIdent = :veilederNavIdent AND
@@ -168,16 +191,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                   (:deltakerFnr IS NULL OR a.deltakerFnr = :deltakerFnr) AND
                   (:bedriftNr IS NULL OR a.bedriftNr = :bedriftNr) AND
                   (:enhet IS NULL OR a.enhetGeografisk = :enhet OR a.enhetOppfolging = :enhet) AND
-                  (:status IS NULL OR
-                    CASE
-                      WHEN a.annullertTidspunkt IS NOT NULL THEN 'ANNULLERT'
-                      WHEN a.avbrutt = TRUE THEN 'AVBRUTT'
-                      WHEN a.gjeldendeInnhold.avtaleInngått IS NOT NULL AND a.gjeldendeInnhold.sluttDato < current_date THEN 'AVSLUTTET'
-                      WHEN a.gjeldendeInnhold.avtaleInngått IS NOT NULL AND a.gjeldendeInnhold.startDato < current_date THEN 'GJENNOMFØRES'
-                      WHEN a.gjeldendeInnhold.avtaleInngått IS NOT NULL THEN 'KLAR_FOR_OPPSTART'
-                      WHEN a.gjeldendeInnhold.ferdigUtfylt = TRUE THEN 'MANGLER_GODKJENNING'
-                      ELSE 'PÅBEGYNT'
-                    END = :status)
+                  (:status IS NULL OR a.status = :status)
         """
     )
     Page<Avtale> sokEtterAvtale(
@@ -187,7 +201,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
         BedriftNr bedriftNr,
         String enhet,
         Tiltakstype tiltakstype,
-        String status,
+        Status status,
         Pageable pageable
     );
 
