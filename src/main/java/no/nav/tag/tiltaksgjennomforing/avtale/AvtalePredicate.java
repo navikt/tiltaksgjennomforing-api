@@ -34,7 +34,7 @@ public class AvtalePredicate implements Predicate<Avtale> {
                 && erLiktHvisOppgitt(bedriftNr, avtale.getBedriftNr())
                 && erLiktHvisOppgitt(deltakerFnr, avtale.getDeltakerFnr())
                 && erLiktHvisOppgitt(tiltakstype, avtale.getTiltakstype())
-                && erLiktHvisOppgitt(status, avtale.statusSomEnum())
+                && erLiktHvisOppgitt(status, avtale.getStatus())
                 && erLiktHvisOppgitt(tilskuddPeriodeStatus, avtale.getGjeldendeTilskuddsperiodestatus())
                 && (erLiktHvisOppgitt(navEnhet, avtale.getEnhetGeografisk()) || erLiktHvisOppgitt(navEnhet, avtale.getEnhetOppfolging()))
                 && erLiktHvisOppgitt(avtaleNr, avtale.getAvtaleNr());

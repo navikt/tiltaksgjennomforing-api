@@ -183,7 +183,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             WHEN a.annullert_tidspunkt IS NOT NULL THEN 'ANNULLERT'
             WHEN a.avbrutt = TRUE THEN 'AVBRUTT'
             WHEN ai.avtale_inngått IS NOT NULL AND ai.slutt_dato < current_date THEN 'AVSLUTTET'
-            WHEN ai.avtale_inngått IS NOT NULL AND ai.start_dato < current_date THEN 'GJENNOMFØRES'
+            WHEN ai.avtale_inngått IS NOT NULL AND ai.start_dato <= current_date THEN 'GJENNOMFØRES'
             WHEN ai.avtale_inngått IS NOT NULL THEN 'KLAR_FOR_OPPSTART'
             WHEN ai.ferdig_utfylt = TRUE THEN 'MANGLER_GODKJENNING'
             ELSE 'PÅBEGYNT'
@@ -192,7 +192,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         WHERE a.gjeldende_innhold_id = ai.id AND a.id = id)
     """)
     @Convert(converter = StatusConverter.class)
-    private Status status;
+    private Status status = Status.PÅBEGYNT;
 
     @JsonIgnore
     @OneToOne(mappedBy = "avtale", fetch = FetchType.EAGER)
@@ -753,30 +753,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     @JsonProperty
-    public String status() {
-        return statusSomEnum().getBeskrivelse();
-    }
-
-    @JsonProperty
-    public Status statusSomEnum() {
-        if (getAnnullertTidspunkt() != null) {
-            return Status.ANNULLERT;
-        } else if (isAvbrutt()) {
-            return Status.AVBRUTT;
-        } else if (erAvtaleInngått() && (gjeldendeInnhold.getSluttDato().isBefore(Now.localDate()))) {
-            return Status.AVSLUTTET;
-        } else if (erAvtaleInngått() && (gjeldendeInnhold.getStartDato().isBefore(Now.localDate().plusDays(1)))) {
-            return Status.GJENNOMFØRES;
-        } else if (erAvtaleInngått()) {
-            return Status.KLAR_FOR_OPPSTART;
-        } else if (erAltUtfylt()) {
-            return Status.MANGLER_GODKJENNING;
-        } else {
-            return Status.PÅBEGYNT;
-        }
-    }
-
-    @JsonProperty
     public boolean kanAvbrytes() {
         return !isAvbrutt();
     }
@@ -1081,7 +1057,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             return false;
         }
         // Statuser som skal få tilskuddsperioder
-        Status status = statusSomEnum();
         return status != Status.ANNULLERT && status != Status.AVBRUTT;
     }
 

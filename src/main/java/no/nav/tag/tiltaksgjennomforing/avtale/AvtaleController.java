@@ -121,7 +121,7 @@ public class AvtaleController {
         Avtale avtale = avtalepart.hentAvtale(avtaleRepository, id);
         return salesforceKontorerConfig.getEnheter().contains(avtale.getEnhetOppfolging()) &&
                 SalesforceKontorerConfig.PILOT_TILTAKSTYPER.contains(avtale.getTiltakstype()) &&
-                (avtale.statusSomEnum() == Status.GJENNOMFØRES || avtale.statusSomEnum() == Status.AVSLUTTET);
+                (avtale.getStatus() == Status.GJENNOMFØRES || avtale.getStatus() == Status.AVSLUTTET);
     }
 
     @AuditLogging("Hent detaljer for avtale om arbeidsmarkedstiltak")

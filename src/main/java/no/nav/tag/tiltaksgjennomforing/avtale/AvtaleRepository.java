@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -65,76 +64,69 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     @Override
     Avtale save(Avtale entity);
 
-    @Query(
-        value = """
-            SELECT avtale.* FROM avtale
-            LEFT JOIN avtale_innhold
-            ON avtale.ID = avtale_innhold.AVTALE
-            WHERE :deltakerFnr = avtale.deltaker_fnr AND
-                  avtale.annullert_tidspunkt IS NULL AND
-                  avtale.avbrutt IS FALSE AND
-                  avtale.slettemerket IS FALSE AND
+    @Query(value = """
+        SELECT a
+        FROM Avtale a
+        WHERE a.deltakerFnr = :deltakerFnr AND
+              a.annullertTidspunkt IS NULL AND
+              a.avbrutt IS FALSE AND
+              a.slettemerket IS FALSE AND
+              (
                   (
-                      (
-                          CAST(:startDato AS DATE) IS NOT NULL AND avtale_innhold.start_dato IS NOT NULL AND avtale_innhold.slutt_dato IS NOT NULL AND
-                          (CAST(:startDato AS DATE) >= avtale_innhold.start_dato AND CAST(:startDato AS DATE) <= avtale_innhold.slutt_dato)
-                      )
-                      OR AVTALE_INNHOLD.godkjent_av_veileder IS NULL
+                      :startDato IS NOT NULL AND a.gjeldendeInnhold.startDato IS NOT NULL AND a.gjeldendeInnhold.sluttDato IS NOT NULL AND
+                      (:startDato >= a.gjeldendeInnhold.startDato AND :startDato <= a.gjeldendeInnhold.sluttDato)
                   )
-        """,
-        nativeQuery = true
-    )
+                  OR a.gjeldendeInnhold.godkjentAvVeileder IS NULL
+              )
+    """)
     List<Avtale> finnAvtalerSomOverlapperForDeltakerVedOpprettelseAvAvtale(
-            @Param("deltakerFnr") String deltakerFnr,
-            @Param("startDato") Date startDato
-    );
-
-    @Query(
-        value = """
-            SELECT avtale.* FROM avtale LEFT JOIN avtale_innhold
-            ON avtale.ID = avtale_innhold.AVTALE
-            WHERE :deltakerFnr = AVTALE.deltaker_fnr AND
-                  (:avtaleId IS NOT NULL AND :avtaleId NOT LIKE CAST(avtale.id as text)) AND
-                  AVTALE.annullert_tidspunkt is null and
-                  AVTALE.avbrutt is false and
-                  AVTALE.slettemerket is false and
-                  (
-                      (
-                          CAST(:startDato AS DATE) IS NOT NULL AND avtale_innhold.start_dato IS NOT NULL AND avtale_innhold.slutt_dato IS NOT NULL AND
-                          (CAST(:startDato AS DATE) >= avtale_innhold.start_dato AND CAST(:startDato AS DATE) <= avtale_innhold.slutt_dato)
-                      )
-                      OR
-                      (
-                          CAST(:sluttDato AS DATE) IS NOT NULL AND avtale_innhold.start_dato IS NOT NULL AND avtale_innhold.slutt_dato IS NOT NULL AND
-                          (CAST(:sluttDato AS DATE) >= avtale_innhold.start_dato AND CAST(:sluttDato AS DATE) <= avtale_innhold.slutt_dato)
-                      )
-                      OR AVTALE_INNHOLD.godkjent_av_veileder is null
-                  )
-        """,
-        nativeQuery = true
-    )
-    List<Avtale> finnAvtalerSomOverlapperForDeltakerVedGodkjenningAvAvtale(
-            @Param("deltakerFnr") String deltakerFnr,
-            @Param("avtaleId") String avtaleId,
-            @Param("startDato") Date startDato,
-            @Param("sluttDato") Date sluttDato
+        Fnr deltakerFnr,
+        LocalDate startDato
     );
 
     @Query(value = """
-        SELECT a.id as id,
-               a.avtaleNr as avtaleNr,
-               a.tiltakstype as tiltakstype,
-               a.veilederNavIdent as veilederNavIdent,
-               a.gjeldendeInnhold.deltakerFornavn as deltakerFornavn,
-               a.opprettetTidspunkt as opprettetTidspunkt,
-               a.sistEndret as sistEndret,
-               a.gjeldendeInnhold.deltakerEtternavn as deltakerEtternavn,
-               a.deltakerFnr as deltakerFnr,
-               a.gjeldendeInnhold.bedriftNavn as bedriftNavn,
-               a.bedriftNr as bedriftNr,
-               min(t.startDato) as startDato,
+        SELECT a
+        FROM Avtale a
+        WHERE :deltakerFnr = a.deltakerFnr AND
+              (:avtaleId IS NOT NULL AND NOT :avtaleId = a.id) AND
+              a.annullertTidspunkt IS NULL AND
+              a.avbrutt IS FALSE AND
+              a.slettemerket IS FALSE AND
+              (
+                  (
+                      :startDato IS NOT NULL AND a.gjeldendeInnhold.startDato IS NOT NULL AND a.gjeldendeInnhold.sluttDato IS NOT NULL AND
+                      (:startDato >= a.gjeldendeInnhold.startDato AND :startDato <= a.gjeldendeInnhold.sluttDato)
+                  )
+                  OR
+                  (
+                      :sluttDato IS NOT NULL AND a.gjeldendeInnhold.startDato IS NOT NULL AND a.gjeldendeInnhold.sluttDato IS NOT NULL AND
+                      (:sluttDato >= a.gjeldendeInnhold.startDato AND :sluttDato <= a.gjeldendeInnhold.sluttDato)
+                  )
+                  OR a.gjeldendeInnhold.godkjentAvVeileder IS NULL
+              )
+    """)
+    List<Avtale> finnAvtalerSomOverlapperForDeltakerVedGodkjenningAvAvtale(
+        Fnr deltakerFnr,
+        UUID avtaleId,
+        LocalDate startDato,
+        LocalDate sluttDato
+    );
+
+    @Query(value = """
+        SELECT a.id AS id,
+               a.avtaleNr AS avtaleNr,
+               a.tiltakstype AS tiltakstype,
+               a.veilederNavIdent AS veilederNavIdent,
+               a.gjeldendeInnhold.deltakerFornavn AS deltakerFornavn,
+               a.opprettetTidspunkt AS opprettetTidspunkt,
+               a.sistEndret AS sistEndret,
+               a.gjeldendeInnhold.deltakerEtternavn AS deltakerEtternavn,
+               a.deltakerFnr AS deltakerFnr,
+               a.gjeldendeInnhold.bedriftNavn AS bedriftNavn,
+               a.bedriftNr AS bedriftNr,
+               min(t.startDato) AS startDato,
                t.status,
-               count(t.id) as antallUbehandlet
+               count(t.id) AS antallUbehandlet
         FROM Avtale a
         LEFT JOIN AvtaleInnhold i ON i.id = a.gjeldendeInnhold.id
         LEFT JOIN TilskuddPeriode t ON (t.avtale.id = a.id AND t.status = :tilskuddsperiodestatus AND t.startDato <= :decisiondate)
@@ -146,25 +138,22 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
         GROUP BY a.id, a.gjeldendeInnhold.deltakerFornavn, a.gjeldendeInnhold.deltakerEtternavn, a.veilederNavIdent, a.gjeldendeInnhold.bedriftNavn, t.status
     """)
     Page<BeslutterOversiktDTO> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
-            @Param("tilskuddsperiodestatus") TilskuddPeriodeStatus tilskuddsperiodestatus,
-            @Param("decisiondate") LocalDate decisiondate,
-            @Param("tiltakstype") Set<Tiltakstype> tiltakstype,
-            @Param("navEnheter") Set<String> navEnheter,
-            @Param("bedriftNr") String bedriftNr,
-            @Param("avtaleNr") Integer avtaleNr,
-            Pageable pageable);
+        TilskuddPeriodeStatus tilskuddsperiodestatus,
+        LocalDate decisiondate,
+        Set<Tiltakstype> tiltakstype,
+        Set<String> navEnheter,
+        String bedriftNr,
+        Integer avtaleNr,
+        Pageable pageable
+    );
 
-    @Query(
-        value = """
-            SELECT avtale.*
-            FROM avtale, avtale_innhold
-            WHERE avtale.gjeldende_innhold_id = avtale_innhold.id
-              AND avtale_innhold.avtale_inngått IS NULL
-              AND avtale.annullert_tidspunkt IS NULL
-              AND avtale.avbrutt IS FALSE
-        """,
-        nativeQuery = true
-    )
+    @Query(value = """
+        SELECT a
+        FROM Avtale a
+        WHERE a.gjeldendeInnhold.avtaleInngått IS NULL
+          AND a.annullertTidspunkt IS NULL
+          AND a.avbrutt IS FALSE
+    """)
     List<Avtale> findAvtalerSomErPabegyntEllerManglerGodkjenning();
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})

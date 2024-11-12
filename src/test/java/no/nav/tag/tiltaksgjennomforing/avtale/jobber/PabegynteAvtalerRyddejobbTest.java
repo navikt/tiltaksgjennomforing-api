@@ -272,7 +272,7 @@ class PabegynteAvtalerRyddejobbTest {
     private static Avtale mockAvtale(LocalDateTime sistEndret, Status status) {
         Avtale avtale = Mockito.mock(Avtale.class);
         when(avtale.getSistEndret()).thenReturn(ZonedDateTime.of(sistEndret, ZoneId.systemDefault()).toInstant());
-        when(avtale.statusSomEnum()).thenReturn(status);
+        when(avtale.getStatus()).thenReturn(status);
         return avtale;
     }
 

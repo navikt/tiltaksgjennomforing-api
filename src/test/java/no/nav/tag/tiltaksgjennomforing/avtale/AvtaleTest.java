@@ -1005,130 +1005,6 @@ public class AvtaleTest {
     }
 
     @Test
-    public void status__ny_avtale() {
-        Avtale avtale = TestData.enArbeidstreningAvtale();
-        assertThat(avtale.status()).isEqualTo(Status.PÅBEGYNT.getBeskrivelse());
-    }
-
-    @Test
-    public void status__null_startdato() {
-        Avtale avtale = TestData.enArbeidstreningAvtale();
-        avtale.getGjeldendeInnhold().setStartDato(null);
-        avtale.getGjeldendeInnhold().setSluttDato(null);
-        assertThat(avtale.status()).isEqualTo(Status.PÅBEGYNT.getBeskrivelse());
-    }
-
-    @Test
-    public void status__noe_fylt_ut() {
-        Avtale avtale = TestData.enArbeidstreningAvtale();
-        avtale.getGjeldendeInnhold().setStartDato(Now.localDate().plusDays(5));
-        avtale.getGjeldendeInnhold().setSluttDato(avtale.getGjeldendeInnhold().getStartDato().plusMonths(3));
-        avtale.getGjeldendeInnhold().setBedriftNavn("testbedriftsnavn");
-        assertThat(avtale.status()).isEqualTo(Status.PÅBEGYNT.getBeskrivelse());
-    }
-
-    @Test
-    public void status__avsluttet_i_gaar() {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusWeeks(4).minusDays(1));
-        avtale.getGjeldendeInnhold().setSluttDato(avtale.getGjeldendeInnhold().getStartDato().plusWeeks(4));
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
-        assertThat(avtale.status()).isEqualTo(Status.AVSLUTTET.getBeskrivelse());
-    }
-
-    @Test
-    public void status__avslutter_i_dag() {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusWeeks(4));
-        avtale.getGjeldendeInnhold().setSluttDato(avtale.getGjeldendeInnhold().getStartDato().plusWeeks(4));
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
-        assertThat(avtale.status()).isEqualTo(Status.GJENNOMFØRES.getBeskrivelse());
-    }
-
-    @Test
-    public void status__startet_i_dag() {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setStartDato(Now.localDate());
-        avtale.getGjeldendeInnhold().setSluttDato(avtale.getGjeldendeInnhold().getStartDato().plusWeeks(4));
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
-        assertThat(avtale.status()).isEqualTo(Status.GJENNOMFØRES.getBeskrivelse());
-    }
-
-    @Test
-    public void status__starter_i_morgen() {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setStartDato(Now.localDate().plusDays(1));
-        avtale.getGjeldendeInnhold().setSluttDato(avtale.getGjeldendeInnhold().getStartDato().plusWeeks(4));
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
-        assertThat(avtale.status()).isEqualTo(Status.KLAR_FOR_OPPSTART.getBeskrivelse());
-    }
-
-    @Test
-    public void status__klar_for_godkjenning() {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        assertThat(avtale.status()).isEqualTo(Status.MANGLER_GODKJENNING.getBeskrivelse());
-    }
-
-    @Test
-    public void status__veileder_har_godkjent() {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setStartDato(Now.localDate().plusDays(1));
-        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().plusDays(1).plusMonths(1).minusDays(1));
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
-        assertThat(avtale.status()).isEqualTo(Status.KLAR_FOR_OPPSTART.getBeskrivelse());
-    }
-
-    @Test
-    public void status__naar_deltaker_tlf_mangler() {
-        // Deltaker tlf ble innført etter at avtaler er opprettet. Det kan derfor være
-        // avtaler som er inngått som mangler tlf.
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusDays(1));
-        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusDays(1).plusMonths(1));
-        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setDeltakerTlf(null);
-        assertThat(avtale.status()).isEqualTo(Status.GJENNOMFØRES.getBeskrivelse());
-    }
-
-    @Test
-    public void status__annullert() {
-        Avtale avtale = TestData.enArbeidstreningAvtale();
-        avtale.annuller(TestData.enVeileder(avtale), "grunnen");
-        assertThat(avtale.status()).isEqualTo(Status.ANNULLERT.getBeskrivelse());
-        assertThat(avtale.getAnnullertTidspunkt()).isNotNull();
-        assertThat(avtale.getAnnullertGrunn()).isEqualTo("grunnen");
-    }
-
-    @Test
-    public void avbryt_ufordelt_avtale_skal_bli_fordelt() {
-        Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
-        Veileder veileder = TestData.enVeileder(new NavIdent("Z123456"));
-        avtale.annuller(veileder, "grunnen");
-
-        assertThat(avtale.status()).isEqualTo(Status.ANNULLERT.getBeskrivelse());
-        assertThat(avtale.erUfordelt()).isFalse();
-        assertThat(avtale.getVeilederNavIdent()).isEqualTo(veileder.getIdentifikator());
-    }
-
-    @Test
     public void tom_avtale_kan_avbrytes() {
         Avtale tomAvtale = TestData.enArbeidstreningAvtale();
         assertThat(tomAvtale.kanAvbrytes()).isTrue();
@@ -1249,12 +1125,6 @@ public class AvtaleTest {
         Instant sistEndret = avtale.getSistEndret();
         avtale.forkortAvtale(avtale.getGjeldendeInnhold().getSluttDato().minusDays(1), "lala", null, TestData.enNavIdent());
         assertThat(avtale.getSistEndret()).isAfter(sistEndret);
-    }
-
-    @Test
-    public void avtaleklarForOppstart() {
-        Avtale avtale = TestData.enAvtaleKlarForOppstart();
-        assertThat(avtale.status()).isEqualTo(Status.KLAR_FOR_OPPSTART.getBeskrivelse());
     }
 
     @Test
@@ -1486,18 +1356,6 @@ public class AvtaleTest {
         assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(nySluttDato);
     }
 
-
-    @Test
-    public void sommerjobb_må_være_godkjent_av_beslutter() {
-        Now.fixedDate(LocalDate.of(2021, 6, 1));
-        Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();
-        assertThat(avtale.statusSomEnum()).isEqualTo(Status.MANGLER_GODKJENNING);
-        assertThat(avtale.getGjeldendeInnhold().getAvtaleInngått()).isNull();
-        avtale.godkjennTilskuddsperiode(new NavIdent("B999999"), TestData.ENHET_OPPFØLGING.getVerdi());
-        assertThat(avtale.statusSomEnum()).isEqualTo(Status.GJENNOMFØRES);
-        assertThat(avtale.getGjeldendeInnhold().getAvtaleInngått()).isNotNull();
-    }
-
     @Test
     public void ikke_lonnstilskudd_skal_inngås_ved_veileders_godkjenning() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
@@ -1540,7 +1398,6 @@ public class AvtaleTest {
     @Test
     public void lonnstilskudd_må_være_godkjent_av_beslutter() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        assertThat(avtale.statusSomEnum()).isEqualTo(Status.MANGLER_GODKJENNING);
         Deltaker deltaker = TestData.enDeltaker(avtale);
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
 

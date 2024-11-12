@@ -15,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -99,10 +98,10 @@ public class DeltakerAlleredePaTiltakTest {
     public void skal_returnere_avtaler_deltaker_allerede_er_registrert_paa() {
         initAvtalerTilDBTest();
         List<Avtale> avtaleAlleredeRegistrertPaDeltaker = avtaleRepository.finnAvtalerSomOverlapperForDeltakerVedGodkjenningAvAvtale(
-                "00000000000",
-                UUID.randomUUID().toString(),
-                Date.valueOf(Now.localDate()),
-                Date.valueOf(Now.localDate().plusMonths(1))
+                new Fnr("00000000000"),
+                UUID.randomUUID(),
+                Now.localDate(),
+                Now.localDate().plusMonths(1)
         );
         Assertions.assertEquals(3, avtaleAlleredeRegistrertPaDeltaker.size());
     }
@@ -111,8 +110,8 @@ public class DeltakerAlleredePaTiltakTest {
     public void avtalePaDeltakerUtenNoenAvtaleIdOgSluttdato() {
         initAvtalerTilDBTest();
         List<Avtale> avtalePaDeltakerUtenNoenAvtaleIdOgSluttdato = avtaleRepository.finnAvtalerSomOverlapperForDeltakerVedOpprettelseAvAvtale(
-                "00000000000",
-                Date.valueOf(Now.localDate())
+                new Fnr("00000000000"),
+                Now.localDate()
         );
         Assertions.assertEquals(3, avtalePaDeltakerUtenNoenAvtaleIdOgSluttdato.size());
     }
@@ -121,10 +120,10 @@ public class DeltakerAlleredePaTiltakTest {
     public void avtalePaDeltakerMedKunOverlappendeStartdato() {
         initAvtalerTilDBTest();
         List<Avtale> avtalePaDeltakerMedKunOverlappendeStartdato = avtaleRepository.finnAvtalerSomOverlapperForDeltakerVedGodkjenningAvAvtale(
-                "00000000000",
-                UUID.randomUUID().toString(),
-                Date.valueOf(Now.localDate()),
-                Date.valueOf(Now.localDate().plusMonths(3))
+                new Fnr("00000000000"),
+                UUID.randomUUID(),
+                Now.localDate(),
+                Now.localDate().plusMonths(3)
         );
         Assertions.assertEquals(3, avtalePaDeltakerMedKunOverlappendeStartdato.size());
     }
@@ -133,10 +132,10 @@ public class DeltakerAlleredePaTiltakTest {
     public void avtalePaDeltakerMedKunOverlappendeSluttdato() {
         initAvtalerTilDBTest();
         List<Avtale> avtalePaDeltakerMedKunOverlappendeSluttdato = avtaleRepository.finnAvtalerSomOverlapperForDeltakerVedGodkjenningAvAvtale(
-                "00000000000",
-                UUID.randomUUID().toString(),
-                Date.valueOf(Now.localDate().minusMonths(1)),
-                Date.valueOf(Now.localDate().plusMonths(1))
+                new Fnr("00000000000"),
+                UUID.randomUUID(),
+                Now.localDate().minusMonths(1),
+                Now.localDate().plusMonths(1)
         );
         Assertions.assertEquals(3, avtalePaDeltakerMedKunOverlappendeSluttdato.size());
     }

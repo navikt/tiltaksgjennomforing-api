@@ -45,7 +45,7 @@ public class DvhAvtalePatchService {
         LocalDateTime tidspunkt = Now.localDateTime();
         UUID meldingId = UUID.randomUUID();
         var melding = AvroTiltakHendelseFabrikk.konstruer(avtale, tidspunkt, meldingId, DvhHendelseType.PATCHING, "system");
-        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, avtale.getId(), tidspunkt, avtale.statusSomEnum(), melding);
+        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, avtale.getId(), tidspunkt, avtale.getStatus(), melding);
         dvhRepository.save(entitet);
     }
 

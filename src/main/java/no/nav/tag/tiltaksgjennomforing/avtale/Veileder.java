@@ -25,7 +25,6 @@ import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.EnumSet;
@@ -428,18 +427,18 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         if(avtaleId != null && startDato != null && sluttDato != null) {
             return AlleredeRegistrertAvtale.filtrerAvtaleDeltakerAlleredeErRegistrertPaa(
                     avtaleRepository.finnAvtalerSomOverlapperForDeltakerVedGodkjenningAvAvtale(
-                            deltakerFnr.asString(),
-                            avtaleId.toString(),
-                            Date.valueOf(settStartDato(startDato)),
-                            Date.valueOf(sluttDato)
+                            deltakerFnr,
+                            avtaleId,
+                            settStartDato(startDato),
+                            sluttDato
                     ),
                     tiltakstype
             );
         }
         return AlleredeRegistrertAvtale.filtrerAvtaleDeltakerAlleredeErRegistrertPaa(
                 avtaleRepository.finnAvtalerSomOverlapperForDeltakerVedOpprettelseAvAvtale(
-                        deltakerFnr.asString(),
-                        Date.valueOf(settStartDato(startDato))
+                        deltakerFnr,
+                        settStartDato(startDato)
 
                 ),
                 tiltakstype

@@ -75,7 +75,7 @@ public class AvtalePredicateTest {
     void status_oppgitt() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         AvtalePredicate query = new AvtalePredicate();
-        query.setStatus(avtale.statusSomEnum());
+        query.setStatus(avtale.getStatus());
         assertThat(query.test(avtale)).isTrue();
     }
 
