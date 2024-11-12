@@ -6,7 +6,7 @@ public record ArenaOrdsFnrResponse(
     List<Person> personListe
 ) {
     public record Person(
-        int personId,
+        Integer personId,
         String fnr
     ) {
     }

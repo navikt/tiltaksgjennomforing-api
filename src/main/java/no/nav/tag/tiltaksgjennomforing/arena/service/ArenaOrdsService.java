@@ -11,6 +11,8 @@ import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaOrdsFnrRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 public class ArenaOrdsService {
@@ -28,7 +30,12 @@ public class ArenaOrdsService {
         this.arenaOrdsClient = arenaOrdsClient;
     }
 
-    public void fetchPerson(int personId) {
+    public void fetchPerson(Integer personId) {
+        if (personId == null) {
+            log.info("PersonId er null - henter ikke fnr fra ORDS");
+            return;
+        }
+
         boolean deltakerFnrExist = fnrRepository.existsById(personId);
         log.info("Henter fnr med id {}", personId);
 
@@ -37,8 +44,13 @@ public class ArenaOrdsService {
             return;
         }
 
-        ArenaOrdsFnrResponse response = arenaOrdsClient.getFnr(personId);
+        Optional<ArenaOrdsFnrResponse> responseOpt = arenaOrdsClient.getFnr(personId);
+        if (responseOpt.isEmpty()) {
+            log.info("Fant ikke fnr i ORDS for person med id {}", personId);
+            return;
+        }
 
+        ArenaOrdsFnrResponse response = responseOpt.get();
         ArenaOrdsFnr arenaOrdsFnr = ArenaOrdsFnr.builder()
             .personId(personId)
             .fnr(response.personListe().getFirst().fnr())
@@ -47,7 +59,11 @@ public class ArenaOrdsService {
         fnrRepository.save(arenaOrdsFnr);
     }
 
-    public void attemptDeleteFnr(int personId) {
+    public void attemptDeleteFnr(Integer personId) {
+        if (personId == null) {
+            return;
+        }
+
         try {
             log.info("Sletter fnr med id {}", personId);
             fnrRepository.deleteById(personId);
@@ -56,7 +72,12 @@ public class ArenaOrdsService {
         }
     }
 
-    public void fetchArbeidsgiver(int arbeidsgiverId) {
+    public void fetchArbeidsgiver(Integer arbeidsgiverId) {
+        if (arbeidsgiverId == null) {
+            log.info("ArbeidsgiverId er null - henter ikke fnr fra ORDS");
+            return;
+        }
+
         boolean arbeidsgiverExist = arbeidsgiverRepository.existsById(arbeidsgiverId);
         log.info("Henter arbeidsgiver med id {}", arbeidsgiverId);
 
@@ -65,8 +86,13 @@ public class ArenaOrdsService {
             return;
         }
 
-        ArenaOrdsArbeidsgiverResponse response = arenaOrdsClient.getArbeidsgiver(arbeidsgiverId);
+        Optional<ArenaOrdsArbeidsgiverResponse> responseOpt = arenaOrdsClient.getArbeidsgiver(arbeidsgiverId);
+        if (responseOpt.isEmpty()) {
+            log.info("Fant ikke virksomhetsnummer i ORDS for arbeidsgiver med id {}", arbeidsgiverId);
+            return;
+        }
 
+        ArenaOrdsArbeidsgiverResponse response = responseOpt.get();
         ArenaOrdsArbeidsgiver arenaOrdsArbeidsgiver = ArenaOrdsArbeidsgiver.builder()
             .arbgivIdArrangor(arbeidsgiverId)
             .virksomhetsnummer(response.bedriftsnr().toString())
@@ -76,7 +102,11 @@ public class ArenaOrdsService {
         arbeidsgiverRepository.save(arenaOrdsArbeidsgiver);
     }
 
-    public void attemptDeleteArbeidsgiver(int arbeidsgiverId) {
+    public void attemptDeleteArbeidsgiver(Integer arbeidsgiverId) {
+        if (arbeidsgiverId == null) {
+            return;
+        }
+
         try {
             log.info("Sletter arbeidsgiver med id {}", arbeidsgiverId);
             arbeidsgiverRepository.deleteById(arbeidsgiverId);

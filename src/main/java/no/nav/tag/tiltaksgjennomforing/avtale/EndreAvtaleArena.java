@@ -16,12 +16,14 @@ import java.util.Optional;
 @AllArgsConstructor
 public class EndreAvtaleArena implements Comparable<Avtale> {
     public enum Handling {
+        GJENOPPRETT,
         OPPDATER,
         AVSLUTT,
         ANNULLER;
 
         public static Handling map(ArenaMigrationAction arenaMigrationAction) {
             return switch (arenaMigrationAction) {
+                case GJENOPPRETT -> GJENOPPRETT;
                 case OPPDATER -> OPPDATER;
                 case ANNULLER -> ANNULLER;
                 case AVSLUTT -> AVSLUTT;

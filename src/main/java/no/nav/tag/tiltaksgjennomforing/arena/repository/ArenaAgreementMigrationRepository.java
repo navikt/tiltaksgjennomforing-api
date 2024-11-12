@@ -33,19 +33,13 @@ public interface ArenaAgreementMigrationRepository extends JpaRepository<ArenaAg
                 atd.datoTil,
                 ats.regDato
             )
-        FROM
-            ArenaTiltakssak ats,
-            ArenaTiltakgjennomforing atg,
-            ArenaTiltakdeltaker atd,
-            ArenaOrdsFnr aof,
-            ArenaOrdsArbeidsgiver aoa
-        WHERE
-            ats.sakId = atg.sakId AND
-            atd.tiltakgjennomforingId = atg.tiltakgjennomforingId AND
-            atd.personId = aof.personId AND
-            atg.arbgivIdArrangor = aoa.arbgivIdArrangor AND
-            atg.tiltakgjennomforingId NOT IN (SELECT tiltakgjennomforingId FROM ArenaAgreementMigration)
-        ORDER BY atd.tiltakgjennomforingId LIMIT 100
+        FROM ArenaTiltakssak ats
+        LEFT JOIN ArenaTiltakgjennomforing atg ON ats.sakId = atg.sakId
+        LEFT JOIN ArenaTiltakdeltaker atd ON atd.tiltakgjennomforingId = atg.tiltakgjennomforingId
+        LEFT JOIN ArenaOrdsFnr aof ON atd.personId = aof.personId
+        LEFT JOIN ArenaOrdsArbeidsgiver aoa ON atg.arbgivIdArrangor = aoa.arbgivIdArrangor
+        WHERE atg.tiltakgjennomforingId NOT IN (SELECT tiltakgjennomforingId FROM ArenaAgreementMigration)
+        ORDER BY atd.tiltakgjennomforingId LIMIT 1000
     """)
     List<ArenaAgreementAggregate> findMigrationAgreementAggregates();
 

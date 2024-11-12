@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class ArenaOrdsClient {
@@ -28,7 +29,7 @@ public class ArenaOrdsClient {
         this.tokenClient = arenaOrdsTokenClient;
     }
 
-    public ArenaOrdsFnrResponse getFnr(int personId) {
+    public Optional<ArenaOrdsFnrResponse> getFnr(int personId) {
         ArenaOrdsFnrRequest request = new ArenaOrdsFnrRequest(List.of(personId));
 
         HttpHeaders headers = new HttpHeaders();
@@ -46,18 +47,18 @@ public class ArenaOrdsClient {
         }
 
         if (HttpStatus.NO_CONTENT == response.getStatusCode()) {
-            throw new RuntimeException("Fnr ikke funnet i Arena ORDS");
+            return Optional.empty();
         }
 
         ArenaOrdsFnrResponse body = response.getBody();
         if (body == null || body.personListe() == null || body.personListe().isEmpty()) {
-            throw new RuntimeException("Fikk ingen respons fra Arena ORDS");
+            return Optional.empty();
         }
 
-        return body;
+        return Optional.of(body);
     }
 
-    public ArenaOrdsArbeidsgiverResponse getArbeidsgiver(int arbeidsgiverId) {
+    public Optional<ArenaOrdsArbeidsgiverResponse> getArbeidsgiver(int arbeidsgiverId) {
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.AUTHORIZATION, "Bearer " + tokenClient.getToken());
         headers.set("arbgivId", String.valueOf(arbeidsgiverId));
@@ -74,14 +75,14 @@ public class ArenaOrdsClient {
         }
 
         if (HttpStatus.NO_CONTENT == response.getStatusCode()) {
-            throw new RuntimeException("Arbeidsgiver ikke funnet i Arena ORDS");
+            return Optional.empty();
         }
 
         ArenaOrdsArbeidsgiverResponse body = response.getBody();
         if (body == null) {
-            throw new RuntimeException("Fikk ingen respons fra Arena ORDS");
+            return Optional.empty();
         }
 
-        return body;
+        return Optional.of(body);
     }
 }

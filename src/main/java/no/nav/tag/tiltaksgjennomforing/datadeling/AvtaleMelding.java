@@ -37,6 +37,7 @@ public class AvtaleMelding {
     Formidlingsgruppe formidlingsgruppe;
     SortedSet<TilskuddPeriode> tilskuddPeriode = new TreeSet<>();
     boolean feilregistrert;
+    Avtaleopphav opphav;
 
     // Innhold
     Integer versjon;
@@ -216,6 +217,7 @@ public class AvtaleMelding {
         avtaleMelding.setUtførtAv(utførtAv);
         avtaleMelding.setUtførtAvRolle(utførtAvAvtaleRolle);
         avtaleMelding.setForkortetGrunn(forkortetGrunn);
+        avtaleMelding.setOpphav(avtale.getOpphav());
 
         //Lister
         avtaleMelding.setTilskuddPeriode(Collections.emptySortedSet());

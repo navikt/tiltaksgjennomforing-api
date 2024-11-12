@@ -61,10 +61,7 @@ public class TiltakgjennomforingArenaEventProcessingService implements IArenaEve
             return ArenaEventStatus.RETRY;
         }
 
-        if (tiltakgjennomforing.getArbgivIdArrangor() != null) {
-            ordsService.fetchArbeidsgiver(tiltakgjennomforing.getArbgivIdArrangor());
-        }
-
+        ordsService.fetchArbeidsgiver(tiltakgjennomforing.getArbgivIdArrangor());
         tiltakgjennomforingRepository.save(tiltakgjennomforing);
 
         log.info("Arena-event er ferdig prossesert");
