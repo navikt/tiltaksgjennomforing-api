@@ -1,8 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import java.util.Comparator;
 import lombok.experimental.UtilityClass;
 import org.springframework.data.domain.Sort;
+
+import java.util.Comparator;
 
 @UtilityClass
 public class AvtaleSorterer {
@@ -36,6 +37,7 @@ public class AvtaleSorterer {
             case "sluttDato" -> "gjeldendeInnhold.sluttDato";
             case "tiltakstype" -> "tiltakstype";
             case "veilederNavIdent" -> "veilederNavIdent";
+            case "status" -> "status";
             default -> "sistEndret";
         };
         return new Sort.Order(Sort.Direction.fromString(sorteringsRetning), feldtnavn);

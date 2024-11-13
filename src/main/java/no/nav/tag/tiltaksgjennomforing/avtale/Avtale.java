@@ -125,6 +125,9 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 @Builder
 public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFnrOgBedriftNr {
 
+    @Id
+    @EqualsAndHashCode.Include
+    private UUID id;
     @Convert(converter = FnrConverter.class)
     private Fnr deltakerFnr;
     @Convert(converter = FnrConverter.class)
@@ -139,9 +142,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     private Tiltakstype tiltakstype;
 
     private LocalDateTime opprettetTidspunkt;
-    @Id
-    @EqualsAndHashCode.Include
-    private UUID id;
 
     @Generated(event = EventType.INSERT)
     private Integer avtaleNr;
@@ -163,6 +163,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     @Enumerated(EnumType.STRING)
     private Avtaleopphav opphav;
+
+    @JsonIgnore
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.PÅBEGYNT;
 
     private boolean godkjentForEtterregistrering;
 
@@ -282,6 +286,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             nyeTilskuddsperioder();
         }
         sistEndretNå();
+        oppdaterStatus();
         registerEvent(new AvtaleEndret(this, AvtaleHendelseUtførtAvRolle.fraAvtalerolle(utfortAvRolle), identifikator));
     }
 
@@ -341,6 +346,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             avbruttDato = null;
             avbruttGrunn = null;
             sistEndretNå();
+            oppdaterStatus();
             registerEvent(new AnnullertAvSystem(this, Identifikator.ARENA));
         } else {
             annullertTidspunkt = null;
@@ -352,6 +358,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
                 nyeTilskuddsperioder();
             }
             sistEndretNå();
+            oppdaterStatus();
             registerEvent(new AvtaleEndretAvArena(this));
         }
     }
@@ -492,10 +499,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         return gjeldendeInnhold.isGodkjentPaVegneAvArbeidsgiver();
     }
 
-    private boolean skalBesluttes() {
-        return tiltakstype == Tiltakstype.SOMMERJOBB || tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD || tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || tiltakstype == Tiltakstype.VTAO;
-    }
-
     private void sjekkOmAvtalenKanEndres() {
         if (erGodkjentAvDeltaker() || erGodkjentAvArbeidsgiver() || erGodkjentAvVeileder()) {
             throw new TilgangskontrollException("Godkjenninger må oppheves før avtalen kan endres.");
@@ -531,11 +534,16 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         gjeldendeInnhold.setGodkjentPaVegneAv(false);
         gjeldendeInnhold.setGodkjentPaVegneGrunn(null);
         gjeldendeInnhold.setGodkjentAvNavIdent(null);
+        oppdaterStatus();
         sistEndretNå();
     }
 
     private void sistEndretNå() {
         this.sistEndret = Now.instant();
+    }
+
+    private void oppdaterStatus() {
+        this.status = Status.fra(this);
     }
 
     void sjekkSistEndret(Instant sistEndret) {
@@ -581,7 +589,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         LocalDateTime tidspunkt = Now.localDateTime();
         gjeldendeInnhold.setGodkjentAvVeileder(tidspunkt);
         gjeldendeInnhold.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
-        if (!skalBesluttes()) {
+        if (!tiltakstype.skalBesluttes()) {
             avtaleInngått(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
         }
         gjeldendeInnhold.setIkrafttredelsestidspunkt(tidspunkt);
@@ -591,6 +599,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     private void avtaleInngått(LocalDateTime tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
         gjeldendeInnhold.setAvtaleInngått(tidspunkt);
+        oppdaterStatus();
         registerEvent(new AvtaleInngått(this, AvtaleHendelseUtførtAvRolle.fraAvtalerolle(utførtAvRolle), utførtAv));
     }
 
@@ -624,7 +633,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         gjeldendeInnhold.setGodkjentPaVegneGrunn(paVegneAvGrunn);
         gjeldendeInnhold.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
         gjeldendeInnhold.setIkrafttredelsestidspunkt(tidspunkt);
-        if (!skalBesluttes()) {
+        if (!tiltakstype.skalBesluttes()) {
             avtaleInngått(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
         }
         sistEndretNå();
@@ -657,7 +666,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         gjeldendeInnhold.setGodkjentPaVegneAvArbeidsgiverGrunn(godkjentPaVegneAvArbeidsgiverGrunn);
         gjeldendeInnhold.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
         gjeldendeInnhold.setIkrafttredelsestidspunkt(tidspunkt);
-        if (!skalBesluttes()) {
+        if (!tiltakstype.skalBesluttes()) {
             avtaleInngått(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
         }
         sistEndretNå();
@@ -679,10 +688,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         if (erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_VEILEDER_HAR_ALLEREDE_GODKJENT);
         }
-        if (tiltakstype == Tiltakstype.SOMMERJOBB && this.getDeltakerFnr().erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
+        if (tiltakstype.isSommerjobb() && this.getDeltakerFnr().erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
             throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_GAMMEL_FRA_OPPSTARTDATO);
         }
-
 
         paVegneAvDeltakerOgArbeidsgiverGrunn.valgtMinstEnGrunn();
         LocalDateTime tidspunkt = Now.localDateTime();
@@ -695,7 +703,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         gjeldendeInnhold.setGodkjentPaVegneAvArbeidsgiverGrunn(paVegneAvDeltakerOgArbeidsgiverGrunn.getGodkjentPaVegneAvArbeidsgiverGrunn());
         gjeldendeInnhold.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
         gjeldendeInnhold.setIkrafttredelsestidspunkt(tidspunkt);
-        if (!skalBesluttes()) {
+        if (!tiltakstype.skalBesluttes()) {
             avtaleInngått(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
         }
         sistEndretNå();
@@ -724,7 +732,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     void sjekkOmAltErKlarTilGodkjenning() {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
 
-        if (!erAltUtfylt()) {
+        if (!felterSomIkkeErFyltUt().isEmpty()) {
             throw new AltMåVæreFyltUtException();
         }
         if (List.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB).contains(tiltakstype) &&
@@ -743,21 +751,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     @JsonProperty
     public Status statusSomEnum() {
-        if (getAnnullertTidspunkt() != null) {
-            return Status.ANNULLERT;
-        } else if (isAvbrutt()) {
-            return Status.AVBRUTT;
-        } else if (erAvtaleInngått() && (gjeldendeInnhold.getSluttDato().isBefore(Now.localDate()))) {
-            return Status.AVSLUTTET;
-        } else if (erAvtaleInngått() && (gjeldendeInnhold.getStartDato().isBefore(Now.localDate().plusDays(1)))) {
-            return Status.GJENNOMFØRES;
-        } else if (erAvtaleInngått()) {
-            return Status.KLAR_FOR_OPPSTART;
-        } else if (erAltUtfylt()) {
-            return Status.MANGLER_GODKJENNING;
-        } else {
-            return Status.PÅBEGYNT;
-        }
+        return Status.fra(this);
     }
 
     @JsonProperty
@@ -784,6 +778,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             setFeilregistrert(true);
         }
         sistEndretNå();
+        oppdaterStatus();
         registerEvent(new AnnullertAvVeileder(this, veileder.getIdentifikator()));
     }
 
@@ -797,6 +792,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
                 setAnnullertGrunn(AnnullertGrunn.UTLØPT);
                 setFeilregistrert(true);
                 sistEndretNå();
+                oppdaterStatus();
                 registerEvent(new AnnullertAvSystem(this, Identifikator.SYSTEM));
             }
         }
@@ -821,10 +817,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         } else {
             registerEvent(new AvtaleNyVeileder(this, gammelNavIdent));
         }
-    }
-
-    private boolean erAltUtfylt() {
-        return felterSomIkkeErFyltUt().isEmpty();
     }
 
     public void leggTilBedriftNavn(String bedriftNavn) {
@@ -1226,6 +1218,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         sendTilbakeTilBeslutter();
         forkortTilskuddsperioder(nySluttDato);
         sistEndretNå();
+        oppdaterStatus();
         registerEvent(new AvtaleForkortet(this, nyAvtaleInnholdVersjon, nySluttDato, grunn, annetGrunn, utførtAv));
     }
 
@@ -1246,6 +1239,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         sendTilbakeTilBeslutter();
         forlengTilskuddsperioder(gammelSluttDato, nySluttDato);
         sistEndretNå();
+        oppdaterStatus();
         registerEvent(new AvtaleForlenget(this, utførtAv));
     }
 

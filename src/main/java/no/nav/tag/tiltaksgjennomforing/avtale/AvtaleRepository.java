@@ -33,21 +33,12 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByBedriftNrInAndFeilregistrertIsFalse(Set<BedriftNr> bedriftNrList, Pageable pageable);
-    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    Page<Avtale> findAllByBedriftNrAndFeilregistrertIsFalse(BedriftNr bedriftNr, Pageable pageable);
-    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    Page<Avtale> findAllByBedriftNrAndTiltakstypeAndFeilregistrertIsFalse(BedriftNr bedriftNr, Tiltakstype tiltakstype, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByBedriftNrInAndTiltakstypeAndFeilregistrertIsFalse(Set<BedriftNr> bedriftNrList, Tiltakstype tiltakstype, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByDeltakerFnrAndFeilregistrertIsFalse(Fnr deltakerFnr, Pageable pageable);
-    Page<Avtale> findAllByDeltakerFnrAndTiltakstypeAndFeilregistrertIsFalse(Fnr deltakerFnr, Tiltakstype tiltakstype, Pageable pageable);
-    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    Page<Avtale> findAllByVeilederNavIdentAndFeilregistrertIsFalse(NavIdent veilederNavIdent, Pageable pageable);
-    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    Page<Avtale> findAllByVeilederNavIdentAndTiltakstypeAndFeilregistrertIsFalse(NavIdent veilederNavIdent, Tiltakstype tiltakstype, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     List<Avtale> findAllByDeltakerFnrAndFeilregistrertIsFalse(Fnr deltakerFnr);
@@ -56,20 +47,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     Page<Avtale> findAllByMentorFnrAndFeilregistrertIsFalse(Fnr mentorFnr, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    Page<Avtale> findAllByVeilederNavIdentIsNullAndEnhetGeografiskAndFeilregistrertIsFalseOrVeilederNavIdentIsNullAndEnhetOppfolgingAndFeilregistrertIsFalse(String enhetGeografisk, String enhetOppfolging, Pageable pageable);
-
-    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    Page<Avtale> findAllByVeilederNavIdentIsNullAndEnhetGeografiskAndTiltakstypeAndFeilregistrertIsFalseOrVeilederNavIdentIsNullAndEnhetOppfolgingAndTiltakstypeAndFeilregistrertIsFalse(String enhetGeografisk, Tiltakstype tiltakstype, String enhetOppfolging, Tiltakstype tiltakstype2, Pageable pageable);
-
-    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    Page<Avtale> findAllByEnhetGeografiskAndFeilregistrertIsFalseOrEnhetOppfolgingAndFeilregistrertIsFalse(String enhetGeografisk, String enhetOppfolging, Pageable pageable);
-
-    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    Page<Avtale> findAllByEnhetGeografiskAndTiltakstypeAndFeilregistrertIsFalseOrEnhetOppfolgingAndTiltakstypeAndFeilregistrertIsFalse(String enhetGeografisk, Tiltakstype tiltakstype, String enhetOppfolging, Tiltakstype tiltakstype2, Pageable pageable);
-    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByAvtaleNrAndFeilregistrertIsFalse(Integer avtaleNr, Pageable pageable);
-    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    Page<Avtale> findAllByAvtaleNrAndTiltakstypeAndFeilregistrertIsFalse(Integer avtaleNr, Tiltakstype tiltakstype, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     List<Avtale> findAllByTiltakstype(Tiltakstype tiltakstype);
@@ -128,7 +106,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     @Query(value = "SELECT a.id as id, a.avtaleNr as avtaleNr, a.tiltakstype as tiltakstype, a.veilederNavIdent as veilederNavIdent, a.gjeldendeInnhold.deltakerFornavn as deltakerFornavn, " +
             "a.opprettetTidspunkt as opprettetTidspunkt, a.sistEndret as sistEndret, a.gjeldendeInnhold.deltakerEtternavn as deltakerEtternavn, " +
             "a.deltakerFnr as deltakerFnr, a.gjeldendeInnhold.bedriftNavn as bedriftNavn, a.bedriftNr as bedriftNr, min(t.startDato) as startDato, " +
-            " t.status as status, count(t.id) as antallUbehandlet " +
+            " t.status, count(t.id) as antallUbehandlet " +
             "from Avtale a " +
             "left join AvtaleInnhold i on i.id = a.gjeldendeInnhold.id " +
             "left join TilskuddPeriode t on (t.avtale.id = a.id and t.status = :tilskuddsperiodestatus and t.startDato <= :decisiondate) " +
@@ -137,7 +115,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             "and exists (select distinct p.avtale.id, p.status, p.løpenummer, p.startDato from TilskuddPeriode p where p.avtale.id = a.id " +
             "and ((:tilskuddsperiodestatus = p.status and p.startDato <= :decisiondate) or (:tilskuddsperiodestatus = p.status AND p.løpenummer = 1))) " +
             "and a.enhetOppfolging IN (:navEnheter) AND (:avtaleNr is null or a.avtaleNr = :avtaleNr) AND (:bedriftNr is null or cast(a.bedriftNr as text) = :bedriftNr) " +
-            "GROUP BY a.id, a.gjeldendeInnhold.deltakerFornavn, a.gjeldendeInnhold.deltakerEtternavn, a.veilederNavIdent, a.gjeldendeInnhold.bedriftNavn, status ",
+            "GROUP BY a.id, a.gjeldendeInnhold.deltakerFornavn, a.gjeldendeInnhold.deltakerEtternavn, a.veilederNavIdent, a.gjeldendeInnhold.bedriftNavn, t.status ",
             nativeQuery = false)
     Page<BeslutterOversiktDTO> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
             @Param("tilskuddsperiodestatus") TilskuddPeriodeStatus tilskuddsperiodestatus,
@@ -157,4 +135,58 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             nativeQuery = true)
     List<Avtale> findAvtalerSomErPabegyntEllerManglerGodkjenning();
 
+    @Query("""
+        SELECT a
+        FROM Avtale a
+        WHERE a.status IS NULL
+        ORDER BY a.opprettetTidspunkt DESC
+        LIMIT 1000
+    """)
+    List<Avtale> findAvtalerSomIkkeHarStatus();
+
+    @Query("""
+        SELECT a
+        FROM Avtale a
+        WHERE (a.status = no.nav.tag.tiltaksgjennomforing.avtale.Status.KLAR_FOR_OPPSTART AND a.gjeldendeInnhold.startDato >= current_date)
+           OR (a.status = no.nav.tag.tiltaksgjennomforing.avtale.Status.GJENNOMFØRES AND a.gjeldendeInnhold.sluttDato < current_date)
+    """)
+    List<Avtale> findAvtalerForEndringAvStatus();
+
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    @Query(
+        value = """
+            SELECT a
+            FROM Avtale a
+            WHERE a.feilregistrert = FALSE AND
+                  a.veilederNavIdent = :veilederNavIdent AND
+                  (:avtaleNr IS NULL OR a.avtaleNr = :avtaleNr) AND
+                  (:tiltakstype IS NULL OR a.tiltakstype = :tiltakstype) AND
+                  (:deltakerFnr IS NULL OR a.deltakerFnr = :deltakerFnr) AND
+                  (:bedriftNr IS NULL OR a.bedriftNr = :bedriftNr) AND
+                  (:enhet IS NULL OR a.enhetGeografisk = :enhet OR a.enhetOppfolging = :enhet) AND
+                  (:status IS NULL OR a.status = :status)
+        """,
+        countQuery = """
+            SELECT COUNT(a)
+            FROM Avtale a
+            WHERE a.feilregistrert = FALSE AND
+                  a.veilederNavIdent = :veilederNavIdent AND
+                  (:avtaleNr IS NULL OR a.avtaleNr = :avtaleNr) AND
+                  (:tiltakstype IS NULL OR a.tiltakstype = :tiltakstype) AND
+                  (:deltakerFnr IS NULL OR a.deltakerFnr = :deltakerFnr) AND
+                  (:bedriftNr IS NULL OR a.bedriftNr = :bedriftNr) AND
+                  (:enhet IS NULL OR a.enhetGeografisk = :enhet OR a.enhetOppfolging = :enhet) AND
+                  (:status IS NULL OR a.status = :status)
+        """
+    )
+    Page<Avtale> sokEtterAvtale(
+        Integer avtaleNr,
+        NavIdent veilederNavIdent,
+        Fnr deltakerFnr,
+        BedriftNr bedriftNr,
+        String enhet,
+        Tiltakstype tiltakstype,
+        Status status,
+        Pageable pageable
+    );
 }

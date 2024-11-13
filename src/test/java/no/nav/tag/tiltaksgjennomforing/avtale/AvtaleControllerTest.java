@@ -160,46 +160,11 @@ public class AvtaleControllerTest {
         Map<String, Object> avtalerPageResponse = veileder.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,
                 avtalePredicate.setVeilederNavIdent(veilederNavIdent),
-                Avtale.Fields.sistEndret,
                 pageable
         );
 
         List<Avtale> avtaler = (List<Avtale>) avtalerPageResponse.get("avtaler");
         assertThat(avtaler).doesNotContain(avtaleForVeilederSomSøkesEtter);
-    }
-
-    @Test
-    public void hentAvtaleOpprettetAvInnloggetVeileder_fordelt_oppfolgingsEnhet_og_geoEnhet() {
-        NavIdent navIdent = new NavIdent("Z123456");
-        String navEnhet = "0904";
-        Veileder veileder = new Veileder(
-                navIdent,
-                tilgangskontrollService,
-                persondataService,
-                norg2Client,
-                Collections.emptySet(),
-                new SlettemerkeProperties(),
-                false,
-            veilarboppfolgingService
-        );
-        værInnloggetSom(veileder);
-        Avtale nyAvtaleMedGeografiskEnhet = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhetOgGeografiskEnhet();
-        Avtale nyAvtaleMedOppfølgningsEnhet = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet();
-
-        when(
-                avtaleRepository.findAllByEnhetGeografiskAndFeilregistrertIsFalseOrEnhetOppfolgingAndFeilregistrertIsFalse(eq(navEnhet), eq(navEnhet), eq(pageable))
-        ).thenReturn(new PageImpl<>(List.of(nyAvtaleMedGeografiskEnhet, nyAvtaleMedOppfølgningsEnhet)));
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
-
-        Map<String, Object> avtalerPageResponse = veileder.hentAlleAvtalerMedLesetilgang(
-                avtaleRepository,
-                new AvtalePredicate().setNavEnhet(navEnhet),
-                Avtale.Fields.sistEndret,
-                pageable
-        );
-
-        List<AvtaleMinimalListevisning> avtaler = (List<AvtaleMinimalListevisning>) avtalerPageResponse.get("avtaler");
-        assertThat(avtaler).isNotNull();
     }
 
     @Disabled("må skrives om")
@@ -232,7 +197,6 @@ public class AvtaleControllerTest {
         Map<String, Object> avtalerPageResponse = veileder.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,
                 new AvtalePredicate().setAvtaleNr(TestData.ET_AVTALENR),
-                Avtale.Fields.sistEndret,
                 pageable
         );
 
@@ -423,7 +387,6 @@ public class AvtaleControllerTest {
         Map<String, Object> avtalerPageResponse = deltaker.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,
                 new AvtalePredicate(),
-                Avtale.Fields.sistEndret,
                 pageable
         );
 
