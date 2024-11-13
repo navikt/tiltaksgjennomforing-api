@@ -49,6 +49,7 @@ no.nav.security.jwt:
 tiltaksgjennomforing:
   retry:
     delay: 100
+    max-delay: 1000
   tilskuddsperioder:
     tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, VTAO
   kontoregister:

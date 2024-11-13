@@ -33,7 +33,7 @@ class VeilarboppfolgingClient {
         this.properties = properties;
     }
 
-    @Retryable(backoff = @Backoff(delayExpression = "${tiltaksgjennomforing.retry.delay}", maxDelay = 20000, multiplier = 2))
+    @Retryable(backoff = @Backoff(delayExpression = "${tiltaksgjennomforing.retry.delay}", maxDelayExpression = "${tiltaksgjennomforing.retry.max-delay}", multiplier = 2))
     @Cacheable(CacheConfig.VEILARBOPPFOLGING_CACHE)
     public Optional<HentOppfolgingsstatusRespons> hentOppfolgingsstatus(HentOppfolgingsstatusRequest request) {
         log.info("Henter oppfølgingenhet fra veilarboppfolging");

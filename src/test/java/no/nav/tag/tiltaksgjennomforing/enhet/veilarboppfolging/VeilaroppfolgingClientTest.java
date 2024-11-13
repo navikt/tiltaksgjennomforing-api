@@ -23,7 +23,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-@ActiveProfiles({Miljø.TEST, Miljø.WIREMOCK})
+@ActiveProfiles({Miljø.TEST})
 public class VeilaroppfolgingClientTest {
     @Autowired
     VeilarboppfolgingClient veilarboppfolgingClient;
