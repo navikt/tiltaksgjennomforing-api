@@ -51,6 +51,8 @@ spring:
         user.info: ${KAFKA_SCHEMA_REGISTRY_USER}:${KAFKA_SCHEMA_REGISTRY_PASSWORD}
 
 tiltaksgjennomforing:
+  retry:
+    delay: 1000
   beslutter-ad-gruppe:
     id: ${beslutter.ad.gruppe}
   kafka:
