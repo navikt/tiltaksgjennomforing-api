@@ -9,7 +9,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
@@ -23,13 +26,14 @@ class VeilarboppfolgingClient {
     private final VeilarboppfolgingProperties properties;
 
     public VeilarboppfolgingClient(
-        RestTemplate azureRestTemplate,
-        VeilarboppfolgingProperties properties
+            RestTemplate azureRestTemplate,
+            VeilarboppfolgingProperties properties
     ) {
         this.restTemplate = azureRestTemplate;
         this.properties = properties;
     }
 
+    @Retryable(backoff = @Backoff(delayExpression = "${tiltaksgjennomforing.retry.delay}", maxDelayExpression = "${tiltaksgjennomforing.retry.max-delay}", multiplier = 2))
     @Cacheable(CacheConfig.VEILARBOPPFOLGING_CACHE)
     public Optional<HentOppfolgingsstatusRespons> hentOppfolgingsstatus(HentOppfolgingsstatusRequest request) {
         log.info("Henter oppfølgingenhet fra veilarboppfolging");
@@ -38,17 +42,19 @@ class VeilarboppfolgingClient {
         headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
         headers.set("Nav-Consumer-Id", "tiltaksgjennomforing-api");
 
-        ResponseEntity<HentOppfolgingsstatusRespons> response = restTemplate.exchange(
-            properties.getUrl() + "/veilarboppfolging/api/v2/person/hent-oppfolgingsstatus",
-            HttpMethod.POST,
-            new HttpEntity<>(request, headers),
-            HentOppfolgingsstatusRespons.class
-        );
-
-        if (NOT_FOUND.isSameCodeAs(response.getStatusCode()) || response.getBody() == null) {
-            return Optional.empty();
+        try {
+            ResponseEntity<HentOppfolgingsstatusRespons> response = restTemplate.exchange(
+                    properties.getUrl() + "/veilarboppfolging/api/v2/person/hent-oppfolgingsstatus",
+                    HttpMethod.POST,
+                    new HttpEntity<>(request, headers),
+                    HentOppfolgingsstatusRespons.class
+            );
+            return Optional.ofNullable(response.getBody());
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == NOT_FOUND) {
+                return Optional.empty();
+            }
+            throw e;
         }
-
-        return Optional.of(response.getBody());
     }
 }
