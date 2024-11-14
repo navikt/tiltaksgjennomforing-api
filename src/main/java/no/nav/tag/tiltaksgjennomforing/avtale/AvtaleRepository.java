@@ -33,12 +33,21 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByBedriftNrInAndFeilregistrertIsFalse(Set<BedriftNr> bedriftNrList, Pageable pageable);
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    Page<Avtale> findAllByBedriftNrAndFeilregistrertIsFalse(BedriftNr bedriftNr, Pageable pageable);
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    Page<Avtale> findAllByBedriftNrAndTiltakstypeAndFeilregistrertIsFalse(BedriftNr bedriftNr, Tiltakstype tiltakstype, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByBedriftNrInAndTiltakstypeAndFeilregistrertIsFalse(Set<BedriftNr> bedriftNrList, Tiltakstype tiltakstype, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByDeltakerFnrAndFeilregistrertIsFalse(Fnr deltakerFnr, Pageable pageable);
+    Page<Avtale> findAllByDeltakerFnrAndTiltakstypeAndFeilregistrertIsFalse(Fnr deltakerFnr, Tiltakstype tiltakstype, Pageable pageable);
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    Page<Avtale> findAllByVeilederNavIdentAndFeilregistrertIsFalse(NavIdent veilederNavIdent, Pageable pageable);
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    Page<Avtale> findAllByVeilederNavIdentAndTiltakstypeAndFeilregistrertIsFalse(NavIdent veilederNavIdent, Tiltakstype tiltakstype, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     List<Avtale> findAllByDeltakerFnrAndFeilregistrertIsFalse(Fnr deltakerFnr);
@@ -47,7 +56,20 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     Page<Avtale> findAllByMentorFnrAndFeilregistrertIsFalse(Fnr mentorFnr, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    Page<Avtale> findAllByVeilederNavIdentIsNullAndEnhetGeografiskAndFeilregistrertIsFalseOrVeilederNavIdentIsNullAndEnhetOppfolgingAndFeilregistrertIsFalse(String enhetGeografisk, String enhetOppfolging, Pageable pageable);
+
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    Page<Avtale> findAllByVeilederNavIdentIsNullAndEnhetGeografiskAndTiltakstypeAndFeilregistrertIsFalseOrVeilederNavIdentIsNullAndEnhetOppfolgingAndTiltakstypeAndFeilregistrertIsFalse(String enhetGeografisk, Tiltakstype tiltakstype, String enhetOppfolging, Tiltakstype tiltakstype2, Pageable pageable);
+
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    Page<Avtale> findAllByEnhetGeografiskAndFeilregistrertIsFalseOrEnhetOppfolgingAndFeilregistrertIsFalse(String enhetGeografisk, String enhetOppfolging, Pageable pageable);
+
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    Page<Avtale> findAllByEnhetGeografiskAndTiltakstypeAndFeilregistrertIsFalseOrEnhetOppfolgingAndTiltakstypeAndFeilregistrertIsFalse(String enhetGeografisk, Tiltakstype tiltakstype, String enhetOppfolging, Tiltakstype tiltakstype2, Pageable pageable);
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByAvtaleNrAndFeilregistrertIsFalse(Integer avtaleNr, Pageable pageable);
+    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
+    Page<Avtale> findAllByAvtaleNrAndTiltakstypeAndFeilregistrertIsFalse(Integer avtaleNr, Tiltakstype tiltakstype, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     List<Avtale> findAllByTiltakstype(Tiltakstype tiltakstype);

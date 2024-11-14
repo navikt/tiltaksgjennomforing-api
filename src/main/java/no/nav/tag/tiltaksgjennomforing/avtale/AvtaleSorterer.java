@@ -37,7 +37,6 @@ public class AvtaleSorterer {
             case "sluttDato" -> "gjeldendeInnhold.sluttDato";
             case "tiltakstype" -> "tiltakstype";
             case "veilederNavIdent" -> "veilederNavIdent";
-            case "status" -> "status";
             default -> "sistEndret";
         };
         return new Sort.Order(Sort.Direction.fromString(sorteringsRetning), feldtnavn);
