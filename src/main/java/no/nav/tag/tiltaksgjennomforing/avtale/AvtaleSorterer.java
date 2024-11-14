@@ -1,8 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import java.util.Comparator;
 import lombok.experimental.UtilityClass;
 import org.springframework.data.domain.Sort;
+
+import java.util.Comparator;
 
 @UtilityClass
 public class AvtaleSorterer {

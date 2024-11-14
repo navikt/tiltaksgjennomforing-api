@@ -51,15 +51,15 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     private final UUID azureOid;
 
     public Veileder(
-            NavIdent identifikator,
-            UUID azureOid,
-            TilgangskontrollService tilgangskontrollService,
-            PersondataService persondataService,
-            Norg2Client norg2Client,
-            Set<NavEnhet> navEnheter,
-            SlettemerkeProperties slettemerkeProperties,
-            boolean harAdGruppeForBeslutter,
-            VeilarboppfolgingService veilarboppfolgingService
+        NavIdent identifikator,
+        UUID azureOid,
+        TilgangskontrollService tilgangskontrollService,
+        PersondataService persondataService,
+        Norg2Client norg2Client,
+        Set<NavEnhet> navEnheter,
+        SlettemerkeProperties slettemerkeProperties,
+        boolean harAdGruppeForBeslutter,
+        VeilarboppfolgingService veilarboppfolgingService
     ) {
 
         super(identifikator);
@@ -75,14 +75,14 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     @Deprecated
     public Veileder(
-            NavIdent identifikator,
-            TilgangskontrollService tilgangskontrollService,
-            PersondataService persondataService,
-            Norg2Client norg2Client,
-            Set<NavEnhet> navEnheter,
-            SlettemerkeProperties slettemerkeProperties,
-            boolean harAdGruppeForBeslutter,
-            VeilarboppfolgingService veilarboppfolgingService
+        NavIdent identifikator,
+        TilgangskontrollService tilgangskontrollService,
+        PersondataService persondataService,
+        Norg2Client norg2Client,
+        Set<NavEnhet> navEnheter,
+        SlettemerkeProperties slettemerkeProperties,
+        boolean harAdGruppeForBeslutter,
+        VeilarboppfolgingService veilarboppfolgingService
     ) {
         this(identifikator, null, tilgangskontrollService, persondataService, norg2Client, navEnheter, slettemerkeProperties, harAdGruppeForBeslutter, veilarboppfolgingService);
     }
@@ -140,11 +140,11 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             }
             int skip = pageable.getPageNumber() > 0 ? (pageable.getPageNumber())*pageable.getPageSize() : 0;
             List<Avtale> totaltFørPaging = avtalerUtenStatusFiltrering.getContent().stream()
-                    .filter(avtale -> avtale.statusSomEnum() == queryParametre.getStatus()).toList();
+                .filter(avtale -> avtale.statusSomEnum() == queryParametre.getStatus()).toList();
             List<Avtale> avtaler = avtalerUtenStatusFiltrering.getContent().stream()
-                    .filter(avtale -> avtale.statusSomEnum() == queryParametre.getStatus())
-                    .skip(skip)
-                    .limit(pageable.getPageSize()).toList();
+                .filter(avtale -> avtale.statusSomEnum() == queryParametre.getStatus())
+                .skip(skip)
+                .limit(pageable.getPageSize()).toList();
             return new PageImpl<>(avtaler, pageable, totaltFørPaging.size());
         }
         else {
@@ -232,8 +232,8 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     public void godkjennForVeilederOgArbeidsgiver(
-            GodkjentPaVegneAvArbeidsgiverGrunn paVegneAvArbeidsgiverGrunn,
-            Avtale avtale
+        GodkjentPaVegneAvArbeidsgiverGrunn paVegneAvArbeidsgiverGrunn,
+        Avtale avtale
     ) {
         super.sjekkTilgang(avtale);
         this.blokkereKode6Prosessering(avtale.getDeltakerFnr());
@@ -242,8 +242,8 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     public void godkjennForVeilederOgDeltakerOgArbeidsgiver(
-            GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn paVegneAvDeltakerOgArbeidsgiverGrunn,
-            Avtale avtale
+        GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn paVegneAvDeltakerOgArbeidsgiverGrunn,
+        Avtale avtale
     ) {
         super.sjekkTilgang(avtale);
         this.blokkereKode6Prosessering(avtale.getDeltakerFnr());
@@ -280,16 +280,16 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     public void endreAvtale(
-            Instant sistEndret,
-            EndreAvtale endreAvtale,
-            Avtale avtale,
-            EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder
+        Instant sistEndret,
+        EndreAvtale endreAvtale,
+        Avtale avtale,
+        EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder
     ) {
         super.sjekkTilgangOgEndreAvtale(
-                sistEndret,
-                endreAvtale,
-                avtale,
-                tiltakstyperMedTilskuddsperioder
+            sistEndret,
+            endreAvtale,
+            avtale,
+            tiltakstyperMedTilskuddsperioder
         );
         this.oppdatereEnheterVedEndreAvtale(avtale);
     }
@@ -310,8 +310,8 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     private void oppdatereGeoEnhetVedEndreAvtale(Avtale avtale, PdlRespons pdlRespons) {
         Norg2GeoResponse norg2GeoResponse = PersondataService.hentGeoLokasjonFraPdlRespons(pdlRespons)
-                .map(norg2Client::hentGeoEnhetFraCacheEllerNorg2)
-                .orElse(null);
+            .map(norg2Client::hentGeoEnhetFraCacheEllerNorg2)
+            .orElse(null);
         if (norg2GeoResponse == null) return;
         avtale.setEnhetGeografisk(norg2GeoResponse.getEnhetNr());
         avtale.setEnhetsnavnGeografisk(norg2GeoResponse.getNavn());
@@ -319,7 +319,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     private void oppdatereOppfølgingEnhetsnavnVedEndreAvtale(Avtale avtale) {
         final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhetFraCacheNorg2(
-                avtale.getEnhetOppfolging()
+            avtale.getEnhetOppfolging()
         );
         if (response == null) return;
         avtale.setEnhetsnavnOppfolging(response.getNavn());
@@ -327,7 +327,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     public void oppdatereOppfølgingStatusVedEndreAvtale(Avtale avtale) {
         Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOppfolgingsstatus(
-                avtale.getDeltakerFnr().asString()
+            avtale.getDeltakerFnr().asString()
         );
         if (oppfølgingsstatus == null) return;
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
@@ -379,8 +379,8 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     public void hentOppfølgingFraArena(
-            Avtale avtale,
-            VeilarboppfolgingService veilarboppfolgingService
+        Avtale avtale,
+        VeilarboppfolgingService veilarboppfolgingService
     ) {
         if(avtale.harOppfølgingsStatus()) return;
         Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
@@ -449,8 +449,8 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     public void endreOppfølgingOgTilrettelegging(
-            EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging,
-            Avtale avtale
+        EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging,
+        Avtale avtale
     ) {
         super.sjekkTilgang(avtale);
         avtale.endreOppfølgingOgTilrettelegging(endreOppfølgingOgTilrettelegging, getIdentifikator());
@@ -496,31 +496,31 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     protected List<AlleredeRegistrertAvtale> hentAvtaleDeltakerAlleredeErRegistrertPaa(
-            Fnr deltakerFnr,
-            Tiltakstype tiltakstype,
-            UUID avtaleId,
-            LocalDate startDato,
-            LocalDate sluttDato,
-            AvtaleRepository avtaleRepository
+        Fnr deltakerFnr,
+        Tiltakstype tiltakstype,
+        UUID avtaleId,
+        LocalDate startDato,
+        LocalDate sluttDato,
+        AvtaleRepository avtaleRepository
     ) {
         if(avtaleId != null && startDato != null && sluttDato != null) {
             return AlleredeRegistrertAvtale.filtrerAvtaleDeltakerAlleredeErRegistrertPaa(
-                    avtaleRepository.finnAvtalerSomOverlapperForDeltakerVedGodkjenningAvAvtale(
-                            deltakerFnr.asString(),
-                            avtaleId.toString(),
-                            Date.valueOf(settStartDato(startDato)),
-                            Date.valueOf(sluttDato)
-                    ),
-                    tiltakstype
+                avtaleRepository.finnAvtalerSomOverlapperForDeltakerVedGodkjenningAvAvtale(
+                    deltakerFnr.asString(),
+                    avtaleId.toString(),
+                    Date.valueOf(settStartDato(startDato)),
+                    Date.valueOf(sluttDato)
+                ),
+                tiltakstype
             );
         }
         return AlleredeRegistrertAvtale.filtrerAvtaleDeltakerAlleredeErRegistrertPaa(
-                avtaleRepository.finnAvtalerSomOverlapperForDeltakerVedOpprettelseAvAvtale(
-                        deltakerFnr.asString(),
-                        Date.valueOf(settStartDato(startDato))
+            avtaleRepository.finnAvtalerSomOverlapperForDeltakerVedOpprettelseAvAvtale(
+                deltakerFnr.asString(),
+                Date.valueOf(settStartDato(startDato))
 
-                ),
-                tiltakstype
+            ),
+            tiltakstype
         );
     }
 

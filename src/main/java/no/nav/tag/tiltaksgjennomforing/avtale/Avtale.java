@@ -125,6 +125,9 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 @Builder
 public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFnrOgBedriftNr {
 
+    @Id
+    @EqualsAndHashCode.Include
+    private UUID id;
     @Convert(converter = FnrConverter.class)
     private Fnr deltakerFnr;
     @Convert(converter = FnrConverter.class)
@@ -139,9 +142,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     private Tiltakstype tiltakstype;
 
     private LocalDateTime opprettetTidspunkt;
-    @Id
-    @EqualsAndHashCode.Include
-    private UUID id;
 
     @Generated(event = EventType.INSERT)
     private Integer avtaleNr;
@@ -163,6 +163,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     @Enumerated(EnumType.STRING)
     private Avtaleopphav opphav;
+
+    @JsonIgnore
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.PÅBEGYNT;
 
     private boolean godkjentForEtterregistrering;
 
@@ -281,8 +285,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         if (tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
             nyeTilskuddsperioder();
         }
-        sistEndretNå();
-        registerEvent(new AvtaleEndret(this, AvtaleHendelseUtførtAvRolle.fraAvtalerolle(utfortAvRolle), identifikator));
+        utforEndring(new AvtaleEndret(this, AvtaleHendelseUtførtAvRolle.fraAvtalerolle(utfortAvRolle), identifikator));
     }
 
     public void endreAvtale(
@@ -340,8 +343,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             avbrutt = false;
             avbruttDato = null;
             avbruttGrunn = null;
-            sistEndretNå();
-            registerEvent(new AnnullertAvSystem(this, Identifikator.ARENA));
+            utforEndring(new AnnullertAvSystem(this, Identifikator.ARENA));
         } else {
             annullertTidspunkt = null;
             annullertGrunn = null;
@@ -351,8 +353,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             if (tiltakstyperMedTilskuddsperioder != null && tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
                 nyeTilskuddsperioder();
             }
-            sistEndretNå();
-            registerEvent(new AvtaleEndretAvArena(this));
+            utforEndring(new AvtaleEndretAvArena(this));
         }
     }
 
@@ -492,10 +493,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         return gjeldendeInnhold.isGodkjentPaVegneAvArbeidsgiver();
     }
 
-    private boolean skalBesluttes() {
-        return tiltakstype == Tiltakstype.SOMMERJOBB || tiltakstype == Tiltakstype.VARIG_LONNSTILSKUDD || tiltakstype == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD || tiltakstype == Tiltakstype.VTAO;
-    }
-
     private void sjekkOmAvtalenKanEndres() {
         if (erGodkjentAvDeltaker() || erGodkjentAvArbeidsgiver() || erGodkjentAvVeileder()) {
             throw new TilgangskontrollException("Godkjenninger må oppheves før avtalen kan endres.");
@@ -505,9 +502,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     void opphevGodkjenningerSomArbeidsgiver() {
         boolean varGodkjentAvDeltaker = erGodkjentAvDeltaker();
         opphevGodkjenninger();
-        registerEvent(new GodkjenningerOpphevetAvArbeidsgiver(this, new GamleVerdier(varGodkjentAvDeltaker, false)));
+        utforEndring(new GodkjenningerOpphevetAvArbeidsgiver(this, new GamleVerdier(varGodkjentAvDeltaker, false)));
         if (varGodkjentAvDeltaker) {
-            registerEvent(new DeltakersGodkjenningOpphevetAvArbeidsgiver(this));
+            utforEndring(new DeltakersGodkjenningOpphevetAvArbeidsgiver(this));
         }
     }
 
@@ -515,12 +512,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         boolean varGodkjentAvDeltaker = erGodkjentAvDeltaker();
         boolean varGodkjentAvArbeidsgiver = erGodkjentAvArbeidsgiver();
         opphevGodkjenninger();
-        registerEvent(new GodkjenningerOpphevetAvVeileder(this, new GamleVerdier(varGodkjentAvDeltaker, varGodkjentAvArbeidsgiver)));
+        utforEndring(new GodkjenningerOpphevetAvVeileder(this, new GamleVerdier(varGodkjentAvDeltaker, varGodkjentAvArbeidsgiver)));
         if (varGodkjentAvDeltaker) {
-            registerEvent(new DeltakersGodkjenningOpphevetAvVeileder(this));
+            utforEndring(new DeltakersGodkjenningOpphevetAvVeileder(this));
         }
         if (varGodkjentAvArbeidsgiver) {
-            registerEvent(new ArbeidsgiversGodkjenningOpphevetAvVeileder(this));
+            utforEndring(new ArbeidsgiversGodkjenningOpphevetAvVeileder(this));
         }
     }
 
@@ -531,11 +528,19 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         gjeldendeInnhold.setGodkjentPaVegneAv(false);
         gjeldendeInnhold.setGodkjentPaVegneGrunn(null);
         gjeldendeInnhold.setGodkjentAvNavIdent(null);
-        sistEndretNå();
     }
 
-    private void sistEndretNå() {
+    private void utforEndring() {
+        utforEndring(null);
+    }
+
+    private <T> void utforEndring(T event) {
+        this.status = Status.fra(this);
         this.sistEndret = Now.instant();
+
+        if (event != null) {
+            registerEvent(event);
+        }
     }
 
     void sjekkSistEndret(Instant sistEndret) {
@@ -552,8 +557,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_ARBEIDSGIVER_HAR_ALLEREDE_GODKJENT);
         }
         gjeldendeInnhold.setGodkjentAvArbeidsgiver(Now.localDateTime());
-        sistEndretNå();
-        registerEvent(new GodkjentAvArbeidsgiver(this, utfortAv));
+        utforEndring(new GodkjentAvArbeidsgiver(this, utfortAv));
     }
 
     void godkjennForVeileder(NavIdent utfortAv) {
@@ -581,17 +585,16 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         LocalDateTime tidspunkt = Now.localDateTime();
         gjeldendeInnhold.setGodkjentAvVeileder(tidspunkt);
         gjeldendeInnhold.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
-        if (!skalBesluttes()) {
+        if (!tiltakstype.skalBesluttes()) {
             avtaleInngått(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
         }
         gjeldendeInnhold.setIkrafttredelsestidspunkt(tidspunkt);
-        sistEndretNå();
-        registerEvent(new GodkjentAvVeileder(this, utfortAv));
+        utforEndring(new GodkjentAvVeileder(this, utfortAv));
     }
 
     private void avtaleInngått(LocalDateTime tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
         gjeldendeInnhold.setAvtaleInngått(tidspunkt);
-        registerEvent(new AvtaleInngått(this, AvtaleHendelseUtførtAvRolle.fraAvtalerolle(utførtAvRolle), utførtAv));
+        utforEndring(new AvtaleInngått(this, AvtaleHendelseUtførtAvRolle.fraAvtalerolle(utførtAvRolle), utførtAv));
     }
 
     void godkjennForVeilederOgDeltaker(NavIdent utfortAv, GodkjentPaVegneGrunn paVegneAvGrunn) {
@@ -624,11 +627,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         gjeldendeInnhold.setGodkjentPaVegneGrunn(paVegneAvGrunn);
         gjeldendeInnhold.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
         gjeldendeInnhold.setIkrafttredelsestidspunkt(tidspunkt);
-        if (!skalBesluttes()) {
+        if (!tiltakstype.skalBesluttes()) {
             avtaleInngått(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
         }
-        sistEndretNå();
-        registerEvent(new GodkjentPaVegneAvDeltaker(this, utfortAv));
+        utforEndring(new GodkjentPaVegneAvDeltaker(this, utfortAv));
     }
 
     void godkjennForVeilederOgArbeidsgiver(NavIdent utfortAv, GodkjentPaVegneAvArbeidsgiverGrunn godkjentPaVegneAvArbeidsgiverGrunn) {
@@ -657,11 +659,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         gjeldendeInnhold.setGodkjentPaVegneAvArbeidsgiverGrunn(godkjentPaVegneAvArbeidsgiverGrunn);
         gjeldendeInnhold.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
         gjeldendeInnhold.setIkrafttredelsestidspunkt(tidspunkt);
-        if (!skalBesluttes()) {
+        if (!tiltakstype.skalBesluttes()) {
             avtaleInngått(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
         }
-        sistEndretNå();
-        registerEvent(new GodkjentPaVegneAvArbeidsgiver(this, utfortAv));
+        utforEndring(new GodkjentPaVegneAvArbeidsgiver(this, utfortAv));
     }
 
     public void godkjennForVeilederOgDeltakerOgArbeidsgiver(NavIdent utfortAv, GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn paVegneAvDeltakerOgArbeidsgiverGrunn) {
@@ -679,10 +680,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         if (erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_VEILEDER_HAR_ALLEREDE_GODKJENT);
         }
-        if (tiltakstype == Tiltakstype.SOMMERJOBB && this.getDeltakerFnr().erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
+        if (tiltakstype.isSommerjobb() && this.getDeltakerFnr().erOver30årFraOppstartDato(getGjeldendeInnhold().getStartDato())) {
             throw new FeilkodeException(Feilkode.SOMMERJOBB_FOR_GAMMEL_FRA_OPPSTARTDATO);
         }
-
 
         paVegneAvDeltakerOgArbeidsgiverGrunn.valgtMinstEnGrunn();
         LocalDateTime tidspunkt = Now.localDateTime();
@@ -695,11 +695,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         gjeldendeInnhold.setGodkjentPaVegneAvArbeidsgiverGrunn(paVegneAvDeltakerOgArbeidsgiverGrunn.getGodkjentPaVegneAvArbeidsgiverGrunn());
         gjeldendeInnhold.setGodkjentAvNavIdent(new NavIdent(utfortAv.asString()));
         gjeldendeInnhold.setIkrafttredelsestidspunkt(tidspunkt);
-        if (!skalBesluttes()) {
+        if (!tiltakstype.skalBesluttes()) {
             avtaleInngått(tidspunkt, Avtalerolle.VEILEDER, utfortAv);
         }
-        sistEndretNå();
-        registerEvent(new GodkjentPaVegneAvDeltakerOgArbeidsgiver(this, utfortAv));
+        utforEndring(new GodkjentPaVegneAvDeltakerOgArbeidsgiver(this, utfortAv));
     }
 
     void godkjennForDeltaker(Identifikator utfortAv) {
@@ -708,8 +707,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_DELTAKER_HAR_ALLEREDE_GODKJENT);
         }
         gjeldendeInnhold.setGodkjentAvDeltaker(Now.localDateTime());
-        sistEndretNå();
-        registerEvent(new GodkjentAvDeltaker(this, utfortAv));
+        utforEndring(new GodkjentAvDeltaker(this, utfortAv));
     }
 
     void godkjennForMentor(Identifikator utfortAv) {
@@ -717,14 +715,13 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_MENTOR_HAR_ALLEREDE_GODKJENT);
         }
         gjeldendeInnhold.setGodkjentTaushetserklæringAvMentor(Now.localDateTime());
-        sistEndretNå();
-        registerEvent(new SignertAvMentor(this, utfortAv));
+        utforEndring(new SignertAvMentor(this, utfortAv));
     }
 
     void sjekkOmAltErKlarTilGodkjenning() {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
 
-        if (!erAltUtfylt()) {
+        if (!felterSomIkkeErFyltUt().isEmpty()) {
             throw new AltMåVæreFyltUtException();
         }
         if (List.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB).contains(tiltakstype) &&
@@ -743,21 +740,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     @JsonProperty
     public Status statusSomEnum() {
-        if (getAnnullertTidspunkt() != null) {
-            return Status.ANNULLERT;
-        } else if (isAvbrutt()) {
-            return Status.AVBRUTT;
-        } else if (erAvtaleInngått() && (gjeldendeInnhold.getSluttDato().isBefore(Now.localDate()))) {
-            return Status.AVSLUTTET;
-        } else if (erAvtaleInngått() && (gjeldendeInnhold.getStartDato().isBefore(Now.localDate().plusDays(1)))) {
-            return Status.GJENNOMFØRES;
-        } else if (erAvtaleInngått()) {
-            return Status.KLAR_FOR_OPPSTART;
-        } else if (erAltUtfylt()) {
-            return Status.MANGLER_GODKJENNING;
-        } else {
-            return Status.PÅBEGYNT;
-        }
+        return Status.fra(this);
     }
 
     @JsonProperty
@@ -783,8 +766,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         if (AnnullertGrunn.FEILREGISTRERING.equals(annullerGrunn)) {
             setFeilregistrert(true);
         }
-        sistEndretNå();
-        registerEvent(new AnnullertAvVeileder(this, veileder.getIdentifikator()));
+        utforEndring(new AnnullertAvVeileder(this, veileder.getIdentifikator()));
     }
 
     public void utlop(AvtaleUtlopHandling handling) {
@@ -796,8 +778,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
                 setAnnullertTidspunkt(Now.instant());
                 setAnnullertGrunn(AnnullertGrunn.UTLØPT);
                 setFeilregistrert(true);
-                sistEndretNå();
-                registerEvent(new AnnullertAvSystem(this, Identifikator.SYSTEM));
+                utforEndring(new AnnullertAvSystem(this, Identifikator.SYSTEM));
             }
         }
     }
@@ -814,17 +795,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         NavIdent gammelNavIdent = this.getVeilederNavIdent();
         this.setVeilederNavIdent(nyNavIdent);
         getGjeldendeInnhold().reberegnLønnstilskudd();
-        sistEndretNå();
         if (gammelNavIdent == null) {
             nyeTilskuddsperioder();
-            this.registerEvent(new AvtaleOpprettetAvArbeidsgiverErFordelt(this));
+            utforEndring(new AvtaleOpprettetAvArbeidsgiverErFordelt(this));
         } else {
-            registerEvent(new AvtaleNyVeileder(this, gammelNavIdent));
+            utforEndring(new AvtaleNyVeileder(this, gammelNavIdent));
         }
-    }
-
-    private boolean erAltUtfylt() {
-        return felterSomIkkeErFyltUt().isEmpty();
     }
 
     public void leggTilBedriftNavn(String bedriftNavn) {
@@ -879,8 +855,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             godkjennForBeslutter(tidspunkt, beslutter);
             avtaleInngått(tidspunkt, Avtalerolle.BESLUTTER, beslutter);
         }
-        sistEndretNå();
-        registerEvent(new TilskuddsperiodeGodkjent(this, gjeldendePeriode, beslutter, resendingsnummer));
+        utforEndring(new TilskuddsperiodeGodkjent(this, gjeldendePeriode, beslutter, resendingsnummer));
     }
 
     private void godkjennForBeslutter(LocalDateTime tidspunkt, NavIdent beslutter) {
@@ -896,8 +871,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         }
         TilskuddPeriode gjeldendePeriode = gjeldendeTilskuddsperiode();
         gjeldendePeriode.avslå(beslutter, avslagsårsaker, avslagsforklaring);
-        sistEndretNå();
-        registerEvent(new TilskuddsperiodeAvslått(this, beslutter, gjeldendePeriode));
+        utforEndring(new TilskuddsperiodeAvslått(this, beslutter, gjeldendePeriode));
     }
 
     public void togglegodkjennEtterregistrering(NavIdent beslutter) {
@@ -906,11 +880,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             throw new FeilkodeException(Feilkode.KAN_IKKE_MERKES_FOR_ETTERREGISTRERING_AVTALE_GODKJENT);
         }
         setGodkjentForEtterregistrering(!this.godkjentForEtterregistrering);
-        sistEndretNå();
         if (this.godkjentForEtterregistrering) {
-            registerEvent(new GodkjentForEtterregistrering(this, beslutter));
+            utforEndring(new GodkjentForEtterregistrering(this, beslutter));
         } else {
-            registerEvent(new FjernetEtterregistrering(this, beslutter));
+            utforEndring(new FjernetEtterregistrering(this, beslutter));
         }
     }
 
@@ -1225,8 +1198,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         getGjeldendeInnhold().endreSluttDato(nySluttDato);
         sendTilbakeTilBeslutter();
         forkortTilskuddsperioder(nySluttDato);
-        sistEndretNå();
-        registerEvent(new AvtaleForkortet(this, nyAvtaleInnholdVersjon, nySluttDato, grunn, annetGrunn, utførtAv));
+        utforEndring(new AvtaleForkortet(this, nyAvtaleInnholdVersjon, nySluttDato, grunn, annetGrunn, utførtAv));
     }
 
     public void forlengAvtale(LocalDate nySluttDato, NavIdent utførtAv) {
@@ -1245,8 +1217,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         getGjeldendeInnhold().endreSluttDato(nySluttDato);
         sendTilbakeTilBeslutter();
         forlengTilskuddsperioder(gammelSluttDato, nySluttDato);
-        sistEndretNå();
-        registerEvent(new AvtaleForlenget(this, utførtAv));
+        utforEndring(new AvtaleForlenget(this, utførtAv));
     }
 
     private void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {
@@ -1270,9 +1241,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_TILSKUDDSBEREGNING);
         this.hentBeregningStrategi().endreBeregning(this, endreTilskuddsberegning);
         endreBeløpITilskuddsperioder();
-        sistEndretNå();
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
-        registerEvent(new TilskuddsberegningEndret(this, utførtAv));
+        utforEndring(new TilskuddsberegningEndret(this, utførtAv));
     }
 
     // Metode for å rydde opp i beregnede felter som ikke har blitt satt etter at lønnstilskuddsprosent manuelt i databasen har blitt satt inn
@@ -1346,9 +1316,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_KONTAKTINFO);
         getGjeldendeInnhold().endreKontaktInfo(endreKontaktInformasjon);
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
-        sistEndretNå();
         sendTilbakeTilBeslutter();
-        registerEvent(new KontaktinformasjonEndret(this, utførtAv));
+        utforEndring(new KontaktinformasjonEndret(this, utførtAv));
     }
 
     public void endreStillingsbeskrivelse(EndreStillingsbeskrivelse endreStillingsbeskrivelse, NavIdent utførtAv) {
@@ -1369,9 +1338,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_STILLING);
         getGjeldendeInnhold().endreStillingsInfo(endreStillingsbeskrivelse);
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
-        sistEndretNå();
         sendTilbakeTilBeslutter();
-        registerEvent(new StillingsbeskrivelseEndret(this, utførtAv));
+        utforEndring(new StillingsbeskrivelseEndret(this, utførtAv));
     }
 
     public void endreOppfølgingOgTilrettelegging(EndreOppfølgingOgTilrettelegging endreOppfølgingOgTilrettelegging, NavIdent utførtAv) {
@@ -1388,9 +1356,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         gjeldendeInnhold = gjeldendeInnhold.nyGodkjentVersjon(AvtaleInnholdType.ENDRE_OPPFØLGING_OG_TILRETTELEGGING);
         gjeldendeInnhold.endreOppfølgingOgTilretteleggingInfo(endreOppfølgingOgTilrettelegging);
         gjeldendeInnhold.setIkrafttredelsestidspunkt(Now.localDateTime());
-        sistEndretNå();
         sendTilbakeTilBeslutter();
-        registerEvent(new OppfølgingOgTilretteleggingEndret(this, utførtAv));
+        utforEndring(new OppfølgingOgTilretteleggingEndret(this, utførtAv));
     }
 
     public void endreMål(EndreMål endreMål, NavIdent utførtAv) {
@@ -1414,9 +1381,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         getGjeldendeInnhold().getMaal().addAll(nyeMål);
         getGjeldendeInnhold().getMaal().forEach(m -> m.setAvtaleInnhold(getGjeldendeInnhold()));
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
-        sistEndretNå();
         sendTilbakeTilBeslutter();
-        registerEvent(new MålEndret(this, utførtAv));
+        utforEndring(new MålEndret(this, utførtAv));
     }
 
     public void endreInkluderingstilskudd(EndreInkluderingstilskudd endreInkluderingstilskudd, NavIdent utførtAv) {
@@ -1452,9 +1418,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         getGjeldendeInnhold().getInkluderingstilskuddsutgift().addAll(nyeInkluderingstilskuddsutgifter);
         getGjeldendeInnhold().getInkluderingstilskuddsutgift().forEach(i -> i.setAvtaleInnhold(getGjeldendeInnhold()));
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
-        sistEndretNå();
         sendTilbakeTilBeslutter();
-        registerEvent(new InkluderingstilskuddEndret(this, utførtAv));
+        utforEndring(new InkluderingstilskuddEndret(this, utførtAv));
     }
 
     public void endreOmMentor(EndreOmMentor endreOmMentor, NavIdent utførtAv) {
@@ -1472,9 +1437,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_OM_MENTOR);
         getGjeldendeInnhold().endreOmMentor(endreOmMentor);
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
-        sistEndretNå();
         sendTilbakeTilBeslutter();
-        registerEvent(new OmMentorEndret(this, utførtAv));
+        utforEndring(new OmMentorEndret(this, utførtAv));
     }
 
     /**

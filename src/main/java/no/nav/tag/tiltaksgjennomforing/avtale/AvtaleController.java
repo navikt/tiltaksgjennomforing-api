@@ -161,9 +161,7 @@ public class AvtaleController {
         Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,
                 queryParametre,
-                sorteringskolonne,
                 pageable
-
         );
         return avtaler;
     }
@@ -196,9 +194,7 @@ public class AvtaleController {
             Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
                     avtaleRepository,
                     avtalePredicate,
-                    sorteringskolonne,
                     pageable
-
             );
             HashMap<String, Object> stringObjectHashMap = new HashMap<>(avtaler);
             stringObjectHashMap.put("sokeParametere", avtalePredicate);
@@ -238,9 +234,7 @@ public class AvtaleController {
         Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,
                 queryParametre,
-                sorteringskolonne,
                 pageable
-
         );
         HashMap<String, Object> stringObjectHashMap = new HashMap<>(avtaler);
         stringObjectHashMap.put("sokeParametere", queryParametre);
