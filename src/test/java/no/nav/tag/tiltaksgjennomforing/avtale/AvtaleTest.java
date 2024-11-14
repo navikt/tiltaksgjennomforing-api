@@ -1154,7 +1154,7 @@ public class AvtaleTest {
     }
 
     @Test
-    public void sistEndretNå__kalles_ved_endreAvtale() throws InterruptedException {
+    public void utforEndring__kalles_ved_endreAvtale() throws InterruptedException {
         Instant førEndringen = Now.instant();
         Avtale avtale = TestData.enArbeidstreningAvtale();
         Thread.sleep(10);
@@ -1163,7 +1163,7 @@ public class AvtaleTest {
     }
 
     @Test
-    public void sistEndretNå__kalles_ved_godkjennForDeltaker() throws InterruptedException {
+    public void utforEndring__kalles_ved_godkjennForDeltaker() throws InterruptedException {
         Instant førEndringen = Now.instant();
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Thread.sleep(10);
@@ -1172,7 +1172,7 @@ public class AvtaleTest {
     }
 
     @Test
-    public void sistEndretNå__kalles_ved_godkjennForArbeidsgiver() throws InterruptedException {
+    public void utforEndring__kalles_ved_godkjennForArbeidsgiver() throws InterruptedException {
         Instant førEndringen = Now.instant();
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Thread.sleep(10);
@@ -1181,7 +1181,7 @@ public class AvtaleTest {
     }
 
     @Test
-    public void sistEndretNå__kalles_ved_godkjennForVeileder() throws InterruptedException {
+    public void utforEndring__kalles_ved_godkjennForVeileder() throws InterruptedException {
         Instant førEndringen = Now.instant();
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Thread.sleep(10);
@@ -1190,7 +1190,7 @@ public class AvtaleTest {
     }
 
     @Test
-    public void sistEndretNå__kalles_ved_godkjennForVeilederOgDeltaker() throws InterruptedException {
+    public void utforEndring__kalles_ved_godkjennForVeilederOgDeltaker() throws InterruptedException {
         Instant førEndringen = Now.instant();
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
@@ -1200,7 +1200,7 @@ public class AvtaleTest {
     }
 
     @Test
-    public void sistEndretNå__kalles_ved_opphevGodkjenningerSomArbeidsgiver() throws InterruptedException {
+    public void utforEndring__kalles_ved_opphevGodkjenningerSomArbeidsgiver() throws InterruptedException {
         Instant førEndringen = Now.instant();
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Thread.sleep(10);
@@ -1209,7 +1209,7 @@ public class AvtaleTest {
     }
 
     @Test
-    public void sistEndretNå__kalles_ved_opphevGodkjenningerSomVeileder() throws InterruptedException {
+    public void utforEndring__kalles_ved_opphevGodkjenningerSomVeileder() throws InterruptedException {
         Instant førEndringen = Now.instant();
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Thread.sleep(10);
@@ -1218,7 +1218,7 @@ public class AvtaleTest {
     }
 
     @Test
-    public void sistEndretNå__kalles_ved_annuller() throws InterruptedException {
+    public void utforEndring__kalles_ved_annuller() throws InterruptedException {
         Instant førEndringen = Now.instant();
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Thread.sleep(10);
@@ -1227,7 +1227,7 @@ public class AvtaleTest {
     }
 
     @Test
-    public void sistEndretNå__kalles_ved_endreOppfølgingOgTilrettelegging() throws InterruptedException {
+    public void utforEndring__kalles_ved_endreOppfølgingOgTilrettelegging() throws InterruptedException {
         Instant førEndringen = Now.instant();
         Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         Thread.sleep(10);
@@ -1236,7 +1236,7 @@ public class AvtaleTest {
     }
 
     @Test
-    public void sistEndretNå__kalles_ved_forlengAvtale() {
+    public void utforEndring__kalles_ved_forlengAvtale() {
         Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         Instant sistEndret = avtale.getSistEndret();
         avtale.forlengAvtale(avtale.getGjeldendeInnhold().getSluttDato().plusDays(1), TestData.enNavIdent());
@@ -1244,7 +1244,7 @@ public class AvtaleTest {
     }
 
     @Test
-    public void sistEndretNå__kalles_ved_forkortAvtale() {
+    public void utforEndring__kalles_ved_forkortAvtale() {
         Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         Instant sistEndret = avtale.getSistEndret();
         avtale.forkortAvtale(avtale.getGjeldendeInnhold().getSluttDato().minusDays(1), "lala", null, TestData.enNavIdent());
