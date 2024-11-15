@@ -96,13 +96,81 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, Pageable pageable) {
-        NavIdent veilederNavIdent = queryParametre.getVeilederNavIdent() != null ? queryParametre.getVeilederNavIdent() : getIdentifikator();
+        if (queryParametre.getVeilederNavIdent() != null) {
+            return avtaleRepository.sokEtterAvtale(
+                null,
+                queryParametre.getVeilederNavIdent(),
+                null,
+                null,
+                null,
+                queryParametre.getTiltakstype(),
+                queryParametre.getStatus(),
+                pageable
+            );
+        }
+        if (queryParametre.getDeltakerFnr() != null) {
+            return avtaleRepository.sokEtterAvtale(
+                null,
+                null,
+                queryParametre.getDeltakerFnr(),
+                null,
+                null,
+                queryParametre.getTiltakstype(),
+                queryParametre.getStatus(),
+                pageable
+            );
+        }
+        if (queryParametre.getBedriftNr() != null) {
+            return avtaleRepository.sokEtterAvtale(
+                null,
+                null,
+                null,
+                queryParametre.getBedriftNr(),
+                null,
+                queryParametre.getTiltakstype(),
+                queryParametre.getStatus(),
+                pageable
+            );
+        }
+        if (queryParametre.getNavEnhet() != null && queryParametre.getErUfordelt() != null && queryParametre.getErUfordelt()) {
+            return avtaleRepository.sokEtterUfordelteAvtale(
+                queryParametre.getNavEnhet(),
+                queryParametre.getTiltakstype(),
+                queryParametre.getStatus(),
+                pageable
+            );
+        }
+        if (queryParametre.getNavEnhet() != null) {
+            return avtaleRepository.sokEtterAvtale(
+                null,
+                null,
+                null,
+                null,
+                queryParametre.getNavEnhet(),
+                queryParametre.getTiltakstype(),
+                queryParametre.getStatus(),
+                pageable
+            );
+        }
+        if (queryParametre.getAvtaleNr() != null) {
+            return avtaleRepository.sokEtterAvtale(
+                queryParametre.getAvtaleNr(),
+                null,
+                null,
+                null,
+                null,
+                queryParametre.getTiltakstype(),
+                queryParametre.getStatus(),
+                pageable
+            );
+        }
+
         return avtaleRepository.sokEtterAvtale(
-            queryParametre.getAvtaleNr(),
-            queryParametre.getErUfordelt() == null || !queryParametre.getErUfordelt() ? veilederNavIdent : null,
-            queryParametre.getDeltakerFnr(),
-            queryParametre.getBedriftNr(),
-            queryParametre.getNavEnhet(),
+            null,
+            getIdentifikator(),
+            null,
+            null,
+            null,
             queryParametre.getTiltakstype(),
             queryParametre.getStatus(),
             pageable
