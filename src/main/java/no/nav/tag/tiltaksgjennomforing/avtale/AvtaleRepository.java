@@ -106,7 +106,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     @Query(value = "SELECT a.id as id, a.avtaleNr as avtaleNr, a.tiltakstype as tiltakstype, a.veilederNavIdent as veilederNavIdent, a.gjeldendeInnhold.deltakerFornavn as deltakerFornavn, " +
             "a.opprettetTidspunkt as opprettetTidspunkt, a.sistEndret as sistEndret, a.gjeldendeInnhold.deltakerEtternavn as deltakerEtternavn, " +
             "a.deltakerFnr as deltakerFnr, a.gjeldendeInnhold.bedriftNavn as bedriftNavn, a.bedriftNr as bedriftNr, min(t.startDato) as startDato, " +
-            " t.status, count(t.id) as antallUbehandlet " +
+            " t.status as status, count(t.id) as antallUbehandlet, a.status as avtaleStatus " +
             "from Avtale a " +
             "left join AvtaleInnhold i on i.id = a.gjeldendeInnhold.id " +
             "left join TilskuddPeriode t on (t.avtale.id = a.id and t.status = :tilskuddsperiodestatus and t.startDato <= :decisiondate) " +
@@ -115,7 +115,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             "and exists (select distinct p.avtale.id, p.status, p.løpenummer, p.startDato from TilskuddPeriode p where p.avtale.id = a.id " +
             "and ((:tilskuddsperiodestatus = p.status and p.startDato <= :decisiondate) or (:tilskuddsperiodestatus = p.status AND p.løpenummer = 1))) " +
             "and a.enhetOppfolging IN (:navEnheter) AND (:avtaleNr is null or a.avtaleNr = :avtaleNr) AND (:bedriftNr is null or cast(a.bedriftNr as text) = :bedriftNr) " +
-            "GROUP BY a.id, a.gjeldendeInnhold.deltakerFornavn, a.gjeldendeInnhold.deltakerEtternavn, a.veilederNavIdent, a.gjeldendeInnhold.bedriftNavn, t.status ",
+            "GROUP BY a.id, a.gjeldendeInnhold.deltakerFornavn, a.gjeldendeInnhold.deltakerEtternavn, a.veilederNavIdent, a.gjeldendeInnhold.bedriftNavn, t.status",
             nativeQuery = false)
     Page<BeslutterOversiktDTO> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
             @Param("tilskuddsperiodestatus") TilskuddPeriodeStatus tilskuddsperiodestatus,
@@ -134,15 +134,6 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             "AND avtale.avbrutt IS FALSE",
             nativeQuery = true)
     List<Avtale> findAvtalerSomErPabegyntEllerManglerGodkjenning();
-
-    @Query("""
-        SELECT a
-        FROM Avtale a
-        WHERE a.status IS NULL
-        ORDER BY a.opprettetTidspunkt DESC
-        LIMIT 1000
-    """)
-    List<Avtale> findAvtalerSomIkkeHarStatus();
 
     @Query("""
         SELECT a
