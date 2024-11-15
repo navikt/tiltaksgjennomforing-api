@@ -2,11 +2,13 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 @Data
@@ -23,6 +25,15 @@ public class AvtalePredicate implements Predicate<Avtale> {
     private String navEnhet;
     private Integer avtaleNr;
 
+    public Optional<NavIdent> utledNavIdent() {
+        if (this.navEnhet != null && this.erUfordelt != null && this.erUfordelt) {
+            return Optional.empty();
+        }
+        if (this.deltakerFnr != null || this.bedriftNr != null || this.navEnhet != null || this.avtaleNr != null) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(veilederNavIdent);
+    }
 
     private static boolean erLiktHvisOppgitt(Object kriterie, Object avtaleVerdi) {
         return kriterie == null || kriterie.equals(avtaleVerdi);

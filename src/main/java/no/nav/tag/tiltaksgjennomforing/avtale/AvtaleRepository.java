@@ -149,7 +149,8 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             SELECT a
             FROM Avtale a
             WHERE a.feilregistrert = FALSE AND
-                  (:veilederNavIdent IS NULL OR a.veilederNavIdent = :veilederNavIdent) AND
+                  (:ufordelt = TRUE OR a.veilederNavIdent IS NULL) AND
+                  (:ufordelt = FALSE OR :veilederNavIdent IS NULL OR a.veilederNavIdent = :veilederNavIdent) AND
                   (:avtaleNr IS NULL OR a.avtaleNr = :avtaleNr) AND
                   (:tiltakstype IS NULL OR a.tiltakstype = :tiltakstype) AND
                   (:deltakerFnr IS NULL OR a.deltakerFnr = :deltakerFnr) AND
@@ -161,7 +162,8 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             SELECT COUNT(a)
             FROM Avtale a
             WHERE a.feilregistrert = FALSE AND
-                  (:veilederNavIdent IS NULL OR a.veilederNavIdent = :veilederNavIdent) AND
+                  (:ufordelt = TRUE OR a.veilederNavIdent IS NULL) AND
+                  (:ufordelt = FALSE OR :veilederNavIdent IS NULL OR a.veilederNavIdent = :veilederNavIdent) AND
                   (:avtaleNr IS NULL OR a.avtaleNr = :avtaleNr) AND
                   (:tiltakstype IS NULL OR a.tiltakstype = :tiltakstype) AND
                   (:deltakerFnr IS NULL OR a.deltakerFnr = :deltakerFnr) AND
@@ -171,41 +173,14 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
         """
     )
     Page<Avtale> sokEtterAvtale(
-        Integer avtaleNr,
         NavIdent veilederNavIdent,
+        Integer avtaleNr,
         Fnr deltakerFnr,
         BedriftNr bedriftNr,
         String enhet,
         Tiltakstype tiltakstype,
         Status status,
-        Pageable pageable
-    );
-
-    @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    @Query(
-        value = """
-            SELECT a
-            FROM Avtale a
-            WHERE a.feilregistrert = FALSE AND
-                  a.veilederNavIdent IS NULL AND
-                  (:tiltakstype IS NULL OR a.tiltakstype = :tiltakstype) AND
-                  (:enhet IS NULL OR a.enhetGeografisk = :enhet OR a.enhetOppfolging = :enhet) AND
-                  (:status IS NULL OR a.status = :status)
-        """,
-        countQuery = """
-            SELECT COUNT(a)
-            FROM Avtale a
-            WHERE a.feilregistrert = FALSE AND
-                  a.veilederNavIdent IS NULL AND
-                  (:tiltakstype IS NULL OR a.tiltakstype = :tiltakstype) AND
-                  (:enhet IS NULL OR a.enhetGeografisk = :enhet OR a.enhetOppfolging = :enhet) AND
-                  (:status IS NULL OR a.status = :status)
-        """
-    )
-    Page<Avtale> sokEtterUfordelteAvtale(
-        String enhet,
-        Tiltakstype tiltakstype,
-        Status status,
+        boolean ufordelt,
         Pageable pageable
     );
 }

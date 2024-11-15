@@ -30,6 +30,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -96,83 +97,22 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, Pageable pageable) {
-        if (queryParametre.getVeilederNavIdent() != null) {
-            return avtaleRepository.sokEtterAvtale(
-                null,
-                queryParametre.getVeilederNavIdent(),
-                null,
-                null,
-                null,
-                queryParametre.getTiltakstype(),
-                queryParametre.getStatus(),
-                pageable
-            );
-        }
-        if (queryParametre.getDeltakerFnr() != null) {
-            return avtaleRepository.sokEtterAvtale(
-                null,
-                null,
-                queryParametre.getDeltakerFnr(),
-                null,
-                null,
-                queryParametre.getTiltakstype(),
-                queryParametre.getStatus(),
-                pageable
-            );
-        }
-        if (queryParametre.getBedriftNr() != null) {
-            return avtaleRepository.sokEtterAvtale(
-                null,
-                null,
-                null,
-                queryParametre.getBedriftNr(),
-                null,
-                queryParametre.getTiltakstype(),
-                queryParametre.getStatus(),
-                pageable
-            );
-        }
-        if (queryParametre.getNavEnhet() != null && queryParametre.getErUfordelt() != null && queryParametre.getErUfordelt()) {
-            return avtaleRepository.sokEtterUfordelteAvtale(
-                queryParametre.getNavEnhet(),
-                queryParametre.getTiltakstype(),
-                queryParametre.getStatus(),
-                pageable
-            );
-        }
-        if (queryParametre.getNavEnhet() != null) {
-            return avtaleRepository.sokEtterAvtale(
-                null,
-                null,
-                null,
-                null,
-                queryParametre.getNavEnhet(),
-                queryParametre.getTiltakstype(),
-                queryParametre.getStatus(),
-                pageable
-            );
-        }
-        if (queryParametre.getAvtaleNr() != null) {
-            return avtaleRepository.sokEtterAvtale(
-                queryParametre.getAvtaleNr(),
-                null,
-                null,
-                null,
-                null,
-                queryParametre.getTiltakstype(),
-                queryParametre.getStatus(),
-                pageable
-            );
-        }
+        NavIdent veilederNavIdent =
+            queryParametre.getDeltakerFnr() != null ||
+            queryParametre.getBedriftNr() != null ||
+            queryParametre.getNavEnhet() != null ||
+            queryParametre.getAvtaleNr() != null ||
+            queryParametre.getVeilederNavIdent() != null ? queryParametre.getVeilederNavIdent() : getIdentifikator();
 
         return avtaleRepository.sokEtterAvtale(
-            null,
-            getIdentifikator(),
-            null,
-            null,
-            null,
+            veilederNavIdent,
+            queryParametre.getAvtaleNr(),
+            queryParametre.getDeltakerFnr(),
+            queryParametre.getBedriftNr(),
+            queryParametre.getNavEnhet(),
             queryParametre.getTiltakstype(),
             queryParametre.getStatus(),
+            Optional.ofNullable(queryParametre.getErUfordelt()).orElse(false),
             pageable
         );
     }
