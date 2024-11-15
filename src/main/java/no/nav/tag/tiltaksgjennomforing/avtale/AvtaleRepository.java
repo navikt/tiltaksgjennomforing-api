@@ -197,10 +197,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             FROM Avtale a
             WHERE a.feilregistrert = FALSE AND
                   a.veilederNavIdent IS NULL AND
-                  (:avtaleNr IS NULL OR a.avtaleNr = :avtaleNr) AND
                   (:tiltakstype IS NULL OR a.tiltakstype = :tiltakstype) AND
-                  (:deltakerFnr IS NULL OR a.deltakerFnr = :deltakerFnr) AND
-                  (:bedriftNr IS NULL OR a.bedriftNr = :bedriftNr) AND
                   (:enhet IS NULL OR a.enhetGeografisk = :enhet OR a.enhetOppfolging = :enhet) AND
                   (:status IS NULL OR a.status = :status)
         """,
@@ -209,10 +206,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             FROM Avtale a
             WHERE a.feilregistrert = FALSE AND
                   a.veilederNavIdent IS NULL AND
-                  (:avtaleNr IS NULL OR a.avtaleNr = :avtaleNr) AND
                   (:tiltakstype IS NULL OR a.tiltakstype = :tiltakstype) AND
-                  (:deltakerFnr IS NULL OR a.deltakerFnr = :deltakerFnr) AND
-                  (:bedriftNr IS NULL OR a.bedriftNr = :bedriftNr) AND
                   (:enhet IS NULL OR a.enhetGeografisk = :enhet OR a.enhetOppfolging = :enhet) AND
                   (:status IS NULL OR a.status = :status)
         """
