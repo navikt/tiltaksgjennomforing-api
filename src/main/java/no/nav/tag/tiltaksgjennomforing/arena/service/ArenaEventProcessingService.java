@@ -47,7 +47,7 @@ public class ArenaEventProcessingService {
     @Async("arenaThreadPoolExecutor")
     public void create(String key, String value) {
         try {
-            ArenaKafkaMessage message = this.objectMapper.readValue(value, ArenaKafkaMessage.class);
+            ArenaKafkaMessage message = this.objectMapper.readValue(sanitize(value), ArenaKafkaMessage.class);
             create(key, message);
         } catch (JsonProcessingException e) {
             log.error("Feil ved prosessering av Arena-event", e);
@@ -77,6 +77,14 @@ public class ArenaEventProcessingService {
                     "Ignorerer arena-event {} som allerede er prossesert med et OP-tidspunkt fremover i tid.",
                     existingArenaEventOpt.get().getLogId()
                 );
+                return;
+            }
+
+            boolean isEqual = existingArenaEventOpt
+                .map(e -> message.opTimestamp().isEqual(e.getOperationTime()) && e.getPayload().equals(payload))
+                .orElse(false);
+
+            if (isEqual) {
                 return;
             }
 
@@ -199,5 +207,9 @@ public class ArenaEventProcessingService {
         } catch (Exception e) {
             log.error("Feil ved lagring av arena-event", e);
         }
+    }
+
+    private String sanitize(String value) {
+        return value.replace("\u0000", "").replace("\\u0000", "");
     }
 }
