@@ -30,7 +30,7 @@ public class ArenaOrdsClient {
     }
 
     public Optional<ArenaOrdsFnrResponse> getFnr(int personId) {
-        ArenaOrdsFnrRequest request = new ArenaOrdsFnrRequest(List.of(personId));
+        ArenaOrdsFnrRequest request = new ArenaOrdsFnrRequest(List.of(new ArenaOrdsFnrRequest.Person(personId)));
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

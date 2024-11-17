@@ -13,13 +13,13 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class ArenaEventRetryService {
+public class ArenaEventProcessingJobService {
     private final static int MAX_RETRY_COUNT = 4;
 
     private final ArenaEventRepository arenaEventRepository;
     private final ArenaEventProcessingService arenaEventProcessingService;
 
-    public ArenaEventRetryService(
+    public ArenaEventProcessingJobService(
         ArenaEventRepository arenaEventRepository,
         ArenaEventProcessingService arenaEventProcessingService
     ) {
@@ -28,11 +28,11 @@ public class ArenaEventRetryService {
     }
 
     @Transactional
-    public List<ArenaEvent> getAndUpdateRetryEvents() {
-        List<ArenaEvent> retryEvents = arenaEventRepository.findRetryEvents();
-        failEventsThatHaveReachedMaxRetryCount(retryEvents);
+    public List<ArenaEvent> getAndUpdateEvents() {
+        List<ArenaEvent> events = findEventsForProcessing();
+        failEventsThatHaveReachedMaxRetryCount(events);
 
-        return retryEvents
+        return events
             .stream()
             .filter(this::isReadyForRetry)
             .map(arenaEvent ->
@@ -45,12 +45,17 @@ public class ArenaEventRetryService {
             .toList();
     }
 
-    public void retry(List<ArenaEvent> arenaEvents) {
+    public void process(List<ArenaEvent> arenaEvents) {
         log.info("Kjører retry på {} eventer", arenaEvents.size());
 
         for (ArenaEvent arenaEvent : arenaEvents) {
             arenaEventProcessingService.process(arenaEvent);
         }
+    }
+
+    private List<ArenaEvent> findEventsForProcessing() {
+        List<ArenaEvent> events = arenaEventRepository.findNewEventsForProcessing();
+        return events.isEmpty() ? arenaEventRepository.findRetryEventsForProcessing() : events;
     }
 
     private void failEventsThatHaveReachedMaxRetryCount(List<ArenaEvent> arenaEvents) {
