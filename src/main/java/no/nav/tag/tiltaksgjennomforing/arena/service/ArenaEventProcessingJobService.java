@@ -55,7 +55,12 @@ public class ArenaEventProcessingJobService {
 
     private List<ArenaEvent> findEventsForProcessing() {
         List<ArenaEvent> events = arenaEventRepository.findNewEventsForProcessing();
-        return events.isEmpty() ? arenaEventRepository.findRetryEventsForProcessing() : events;
+
+        if (events.isEmpty() || events.size() <= 50) {
+            events.addAll(arenaEventRepository.findRetryEventsForProcessing());
+        }
+
+        return events;
     }
 
     private void failEventsThatHaveReachedMaxRetryCount(List<ArenaEvent> arenaEvents) {
