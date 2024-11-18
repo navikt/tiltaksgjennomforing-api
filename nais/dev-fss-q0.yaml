@@ -39,7 +39,4 @@ spec:
   accessPolicy:
     outbound:
       rules:
-        - application: tiltak-fakelogin
-        - application: tiltaksgjennomforing-wiremock
-        - application: tiltak-refusjon-api-labs
-        - application: tiltak-dokgen
+        - application: tiltaksgjennomforing-wiremock-q0
