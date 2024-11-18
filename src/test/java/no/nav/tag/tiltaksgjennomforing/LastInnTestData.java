@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -13,6 +14,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -27,62 +30,69 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
             return;
         }
 
+        List<Avtale> avtaler = new ArrayList<>();
+
         log.info("Laster testdata");
 
-        avtaleRepository.save(TestData.enLonnstilskuddAvtaleGodkjentAvVeilederUtenTilskuddsperioder());
-        avtaleRepository.save(TestData.enArbeidstreningAvtale());
-        avtaleRepository.save(TestData.enMentorAvtaleSignert());
-        avtaleRepository.save(TestData.enMentorAvtaleUsignert());
-        avtaleRepository.save(TestData.enInkluderingstilskuddAvtale());
-        avtaleRepository.save(TestData.enInkluderingstilskuddAvtaleUtfyltOgGodkjentAvArbeidsgiver());
-        avtaleRepository.save(TestData.enAvtaleMedAltUtfylt());
-        avtaleRepository.save(TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder());
-        avtaleRepository.save(TestData.enAvtaleMedFlereVersjoner());
-        avtaleRepository.save(TestData.enAvtaleKlarForOppstart());
+        avtaler.add(TestData.enLonnstilskuddAvtaleGodkjentAvVeilederUtenTilskuddsperioder());
+        avtaler.add(TestData.enArbeidstreningAvtale());
+        avtaler.add(TestData.enMentorAvtaleSignert());
+        avtaler.add(TestData.enMentorAvtaleUsignert());
+        avtaler.add(TestData.enInkluderingstilskuddAvtale());
+        avtaler.add(TestData.enInkluderingstilskuddAvtaleUtfyltOgGodkjentAvArbeidsgiver());
+        avtaler.add(TestData.enAvtaleMedAltUtfylt());
+        avtaler.add(TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder());
+        avtaler.add(TestData.enAvtaleMedFlereVersjoner());
+        avtaler.add(TestData.enAvtaleKlarForOppstart());
         Avtale lilly = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         lilly.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
-        avtaleRepository.save(lilly);
-        avtaleRepository.save(TestData.enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder());
+        avtaler.add(lilly);
+        avtaler.add(TestData.enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder());
 
-        avtaleRepository.save(TestData.enLonnstilskuddAvtaleGodkjentAvVeilederTilbakeITid());
+        avtaler.add(TestData.enLonnstilskuddAvtaleGodkjentAvVeilederTilbakeITid());
         Now.fixedDate(LocalDate.of(2021, 6, 1));
-        avtaleRepository.save(TestData.enSommerjobbAvtaleGodkjentAvVeileder());
-        avtaleRepository.save(TestData.enSommerjobbAvtaleGodkjentAvBeslutter());
-        avtaleRepository.save(TestData.enSommerjobbAvtaleGodkjentAvArbeidsgiver());
+        avtaler.add(TestData.enSommerjobbAvtaleGodkjentAvVeileder());
+        avtaler.add(TestData.enSommerjobbAvtaleGodkjentAvBeslutter());
+        avtaler.add(TestData.enSommerjobbAvtaleGodkjentAvArbeidsgiver());
         Now.resetClock();
-        avtaleRepository.save(TestData.enMidlertidigLonnstilskuddAvtaleMedSpesieltTilpassetInnsatsGodkjentAvVeileder());
-        avtaleRepository.save(TestData.enMentorAvtaleMedMedAltUtfylt());
-        avtaleRepository.save(TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt());
-        avtaleRepository.save(TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedGeografiskEnhet());
-        avtaleRepository.save(TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedGeografiskEnhet());
-        avtaleRepository.save(TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet());
-        avtaleRepository.save(TestData.enAvtaleOpprettetAvArbeidsgiver(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
-        avtaleRepository.save(TestData.enAvtaleOpprettetAvArbeidsgiver(Tiltakstype.VARIG_LONNSTILSKUDD));
-        avtaleRepository.save(TestData.enVarigLonnstilskuddAvtaleMedBehandletIArenaPerioder());
-        avtaleRepository.save(TestData.enVtaoAvtaleGodkjentAvArbeidsgiver());
+        avtaler.add(TestData.enMidlertidigLonnstilskuddAvtaleMedSpesieltTilpassetInnsatsGodkjentAvVeileder());
+        avtaler.add(TestData.enMentorAvtaleMedMedAltUtfylt());
+        avtaler.add(TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt());
+        avtaler.add(TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedGeografiskEnhet());
+        avtaler.add(TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedGeografiskEnhet());
+        avtaler.add(TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedOppfølgningsEnhet());
+        avtaler.add(TestData.enAvtaleOpprettetAvArbeidsgiver(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
+        avtaler.add(TestData.enAvtaleOpprettetAvArbeidsgiver(Tiltakstype.VARIG_LONNSTILSKUDD));
+        avtaler.add(TestData.enVarigLonnstilskuddAvtaleMedBehandletIArenaPerioder());
+        avtaler.add(TestData.enVtaoAvtaleGodkjentAvArbeidsgiver());
 
         Now.fixedDate(LocalDate.of(2024, 10, 1));
-        avtaleRepository.save(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
+        avtaler.add(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
         Now.resetClock();
 
         Now.fixedDate(LocalDate.of(2024, 7, 23));
-        avtaleRepository.save(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
+        avtaler.add(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
         Now.resetClock();
 
         Now.fixedDate(LocalDate.of(2024, 9, 6));
-        avtaleRepository.save(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
+        avtaler.add(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
         Now.resetClock();
 
         Now.fixedDate(LocalDate.of(2024, 9, 5));
-        avtaleRepository.save(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
+        avtaler.add(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
         Now.resetClock();
 
         Now.fixedDate(LocalDate.of(2024, 9, 4));
-        avtaleRepository.save(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
+        avtaler.add(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
         Now.resetClock();
 
         Now.fixedDate(LocalDate.of(2024, 9, 3));
-        avtaleRepository.save(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
+        avtaler.add(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
         Now.resetClock();
+
+        avtaler.forEach(avtale -> {
+            avtale.setStatus(Status.fra(avtale));
+            avtaleRepository.save(avtale);
+        });
     }
 }
