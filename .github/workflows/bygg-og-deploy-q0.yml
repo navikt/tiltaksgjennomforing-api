@@ -38,7 +38,7 @@ jobs:
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
 
-  deploy-gcp-labs:
+  deploy-gcp-q0:
     name: Deploy til q0
     runs-on: ubuntu-latest
     needs: build
@@ -53,12 +53,12 @@ jobs:
         run: |
           curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
           chmod +x ./kubectl
-          ./kubectl create configmap --dry-run=client -o yaml --from-file src/test/resources/mappings -n arbeidsgiver tiltaksgjennomforing-wiremock > nais/wiremock-mappings.yaml
-          cat nais/wiremock-mappings.yaml # debug
+          ./kubectl create configmap --dry-run=client -o yaml --from-file src/test/resources/mappings -n arbeidsgiver tiltaksgjennomforing-wiremock > nais/wiremock-mappings-q0.yaml
+          cat nais/wiremock-mappings-q0.yaml # debug
 
       - name: Deploy til dev-fss
         uses: nais/deploy/actions/deploy@v2
         env:
           CLUSTER: dev-fss
-          RESOURCE: nais/dev-fss-q0.yaml,nais/wiremock.yaml,nais/wiremock-mappings.yaml
+          RESOURCE: nais/dev-fss-q0.yaml,nais/wiremock-q0.yaml,nais/wiremock-mappings-q0.yaml
           VAR: image=${{ needs.build.outputs.image }},deploytrigger=${{ github.run_number }}
