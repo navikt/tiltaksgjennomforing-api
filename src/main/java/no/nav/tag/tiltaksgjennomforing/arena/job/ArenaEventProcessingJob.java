@@ -26,7 +26,7 @@ public class ArenaEventProcessingJob {
         this.featureToggleService = featureToggleService;
     }
 
-    @Scheduled(fixedRate = 60, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(fixedRate = 15, timeUnit = TimeUnit.SECONDS)
     public void run() {
         if (!featureToggleService.isEnabled(FeatureToggle.ARENA_PROSESSERINGS_JOBB)) {
             return;
