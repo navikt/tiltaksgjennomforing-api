@@ -1,0 +1,99 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:db;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    username: sa
+    password: sa
+    driverClassName: org.h2.Driver
+  flyway:
+    locations: classpath:db/callbacks/labs
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  main:
+    banner-mode: "console"
+  sql:
+    init:
+      platform: postgres
+
+no.nav.security.jwt:
+  issuer:
+    aad:
+      discoveryurl: http://tiltak-fakelogin/metadata?issuer=aad
+      accepted_audience: fake-aad
+    tokenx:
+      discoveryurl: http://tiltak-fakelogin/metadata?issuer=tokenx
+      accepted_audience: fake-tokenx
+
+tiltaksgjennomforing:
+  kontoregister:
+    fake: true
+  beslutter-ad-gruppe:
+    id: 1a1d2745-952f-4a0f-839f-9530145b1d4a
+  kafka:
+    enabled: false
+    fake-url: http://tiltak-refusjon-api-labs/fake-kafka
+  altinn-tilgangsstyring:
+    uri: http://tiltaksgjennomforing-wiremock/altinn-tilgangsstyring
+    proxyUri: http://heh:9090/
+    beOmRettighetBaseUrl: https://arbeidsgiver-q.nav.no/min-side-arbeidsgiver/?fragment=be-om-tilgang
+    ltsMidlertidigServiceCode: 5516
+    ltsMidlertidigServiceEdition: 1
+    ltsVarigServiceCode: 5516
+    ltsVarigServiceEdition: 2
+    sommerjobbServiceCode: 5516
+    sommerjobbServiceEdition: 3
+    mentorServiceCode: 5516
+    mentorServiceEdition: 4
+    inkluderingstilskuddServiceCode: 5516
+    inkluderingstilskuddServiceEdition: 5
+    arbtreningServiceCode: 5332
+    arbtreningServiceEdition: 1
+    vtaoServiceCode: 5516
+    vtaoServiceEdition: 5 # TODO: Finn riktig service edition
+    vtaoAktiv: true
+    altinnApiKey: foo
+    apiGwApiKey: foo
+  ereg:
+    uri: http://tiltaksgjennomforing-wiremock/ereg
+  sts:
+    username: foo
+    password: bar
+    rest-uri: http://tiltaksgjennomforing-wiremock/sts/sts/token
+  axsys:
+    uri: http://tiltaksgjennomforing-wiremock/axsys
+  oppgave:
+    oppgave-uri: http://tiltaksgjennomforing-wiremock/api/v1/oppgaver
+  veilarboppfolging:
+    url: http://tiltaksgjennomforing-wiremock
+  norg2:
+    geografisk:
+      url: http://tiltaksgjennomforing-wiremock/norg2/api/v1/enhet/navkontor/
+    enhet:
+      url: http://tiltaksgjennomforing-wiremock/norg2/api/v1/enhet/
+  consumer:
+    system:
+      id: testsystem
+  persondata:
+    uri: http://tiltaksgjennomforing-wiremock/persondata
+  dokgen:
+    uri: http://tiltak-dokgen/template/tiltak-avtale/create-pdf
+  notifikasjoner:
+    uri: https://notifikasjon-fake-produsent-api.labs.nais.io/api/graphql
+    lenke: https://arbeidsgiver.labs.nais.io/tiltaksgjennomforing/avtale/
+    enabled: false
+  tilskuddsperioder:
+    tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD
+  arena:
+    kafka:
+      tiltakdeltaker-endret-topic: 'teamarenanais.aapen-arena-tiltakdeltakerendret-v1-q2'
+      tiltakgjennomforing-endret-topic: 'teamarenanais.aapen-arena-tiltakgjennomforingendret-v1-q2'
+      tiltakssak-endret-topic: 'teamarenanais.aapen-arena-tiltakssakendret-v1-q2'
+    ords:
+      url: http://tiltaksgjennomforing-wiremock/arena-ords
+      client-id: client
+      client-secret: secret
+    aktivitet-acl:
+      url: http://tiltaksgjennomforing-wiremock/aktivitet-arena-acl
+
+ELECTOR_PATH: null

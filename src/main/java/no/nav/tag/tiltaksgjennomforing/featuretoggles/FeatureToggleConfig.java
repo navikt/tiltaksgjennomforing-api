@@ -50,7 +50,7 @@ public class FeatureToggleConfig {
 
     @Bean
     @RequestScope
-    @Profile({ Miljø.LOCAL, Miljø.DOCKER_COMPOSE, Miljø.DEV_GCP_LABS })
+    @Profile({ Miljø.LOCAL, Miljø.DOCKER_COMPOSE, Miljø.DEV_GCP_LABS, Miljø.DEV_FSS_Q0 })
     public Unleash unleashMock(@Autowired HttpServletRequest request) {
         FakeFakeUnleash fakeUnleash = new FakeFakeUnleash();
 

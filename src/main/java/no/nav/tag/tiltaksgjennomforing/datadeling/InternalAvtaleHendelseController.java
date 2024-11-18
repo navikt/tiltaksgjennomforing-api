@@ -20,7 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
-@Profile(value = {Miljø.DEV_FSS, Miljø.DEV_GCP_LABS})
+@Profile({ Miljø.DEV_FSS, Miljø.DEV_GCP_LABS, Miljø.DEV_FSS_Q0 })
 @RestController
 @RequestMapping("/avtale-hendelse")
 @RequiredArgsConstructor

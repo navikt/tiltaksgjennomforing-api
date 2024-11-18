@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile(value = { Miljø.DEV_GCP_LABS })
+@Profile(value = { Miljø.DEV_GCP_LABS, Miljø.DEV_FSS_Q0 })
 public class ArbeidsgiverTokenStrategyFactoryLabsMock implements ArbeidsgiverTokenStrategyFactory {
 
     @Override
