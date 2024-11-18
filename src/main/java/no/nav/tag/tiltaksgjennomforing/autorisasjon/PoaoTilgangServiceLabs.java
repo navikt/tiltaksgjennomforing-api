@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
-@Profile({ Miljø.LOCAL, Miljø.TEST, Miljø.DOCKER_COMPOSE, Miljø.DEV_GCP_LABS })
+@Profile({ Miljø.LOCAL, Miljø.TEST, Miljø.DOCKER_COMPOSE, Miljø.DEV_GCP_LABS, Miljø.DEV_FSS_Q0 })
 public class PoaoTilgangServiceLabs implements PoaoTilgangService {
 
     public boolean harSkriveTilgang(UUID beslutterAzureUUID, String deltakerFnr) {

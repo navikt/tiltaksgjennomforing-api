@@ -20,7 +20,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-@Profile({ Miljø.TESTDATA, Miljø.DEV_GCP_LABS })
+@Profile({ Miljø.TESTDATA })
 public class LastInnTestData implements ApplicationListener<ApplicationReadyEvent> {
     private final AvtaleRepository avtaleRepository;
 
