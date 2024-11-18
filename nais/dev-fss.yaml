@@ -9,6 +9,8 @@ spec:
   env:
     - name: MILJO
       value: dev-fss
+    - name: JDK_JAVA_OPTIONS
+      value: "-XX:MaxRAMPercentage=80.0"
   azure:
     application:
       enabled: true
