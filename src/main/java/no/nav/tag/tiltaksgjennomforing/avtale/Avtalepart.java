@@ -40,11 +40,11 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     abstract boolean harTilgangTilAvtale(Avtale avtale);
 
-    abstract Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, Pageable pageable);
+    abstract Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtaleQueryParameter queryParametre, Pageable pageable);
 
     abstract AvtaleMinimalListevisning skjulData(AvtaleMinimalListevisning avtaleMinimalListevisning);
 
-    public Map<String, Object> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, Pageable pageable) {
+    public Map<String, Object> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtaleQueryParameter queryParametre, Pageable pageable) {
         Page<Avtale> avtaler = hentAlleAvtalerMedMuligTilgang(avtaleRepository, queryParametre, pageable);
 
         List<Avtale> avtalerMedTilgang = avtaler.getContent().stream()

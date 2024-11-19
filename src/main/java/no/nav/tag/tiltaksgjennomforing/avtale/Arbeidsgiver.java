@@ -156,7 +156,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     @Override
-    Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, Pageable pageable) {
+    Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtaleQueryParameter queryParametre, Pageable pageable) {
         if (tilganger.isEmpty()) {
             return Page.empty();
         }

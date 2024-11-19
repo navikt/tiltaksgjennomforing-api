@@ -150,7 +150,7 @@ public class AvtaleController {
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTil(
 
-            AvtalePredicate queryParametre,
+            AvtaleQueryParameter queryParametre,
             @CookieValue("innlogget-part") Avtalerolle innloggetPart,
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
@@ -184,7 +184,7 @@ public class AvtaleController {
             filterSok.setAntallGangerSokt(filterSok.getAntallGangerSokt() + 1);
             filterSok.setSistSoktTidspunkt(Now.localDateTime());
             filterSokRepository.save(filterSok);
-            AvtalePredicate avtalePredicate = filterSok.getAvtalePredicate();
+            AvtaleQueryParameter avtalePredicate = filterSok.getAvtalePredicate();
 
             Pageable pageable = PageRequest.of(
                     Math.abs(page),
@@ -210,7 +210,7 @@ public class AvtaleController {
                     entry("currentPage", 0),
                     entry("totalItems", 0),
                     entry("totalPages", 0),
-                    entry("sokeParametere", new AvtalePredicate()),
+                    entry("sokeParametere", new AvtaleQueryParameter()),
                     entry("sorteringskolonne", "sistEndret"),
                     entry("sorteringOrder", "DESC"),
                     entry("sokId", "")
@@ -222,7 +222,7 @@ public class AvtaleController {
     @PostMapping("/sok")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTilMedPost(
-            @RequestBody AvtalePredicate queryParametre,
+            @RequestBody AvtaleQueryParameter queryParametre,
             @CookieValue("innlogget-part") Avtalerolle innloggetPart,
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
@@ -263,7 +263,7 @@ public class AvtaleController {
     @GetMapping("/beslutter-liste")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public Map<String, Object> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
-            AvtalePredicate queryParametre,
+            AvtaleQueryParameter queryParametre,
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = "startDato") String sorteringskolonne,
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
             @RequestParam(value = "size", required = false, defaultValue = "20") Integer size,

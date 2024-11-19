@@ -155,7 +155,7 @@ public class AvtaleControllerTest {
                 eq(veileder),
                 any(Fnr.class)
         )).thenReturn(false);
-        AvtalePredicate avtalePredicate = new AvtalePredicate();
+        AvtaleQueryParameter avtalePredicate = new AvtaleQueryParameter();
 
         Map<String, Object> avtalerPageResponse = veileder.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,
@@ -196,7 +196,7 @@ public class AvtaleControllerTest {
 
         Map<String, Object> avtalerPageResponse = veileder.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,
-                new AvtalePredicate().setAvtaleNr(TestData.ET_AVTALENR),
+                new AvtaleQueryParameter().setAvtaleNr(TestData.ET_AVTALENR),
                 pageable
         );
 
@@ -386,7 +386,7 @@ public class AvtaleControllerTest {
 
         Map<String, Object> avtalerPageResponse = deltaker.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,
-                new AvtalePredicate(),
+                new AvtaleQueryParameter(),
                 pageable
         );
 
