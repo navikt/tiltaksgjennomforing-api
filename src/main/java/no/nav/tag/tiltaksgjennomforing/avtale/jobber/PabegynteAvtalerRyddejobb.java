@@ -50,7 +50,7 @@ public class PabegynteAvtalerRyddejobb {
         }
 
         List<Avtale> avtaler = avtaleRepository.findAvtalerSomErPabegyntEllerManglerGodkjenning().stream()
-            .filter(avtale -> avtaleStatuserSomSkalRyddes.contains(avtale.statusSomEnum()))
+            .filter(avtale -> avtaleStatuserSomSkalRyddes.contains(avtale.getStatus()))
             .toList();
 
         if (avtaler.isEmpty()) {
@@ -101,7 +101,7 @@ public class PabegynteAvtalerRyddejobb {
                     log.info(
                         "Utløper avtale {} med status {} som sist var endret {}",
                         avtale.getId(),
-                        avtale.statusSomEnum(),
+                        avtale.getStatus(),
                         avtale.getSistEndret()
                     );
                     avtale.utlop(AvtaleUtlopHandling.UTLOP);

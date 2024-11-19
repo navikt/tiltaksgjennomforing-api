@@ -6,7 +6,12 @@ import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
-import no.nav.tag.tiltaksgjennomforing.exceptions.*;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangArbeidstreningException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
@@ -27,8 +32,15 @@ import java.util.List;
 import java.util.Set;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.*;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus.*;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enBeslutter;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enIdentifikator;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enSommerjobbAvtale;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.endringPåAlleLønnstilskuddFelterForSommerjobb;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.setOppfølgingPåAvtale;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus.AVSLÅTT;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus.GODKJENT;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus.UBEHANDLET;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -1007,7 +1019,7 @@ public class AvtaleTest {
     @Test
     public void status__ny_avtale() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        assertThat(avtale.statusSomEnum()).isEqualTo(Status.PÅBEGYNT);
+        assertThat(avtale.getStatus()).isEqualTo(Status.PÅBEGYNT);
     }
 
     @Test
@@ -1015,7 +1027,7 @@ public class AvtaleTest {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         avtale.getGjeldendeInnhold().setStartDato(null);
         avtale.getGjeldendeInnhold().setSluttDato(null);
-        assertThat(avtale.statusSomEnum()).isEqualTo(Status.PÅBEGYNT);
+        assertThat(avtale.getStatus()).isEqualTo(Status.PÅBEGYNT);
     }
 
     @Test
@@ -1024,7 +1036,8 @@ public class AvtaleTest {
         avtale.getGjeldendeInnhold().setStartDato(Now.localDate().plusDays(5));
         avtale.getGjeldendeInnhold().setSluttDato(avtale.getGjeldendeInnhold().getStartDato().plusMonths(3));
         avtale.getGjeldendeInnhold().setBedriftNavn("testbedriftsnavn");
-        assertThat(avtale.statusSomEnum()).isEqualTo(Status.PÅBEGYNT);
+        avtale.setStatus(Status.fra(avtale));
+        assertThat(avtale.getStatus()).isEqualTo(Status.PÅBEGYNT);
     }
 
     @Test
@@ -1036,7 +1049,8 @@ public class AvtaleTest {
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
-        assertThat(avtale.statusSomEnum()).isEqualTo(Status.AVSLUTTET);
+        avtale.setStatus(Status.fra(avtale));
+        assertThat(avtale.getStatus()).isEqualTo(Status.AVSLUTTET);
     }
 
     @Test
@@ -1048,7 +1062,8 @@ public class AvtaleTest {
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
-        assertThat(avtale.statusSomEnum()).isEqualTo(Status.GJENNOMFØRES);
+        avtale.setStatus(Status.fra(avtale));
+        assertThat(avtale.getStatus()).isEqualTo(Status.GJENNOMFØRES);
     }
 
     @Test
@@ -1060,7 +1075,8 @@ public class AvtaleTest {
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
-        assertThat(avtale.statusSomEnum()).isEqualTo(Status.GJENNOMFØRES);
+        avtale.setStatus(Status.fra(avtale));
+        assertThat(avtale.getStatus()).isEqualTo(Status.GJENNOMFØRES);
     }
 
     @Test
@@ -1072,13 +1088,15 @@ public class AvtaleTest {
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
-        assertThat(avtale.statusSomEnum()).isEqualTo(Status.KLAR_FOR_OPPSTART);
+        avtale.setStatus(Status.fra(avtale));
+        assertThat(avtale.getStatus()).isEqualTo(Status.KLAR_FOR_OPPSTART);
     }
 
     @Test
     public void status__klar_for_godkjenning() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        assertThat(avtale.statusSomEnum()).isEqualTo(Status.MANGLER_GODKJENNING);
+        avtale.setStatus(Status.fra(avtale));
+        assertThat(avtale.getStatus()).isEqualTo(Status.MANGLER_GODKJENNING);
     }
 
     @Test
@@ -1090,7 +1108,8 @@ public class AvtaleTest {
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
-        assertThat(avtale.statusSomEnum()).isEqualTo(Status.KLAR_FOR_OPPSTART);
+        avtale.setStatus(Status.fra(avtale));
+        assertThat(avtale.getStatus()).isEqualTo(Status.KLAR_FOR_OPPSTART);
     }
 
     @Test
@@ -1105,14 +1124,15 @@ public class AvtaleTest {
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         avtale.getGjeldendeInnhold().setAvtaleInngått(Now.localDateTime());
         avtale.getGjeldendeInnhold().setDeltakerTlf(null);
-        assertThat(avtale.statusSomEnum()).isEqualTo(Status.GJENNOMFØRES);
+        avtale.setStatus(Status.fra(avtale));
+        assertThat(avtale.getStatus()).isEqualTo(Status.GJENNOMFØRES);
     }
 
     @Test
     public void status__annullert() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         avtale.annuller(TestData.enVeileder(avtale), "grunnen");
-        assertThat(avtale.statusSomEnum()).isEqualTo(Status.ANNULLERT);
+        assertThat(avtale.getStatus()).isEqualTo(Status.ANNULLERT);
         assertThat(avtale.getAnnullertTidspunkt()).isNotNull();
         assertThat(avtale.getAnnullertGrunn()).isEqualTo("grunnen");
     }
@@ -1123,7 +1143,7 @@ public class AvtaleTest {
         Veileder veileder = TestData.enVeileder(new NavIdent("Z123456"));
         avtale.annuller(veileder, "grunnen");
 
-        assertThat(avtale.statusSomEnum()).isEqualTo(Status.ANNULLERT);
+        assertThat(avtale.getStatus()).isEqualTo(Status.ANNULLERT);
         assertThat(avtale.erUfordelt()).isFalse();
         assertThat(avtale.getVeilederNavIdent()).isEqualTo(veileder.getIdentifikator());
     }
@@ -1254,7 +1274,8 @@ public class AvtaleTest {
     @Test
     public void avtaleklarForOppstart() {
         Avtale avtale = TestData.enAvtaleKlarForOppstart();
-        assertThat(avtale.statusSomEnum()).isEqualTo(Status.KLAR_FOR_OPPSTART);
+        avtale.setStatus(Status.fra(avtale));
+        assertThat(avtale.getStatus()).isEqualTo(Status.KLAR_FOR_OPPSTART);
     }
 
     @Test
@@ -1491,10 +1512,10 @@ public class AvtaleTest {
     public void sommerjobb_må_være_godkjent_av_beslutter() {
         Now.fixedDate(LocalDate.of(2021, 6, 1));
         Avtale avtale = TestData.enSommerjobbAvtaleGodkjentAvVeileder();
-        assertThat(avtale.statusSomEnum()).isEqualTo(Status.MANGLER_GODKJENNING);
+        assertThat(avtale.getStatus()).isEqualTo(Status.MANGLER_GODKJENNING);
         assertThat(avtale.getGjeldendeInnhold().getAvtaleInngått()).isNull();
         avtale.godkjennTilskuddsperiode(new NavIdent("B999999"), TestData.ENHET_OPPFØLGING.getVerdi());
-        assertThat(avtale.statusSomEnum()).isEqualTo(Status.GJENNOMFØRES);
+        assertThat(avtale.getStatus()).isEqualTo(Status.GJENNOMFØRES);
         assertThat(avtale.getGjeldendeInnhold().getAvtaleInngått()).isNotNull();
     }
 
@@ -1540,7 +1561,7 @@ public class AvtaleTest {
     @Test
     public void lonnstilskudd_må_være_godkjent_av_beslutter() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        assertThat(avtale.statusSomEnum()).isEqualTo(Status.MANGLER_GODKJENNING);
+        assertThat(avtale.getStatus()).isEqualTo(Status.MANGLER_GODKJENNING);
         Deltaker deltaker = TestData.enDeltaker(avtale);
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
 

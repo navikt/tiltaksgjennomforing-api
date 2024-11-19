@@ -728,11 +728,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     @JsonProperty
-    public Status statusSomEnum() {
-        return Status.fra(this);
-    }
-
-    @JsonProperty
     public boolean kanAvbrytes() {
         return !isAvbrutt();
     }
@@ -1027,7 +1022,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             return false;
         }
         // Statuser som skal få tilskuddsperioder
-        Status status = statusSomEnum();
         return status != Status.ANNULLERT && status != Status.AVBRUTT;
     }
 

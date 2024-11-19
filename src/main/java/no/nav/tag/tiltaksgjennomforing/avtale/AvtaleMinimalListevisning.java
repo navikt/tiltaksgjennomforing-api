@@ -40,7 +40,7 @@ public class AvtaleMinimalListevisning implements AvtaleMedFnrOgBedriftNr {
                 .veilederNavIdent(avtale.getVeilederNavIdent() != null ? avtale.getVeilederNavIdent().asString() : null)
                 .startDato(avtale.getGjeldendeInnhold().getStartDato())
                 .sluttDato(avtale.getGjeldendeInnhold().getSluttDato())
-                .status(avtale.statusSomEnum())
+                .status(avtale.getStatus())
                 .tiltakstype(avtale.getTiltakstype())
                 .erGodkjentTaushetserklæringAvMentor(avtale.erGodkjentTaushetserklæringAvMentor())
                 .gjeldendeTilskuddsperiodeStatus(avtale.getGjeldendeTilskuddsperiodestatus())

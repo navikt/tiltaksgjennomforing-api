@@ -43,15 +43,15 @@ public class AvtaleHendelseStatusendringJobb {
             UUID avtaleId = avtaleMeldingEntitet.getAvtaleId();
             Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow();
 
-            if (avtale.statusSomEnum() != avtaleMeldingEntitet.getAvtaleStatus()) {
+            if (avtale.getStatus() != avtaleMeldingEntitet.getAvtaleStatus()) {
                 LocalDateTime tidspunkt = Now.localDateTime();
                 AvtaleMelding avtaleMelding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), new Identifikator("tiltaksgjennomforing-api"), AvtaleHendelseUtførtAvRolle.SYSTEM, HendelseType.STATUSENDRING);
                 try {
                     String meldingSomString = objectMapper.writeValueAsString(avtaleMelding);
-                    AvtaleMeldingEntitet entitet = new AvtaleMeldingEntitet(UUID.randomUUID(), avtaleId, tidspunkt, HendelseType.STATUSENDRING, avtale.statusSomEnum(), meldingSomString);
+                    AvtaleMeldingEntitet entitet = new AvtaleMeldingEntitet(UUID.randomUUID(), avtaleId, tidspunkt, HendelseType.STATUSENDRING, avtale.getStatus(), meldingSomString);
                     avtaleMeldingEntitetRepository.save(entitet);
                     log.info("Avtale med id {} har byttet status til {}, siste melding har status {}, så sender melding med den nye statusen på topic {}",
-                            avtale.getId(), avtale.statusSomEnum(), avtaleMeldingEntitet.getAvtaleStatus(), Topics.AVTALE_HENDELSE);
+                            avtale.getId(), avtale.getStatus(), avtaleMeldingEntitet.getAvtaleStatus(), Topics.AVTALE_HENDELSE);
                     antallNyeMeldinger++;
                 } catch (JsonProcessingException e) {
                     log.error("Feil ved parsing av AvtaleHendelseMelding i statusendringjobb til json for hendelse med avtaleId {}", avtaleMelding.getAvtaleId());

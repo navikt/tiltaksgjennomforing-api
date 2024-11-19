@@ -30,7 +30,7 @@ public enum ArenaMigrationAction {
         Avtale avtale,
         ArenaAgreementAggregate agreementAggregate
     ) {
-        Status avtalestatus = avtale.statusSomEnum();
+        Status avtalestatus = avtale.getStatus();
         Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
         Tiltakstatuskode tiltakstatuskode = agreementAggregate.getTiltakstatuskode();
         boolean isFeilregistrert = avtale.isFeilregistrert();

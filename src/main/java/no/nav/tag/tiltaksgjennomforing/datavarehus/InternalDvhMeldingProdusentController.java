@@ -36,7 +36,7 @@ public class InternalDvhMeldingProdusentController {
             UUID meldingId = UUID.randomUUID();
             String utførtAv = tokenUtils.hentBrukerOgIssuer().map(TokenUtils.BrukerOgIssuer::getBrukerIdent).orElse("patch");
             AvroTiltakHendelse avroTiltakHendelse = AvroTiltakHendelseFabrikk.konstruer(avtale, Now.localDateTime(), meldingId, DvhHendelseType.PATCHING, utførtAv);
-            dvhMeldingRepository.save(new DvhMeldingEntitet(meldingId, avtale.getId(), Now.localDateTime(), avtale.statusSomEnum(), avroTiltakHendelse));
+            dvhMeldingRepository.save(new DvhMeldingEntitet(meldingId, avtale.getId(), Now.localDateTime(), avtale.getStatus(), avroTiltakHendelse));
             log.info("Patchet avtale {}, sendt melding med id {} til datavarehus", avtale.getId(), meldingId);
         });
     }
