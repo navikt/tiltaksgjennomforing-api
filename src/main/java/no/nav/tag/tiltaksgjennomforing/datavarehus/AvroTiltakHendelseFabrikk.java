@@ -21,7 +21,7 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setTiltakstype(TiltakType.valueOf(avtale.getTiltakstype().name()));
         hendelse.setTiltakskodeArena(avtale.getTiltakstype().getTiltakskodeArena() != null ? TiltakKodeArena.valueOf(avtale.getTiltakstype().getTiltakskodeArena()) : null);
         hendelse.setHendelseType(hendelseType.name());
-        hendelse.setTiltakStatus(avtale.statusSomEnum().name());
+        hendelse.setTiltakStatus(avtale.getStatus().name());
         hendelse.setDeltakerFnr(avtale.getDeltakerFnr().asString());
         hendelse.setBedriftNr(avtale.getBedriftNr().asString());
         hendelse.setVeilederNavIdent(avtale.getVeilederNavIdent().asString());

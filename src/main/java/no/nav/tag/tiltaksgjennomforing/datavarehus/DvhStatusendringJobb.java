@@ -39,11 +39,11 @@ public class DvhStatusendringJobb {
             UUID avtaleId = dvhMeldingEntitet.getAvtaleId();
             Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow();
 
-            if (avtale.statusSomEnum() != dvhMeldingEntitet.getTiltakStatus()) {
+            if (avtale.getStatus() != dvhMeldingEntitet.getTiltakStatus()) {
                 LocalDateTime tidspunkt = Now.localDateTime();
                 AvroTiltakHendelse avroTiltakHendelse = AvroTiltakHendelseFabrikk.konstruer(avtale, tidspunkt, UUID.randomUUID(), DvhHendelseType.STATUSENDRING, "system");
-                dvhMeldingRepository.save(new DvhMeldingEntitet(UUID.randomUUID(), avtaleId, tidspunkt, avtale.statusSomEnum(), avroTiltakHendelse));
-                log.info("Avtale med id {} har byttet status til {}, siste melding har status {}, så sender melding med den nye statusen til datavarehus", avtale.getId(), avtale.statusSomEnum(), dvhMeldingEntitet.getTiltakStatus());
+                dvhMeldingRepository.save(new DvhMeldingEntitet(UUID.randomUUID(), avtaleId, tidspunkt, avtale.getStatus(), avroTiltakHendelse));
+                log.info("Avtale med id {} har byttet status til {}, siste melding har status {}, så sender melding med den nye statusen til datavarehus", avtale.getId(), avtale.getStatus(), dvhMeldingEntitet.getTiltakStatus());
                 antallNyeMeldinger++;
             }
         }
