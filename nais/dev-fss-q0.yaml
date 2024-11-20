@@ -37,6 +37,8 @@ spec:
     requests:
       cpu: 500m
       memory: 6000Mi
+  vault:
+    enabled: true
   prometheus:
     enabled: true
     path: /tiltaksgjennomforing-api/internal/actuator/prometheus
