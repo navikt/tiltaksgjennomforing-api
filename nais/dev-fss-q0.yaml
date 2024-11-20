@@ -9,8 +9,12 @@ spec:
   env:
     - name: MILJO
       value: dev-fss-q0
+    - name: JDK_JAVA_OPTIONS
+      value: "-XX:MaxRAMPercentage=80.0"
   image: {{image}}
   port: 8080
+  kafka:
+    pool: nav-dev
   replicas:
     min: 1
     max: 1
