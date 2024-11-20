@@ -2,16 +2,17 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Predicate;
+import java.util.Optional;
 
 @Data
 @Accessors(chain = true)
-public class AvtalePredicate implements Predicate<Avtale> {
+public class AvtaleQueryParameter {
 
     private NavIdent veilederNavIdent;
     private BedriftNr bedriftNr;
@@ -23,21 +24,17 @@ public class AvtalePredicate implements Predicate<Avtale> {
     private String navEnhet;
     private Integer avtaleNr;
 
-
-    private static boolean erLiktHvisOppgitt(Object kriterie, Object avtaleVerdi) {
-        return kriterie == null || kriterie.equals(avtaleVerdi);
+    public boolean harFilterPaEnEntitet() {
+        return erUfordelt != null ||
+            veilederNavIdent != null ||
+            bedriftNr != null ||
+            deltakerFnr != null ||
+            navEnhet != null ||
+            avtaleNr != null;
     }
 
-    @Override
-    public boolean test(Avtale avtale) {
-        return erLiktHvisOppgitt(veilederNavIdent, avtale.getVeilederNavIdent())
-                && erLiktHvisOppgitt(bedriftNr, avtale.getBedriftNr())
-                && erLiktHvisOppgitt(deltakerFnr, avtale.getDeltakerFnr())
-                && erLiktHvisOppgitt(tiltakstype, avtale.getTiltakstype())
-                && erLiktHvisOppgitt(status, avtale.statusSomEnum())
-                && erLiktHvisOppgitt(tilskuddPeriodeStatus, avtale.getGjeldendeTilskuddsperiodestatus())
-                && (erLiktHvisOppgitt(navEnhet, avtale.getEnhetGeografisk()) || erLiktHvisOppgitt(navEnhet, avtale.getEnhetOppfolging()))
-                && erLiktHvisOppgitt(avtaleNr, avtale.getAvtaleNr());
+    public boolean erUfordelt() {
+        return Optional.ofNullable(this.erUfordelt).orElse(false);
     }
 
     public String generateHash() {
@@ -53,7 +50,7 @@ public class AvtalePredicate implements Predicate<Avtale> {
 
         String predicateString = String.join(";", liste);
 
-        MessageDigest digest = null;
+        MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {

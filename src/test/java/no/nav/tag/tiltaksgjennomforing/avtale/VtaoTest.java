@@ -357,7 +357,7 @@ public class VtaoTest {
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = new GodkjentPaVegneGrunn();
         godkjentPaVegneGrunn.setDigitalKompetanse(true);
         avtale.godkjennForVeilederOgDeltaker(navIdent, godkjentPaVegneGrunn);
-        assertEquals(avtale.status(), Status.MANGLER_GODKJENNING.getBeskrivelse());
+        assertEquals(avtale.getStatus(), Status.MANGLER_GODKJENNING);
     }
 
     private void værInnloggetSom(Avtalepart<?> avtalepart) {

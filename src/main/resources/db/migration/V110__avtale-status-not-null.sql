@@ -1,0 +1,1 @@
+ALTER TABLE avtale ALTER COLUMN status SET NOT NULL;

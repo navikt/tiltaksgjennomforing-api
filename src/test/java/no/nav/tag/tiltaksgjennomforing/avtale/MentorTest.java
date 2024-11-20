@@ -111,7 +111,7 @@ public class MentorTest {
         // GITT
         Avtale avtale = TestData.enMentorAvtaleUsignert();
         Mentor mentor = TestData.enMentor(avtale);
-        AvtalePredicate avtalePredicate = new AvtalePredicate();
+        AvtaleQueryParameter avtalePredicate = new AvtaleQueryParameter();
         // NÅR
         when(avtaleRepository.findAllByMentorFnrAndFeilregistrertIsFalse(any(), eq(pageable))).thenReturn(new PageImpl<>(List.of(avtale)));
         Map<String, Object> avtalerMinimalPage = mentor.hentAlleAvtalerMedLesetilgang(avtaleRepository, avtalePredicate, pageable);

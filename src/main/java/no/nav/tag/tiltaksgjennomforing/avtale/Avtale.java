@@ -164,7 +164,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     @Enumerated(EnumType.STRING)
     private Avtaleopphav opphav;
 
-    @JsonIgnore
     @Enumerated(EnumType.STRING)
     private Status status = Status.PÅBEGYNT;
 
@@ -174,7 +173,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     private Kvalifiseringsgruppe kvalifiseringsgruppe;
     @Enumerated(EnumType.STRING)
     private Formidlingsgruppe formidlingsgruppe;
-
 
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
@@ -530,10 +528,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         gjeldendeInnhold.setGodkjentAvNavIdent(null);
     }
 
-    private void utforEndring() {
-        utforEndring(null);
-    }
-
     private <T> void utforEndring(T event) {
         this.status = Status.fra(this);
         this.sistEndret = Now.instant();
@@ -731,11 +725,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         if (veilederNavIdent == null) {
             throw new FeilkodeException(Feilkode.MANGLER_VEILEDER_PÅ_AVTALE);
         }
-    }
-
-    @JsonProperty
-    public String status() {
-        return statusSomEnum().getBeskrivelse();
     }
 
     @JsonProperty

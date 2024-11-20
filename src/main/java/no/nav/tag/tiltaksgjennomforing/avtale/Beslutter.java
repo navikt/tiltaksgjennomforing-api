@@ -72,7 +72,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     @Override
-    Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtalePredicate queryParametre, Pageable pageable) {
+    Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtaleQueryParameter queryParametre, Pageable pageable) {
         return avtaleRepository.findAllByAvtaleNrAndFeilregistrertIsFalse(queryParametre.getAvtaleNr(), pageable);
     }
 
@@ -87,7 +87,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
 
     Page<BeslutterOversiktDTO> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
             AvtaleRepository avtaleRepository,
-            AvtalePredicate queryParametre,
+            AvtaleQueryParameter queryParametre,
             String sorteringskolonne,
             Integer page,
             Integer size,

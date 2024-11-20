@@ -26,7 +26,7 @@ public class FilterSok {
 
 
     @SneakyThrows
-    public FilterSok(AvtalePredicate queryParametre) {
+    public FilterSok(AvtaleQueryParameter queryParametre) {
         this.sistSoktTidspunkt = Now.localDateTime();
         this.antallGangerSokt = 1;
         this.sokId = queryParametre.generateHash();
@@ -34,22 +34,22 @@ public class FilterSok {
         this.queryParametre = mapper.writeValueAsString(queryParametre);
     }
 
-    public boolean erLik(AvtalePredicate avtalePredicate) {
+    public boolean erLik(AvtaleQueryParameter avtalePredicate) {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            return mapper.readValue(this.queryParametre, AvtalePredicate.class).equals(avtalePredicate);
+            return mapper.readValue(this.queryParametre, AvtaleQueryParameter.class).equals(avtalePredicate);
         } catch (JsonProcessingException e) {
             return false;
         }
     }
 
-    public AvtalePredicate getAvtalePredicate() {
+    public AvtaleQueryParameter getAvtalePredicate() {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         try {
-            return mapper.readValue(this.queryParametre, AvtalePredicate.class);
+            return mapper.readValue(this.queryParametre, AvtaleQueryParameter.class);
         } catch (JsonProcessingException e) {
-            return new AvtalePredicate();
+            return new AvtaleQueryParameter();
         }
     }
 }
