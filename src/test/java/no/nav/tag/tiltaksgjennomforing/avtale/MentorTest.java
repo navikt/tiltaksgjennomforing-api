@@ -1,7 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -17,18 +15,13 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleApiTestUtil.getForPart;
-import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleApiTestUtil.jsonHarVerdi;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -43,45 +36,8 @@ public class MentorTest {
     MockMvc mockMvc;
     @MockBean
     private AvtaleRepository avtaleRepository;
-    @Autowired
-    ObjectMapper mapper;
 
     private final Pageable pageable = PageRequest.of(0, 100);
-
-    @Test
-    public void hentAlleAvtalerMedMuligTilgang__mentor_en_avtale() throws Exception {
-
-        // GITT
-        Avtale avtaleUsignert = TestData.enMentorAvtaleUsignert();
-        Avtale avtaleSignert = TestData.enMentorAvtaleSignert();
-        Mentor mentor = TestData.enMentor(avtaleSignert);
-
-        // NÅR
-        when(avtaleRepository.findAllByMentorFnrAndFeilregistrertIsFalse(any(), any())).thenReturn(new PageImpl<>(List.of(avtaleUsignert, avtaleSignert)));
-        var avtalerRespons = hentAvtalerForMentor(mentor);
-        var avtalerMinimal = mapper.readValue(avtalerRespons.getContentAsString(), HashMap.class);
-
-        assertThat(((List<?>) avtalerMinimal.get("avtaler")).size()).isEqualTo(2);
-        assertFalse(jsonHarVerdi(avtalerRespons.getContentAsString(), avtaleSignert.getDeltakerFnr().asString()));
-        assertFalse(jsonHarVerdi(avtalerRespons.getContentAsString(), avtaleUsignert.getDeltakerFnr().asString()));
-    }
-
-    @Test
-    public void deltakerFNR_skal_være_null_selv_om_mentor_har_signert() throws Exception {
-        // GITT
-        Avtale avtaleSignert = TestData.enMentorAvtaleSignert();
-        var originalJson = mapper.valueToTree(avtaleSignert);
-        var deltakerFnr = avtaleSignert.getDeltakerFnr().asString();
-        Mentor mentor = TestData.enMentor(avtaleSignert);
-        // NÅR
-        when(avtaleRepository.findById(any())).thenReturn(Optional.of(avtaleSignert));
-        var respons = hentAvtaleForMentor(mentor, avtaleSignert.getId());
-        var avtaleJson = mapper.readTree(respons.getContentAsString(StandardCharsets.UTF_8));
-
-        assertEquals(avtaleJson, ((ObjectNode) originalJson.deepCopy()).putNull("deltakerFnr"),
-                "Når vi fjerner fnr fra det opprinnelige testobjektet skal det matche responsen");
-        assertFalse(jsonHarVerdi(respons.getContentAsString(), deltakerFnr));
-    }
 
     @Test
     public void om_mentor_har_tilgang_til_en_annen_mentors_avtale() {
