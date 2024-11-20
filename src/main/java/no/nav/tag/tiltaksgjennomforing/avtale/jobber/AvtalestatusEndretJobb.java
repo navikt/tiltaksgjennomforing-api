@@ -24,7 +24,7 @@ public class AvtalestatusEndretJobb {
         this.leaderPodCheck = leaderPodCheck;
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 5 0 * * *")
     public void run() {
         if (leaderPodCheck.isLeaderPod()) {
             avtalestatusService.oppdaterAvtalerSomKreverEndringAvStatus();
