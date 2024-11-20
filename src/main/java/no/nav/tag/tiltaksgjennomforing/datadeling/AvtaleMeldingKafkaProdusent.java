@@ -27,18 +27,6 @@ public class AvtaleMeldingKafkaProdusent {
     public void avtaleMeldingOpprettet(AvtaleMeldingOpprettet event) {
         String meldingId = event.getEntitet().getAvtaleId().toString();
 
-        kafkaTemplate.send(Topics.AVTALE_HENDELSE, meldingId, event.getEntitet().getJson()).whenComplete(
-                (result, ex) -> {
-                    if (ex != null) {
-                        log.error("AvtaleHendelse med avtaleId {} kunne ikke sendes til Kafka topic {}", meldingId, Topics.AVTALE_HENDELSE);
-                    } else {
-                        log.info("AvtaleHendelse melding med avtaleId {} sendt til Kafka topic {}", meldingId, Topics.AVTALE_HENDELSE);
-                        AvtaleMeldingEntitet entitet = event.getEntitet();
-                        entitet.setSendt(true);
-                        repository.save(entitet);
-                    }
-                });
-
         kafkaTemplate.send(Topics.AVTALE_HENDELSE_COMPACT, meldingId, event.getEntitet().getJson()).whenComplete(
                 (result, ex) -> {
                     if (ex != null) {
