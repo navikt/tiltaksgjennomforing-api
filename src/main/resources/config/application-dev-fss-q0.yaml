@@ -16,6 +16,13 @@ no.nav.security.jwt:
       accepted_audience: fake-tokenx
 
 tiltaksgjennomforing:
+  database:
+    database-navn: tiltaksgjennomforing-p15-q0
+    database-url: ${spring.datasource.url}
+    vault-sti: postgresql/preprod-fss
+    minimum-idle: 1
+    maximum-pool-size: 8
+    max-lifetime: 300000
   kontoregister:
     fake: true
   beslutter-ad-gruppe:
