@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -104,6 +105,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
 
         TilskuddPeriodeStatus status = queryParametre.getTilskuddPeriodeStatus();
         Tiltakstype tiltakstype = queryParametre.getTiltakstype();
+        List<Tiltakstype> tiltakstyper = queryParametre.getTiltakstyper();
         BedriftNr bedriftNr = queryParametre.getBedriftNr();
         Integer avtaleNr = queryParametre.getAvtaleNr();
         String filtrertNavEnhet = queryParametre.getNavEnhet();
@@ -114,20 +116,22 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
             status = TilskuddPeriodeStatus.UBEHANDLET;
         }
 
-        Set<Tiltakstype> tiltakstyper = new HashSet<>();
-        if (tiltakstype != null) {
-            tiltakstyper.add(tiltakstype);
+        Set<Tiltakstype> tiltakstypesett = new HashSet<>();
+        if (!tiltakstyper.isEmpty()) {
+            tiltakstypesett.addAll(tiltakstyper);
+        } else if (tiltakstype != null) {
+            tiltakstypesett.add(tiltakstype);
         } else {
-            tiltakstyper.add(Tiltakstype.SOMMERJOBB);
-            tiltakstyper.add(Tiltakstype.VARIG_LONNSTILSKUDD);
-            tiltakstyper.add(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
-            tiltakstyper.add(Tiltakstype.VTAO);
+            tiltakstypesett.add(Tiltakstype.SOMMERJOBB);
+            tiltakstypesett.add(Tiltakstype.VARIG_LONNSTILSKUDD);
+            tiltakstypesett.add(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+            tiltakstypesett.add(Tiltakstype.VTAO);
         }
 
         return avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
                 status,
                 decisiondate,
-                tiltakstyper,
+                tiltakstypesett,
                 filtrertNavEnhet != null ? Set.of(filtrertNavEnhet) : navEnheter,
                 bedriftNr != null ? bedriftNr.asString() : null,
                 avtaleNr,

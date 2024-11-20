@@ -29,6 +29,7 @@ import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -88,7 +89,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
         boolean harTilgang = tilgangskontrollService.harSkrivetilgangTilKandidat(this, avtale.getDeltakerFnr());
-        if(!harTilgang) {
+        if (!harTilgang) {
             log.info("Har ikke tilgang til avtale {}", avtale.getAvtaleNr());
         }
         return harTilgang;
@@ -98,16 +99,26 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtaleQueryParameter queryParametre, Pageable pageable) {
         NavIdent veilederNavIdent = queryParametre.harFilterPaEnEntitet() ? queryParametre.getVeilederNavIdent() : getIdentifikator();
 
+        Set<Tiltakstype> tiltakstypesett = new HashSet<>();
+        queryParametre.getTiltakstyper();
+        if (!queryParametre.getTiltakstyper().isEmpty()) {
+            tiltakstypesett.addAll(queryParametre.getTiltakstyper());
+        } else if (queryParametre.getTiltakstype() != null) {
+            tiltakstypesett.add(queryParametre.getTiltakstype());
+        } else {
+            tiltakstypesett = null;
+        }
+
         return avtaleRepository.sokEtterAvtale(
-            veilederNavIdent,
-            queryParametre.getAvtaleNr(),
-            queryParametre.getDeltakerFnr(),
-            queryParametre.getBedriftNr(),
-            queryParametre.getNavEnhet(),
-            queryParametre.getTiltakstype(),
-            queryParametre.getStatus(),
-            queryParametre.erUfordelt(),
-            pageable
+                veilederNavIdent,
+                queryParametre.getAvtaleNr(),
+                queryParametre.getDeltakerFnr(),
+                queryParametre.getBedriftNr(),
+                queryParametre.getNavEnhet(),
+                tiltakstypesett,
+                queryParametre.getStatus(),
+                queryParametre.erUfordelt(),
+                pageable
         );
     }
 
@@ -278,12 +289,12 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     private void sjekkTilgangskontroll(Fnr deltakerFnr) {
-        if(!tilgangskontrollService.harSkrivetilgangTilKandidat(this, deltakerFnr)) {
+        if (!tilgangskontrollService.harSkrivetilgangTilKandidat(this, deltakerFnr)) {
             throw new IkkeTilgangTilDeltakerException();
         }
     }
 
-    protected void leggTilEnheter(Avtale avtale){
+    protected void leggTilEnheter(Avtale avtale) {
         final PdlRespons persondata = this.hentPersonDataForOpprettelseAvAvtale(avtale);
         this.hentOppfølgingFraArena(avtale, veilarboppfolgingService);
         super.hentGeoEnhetFraNorg2(avtale, persondata, norg2Client);
@@ -306,7 +317,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             Avtale avtale,
             VeilarboppfolgingService veilarboppfolgingService
     ) {
-        if(avtale.harOppfølgingsStatus()) return;
+        if (avtale.harOppfølgingsStatus()) return;
         Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
         if (oppfølgingsstatus == null) return;
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
@@ -427,7 +438,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             LocalDate sluttDato,
             AvtaleRepository avtaleRepository
     ) {
-        if(avtaleId != null && startDato != null && sluttDato != null) {
+        if (avtaleId != null && startDato != null && sluttDato != null) {
             return AlleredeRegistrertAvtale.filtrerAvtaleDeltakerAlleredeErRegistrertPaa(
                     avtaleRepository.finnAvtalerSomOverlapperForDeltakerVedGodkjenningAvAvtale(
                             deltakerFnr.asString(),
@@ -448,11 +459,13 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         );
     }
 
-    @Override public UUID getAzureOid() {
+    @Override
+    public UUID getAzureOid() {
         return azureOid;
     }
 
-    @Override public NavIdent getNavIdent() {
+    @Override
+    public NavIdent getNavIdent() {
         return getIdentifikator();
     }
 }

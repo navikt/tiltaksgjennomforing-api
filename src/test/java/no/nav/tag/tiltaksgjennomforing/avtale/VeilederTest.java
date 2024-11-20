@@ -494,7 +494,7 @@ public class VeilederTest {
         query.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         query.setStatus(Status.PÅBEGYNT);
         veileder.hentAlleAvtalerMedMuligTilgang(avtaleRepository, query, Pageable.unpaged());
-        verify(avtaleRepository).sokEtterAvtale(new NavIdent("Z123456"), null, null, null, null, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Status.PÅBEGYNT, false, Pageable.unpaged());
+        verify(avtaleRepository).sokEtterAvtale(new NavIdent("Z123456"), null, null, null, null, Set.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Status.PÅBEGYNT, false, Pageable.unpaged());
     }
 
     @Test
@@ -511,7 +511,7 @@ public class VeilederTest {
         query.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         query.setStatus(Status.PÅBEGYNT);
         veileder.hentAlleAvtalerMedMuligTilgang(avtaleRepository, query, Pageable.unpaged());
-        verify(avtaleRepository).sokEtterAvtale(new NavIdent("Z000000"), null, null, null, null, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Status.PÅBEGYNT, false, Pageable.unpaged());
+        verify(avtaleRepository).sokEtterAvtale(new NavIdent("Z000000"), null, null, null, null, Set.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD), Status.PÅBEGYNT, false, Pageable.unpaged());
     }
 
     @Test
@@ -533,7 +533,7 @@ public class VeilederTest {
         query.setStatus(Status.KLAR_FOR_OPPSTART);
         query.setNavEnhet("4802");
         veileder.hentAlleAvtalerMedMuligTilgang(avtaleRepository, query, Pageable.unpaged());
-        verify(avtaleRepository).sokEtterAvtale(null, null, null, null, "4802", Tiltakstype.SOMMERJOBB, Status.KLAR_FOR_OPPSTART, true, Pageable.unpaged());
+        verify(avtaleRepository).sokEtterAvtale(null, null, null, null, "4802", Set.of(Tiltakstype.SOMMERJOBB), Status.KLAR_FOR_OPPSTART, true, Pageable.unpaged());
     }
 
     @Test
@@ -557,6 +557,6 @@ public class VeilederTest {
         query.setTiltakstype(Tiltakstype.ARBEIDSTRENING);
         query.setStatus(Status.MANGLER_GODKJENNING);
         veileder.hentAlleAvtalerMedMuligTilgang(avtaleRepository, query, Pageable.unpaged());
-        verify(avtaleRepository).sokEtterAvtale(new NavIdent("Z000000"), 1, new Fnr("12345678901"), new BedriftNr("123456789"), "4802", Tiltakstype.ARBEIDSTRENING, Status.MANGLER_GODKJENNING, false, Pageable.unpaged());
+        verify(avtaleRepository).sokEtterAvtale(new NavIdent("Z000000"), 1, new Fnr("12345678901"), new BedriftNr("123456789"), "4802", Set.of(Tiltakstype.ARBEIDSTRENING), Status.MANGLER_GODKJENNING, false, Pageable.unpaged());
     }
 }
