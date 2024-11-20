@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Profile;
 import javax.sql.DataSource;
 
 @Configuration
-@Profile({Miljø.DEV_FSS, Miljø.PROD_FSS})
+@Profile({ Miljø.DEV_FSS_Q0, Miljø.DEV_FSS, Miljø.PROD_FSS})
 public class VaultDatabaseConfiguration {
     private final DatabaseProperties config;
 
