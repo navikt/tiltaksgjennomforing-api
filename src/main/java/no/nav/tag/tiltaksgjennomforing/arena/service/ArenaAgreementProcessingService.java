@@ -96,7 +96,7 @@ public class ArenaAgreementProcessingService {
                     log.info(
                         "Lagrer avtale med id {}. Status for avtalen etter migrering {}",
                         completed.avtale().getId(),
-                        completed.avtale().statusSomEnum()
+                        completed.avtale().getStatus()
                     );
                     updateMigrationStatus(
                         tiltaksgjennomforingId,
@@ -174,7 +174,7 @@ public class ArenaAgreementProcessingService {
                 log.info(
                     "Avtale med id {} og status {} har tiltakstatus {} og deltakerstatus {} i Arena. Ignorerer avtalen.",
                     avtale.getId(),
-                    avtale.statusSomEnum(),
+                    avtale.getStatus(),
                     agreementAggregate.getTiltakstatuskode(),
                     agreementAggregate.getDeltakerstatuskode()
                 );
@@ -186,7 +186,7 @@ public class ArenaAgreementProcessingService {
                     "men er satt som feilregistrert eller annullert med status 'ANNET' hos oss. " +
                     "Opprettet ny avtale.",
                     avtale.getId(),
-                    avtale.statusSomEnum(),
+                    avtale.getStatus(),
                     agreementAggregate.getTiltakstatuskode(),
                     agreementAggregate.getDeltakerstatuskode()
                 );
@@ -204,7 +204,7 @@ public class ArenaAgreementProcessingService {
                 log.info(
                     "Avtale med id {} og status {} har tiltakstatus {} og deltakerstatus {} i Arena. {}.",
                     avtale.getId(),
-                    avtale.statusSomEnum(),
+                    avtale.getStatus(),
                     agreementAggregate.getTiltakstatuskode(),
                     agreementAggregate.getDeltakerstatuskode(),
                     switch (action) {

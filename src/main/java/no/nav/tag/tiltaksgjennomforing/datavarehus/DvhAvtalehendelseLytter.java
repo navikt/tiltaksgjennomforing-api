@@ -78,7 +78,7 @@ public class DvhAvtalehendelseLytter {
             UUID meldingId = UUID.randomUUID();
             DvhHendelseType hendelseType = endret;
             var melding = AvroTiltakHendelseFabrikk.konstruer(avtale, tidspunkt, meldingId, hendelseType, utførtAv.asString());
-            DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, avtale.getId(), tidspunkt, avtale.statusSomEnum(), melding);
+            DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, avtale.getId(), tidspunkt, avtale.getStatus(), melding);
             repository.save(entitet);
         }
     }

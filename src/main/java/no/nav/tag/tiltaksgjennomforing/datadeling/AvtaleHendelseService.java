@@ -83,7 +83,7 @@ public class AvtaleHendelseService {
         LocalDateTime tidspunkt = Now.localDateTime();
         try {
             String meldingSomString = objectMapper.writeValueAsString(melding);
-            AvtaleMeldingEntitet entitet = new AvtaleMeldingEntitet(meldingId, avtale.getId(), tidspunkt, HendelseType.STATUSENDRING, avtale.statusSomEnum(), meldingSomString);
+            AvtaleMeldingEntitet entitet = new AvtaleMeldingEntitet(meldingId, avtale.getId(), tidspunkt, HendelseType.STATUSENDRING, avtale.getStatus(), meldingSomString);
             avtaleMeldingEntitetRepository.save(entitet);
         } catch (JsonProcessingException e) {
             log.error("Feil ved parsing av AvtaleHendelseMelding til json for avtale med id: {}", avtale.getId());

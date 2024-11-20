@@ -128,7 +128,7 @@ public class AvtaleMelding {
 
         AvtaleMelding avtaleMelding = new AvtaleMelding();
         avtaleMelding.setHendelseType(hendelseType);
-        avtaleMelding.setAvtaleStatus(avtale.statusSomEnum());
+        avtaleMelding.setAvtaleStatus(avtale.getStatus());
         avtaleMelding.setDeltakerFnr(avtale.getDeltakerFnr());
         avtaleMelding.setMentorFnr(avtale.getMentorFnr());
         avtaleMelding.setBedriftNr(avtale.getBedriftNr());
