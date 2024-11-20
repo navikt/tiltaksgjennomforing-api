@@ -2,15 +2,25 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.enhet.*;
+import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
+import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
-import no.nav.tag.tiltaksgjennomforing.exceptions.*;
+import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeAdminTilgangException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
+import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.EnumSet;
@@ -21,7 +31,12 @@ import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class VeilederTest {
 
@@ -465,5 +480,83 @@ public class VeilederTest {
         assertThatThrownBy(() -> veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale))
                 .isExactlyInstanceOf(FeilkodeException.class)
                 .hasMessage(Feilkode.KVALIFISERINGSGRUPPE_IKKE_RETTIGHET.name());
+    }
+
+    @Test
+    public void hentAlleAvtalerMedMuligTilgang_kaller_sokEtterAvtale_med_veileder_ident_dersom_sporring_ikke_har_andre_enheter(){
+        AvtaleRepository avtaleRepository = spy(AvtaleRepository.class);
+        Veileder veileder = TestData.enVeileder(new NavIdent("Z123456"));
+
+        AvtaleQueryParameter query = new AvtaleQueryParameter();
+        veileder.hentAlleAvtalerMedMuligTilgang(avtaleRepository, query, Pageable.unpaged());
+        verify(avtaleRepository).sokEtterAvtale(new NavIdent("Z123456"), null, null, null, null, null, null, false, Pageable.unpaged());
+
+        query.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+        query.setStatus(Status.PÅBEGYNT);
+        veileder.hentAlleAvtalerMedMuligTilgang(avtaleRepository, query, Pageable.unpaged());
+        verify(avtaleRepository).sokEtterAvtale(new NavIdent("Z123456"), null, null, null, null, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Status.PÅBEGYNT, false, Pageable.unpaged());
+    }
+
+    @Test
+    public void hentAlleAvtalerMedMuligTilgang_kaller_sokEtterAvtale_med_veileder_nav_ident_dersom_den_er_i_sporringen(){
+        AvtaleRepository avtaleRepository = spy(AvtaleRepository.class);
+        Veileder veileder = TestData.enVeileder(new NavIdent("Z123456"));
+
+        AvtaleQueryParameter query = new AvtaleQueryParameter();
+        query.setVeilederNavIdent(new NavIdent("Z000000"));
+
+        veileder.hentAlleAvtalerMedMuligTilgang(avtaleRepository, query, Pageable.unpaged());
+        verify(avtaleRepository).sokEtterAvtale(new NavIdent("Z000000"), null, null, null, null, null, null, false, Pageable.unpaged());
+
+        query.setTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+        query.setStatus(Status.PÅBEGYNT);
+        veileder.hentAlleAvtalerMedMuligTilgang(avtaleRepository, query, Pageable.unpaged());
+        verify(avtaleRepository).sokEtterAvtale(new NavIdent("Z000000"), null, null, null, null, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Status.PÅBEGYNT, false, Pageable.unpaged());
+    }
+
+    @Test
+    public void hentAlleAvtalerMedMuligTilgang_kaller_sokEtterAvtale_med_ufordelt_true_dersom_avtalen_er_ufordelt(){
+        AvtaleRepository avtaleRepository = spy(AvtaleRepository.class);
+        Veileder veileder = TestData.enVeileder(new NavIdent("Z123456"));
+
+        AvtaleQueryParameter query = new AvtaleQueryParameter();
+        query.setErUfordelt(true);
+
+        veileder.hentAlleAvtalerMedMuligTilgang(avtaleRepository, query, Pageable.unpaged());
+        verify(avtaleRepository).sokEtterAvtale(null, null, null, null, null, null, null, true, Pageable.unpaged());
+
+        query.setNavEnhet("4802");
+        veileder.hentAlleAvtalerMedMuligTilgang(avtaleRepository, query, Pageable.unpaged());
+        verify(avtaleRepository).sokEtterAvtale(null, null, null, null, "4802", null, null, true, Pageable.unpaged());
+
+        query.setTiltakstype(Tiltakstype.SOMMERJOBB);
+        query.setStatus(Status.KLAR_FOR_OPPSTART);
+        query.setNavEnhet("4802");
+        veileder.hentAlleAvtalerMedMuligTilgang(avtaleRepository, query, Pageable.unpaged());
+        verify(avtaleRepository).sokEtterAvtale(null, null, null, null, "4802", Tiltakstype.SOMMERJOBB, Status.KLAR_FOR_OPPSTART, true, Pageable.unpaged());
+    }
+
+    @Test
+    public void setter_alle_parameter_dersom_de_eksisterer(){
+        AvtaleRepository avtaleRepository = spy(AvtaleRepository.class);
+        Veileder veileder = TestData.enVeileder(new NavIdent("Z123456"));
+
+        AvtaleQueryParameter query = new AvtaleQueryParameter();
+        query.setDeltakerFnr(new Fnr("12345678901"));
+        query.setBedriftNr(new BedriftNr("123456789"));
+        query.setAvtaleNr(1);
+        query.setNavEnhet("4802");
+
+        veileder.hentAlleAvtalerMedMuligTilgang(avtaleRepository, query, Pageable.unpaged());
+        verify(avtaleRepository).sokEtterAvtale(null, 1, new Fnr("12345678901"), new BedriftNr("123456789"), "4802", null, null, false, Pageable.unpaged());
+
+        query.setVeilederNavIdent(new NavIdent("Z000000"));
+        veileder.hentAlleAvtalerMedMuligTilgang(avtaleRepository, query, Pageable.unpaged());
+        verify(avtaleRepository).sokEtterAvtale(new NavIdent("Z000000"), 1, new Fnr("12345678901"), new BedriftNr("123456789"), "4802", null, null, false, Pageable.unpaged());
+
+        query.setTiltakstype(Tiltakstype.ARBEIDSTRENING);
+        query.setStatus(Status.MANGLER_GODKJENNING);
+        veileder.hentAlleAvtalerMedMuligTilgang(avtaleRepository, query, Pageable.unpaged());
+        verify(avtaleRepository).sokEtterAvtale(new NavIdent("Z000000"), 1, new Fnr("12345678901"), new BedriftNr("123456789"), "4802", Tiltakstype.ARBEIDSTRENING, Status.MANGLER_GODKJENNING, false, Pageable.unpaged());
     }
 }

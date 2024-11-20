@@ -29,7 +29,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.*;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.ENHET_GEOGRAFISK;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.ENHET_OPPFØLGING;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter;
 import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.ARBEIDSTRENING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -56,6 +59,7 @@ public class AvtaleRepositoryTest {
 
     @Autowired
     private DvhMeldingEntitetRepository dvhMeldingEntitetRepository;
+
     @Autowired
     private AvtaleMeldingEntitetRepository avtaleMeldingEntitetRepository;
 
@@ -382,5 +386,201 @@ public class AvtaleRepositoryTest {
         assertThat(avtalerFunnet.getContent()).isNotEmpty();
         assertThat(avtalerFunnet.getTotalElements()).isEqualTo(1);
         assertThat(avtalerFunnet.getContent().stream().findFirst().get().isFeilregistrert()).isFalse();
+    }
+
+    @Test
+    public void sokEtterAvtale_finner_avtaler_ved_sok_pa_ufordelte_og_bryr_seg_ikke_om_nav_ident_ved_sok_pa_ufordelte() {
+        Avtale avtale1 = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedGeografiskEnhet();
+        avtaleRepository.save(avtale1);
+
+        Avtale avtale2 = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
+        avtaleRepository.save(avtale2);
+
+        Avtale avtale3 = TestData.enInkluderingstilskuddAvtale();
+        avtaleRepository.save(avtale3);
+
+        Avtale avtale4 = TestData.enAvtaleMedAltUtfylt();
+        avtaleRepository.save(avtale4);
+
+        Avtale avtale5 = TestData.enMentorAvtaleUsignert();
+        avtaleRepository.save(avtale5);
+
+        Page<Avtale> resultat1 = avtaleRepository.sokEtterAvtale(null, null, null, null, ENHET_GEOGRAFISK.getVerdi(), null, null, true, PageRequest.of(0, 10));
+        assertThat(resultat1.getContent()).hasSize(1);
+        assertThat(resultat1.getContent().getFirst().getId()).isEqualTo(avtale1.getId());
+
+        Page<Avtale> resultat2 = avtaleRepository.sokEtterAvtale(new NavIdent("A123456"), null, null, null, null, null, null, true, PageRequest.of(0, 10));
+        assertThat(resultat2.getContent()).hasSize(1);
+        assertThat(resultat2.getContent().getFirst().getId()).isEqualTo(avtale1.getId());
+    }
+
+    @Test
+    public void sokEtterAvtale_finner_avtaler_ved_sok_pa_veileder() {
+        Avtale avtale1 = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedGeografiskEnhet();
+        avtale1.setVeilederNavIdent(new NavIdent("A123456"));
+        avtaleRepository.save(avtale1);
+
+        Avtale avtale2 = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
+        avtale2.setVeilederNavIdent(new NavIdent("B123456"));
+        avtaleRepository.save(avtale2);
+
+        Avtale avtale3 = TestData.enInkluderingstilskuddAvtale();
+        avtale3.setVeilederNavIdent(new NavIdent("C123456"));
+        avtaleRepository.save(avtale3);
+
+        Avtale avtale4 = TestData.enAvtaleMedAltUtfylt();
+        avtale4.setVeilederNavIdent(new NavIdent("D123456"));
+        avtaleRepository.save(avtale4);
+
+        Avtale avtale5 = TestData.enMentorAvtaleUsignert();
+        avtale5.setVeilederNavIdent(new NavIdent("E123456"));
+        avtaleRepository.save(avtale5);
+
+        Page<Avtale> resultat = avtaleRepository.sokEtterAvtale(avtale3.getVeilederNavIdent(), null, null, null, null, null, null, false, PageRequest.of(0, 10));
+        assertThat(resultat.getContent()).hasSize(1);
+        assertThat(resultat.getContent().getFirst().getId()).isEqualTo(avtale3.getId());
+    }
+
+    @Test
+    public void sokEtterAvtale_finner_avtaler_ved_sok_pa_avtaleNr() {
+        Avtale avtale1 = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedGeografiskEnhet();
+        avtaleRepository.save(avtale1);
+
+        Avtale avtale2 = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
+        avtaleRepository.save(avtale2);
+
+        Avtale avtale3 = TestData.enInkluderingstilskuddAvtale();
+        avtaleRepository.save(avtale3);
+
+        Avtale avtale4 = TestData.enAvtaleMedAltUtfylt();
+        avtaleRepository.save(avtale4);
+
+        Avtale avtale5 = TestData.enMentorAvtaleUsignert();
+        avtaleRepository.save(avtale5);
+
+        Integer avtaleNr = avtaleRepository.findById(avtale5.getId()).map(Avtale::getAvtaleNr).orElse(null);
+        Page<Avtale> resultat = avtaleRepository.sokEtterAvtale(null, avtaleNr, null, null, null, null, null, false, PageRequest.of(0, 10));
+        assertThat(resultat.getContent()).hasSize(1);
+        assertThat(resultat.getContent().getFirst().getId()).isEqualTo(avtale5.getId());
+    }
+
+    @Test
+    public void sokEtterAvtale_finner_avtaler_ved_sok_pa_deltakerFnr() {
+        Avtale avtale1 = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedGeografiskEnhet();
+        avtale1.setDeltakerFnr(new Fnr("10000000001"));
+        avtaleRepository.save(avtale1);
+
+        Avtale avtale2 = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
+        avtale2.setDeltakerFnr(new Fnr("10000000002"));
+        avtaleRepository.save(avtale2);
+
+        Avtale avtale3 = TestData.enInkluderingstilskuddAvtale();
+        avtale3.setDeltakerFnr(new Fnr("10000000003"));
+        avtaleRepository.save(avtale3);
+
+        Avtale avtale4 = TestData.enAvtaleMedAltUtfylt();
+        avtale4.setDeltakerFnr(new Fnr("10000000004"));
+        avtaleRepository.save(avtale4);
+
+        Avtale avtale5 = TestData.enMentorAvtaleUsignert();
+        avtale5.setDeltakerFnr(new Fnr("10000000005"));
+        avtaleRepository.save(avtale5);
+
+        Page<Avtale> resultat = avtaleRepository.sokEtterAvtale(null, null, avtale4.getDeltakerFnr(), null, null, null, null, false, PageRequest.of(0, 10));
+        assertThat(resultat.getContent()).hasSize(1);
+        assertThat(resultat.getContent().getFirst().getId()).isEqualTo(avtale4.getId());
+    }
+
+    @Test
+    public void sokEtterAvtale_finner_avtaler_ved_sok_pa_bedriftsNr() {
+        Avtale avtale1 = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedGeografiskEnhet();
+        avtale1.setBedriftNr(new BedriftNr("100000001"));
+        avtaleRepository.save(avtale1);
+
+        Avtale avtale2 = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
+        avtale2.setBedriftNr(new BedriftNr("100000002"));
+        avtaleRepository.save(avtale2);
+
+        Avtale avtale3 = TestData.enInkluderingstilskuddAvtale();
+        avtale3.setBedriftNr(new BedriftNr("100000003"));
+        avtaleRepository.save(avtale3);
+
+        Avtale avtale4 = TestData.enAvtaleMedAltUtfylt();
+        avtale4.setBedriftNr(new BedriftNr("100000004"));
+        avtaleRepository.save(avtale4);
+
+        Avtale avtale5 = TestData.enMentorAvtaleUsignert();
+        avtale5.setBedriftNr(new BedriftNr("100000005"));
+        avtaleRepository.save(avtale5);
+
+        Page<Avtale> resultat = avtaleRepository.sokEtterAvtale(null, null, null, avtale2.getBedriftNr(), null, null, null, false, PageRequest.of(0, 10));
+        assertThat(resultat.getContent()).hasSize(1);
+        assertThat(resultat.getContent().getFirst().getId()).isEqualTo(avtale2.getId());
+    }
+
+    @Test
+    public void sokEtterAvtale_finner_avtaler_ved_sok_pa_status_og_andre_parametere() {
+        Avtale avtale1 = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedGeografiskEnhet();
+        avtale1.setVeilederNavIdent(new NavIdent("A123456"));
+        avtale1.setStatus(Status.GJENNOMFØRES);
+        avtaleRepository.save(avtale1);
+
+        Avtale avtale2 = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
+        avtale2.setVeilederNavIdent(new NavIdent("B123456"));
+        avtale2.setStatus(Status.AVBRUTT);
+        avtaleRepository.save(avtale2);
+
+        Avtale avtale3 = TestData.enInkluderingstilskuddAvtale();
+        avtale3.setVeilederNavIdent(new NavIdent("C123456"));
+        avtale2.setStatus(Status.KLAR_FOR_OPPSTART);
+        avtaleRepository.save(avtale3);
+
+        Avtale avtale4 = TestData.enAvtaleMedAltUtfylt();
+        avtale4.setVeilederNavIdent(new NavIdent("D123456"));
+        avtale2.setStatus(Status.PÅBEGYNT);
+        avtaleRepository.save(avtale4);
+
+        Avtale avtale5 = TestData.enMentorAvtaleUsignert();
+        avtale5.setVeilederNavIdent(new NavIdent("E123456"));
+        avtale2.setStatus(Status.MANGLER_GODKJENNING);
+        avtaleRepository.save(avtale5);
+
+        Page<Avtale> resultat1 = avtaleRepository.sokEtterAvtale(null, null, null, null, null, null, Status.GJENNOMFØRES, false, PageRequest.of(0, 10));
+        assertThat(resultat1.getContent()).hasSize(1);
+        assertThat(resultat1.getContent().getFirst().getId()).isEqualTo(avtale1.getId());
+
+        Page<Avtale> resultat2 = avtaleRepository.sokEtterAvtale(avtale2.getVeilederNavIdent(), null, null, null, null, null, Status.GJENNOMFØRES, false, PageRequest.of(0, 10));
+        assertThat(resultat2.getContent()).hasSize(0);
+    }
+
+    @Test
+    public void sokEtterAvtale_finner_avtaler_ved_sok_pa_tiltakstype_og_andre_parametere() {
+        Avtale avtale1 = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordeltMedGeografiskEnhet();
+        avtale1.setVeilederNavIdent(new NavIdent("A123456"));
+        avtaleRepository.save(avtale1);
+
+        Avtale avtale2 = TestData.enArbeidstreningAvtaleGodkjentAvVeileder();
+        avtale2.setVeilederNavIdent(new NavIdent("B123456"));
+        avtaleRepository.save(avtale2);
+
+        Avtale avtale3 = TestData.enInkluderingstilskuddAvtale();
+        avtale3.setVeilederNavIdent(new NavIdent("C123456"));
+        avtaleRepository.save(avtale3);
+
+        Avtale avtale4 = TestData.enAvtaleMedAltUtfylt();
+        avtale4.setVeilederNavIdent(new NavIdent("D123456"));
+        avtaleRepository.save(avtale4);
+
+        Avtale avtale5 = TestData.enMentorAvtaleUsignert();
+        avtale5.setVeilederNavIdent(new NavIdent("E123456"));
+        avtaleRepository.save(avtale5);
+
+        Page<Avtale> resultat1 = avtaleRepository.sokEtterAvtale(null, null, null, null, null, Tiltakstype.INKLUDERINGSTILSKUDD, null, false, PageRequest.of(0, 10));
+        assertThat(resultat1.getContent()).hasSize(1);
+        assertThat(resultat1.getContent().getFirst().getId()).isEqualTo(avtale3.getId());
+
+        Page<Avtale> resultat2 = avtaleRepository.sokEtterAvtale(avtale3.getVeilederNavIdent(), null, null, null, null, Tiltakstype.INKLUDERINGSTILSKUDD, null, false, PageRequest.of(0, 10));
+        assertThat(resultat2.getContent()).hasSize(1);
+        assertThat(resultat1.getContent().getFirst().getId()).isEqualTo(avtale3.getId());
     }
 }
