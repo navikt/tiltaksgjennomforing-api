@@ -902,7 +902,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         var gjeldendePeriode = gjeldendeTilskuddsperiodeGammel();
         var gjeldendePeriodeKalkulertId = gjeldendePeriode != null ? gjeldendePeriode.getId() : null;
         var gjeldendeFraDbId = this.gjeldendeTilskuddsperiode != null ? this.gjeldendeTilskuddsperiode.getId() : null;
-        if (Objects.equals(gjeldendePeriodeKalkulertId, gjeldendeFraDbId)) {
+        if (!Objects.equals(gjeldendePeriodeKalkulertId, gjeldendeFraDbId)) {
             log.debug("Gjeldende tilskuddsperiode ikke oppdatert? Fant {}, men kalkulerte {}", gjeldendeFraDbId, gjeldendePeriodeKalkulertId);
         }
         return gjeldendePeriode;
