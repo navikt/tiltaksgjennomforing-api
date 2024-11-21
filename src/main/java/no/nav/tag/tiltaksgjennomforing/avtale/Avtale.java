@@ -840,6 +840,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         // Sjekk om samme løpenummer allerede er godkjent og annullert. Trenger da en "ekstra" resendingsnummer
         Integer resendingsnummer = finnResendingsNummer(gjeldendePeriode);
         gjeldendePeriode.godkjenn(beslutter, enhet);
+        setGjeldendeTilskuddsperiode(gjeldendeTilskuddsperiodeGammel());
         if (!erAvtaleInngått()) {
             LocalDateTime tidspunkt = Now.localDateTime();
             godkjennForBeslutter(tidspunkt, beslutter);
@@ -904,7 +905,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         var gjeldendePeriodeKalkulertId = gjeldendePeriode != null ? gjeldendePeriode.getId() : null;
         var gjeldendeFraDbId = this.gjeldendeTilskuddsperiode != null ? this.gjeldendeTilskuddsperiode.getId() : null;
         if (!Objects.equals(gjeldendePeriodeKalkulertId, gjeldendeFraDbId)) {
-            log.debug("Gjeldende tilskuddsperiode ikke oppdatert? Fant {}, men kalkulerte {}", gjeldendeFraDbId, gjeldendePeriodeKalkulertId);
+            log.warn("Gjeldende tilskuddsperiode ikke oppdatert? Fant {}, men kalkulerte {}", gjeldendeFraDbId, gjeldendePeriodeKalkulertId);
         }
         return gjeldendePeriode;
     }
@@ -997,6 +998,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
                 }
             }
         }
+        setGjeldendeTilskuddsperiode(gjeldendeTilskuddsperiodeGammel());
     }
 
     void endreBeløpITilskuddsperioder() {
@@ -1012,6 +1014,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
                 .filter(t -> t.getStatus() == TilskuddPeriodeStatus.AVSLÅTT)
                 .map(TilskuddPeriode::deaktiverOgLagNyUbehandlet).toList();
         tilskuddPeriode.addAll(rettede);
+        setGjeldendeTilskuddsperiode(gjeldendeTilskuddsperiodeGammel());
     }
 
     private void sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt() {
@@ -1035,6 +1038,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     private void nyeTilskuddsperioder() {
         this.hentBeregningStrategi().genererNyeTilskuddsperioder(this);
+        setGjeldendeTilskuddsperiode(gjeldendeTilskuddsperiodeGammel());
     }
 
     private boolean sjekkRyddingAvTilskuddsperioder() {
@@ -1092,6 +1096,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             fikseLøpenumre(tilskuddsperioder, 1);
             if (!dryRun) {
                 tilskuddPeriode.addAll(tilskuddsperioder);
+                setGjeldendeTilskuddsperiode(gjeldendeTilskuddsperiodeGammel());
             }
             return true;
         } else {
