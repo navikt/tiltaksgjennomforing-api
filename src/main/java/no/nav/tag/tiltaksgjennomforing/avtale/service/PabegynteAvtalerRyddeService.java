@@ -9,7 +9,7 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZoneId;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleUtlopHandling.START_DATO_FOR_RYDDING;
 
 @Slf4j
-@Component
+@Service
 @Profile({ Miljø.DEV_FSS, Miljø.PROD_FSS })
 public class PabegynteAvtalerRyddeService {
     private final AvtaleRepository avtaleRepository;
