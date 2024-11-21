@@ -178,6 +178,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     @OneToOne(cascade = CascadeType.ALL)
     @Nullable
+    @JsonIgnore
     private TilskuddPeriode gjeldendeTilskuddsperiode;
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
