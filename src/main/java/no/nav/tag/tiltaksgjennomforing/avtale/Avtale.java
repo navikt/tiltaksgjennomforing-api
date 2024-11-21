@@ -895,9 +895,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
      * før etter endringen.
      * <p>
      * TODO: Fjern gammel logikk, og denne disclaimeren
-     * @deprecated Når vi fjerner logikk og bruker feltet i stedet, vil lombok generere en getter, men metodenavnet vil bli getXXXX
      */
-    @Deprecated
     @Nullable
     @JsonProperty
     public TilskuddPeriode gjeldendeTilskuddsperiode() {
@@ -908,11 +906,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             log.debug("Gjeldende tilskuddsperiode ikke oppdatert? Fant {}, men kalkulerte {}", gjeldendeFraDbId, gjeldendePeriodeKalkulertId);
         }
         return gjeldendePeriode;
-    }
-
-    @Nullable
-    public TilskuddPeriode getGjeldendeTilskuddsperiode() {
-        return gjeldendeTilskuddsperiode();
     }
 
     private TilskuddPeriode gjeldendeTilskuddsperiodeGammel() {
