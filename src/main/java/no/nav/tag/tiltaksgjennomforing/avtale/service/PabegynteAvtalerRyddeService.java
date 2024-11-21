@@ -1,18 +1,16 @@
-package no.nav.tag.tiltaksgjennomforing.avtale.jobber;
+package no.nav.tag.tiltaksgjennomforing.avtale.service;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleUtlopHandling;
-import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
-import no.nav.tag.tiltaksgjennomforing.leader.LeaderPodCheck;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -26,32 +24,21 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleUtlopHandling.START_D
 @Slf4j
 @Component
 @Profile({ Miljø.DEV_FSS, Miljø.PROD_FSS })
-public class PabegynteAvtalerRyddejobb {
-    private List<Status> avtaleStatuserSomSkalRyddes = List.of(Status.PÅBEGYNT, Status.MANGLER_GODKJENNING);
-
+public class PabegynteAvtalerRyddeService {
     private final AvtaleRepository avtaleRepository;
     private final FeatureToggleService featureToggleService;
-    private final LeaderPodCheck leaderPodCheck;
 
-    public PabegynteAvtalerRyddejobb(
+    public PabegynteAvtalerRyddeService(
         AvtaleRepository avtaleRepository,
-        FeatureToggleService featureToggleService,
-        LeaderPodCheck leaderPodCheck
+        FeatureToggleService featureToggleService
     ) {
         this.featureToggleService = featureToggleService;
         this.avtaleRepository = avtaleRepository;
-        this.leaderPodCheck = leaderPodCheck;
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
-    public void run() {
-        if (!leaderPodCheck.isLeaderPod()) {
-            return;
-        }
-
-        List<Avtale> avtaler = avtaleRepository.findAvtalerSomErPabegyntEllerManglerGodkjenning().stream()
-            .filter(avtale -> avtaleStatuserSomSkalRyddes.contains(avtale.getStatus()))
-            .toList();
+    @Transactional
+    public void ryddAvtalerSomErPabegyntEllerManglerGodkjenning() {
+        List<Avtale> avtaler = avtaleRepository.findAvtalerSomErPabegyntEllerManglerGodkjenning();
 
         if (avtaler.isEmpty()) {
             return;
