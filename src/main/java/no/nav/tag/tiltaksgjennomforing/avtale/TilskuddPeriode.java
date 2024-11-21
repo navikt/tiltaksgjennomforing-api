@@ -42,7 +42,7 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
     @EqualsAndHashCode.Include
     private UUID id = UUID.randomUUID();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY) // Unngå rekursiv query-loop (avtale.gjeldendetilskudd->tilskudd.avtale->...)
     @JoinColumn(name = "avtale_id")
     @JsonIgnore
     @ToString.Exclude
