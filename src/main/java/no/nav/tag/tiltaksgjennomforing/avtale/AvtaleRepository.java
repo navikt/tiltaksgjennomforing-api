@@ -127,13 +127,11 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             @Param("avtaleNr") Integer avtaleNr,
             Pageable pageable);
 
-    @Query(value = "SELECT avtale.* " +
-            "FROM avtale, avtale_innhold " +
-            "WHERE avtale.gjeldende_innhold_id = avtale_innhold.id " +
-            "AND avtale_innhold.avtale_inngått IS NULL " +
-            "AND avtale.annullert_tidspunkt IS NULL " +
-            "AND avtale.avbrutt IS FALSE",
-            nativeQuery = true)
+    @Query("""
+        SELECT a
+        FROM Avtale a
+        WHERE a.status = no.nav.tag.tiltaksgjennomforing.avtale.Status.PÅBEGYNT OR a.status = no.nav.tag.tiltaksgjennomforing.avtale.Status.MANGLER_GODKJENNING
+    """)
     List<Avtale> findAvtalerSomErPabegyntEllerManglerGodkjenning();
 
     @Query("""
