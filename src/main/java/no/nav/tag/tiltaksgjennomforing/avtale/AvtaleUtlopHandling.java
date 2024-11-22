@@ -32,7 +32,7 @@ public enum AvtaleUtlopHandling {
         return parse(avtale.getSistEndret());
     }
 
-    public static AvtaleUtlopHandling parse(Instant sistEndret) {
+    private static AvtaleUtlopHandling parse(Instant sistEndret) {
         if (sistEndret.plus(TOLV_UKER).isBefore(Now.instant())) {
             return AvtaleUtlopHandling.UTLOP;
         }
