@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -103,6 +104,7 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
@@ -174,6 +176,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     @Enumerated(EnumType.STRING)
     private Formidlingsgruppe formidlingsgruppe;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @Nullable
+    @JsonIgnore
+    private TilskuddPeriode gjeldendeTilskuddsperiode;
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
     @SortNatural
@@ -883,9 +889,30 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         return tilskuddPeriode.toArray(new TilskuddPeriode[0])[index];
     }
 
+    /**
+     * Vi ønsker å migrere til at "gjeldende tilskuddsperiode" lagres i databasen for å legge til rette for bedre
+     * filtreringsmuligheter for besluttere. I en overgangsfase bør all logikk basere seg på gammel implementasjon som
+     * "kalkulerer" gjeldende periode, men vi bør også logge eventuelle avvik for å sikre at systemet fungerer likt som
+     * før etter endringen.
+     * <p>
+     * TODO: Fjern gammel logikk, og denne disclaimeren
+     */
+    @Nullable
     @JsonProperty
     public TilskuddPeriode gjeldendeTilskuddsperiode() {
-        TreeSet<TilskuddPeriode> aktiveTilskuddsperioder = new TreeSet<>(tilskuddPeriode.stream().filter(TilskuddPeriode::isAktiv).collect(Collectors.toSet()));
+        var gjeldendePeriode = gjeldendeTilskuddsperiodeGammel();
+        var gjeldendePeriodeKalkulertId = gjeldendePeriode != null ? gjeldendePeriode.getId() : null;
+        var gjeldendeFraDbId = this.gjeldendeTilskuddsperiode != null ? this.gjeldendeTilskuddsperiode.getId() : null;
+        if (!Objects.equals(gjeldendePeriodeKalkulertId, gjeldendeFraDbId)) {
+            log.debug("Gjeldende tilskuddsperiode ikke oppdatert? Fant {}, men kalkulerte {}", gjeldendeFraDbId, gjeldendePeriodeKalkulertId);
+        }
+        return gjeldendePeriode;
+    }
+
+    private TilskuddPeriode gjeldendeTilskuddsperiodeGammel() {
+        TreeSet<TilskuddPeriode> aktiveTilskuddsperioder = tilskuddPeriode.stream()
+                .filter(TilskuddPeriode::isAktiv)
+                .collect(Collectors.toCollection(TreeSet::new));
 
         if (aktiveTilskuddsperioder.isEmpty()) {
             return null;
