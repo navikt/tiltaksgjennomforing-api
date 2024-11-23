@@ -4,11 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEvent;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEventStatus;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaEventRepository;
-import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -34,7 +32,6 @@ public class ArenaEventProcessingJobService {
 
         return events
             .stream()
-            .filter(this::isReadyForRetry)
             .map(arenaEvent ->
                 arenaEvent.toBuilder()
                     .status(ArenaEventStatus.PENDING)
@@ -56,7 +53,7 @@ public class ArenaEventProcessingJobService {
     private List<ArenaEvent> findEventsForProcessing() {
         List<ArenaEvent> events = arenaEventRepository.findNewEventsForProcessing();
 
-        if (events.isEmpty() || events.size() <= 50) {
+        if (events.isEmpty() || events.size() <= 100) {
             events.addAll(arenaEventRepository.findRetryEventsForProcessing());
         }
 
@@ -83,19 +80,6 @@ public class ArenaEventProcessingJobService {
 
     private boolean isMaxRetry(ArenaEvent arenaEvent) {
         return arenaEvent.getRetryCount() > MAX_RETRY_COUNT;
-    }
-
-    private boolean isReadyForRetry(ArenaEvent arenaEvent) {
-        LocalDateTime created = arenaEvent.getCreated();
-
-        return switch (arenaEvent.getRetryCount()) {
-            case 0 -> Now.localDateTime().minusMinutes(5).isAfter(created);
-            case 1 -> Now.localDateTime().minusMinutes(10).isAfter(created);
-            case 2 -> Now.localDateTime().minusMinutes(15).isAfter(created);
-            case 3 -> Now.localDateTime().minusHours(30).isAfter(created);
-            case 4 -> Now.localDateTime().minusHours(1).isAfter(created);
-            default -> false;
-        };
     }
 
 }
