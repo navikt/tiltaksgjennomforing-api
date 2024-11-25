@@ -1,10 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import io.micrometer.core.annotation.Timed;
+import jakarta.persistence.LockModeType;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -61,6 +64,9 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     List<Avtale> findAll();
 
     List<Avtale> findAllByGjeldendeInnhold_AvtaleInngåttNotNull();
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    List<Avtale> findAllByGjeldendeTilskuddsperiodeIsNullAndTiltakstypeIsNot(Tiltakstype tiltakstype, Limit limit);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Override
