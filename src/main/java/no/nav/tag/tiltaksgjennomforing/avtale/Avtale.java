@@ -835,7 +835,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         if (beslutter.equals(gjeldendeInnhold.getGodkjentAvNavIdent())) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE);
         }
-        TilskuddPeriode gjeldendePeriode = gjeldendeTilskuddsperiode();
+        TilskuddPeriode gjeldendePeriode = getGjeldendeTilskuddsperiode();
 
         // Sjekk om samme løpenummer allerede er godkjent og annullert. Trenger da en "ekstra" resendingsnummer
         Integer resendingsnummer = finnResendingsNummer(gjeldendePeriode);
@@ -859,7 +859,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_KAN_KUN_BEHANDLES_VED_INNGAATT_AVTALE);
         }
-        TilskuddPeriode gjeldendePeriode = gjeldendeTilskuddsperiode();
+        TilskuddPeriode gjeldendePeriode = getGjeldendeTilskuddsperiode();
         gjeldendePeriode.avslå(beslutter, avslagsårsaker, avslagsforklaring);
         utforEndring(new TilskuddsperiodeAvslått(this, beslutter, gjeldendePeriode));
     }
@@ -878,7 +878,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     protected TilskuddPeriodeStatus getGjeldendeTilskuddsperiodestatus() {
-        TilskuddPeriode tilskuddPeriode = gjeldendeTilskuddsperiode();
+        TilskuddPeriode tilskuddPeriode = getGjeldendeTilskuddsperiode();
         if (tilskuddPeriode == null) {
             return null;
         }
@@ -899,7 +899,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
      */
     @Nullable
     @JsonProperty
-    public TilskuddPeriode gjeldendeTilskuddsperiode() {
+    public TilskuddPeriode getGjeldendeTilskuddsperiode() {
         var gjeldendePeriode = gjeldendeTilskuddsperiodeGammel();
         var gjeldendePeriodeKalkulertId = gjeldendePeriode != null ? gjeldendePeriode.getId() : null;
         var gjeldendeFraDbId = this.gjeldendeTilskuddsperiode != null ? this.gjeldendeTilskuddsperiode.getId() : null;
