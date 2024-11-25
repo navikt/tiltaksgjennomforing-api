@@ -46,13 +46,16 @@ class GjeldendeTilskuddsperiodeJobbWorker {
             log.info("Ingen avtaler å behandle");
             return;
         }
+        log.info("Fant {} avtaler å behandle...", avtaler.size());
         avtaler.forEach(avtale -> {
             var nyGjeldende = avtale.finnGjeldendeTilskuddsperiode();
             if (nyGjeldende == null) {
                 log.warn("Fant ikke en gjeldende tilskuddsperiode! Har ikke avtalen aktive tilskuddsperioder? (avtale-id: {})", avtale.getId());
             }
-            avtale.setGjeldendeTilskuddsperiode(nyGjeldende);
+            // TODO: Utfør!
+            //avtale.setGjeldendeTilskuddsperiode(nyGjeldende);
         });
-        avtaleRepository.saveAll(avtaler);
+        //avtaleRepository.saveAll(avtaler);
+        log.info("Dry-run over!");
     }
 }
