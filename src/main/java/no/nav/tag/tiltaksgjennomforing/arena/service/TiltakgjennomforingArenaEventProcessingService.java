@@ -54,7 +54,7 @@ public class TiltakgjennomforingArenaEventProcessingService implements IArenaEve
                 tiltakgjennomforing,
                 () -> log.info("Sletter tidligere håndtert tiltak som nå skal ignoreres")
             );
-            ordsService.attemptDeleteArbeidsgiver(tiltakgjennomforing.getArbgivIdArrangor());
+            deleteArbeidsgiver(tiltakgjennomforing.getArbgivIdArrangor());
 
             return ArenaEventStatus.IGNORED;
         }
@@ -75,7 +75,7 @@ public class TiltakgjennomforingArenaEventProcessingService implements IArenaEve
 
         if (Operation.DELETE == arenaEvent.getOperation()) {
             delete(tiltakgjennomforing, () -> log.info("Arena-event har operasjon DELETE og slettet"));
-            ordsService.attemptDeleteArbeidsgiver(tiltakgjennomforing.getArbgivIdArrangor());
+            deleteArbeidsgiver(tiltakgjennomforing.getArbgivIdArrangor());
             return ArenaEventStatus.DONE;
         }
 
@@ -90,6 +90,14 @@ public class TiltakgjennomforingArenaEventProcessingService implements IArenaEve
 
         log.info("Arena-event er ferdig prossesert");
         return ArenaEventStatus.DONE;
+    }
+
+    private void deleteArbeidsgiver(Integer arbeidsgiverId) {
+        if (!tiltakgjennomforingRepository.findByArbgivIdArrangor(arbeidsgiverId).isEmpty()) {
+            log.info("Arbeidsgiver {} er fortsatt er i bruk", arbeidsgiverId);
+            return;
+        }
+        ordsService.attemptDeleteArbeidsgiver(arbeidsgiverId);
     }
 
     private void delete(

@@ -53,7 +53,7 @@ public class TiltakdeltakerArenaEventProcessingService implements IArenaEventPro
                 tiltakdeltaker,
                 () -> log.info("Sletter tidligere håndtert deltaker som nå skal ignoreres")
             );
-            ordsService.attemptDeleteFnr(tiltakdeltaker.getPersonId());
+            deleteFnr(tiltakdeltaker.getPersonId());
 
             return ArenaEventStatus.IGNORED;
         }
@@ -65,7 +65,7 @@ public class TiltakdeltakerArenaEventProcessingService implements IArenaEventPro
 
         if (Operation.DELETE == arenaEvent.getOperation()) {
             delete(tiltakdeltaker, () -> log.info("Arena-event har operasjon DELETE og blir slettes"));
-            ordsService.attemptDeleteFnr(tiltakdeltaker.getPersonId());
+            deleteFnr(tiltakdeltaker.getPersonId());
             return ArenaEventStatus.DONE;
         }
 
@@ -80,6 +80,14 @@ public class TiltakdeltakerArenaEventProcessingService implements IArenaEventPro
 
         log.info("Arena-event er ferdig prossesert");
         return ArenaEventStatus.DONE;
+    }
+
+    private void deleteFnr(Integer personId) {
+        if (!tiltakdeltakerRepository.findByPersonId(personId).isEmpty()) {
+            log.info("Person {} er fortsatt er i bruk", personId);
+            return;
+        }
+        ordsService.attemptDeleteFnr(personId);
     }
 
     private void delete(
