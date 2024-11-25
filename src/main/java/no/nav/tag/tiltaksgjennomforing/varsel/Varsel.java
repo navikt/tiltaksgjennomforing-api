@@ -41,7 +41,7 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
     private AvtaleHendelseUtførtAvRolle utførtAv;
 
     private static String tilskuddsperiodeAvslåttTekst(Avtale avtale, String hendelseTypeTekst) {
-        TilskuddPeriode gjeldendePeriode = avtale.gjeldendeTilskuddsperiode();
+        TilskuddPeriode gjeldendePeriode = avtale.getGjeldendeTilskuddsperiode();
         String avslagÅrsaker = gjeldendePeriode.getAvslagsårsaker().stream()
                 .map(type -> type.getTekst().toLowerCase()).collect(Collectors.joining(", "));
         return hendelseTypeTekst
@@ -56,11 +56,11 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
         return switch (hendelseType) {
             case TILSKUDDSPERIODE_AVSLATT -> tilskuddsperiodeAvslåttTekst(avtale, hendelseType.getTekst());
             case TILSKUDDSPERIODE_GODKJENT -> {
-                if (avtale.gjeldendeTilskuddsperiode() != null
-                        && avtale.gjeldendeTilskuddsperiode().getStartDato() != null
-                        && avtale.gjeldendeTilskuddsperiode().getSluttDato() != null) {
+                if (avtale.getGjeldendeTilskuddsperiode() != null
+                        && avtale.getGjeldendeTilskuddsperiode().getStartDato() != null
+                        && avtale.getGjeldendeTilskuddsperiode().getSluttDato() != null) {
                     DateTimeFormatter norskDatoformat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-                    yield hendelseType.getTekst() + "\n(" + avtale.gjeldendeTilskuddsperiode().getStartDato().format(norskDatoformat) + " til " + avtale.gjeldendeTilskuddsperiode().getSluttDato().format(norskDatoformat) + ")";
+                    yield hendelseType.getTekst() + "\n(" + avtale.getGjeldendeTilskuddsperiode().getStartDato().format(norskDatoformat) + " til " + avtale.getGjeldendeTilskuddsperiode().getSluttDato().format(norskDatoformat) + ")";
                 } else {
                     yield hendelseType.getTekst();
                 }
