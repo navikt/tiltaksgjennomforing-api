@@ -68,4 +68,13 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilsk
         tilskuddsperioder.forEach(t -> t.setEnhetsnavn(gjeldendeInnhold.getEnhetsnavnKostnadssted()));
         return tilskuddsperioder;
     }
+
+    @Override
+    public Integer beregnTilskuddsbeløpForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
+        var vtaoSats = VTAO_SATS.hentGjeldendeSats(startDato);
+        if (vtaoSats == null) {
+            return null;
+        }
+        return LonnstilskuddAvtaleBeregningStrategy.beløpForPeriode(startDato, sluttDato, vtaoSats);
+    }
 }
