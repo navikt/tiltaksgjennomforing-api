@@ -966,6 +966,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     void forlengTilskuddsperioder(LocalDate gammelSluttDato, LocalDate nySluttDato) {
         hentBeregningStrategi().forleng(this, gammelSluttDato, nySluttDato);
+        setGjeldendeTilskuddsperiode(gjeldendeTilskuddsperiodeGammel());
     }
 
     private void annullerTilskuddsperioder() {
@@ -1228,8 +1229,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         }
         sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), nySluttDato);
         var gammelSluttDato = gjeldendeInnhold.getSluttDato();
-        AvtaleInnhold nyVersjon = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORLENGE);
-        gjeldendeInnhold = nyVersjon;
+        gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORLENGE);
         getGjeldendeInnhold().endreSluttDato(nySluttDato);
         sendTilbakeTilBeslutter();
         forlengTilskuddsperioder(gammelSluttDato, nySluttDato);
