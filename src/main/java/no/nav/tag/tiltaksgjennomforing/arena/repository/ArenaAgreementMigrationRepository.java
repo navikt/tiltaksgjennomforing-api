@@ -33,8 +33,8 @@ public interface ArenaAgreementMigrationRepository extends JpaRepository<ArenaAg
                 atd.datoTil,
                 ats.regDato
             )
-        FROM ArenaTiltakssak ats
-        LEFT JOIN ArenaTiltakgjennomforing atg ON ats.sakId = atg.sakId
+        FROM ArenaTiltakgjennomforing atg
+        LEFT JOIN ArenaTiltakssak ats ON atg.sakId = ats.sakId
         LEFT JOIN ArenaTiltakdeltaker atd ON atd.tiltakgjennomforingId = atg.tiltakgjennomforingId
         LEFT JOIN ArenaOrdsFnr aof ON atd.personId = aof.personId
         LEFT JOIN ArenaOrdsArbeidsgiver aoa ON atg.arbgivIdArrangor = aoa.arbgivIdArrangor
