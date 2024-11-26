@@ -27,16 +27,18 @@ public class ArenaEventProcessingJobService {
 
     @Transactional
     public List<ArenaEvent> getAndUpdateEvents() {
-        List<ArenaEvent> events = findEventsForProcessing();
-
-        return events
+        List<ArenaEvent> events = findEventsForProcessing()
             .stream()
             .map(arenaEvent ->
                 isMaxRetry(arenaEvent)
                     ? arenaEvent.toBuilder().status(ArenaEventStatus.FAILED).build()
                     : arenaEvent.toBuilder().retryCount(arenaEvent.getRetryCount() + 1).build()
             )
-            .peek(arenaEventRepository::save)
+            .toList();
+
+        arenaEventRepository.saveAll(events);
+
+        return events.stream()
             .filter(arenaEvent -> arenaEvent.getStatus() != ArenaEventStatus.FAILED)
             .toList();
     }

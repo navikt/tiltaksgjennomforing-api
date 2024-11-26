@@ -15,7 +15,7 @@ public interface ArenaEventRepository extends JpaRepository<ArenaEvent, UUID> {
     @Query("SELECT ae FROM ArenaEvent ae WHERE ae.status = 'CREATED' ORDER BY ae.operationTime ASC LIMIT 1000")
     List<ArenaEvent> findNewEventsForProcessing();
 
-    @Query("SELECT ae FROM ArenaEvent ae WHERE ae.status = 'RETRY' ORDER BY ae.retryCount, random() LIMIT 1000")
+    @Query("SELECT ae FROM ArenaEvent ae WHERE ae.status = 'RETRY' ORDER BY ae.retryCount ASC LIMIT 1000")
     List<ArenaEvent> findRetryEventsForProcessing();
 
 }
