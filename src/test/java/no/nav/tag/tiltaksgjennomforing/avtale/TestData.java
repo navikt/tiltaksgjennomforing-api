@@ -445,8 +445,20 @@ public class TestData {
         return avtale;
     }
 
+    public static Avtale enVtaoAvtaleGodkjentAvVeileder(){
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
+        setOppfølgingPåAvtale(avtale);
+        EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        return avtale;
+    }
+
     public static Avtale enVtaoAvtaleGodkjentAvArbeidsgiver() {
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
+        avtale.setGodkjentForEtterregistrering(true);
         setOppfølgingPåAvtale(avtale);
         EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
@@ -470,7 +482,9 @@ public class TestData {
         endreAvtale.setOppfolging("Telefon hver uke");
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
+        //endreAvtale.setStartDato((Now.localDate()).minusMonths(7).minusDays(1));
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(12).minusDays(1));
+        //endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(12).minusDays(1));
         endreAvtale.setStillingprosent(50);
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
         endreAvtale.setArbeidsgiverKontonummer("000111222");

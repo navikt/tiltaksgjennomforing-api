@@ -78,4 +78,24 @@ class BeslutterTest {
         );
         assertThat(avtale.erAvtaleInngått()).isFalse();
     }
+/*
+    @Test
+    public void godkjenne_flere_tilskuddsperioder() {
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        Beslutter beslutter = TestData.enBeslutter(avtale);
+        beslutter.godkjennFlereTilskuddsperiode(avtale, "4802");
+        assertThat(avtale.erAvtaleInngått()).isTrue();
+        beslutter.godkjennTilskuddsperiode(avtale, "4802");
+        assertThat(avtale.erAvtaleInngått()).isTrue();
+    }
+*/
+/*
+    @Test
+    public void kan_godkjenne_VTAO_tilskuddsperiode_seks_måneder_frem_i_tid() {
+        Avtale avtale = TestData.enVtaOInnsatsgruppeAvtaleMedAltUtfylt();
+        Beslutter beslutter = TestData.enBeslutter(avtale);
+        beslutter.godkjennTilskuddsperiode(avtale, "4802");
+        assertThat(avtale.erAvtaleInngått()).isTrue();
+    }
+    */
 }

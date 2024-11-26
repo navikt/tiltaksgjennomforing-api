@@ -28,6 +28,11 @@ public class Sats {
     public static final Sats VTAO_SATS = new Sats(List.of(
             new SatsPeriodeData(
                     6_808,
+                    LocalDate.of(2025, 1, 1),
+                    LocalDate.of(2025, 12, 31)
+            ),
+            new SatsPeriodeData(
+                    6_808,
                     LocalDate.of(2024, 1, 1),
                     LocalDate.of(2024, 12, 31)
             ), new SatsPeriodeData(

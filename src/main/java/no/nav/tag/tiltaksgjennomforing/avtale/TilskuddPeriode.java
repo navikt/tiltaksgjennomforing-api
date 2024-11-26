@@ -124,7 +124,7 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
         return startDatoMinus3Mnd.isBefore(TilskuddPeriode.JAN_2025) ? TilskuddPeriode.JAN_2025 : startDatoMinus3Mnd;
     }
     private boolean startDatoErI2025() {
-        return startDato.isAfter(JAN_2025.minusDays(1));
+        return /*startDato.isAfter(JAN_2025.minusDays(1))*/ false;
     }
 
     private static final LocalDate JAN_2025 = LocalDate.of(2025, 1, 1);
@@ -138,6 +138,10 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
         }
         if (løpenummer == 1) {
             return LocalDate.MIN;
+        }
+
+        if (avtale.getTiltakstype() == Tiltakstype.VTAO) {
+            return startDato.minusMonths(6);
         }
         return startDato.minusMonths(3);
     }

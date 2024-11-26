@@ -846,7 +846,32 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         }
         utforEndring(new TilskuddsperiodeGodkjent(this, gjeldendePeriode, beslutter, resendingsnummer));
     }
+/*
+    public void godkjennFlereTilskuddsperioder(NavIdent beslutter, String enhet, String[] perioder) {
+        sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
 
+        if (!erGodkjentAvVeileder()) {
+            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_KAN_KUN_BEHANDLES_VED_INNGAATT_AVTALE);
+        }
+        if (enhet == null || !enhet.matches("^\\d{4}$")) {
+            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ENHET_FIRE_SIFFER);
+        }
+        if (beslutter.equals(gjeldendeInnhold.getGodkjentAvNavIdent())) {
+            throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE);
+        }
+        TilskuddPeriode gjeldendePeriode = gjeldendeTilskuddsperiode();
+
+        // Sjekk om samme løpenummer allerede er godkjent og annullert. Trenger da en "ekstra" resendingsnummer
+        Integer resendingsnummer = finnResendingsNummer(gjeldendePeriode);
+        gjeldendePeriode.godkjenn(beslutter, enhet);
+        if (!erAvtaleInngått()) {
+            LocalDateTime tidspunkt = Now.localDateTime();
+            godkjennForBeslutter(tidspunkt, beslutter);
+            avtaleInngått(tidspunkt, Avtalerolle.BESLUTTER, beslutter);
+        }
+        utforEndring(new TilskuddsperiodeGodkjent(this, gjeldendePeriode, beslutter, resendingsnummer));
+    }
+*/
     private void godkjennForBeslutter(LocalDateTime tidspunkt, NavIdent beslutter) {
         gjeldendeInnhold.setGodkjentAvBeslutter(tidspunkt);
         gjeldendeInnhold.setGodkjentAvBeslutterNavIdent(beslutter);

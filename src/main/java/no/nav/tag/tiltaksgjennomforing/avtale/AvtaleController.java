@@ -826,6 +826,20 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
+    @PostMapping("/{avtaleId}/godkjenn-flere-tilskuddsperioder")
+    @Transactional
+    public void godkjennFlereTilskuddsperioder(
+            @PathVariable("avtaleId") UUID avtaleId,
+            @RequestBody GodkjennFlereTilskuddsperioderRequest godkjennFlereTilskuddsperioderRequest
+    ) {
+        Beslutter beslutter = innloggingService.hentBeslutter();
+        Avtale avtale = avtaleRepository.findById(avtaleId)
+                .map(this::sjekkArbeidstreningToggle)
+                .orElseThrow(RessursFinnesIkkeException::new);
+        beslutter.godkjennFlereTilskuddsperioder(avtale, godkjennFlereTilskuddsperioderRequest.getEnhet(), godkjennFlereTilskuddsperioderRequest.getTilskuddsperioderIder());
+        avtaleRepository.save(avtale);
+    }
+
     @AuditLogging("Oppdater avtale om arbeidsmarkedstiltak")
     @PostMapping("/{avtaleId}/set-om-avtalen-kan-etterregistreres")
     @Transactional

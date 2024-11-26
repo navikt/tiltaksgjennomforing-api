@@ -19,10 +19,7 @@ import org.springframework.data.domain.Sort;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -50,6 +47,18 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
             throw new FeilkodeException(Feilkode.ENHET_FINNES_IKKE);
         }
         avtale.godkjennTilskuddsperiode(getIdentifikator(), enhet);
+    }
+
+    public void godkjennFlereTilskuddsperioder(Avtale avtale, String enhet, List<String> ider) {
+        sjekkTilgang(avtale);
+        final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhet(enhet);
+
+        if (response == null) {
+            throw new FeilkodeException(Feilkode.ENHET_FINNES_IKKE);
+        }
+        for (String id : ider) {
+            avtale.godkjennTilskuddsperiode(getIdentifikator(), enhet);
+        }
     }
 
     public void avslåTilskuddsperiode(Avtale avtale, EnumSet<Avslagsårsak> avslagsårsaker, String avslagsforklaring) {
@@ -85,6 +94,10 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
         return ((int) ChronoUnit.DAYS.between(Now.localDate(), Now.localDate().plusMonths(3)));
     }
 
+    private Integer getPlussdatoVTAO() {
+        return ((int) ChronoUnit.DAYS.between(Now.localDate(), Now.localDate().plusMonths(6)));
+    }
+
     Page<BeslutterOversiktDTO> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
             AvtaleRepository avtaleRepository,
             AvtaleQueryParameter queryParametre,
@@ -107,7 +120,16 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
         BedriftNr bedriftNr = queryParametre.getBedriftNr();
         Integer avtaleNr = queryParametre.getAvtaleNr();
         String filtrertNavEnhet = queryParametre.getNavEnhet();
-        Integer plussDato = getPlussdato();
+        //Integer plussDato = getPlussdato();
+        Integer plussDato = tiltakstype == Tiltakstype.VTAO ? getPlussdatoVTAO() : getPlussdato();
+        /*
+        if(tiltakstype == Tiltakstype.VTAO){
+            plussDato = getPlussdatoVTAO();
+        }
+        else {
+            plussDato = getPlussdato();
+        }
+        */
         LocalDate decisiondate = Now.localDate().plusDays(plussDato);
 
         if (status == null) {
