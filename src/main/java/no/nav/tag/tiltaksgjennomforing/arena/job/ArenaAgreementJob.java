@@ -10,7 +10,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Component
 @Profile({ Miljø.DEV_FSS, Miljø.PROD_FSS })
@@ -26,7 +25,7 @@ public class ArenaAgreementJob {
         this.featureToggleService = featureToggleService;
     }
 
-    @Scheduled(fixedRate = 30, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(cron = "*/15 * 1-23 * * *")
     public void run() {
         if (!featureToggleService.isEnabled(FeatureToggle.ARENA_AVTALE_JOBB)) {
             return;

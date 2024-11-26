@@ -5,6 +5,8 @@ management.endpoints.web:
   base-path: /internal/actuator
 
 spring:
+  task:
+    scheduling.pool.size: 4
   cache:
     type: caffeine
   jpa:
