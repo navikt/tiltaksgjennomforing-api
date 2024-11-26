@@ -152,12 +152,7 @@ public class ArenaEventProcessingService {
     @ArenaEventLogging
     @Async("arenaThreadPoolExecutor")
     public void process(ArenaEvent arenaEvent) {
-        ArenaEvent processingEvent = arenaEvent.toBuilder()
-            .status(ArenaEventStatus.PROCESSING)
-            .build();
-
         log.info("Starter prosessering av arena-event");
-        arenaEventRepository.save(processingEvent);
 
         try {
             var result = switch (arenaEvent.getArenaTable()) {

@@ -34,7 +34,6 @@ public class ArenaEventProcessingJobService {
             .stream()
             .map(arenaEvent ->
                 arenaEvent.toBuilder()
-                    .status(ArenaEventStatus.PENDING)
                     .retryCount(arenaEvent.getRetryCount() + 1)
                     .build()
             )
