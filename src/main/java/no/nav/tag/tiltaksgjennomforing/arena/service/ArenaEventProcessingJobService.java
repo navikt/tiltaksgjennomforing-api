@@ -28,16 +28,16 @@ public class ArenaEventProcessingJobService {
     @Transactional
     public List<ArenaEvent> getAndUpdateEvents() {
         List<ArenaEvent> events = findEventsForProcessing();
-        failEventsThatHaveReachedMaxRetryCount(events);
 
         return events
             .stream()
             .map(arenaEvent ->
-                arenaEvent.toBuilder()
-                    .retryCount(arenaEvent.getRetryCount() + 1)
-                    .build()
+                isMaxRetry(arenaEvent)
+                    ? arenaEvent.toBuilder().status(ArenaEventStatus.FAILED).build()
+                    : arenaEvent.toBuilder().retryCount(arenaEvent.getRetryCount() + 1).build()
             )
             .peek(arenaEventRepository::save)
+            .filter(arenaEvent -> arenaEvent.getStatus() != ArenaEventStatus.FAILED)
             .toList();
     }
 
@@ -59,26 +59,16 @@ public class ArenaEventProcessingJobService {
         return events;
     }
 
-    private void failEventsThatHaveReachedMaxRetryCount(List<ArenaEvent> arenaEvents) {
-        arenaEvents
-            .stream()
-            .filter(this::isMaxRetry)
-            .map(arenaEvent ->
-                arenaEvent.toBuilder()
-                    .status(ArenaEventStatus.FAILED)
-                    .build()
-            )
-            .peek(arenaEvent ->
-                log.warn(
-                    "Arena-event {} har blitt forsøkt max antall ganger. Avbryter.",
-                    arenaEvent.getLogId()
-                )
-            )
-            .forEach(arenaEventRepository::save);
-    }
-
     private boolean isMaxRetry(ArenaEvent arenaEvent) {
-        return arenaEvent.getRetryCount() > MAX_RETRY_COUNT;
+        if (arenaEvent.getRetryCount() > MAX_RETRY_COUNT) {
+            log.warn(
+                "Arena-event {} har blitt forsøkt max antall ganger. Avbryter.",
+                arenaEvent.getLogId()
+            );
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }
