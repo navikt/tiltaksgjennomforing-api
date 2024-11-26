@@ -32,7 +32,7 @@ public class ArenaEventProcessingJobService {
             .map(arenaEvent ->
                 isMaxRetry(arenaEvent)
                     ? arenaEvent.toBuilder().status(ArenaEventStatus.FAILED).build()
-                    : arenaEvent.toBuilder().retryCount(arenaEvent.getRetryCount() + 1).build()
+                    : arenaEvent.toBuilder().status(ArenaEventStatus.PROCESSING).retryCount(arenaEvent.getRetryCount() + 1).build()
             )
             .toList();
 
