@@ -15,7 +15,7 @@ public interface ArenaAgreementMigrationRepository extends JpaRepository<ArenaAg
     @Query("""
         SELECT
             new ArenaAgreementAggregate(
-                ats.sakId,
+                atg.sakId,
                 atg.tiltakgjennomforingId,
                 atd.tiltakdeltakerId,
                 aof.personId,
@@ -31,10 +31,9 @@ public interface ArenaAgreementMigrationRepository extends JpaRepository<ArenaAg
                 atd.deltakerstatuskode,
                 atd.datoFra,
                 atd.datoTil,
-                ats.regDato
+                atg.regDato
             )
         FROM ArenaTiltakgjennomforing atg
-        LEFT JOIN ArenaTiltakssak ats ON atg.sakId = ats.sakId
         LEFT JOIN ArenaTiltakdeltaker atd ON atd.tiltakgjennomforingId = atg.tiltakgjennomforingId
         LEFT JOIN ArenaOrdsFnr aof ON atd.personId = aof.personId
         LEFT JOIN ArenaOrdsArbeidsgiver aoa ON atg.arbgivIdArrangor = aoa.arbgivIdArrangor

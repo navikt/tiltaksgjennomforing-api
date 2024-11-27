@@ -9,8 +9,7 @@ import java.util.Arrays;
 @AllArgsConstructor
 public enum ArenaTable {
     TILTAKDELTAKER("SIAMO.TILTAKDELTAKER"),
-    TILTAKGJENNOMFORING("SIAMO.TILTAKGJENNOMFORING"),
-    TILTAKSAK("SIAMO.SAK");
+    TILTAKGJENNOMFORING("SIAMO.TILTAKGJENNOMFORING");
 
     private final String table;
 

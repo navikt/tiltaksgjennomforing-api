@@ -9,7 +9,6 @@ import no.nav.tag.tiltaksgjennomforing.arena.configuration.ArenaKafkaProperties;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaKafkaMessage;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakdeltaker;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakgjennomforing;
-import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakssak;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Operation;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementAggregate;
 import no.nav.tag.tiltaksgjennomforing.arena.service.ArenaAgreementService;
@@ -57,22 +56,6 @@ public class ArenaSimulatorController {
 
             String id = tiltakgjennomforingEndret.getTiltakgjennomforingId().toString();
             arenaMockKafkaTemplate.send(arenaKafkaProperties.getTiltakgjennomforingEndretTopic(), id, melding);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getCause().getMessage());
-        }
-    }
-
-    @PostMapping("/tiltakssak-endret")
-    public ResponseEntity<?> tiltakssakEndret(
-        @RequestBody ArenaKafkaMessage melding
-    ) {
-        try {
-            JsonNode payload = Operation.DELETE.getOperation().equals(melding.opType()) ? melding.before() : melding.after();
-            ArenaTiltakssak tiltaksakEndret =  objectMapper.treeToValue(payload, ArenaTiltakssak.class);
-
-            String id = tiltaksakEndret.getSakId().toString();
-            arenaMockKafkaTemplate.send(arenaKafkaProperties.getTiltakssakEndretTopic(), id, melding);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getCause().getMessage());
