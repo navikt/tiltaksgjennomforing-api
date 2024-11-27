@@ -13,6 +13,7 @@ import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaEventRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,6 +42,7 @@ public class ArenaEventProcessingService {
         this.tiltakdeltakerArenaEventService = tiltakdeltakerArenaEventService;
     }
 
+    @Transactional
     @Async("arenaThreadPoolExecutor")
     public void create(String key, String value) {
         try {
@@ -146,6 +148,7 @@ public class ArenaEventProcessingService {
         }
     }
 
+    @Transactional
     @ArenaEventLogging
     @Async("arenaThreadPoolExecutor")
     public void process(ArenaEvent arenaEvent) {
