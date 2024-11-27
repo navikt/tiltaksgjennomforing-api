@@ -42,7 +42,6 @@ public class ArenaEventProcessingService {
         this.tiltakdeltakerArenaEventService = tiltakdeltakerArenaEventService;
     }
 
-    @Transactional
     @Async("arenaThreadPoolExecutor")
     public void create(String key, String value) {
         try {
