@@ -27,20 +27,17 @@ public class ArenaEventProcessingService {
     private final ObjectMapper objectMapper;
     private final ArenaEventRepository arenaEventRepository;
     private final TiltakgjennomforingArenaEventProcessingService tiltakgjennomforingArenaEventService;
-    private final TiltaksakArenaEventProcessingService tiltaksakArenaEventService;
     private final TiltakdeltakerArenaEventProcessingService tiltakdeltakerArenaEventService;
 
     public ArenaEventProcessingService(
         ObjectMapper objectMapper,
         ArenaEventRepository arenaEventRepository,
         TiltakgjennomforingArenaEventProcessingService tiltakgjennomforingArenaEventService,
-        TiltaksakArenaEventProcessingService tiltaksakArenaEventService,
         TiltakdeltakerArenaEventProcessingService tiltakdeltakerArenaEventService
     ) {
         this.objectMapper = objectMapper;
         this.arenaEventRepository = arenaEventRepository;
         this.tiltakgjennomforingArenaEventService = tiltakgjennomforingArenaEventService;
-        this.tiltaksakArenaEventService = tiltaksakArenaEventService;
         this.tiltakdeltakerArenaEventService = tiltakdeltakerArenaEventService;
     }
 
@@ -157,7 +154,6 @@ public class ArenaEventProcessingService {
         try {
             var result = switch (arenaEvent.getArenaTable()) {
                 case TILTAKGJENNOMFORING -> tiltakgjennomforingArenaEventService.process(arenaEvent);
-                case TILTAKSAK -> tiltaksakArenaEventService.process(arenaEvent);
                 case TILTAKDELTAKER -> tiltakdeltakerArenaEventService.process(arenaEvent);
             };
 

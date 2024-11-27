@@ -20,10 +20,9 @@ public interface ArenaEventRepository extends JpaRepository<ArenaEvent, UUID> {
         FROM ArenaEvent ae
         WHERE ae.status = 'RETRY'
         ORDER BY (CASE
-            WHEN ae.arenaTable = 'SIAMO.SAK' THEN 0
-            WHEN ae.arenaTable = 'SIAMO.TILTAKGJENNOMFORING' THEN 1
-            WHEN ae.arenaTable = 'SIAMO.TILTAKDELTAKER' THEN 2
-            ELSE 3
+            WHEN ae.arenaTable = 'SIAMO.TILTAKGJENNOMFORING' THEN 0
+            WHEN ae.arenaTable = 'SIAMO.TILTAKDELTAKER' THEN 1
+            ELSE 2
         END) ASC,
         ae.retryCount ASC
         LIMIT 1000

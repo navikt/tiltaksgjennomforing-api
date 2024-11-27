@@ -10,5 +10,4 @@ import org.springframework.context.annotation.Configuration;
 public class ArenaKafkaProperties {
     private String tiltakdeltakerEndretTopic;
     private String tiltakgjennomforingEndretTopic;
-    private String tiltakssakEndretTopic;
 }
