@@ -48,13 +48,7 @@ public class TiltakdeltakerArenaEventProcessingService implements IArenaEventPro
 
         if (isTiltakgjennomforingIgnored) {
             log.info("Arena-event ignorert fordi tilhørende tiltakgjennomføring er ignorert");
-
-            delete(
-                tiltakdeltaker,
-                () -> log.info("Sletter tidligere håndtert deltaker som nå skal ignoreres")
-            );
-            deleteFnr(tiltakdeltaker.getPersonId());
-
+            delete(tiltakdeltaker, () -> log.info("Sletter tidligere håndtert deltaker som nå skal ignoreres"));
             return ArenaEventStatus.IGNORED;
         }
 
@@ -65,7 +59,6 @@ public class TiltakdeltakerArenaEventProcessingService implements IArenaEventPro
 
         if (Operation.DELETE == arenaEvent.getOperation()) {
             delete(tiltakdeltaker, () -> log.info("Arena-event har operasjon DELETE og blir slettes"));
-            deleteFnr(tiltakdeltaker.getPersonId());
             return ArenaEventStatus.DONE;
         }
 
@@ -82,14 +75,6 @@ public class TiltakdeltakerArenaEventProcessingService implements IArenaEventPro
         return ArenaEventStatus.DONE;
     }
 
-    private void deleteFnr(Integer personId) {
-        if (!tiltakdeltakerRepository.findByPersonId(personId).isEmpty()) {
-            log.info("Person {} er fortsatt er i bruk", personId);
-            return;
-        }
-        ordsService.attemptDeleteFnr(personId);
-    }
-
     private void delete(
         ArenaTiltakdeltaker arenaTiltakdeltaker,
         Runnable onBeforeDelete
@@ -100,7 +85,16 @@ public class TiltakdeltakerArenaEventProcessingService implements IArenaEventPro
                 (existingTiltaksak) -> {
                     onBeforeDelete.run();
                     tiltakdeltakerRepository.delete(existingTiltaksak);
+                    deleteFnr(arenaTiltakdeltaker.getPersonId());
                 }
             );
+    }
+
+    private void deleteFnr(Integer personId) {
+        if (!tiltakdeltakerRepository.findByPersonId(personId).isEmpty()) {
+            log.info("Person {} er fortsatt er i bruk", personId);
+            return;
+        }
+        ordsService.attemptDeleteFnr(personId);
     }
 }

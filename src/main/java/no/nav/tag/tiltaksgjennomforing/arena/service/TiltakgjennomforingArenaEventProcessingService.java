@@ -33,10 +33,7 @@ public class TiltakgjennomforingArenaEventProcessingService implements IArenaEve
 
         if (!tiltakgjennomforing.isArbeidstrening()) {
             log.info("Arena-event ignorert fordi den ikke er arbeidstrening");
-            delete(
-                tiltakgjennomforing,
-                () -> log.info("Sletter tidligere håndtert tiltak som nå skal ignoreres")
-            );
+            delete(tiltakgjennomforing, () -> log.info("Sletter tidligere håndtert tiltak som nå skal ignoreres"));
             return ArenaEventStatus.IGNORED;
         }
 
@@ -47,7 +44,6 @@ public class TiltakgjennomforingArenaEventProcessingService implements IArenaEve
 
         if (Operation.DELETE == arenaEvent.getOperation()) {
             delete(tiltakgjennomforing, () -> log.info("Arena-event har operasjon DELETE og slettet"));
-            deleteArbeidsgiver(tiltakgjennomforing.getArbgivIdArrangor());
             return ArenaEventStatus.DONE;
         }
 
@@ -56,14 +52,6 @@ public class TiltakgjennomforingArenaEventProcessingService implements IArenaEve
 
         log.info("Arena-event er ferdig prossesert");
         return ArenaEventStatus.DONE;
-    }
-
-    private void deleteArbeidsgiver(Integer arbeidsgiverId) {
-        if (!tiltakgjennomforingRepository.findByArbgivIdArrangor(arbeidsgiverId).isEmpty()) {
-            log.info("Arbeidsgiver {} er fortsatt er i bruk", arbeidsgiverId);
-            return;
-        }
-        ordsService.attemptDeleteArbeidsgiver(arbeidsgiverId);
     }
 
     private void delete(
@@ -76,7 +64,16 @@ public class TiltakgjennomforingArenaEventProcessingService implements IArenaEve
                 (existingTiltaksak) -> {
                     onBeforeDelete.run();
                     tiltakgjennomforingRepository.delete(existingTiltaksak);
+                    deleteArbeidsgiver(arenaTiltakgjennomforing.getArbgivIdArrangor());
                 }
             );
+    }
+
+    private void deleteArbeidsgiver(Integer arbeidsgiverId) {
+        if (!tiltakgjennomforingRepository.findByArbgivIdArrangor(arbeidsgiverId).isEmpty()) {
+            log.info("Arbeidsgiver {} er fortsatt er i bruk", arbeidsgiverId);
+            return;
+        }
+        ordsService.attemptDeleteArbeidsgiver(arbeidsgiverId);
     }
 }
