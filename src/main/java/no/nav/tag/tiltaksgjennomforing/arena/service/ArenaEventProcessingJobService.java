@@ -57,11 +57,11 @@ public class ArenaEventProcessingJobService {
         List<ArenaEvent> events = arenaEventRepository.findByStatus(ArenaEventStatus.CREATED, Limit.of(1000));
 
         if (events.isEmpty() || events.size() <= 100) {
-            events.addAll(arenaEventRepository.findByStatusAndArenaTable(ArenaEventStatus.RETRY, ArenaTable.TILTAKDELTAKER.getTable(), Limit.of(1000)));
+            events.addAll(arenaEventRepository.findByStatusAndArenaTable(ArenaEventStatus.RETRY, ArenaTable.TILTAKGJENNOMFORING.getTable(), Limit.of(1000)));
         }
 
         if (events.isEmpty() || events.size() <= 100) {
-            events.addAll(arenaEventRepository.findByStatusAndArenaTable(ArenaEventStatus.RETRY, ArenaTable.TILTAKGJENNOMFORING.getTable(), Limit.of(1000)));
+            events.addAll(arenaEventRepository.findByStatusAndArenaTable(ArenaEventStatus.RETRY, ArenaTable.TILTAKDELTAKER.getTable(), Limit.of(1000)));
         }
 
         return events;
