@@ -1,8 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.arena.repository;
 
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEvent;
+import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEventStatus;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,21 +13,8 @@ public interface ArenaEventRepository extends JpaRepository<ArenaEvent, UUID> {
 
     Optional<ArenaEvent> findByArenaIdAndArenaTable(String arenaId, String arenaTable);
 
-    @Query("SELECT ae FROM ArenaEvent ae WHERE ae.status = 'CREATED' ORDER BY ae.operationTime ASC LIMIT 1000")
-    List<ArenaEvent> findNewEventsForProcessing();
+    List<ArenaEvent> findByStatus(ArenaEventStatus status, Limit limit);
 
-    @Query("""
-        SELECT ae
-        FROM ArenaEvent ae
-        WHERE ae.status = 'RETRY'
-        ORDER BY (CASE
-            WHEN ae.arenaTable = 'SIAMO.TILTAKGJENNOMFORING' THEN 0
-            WHEN ae.arenaTable = 'SIAMO.TILTAKDELTAKER' THEN 1
-            ELSE 2
-        END) ASC,
-        ae.retryCount ASC
-        LIMIT 1000
-    """)
-    List<ArenaEvent> findRetryEventsForProcessing();
+    List<ArenaEvent> findByStatusAndArenaTable(ArenaEventStatus status, String arenaTable, Limit limit);
 
 }
