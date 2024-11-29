@@ -30,15 +30,19 @@ public class ArenaAgreementService {
     public List<ArenaAgreementAggregate> getArenaAgreementsForProcessing() {
         List<ArenaAgreementAggregate> agreementAggregates = arenaAgreementMigrationRepository.findMigrationAgreementAggregates();
 
-        agreementAggregates.forEach(aggregate -> {
-            ArenaAgreementMigration migration = ArenaAgreementMigration.builder()
-                    .tiltakgjennomforingId(aggregate.getTiltakgjennomforingId())
-                    .status(ArenaAgreementMigrationStatus.PENDING)
-                    .modified(LocalDateTime.now())
-                    .build();
-
-            arenaAgreementMigrationRepository.save(migration);
-        });
+        arenaAgreementMigrationRepository.saveAll(
+            arenaAgreementMigrationRepository
+                .findMigrationAgreementAggregates()
+                .stream()
+                .map(aggregate ->
+                    ArenaAgreementMigration.builder()
+                        .tiltakgjennomforingId(aggregate.getTiltakgjennomforingId())
+                        .status(ArenaAgreementMigrationStatus.PROCESSING)
+                        .modified(LocalDateTime.now())
+                        .build()
+                )
+                .toList()
+        );
 
         return agreementAggregates;
     }

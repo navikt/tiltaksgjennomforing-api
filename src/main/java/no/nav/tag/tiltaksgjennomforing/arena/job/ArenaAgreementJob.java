@@ -5,6 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementAggr
 import no.nav.tag.tiltaksgjennomforing.arena.service.ArenaAgreementService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
+import no.nav.tag.tiltaksgjennomforing.leader.LeaderPodCheck;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -16,18 +17,21 @@ import java.util.List;
 public class ArenaAgreementJob {
     private final ArenaAgreementService arenaAgreementService;
     private final FeatureToggleService featureToggleService;
+    private final LeaderPodCheck leaderPodCheck;
 
     public ArenaAgreementJob(
             ArenaAgreementService arenaAgreementService,
-            FeatureToggleService featureToggleService
+            FeatureToggleService featureToggleService,
+            LeaderPodCheck leaderPodCheck
     ) {
         this.arenaAgreementService = arenaAgreementService;
         this.featureToggleService = featureToggleService;
+        this.leaderPodCheck = leaderPodCheck;
     }
 
     @Scheduled(cron = "*/15 * 1-23 * * *")
     public void run() {
-        if (!featureToggleService.isEnabled(FeatureToggle.ARENA_AVTALE_JOBB)) {
+        if (!leaderPodCheck.isLeaderPod() || !featureToggleService.isEnabled(FeatureToggle.ARENA_AVTALE_JOBB)) {
             return;
         }
 

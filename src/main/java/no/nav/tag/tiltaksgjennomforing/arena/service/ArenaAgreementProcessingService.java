@@ -79,7 +79,6 @@ public class ArenaAgreementProcessingService {
     public void process(ArenaAgreementAggregate agreementAggregate) {
         UUID eksternId = agreementAggregate.getEksternIdAsUuid().orElse(null);
         Integer tiltaksgjennomforingId = agreementAggregate.getTiltakgjennomforingId();
-        updateMigrationStatus(tiltaksgjennomforingId, ArenaAgreementMigrationStatus.PROCESSING, null, null, null);
 
         try {
             ArenaMigrationProcessResult result = agreementAggregate.getEksternIdAsUuid()

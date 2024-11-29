@@ -1,17 +1,14 @@
 package no.nav.tag.tiltaksgjennomforing.arena.repository;
 
-import jakarta.persistence.LockModeType;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementAggregate;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigration;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
 public interface ArenaAgreementMigrationRepository extends JpaRepository<ArenaAgreementMigration, Integer> {
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
         SELECT
             new ArenaAgreementAggregate(
