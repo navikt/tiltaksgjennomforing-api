@@ -966,7 +966,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     void forlengTilskuddsperioder(LocalDate gammelSluttDato, LocalDate nySluttDato) {
         hentBeregningStrategi().forleng(this, gammelSluttDato, nySluttDato);
-        setGjeldendeTilskuddsperiode(gjeldendeTilskuddsperiodeGammel());
+        setGjeldendeTilskuddsperiode(finnTilskuddsperiodeGammel());
     }
 
     private void annullerTilskuddsperioder() {
