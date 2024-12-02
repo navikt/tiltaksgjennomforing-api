@@ -91,8 +91,12 @@ public class TiltakdeltakerArenaEventProcessingService implements IArenaEventPro
     }
 
     private void deleteFnr(Integer personId) {
+        if (personId == null) {
+            return;
+        }
+
         if (!tiltakdeltakerRepository.findByPersonId(personId).isEmpty()) {
-            log.info("Person {} er fortsatt er i bruk", personId);
+            log.info("Person {} er fortsatt i bruk", personId);
             return;
         }
         ordsService.attemptDeleteFnr(personId);

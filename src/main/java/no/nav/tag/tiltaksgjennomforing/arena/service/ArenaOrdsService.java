@@ -68,7 +68,7 @@ public class ArenaOrdsService {
             log.info("Sletter fnr med id {}", personId);
             fnrRepository.deleteById(personId);
         } catch (DataIntegrityViolationException e) {
-            log.info("Person {} er fortsatt er i bruk", personId);
+            log.info("Person {} er fortsatt i bruk", personId);
         }
     }
 
@@ -111,7 +111,7 @@ public class ArenaOrdsService {
             log.info("Sletter arbeidsgiver med id {}", arbeidsgiverId);
             arbeidsgiverRepository.deleteById(arbeidsgiverId);
         } catch (DataIntegrityViolationException e) {
-            log.info("Arbeidsgiver {} er fortsatt er i bruk", arbeidsgiverId);
+            log.info("Arbeidsgiver {} er fortsatt i bruk", arbeidsgiverId);
         }
     }
 }

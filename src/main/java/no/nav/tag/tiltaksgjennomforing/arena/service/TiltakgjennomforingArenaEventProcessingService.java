@@ -70,8 +70,12 @@ public class TiltakgjennomforingArenaEventProcessingService implements IArenaEve
     }
 
     private void deleteArbeidsgiver(Integer arbeidsgiverId) {
+        if (arbeidsgiverId == null) {
+            return;
+        }
+
         if (!tiltakgjennomforingRepository.findByArbgivIdArrangor(arbeidsgiverId).isEmpty()) {
-            log.info("Arbeidsgiver {} er fortsatt er i bruk", arbeidsgiverId);
+            log.info("Arbeidsgiver {} er fortsatt i bruk", arbeidsgiverId);
             return;
         }
         ordsService.attemptDeleteArbeidsgiver(arbeidsgiverId);
