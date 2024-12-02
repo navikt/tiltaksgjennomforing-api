@@ -20,7 +20,7 @@ class GjeldendeTilskuddsperiodeJobb {
         this.gjeldendeTilskuddsperiodeJobbWorker = gjeldendeTilskuddsperiodeJobbWorker;
     }
 
-    @Scheduled(cron = "0 15/15 0-3 * * *")
+    @Scheduled(cron = "0 5/5 0-4 * * *")
     public void settGjeldendeTilskuddsperiodeJobb() {
         gjeldendeTilskuddsperiodeJobbWorker.settGjeldendeTilskuddsperiodeJobb();
     }
