@@ -47,7 +47,6 @@ public class TiltakgjennomforingArenaEventProcessingService implements IArenaEve
             return ArenaEventStatus.DONE;
         }
 
-        ordsService.fetchArbeidsgiver(tiltakgjennomforing.getArbgivIdArrangor());
         tiltakgjennomforingRepository.save(tiltakgjennomforing);
 
         log.info("Arena-event er ferdig prossesert");
