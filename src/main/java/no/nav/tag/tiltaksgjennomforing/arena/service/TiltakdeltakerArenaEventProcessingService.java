@@ -39,15 +39,15 @@ public class TiltakdeltakerArenaEventProcessingService implements IArenaEventPro
     public ArenaEventStatus process(ArenaEvent arenaEvent) throws JsonProcessingException {
         ArenaTiltakdeltaker tiltakdeltaker = this.objectMapper.treeToValue(arenaEvent.getPayload(), ArenaTiltakdeltaker.class);
 
-        boolean isTiltakgjennomforingIgnored = eventRepository.findByArenaIdAndArenaTable(
-            tiltakdeltaker.getTiltakgjennomforingId().toString(),
-            ArenaTable.TILTAKGJENNOMFORING.getTable()
-        )
-            .map((tiltak) -> ArenaEventStatus.IGNORED == tiltak.getStatus())
+        boolean isTiltakgjennomforingIgnoredOrDeleted = eventRepository.findByArenaIdAndArenaTable(
+                tiltakdeltaker.getTiltakgjennomforingId().toString(),
+                ArenaTable.TILTAKGJENNOMFORING.getTable()
+            )
+            .map((tiltak) -> ArenaEventStatus.IGNORED == tiltak.getStatus() || Operation.DELETE == tiltak.getOperation())
             .orElse(false);
 
-        if (isTiltakgjennomforingIgnored) {
-            log.info("Arena-event ignorert fordi tilhørende tiltakgjennomføring er ignorert");
+        if (isTiltakgjennomforingIgnoredOrDeleted) {
+            log.info("Arena-event ignorert fordi tilhørende tiltakgjennomføring er ignorert eller slettet");
             delete(tiltakdeltaker, () -> log.info("Sletter tidligere håndtert deltaker som nå skal ignoreres"));
             return ArenaEventStatus.IGNORED;
         }
