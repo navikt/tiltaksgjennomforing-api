@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.arena.configuration.ArenaKafkaProperties;
 import no.nav.tag.tiltaksgjennomforing.arena.service.ArenaEventProcessingService;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.context.annotation.Profile;
@@ -31,17 +30,13 @@ public class ArenaKafkaConsumer {
 
     @KafkaListener(topics = "${tiltaksgjennomforing.arena.kafka.tiltakgjennomforing-endret-topic}", containerFactory = "arenaContainerFactory")
     public void arenaTiltakgjennomforingEndret(ConsumerRecord<String, String> record) {
-        if (featureToggleService.isEnabled(FeatureToggle.ARENA_KAFKA)) {
-            log.info("Mottatt melding for {}: {}", arenaKafkaProperties.getTiltakgjennomforingEndretTopic(), record.key());
-            arenaEventProcessingService.create(record.key(), record.value());
-        }
+        log.info("Mottatt melding for {}: {}", arenaKafkaProperties.getTiltakgjennomforingEndretTopic(), record.key());
+        arenaEventProcessingService.create(record.key(), record.value());
     }
 
     @KafkaListener(topics = "${tiltaksgjennomforing.arena.kafka.tiltakdeltaker-endret-topic}", containerFactory = "arenaContainerFactory")
     public void arenaTiltakdeltakerEndret(ConsumerRecord<String, String> record) {
-        if (featureToggleService.isEnabled(FeatureToggle.ARENA_KAFKA)) {
-            log.info("Mottatt melding for {}: {}", arenaKafkaProperties.getTiltakdeltakerEndretTopic(), record.key());
-            arenaEventProcessingService.create(record.key(), record.value());
-        }
+        log.info("Mottatt melding for {}: {}", arenaKafkaProperties.getTiltakdeltakerEndretTopic(), record.key());
+        arenaEventProcessingService.create(record.key(), record.value());
     }
 }

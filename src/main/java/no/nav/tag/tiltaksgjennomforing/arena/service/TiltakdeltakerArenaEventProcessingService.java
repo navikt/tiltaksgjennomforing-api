@@ -68,7 +68,6 @@ public class TiltakdeltakerArenaEventProcessingService implements IArenaEventPro
             return ArenaEventStatus.RETRY;
         }
 
-        ordsService.fetchPerson(tiltakdeltaker.getPersonId());
         tiltakdeltakerRepository.save(tiltakdeltaker);
 
         log.info("Arena-event er ferdig prossesert");
