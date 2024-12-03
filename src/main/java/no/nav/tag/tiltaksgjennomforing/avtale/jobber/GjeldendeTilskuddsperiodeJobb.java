@@ -2,65 +2,28 @@ package no.nav.tag.tiltaksgjennomforing.avtale.jobber;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.avtale.service.GjeldendeTilskuddsperiodeJobbService;
 import no.nav.tag.tiltaksgjennomforing.leader.LeaderPodCheck;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.domain.Limit;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Component
 @Profile({Miljø.DEV_FSS, Miljø.PROD_FSS})
 class GjeldendeTilskuddsperiodeJobb {
-    private final GjeldendeTilskuddsperiodeJobbWorker gjeldendeTilskuddsperiodeJobbWorker;
+    private final GjeldendeTilskuddsperiodeJobbService gjeldendeTilskuddsperiodeJobbService;
     private final LeaderPodCheck leaderPodCheck;
 
-    public GjeldendeTilskuddsperiodeJobb(GjeldendeTilskuddsperiodeJobbWorker gjeldendeTilskuddsperiodeJobbWorker, LeaderPodCheck leaderPodCheck) {
-        this.gjeldendeTilskuddsperiodeJobbWorker = gjeldendeTilskuddsperiodeJobbWorker;
+    public GjeldendeTilskuddsperiodeJobb(GjeldendeTilskuddsperiodeJobbService gjeldendeTilskuddsperiodeJobbService, LeaderPodCheck leaderPodCheck) {
+        this.gjeldendeTilskuddsperiodeJobbService = gjeldendeTilskuddsperiodeJobbService;
         this.leaderPodCheck = leaderPodCheck;
     }
 
-    @Scheduled(cron = "0 5/5 0-4 * * *")
+    @Scheduled(cron = "0 5/5 1-4 * * *")
     public void settGjeldendeTilskuddsperiodeJobb() {
         if (leaderPodCheck.isLeaderPod()) {
-            gjeldendeTilskuddsperiodeJobbWorker.settGjeldendeTilskuddsperiodeJobb();
+            gjeldendeTilskuddsperiodeJobbService.settGjeldendeTilskuddsperiodeJobb();
         }
-    }
-}
-
-@Slf4j
-@Component
-class GjeldendeTilskuddsperiodeJobbWorker {
-    private final AvtaleRepository avtaleRepository;
-
-    public GjeldendeTilskuddsperiodeJobbWorker(AvtaleRepository avtaleRepository, LeaderPodCheck leaderPodCheck) {
-        this.avtaleRepository = avtaleRepository;
-    }
-
-    @Transactional
-    public void settGjeldendeTilskuddsperiodeJobb() {
-        log.info("Starter jobb for å oppdatere gjeldedeTilskuddsperiode-felt");
-        var avtaler = avtaleRepository.findAllByGjeldendeTilskuddsperiodeIsNullAndTiltakstypeIsNot(
-                Tiltakstype.ARBEIDSTRENING,
-                Limit.of(100)
-        );
-        if (avtaler.isEmpty()) {
-            log.info("Ingen avtaler å behandle");
-            return;
-        }
-        log.info("Fant {} avtaler å behandle...", avtaler.size());
-        avtaler.forEach(avtale -> {
-            var nyGjeldende = avtale.finnGjeldendeTilskuddsperiode();
-            if (nyGjeldende == null) {
-                log.warn("Fant ikke en gjeldende tilskuddsperiode! Har ikke avtalen aktive tilskuddsperioder? (avtale-id: {})", avtale.getId());
-            }
-            // TODO: Utfør!
-            //avtale.setGjeldendeTilskuddsperiode(nyGjeldende);
-        });
-        //avtaleRepository.saveAll(avtaler);
-        log.info("Dry-run over!");
     }
 }
