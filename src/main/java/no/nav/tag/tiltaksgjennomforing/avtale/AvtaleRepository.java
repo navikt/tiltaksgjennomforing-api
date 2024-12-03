@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import io.micrometer.core.annotation.Timed;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -61,6 +62,8 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     List<Avtale> findAll();
 
     List<Avtale> findAllByGjeldendeInnhold_AvtaleInngåttNotNull();
+
+    List<Avtale> findAllByGjeldendeTilskuddsperiodeIsNullAndTiltakstypeIsIn(List<Tiltakstype> tiltakstyper, Limit limit);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Override
