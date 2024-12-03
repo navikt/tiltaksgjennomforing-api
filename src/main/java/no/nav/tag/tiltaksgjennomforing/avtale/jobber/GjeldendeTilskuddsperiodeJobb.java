@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.leader.LeaderPodCheck;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Limit;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -15,14 +16,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Profile({Miljø.DEV_FSS, Miljø.PROD_FSS})
 class GjeldendeTilskuddsperiodeJobb {
     private final GjeldendeTilskuddsperiodeJobbWorker gjeldendeTilskuddsperiodeJobbWorker;
+    private final LeaderPodCheck leaderPodCheck;
 
-    public GjeldendeTilskuddsperiodeJobb(GjeldendeTilskuddsperiodeJobbWorker gjeldendeTilskuddsperiodeJobbWorker) {
+    public GjeldendeTilskuddsperiodeJobb(GjeldendeTilskuddsperiodeJobbWorker gjeldendeTilskuddsperiodeJobbWorker, LeaderPodCheck leaderPodCheck) {
         this.gjeldendeTilskuddsperiodeJobbWorker = gjeldendeTilskuddsperiodeJobbWorker;
+        this.leaderPodCheck = leaderPodCheck;
     }
 
     @Scheduled(cron = "0 5/5 0-4 * * *")
     public void settGjeldendeTilskuddsperiodeJobb() {
-        gjeldendeTilskuddsperiodeJobbWorker.settGjeldendeTilskuddsperiodeJobb();
+        if (leaderPodCheck.isLeaderPod()) {
+            gjeldendeTilskuddsperiodeJobbWorker.settGjeldendeTilskuddsperiodeJobb();
+        }
     }
 }
 
@@ -31,7 +36,7 @@ class GjeldendeTilskuddsperiodeJobb {
 class GjeldendeTilskuddsperiodeJobbWorker {
     private final AvtaleRepository avtaleRepository;
 
-    public GjeldendeTilskuddsperiodeJobbWorker(AvtaleRepository avtaleRepository) {
+    public GjeldendeTilskuddsperiodeJobbWorker(AvtaleRepository avtaleRepository, LeaderPodCheck leaderPodCheck) {
         this.avtaleRepository = avtaleRepository;
     }
 
