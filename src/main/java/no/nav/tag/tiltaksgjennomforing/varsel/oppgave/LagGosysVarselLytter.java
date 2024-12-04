@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.oppgave;
 
-import lombok.RequiredArgsConstructor;
+import com.github.kagkarlsson.scheduler.Scheduler;
+import com.github.kagkarlsson.scheduler.task.Task;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
@@ -9,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArena;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
@@ -20,19 +22,29 @@ import static java.lang.String.format;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 class LagGosysVarselLytter {
-    private final OppgaveVarselService oppgaveVarselService;
+
     private final PersondataService persondataService;
+    private final Task<OppgaveRequest> opprettOppgave;
+    private final Scheduler scheduler;
 
     private static final DateTimeFormatter NORSK_DATO = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
             .withLocale(Locale.forLanguageTag("nb-NO"));
-
     protected final static String GOSYS_OPPRETTET_AVTALE_BESKRIVELSE = "Avtale er opprettet av arbeidsgiver på tiltak %s. Se avtalen under filteret 'Ufordelte' i https://tiltaksgjennomforing.intern.nav.no/tiltaksgjennomforing";
     protected final static String GOSYS_AVTALE_HENTET_FRA_ARENA = "Avtale hentet fra Arena på tiltak %s. Se avtalen her: https://tiltaksgjennomforing.intern.nav.no/tiltaksgjennomforing/avtale/%s";
     protected final static String VTAO_INNGÅTT = "Brukeren har fått innvilget tiltaksplass og har startet på varig tilrettelagt arbeid i skjermet/ordinær bedrift %s.";
 
-    private void varsleGosysOmOpprettetAvtale(Avtale avtale) {
+    public LagGosysVarselLytter(
+            PersondataService persondataService,
+            Scheduler scheduler,
+            Task<OppgaveRequest> opprettOppgave
+    ) {
+        this.persondataService = persondataService;
+        this.scheduler = scheduler;
+        this.opprettOppgave = opprettOppgave;
+    }
+
+    private void opprettGosysOppgaveOmOpprettetAvtale(Avtale avtale) {
         final String aktørid = persondataService.hentAktørId(avtale.getDeltakerFnr());
         Tiltakstype tiltakstype = avtale.getTiltakstype();
 
@@ -42,46 +54,47 @@ class LagGosysVarselLytter {
         } else {
             beskrivelse = format(GOSYS_OPPRETTET_AVTALE_BESKRIVELSE, tiltakstype.getBeskrivelse());
         }
-        try {
-            oppgaveVarselService.opprettOppgave(new OppgaveRequest(aktørid, GosysTema.TILTAK, GosysBehandlingstype.SOKNAD, tiltakstype, beskrivelse));
-            log.info("Opprettet gosys-oppgave for 'avtale opprettet' (avtaleid = {})", avtale.getId());
-        } catch (Exception e) {
-            log.error("Klarte ikke opprette oppgave for 'avtale opprettet' (avtaleid = {})", avtale.getId(), e);
-            throw e;
-        }
+        scheduler.schedule(
+                opprettOppgave.instance(format("GOSYS_AVTALE_OPPRETTET_%s", avtale.getId()),
+                        new OppgaveRequest(
+                                aktørid,
+                                GosysTema.TILTAK,
+                                GosysBehandlingstype.SOKNAD,
+                                tiltakstype,
+                                beskrivelse
+                        )),
+                Now.instant()
+        );
     }
 
-    private void varsleGosysOmInngaattVTAOAvtale(Avtale avtale) {
+    private void opprettGosysOppgaveOmInngaattVTAOAvtale(Avtale avtale) {
         final String aktørid = persondataService.hentAktørId(avtale.getDeltakerFnr());
-        try {
-            oppgaveVarselService.opprettOppgave(new OppgaveRequest(
-                    aktørid,
-                    GosysTema.UFORETRYGD,
-                    GosysBehandlingstype.INGEN,
-                    null,
-                    format(VTAO_INNGÅTT, NORSK_DATO.format(avtale.getGjeldendeInnhold().getStartDato())))
-            );
-            log.info("Opprettet oppgave for 'vtao-avtale inngått' (avtaleid = {})", avtale.getId());
-        } catch (Exception e) {
-            log.error("Klarte ikke opprette oppgave for 'vtao-avtale inngått' (avtaleid = {})", avtale.getId(), e);
-            throw e;
-        }
+        scheduler.schedule(
+                opprettOppgave.instance(format("GOSYS_VTAO_INNGÅTT_%s", avtale.getId()),
+                        new OppgaveRequest(
+                                aktørid,
+                                GosysTema.UFORETRYGD,
+                                GosysBehandlingstype.INGEN,
+                                null,
+                                format(VTAO_INNGÅTT, NORSK_DATO.format(avtale.getGjeldendeInnhold().getStartDato())))
+                ), Now.instant()
+        );
     }
 
     @TransactionalEventListener
     public void opprettGosysVarsel(AvtaleOpprettetAvArbeidsgiver event) {
-        varsleGosysOmOpprettetAvtale(event.getAvtale());
+        opprettGosysOppgaveOmOpprettetAvtale(event.getAvtale());
     }
 
     @TransactionalEventListener
     public void opprettGosysVarsel(AvtaleOpprettetAvArena event) {
-        varsleGosysOmOpprettetAvtale(event.getAvtale());
+        opprettGosysOppgaveOmOpprettetAvtale(event.getAvtale());
     }
 
     @TransactionalEventListener
     public void opprettVTAOGosysVarsel(AvtaleInngått event) {
         if (event.getAvtale().getTiltakstype().equals(Tiltakstype.VTAO)) {
-            varsleGosysOmInngaattVTAOAvtale(event.getAvtale());
+            opprettGosysOppgaveOmInngaattVTAOAvtale(event.getAvtale());
         }
     }
 }
