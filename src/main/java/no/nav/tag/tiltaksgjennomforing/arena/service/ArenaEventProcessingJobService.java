@@ -5,7 +5,6 @@ import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTable;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEvent;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEventStatus;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaEventRepository;
-import org.springframework.data.domain.Limit;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,14 +53,14 @@ public class ArenaEventProcessingJobService {
     }
 
     private List<ArenaEvent> findEventsForProcessing() {
-        List<ArenaEvent> events = arenaEventRepository.findByStatus(ArenaEventStatus.CREATED, Limit.of(1000));
+        List<ArenaEvent> events = arenaEventRepository.findByStatus(ArenaEventStatus.CREATED);
 
         if (events.isEmpty() || events.size() <= 100) {
-            events.addAll(arenaEventRepository.findByStatusAndArenaTable(ArenaEventStatus.RETRY, ArenaTable.TILTAKGJENNOMFORING.getTable(), Limit.of(1000)));
+            events.addAll(arenaEventRepository.findByStatusAndArenaTable(ArenaEventStatus.RETRY, ArenaTable.TILTAKGJENNOMFORING.getTable()));
         }
 
         if (events.isEmpty() || events.size() <= 100) {
-            events.addAll(arenaEventRepository.findByStatusAndArenaTable(ArenaEventStatus.RETRY, ArenaTable.TILTAKDELTAKER.getTable(), Limit.of(1000)));
+            events.addAll(arenaEventRepository.findByStatusAndArenaTable(ArenaEventStatus.RETRY, ArenaTable.TILTAKDELTAKER.getTable()));
         }
 
         return events;
