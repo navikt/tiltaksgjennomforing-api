@@ -2,10 +2,13 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -17,20 +20,28 @@ public class AvtaleQueryParameter {
     private NavIdent veilederNavIdent;
     private BedriftNr bedriftNr;
     private Fnr deltakerFnr;
+    @Nullable
     private Tiltakstype tiltakstype;
+    @Nullable
+    private List<Tiltakstype> tiltakstyper;
     private Status status;
     private Boolean erUfordelt;
     private TilskuddPeriodeStatus tilskuddPeriodeStatus;
     private String navEnhet;
     private Integer avtaleNr;
 
+    @NotNull
+    public List<Tiltakstype> getTiltakstyper() {
+        return tiltakstyper == null ? Collections.emptyList() : tiltakstyper;
+    }
+
     public boolean harFilterPaEnEntitet() {
         return erUfordelt != null ||
-            veilederNavIdent != null ||
-            bedriftNr != null ||
-            deltakerFnr != null ||
-            navEnhet != null ||
-            avtaleNr != null;
+                veilederNavIdent != null ||
+                bedriftNr != null ||
+                deltakerFnr != null ||
+                navEnhet != null ||
+                avtaleNr != null;
     }
 
     public boolean erUfordelt() {
@@ -42,6 +53,7 @@ public class AvtaleQueryParameter {
                 , Objects.toString(bedriftNr, "")
                 , Objects.toString(deltakerFnr, "")
                 , Objects.toString(tiltakstype, "")
+                , Objects.toString(tiltakstyper, "")
                 , Objects.toString(status, "")
                 , Objects.toString(erUfordelt, "")
                 , Objects.toString(tilskuddPeriodeStatus, "")
