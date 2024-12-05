@@ -23,6 +23,7 @@ public interface ArenaAgreementMigrationRepository extends JpaRepository<ArenaAg
                 atg.datoFra,
                 atg.datoTil,
                 atg.eksternId,
+                atd.eksternId,
                 atg.prosentDeltid,
                 atg.tiltakstatuskode,
                 atd.deltakerstatuskode,

@@ -8,6 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import java.time.LocalDate;
 
 public enum ArenaMigrationAction {
+    HOPP_OVER,
     GJENOPPRETT,
     OPPRETT,
     OPPDATER,
@@ -19,6 +20,14 @@ public enum ArenaMigrationAction {
         Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
         boolean isSluttdatoInTheFuture = agreementAggregate.findSluttdato()
             .map(sluttdato -> sluttdato.isAfter(LocalDate.now())).orElse(false);
+
+        if (agreementAggregate.isDeltakerDublett()) {
+            return HOPP_OVER;
+        }
+
+        if (agreementAggregate.isTiltakDublett()) {
+            return IGNORER;
+        }
 
         return switch (deltakerstatuskode) {
             case GJENN, TILBUD -> isSluttdatoInTheFuture ? OPPRETT : IGNORER;
@@ -36,6 +45,14 @@ public enum ArenaMigrationAction {
         boolean isFeilregistrert = avtale.isFeilregistrert();
         boolean isSluttdatoIFremtiden = agreementAggregate.findSluttdato()
             .map(sluttdato -> sluttdato.isAfter(LocalDate.now())).orElse(false);
+
+        if (agreementAggregate.isDeltakerDublett()) {
+            return HOPP_OVER;
+        }
+
+        if (agreementAggregate.isTiltakDublett()) {
+            return IGNORER;
+        }
 
         return switch (avtalestatus) {
             case ANNULLERT, AVBRUTT -> switch (deltakerstatuskode) {
