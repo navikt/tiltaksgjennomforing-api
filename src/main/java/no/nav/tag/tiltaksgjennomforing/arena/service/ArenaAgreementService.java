@@ -2,13 +2,9 @@ package no.nav.tag.tiltaksgjennomforing.arena.service;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementAggregate;
-import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigration;
-import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigrationStatus;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaAgreementMigrationRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -26,25 +22,8 @@ public class ArenaAgreementService {
         this.arenaAgreementMigrationRepository = arenaAgreementMigrationRepository;
     }
 
-    @Transactional
     public List<ArenaAgreementAggregate> getArenaAgreementsForProcessing() {
-        List<ArenaAgreementAggregate> agreementAggregates = arenaAgreementMigrationRepository.findMigrationAgreementAggregates();
-
-        arenaAgreementMigrationRepository.saveAll(
-            arenaAgreementMigrationRepository
-                .findMigrationAgreementAggregates()
-                .stream()
-                .map(aggregate ->
-                    ArenaAgreementMigration.builder()
-                        .tiltakgjennomforingId(aggregate.getTiltakgjennomforingId())
-                        .status(ArenaAgreementMigrationStatus.PROCESSING)
-                        .modified(LocalDateTime.now())
-                        .build()
-                )
-                .toList()
-        );
-
-        return agreementAggregates;
+        return arenaAgreementMigrationRepository.findMigrationAgreementAggregates();
     }
 
     public void processAgreements(List<ArenaAgreementAggregate> agreements) {
