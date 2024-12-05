@@ -92,14 +92,14 @@ public class LagVarselFraAvtaleHendelser {
     //TODO: Hent IDENTEN til beslutter her og ikke veileder
     @EventListener
     public void tilskuddsperiodeAvslått(TilskuddsperiodeAvslått event) {
-        VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.BESLUTTER, event.getUtfortAv(), HendelseType.TILSKUDDSPERIODE_AVSLATT);
+        VarselFactory factory = new VarselFactory(event.getAvtale(), event.getTilskuddsperiode(), AvtaleHendelseUtførtAvRolle.BESLUTTER, event.getUtfortAv(), HendelseType.TILSKUDDSPERIODE_AVSLATT);
         varselRepository.saveAll(List.of(factory.veileder()));
     }
 
     //TODO: Hent IDENTEN til beslutter her og ikke veileder
     @EventListener
     public void tilskuddsperiodeGodkjent(TilskuddsperiodeGodkjent event) {
-        VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.BESLUTTER, event.getUtfortAv(), HendelseType.TILSKUDDSPERIODE_GODKJENT);
+        VarselFactory factory = new VarselFactory(event.getAvtale(), event.getTilskuddsperiode(), AvtaleHendelseUtførtAvRolle.BESLUTTER, event.getUtfortAv(), HendelseType.TILSKUDDSPERIODE_GODKJENT);
         varselRepository.saveAll(List.of(factory.veileder()));
     }
 
