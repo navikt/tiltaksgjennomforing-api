@@ -23,7 +23,7 @@ public class GjeldendeTilskuddsperiodeJobbService {
         log.info("Starter jobb for å oppdatere gjeldedeTilskuddsperiode-felt");
         var avtaler = avtaleRepository.findAllByGjeldendeTilskuddsperiodeIsNullAndTiltakstypeIsIn(
                 List.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB, Tiltakstype.VTAO),
-                Limit.of(100)
+                Limit.of(200)
         );
         if (avtaler.isEmpty()) {
             log.info("Ingen avtaler å behandle");
@@ -35,10 +35,8 @@ public class GjeldendeTilskuddsperiodeJobbService {
             if (nyGjeldende == null) {
                 log.warn("Fant ikke en gjeldende tilskuddsperiode! Har ikke avtalen aktive tilskuddsperioder? (avtale-id: {})", avtale.getId());
             }
-            // TODO: Utfør!
-            //avtale.setGjeldendeTilskuddsperiode(nyGjeldende);
+            avtale.setGjeldendeTilskuddsperiode(nyGjeldende);
         });
-        //avtaleRepository.saveAll(avtaler);
-        log.info("Dry-run over!");
+        avtaleRepository.saveAll(avtaler);
     }
 }
