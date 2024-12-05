@@ -346,10 +346,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         }
 
         setAnnullertTidspunkt(null);
-        setAnnullertGrunn(annullertGrunn);
-        setAvbrutt(avbrutt);
-        setAvbruttDato(avbruttDato);
-        setAvbruttGrunn(avbruttGrunn);
+        setAnnullertGrunn(null);
+        setAvbrutt(false);
+        setAvbruttDato(null);
+        setAvbruttGrunn(null);
         setFeilregistrert(false);
         if (tiltakstyperMedTilskuddsperioder != null && tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
             nyeTilskuddsperioder();
