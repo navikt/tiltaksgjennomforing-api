@@ -86,9 +86,9 @@ tiltaksgjennomforing:
       tiltakdeltaker-endret-topic: 'teamarenanais.aapen-arena-tiltakdeltakerendret-v1-q1'
       tiltakgjennomforing-endret-topic: 'teamarenanais.aapen-arena-tiltakgjennomforingendret-v1-q1'
     ords:
-      url: http://tiltaksgjennomforing-wiremock-q0/arena-ords
-      client-id: client
-      client-secret: secret
+      url: https://arena-ords-q1.nais.preprod.local
+      client-id: ${ARENA_ORDS_CLIENT_ID}
+      client-secret: ${ARENA_ORDS_CLIENT_SECRET}
     aktivitet-acl:
       url: http://tiltaksgjennomforing-wiremock-q0/aktivitet-arena-acl
 
