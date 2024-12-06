@@ -46,3 +46,5 @@ spec:
     outbound:
       rules:
         - application: tiltaksgjennomforing-wiremock-q0
+  envFrom:
+    - secret: tiltaksgjennomforing-api-q0
