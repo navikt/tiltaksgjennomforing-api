@@ -327,7 +327,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
             LocalDate startDato = Stream.of(endreAvtaleArena.getStartdato(), gjeldendeInnhold.getStartDato())
                     .filter(dato -> dato.isEqual(sluttDato) || dato.isBefore(sluttDato))
-                    .findFirst()
+
                     .orElse(LocalDate.now().minusDays(1));
 
             getGjeldendeInnhold().setStartDato(startDato);
