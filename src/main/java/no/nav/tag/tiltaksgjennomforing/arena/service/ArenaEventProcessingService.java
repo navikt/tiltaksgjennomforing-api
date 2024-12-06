@@ -15,6 +15,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
@@ -55,6 +56,10 @@ public class ArenaEventProcessingService {
     private void create(String key, ArenaKafkaMessage message) {
         String operation = message.opType();
         String table = message.table();
+
+        if (message.opTimestamp().isBefore(LocalDate.of(2024, 12, 6).atStartOfDay())) {
+            return;
+        }
 
         Lock lock = locks.computeIfAbsent(key + table, k -> new ReentrantLock());
         lock.lock();
