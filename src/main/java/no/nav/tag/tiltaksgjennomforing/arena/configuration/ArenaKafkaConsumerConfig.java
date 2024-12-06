@@ -15,7 +15,7 @@ import java.util.Map;
 
 @Configuration
 @EnableKafka
-@Profile({ Miljø.LOCAL, Miljø.DEV_FSS, Miljø.PROD_FSS })
+@Profile({ Miljø.LOCAL, Miljø.DEV_FSS_Q0, Miljø.DEV_FSS, Miljø.PROD_FSS })
 public class ArenaKafkaConsumerConfig {
 
     @Bean
