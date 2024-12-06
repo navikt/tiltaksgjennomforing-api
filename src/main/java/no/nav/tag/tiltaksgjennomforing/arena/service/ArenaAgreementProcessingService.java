@@ -308,7 +308,7 @@ public class ArenaAgreementProcessingService {
         hendelseAktivitetsplanClient.putAktivietsplanId(avtale.getId(), aktivitetsplanId);
     }
 
-    private void validate(Avtale avtale, ArenaAgreementAggregate agreementAggregate,) {
+    private void validate(Avtale avtale, ArenaAgreementAggregate agreementAggregate) {
         if (
             agreementAggregate.getFnr() != null &&
                 !avtale.getDeltakerFnr().asString().equals(agreementAggregate.getFnr())
