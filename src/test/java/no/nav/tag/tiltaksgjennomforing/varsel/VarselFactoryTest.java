@@ -18,7 +18,8 @@ class VarselFactoryTest {
   @Test
   public void skal_returnere_tilskuddsperiode_verdi_i_teksten_naar_beslutter_godkjenner_periode(){
     Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedSpesieltTilpassetInnsatsGodkjentAvVeileder();
-    VarselFactory factory = new VarselFactory(avtale, AvtaleHendelseUtførtAvRolle.BESLUTTER, TestData.enNavIdent() , HendelseType.TILSKUDDSPERIODE_GODKJENT);
+    TilskuddPeriode tilskuddPeriode = avtale.getGjeldendeTilskuddsperiode();
+    VarselFactory factory = new VarselFactory(avtale, tilskuddPeriode, AvtaleHendelseUtførtAvRolle.BESLUTTER, TestData.enNavIdent() , HendelseType.TILSKUDDSPERIODE_GODKJENT);
     DateTimeFormatter norskDatoformat = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     assertEquals("Tilskuddsperiode har blitt godkjent av beslutter\n(" + avtale.getGjeldendeTilskuddsperiode().getStartDato().format(norskDatoformat) + " til " + avtale.getGjeldendeTilskuddsperiode().getSluttDato().format(norskDatoformat) + ")",factory.veileder().getTekst());
   }
