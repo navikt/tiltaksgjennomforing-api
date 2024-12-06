@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Component
-@Profile({ Miljø.DEV_FSS_Q0, Miljø.DEV_FSS, Miljø.PROD_FSS })
+@Profile({ Miljø.DEV_FSS, Miljø.PROD_FSS })
 public class ArenaEventProcessingJob {
     private final ArenaEventProcessingJobService arenaEventRetryService;
 
