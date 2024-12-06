@@ -97,7 +97,7 @@ public class ArenaAgreementProcessingService {
                         completed.avtale().getId(),
                         completed.avtale().getStatus()
                     );
-                    updateMigrationStatus(
+                    saveMigrationStatus(
                         tiltaksgjennomforingId,
                         ArenaAgreementMigrationStatus.COMPLETED,
                         completed.action(),
@@ -106,17 +106,20 @@ public class ArenaAgreementProcessingService {
                     );
                 }
                 case ArenaMigrationProcessResult.Ignored ignored ->
-                    updateMigrationStatus(
+                    saveMigrationStatus(
                         tiltaksgjennomforingId,
                         ArenaAgreementMigrationStatus.COMPLETED,
                         ignored.action(),
                         eksternId,
                         null
                     );
+                case ArenaMigrationProcessResult.Skip skip -> {
+                    // Gjør ingenting
+                }
             }
         } catch(Exception e) {
             log.error("Feil ved prossesering av avtale fra Arena", e);
-            updateMigrationStatus(
+            saveMigrationStatus(
                 tiltaksgjennomforingId,
                 ArenaAgreementMigrationStatus.FAILED,
                 null,
@@ -126,7 +129,7 @@ public class ArenaAgreementProcessingService {
         }
     }
 
-    private void updateMigrationStatus(
+    private void saveMigrationStatus(
             Integer id,
             ArenaAgreementMigrationStatus status,
             ArenaMigrationAction action,
@@ -169,13 +172,20 @@ public class ArenaAgreementProcessingService {
 
         ArenaMigrationAction action = ArenaMigrationAction.map(avtale, agreementAggregate);
         switch (action) {
+            case HOPP_OVER -> {
+                log.info(
+                    "Avtale har deltaker som er duplett i Arena. Hopper over avtalen. Den vil sannsynligvis bli oppdatert senere."
+                );
+                return new ArenaMigrationProcessResult.Skip(action);
+            }
             case IGNORER -> {
                 log.info(
-                    "Avtale med id {} og status {} har tiltakstatus {} og deltakerstatus {} i Arena. Ignorerer avtalen.",
+                    "Avtale med id {} og status {} har tiltakstatus {}, deltakerstatus {} og tiltaket er {} i Arena. Ignorerer avtalen.",
                     avtale.getId(),
                     avtale.getStatus(),
                     agreementAggregate.getTiltakstatuskode(),
-                    agreementAggregate.getDeltakerstatuskode()
+                    agreementAggregate.getDeltakerstatuskode(),
+                    agreementAggregate.isTiltakDublett() ? "dublett" : "ikke dublett"
                 );
                 return new ArenaMigrationProcessResult.Ignored(action);
             }
@@ -224,12 +234,20 @@ public class ArenaAgreementProcessingService {
     private ArenaMigrationProcessResult createAvtale(ArenaAgreementAggregate agreementAggregate) {
         ArenaMigrationAction action = ArenaMigrationAction.map(agreementAggregate);
 
+        if (ArenaMigrationAction.HOPP_OVER == action) {
+            log.info(
+                "Avtale har deltaker som er duplett i Arena. Hopper over avtalen. Den vil sannsynligvis bli oppdatert senere."
+            );
+            return new ArenaMigrationProcessResult.Skip(action);
+        }
+
         if (ArenaMigrationAction.IGNORER == action) {
             log.info(
-                "Avtale har tiltaksstatus {}, deltakerstatus {} og sluttdato {} i Arena. Ignorerer avtalen.",
+                "Avtale har tiltaksstatus {}, deltakerstatus {}, sluttdato {} og er {} i Arena. Ignorerer avtalen.",
                 agreementAggregate.getTiltakstatuskode(),
                 agreementAggregate.getDeltakerstatuskode(),
-                agreementAggregate.findSluttdato().orElse(null)
+                agreementAggregate.findSluttdato().orElse(null),
+                agreementAggregate.isTiltakDublett() ? "dublett" : "ikke dublett"
             );
             return new ArenaMigrationProcessResult.Ignored(action);
         }
