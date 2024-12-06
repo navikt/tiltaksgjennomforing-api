@@ -341,24 +341,20 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         Optional.ofNullable(endreAvtaleArena.getAntallDagerPerUke()).ifPresent(getGjeldendeInnhold()::setAntallDagerPerUke);
 
         if (EndreAvtaleArena.Handling.ANNULLER == action) {
-            annullerTilskuddsperioder();
-            annullertTidspunkt = Now.instant();
-            annullertGrunn = "Avtalen er annullert i Arena";
-            avbrutt = false;
-            avbruttDato = null;
-            avbruttGrunn = null;
-            utforEndring(new AnnullertAvSystem(this, Identifikator.ARENA));
-        } else {
-            annullertTidspunkt = null;
-            annullertGrunn = null;
-            avbrutt = false;
-            avbruttDato = null;
-            avbruttGrunn = null;
-            if (tiltakstyperMedTilskuddsperioder != null && tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
-                nyeTilskuddsperioder();
-            }
-            utforEndring(new AvtaleEndretAvArena(this));
+            annuller(Identifikator.ARENA, AnnullertGrunn.ANNULLERT_I_ARENA);
+            return;
         }
+
+        setAnnullertTidspunkt(null);
+        setAnnullertGrunn(null);
+        setAvbrutt(false);
+        setAvbruttDato(null);
+        setAvbruttGrunn(null);
+        setFeilregistrert(false);
+        if (tiltakstyperMedTilskuddsperioder != null && tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
+            nyeTilskuddsperioder();
+        }
+        utforEndring(new AvtaleEndretAvArena(this));
     }
 
     public void delMedAvtalepart(Avtalerolle avtalerolle) {
@@ -744,32 +740,40 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     public void annuller(Veileder veileder, String annullerGrunn) {
+        annuller(veileder.getNavIdent(), annullerGrunn);
+    }
+
+    public void annuller(Identifikator identifikator, String annullerGrunn) {
         sjekkAtIkkeAvtalenInneholderUtbetaltTilskuddsperiode();
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
 
         annullerTilskuddsperioder();
         setAnnullertTidspunkt(Now.instant());
         setAnnullertGrunn(annullerGrunn);
+        setFeilregistrert(AnnullertGrunn.skalFeilregistreres(annullerGrunn));
+
+        Optional<NavIdent> veilederNavIdentOpt = Optional.ofNullable(identifikator)
+            .filter(i -> i instanceof NavIdent)
+            .map(i -> (NavIdent) i);
+
+        if (veilederNavIdentOpt.isEmpty()) {
+            utforEndring(new AnnullertAvSystem(this, identifikator));
+            return;
+        }
+
+        NavIdent veilederNavIdent = veilederNavIdentOpt.get();
         if (erUfordelt()) {
-            setVeilederNavIdent(veileder.getIdentifikator());
+            setVeilederNavIdent(veilederNavIdent);
         }
-        if (AnnullertGrunn.FEILREGISTRERING.equals(annullerGrunn)) {
-            setFeilregistrert(true);
-        }
-        utforEndring(new AnnullertAvVeileder(this, veileder.getIdentifikator()));
+
+        utforEndring(new AnnullertAvVeileder(this, veilederNavIdent));
     }
 
     public void utlop(AvtaleUtlopHandling handling) {
         switch (handling) {
             case VARSEL_EN_UKE -> registerEvent(new AvtaleUtloperVarsel(this, AvtaleUtloperVarsel.Type.OM_EN_UKE));
             case VARSEL_24_TIMER -> registerEvent(new AvtaleUtloperVarsel(this, AvtaleUtloperVarsel.Type.OM_24_TIMER));
-            case UTLOP -> {
-                annullerTilskuddsperioder();
-                setAnnullertTidspunkt(Now.instant());
-                setAnnullertGrunn(AnnullertGrunn.UTLØPT);
-                setFeilregistrert(true);
-                utforEndring(new AnnullertAvSystem(this, Identifikator.SYSTEM));
-            }
+            case UTLOP -> annuller(Identifikator.SYSTEM, AnnullertGrunn.UTLØPT);
         }
     }
 
