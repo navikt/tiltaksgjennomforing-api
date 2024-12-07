@@ -370,7 +370,7 @@ const generateRandomSSN = () => {
     return `${datePart}${individualAndControlPart}`;
 }
 
-const generateAvtale = (avtaleId, fnr, bedriftNr, datoFra, datoTil, annullertDato, avbruttDato) => {
+const generateAvtale = (avtaleId, fnr, bedriftNr, datoFra, datoTil, status, annullertDato, avbruttDato) => {
     const avtaleInhholdId = crypto.randomUUID();
 
     return`
@@ -378,8 +378,10 @@ const generateAvtale = (avtaleId, fnr, bedriftNr, datoFra, datoTil, annullertDat
         VALUES ('${avtaleInhholdId}', null, '${generateFornavn()}', '${generateEtternavn()}', '${generateTlf()}', '${generateBedriftsnavn()}', '${generateFornavn()}', '${generateEtternavn()}', '${generateTlf()}', '${generateFornavn()}', '${generateEtternavn()}', '${generateTlf()}', 'Telefon hver uke', 'Ingen', '${formatDato(datoFra)}', '${formatDato(datoTil)}', 50, 1, '${datoFra}', '${datoFra}', '${datoFra}', false, null, null, null, null, 'Butikkbetjent', 'Butikkarbeid', null, null, null, null, 1, null, null, null, null, null, null, null, null, null, null, null, null, null, 5223, 112968, null, null, 'Q987654', null, null, 5, '${datoFra}', '${datoFra}', null, null, 'INNGÅ', false, null, null, null, null, null, null, null, null, true, null, null, null, null, null)
         ON CONFLICT DO NOTHING;
 
-        INSERT INTO avtale (id, opprettet_tidspunkt, deltaker_fnr, bedrift_nr, arbeidsgiver_fnr, veileder_nav_ident, arbeidstrening_lengde, gammel_godkjent_av_deltaker, gammel_godkjent_av_arbeidsgiver, gammel_godkjent_av_veileder, avbrutt, tiltakstype, sist_endret, avbrutt_dato, avbrutt_grunn, enhet_oppfolging, enhet_geografisk, slettemerket, annullert_tidspunkt, annullert_grunn, feilregistrert, enhetsnavn_geografisk, enhetsnavn_oppfolging, kvalifiseringsgruppe, formidlingsgruppe, godkjent_for_etterregistrering, gjeldende_innhold_id, mentor_fnr, opphav)
-        VALUES ('${avtaleId}', '${datoFra}', '${fnr}', '${bedriftNr}', null, 'Z123456', null, null, null, null, ${avbruttDato ? 'true' : 'false'}, 'ARBEIDSTRENING', '${datoFra}', ${avbruttDato ? `'${formatDato(avbruttDato)}'` : 'null'}, ${avbruttDato ? '\'IKKE MØTT\'' : 'null'}, null, null, false, ${annullertDato ? `'${annullertDato}'` : 'null'}, ${annullertDato ? '\'IKKE MØTT\'' : 'null'}, false, null, null, null, null, false, '${avtaleInhholdId}', null, 'VEILEDER')
+        INSERT INTO maal (id, opprettet_tidspunkt, kategori, beskrivelse, avtale_innhold) VALUES ('${crypto.randomUUID()}', '${datoFra}', 'ARBEIDSERFARING', 'Dette er et bra mål!', '${avtaleInhholdId}');
+
+        INSERT INTO avtale (id, opprettet_tidspunkt, deltaker_fnr, bedrift_nr, arbeidsgiver_fnr, veileder_nav_ident, arbeidstrening_lengde, gammel_godkjent_av_deltaker, gammel_godkjent_av_arbeidsgiver, gammel_godkjent_av_veileder, avbrutt, tiltakstype, sist_endret, avbrutt_dato, avbrutt_grunn, enhet_oppfolging, enhet_geografisk, slettemerket, annullert_tidspunkt, annullert_grunn, feilregistrert, enhetsnavn_geografisk, enhetsnavn_oppfolging, kvalifiseringsgruppe, formidlingsgruppe, godkjent_for_etterregistrering, gjeldende_innhold_id, mentor_fnr, opphav, status)
+        VALUES ('${avtaleId}', '${datoFra}', '${fnr}', '${bedriftNr}', null, 'Z123456', null, null, null, null, ${avbruttDato ? 'true' : 'false'}, 'ARBEIDSTRENING', '${datoFra}', ${avbruttDato ? `'${formatDato(avbruttDato)}'` : 'null'}, ${avbruttDato ? '\'IKKE MØTT\'' : 'null'}, null, null, false, ${annullertDato ? `'${annullertDato}'` : 'null'}, ${annullertDato ? '\'IKKE MØTT\'' : 'null'}, false, null, null, null, null, false, '${avtaleInhholdId}', null, 'VEILEDER', '${status}')
         ON CONFLICT DO NOTHING;
 
         UPDATE avtale_innhold SET avtale='${avtaleId}' WHERE id='${avtaleInhholdId}';
@@ -391,28 +393,47 @@ const genererArenaTiltak = (id, tiltakstatus, bedriftNr, datoFra, datoTil, ekste
     VALUES ('${id}', '${bedriftNr}', '123456789')
     ON CONFLICT DO NOTHING;
 
-    INSERT INTO arena_tiltakssak (sak_id, sakskode, reg_dato, reg_user, mod_dato, mod_user, tabellnavnalias, objekt_id, aar, lopenrsak, dato_avsluttet, sakstatuskode, arkivnokkel, aetatenhet_arkiv, arkivhenvisning, brukerid_ansvarlig, aetatenhet_ansvarlig, objekt_kode, status_endret, partisjon, er_utland)
-    VALUES ('${id}', 'TILT', '${formatDato(datoFra)}', 'ARBLINJE', '${formatDato(datoFra)}', 'BRUKER', 'SAK', 13193683, 2024, ${id}, null, 'AKTIV', null, null, null, 'GH1219', '1219', null, '${datoFra}', null, false)
-    ON CONFLICT DO NOTHING;
-
     INSERT INTO arena_tiltakgjennomforing(tiltakgjennomforing_id, sak_id, tiltakskode, antall_deltakere, antall_varighet, dato_fra, dato_til, fagplankode, maaleenhet_varighet, tekst_fagbeskrivelse, tekst_kurssted, tekst_maalgruppe, status_treverdikode_innsokning, reg_dato, reg_user, mod_dato, mod_user, lokaltnavn, tiltakstatuskode, prosent_deltid, kommentar, arbgiv_id_arrangor, profilelement_id_geografi, klokketid_fremmote, dato_fremmote, begrunnelse_status, avtale_id, aktivitet_id, dato_innsokningstart, gml_fra_dato, gml_til_dato, aetat_fremmotereg, aetat_konteringssted, opplaeringnivaakode, tiltakgjennomforing_id_rel, vurdering_gjennomforing, profilelement_id_oppl_tiltak, dato_oppfolging_ok, partisjon, maalform_kravbrev, ekstern_id)
     VALUES ('${id}', '${id}', 'ARBTREN', 1, null, '${formatDato(datoFra)}', '${formatDato(datoTil)}', null, null, null, null, null, null, '${formatDato(datoFra)}', 'ARBLINJE', '${formatDato(datoFra)}', 'BRUKER', null, '${tiltakstatus}', 50, null, '${id}', null, null, null, null, null, '133292332', null, null, null, '1219', '1219', null, null, null, null, null, null, 'NO', '${eksternId}')
     ON CONFLICT DO NOTHING;
 `;
 
-const genererArenaDeltaker = (id, deltakerstatus, fnr, datoFra, datoTil, eksternId) => `
-    INSERT INTO arena_ords_fnr (person_id, fnr)
-    VALUES ('${id}', '${fnr}')
-    ON CONFLICT DO NOTHING;
+const genererArenaDeltaker = (id, deltakerstatus, fnr, datoFra, datoTil, eksternId) => {
+    let deltaker = `
+        INSERT INTO arena_ords_fnr (person_id, fnr)
+        VALUES ('${id}', '${fnr}')
+        ON CONFLICT DO NOTHING;
+    
+        INSERT INTO arena_tiltakdeltaker(tiltakdeltaker_id, person_id, tiltakgjennomforing_id, deltakerstatuskode, deltakertypekode, aarsakverdikode_status, oppmotetypekode, prioritet, begrunnelse_innsokt, begrunnelse_prioritering, reg_dato, reg_user, mod_dato, mod_user, dato_svarfrist, dato_fra, dato_til, begrunnelse_status, prosent_deltid, brukerid_statusendring, dato_statusendring, aktivitet_id, brukerid_endring_prioritering, dato_endring_prioritering, dokumentkode_siste_brev, status_innsok_pakke, status_opptak_pakke, opplysninger_innsok, partisjon, begrunnelse_bestilling, antall_dager_pr_uke, ekstern_id)
+        VALUES ('${id}', '${id}', '${id}', '${deltakerstatus}', null, null, null, null, null, null, '${formatDato(datoFra)}', 'BRUKER', '${formatDato(datoFra)}', 'BRUKER', null, '${formatDato(datoFra)}', '${formatDato(datoTil)}', null, 50, 'BRUKER', '${formatDato(datoFra)}', 1, null, null, null, null, null, null, null, null, 5, '${eksternId}')
+        ON CONFLICT DO NOTHING;
+    `;
 
-    INSERT INTO arena_tiltakdeltaker(tiltakdeltaker_id, person_id, tiltakgjennomforing_id, deltakerstatuskode, deltakertypekode, aarsakverdikode_status, oppmotetypekode, prioritet, begrunnelse_innsokt, begrunnelse_prioritering, reg_dato, reg_user, mod_dato, mod_user, dato_svarfrist, dato_fra, dato_til, begrunnelse_status, prosent_deltid, brukerid_statusendring, dato_statusendring, aktivitet_id, brukerid_endring_prioritering, dato_endring_prioritering, dokumentkode_siste_brev, status_innsok_pakke, status_opptak_pakke, opplysninger_innsok, partisjon, begrunnelse_bestilling, antall_dager_pr_uke, ekstern_id)
-    VALUES ('${id}', '${id}', '${id}', '${deltakerstatus}', null, null, null, null, null, null, '${formatDato(datoFra)}', 'BRUKER', '${formatDato(datoFra)}', 'BRUKER', null, '${formatDato(datoFra)}', '${formatDato(datoTil)}', null, 50, 'BRUKER', '${formatDato(datoFra)}', 1, null, null, null, null, null, null, null, null, 5, '${eksternId}')
-    ON CONFLICT DO NOTHING;
-`;
+    if (Math.random() >= 0.75) {
+        const nyId = id + 1000000;
+        deltaker += `
+            INSERT INTO arena_ords_fnr (person_id, fnr)
+            VALUES ('${nyId}', '${generateRandomSSN()}')
+            ON CONFLICT DO NOTHING;
+        
+            INSERT INTO arena_tiltakdeltaker(tiltakdeltaker_id, person_id, tiltakgjennomforing_id, deltakerstatuskode, deltakertypekode, aarsakverdikode_status, oppmotetypekode, prioritet, begrunnelse_innsokt, begrunnelse_prioritering, reg_dato, reg_user, mod_dato, mod_user, dato_svarfrist, dato_fra, dato_til, begrunnelse_status, prosent_deltid, brukerid_statusendring, dato_statusendring, aktivitet_id, brukerid_endring_prioritering, dato_endring_prioritering, dokumentkode_siste_brev, status_innsok_pakke, status_opptak_pakke, opplysninger_innsok, partisjon, begrunnelse_bestilling, antall_dager_pr_uke, ekstern_id)
+            VALUES ('${nyId}', '${nyId}', '${id}', '${deltakerstatus}', null, null, null, null, null, null, '${formatDato(datoFra)}', 'BRUKER', '${formatDato(datoFra)}', 'BRUKER', null, '${formatDato(datoFra)}', '${formatDato(datoTil)}', null, 50, 'BRUKER', '${formatDato(datoFra)}', 1, null, null, null, null, null, null, null, null, 5, '${eksternId}')
+            ON CONFLICT DO NOTHING;
+        `;
+    }
+
+    return deltaker;
+}
+
+const printProgress = (progressPercentage) => {
+    process.stdout.clearLine();
+    process.stdout.cursorTo(0);
+    process.stdout.write(`Progress: ${progressPercentage}%`);
+}
 
 const migration = [];
 
-statuser.forEach((s) => {
+statuser.forEach((s, idx) => {
     const {status, tiltakstatus, deltakerstatus, tid, antall} = s;
 
     for (let i = 0; i < antall; i++) {
@@ -425,31 +446,31 @@ statuser.forEach((s) => {
             const avtaleFra = addRandomDaysFromNow(30, -365);
             const avtaleTil = addRandomDays(avtaleFra, 180);
             migration.push(
-                generateAvtale(avtaleId, fnr, bedriftNr, avtaleFra.toISOString(), avtaleTil.toISOString(), randomDayBetween(avtaleFra, avtaleTil).toISOString()),
+                generateAvtale(avtaleId, fnr, bedriftNr, avtaleFra.toISOString(), avtaleTil.toISOString(), status, randomDayBetween(avtaleFra, avtaleTil).toISOString()),
             );
         } else if (status === 'AVBRUTT') {
             const avtaleFra = addRandomDaysFromNow(30, -365);
             const avtaleTil = addRandomDays(avtaleFra, 180);
             migration.push(
-                generateAvtale(avtaleId, fnr, bedriftNr, avtaleFra.toISOString(), avtaleTil.toISOString(), null, randomDayBetween(avtaleFra, avtaleTil).toISOString()),
+                generateAvtale(avtaleId, fnr, bedriftNr, avtaleFra.toISOString(), avtaleTil.toISOString(), status, null, randomDayBetween(avtaleFra, avtaleTil).toISOString()),
             );
         } else if (status === 'AVSLUTTET') {
             const avtaleTil = addRandomDaysFromNow(-1, -365);
             const avtaleFra = addRandomDays(avtaleTil, -1, -180);
             migration.push(
-                generateAvtale(avtaleId, fnr, bedriftNr, avtaleFra.toISOString(), avtaleTil.toISOString()),
+                generateAvtale(avtaleId, fnr, bedriftNr, avtaleFra.toISOString(), avtaleTil.toISOString(), status),
             );
         } else if (status === 'KLAR_FOR_OPPSTART') {
             const avtaleFra = addRandomDaysFromNow(10);
             const avtaleTil = addRandomDays(avtaleFra, 180);
             migration.push(
-                generateAvtale(avtaleId, fnr, bedriftNr, avtaleFra.toISOString(), avtaleTil.toISOString()),
+                generateAvtale(avtaleId, fnr, bedriftNr, avtaleFra.toISOString(), avtaleTil.toISOString(), status),
             );
         } else {
             const avtaleTil = addRandomDaysFromNow(180);
             const avtaleFra = addRandomDaysFromNow(-1, -180);
             migration.push(
-                generateAvtale(avtaleId, fnr, bedriftNr, avtaleFra.toISOString(), avtaleTil.toISOString()),
+                generateAvtale(avtaleId, fnr, bedriftNr, avtaleFra.toISOString(), avtaleTil.toISOString(), status),
             );
         }
 
@@ -479,9 +500,14 @@ statuser.forEach((s) => {
             }
         }
     }
+
+    printProgress(Math.floor(idx / statuser.length * 100));
 });
 
+printProgress(100);
+
 try {
+    fs.mkdir('./src/main/resources/db/callbacks/local', { recursive: true }, (err) => { if (err) throw err; });
     fs.writeFileSync('./src/main/resources/db/callbacks/local/afterMigrate__arena.sql', migration.join('').replaceAll(/[ \t]{2,}/g, ' '));
 } catch (err) {
     console.error(err);
