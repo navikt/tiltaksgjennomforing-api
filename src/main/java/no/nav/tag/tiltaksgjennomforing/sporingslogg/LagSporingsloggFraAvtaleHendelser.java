@@ -3,13 +3,10 @@ package no.nav.tag.tiltaksgjennomforing.sporingslogg;
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvbruttAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndretAvArena;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleGjenopprettet;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleLåstOpp;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiverErFordelt;
@@ -162,20 +159,5 @@ public class LagSporingsloggFraAvtaleHendelser {
     @EventListener
     public void fordelt(AvtaleOpprettetAvArbeidsgiverErFordelt event) {
         sporingsloggRepository.save(Sporingslogg.nyHendelse(event.getAvtale(), HendelseType.AVTALE_FORDELT));
-    }
-
-    @EventListener
-    public void avbrutt(AvbruttAvVeileder event) {
-        sporingsloggRepository.save(Sporingslogg.nyHendelse(event.getAvtale(), HendelseType.AVBRUTT));
-    }
-
-    @EventListener
-    public void låstOpp(AvtaleLåstOpp event) {
-        sporingsloggRepository.save(Sporingslogg.nyHendelse(event.getAvtale(), HendelseType.LÅST_OPP));
-    }
-
-    @EventListener
-    public void gjenopprettet(AvtaleGjenopprettet event) {
-        sporingsloggRepository.save(Sporingslogg.nyHendelse(event.getAvtale(), HendelseType.GJENOPPRETTET));
     }
 }
