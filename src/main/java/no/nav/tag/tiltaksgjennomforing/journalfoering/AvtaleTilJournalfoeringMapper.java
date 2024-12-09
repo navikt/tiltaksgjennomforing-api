@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.journalfoering;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 
@@ -68,6 +69,9 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setRefusjonKontaktperson(avtaleInnhold.getRefusjonKontaktperson());
         avtaleTilJournalfoering.setInkluderingstilskuddsutgift(avtaleInnhold.getInkluderingstilskuddsutgift());
         avtaleTilJournalfoering.setInkluderingstilskuddBegrunnelse(avtaleInnhold.getInkluderingstilskuddBegrunnelse());
+        avtaleTilJournalfoering.setFadderFornavn(Optional.ofNullable(avtaleInnhold.getVtao()).map(Vtao::getFadderFornavn).orElse(null));
+        avtaleTilJournalfoering.setFadderEtternavn(Optional.ofNullable(avtaleInnhold.getVtao()).map(Vtao::getFadderEtternavn).orElse(null));
+        avtaleTilJournalfoering.setFadderTlf(Optional.ofNullable(avtaleInnhold.getVtao()).map(Vtao::getFadderTlf).orElse(null));
 
         if(avtalerolle != null) {
             avtaleTilJournalfoering.setAvtalerolle(avtalerolle) ;
