@@ -55,13 +55,13 @@ public class AvtaleMelding {
     String tilrettelegging;
     LocalDate startDato;
     LocalDate sluttDato;
-    Integer stillingprosent;
+    Double stillingprosent;
     String journalpostId;
     String arbeidsoppgaver;
     String stillingstittel;
     Integer stillingStyrk08;
     Integer stillingKonseptId;
-    Integer antallDagerPerUke;
+    Double antallDagerPerUke;
     RefusjonKontaktperson refusjonKontaktperson;
     // Mentor
     String mentorFornavn;
