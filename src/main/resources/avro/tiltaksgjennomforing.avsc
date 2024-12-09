@@ -120,7 +120,7 @@
       "name": "antallDagerPerUke",
       "type": [
         "null",
-        "int"
+        "float"
       ]
     },
     {

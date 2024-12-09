@@ -35,7 +35,7 @@ public class EndreAvtaleArena implements Comparable<Avtale> {
     private LocalDate startdato;
     private LocalDate sluttdato;
     private Integer stillingprosent;
-    private Integer antallDagerPerUke;
+    private Double antallDagerPerUke;
     private Handling handling;
 
     @Override

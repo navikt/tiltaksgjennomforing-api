@@ -174,7 +174,7 @@ class LagVarselFraAvtaleHendelserTest {
         assertIngenHendelse(TILSKUDDSPERIODE_GODKJENT, Avtalerolle.ARBEIDSGIVER);
         assertIngenHendelse(TILSKUDDSPERIODE_GODKJENT, Avtalerolle.DELTAKER);
 
-        veileder.endreStillingbeskrivelse(EndreStillingsbeskrivelse.builder().stillingstittel("Tittel").arbeidsoppgaver("Oppgaver").stillingprosent(100).stillingKonseptId(1).stillingStyrk08(1).antallDagerPerUke(5).build(), avtale);
+        veileder.endreStillingbeskrivelse(EndreStillingsbeskrivelse.builder().stillingstittel("Tittel").arbeidsoppgaver("Oppgaver").stillingprosent(100).stillingKonseptId(1).stillingStyrk08(1).antallDagerPerUke(5.0).build(), avtale);
         avtale = avtaleRepository.save(avtale);
         assertHendelse(STILLINGSBESKRIVELSE_ENDRET, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.VEILEDER, false);
         assertHendelse(STILLINGSBESKRIVELSE_ENDRET, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);

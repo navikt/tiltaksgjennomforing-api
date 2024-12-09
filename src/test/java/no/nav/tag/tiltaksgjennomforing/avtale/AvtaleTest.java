@@ -114,7 +114,7 @@ public class AvtaleTest {
         endreAvtale.setArbeidsgiveravgift(BigDecimal.ONE);
         endreAvtale.setOtpSats(0.02);
         endreAvtale.setStillingstype(Stillingstype.FAST);
-        endreAvtale.setAntallDagerPerUke(5);
+        endreAvtale.setAntallDagerPerUke(5.0);
         endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678", true));
         avtale.opphevGodkjenningerSomVeileder();
         final int FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_6_AAR_VARIG_AVTALE = 14;
@@ -207,7 +207,7 @@ public class AvtaleTest {
         endreAvtale.setArbeidsgiveravgift(BigDecimal.ONE);
         endreAvtale.setOtpSats(0.02);
         endreAvtale.setStillingstype(Stillingstype.FAST);
-        endreAvtale.setAntallDagerPerUke(5);
+        endreAvtale.setAntallDagerPerUke(5.0);
         endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678", true));
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
         final int FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_6_AAR_VARIG_AVTALE = 74;
@@ -276,7 +276,7 @@ public class AvtaleTest {
         endreAvtale.setArbeidsgiveravgift(BigDecimal.ONE);
         endreAvtale.setOtpSats(0.02);
         endreAvtale.setStillingstype(Stillingstype.FAST);
-        endreAvtale.setAntallDagerPerUke(5);
+        endreAvtale.setAntallDagerPerUke(5.0);
         endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678", true));
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
         final int FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_6_AAR_VARIG_AVTALE = 73;
@@ -392,7 +392,7 @@ public class AvtaleTest {
         endreAvtale.setArbeidsgiveravgift(BigDecimal.ONE);
         endreAvtale.setOtpSats(0.02);
         endreAvtale.setStillingstype(Stillingstype.FAST);
-        endreAvtale.setAntallDagerPerUke(5);
+        endreAvtale.setAntallDagerPerUke(5.0);
         endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678", true));
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
         final int FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE = 13;
@@ -436,7 +436,7 @@ public class AvtaleTest {
         endreAvtale.setArbeidsgiveravgift(BigDecimal.ONE);
         endreAvtale.setOtpSats(0.02);
         endreAvtale.setStillingstype(Stillingstype.FAST);
-        endreAvtale.setAntallDagerPerUke(5);
+        endreAvtale.setAntallDagerPerUke(5.0);
         endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678", true));
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
 
@@ -1386,7 +1386,7 @@ public class AvtaleTest {
         Integer stillingStyrk08 = 1234;
         Integer stillingKonseptId = 9999;
         Integer stillingprosent = 90;
-        Integer antallDagerPerUke = 4;
+        Double antallDagerPerUke = 4.0;
         var endreStillingsbeskrivelse = new EndreStillingsbeskrivelse(stillingstittel, arbeidsoppgaver, stillingStyrk08, stillingKonseptId, stillingprosent, antallDagerPerUke);
 
         assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(1);
