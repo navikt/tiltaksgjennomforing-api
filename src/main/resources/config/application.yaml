@@ -117,3 +117,21 @@ caches:
     - name: axsys_cache
       expiryInMinutes: 60
       maximumSize: 1000
+
+db-scheduler:
+  enabled: true
+  heartbeat-interval: 5m
+  polling-interval: 10s
+  table-name: scheduled_tasks
+  immediate-execution-enabled: false
+  scheduler-name: db-tasks
+  threads: 4
+  # Ignored if a custom DbSchedulerStarter bean is defined
+  delay-startup-until-context-ready: true
+
+  polling-strategy: fetch
+  polling-strategy-lower-limit-fraction-of-threads: 0.5
+  polling-strategy-upper-limit-fraction-of-threads: 3.0
+  
+  shutdown-max-wait: 3m
+  always-persist-timestamp-in-utc: true
