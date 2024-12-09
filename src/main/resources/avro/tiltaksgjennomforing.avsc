@@ -113,7 +113,7 @@
       "name": "stillingprosent",
       "type": [
         "null",
-        "int"
+        "float"
       ]
     },
     {

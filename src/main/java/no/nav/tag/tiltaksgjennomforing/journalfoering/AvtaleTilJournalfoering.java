@@ -47,7 +47,7 @@ public class AvtaleTilJournalfoering {
 
     private LocalDate startDato;
     private LocalDate sluttDato;
-    private Integer stillingprosent;
+    private Double stillingprosent;
     private String stillingstittel;
     private Stillingstype stillingstype;
     private String arbeidsoppgaver;

@@ -471,7 +471,7 @@ public class TestData {
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(12).minusDays(1));
-        endreAvtale.setStillingprosent(50);
+        endreAvtale.setStillingprosent(50.0);
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
         endreAvtale.setArbeidsgiverKontonummer("000111222");
         endreAvtale.setStillingstittel("Butikkbetjent");
@@ -577,7 +577,7 @@ public class TestData {
         endreAvtale.setStillingStyrk08(5223);
         endreAvtale.setStillingKonseptId(112968);
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
-        endreAvtale.setStillingprosent(50);
+        endreAvtale.setStillingprosent(50.5);
         endreAvtale.setAntallDagerPerUke(5.0);
         endreAvtale.getMaal().add(TestData.etMaal());
         endreAvtale.setStartDato(Now.localDate());
@@ -605,7 +605,7 @@ public class TestData {
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(12).minusDays(1));
-        endreAvtale.setStillingprosent(50);
+        endreAvtale.setStillingprosent(50.7);
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
         endreAvtale.setArbeidsgiverKontonummer("000111222");
         endreAvtale.setStillingstittel("Butikkbetjent");

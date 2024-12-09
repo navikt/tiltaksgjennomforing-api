@@ -102,7 +102,7 @@ public class AvtaleTest {
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusYears(6).minusDays(1));
-        endreAvtale.setStillingprosent(50);
+        endreAvtale.setStillingprosent(50.7239);
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
         endreAvtale.setArbeidsgiverKontonummer("000111222");
         endreAvtale.setStillingstittel("Butikkbetjent");
@@ -195,7 +195,7 @@ public class AvtaleTest {
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusYears(6).minusDays(1));
-        endreAvtale.setStillingprosent(50);
+        endreAvtale.setStillingprosent(50.259);
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
         endreAvtale.setArbeidsgiverKontonummer("000111222");
         endreAvtale.setStillingstittel("Butikkbetjent");
@@ -264,7 +264,7 @@ public class AvtaleTest {
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusYears(6).minusDays(1));
-        endreAvtale.setStillingprosent(50);
+        endreAvtale.setStillingprosent(50.222);
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
         endreAvtale.setArbeidsgiverKontonummer("000111222");
         endreAvtale.setStillingstittel("Butikkbetjent");
@@ -380,7 +380,7 @@ public class AvtaleTest {
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusYears(1).minusDays(1));
-        endreAvtale.setStillingprosent(100);
+        endreAvtale.setStillingprosent(100.0);
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
         endreAvtale.setArbeidsgiverKontonummer("000111222");
         endreAvtale.setStillingstittel("Butikkbetjent");
@@ -424,7 +424,7 @@ public class AvtaleTest {
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusYears(1).minusDays(1));
-        endreAvtale.setStillingprosent(100);
+        endreAvtale.setStillingprosent(100.0);
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
         endreAvtale.setArbeidsgiverKontonummer("000111222");
         endreAvtale.setStillingstittel("Butikkbetjent");
@@ -1385,7 +1385,7 @@ public class AvtaleTest {
         String arbeidsoppgaver = "Lage mat";
         Integer stillingStyrk08 = 1234;
         Integer stillingKonseptId = 9999;
-        Integer stillingprosent = 90;
+        Double stillingprosent = 90.0;
         Double antallDagerPerUke = 4.0;
         var endreStillingsbeskrivelse = new EndreStillingsbeskrivelse(stillingstittel, arbeidsoppgaver, stillingStyrk08, stillingKonseptId, stillingprosent, antallDagerPerUke);
 
