@@ -186,7 +186,7 @@ public class ArenaAgreementProcessingService {
                 EndreAvtaleArena endreAvtale = EndreAvtaleArena.builder()
                     .startdato(agreementAggregate.findStartdato().orElse(null))
                     .sluttdato(agreementAggregate.findSluttdato().orElse(null))
-                    .antallDagerPerUke(agreementAggregate.getAntallDagerPrUke() != null ? Integer.parseInt(agreementAggregate.getAntallDagerPrUke()) : null)
+                    .antallDagerPerUke(agreementAggregate.getAntallDagerPrUke() != null ? Double.parseDouble(agreementAggregate.getAntallDagerPrUke()) : null)
                     .stillingprosent(agreementAggregate.getProsentDeltid())
                     .handling(EndreAvtaleArena.Handling.map(action))
                     .build();
@@ -271,7 +271,7 @@ public class ArenaAgreementProcessingService {
             .ifPresent(avtaleinnhold::setStartDato);
         agreementAggregate.findSluttdato()
             .ifPresent(avtaleinnhold::setSluttDato);
-        Optional.ofNullable(agreementAggregate.getAntallDagerPrUke() != null ? Integer.parseInt(agreementAggregate.getAntallDagerPrUke()) : null)
+        Optional.ofNullable(agreementAggregate.getAntallDagerPrUke() != null ? Double.parseDouble(agreementAggregate.getAntallDagerPrUke()) : null)
             .ifPresent(avtaleinnhold::setAntallDagerPerUke);
         Optional.ofNullable(agreementAggregate.getProsentDeltid())
             .ifPresent(avtaleinnhold::setStillingprosent);

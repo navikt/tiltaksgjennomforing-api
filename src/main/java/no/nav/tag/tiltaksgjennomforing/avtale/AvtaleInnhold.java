@@ -60,7 +60,7 @@ public class AvtaleInnhold {
     private String stillingstittel;
     private Integer stillingStyrk08;
     private Integer stillingKonseptId;
-    private Integer antallDagerPerUke;
+    private Double antallDagerPerUke;
 
     @Embedded
     private RefusjonKontaktperson refusjonKontaktperson;

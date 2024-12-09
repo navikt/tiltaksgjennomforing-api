@@ -35,7 +35,7 @@ public class EndreAvtale {
     private String stillingstittel;
     private Integer stillingStyrk08;
     private Integer stillingKonseptId;
-    private Integer antallDagerPerUke;
+    private Double antallDagerPerUke;
 
     private String refusjonKontaktpersonFornavn;
     private String refusjonKontaktpersonEtternavn;

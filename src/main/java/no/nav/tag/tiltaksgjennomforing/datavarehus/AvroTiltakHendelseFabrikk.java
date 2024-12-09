@@ -29,7 +29,7 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setStartDato(avtale.getGjeldendeInnhold().getStartDato());
         hendelse.setSluttDato(avtale.getGjeldendeInnhold().getSluttDato());
         hendelse.setStillingprosent(avtale.getGjeldendeInnhold().getStillingprosent());
-        hendelse.setAntallDagerPerUke(avtale.getGjeldendeInnhold().getAntallDagerPerUke());
+        hendelse.setAntallDagerPerUke(avtale.getGjeldendeInnhold().getAntallDagerPerUke() != null ? avtale.getGjeldendeInnhold().getAntallDagerPerUke().floatValue() : null);
         hendelse.setStillingstittel(avtale.getGjeldendeInnhold().getStillingstittel());
         hendelse.setStillingstype(avtale.getGjeldendeInnhold().getStillingstype() != null ? StillingType.valueOf(avtale.getGjeldendeInnhold().getStillingstype().name()) : null);
         hendelse.setStillingStyrk08(avtale.getGjeldendeInnhold().getStillingStyrk08());

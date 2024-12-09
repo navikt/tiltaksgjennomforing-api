@@ -477,7 +477,7 @@ public class TestData {
         endreAvtale.setStillingstittel("Butikkbetjent");
         endreAvtale.setManedslonn(6808);
         endreAvtale.setStillingstype(Stillingstype.FAST);
-        endreAvtale.setAntallDagerPerUke(5);
+        endreAvtale.setAntallDagerPerUke(5.0);
         endreAvtale.setHarFamilietilknytning(false);
         return endreAvtale;
     }
@@ -578,7 +578,7 @@ public class TestData {
         endreAvtale.setStillingKonseptId(112968);
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
         endreAvtale.setStillingprosent(50);
-        endreAvtale.setAntallDagerPerUke(5);
+        endreAvtale.setAntallDagerPerUke(5.0);
         endreAvtale.getMaal().add(TestData.etMaal());
         endreAvtale.setStartDato(Now.localDate());
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusMonths(12).minusDays(1));
@@ -617,7 +617,7 @@ public class TestData {
         endreAvtale.setArbeidsgiveravgift(BigDecimal.ONE);
         endreAvtale.setOtpSats(0.02);
         endreAvtale.setStillingstype(Stillingstype.FAST);
-        endreAvtale.setAntallDagerPerUke(5);
+        endreAvtale.setAntallDagerPerUke(5.0);
         endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678", true));
         return endreAvtale;
     }

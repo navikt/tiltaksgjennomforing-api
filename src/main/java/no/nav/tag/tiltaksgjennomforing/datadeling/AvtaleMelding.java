@@ -61,7 +61,7 @@ public class AvtaleMelding {
     String stillingstittel;
     Integer stillingStyrk08;
     Integer stillingKonseptId;
-    Integer antallDagerPerUke;
+    Double antallDagerPerUke;
     RefusjonKontaktperson refusjonKontaktperson;
     // Mentor
     String mentorFornavn;
