@@ -327,7 +327,7 @@ public class AvtaleRepositoryTest {
         Set<BedriftNr> bedriftNrSet = Set.of(lagretAvtale3.getBedriftNr(), lagretAvtale2.getBedriftNr(), lagretAvtale.getBedriftNr());
 
         Page<Avtale> avtalerFunnet = avtaleRepository
-            .findAllByBedriftNrInAndTiltakstypeAndFeilregistrertIsFalse(bedriftNrSet, lagretAvtale.getTiltakstype(), pageable);
+            .findAllByBedriftNrInAndTiltakstypeInAndFeilregistrertIsFalse(bedriftNrSet, Set.of(lagretAvtale.getTiltakstype()), pageable);
 
         assertThat(avtalerFunnet.getContent()).isNotEmpty();
         assertThat(avtalerFunnet.getTotalElements()).isEqualTo(1);
@@ -575,11 +575,11 @@ public class AvtaleRepositoryTest {
         avtale5.setVeilederNavIdent(new NavIdent("E123456"));
         avtaleRepository.save(avtale5);
 
-        Page<Avtale> resultat1 = avtaleRepository.sokEtterAvtale(null, null, null, null, null, Tiltakstype.INKLUDERINGSTILSKUDD, null, false, PageRequest.of(0, 10));
+        Page<Avtale> resultat1 = avtaleRepository.sokEtterAvtale(null, null, null, null, null, Set.of(Tiltakstype.INKLUDERINGSTILSKUDD), null, false, PageRequest.of(0, 10));
         assertThat(resultat1.getContent()).hasSize(1);
         assertThat(resultat1.getContent().getFirst().getId()).isEqualTo(avtale3.getId());
 
-        Page<Avtale> resultat2 = avtaleRepository.sokEtterAvtale(avtale3.getVeilederNavIdent(), null, null, null, null, Tiltakstype.INKLUDERINGSTILSKUDD, null, false, PageRequest.of(0, 10));
+        Page<Avtale> resultat2 = avtaleRepository.sokEtterAvtale(avtale3.getVeilederNavIdent(), null, null, null, null, Set.of(Tiltakstype.INKLUDERINGSTILSKUDD), null, false, PageRequest.of(0, 10));
         assertThat(resultat2.getContent()).hasSize(1);
         assertThat(resultat1.getContent().getFirst().getId()).isEqualTo(avtale3.getId());
     }
