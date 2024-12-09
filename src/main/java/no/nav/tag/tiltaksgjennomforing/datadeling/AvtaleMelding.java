@@ -55,7 +55,7 @@ public class AvtaleMelding {
     String tilrettelegging;
     LocalDate startDato;
     LocalDate sluttDato;
-    Integer stillingprosent;
+    Double stillingprosent;
     String journalpostId;
     String arbeidsoppgaver;
     String stillingstittel;

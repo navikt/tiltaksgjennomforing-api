@@ -54,7 +54,7 @@ public class AvtaleInnhold {
     private String tilrettelegging;
     private LocalDate startDato;
     private LocalDate sluttDato;
-    private Integer stillingprosent;
+    private Double stillingprosent;
     private String journalpostId;
     private String arbeidsoppgaver;
     private String stillingstittel;
