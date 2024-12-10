@@ -7,10 +7,11 @@ import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Value
-class OppgaveRequest {
+class OppgaveRequest implements Serializable {
     String beskrivelse;
     String tema;
     String prioritet = "NORM";
