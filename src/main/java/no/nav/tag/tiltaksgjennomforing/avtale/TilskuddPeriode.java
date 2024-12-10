@@ -119,22 +119,22 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
         }
     }
 
-    private LocalDate tidligstI2025() {
+    private LocalDate tidligstI2026() {
         var startDatoMinus3Mnd = startDato.minusMonths(3);
-        return startDatoMinus3Mnd.isBefore(TilskuddPeriode.JAN_2025) ? TilskuddPeriode.JAN_2025 : startDatoMinus3Mnd;
+        return startDatoMinus3Mnd.isBefore(TilskuddPeriode.JAN_2026) ? TilskuddPeriode.JAN_2026 : startDatoMinus3Mnd;
     }
-    private boolean startDatoErI2025() {
-        return startDato.isAfter(JAN_2025.minusDays(1));
+    private boolean startDatoErI2026() {
+        return startDato.isAfter(JAN_2026.minusDays(1));
     }
 
-    private static final LocalDate JAN_2025 = LocalDate.of(2025, 1, 1);
+    private static final LocalDate JAN_2026 = LocalDate.of(2026, 1, 1);
 
     @JsonProperty
     private LocalDate kanBesluttesFom() {
-        // Ikke tillat godkjenning av tilskuddsperioder etter 2025 før budsjettet er vedtatt
-        // TODO: Må oppdateres før årsskifte 2024/2025
-        if (startDatoErI2025()) {
-            return tidligstI2025();
+        // Ikke tillat godkjenning av tilskuddsperioder etter 2026 før budsjettet er vedtatt
+        // TODO: Må oppdateres før årsskifte 2025/2026
+        if (startDatoErI2026()) {
+            return tidligstI2026();
         }
         if (løpenummer == 1) {
             return LocalDate.MIN;
