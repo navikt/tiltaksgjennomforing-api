@@ -52,7 +52,7 @@ public class ArenaAgreementAggregate {
     private LocalDateTime tiltakSluttdato;
     private String eksternIdTiltak;
     private String eksternIdDeltaker;
-    private Integer prosentDeltid;
+    private Double prosentDeltid;
     private Tiltakstatuskode tiltakstatuskode;
     private Deltakerstatuskode deltakerstatuskode;
     private LocalDateTime deltakerStartdato;

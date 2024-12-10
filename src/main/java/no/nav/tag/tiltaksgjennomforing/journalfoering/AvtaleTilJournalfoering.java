@@ -47,11 +47,11 @@ public class AvtaleTilJournalfoering {
 
     private LocalDate startDato;
     private LocalDate sluttDato;
-    private Integer stillingprosent;
+    private Double stillingprosent;
     private String stillingstittel;
     private Stillingstype stillingstype;
     private String arbeidsoppgaver;
-    private Integer antallDagerPerUke;
+    private Double antallDagerPerUke;
     private String enhetOppfolging;
 
     private RefusjonKontaktperson refusjonKontaktperson;
