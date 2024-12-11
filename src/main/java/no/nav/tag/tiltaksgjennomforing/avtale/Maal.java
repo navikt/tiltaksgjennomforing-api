@@ -30,7 +30,6 @@ public class Maal {
     public Maal() {}
 
     public Maal(Maal fra) {
-        id = UUID.randomUUID();
         kategori = fra.kategori;
         beskrivelse = fra.beskrivelse;
     }
