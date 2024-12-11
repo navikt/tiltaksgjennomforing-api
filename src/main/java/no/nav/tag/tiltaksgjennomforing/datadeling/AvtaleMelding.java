@@ -55,13 +55,13 @@ public class AvtaleMelding {
     String tilrettelegging;
     LocalDate startDato;
     LocalDate sluttDato;
-    Double stillingprosent;
+    Integer stillingprosent;
     String journalpostId;
     String arbeidsoppgaver;
     String stillingstittel;
     Integer stillingStyrk08;
     Integer stillingKonseptId;
-    Double antallDagerPerUke;
+    Integer antallDagerPerUke;
     RefusjonKontaktperson refusjonKontaktperson;
     // Mentor
     String mentorFornavn;
@@ -165,13 +165,13 @@ public class AvtaleMelding {
         avtaleMelding.setTilrettelegging(avtaleInnhold.getTilrettelegging());
         avtaleMelding.setStartDato(avtaleInnhold.getStartDato());
         avtaleMelding.setSluttDato(avtaleInnhold.getSluttDato());
-        avtaleMelding.setStillingprosent(avtaleInnhold.getStillingprosent());
+        avtaleMelding.setStillingprosent(Long.valueOf(Math.round(avtaleInnhold.getStillingprosent())).intValue());
         avtaleMelding.setJournalpostId(avtaleInnhold.getJournalpostId());
         avtaleMelding.setArbeidsoppgaver(avtaleInnhold.getArbeidsoppgaver());
         avtaleMelding.setStillingstittel(avtaleInnhold.getStillingstittel());
         avtaleMelding.setStillingStyrk08(avtaleInnhold.getStillingStyrk08());
         avtaleMelding.setStillingKonseptId(avtaleInnhold.getStillingKonseptId());
-        avtaleMelding.setAntallDagerPerUke(avtaleInnhold.getAntallDagerPerUke());
+        avtaleMelding.setAntallDagerPerUke(Long.valueOf(Math.round(avtaleInnhold.getAntallDagerPerUke())).intValue());
         avtaleMelding.setRefusjonKontaktperson(avtaleInnhold.getRefusjonKontaktperson());
         avtaleMelding.setMentorFornavn(avtaleInnhold.getMentorFornavn());
         avtaleMelding.setMentorEtternavn(avtaleInnhold.getMentorEtternavn());
