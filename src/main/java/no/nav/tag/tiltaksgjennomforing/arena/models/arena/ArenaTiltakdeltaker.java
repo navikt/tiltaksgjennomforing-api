@@ -82,7 +82,7 @@ public class ArenaTiltakdeltaker {
     private String begrunnelseStatus;
 
     @JsonProperty("PROSENT_DELTID")
-    private Integer prosentDeltid;
+    private String prosentDeltid;
 
     @JsonProperty("BRUKERID_STATUSENDRING")
     private String brukeridStatusendring;
