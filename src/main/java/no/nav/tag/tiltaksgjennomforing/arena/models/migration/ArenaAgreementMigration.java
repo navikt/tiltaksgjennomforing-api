@@ -18,6 +18,7 @@ import java.util.UUID;
 @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class ArenaAgreementMigration {
     @Id
+    private UUID id;
     private Integer tiltakgjennomforingId;
     @Enumerated(EnumType.STRING)
     private ArenaAgreementMigrationStatus status;
