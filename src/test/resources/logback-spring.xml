@@ -7,7 +7,7 @@
         </encoder>
     </appender>
     <logger name="no.nav.vault.jdbc.hikaricp.VaultUtil" level="WARN"/>
-    <root level="WARN">
+    <root level="INFO">
         <appender-ref ref="consoleAppender"/>
     </root>
 </configuration>

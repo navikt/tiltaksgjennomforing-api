@@ -91,8 +91,7 @@ public class ArenaAgreementProcessingService {
                     if (agreementAggregate.getTiltakdeltakerId() != null) {
                         transferAktivitetsplankort(completed.avtale(), agreementAggregate.getTiltakdeltakerId());
                     }
-//                    Avtale nyAvtale = avtaleRepository.save(completed.avtale());
-                    Avtale nyAvtale = avtaleRepository.save(null);
+                    Avtale nyAvtale = avtaleRepository.save(completed.avtale());
                     log.info(
                         "Lagrer avtale med id {}. Status for avtalen etter migrering {}",
                         nyAvtale.getId(),
