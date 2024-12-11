@@ -79,6 +79,7 @@ public class ArenaAgreementProcessingService {
     public void process(ArenaAgreementAggregate agreementAggregate) {
         UUID eksternId = agreementAggregate.getEksternIdAsUuid().orElse(null);
         Integer tiltaksgjennomforingId = agreementAggregate.getTiltakgjennomforingId();
+        Integer tiltakdeltakerId = agreementAggregate.getTiltakdeltakerId();
 
         try {
             ArenaMigrationProcessResult result = agreementAggregate.getEksternIdAsUuid()
@@ -99,6 +100,7 @@ public class ArenaAgreementProcessingService {
                     );
                     saveMigrationStatus(
                         tiltaksgjennomforingId,
+                        tiltakdeltakerId,
                         ArenaAgreementMigrationStatus.COMPLETED,
                         completed.action(),
                         eksternId,
@@ -108,6 +110,7 @@ public class ArenaAgreementProcessingService {
                 case ArenaMigrationProcessResult.Ignored ignored ->
                     saveMigrationStatus(
                         tiltaksgjennomforingId,
+                        tiltakdeltakerId,
                         ArenaAgreementMigrationStatus.COMPLETED,
                         ignored.action(),
                         eksternId,
@@ -121,6 +124,7 @@ public class ArenaAgreementProcessingService {
             log.error("Feil ved prossesering av avtale fra Arena", e);
             saveMigrationStatus(
                 tiltaksgjennomforingId,
+                tiltakdeltakerId,
                 ArenaAgreementMigrationStatus.FAILED,
                 null,
                 eksternId,
@@ -131,6 +135,7 @@ public class ArenaAgreementProcessingService {
 
     private void saveMigrationStatus(
             Integer tiltakgjennomforingId,
+            Integer tiltakdeltakerId,
             ArenaAgreementMigrationStatus status,
             ArenaMigrationAction action,
             UUID eksternId,
@@ -140,6 +145,7 @@ public class ArenaAgreementProcessingService {
             ArenaAgreementMigration.builder()
                 .id(UUID.randomUUID())
                 .tiltakgjennomforingId(tiltakgjennomforingId)
+                .tiltakdeltakerId(tiltakdeltakerId)
                 .status(status)
                 .action(action)
                 .avtaleId(agreementId)

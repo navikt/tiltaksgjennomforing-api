@@ -20,6 +20,7 @@ public class ArenaAgreementMigration {
     @Id
     private UUID id;
     private Integer tiltakgjennomforingId;
+    private Integer tiltakdeltakerId;
     @Enumerated(EnumType.STRING)
     private ArenaAgreementMigrationStatus status;
     @Enumerated(EnumType.STRING)
