@@ -1,2 +1,0 @@
-alter table arena_tiltakdeltaker alter column prosent_deltid type text using prosent_deltid::text;
-alter table arena_tiltakgjennomforing alter column prosent_deltid type text using prosent_deltid::text;
