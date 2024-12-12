@@ -130,7 +130,7 @@ public class ArenaAgreementProcessingService {
     }
 
     private void saveMigrationStatus(
-            Integer id,
+            Integer tiltakgjennomforingId,
             ArenaAgreementMigrationStatus status,
             ArenaMigrationAction action,
             UUID eksternId,
@@ -138,7 +138,8 @@ public class ArenaAgreementProcessingService {
     ) {
         arenaAgreementMigrationRepository.save(
             ArenaAgreementMigration.builder()
-                .tiltakgjennomforingId(id)
+                .id(UUID.randomUUID())
+                .tiltakgjennomforingId(tiltakgjennomforingId)
                 .status(status)
                 .action(action)
                 .avtaleId(agreementId)
