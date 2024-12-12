@@ -8,7 +8,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import java.time.LocalDate;
 
 public enum ArenaMigrationAction {
-    HOPP_OVER,
     GJENOPPRETT,
     OPPRETT,
     OPPDATER,
@@ -21,14 +20,9 @@ public enum ArenaMigrationAction {
         boolean isSluttdatoInTheFuture = agreementAggregate.findSluttdato()
             .map(sluttdato -> sluttdato.isAfter(LocalDate.now())).orElse(false);
 
-        if (agreementAggregate.isDeltakerDublett()) {
-            return HOPP_OVER;
-        }
-
-        if (agreementAggregate.isTiltakDublett()) {
+        if (agreementAggregate.isDublett()) {
             return IGNORER;
         }
-
         return switch (deltakerstatuskode) {
             case GJENN, TILBUD -> isSluttdatoInTheFuture ? OPPRETT : IGNORER;
             case null, default -> IGNORER;
@@ -46,11 +40,7 @@ public enum ArenaMigrationAction {
         boolean isSluttdatoIFremtiden = agreementAggregate.findSluttdato()
             .map(sluttdato -> sluttdato.isAfter(LocalDate.now())).orElse(false);
 
-        if (agreementAggregate.isDeltakerDublett()) {
-            return HOPP_OVER;
-        }
-
-        if (agreementAggregate.isTiltakDublett()) {
+        if (agreementAggregate.isDublett()) {
             return IGNORER;
         }
 

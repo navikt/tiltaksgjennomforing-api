@@ -116,9 +116,6 @@ public class ArenaAgreementProcessingService {
                         eksternId,
                         null
                     );
-                case ArenaMigrationProcessResult.Skip skip -> {
-                    // Gjør ingenting
-                }
             }
         } catch(Exception e) {
             log.error("Feil ved prossesering av avtale fra Arena", e);
@@ -158,12 +155,6 @@ public class ArenaAgreementProcessingService {
     private ArenaMigrationProcessResult updateAvtale(Avtale avtale, ArenaAgreementAggregate agreementAggregate) {
         ArenaMigrationAction action = ArenaMigrationAction.map(avtale, agreementAggregate);
         switch (action) {
-            case HOPP_OVER -> {
-                log.info(
-                    "Avtale har deltaker som er duplett i Arena. Hopper over avtalen. Den vil sannsynligvis bli oppdatert senere."
-                );
-                return new ArenaMigrationProcessResult.Skip(action);
-            }
             case IGNORER -> {
                 log.info(
                     "Avtale med id {} og status {} har tiltakstatus {}, deltakerstatus {} og tiltaket er {} i Arena. Ignorerer avtalen.",
@@ -171,7 +162,7 @@ public class ArenaAgreementProcessingService {
                     avtale.getStatus(),
                     agreementAggregate.getTiltakstatuskode(),
                     agreementAggregate.getDeltakerstatuskode(),
-                    agreementAggregate.isTiltakDublett() ? "dublett" : "ikke dublett"
+                    agreementAggregate.isDublett() ? "dublett" : "ikke dublett"
                 );
                 return new ArenaMigrationProcessResult.Ignored(action);
             }
@@ -224,20 +215,13 @@ public class ArenaAgreementProcessingService {
     private ArenaMigrationProcessResult createAvtale(ArenaAgreementAggregate agreementAggregate) {
         ArenaMigrationAction action = ArenaMigrationAction.map(agreementAggregate);
 
-        if (ArenaMigrationAction.HOPP_OVER == action) {
-            log.info(
-                "Avtale har deltaker som er duplett i Arena. Hopper over avtalen. Den vil sannsynligvis bli oppdatert senere."
-            );
-            return new ArenaMigrationProcessResult.Skip(action);
-        }
-
         if (ArenaMigrationAction.IGNORER == action) {
             log.info(
                 "Avtale har tiltaksstatus {}, deltakerstatus {}, sluttdato {} og er {} i Arena. Ignorerer avtalen.",
                 agreementAggregate.getTiltakstatuskode(),
                 agreementAggregate.getDeltakerstatuskode(),
                 agreementAggregate.findSluttdato().orElse(null),
-                agreementAggregate.isTiltakDublett() ? "dublett" : "ikke dublett"
+                agreementAggregate.isDublett() ? "dublett" : "ikke dublett"
             );
             return new ArenaMigrationProcessResult.Ignored(action);
         }
