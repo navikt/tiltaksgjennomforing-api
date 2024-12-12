@@ -73,12 +73,8 @@ public class ArenaAgreementAggregate {
             .findFirst();
     }
 
-    public boolean isTiltakDublett() {
-        return isDublett(eksternIdTiltak);
-    }
-
-    public boolean isDeltakerDublett() {
-        return isDublett(eksternIdDeltaker);
+    public boolean isDublett() {
+        return isDublett(eksternIdTiltak) || isDublett(eksternIdDeltaker);
     }
 
     public Optional<UUID> getEksternIdAsUuid() throws IllegalArgumentException {
