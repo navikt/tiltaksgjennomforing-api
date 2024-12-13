@@ -1,9 +1,14 @@
 package no.nav.tag.tiltaksgjennomforing.journalfoering;
 
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
+import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.avtale.Maal;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
 
 public class AvtaleTilJournalfoeringMapper {
 
@@ -49,8 +54,8 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setTilrettelegging(avtaleInnhold.getTilrettelegging());
         avtaleTilJournalfoering.setStartDato(avtaleInnhold.getStartDato());
         avtaleTilJournalfoering.setSluttDato(avtaleInnhold.getSluttDato());
-        avtaleTilJournalfoering.setStillingprosent(Long.valueOf(Math.round(avtaleInnhold.getStillingprosent())).intValue());
-        avtaleTilJournalfoering.setAntallDagerPerUke(Long.valueOf(Math.round(avtaleInnhold.getAntallDagerPerUke())).intValue());
+        avtaleTilJournalfoering.setStillingprosent(avtale.getGjeldendeInnhold().getStillingprosent() != null ? Long.valueOf(Math.round(avtale.getGjeldendeInnhold().getStillingprosent())).intValue() : null);
+        avtaleTilJournalfoering.setAntallDagerPerUke(avtale.getGjeldendeInnhold().getAntallDagerPerUke() != null ? Long.valueOf(Math.round(avtale.getGjeldendeInnhold().getAntallDagerPerUke())).intValue() : null);
         avtaleTilJournalfoering.setMaal(maalListToMaalTilJournalfoeringList(avtaleInnhold.getMaal()));
         avtaleTilJournalfoering.setGodkjentPaVegneGrunn(godkjentPaVegneGrunn(avtaleInnhold.getGodkjentPaVegneGrunn()));
         avtaleTilJournalfoering.setGodkjentPaVegneAv(avtaleInnhold.isGodkjentPaVegneAv());
