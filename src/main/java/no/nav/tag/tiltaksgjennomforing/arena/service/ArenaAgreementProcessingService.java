@@ -90,9 +90,6 @@ public class ArenaAgreementProcessingService {
 
             switch (result) {
                 case ArenaMigrationProcessResult.Completed completed -> {
-                    if (agreementAggregate.getTiltakdeltakerId() != null) {
-                        transferAktivitetsplankort(completed.avtale(), agreementAggregate.getTiltakdeltakerId());
-                    }
                     Avtale nyAvtale = avtaleRepository.save(completed.avtale());
                     log.info(
                         "Lagrer avtale med id {}. Status for avtalen etter migrering {}",
