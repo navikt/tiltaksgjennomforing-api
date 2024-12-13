@@ -36,6 +36,8 @@ public class ArenaAgreementService {
                 .map(aggregate ->
                     ArenaAgreementMigration.builder()
                         .tiltakgjennomforingId(aggregate.getTiltakgjennomforingId())
+                        .tiltakdeltakerId(aggregate.getTiltakdeltakerId())
+                        .eksternId(aggregate.getEksternIdAsUuid().orElse(null))
                         .status(ArenaAgreementMigrationStatus.PROCESSING)
                         .modified(LocalDateTime.now())
                         .build()
