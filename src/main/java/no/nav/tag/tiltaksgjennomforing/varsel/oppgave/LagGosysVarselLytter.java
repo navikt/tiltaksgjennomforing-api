@@ -5,12 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArena;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -65,23 +61,6 @@ class LagGosysVarselLytter {
         } catch (Exception e) {
             log.error("Klarte ikke opprette oppgave for 'vtao-avtale inngått' (avtaleid = {})", avtale.getId(), e);
             throw e;
-        }
-    }
-
-    @TransactionalEventListener
-    public void opprettGosysVarsel(AvtaleOpprettetAvArbeidsgiver event) {
-        varsleGosysOmOpprettetAvtale(event.getAvtale());
-    }
-
-    @TransactionalEventListener
-    public void opprettGosysVarsel(AvtaleOpprettetAvArena event) {
-        varsleGosysOmOpprettetAvtale(event.getAvtale());
-    }
-
-    @TransactionalEventListener
-    public void opprettVTAOGosysVarsel(AvtaleInngått event) {
-        if (event.getAvtale().getTiltakstype().equals(Tiltakstype.VTAO)) {
-            varsleGosysOmInngaattVTAOAvtale(event.getAvtale());
         }
     }
 }
