@@ -21,7 +21,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Unprotected
@@ -80,7 +81,7 @@ public class ArenaSimulatorController {
 
     @GetMapping("/trigger")
     public ResponseEntity<?> trigger() {
-        List<ArenaAgreementAggregate> arenaAgreements = arenaAgreementService.getArenaAgreementsForProcessing();
+        Map<UUID, ArenaAgreementAggregate> arenaAgreements = arenaAgreementService.getArenaAgreementsForProcessing();
 
         if (!arenaAgreements.isEmpty()) {
             arenaAgreementService.processAgreements(arenaAgreements);
