@@ -89,7 +89,7 @@ public class ArenaTiltakgjennomforing {
     private Tiltakstatuskode tiltakstatuskode;
 
     @JsonProperty("PROSENT_DELTID")
-    private Integer prosentDeltid;
+    private String prosentDeltid;
 
     @JsonProperty("KOMMENTAR")
     private String kommentar;

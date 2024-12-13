@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.arena.service;
 
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.arena.client.acl.AktivitetArenaAclClient;
 import no.nav.tag.tiltaksgjennomforing.arena.client.hendelse.HendelseAktivitetsplanClient;
@@ -186,8 +187,8 @@ public class ArenaAgreementProcessingService {
                 EndreAvtaleArena endreAvtale = EndreAvtaleArena.builder()
                     .startdato(agreementAggregate.findStartdato().orElse(null))
                     .sluttdato(agreementAggregate.findSluttdato().orElse(null))
-                    .antallDagerPerUke(agreementAggregate.getAntallDagerPrUke() != null ? Integer.parseInt(agreementAggregate.getAntallDagerPrUke()) : null)
-                    .stillingprosent(agreementAggregate.getProsentDeltid())
+                    .antallDagerPerUke(Strings.isNullOrEmpty(agreementAggregate.getAntallDagerPrUke()) ? null : Double.parseDouble(agreementAggregate.getAntallDagerPrUke()))
+                    .stillingprosent(Strings.isNullOrEmpty(agreementAggregate.getProsentDeltid()) ? null : Double.parseDouble(agreementAggregate.getProsentDeltid()))
                     .handling(EndreAvtaleArena.Handling.map(action))
                     .build();
 
@@ -271,9 +272,9 @@ public class ArenaAgreementProcessingService {
             .ifPresent(avtaleinnhold::setStartDato);
         agreementAggregate.findSluttdato()
             .ifPresent(avtaleinnhold::setSluttDato);
-        Optional.ofNullable(agreementAggregate.getAntallDagerPrUke() != null ? Integer.parseInt(agreementAggregate.getAntallDagerPrUke()) : null)
+        Optional.ofNullable(Strings.isNullOrEmpty(agreementAggregate.getAntallDagerPrUke()) ? null : Double.parseDouble(agreementAggregate.getAntallDagerPrUke()))
             .ifPresent(avtaleinnhold::setAntallDagerPerUke);
-        Optional.ofNullable(agreementAggregate.getProsentDeltid())
+        Optional.ofNullable(Strings.isNullOrEmpty(agreementAggregate.getProsentDeltid()) ? null : Double.parseDouble(agreementAggregate.getProsentDeltid()))
             .ifPresent(avtaleinnhold::setStillingprosent);
 
         avtale.setGodkjentForEtterregistrering(true);
@@ -321,5 +322,4 @@ public class ArenaAgreementProcessingService {
             }
         }
     }
-
 }
