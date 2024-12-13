@@ -10,7 +10,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -36,7 +37,7 @@ public class ArenaAgreementJob {
             return;
         }
 
-        List<ArenaAgreementAggregate> arenaAgreements = arenaAgreementService.getArenaAgreementsForProcessing();
+        Map<UUID, ArenaAgreementAggregate> arenaAgreements = arenaAgreementService.getArenaAgreementsForProcessing();
 
         if (!arenaAgreements.isEmpty()) {
             arenaAgreementService.processAgreements(arenaAgreements);

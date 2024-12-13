@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -27,17 +29,21 @@ public class ArenaAgreementService {
     }
 
     @Transactional
-    public List<ArenaAgreementAggregate> getArenaAgreementsForProcessing() {
-        List<ArenaAgreementAggregate> agreementAggregates = arenaAgreementMigrationRepository.findMigrationAgreementAggregates();
+    public Map<UUID, ArenaAgreementAggregate> getArenaAgreementsForProcessing() {
+        Map<UUID, ArenaAgreementAggregate> agreementAggregates = arenaAgreementMigrationRepository.findMigrationAgreementAggregates()
+                .stream()
+                .collect(Collectors.toMap(aggregate -> UUID.randomUUID(), aggregate -> aggregate));
 
         arenaAgreementMigrationRepository.saveAll(
             agreementAggregates
+                .entrySet()
                 .stream()
-                .map(aggregate ->
+                .map(entry ->
                     ArenaAgreementMigration.builder()
-                        .tiltakgjennomforingId(aggregate.getTiltakgjennomforingId())
-                        .tiltakdeltakerId(aggregate.getTiltakdeltakerId())
-                        .eksternId(aggregate.getEksternIdAsUuid().orElse(null))
+                        .id(entry.getKey())
+                        .tiltakgjennomforingId(entry.getValue().getTiltakgjennomforingId())
+                        .tiltakdeltakerId(entry.getValue().getTiltakdeltakerId())
+                        .eksternId(entry.getValue().getEksternIdAsUuid().orElse(null))
                         .status(ArenaAgreementMigrationStatus.PROCESSING)
                         .modified(LocalDateTime.now())
                         .build()
@@ -48,11 +54,11 @@ public class ArenaAgreementService {
         return agreementAggregates;
     }
 
-    public void processAgreements(List<ArenaAgreementAggregate> agreements) {
+    public void processAgreements(Map<UUID, ArenaAgreementAggregate> agreements) {
         log.info("Prosseserer {} avtaler fra Arena", agreements.size());
 
-        for (ArenaAgreementAggregate agreement : agreements) {
-            arenaAgreementProcessingService.process(agreement);
+        for (Map.Entry<UUID, ArenaAgreementAggregate> entry : agreements.entrySet()) {
+            arenaAgreementProcessingService.process(entry.getKey(), entry.getValue());
         }
     }
 

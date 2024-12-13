@@ -77,7 +77,7 @@ public class ArenaAgreementProcessingService {
     @Transactional
     @ArenaAgreementLogging
     @Async("arenaThreadPoolExecutor")
-    public void process(ArenaAgreementAggregate agreementAggregate) {
+    public void process(UUID migrationId, ArenaAgreementAggregate agreementAggregate) {
         UUID eksternId = agreementAggregate.getEksternIdAsUuid().orElse(null);
         Integer tiltaksgjennomforingId = agreementAggregate.getTiltakgjennomforingId();
         Integer tiltakdeltakerId = agreementAggregate.getTiltakdeltakerId();
@@ -100,6 +100,7 @@ public class ArenaAgreementProcessingService {
                         completed.avtale().getStatus()
                     );
                     saveMigrationStatus(
+                        migrationId,
                         tiltaksgjennomforingId,
                         tiltakdeltakerId,
                         ArenaAgreementMigrationStatus.COMPLETED,
@@ -110,6 +111,7 @@ public class ArenaAgreementProcessingService {
                 }
                 case ArenaMigrationProcessResult.Ignored ignored ->
                     saveMigrationStatus(
+                        migrationId,
                         tiltaksgjennomforingId,
                         tiltakdeltakerId,
                         ArenaAgreementMigrationStatus.COMPLETED,
@@ -121,6 +123,7 @@ public class ArenaAgreementProcessingService {
         } catch(Exception e) {
             log.error("Feil ved prossesering av avtale fra Arena", e);
             saveMigrationStatus(
+                migrationId,
                 tiltaksgjennomforingId,
                 tiltakdeltakerId,
                 ArenaAgreementMigrationStatus.FAILED,
@@ -132,6 +135,7 @@ public class ArenaAgreementProcessingService {
     }
 
     private void saveMigrationStatus(
+            UUID id,
             Integer tiltakgjennomforingId,
             Integer tiltakdeltakerId,
             ArenaAgreementMigrationStatus status,
@@ -141,7 +145,7 @@ public class ArenaAgreementProcessingService {
     ) {
         arenaAgreementMigrationRepository.save(
             ArenaAgreementMigration.builder()
-                .id(UUID.randomUUID())
+                .id(id)
                 .tiltakgjennomforingId(tiltakgjennomforingId)
                 .tiltakdeltakerId(tiltakdeltakerId)
                 .status(status)
