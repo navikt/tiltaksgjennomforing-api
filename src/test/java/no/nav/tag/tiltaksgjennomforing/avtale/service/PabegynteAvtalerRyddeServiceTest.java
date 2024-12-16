@@ -63,116 +63,7 @@ class PabegynteAvtalerRyddeServiceTest {
     }
 
     @Test
-    void skal_ikke_røre_noen_avtaler_før_28_november() {
-        Now.fixedDate(LocalDate.of(2024, 11, 1));
-
-        List<Avtale> avtaler = List.of(
-            mockAvtale(LocalDateTime.of(1989, 10, 8, 12, 0)),
-            mockAvtale(LocalDateTime.of(2000, 12, 31, 23, 59)),
-            mockAvtale(LocalDateTime.of(2019, 3, 11, 19, 18)),
-            mockAvtale(LocalDateTime.of(2021, 2, 28, 19, 18)),
-            mockAvtale(LocalDateTime.of(2023, 10, 8, 12, 0)),
-            mockAvtale(LocalDateTime.of(2024, 12, 24, 14, 40)),
-            mockAvtale(LocalDateTime.of(2025, 5, 19, 11, 20))
-        );
-
-        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(avtaler);
-
-        PabegynteAvtalerRyddeService pabegynteAvtalerRyddeService = new PabegynteAvtalerRyddeService(
-            avtaleRepositoryMock,
-            featureToggleServiceMock
-        );
-        pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
-
-        verify(avtaleRepositoryMock, times(0)).save(any());
-
-        Now.fixedDate(LocalDate.of(2024, 11, 21));
-
-        pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
-
-        verify(avtaleRepositoryMock, times(0)).save(any());
-
-        Now.fixedDate(LocalDate.of(2024, 11, 27));
-
-        pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
-
-        verify(avtaleRepositoryMock, times(0)).save(any());
-    }
-
-    @Test
-    void varsler_avtaler_som_har_en_uke_igjen_til_den_28_november() {
-        Now.fixedDate(LocalDate.of(2024, 11, 22));
-
-        Avtale skalVarsle1 = mockAvtale(LocalDateTime.of(1989, 10, 8, 12, 0));
-        Avtale skalVarsle2 = mockAvtale(LocalDateTime.of(2000, 12, 31, 23, 59));
-        Avtale skalVarsle3 = mockAvtale(LocalDateTime.of(2019, 3, 11, 19, 18));
-        Avtale skalVarsle4 = mockAvtale(LocalDateTime.of(2021, 2, 28, 19, 18));
-        Avtale skalVarsle5 = mockAvtale(LocalDateTime.of(2023, 10, 8, 12, 0));
-
-        List<Avtale> avtaler = List.of(
-            skalVarsle1,
-            skalVarsle2,
-            skalVarsle3,
-            skalVarsle4,
-            skalVarsle5,
-            mockAvtale(LocalDateTime.of(2024, 12, 24, 14, 40)),
-            mockAvtale(LocalDateTime.of(2025, 5, 19, 11, 20))
-        );
-
-        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(avtaler);
-
-        PabegynteAvtalerRyddeService pabegynteAvtalerRyddeService = new PabegynteAvtalerRyddeService(
-            avtaleRepositoryMock,
-            featureToggleServiceMock
-        );
-        pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
-
-        verify(skalVarsle1, times(1)).utlop(AvtaleUtlopHandling.VARSEL_EN_UKE);
-        verify(skalVarsle2, times(1)).utlop(AvtaleUtlopHandling.VARSEL_EN_UKE);
-        verify(skalVarsle3, times(1)).utlop(AvtaleUtlopHandling.VARSEL_EN_UKE);
-        verify(skalVarsle4, times(1)).utlop(AvtaleUtlopHandling.VARSEL_EN_UKE);
-        verify(skalVarsle5, times(1)).utlop(AvtaleUtlopHandling.VARSEL_EN_UKE);
-        verify(avtaleRepositoryMock, times(5)).save(any());
-    }
-
-    @Test
-    void varsler_avtaler_som_har_24_timer_igjen_til_den_28_november() {
-        Now.fixedDate(LocalDate.of(2024, 11, 28));
-
-        Avtale skalVarsle1 = mockAvtale(LocalDateTime.of(1989, 10, 8, 12, 0));
-        Avtale skalVarsle2 = mockAvtale(LocalDateTime.of(2000, 12, 31, 23, 59));
-        Avtale skalVarsle3 = mockAvtale(LocalDateTime.of(2019, 3, 11, 19, 18));
-        Avtale skalVarsle4 = mockAvtale(LocalDateTime.of(2021, 2, 28, 19, 18));
-        Avtale skalVarsle5 = mockAvtale(LocalDateTime.of(2023, 10, 8, 12, 0));
-
-        List<Avtale> avtaler = List.of(
-            skalVarsle1,
-            skalVarsle2,
-            skalVarsle3,
-            skalVarsle4,
-            skalVarsle5,
-            mockAvtale(LocalDateTime.of(2024, 12, 15, 14, 40)),
-            mockAvtale(LocalDateTime.of(2025, 5, 19, 11, 20))
-        );
-
-        when(avtaleRepositoryMock.findAvtalerSomErPabegyntEllerManglerGodkjenning()).thenReturn(avtaler);
-
-        PabegynteAvtalerRyddeService pabegynteAvtalerRyddeService = new PabegynteAvtalerRyddeService(
-            avtaleRepositoryMock,
-            featureToggleServiceMock
-        );
-        pabegynteAvtalerRyddeService.ryddAvtalerSomErPabegyntEllerManglerGodkjenning();
-
-        verify(skalVarsle1, times(1)).utlop(AvtaleUtlopHandling.VARSEL_24_TIMER);
-        verify(skalVarsle2, times(1)).utlop(AvtaleUtlopHandling.VARSEL_24_TIMER);
-        verify(skalVarsle3, times(1)).utlop(AvtaleUtlopHandling.VARSEL_24_TIMER);
-        verify(skalVarsle4, times(1)).utlop(AvtaleUtlopHandling.VARSEL_24_TIMER);
-        verify(skalVarsle5, times(1)).utlop(AvtaleUtlopHandling.VARSEL_24_TIMER);
-        verify(avtaleRepositoryMock, times(5)).save(any());
-    }
-
-    @Test
-    void skal_utlope_gamle_avtaler_etter_28_novemeber() {
+    void utloper_gamle_avtaler() {
         Now.fixedDate(LocalDate.of(2024, 11, 29));
 
         Avtale skalUtlope1 = mockAvtale(LocalDateTime.of(1989, 10, 8, 12, 0));
@@ -247,7 +138,7 @@ class PabegynteAvtalerRyddeServiceTest {
 
     @Test
     @Transactional
-    void skal_bare_ta_avtaler_som_er_pabegynt_eller_mangler_godkjenning() {
+    void tar_bare_avtaler_som_er_pabegynt_eller_mangler_godkjenning() {
         PabegynteAvtalerRyddeService pabegynteAvtalerRyddeService = new PabegynteAvtalerRyddeService(
             avtaleRepository,
             featureToggleServiceMock
