@@ -1,8 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.satser;
 
 import java.time.LocalDate;
-import java.time.Month;
-import java.time.Year;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -14,9 +12,14 @@ public class Sats {
 
     public static final Sats INKLUDERINGSTILSKUDD_SATS = new Sats(List.of(
             new SatsPeriodeData(
+                    154_800,
+                    LocalDate.of(2025, 1, 1),
+                    null
+            ),
+            new SatsPeriodeData(
                     149_100,
                     LocalDate.of(2024, 1, 1),
-                    null
+                    LocalDate.of(2024, 12, 31)
             ),
             new SatsPeriodeData(
                     143_900,
