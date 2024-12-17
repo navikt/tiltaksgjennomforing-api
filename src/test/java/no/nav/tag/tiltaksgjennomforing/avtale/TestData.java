@@ -187,22 +187,6 @@ public class TestData {
         return avtale;
     }
 
-    public static Avtale enMidlertidigLønnstilskuddsRyddeAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate startDato, LocalDate sluttDato) {
-        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
-        avtale.setArenaRyddeAvtale(new ArenaRyddeAvtale());
-        setOppfølgingOgGeografiskPåAvtale(avtale);
-        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
-        EndreAvtale endring = TestData.endringPåAlleLønnstilskuddFelter();
-        endring.setStartDato(startDato);
-        endring.setSluttDato(sluttDato);
-        avtale.setGodkjentForEtterregistrering(true);
-        avtale.endreAvtale(Now.instant(), endring, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
-        avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
-        avtale.godkjennForDeltaker(TestData.enIdentifikator());
-        avtale.godkjennForVeileder(TestData.enNavIdent());
-        return avtale;
-    }
-
     public static Avtale enMidlertidigLonnstilskuddAvtaleMedAltUtfylt() {
         return enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
     }
