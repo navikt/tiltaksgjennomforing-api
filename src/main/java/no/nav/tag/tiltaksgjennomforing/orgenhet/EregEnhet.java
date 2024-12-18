@@ -19,10 +19,6 @@ public record EregEnhet (
     }
 
     public record EregNavn (
-        String navnelinje1,
-        String navnelinje2,
-        String navnelinje3,
-        String navnelinje4,
         String sammensattnavn
     ) {}
 
