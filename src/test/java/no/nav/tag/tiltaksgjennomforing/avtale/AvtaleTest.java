@@ -416,7 +416,7 @@ public class AvtaleTest {
     public void test_riktig_beregning_VTAO_Lonnstilskudd_Avtale() {
         Now.fixedDate(LocalDate.of(2024, 7, 29));
         Avtale avtale = TestData.enVtaoAvtaleGodkjentAvArbeidsgiver();
-        List<Integer> forventedeBelop = Arrays.asList(671, 6808, 6808, 6808, 6808, 6808, null, null, null, null, null, null, null);
+        List<Integer> forventedeBelop = Arrays.asList(671, 6808, 6808, 6808, 6808, 6808, 7067, 7067, 7067, 7067, 7067, 7067, 6501);
         assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(forventedeBelop);
         avtale.opphevGodkjenningerSomVeileder();
         EndreAvtale endreAvtale = new EndreAvtale();
@@ -442,7 +442,7 @@ public class AvtaleTest {
 
         final int FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE = 13;
         assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList().size()).isEqualTo(FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE);
-        List<Integer> forventedeBelopEtterEndring = Arrays.asList(671, 6808, 6808, 6808, 6808, 6808, null, null, null, null, null, null, null);
+        List<Integer> forventedeBelopEtterEndring = Arrays.asList(671, 6808, 6808, 6808, 6808, 6808, 7067, 7067, 7067, 7067, 7067, 7067, 6501);
         assertThat(avtale.getTilskuddPeriode().stream().map(TilskuddPeriode::getBeløp).toList()).isEqualTo(forventedeBelopEtterEndring);
 
         double otpSats = 0.048;
