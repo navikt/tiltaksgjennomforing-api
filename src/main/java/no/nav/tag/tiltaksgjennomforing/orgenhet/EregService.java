@@ -22,10 +22,14 @@ public class EregService {
                 .toUri();
         try {
             EregEnhet eregEnhet = restTemplate.getForObject(uri, EregEnhet.class);
-            if ("JuridiskEnhet".equals(eregEnhet.getType())) {
+            if ("JuridiskEnhet".equals(eregEnhet.type())) {
                 throw new EnhetErJuridiskException();
-            } else if ("Organisasjonsledd".equals(eregEnhet.getType())) {
+            }
+            if ("Organisasjonsledd".equals(eregEnhet.type())) {
                 throw new EnhetErOrganisasjonsleddException();
+            }
+            if (!eregEnhet.erAktiv()) {
+                throw new EnhetErSlettetException();
             }
             return eregEnhet.konverterTilDomeneObjekt();
         } catch (RestClientException e) {

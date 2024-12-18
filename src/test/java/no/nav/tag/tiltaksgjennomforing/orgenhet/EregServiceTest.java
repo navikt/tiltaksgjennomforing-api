@@ -29,6 +29,11 @@ public class EregServiceTest {
 
     @Test
     public void hentBedriftNavn__kaster_exception_ved_404() {
-        assertThatThrownBy(() -> eregService.hentVirksomhet(new BedriftNr("799999999"))).isExactlyInstanceOf(EnhetFinnesIkkeException.class);
+        assertThatThrownBy(() -> eregService.hentVirksomhet(new BedriftNr("699999999"))).isExactlyInstanceOf(EnhetFinnesIkkeException.class);
+    }
+
+    @Test
+    public void hentBedriftNavn__kaster_exception_dersom_enhet_er_slettet() {
+        assertThatThrownBy(() -> eregService.hentVirksomhet(new BedriftNr("799999999"))).isExactlyInstanceOf(EnhetErSlettetException.class);
     }
 }
