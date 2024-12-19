@@ -15,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -147,12 +149,16 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         return super.avtalenEksisterer(avtale);
     }
 
-    private boolean harTilgangPåTiltakIBedrift(BedriftNr bedriftNr, Tiltakstype tiltakstype) {
+    private Set<Tiltakstype> harTilgangPåTiltakIBedrift(BedriftNr bedriftNr, Set<Tiltakstype> tiltakstyper) {
         if (!tilganger.containsKey(bedriftNr)) {
-            return false;
+            return Collections.emptySet();
         }
         Collection<Tiltakstype> gyldigeTilgangerPåBedriftNr = tilganger.get(bedriftNr);
-        return gyldigeTilgangerPåBedriftNr.contains(tiltakstype);
+        return tiltakstyper.stream().filter(gyldigeTilgangerPåBedriftNr::contains).collect(Collectors.toSet());
+    }
+
+    private boolean harTilgangPåTiltakIBedrift(BedriftNr bedriftNr, Tiltakstype tiltakstype) {
+        return !harTilgangPåTiltakIBedrift(bedriftNr, Set.of(tiltakstype)).isEmpty();
     }
 
     @Override
@@ -161,11 +167,13 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
             return Page.empty();
         }
         Page<Avtale> avtaler;
-        if (queryParametre.getTiltakstype() != null) {
-            if (harTilgangPåTiltakIBedrift(queryParametre.getBedriftNr(), queryParametre.getTiltakstype()))
-                avtaler = avtaleRepository.findAllByBedriftNrInAndTiltakstypeAndFeilregistrertIsFalse(Set.of(queryParametre.getBedriftNr()), queryParametre.getTiltakstype(), pageable);
+        if (queryParametre.getTiltakstype() != null || !queryParametre.getTiltakstyper().isEmpty()) {
+            Set<Tiltakstype> tiltakstyper = queryParametre.getTiltakstype() != null ? Set.of(queryParametre.getTiltakstype()) : new HashSet<>(queryParametre.getTiltakstyper());
+            Set<Tiltakstype> tiltakstyperArbeidsgiverHarTilgangTil = harTilgangPåTiltakIBedrift(queryParametre.getBedriftNr(), tiltakstyper);
+            if (!tiltakstyperArbeidsgiverHarTilgangTil.isEmpty())
+                avtaler = avtaleRepository.findAllByBedriftNrInAndTiltakstypeInAndFeilregistrertIsFalse(Set.of(queryParametre.getBedriftNr()), tiltakstyperArbeidsgiverHarTilgangTil, pageable);
             else if (queryParametre.getBedriftNr() == null) {
-                avtaler = avtaleRepository.findAllByBedriftNrInAndTiltakstypeAndFeilregistrertIsFalse(tilganger.keySet(), queryParametre.getTiltakstype(), pageable);
+                avtaler = avtaleRepository.findAllByBedriftNrInAndTiltakstypeInAndFeilregistrertIsFalse(tilganger.keySet(), tiltakstyper, pageable);
             } else { // Bruker ba om informasjon på en bedrift hen ikke har tilgang til, og får dermed tom liste
                 avtaler = Page.empty();
             }
