@@ -1358,6 +1358,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_STILLING);
         getGjeldendeInnhold().endreStillingsInfo(endreStillingsbeskrivelse);
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
+        getGjeldendeInnhold().reberegnLønnstilskudd();
         sendTilbakeTilBeslutter();
         utforEndring(new StillingsbeskrivelseEndret(this, utførtAv));
     }
