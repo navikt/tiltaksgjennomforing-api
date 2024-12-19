@@ -187,10 +187,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     private boolean feilregistrert;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "avtale", fetch = FetchType.EAGER)
-    private ArenaRyddeAvtale arenaRyddeAvtale;
-
-    @JsonIgnore
     @Transient
     private FnrOgBedrift fnrOgBedrift;
 
@@ -395,11 +391,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             case MENTOR -> gjeldendeInnhold.getMentorTlf();
             default -> throw new IllegalArgumentException();
         };
-    }
-
-    @JsonProperty
-    public boolean erRyddeAvtale() {
-        return arenaRyddeAvtale != null;
     }
 
     @JsonProperty
