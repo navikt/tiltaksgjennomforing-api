@@ -9,7 +9,6 @@ import no.nav.tag.tiltaksgjennomforing.arena.configuration.ArenaKafkaProperties;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaKafkaMessage;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakdeltaker;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakgjennomforing;
-import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakssak;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Operation;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementAggregate;
 import no.nav.tag.tiltaksgjennomforing.arena.service.ArenaAgreementService;
@@ -22,7 +21,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Unprotected
@@ -63,22 +63,6 @@ public class ArenaSimulatorController {
         }
     }
 
-    @PostMapping("/tiltakssak-endret")
-    public ResponseEntity<?> tiltakssakEndret(
-        @RequestBody ArenaKafkaMessage melding
-    ) {
-        try {
-            JsonNode payload = Operation.DELETE.getOperation().equals(melding.opType()) ? melding.before() : melding.after();
-            ArenaTiltakssak tiltaksakEndret =  objectMapper.treeToValue(payload, ArenaTiltakssak.class);
-
-            String id = tiltaksakEndret.getSakId().toString();
-            arenaMockKafkaTemplate.send(arenaKafkaProperties.getTiltakssakEndretTopic(), id, melding);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getCause().getMessage());
-        }
-    }
-
     @PostMapping("/tiltakdeltaker-endret")
     public ResponseEntity<?> tiltakdeltakerEndret(
         @RequestBody ArenaKafkaMessage melding
@@ -97,7 +81,7 @@ public class ArenaSimulatorController {
 
     @GetMapping("/trigger")
     public ResponseEntity<?> trigger() {
-        List<ArenaAgreementAggregate> arenaAgreements = arenaAgreementService.getArenaAgreementsForProcessing();
+        Map<UUID, ArenaAgreementAggregate> arenaAgreements = arenaAgreementService.getArenaAgreementsForProcessing();
 
         if (!arenaAgreements.isEmpty()) {
             arenaAgreementService.processAgreements(arenaAgreements);

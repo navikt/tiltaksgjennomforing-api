@@ -20,27 +20,27 @@ public class GjeldendeTilskuddsperiodeTest {
 
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfyltMedGodkjentForEtterregistrering(avtaleStart, avtaleSlutt);
 
-        assertThat(avtale.tilskuddsperiode(0)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
+        assertThat(avtale.tilskuddsperiode(0)).isEqualTo(avtale.getGjeldendeTilskuddsperiode());
 
         avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), "0000");
-        assertThat(avtale.tilskuddsperiode(1)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
+        assertThat(avtale.tilskuddsperiode(1)).isEqualTo(avtale.getGjeldendeTilskuddsperiode());
 
         avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), "0000");
-        assertThat(avtale.tilskuddsperiode(2)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
+        assertThat(avtale.tilskuddsperiode(2)).isEqualTo(avtale.getGjeldendeTilskuddsperiode());
 
         avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), "0000");
-        assertThat(avtale.tilskuddsperiode(3)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
+        assertThat(avtale.tilskuddsperiode(3)).isEqualTo(avtale.getGjeldendeTilskuddsperiode());
 
         avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), "0000");
-        assertThat(avtale.tilskuddsperiode(4)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
+        assertThat(avtale.tilskuddsperiode(4)).isEqualTo(avtale.getGjeldendeTilskuddsperiode());
 
 
         avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), "0000");
-        assertThat(avtale.tilskuddsperiode(5)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
+        assertThat(avtale.tilskuddsperiode(5)).isEqualTo(avtale.getGjeldendeTilskuddsperiode());
 
         // Tilskuddsperiode index 5 har startdato som er mer enn 3 mnd frem i tid og vil ikke bli godkjent, slik den vil fortsatt være gjeldende.
         avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), "0000");
-        assertThat(avtale.tilskuddsperiode(5)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
+        assertThat(avtale.tilskuddsperiode(5)).isEqualTo(avtale.getGjeldendeTilskuddsperiode());
 
         Now.resetClock();
     }
@@ -51,7 +51,7 @@ public class GjeldendeTilskuddsperiodeTest {
         LocalDate avtaleStart = Now.localDate();
         LocalDate avtaleSlutt = Now.localDate();
         Avtale avtale = enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
-        assertThat(avtale.tilskuddsperiode(0)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
+        assertThat(avtale.tilskuddsperiode(0)).isEqualTo(avtale.getGjeldendeTilskuddsperiode());
     }
 
     // 5
@@ -60,7 +60,7 @@ public class GjeldendeTilskuddsperiodeTest {
         LocalDate avtaleStart = Now.localDate().plusDays(15);
         LocalDate avtaleSlutt = Now.localDate().plusMonths(8);
         Avtale avtale = enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
-        assertThat(avtale.tilskuddsperiode(0)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
+        assertThat(avtale.tilskuddsperiode(0)).isEqualTo(avtale.getGjeldendeTilskuddsperiode());
     }
 
     // 6
@@ -73,7 +73,7 @@ public class GjeldendeTilskuddsperiodeTest {
         Avtale avtale = TestData.enLonnstilskuddAvtaleMedAltUtfyltMedGodkjentForEtterregistrering(avtaleStart, avtaleSlutt);
 
         avtale.avslåTilskuddsperiode(TestData.enNavIdent2(), EnumSet.of(Avslagsårsak.ANNET), "Forklaring");
-        assertThat(avtale.tilskuddsperiode(0)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
+        assertThat(avtale.tilskuddsperiode(0)).isEqualTo(avtale.getGjeldendeTilskuddsperiode());
         Now.resetClock();
     }
 
@@ -84,7 +84,7 @@ public class GjeldendeTilskuddsperiodeTest {
         LocalDate avtaleSlutt = Now.localDate().plusMonths(8);
         Avtale avtale = enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
         avtale.avslåTilskuddsperiode(TestData.enNavIdent2(), EnumSet.of(Avslagsårsak.ANNET), "Forklaring");
-        assertThat(avtale.tilskuddsperiode(0)).isEqualTo(avtale.gjeldendeTilskuddsperiode());
+        assertThat(avtale.tilskuddsperiode(0)).isEqualTo(avtale.getGjeldendeTilskuddsperiode());
     }
 
     // 8
@@ -95,10 +95,10 @@ public class GjeldendeTilskuddsperiodeTest {
         LocalDate avtaleStart = Now.localDate();
         LocalDate avtaleSlutt = Now.localDate().plusMonths(6);
         Avtale avtale = enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
-        assertThat(avtale.gjeldendeTilskuddsperiode().getStartDato()).isEqualTo(avtaleStart);
+        assertThat(avtale.getGjeldendeTilskuddsperiode().getStartDato()).isEqualTo(avtaleStart);
         avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), avtale.getEnhetGeografisk());
-        assertThat(avtale.gjeldendeTilskuddsperiode().getStartDato()).isEqualTo(avtaleStart);
-        assertThat(avtale.gjeldendeTilskuddsperiode().getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
+        assertThat(avtale.getGjeldendeTilskuddsperiode().getStartDato()).isEqualTo(avtaleStart);
+        assertThat(avtale.getGjeldendeTilskuddsperiode().getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
         Now.resetClock();
     }
 
@@ -109,16 +109,16 @@ public class GjeldendeTilskuddsperiodeTest {
         LocalDate avtaleSlutt = Now.localDate().plusMonths(6);
         Avtale avtale = enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter(avtaleStart, avtaleSlutt);
 
-        assertThat(avtale.gjeldendeTilskuddsperiode().getStartDato()).isEqualTo(avtaleStart);
+        assertThat(avtale.getGjeldendeTilskuddsperiode().getStartDato()).isEqualTo(avtaleStart);
         avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), avtale.getEnhetGeografisk());
-        assertThat(avtale.gjeldendeTilskuddsperiode()).isEqualTo(avtale.tilskuddsperiode(1));
+        assertThat(avtale.getGjeldendeTilskuddsperiode()).isEqualTo(avtale.tilskuddsperiode(1));
         avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), avtale.getEnhetGeografisk());
-        assertThat(avtale.gjeldendeTilskuddsperiode()).isEqualTo(avtale.tilskuddsperiode(2));
+        assertThat(avtale.getGjeldendeTilskuddsperiode()).isEqualTo(avtale.tilskuddsperiode(2));
         avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), avtale.getEnhetGeografisk());
-        assertThat(avtale.gjeldendeTilskuddsperiode()).isEqualTo(avtale.tilskuddsperiode(3));
+        assertThat(avtale.getGjeldendeTilskuddsperiode()).isEqualTo(avtale.tilskuddsperiode(3));
         avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), avtale.getEnhetGeografisk());
-        assertThat(avtale.gjeldendeTilskuddsperiode()).isEqualTo(avtale.tilskuddsperiode(3));
-        assertThat(avtale.gjeldendeTilskuddsperiode().getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
+        assertThat(avtale.getGjeldendeTilskuddsperiode()).isEqualTo(avtale.tilskuddsperiode(3));
+        assertThat(avtale.getGjeldendeTilskuddsperiode().getStatus()).isEqualTo(TilskuddPeriodeStatus.GODKJENT);
 
 
     }

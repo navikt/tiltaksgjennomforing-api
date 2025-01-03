@@ -20,6 +20,9 @@ public enum ArenaMigrationAction {
         boolean isSluttdatoInTheFuture = agreementAggregate.findSluttdato()
             .map(sluttdato -> sluttdato.isAfter(LocalDate.now())).orElse(false);
 
+        if (agreementAggregate.isDublett()) {
+            return IGNORER;
+        }
         return switch (deltakerstatuskode) {
             case GJENN, TILBUD -> isSluttdatoInTheFuture ? OPPRETT : IGNORER;
             case null, default -> IGNORER;
@@ -30,12 +33,16 @@ public enum ArenaMigrationAction {
         Avtale avtale,
         ArenaAgreementAggregate agreementAggregate
     ) {
-        Status avtalestatus = avtale.statusSomEnum();
+        Status avtalestatus = avtale.getStatus();
         Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
         Tiltakstatuskode tiltakstatuskode = agreementAggregate.getTiltakstatuskode();
         boolean isFeilregistrert = avtale.isFeilregistrert();
         boolean isSluttdatoIFremtiden = agreementAggregate.findSluttdato()
             .map(sluttdato -> sluttdato.isAfter(LocalDate.now())).orElse(false);
+
+        if (agreementAggregate.isDublett()) {
+            return IGNORER;
+        }
 
         return switch (avtalestatus) {
             case ANNULLERT, AVBRUTT -> switch (deltakerstatuskode) {

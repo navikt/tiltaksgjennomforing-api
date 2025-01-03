@@ -44,12 +44,4 @@ public class ArenaKafkaConsumer {
             arenaEventProcessingService.create(record.key(), record.value());
         }
     }
-
-    @KafkaListener(topics = "${tiltaksgjennomforing.arena.kafka.tiltakssak-endret-topic}", containerFactory = "arenaContainerFactory")
-    public void arenaTiltaksakEndret(ConsumerRecord<String, String> record) {
-        if (featureToggleService.isEnabled(FeatureToggle.ARENA_KAFKA)) {
-            log.info("Mottatt melding for {}: {}", arenaKafkaProperties.getTiltakssakEndretTopic(), record.key());
-            arenaEventProcessingService.create(record.key(), record.value());
-        }
-    }
 }

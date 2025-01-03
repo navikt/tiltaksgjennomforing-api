@@ -1,21 +1,20 @@
 package no.nav.tag.tiltaksgjennomforing.arena.repository;
 
-import jakarta.persistence.LockModeType;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementAggregate;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigration;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
 public interface ArenaAgreementMigrationRepository extends JpaRepository<ArenaAgreementMigration, Integer> {
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
         SELECT
             new ArenaAgreementAggregate(
-                ats.sakId,
+                atg.sakId,
                 atg.tiltakgjennomforingId,
                 atd.tiltakdeltakerId,
                 aof.personId,
@@ -26,21 +25,31 @@ public interface ArenaAgreementMigrationRepository extends JpaRepository<ArenaAg
                 atg.datoFra,
                 atg.datoTil,
                 atg.eksternId,
+                atd.eksternId,
                 atg.prosentDeltid,
                 atg.tiltakstatuskode,
                 atd.deltakerstatuskode,
                 atd.datoFra,
                 atd.datoTil,
-                ats.regDato
+                atg.regDato
             )
-        FROM ArenaTiltakssak ats
-        LEFT JOIN ArenaTiltakgjennomforing atg ON ats.sakId = atg.sakId
-        LEFT JOIN ArenaTiltakdeltaker atd ON atd.tiltakgjennomforingId = atg.tiltakgjennomforingId
+        FROM ArenaTiltakgjennomforing atg
+        FULL OUTER JOIN ArenaTiltakdeltaker atd ON atd.tiltakgjennomforingId = atg.tiltakgjennomforingId
         LEFT JOIN ArenaOrdsFnr aof ON atd.personId = aof.personId
         LEFT JOIN ArenaOrdsArbeidsgiver aoa ON atg.arbgivIdArrangor = aoa.arbgivIdArrangor
-        WHERE atg.tiltakgjennomforingId NOT IN (SELECT tiltakgjennomforingId FROM ArenaAgreementMigration)
-        ORDER BY atd.tiltakgjennomforingId LIMIT 1000
+        WHERE atg.tiltakgjennomforingId NOT IN (SELECT tiltakgjennomforingId FROM ArenaAgreementMigration) OR
+              atd.tiltakdeltakerId NOT IN (SELECT tiltakdeltakerId FROM ArenaAgreementMigration)
+        ORDER BY atd.tiltakgjennomforingId LIMIT 2500
     """)
     List<ArenaAgreementAggregate> findMigrationAgreementAggregates();
+
+    @Query("""
+        SELECT a
+        FROM Avtale a
+        WHERE a.tiltakstype = 'ARBEIDSTRENING'
+          AND a.status = 'GJENNOMFØRES'
+          AND a.id NOT IN (SELECT aam.avtaleId FROM ArenaAgreementMigration aam WHERE aam.avtaleId IS NOT NULL)
+    """)
+    List<Avtale> findAgreementsForCleanUp(Limit limit);
 
 }

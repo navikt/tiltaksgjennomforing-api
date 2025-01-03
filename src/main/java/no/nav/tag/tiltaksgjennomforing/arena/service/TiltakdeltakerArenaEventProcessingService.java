@@ -39,22 +39,16 @@ public class TiltakdeltakerArenaEventProcessingService implements IArenaEventPro
     public ArenaEventStatus process(ArenaEvent arenaEvent) throws JsonProcessingException {
         ArenaTiltakdeltaker tiltakdeltaker = this.objectMapper.treeToValue(arenaEvent.getPayload(), ArenaTiltakdeltaker.class);
 
-        boolean isTiltakgjennomforingIgnored = eventRepository.findByArenaIdAndArenaTable(
-            tiltakdeltaker.getTiltakgjennomforingId().toString(),
-            ArenaTable.TILTAKGJENNOMFORING.getTable()
-        )
-            .map((tiltak) -> ArenaEventStatus.IGNORED == tiltak.getStatus())
+        boolean isTiltakgjennomforingIgnoredOrDeleted = eventRepository.findByArenaIdAndArenaTable(
+                tiltakdeltaker.getTiltakgjennomforingId().toString(),
+                ArenaTable.TILTAKGJENNOMFORING.getTable()
+            )
+            .map((tiltak) -> ArenaEventStatus.IGNORED == tiltak.getStatus() || Operation.DELETE == tiltak.getOperation())
             .orElse(false);
 
-        if (isTiltakgjennomforingIgnored) {
-            log.info("Arena-event ignorert fordi tilhørende tiltakgjennomføring er ignorert");
-
-            delete(
-                tiltakdeltaker,
-                () -> log.info("Sletter tidligere håndtert deltaker som nå skal ignoreres")
-            );
-            ordsService.attemptDeleteFnr(tiltakdeltaker.getPersonId());
-
+        if (isTiltakgjennomforingIgnoredOrDeleted) {
+            log.info("Arena-event ignorert fordi tilhørende tiltakgjennomføring er ignorert eller slettet");
+            delete(tiltakdeltaker, () -> log.info("Sletter tidligere håndtert deltaker som nå skal ignoreres"));
             return ArenaEventStatus.IGNORED;
         }
 
@@ -65,7 +59,6 @@ public class TiltakdeltakerArenaEventProcessingService implements IArenaEventPro
 
         if (Operation.DELETE == arenaEvent.getOperation()) {
             delete(tiltakdeltaker, () -> log.info("Arena-event har operasjon DELETE og blir slettes"));
-            ordsService.attemptDeleteFnr(tiltakdeltaker.getPersonId());
             return ArenaEventStatus.DONE;
         }
 
@@ -92,7 +85,20 @@ public class TiltakdeltakerArenaEventProcessingService implements IArenaEventPro
                 (existingTiltaksak) -> {
                     onBeforeDelete.run();
                     tiltakdeltakerRepository.delete(existingTiltaksak);
+                    deleteFnr(arenaTiltakdeltaker.getPersonId());
                 }
             );
+    }
+
+    private void deleteFnr(Integer personId) {
+        if (personId == null) {
+            return;
+        }
+
+        if (!tiltakdeltakerRepository.findByPersonId(personId).isEmpty()) {
+            log.info("Person {} er fortsatt i bruk", personId);
+            return;
+        }
+        ordsService.attemptDeleteFnr(personId);
     }
 }

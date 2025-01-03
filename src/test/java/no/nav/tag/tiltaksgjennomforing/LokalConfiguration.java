@@ -34,8 +34,7 @@ public class LokalConfiguration {
         1,
         true,
         arenaKafkaProperties.getTiltakdeltakerEndretTopic(),
-        arenaKafkaProperties.getTiltakgjennomforingEndretTopic(),
-        arenaKafkaProperties.getTiltakssakEndretTopic()
+        arenaKafkaProperties.getTiltakgjennomforingEndretTopic()
     ).kafkaPorts(3333);
   }
 

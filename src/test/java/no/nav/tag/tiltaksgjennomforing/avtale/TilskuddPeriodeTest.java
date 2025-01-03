@@ -70,7 +70,7 @@ class TilskuddPeriodeTest {
         assertThat(tilskuddPeriode.erUtbetalt()).isTrue();
     }
 
-    static final Integer NESTE_AAR = 2025;
+    static final Integer NESTE_AAR = 2026;
     static final Integer NAAVAERENDE_AAR = NESTE_AAR - 1;
 
     @Test

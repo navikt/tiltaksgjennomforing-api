@@ -13,6 +13,7 @@ import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaEventRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,20 +28,17 @@ public class ArenaEventProcessingService {
     private final ObjectMapper objectMapper;
     private final ArenaEventRepository arenaEventRepository;
     private final TiltakgjennomforingArenaEventProcessingService tiltakgjennomforingArenaEventService;
-    private final TiltaksakArenaEventProcessingService tiltaksakArenaEventService;
     private final TiltakdeltakerArenaEventProcessingService tiltakdeltakerArenaEventService;
 
     public ArenaEventProcessingService(
         ObjectMapper objectMapper,
         ArenaEventRepository arenaEventRepository,
         TiltakgjennomforingArenaEventProcessingService tiltakgjennomforingArenaEventService,
-        TiltaksakArenaEventProcessingService tiltaksakArenaEventService,
         TiltakdeltakerArenaEventProcessingService tiltakdeltakerArenaEventService
     ) {
         this.objectMapper = objectMapper;
         this.arenaEventRepository = arenaEventRepository;
         this.tiltakgjennomforingArenaEventService = tiltakgjennomforingArenaEventService;
-        this.tiltaksakArenaEventService = tiltaksakArenaEventService;
         this.tiltakdeltakerArenaEventService = tiltakdeltakerArenaEventService;
     }
 
@@ -149,20 +147,15 @@ public class ArenaEventProcessingService {
         }
     }
 
+    @Transactional
     @ArenaEventLogging
     @Async("arenaThreadPoolExecutor")
     public void process(ArenaEvent arenaEvent) {
-        ArenaEvent processingEvent = arenaEvent.toBuilder()
-            .status(ArenaEventStatus.PROCESSING)
-            .build();
-
         log.info("Starter prosessering av arena-event");
-        arenaEventRepository.save(processingEvent);
 
         try {
             var result = switch (arenaEvent.getArenaTable()) {
                 case TILTAKGJENNOMFORING -> tiltakgjennomforingArenaEventService.process(arenaEvent);
-                case TILTAKSAK -> tiltaksakArenaEventService.process(arenaEvent);
                 case TILTAKDELTAKER -> tiltakdeltakerArenaEventService.process(arenaEvent);
             };
 

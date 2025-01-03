@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -103,6 +104,7 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
@@ -174,6 +176,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     @Enumerated(EnumType.STRING)
     private Formidlingsgruppe formidlingsgruppe;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @Nullable
+    @JsonIgnore
+    private TilskuddPeriode gjeldendeTilskuddsperiode;
     @OneToMany(mappedBy = "avtale", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT)
     @SortNatural
@@ -335,24 +341,20 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         Optional.ofNullable(endreAvtaleArena.getAntallDagerPerUke()).ifPresent(getGjeldendeInnhold()::setAntallDagerPerUke);
 
         if (EndreAvtaleArena.Handling.ANNULLER == action) {
-            annullerTilskuddsperioder();
-            annullertTidspunkt = Now.instant();
-            annullertGrunn = "Avtalen er annullert i Arena";
-            avbrutt = false;
-            avbruttDato = null;
-            avbruttGrunn = null;
-            utforEndring(new AnnullertAvSystem(this, Identifikator.ARENA));
-        } else {
-            annullertTidspunkt = null;
-            annullertGrunn = null;
-            avbrutt = false;
-            avbruttDato = null;
-            avbruttGrunn = null;
-            if (tiltakstyperMedTilskuddsperioder != null && tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
-                nyeTilskuddsperioder();
-            }
-            utforEndring(new AvtaleEndretAvArena(this));
+            annuller(Identifikator.ARENA, AnnullertGrunn.ANNULLERT_I_ARENA);
+            return;
         }
+
+        setAnnullertTidspunkt(null);
+        setAnnullertGrunn(null);
+        setAvbrutt(false);
+        setAvbruttDato(null);
+        setAvbruttGrunn(null);
+        setFeilregistrert(false);
+        if (tiltakstyperMedTilskuddsperioder != null && tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
+            nyeTilskuddsperioder();
+        }
+        utforEndring(new AvtaleEndretAvArena(this));
     }
 
     public void delMedAvtalepart(Avtalerolle avtalerolle) {
@@ -728,11 +730,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     @JsonProperty
-    public Status statusSomEnum() {
-        return Status.fra(this);
-    }
-
-    @JsonProperty
     public boolean kanAvbrytes() {
         return !isAvbrutt();
     }
@@ -743,32 +740,40 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     public void annuller(Veileder veileder, String annullerGrunn) {
+        annuller(veileder.getNavIdent(), annullerGrunn);
+    }
+
+    public void annuller(Identifikator identifikator, String annullerGrunn) {
         sjekkAtIkkeAvtalenInneholderUtbetaltTilskuddsperiode();
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
 
         annullerTilskuddsperioder();
         setAnnullertTidspunkt(Now.instant());
         setAnnullertGrunn(annullerGrunn);
+        setFeilregistrert(AnnullertGrunn.skalFeilregistreres(annullerGrunn));
+
+        Optional<NavIdent> veilederNavIdentOpt = Optional.ofNullable(identifikator)
+            .filter(i -> i instanceof NavIdent)
+            .map(i -> (NavIdent) i);
+
+        if (veilederNavIdentOpt.isEmpty()) {
+            utforEndring(new AnnullertAvSystem(this, identifikator));
+            return;
+        }
+
+        NavIdent veilederNavIdent = veilederNavIdentOpt.get();
         if (erUfordelt()) {
-            setVeilederNavIdent(veileder.getIdentifikator());
+            setVeilederNavIdent(veilederNavIdent);
         }
-        if (AnnullertGrunn.FEILREGISTRERING.equals(annullerGrunn)) {
-            setFeilregistrert(true);
-        }
-        utforEndring(new AnnullertAvVeileder(this, veileder.getIdentifikator()));
+
+        utforEndring(new AnnullertAvVeileder(this, veilederNavIdent));
     }
 
     public void utlop(AvtaleUtlopHandling handling) {
         switch (handling) {
             case VARSEL_EN_UKE -> registerEvent(new AvtaleUtloperVarsel(this, AvtaleUtloperVarsel.Type.OM_EN_UKE));
             case VARSEL_24_TIMER -> registerEvent(new AvtaleUtloperVarsel(this, AvtaleUtloperVarsel.Type.OM_24_TIMER));
-            case UTLOP -> {
-                annullerTilskuddsperioder();
-                setAnnullertTidspunkt(Now.instant());
-                setAnnullertGrunn(AnnullertGrunn.UTLØPT);
-                setFeilregistrert(true);
-                utforEndring(new AnnullertAvSystem(this, Identifikator.SYSTEM));
-            }
+            case UTLOP -> annuller(Identifikator.SYSTEM, AnnullertGrunn.UTLØPT);
         }
     }
 
@@ -834,11 +839,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         if (beslutter.equals(gjeldendeInnhold.getGodkjentAvNavIdent())) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_IKKE_GODKJENNE_EGNE);
         }
-        TilskuddPeriode gjeldendePeriode = gjeldendeTilskuddsperiode();
+        TilskuddPeriode gjeldendePeriode = getGjeldendeTilskuddsperiode();
 
         // Sjekk om samme løpenummer allerede er godkjent og annullert. Trenger da en "ekstra" resendingsnummer
         Integer resendingsnummer = finnResendingsNummer(gjeldendePeriode);
         gjeldendePeriode.godkjenn(beslutter, enhet);
+        setGjeldendeTilskuddsperiode(finnGjeldendeTilskuddsperiode());
         if (!erAvtaleInngått()) {
             LocalDateTime tidspunkt = Now.localDateTime();
             godkjennForBeslutter(tidspunkt, beslutter);
@@ -883,7 +889,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         if (!erGodkjentAvVeileder()) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_KAN_KUN_BEHANDLES_VED_INNGAATT_AVTALE);
         }
-        TilskuddPeriode gjeldendePeriode = gjeldendeTilskuddsperiode();
+        TilskuddPeriode gjeldendePeriode = getGjeldendeTilskuddsperiode();
         gjeldendePeriode.avslå(beslutter, avslagsårsaker, avslagsforklaring);
         utforEndring(new TilskuddsperiodeAvslått(this, beslutter, gjeldendePeriode));
     }
@@ -902,7 +908,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     protected TilskuddPeriodeStatus getGjeldendeTilskuddsperiodestatus() {
-        TilskuddPeriode tilskuddPeriode = gjeldendeTilskuddsperiode();
+        TilskuddPeriode tilskuddPeriode = getGjeldendeTilskuddsperiode();
         if (tilskuddPeriode == null) {
             return null;
         }
@@ -913,9 +919,30 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         return tilskuddPeriode.toArray(new TilskuddPeriode[0])[index];
     }
 
+    /**
+     * Vi ønsker å migrere til at "gjeldende tilskuddsperiode" lagres i databasen for å legge til rette for bedre
+     * filtreringsmuligheter for besluttere. I en overgangsfase bør all logikk basere seg på gammel implementasjon som
+     * "kalkulerer" gjeldende periode, men vi bør også logge eventuelle avvik for å sikre at systemet fungerer likt som
+     * før etter endringen.
+     * <p>
+     * TODO: Fjern gammel logikk, og denne disclaimeren
+     */
+    @Nullable
     @JsonProperty
-    public TilskuddPeriode gjeldendeTilskuddsperiode() {
-        TreeSet<TilskuddPeriode> aktiveTilskuddsperioder = new TreeSet<>(tilskuddPeriode.stream().filter(TilskuddPeriode::isAktiv).collect(Collectors.toSet()));
+    public TilskuddPeriode getGjeldendeTilskuddsperiode() {
+        var gjeldendePeriode = finnGjeldendeTilskuddsperiode();
+        var gjeldendePeriodeKalkulertId = gjeldendePeriode != null ? gjeldendePeriode.getId() : null;
+        var gjeldendeFraDbId = this.gjeldendeTilskuddsperiode != null ? this.gjeldendeTilskuddsperiode.getId() : null;
+        if (!Objects.equals(gjeldendePeriodeKalkulertId, gjeldendeFraDbId)) {
+            log.warn("Gjeldende tilskuddsperiode ikke oppdatert? Fant {}, men kalkulerte {}", gjeldendeFraDbId, gjeldendePeriodeKalkulertId);
+        }
+        return gjeldendePeriode;
+    }
+
+    public TilskuddPeriode finnGjeldendeTilskuddsperiode() {
+        TreeSet<TilskuddPeriode> aktiveTilskuddsperioder = tilskuddPeriode.stream()
+                .filter(TilskuddPeriode::isAktiv)
+                .collect(Collectors.toCollection(TreeSet::new));
 
         if (aktiveTilskuddsperioder.isEmpty()) {
             return null;
@@ -968,6 +995,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     void forlengTilskuddsperioder(LocalDate gammelSluttDato, LocalDate nySluttDato) {
         hentBeregningStrategi().forleng(this, gammelSluttDato, nySluttDato);
+        setGjeldendeTilskuddsperiode(finnGjeldendeTilskuddsperiode());
     }
 
     private void annullerTilskuddsperioder() {
@@ -979,6 +1007,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
                 annullerTilskuddsperiode(tilskuddsperiode);
             }
         }
+        setGjeldendeTilskuddsperiode(finnGjeldendeTilskuddsperiode());
     }
 
     private void forkortTilskuddsperioder(LocalDate nySluttDato) {
@@ -1000,6 +1029,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
                 }
             }
         }
+        setGjeldendeTilskuddsperiode(finnGjeldendeTilskuddsperiode());
     }
 
     void endreBeløpITilskuddsperioder() {
@@ -1015,6 +1045,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
                 .filter(t -> t.getStatus() == TilskuddPeriodeStatus.AVSLÅTT)
                 .map(TilskuddPeriode::deaktiverOgLagNyUbehandlet).toList();
         tilskuddPeriode.addAll(rettede);
+        setGjeldendeTilskuddsperiode(finnGjeldendeTilskuddsperiode());
     }
 
     private void sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt() {
@@ -1038,6 +1069,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     private void nyeTilskuddsperioder() {
         this.hentBeregningStrategi().genererNyeTilskuddsperioder(this);
+        setGjeldendeTilskuddsperiode(finnGjeldendeTilskuddsperiode());
     }
 
     private boolean sjekkRyddingAvTilskuddsperioder() {
@@ -1052,7 +1084,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             return false;
         }
         // Statuser som skal få tilskuddsperioder
-        Status status = statusSomEnum();
         return status != Status.ANNULLERT && status != Status.AVBRUTT;
     }
 
@@ -1096,6 +1127,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             fikseLøpenumre(tilskuddsperioder, 1);
             if (!dryRun) {
                 tilskuddPeriode.addAll(tilskuddsperioder);
+                setGjeldendeTilskuddsperiode(finnGjeldendeTilskuddsperiode());
             }
             return true;
         } else {
@@ -1226,8 +1258,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         }
         sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), nySluttDato);
         var gammelSluttDato = gjeldendeInnhold.getSluttDato();
-        AvtaleInnhold nyVersjon = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORLENGE);
-        gjeldendeInnhold = nyVersjon;
+        gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORLENGE);
         getGjeldendeInnhold().endreSluttDato(nySluttDato);
         sendTilbakeTilBeslutter();
         forlengTilskuddsperioder(gammelSluttDato, nySluttDato);
@@ -1352,6 +1383,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_STILLING);
         getGjeldendeInnhold().endreStillingsInfo(endreStillingsbeskrivelse);
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
+        getGjeldendeInnhold().reberegnLønnstilskudd();
         sendTilbakeTilBeslutter();
         utforEndring(new StillingsbeskrivelseEndret(this, utførtAv));
     }

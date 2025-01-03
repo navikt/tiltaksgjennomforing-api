@@ -3,14 +3,11 @@ package no.nav.tag.tiltaksgjennomforing.arena.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTable;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakgjennomforing;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Operation;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEvent;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEventStatus;
-import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaEventRepository;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaTiltakgjennomforingRepository;
-import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaTiltakssakRepository;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -19,52 +16,24 @@ public class TiltakgjennomforingArenaEventProcessingService implements IArenaEve
 
     private final ObjectMapper objectMapper;
     private final ArenaTiltakgjennomforingRepository tiltakgjennomforingRepository;
-    private final ArenaTiltakssakRepository tiltakssakRepository;
     private final ArenaOrdsService ordsService;
-    private final ArenaEventRepository eventRepository;
 
     public TiltakgjennomforingArenaEventProcessingService(
-        ArenaEventRepository eventRepository,
         ArenaOrdsService ordsService,
         ArenaTiltakgjennomforingRepository tiltakgjennomforingRepository,
-        ArenaTiltakssakRepository tiltakssakRepository,
         ObjectMapper objectMapper
     ) {
-        this.eventRepository = eventRepository;
         this.objectMapper = objectMapper;
         this.ordsService = ordsService;
         this.tiltakgjennomforingRepository = tiltakgjennomforingRepository;
-        this.tiltakssakRepository = tiltakssakRepository;
     }
 
     public ArenaEventStatus process(ArenaEvent arenaEvent) throws JsonProcessingException {
         ArenaTiltakgjennomforing tiltakgjennomforing = this.objectMapper.treeToValue(arenaEvent.getPayload(), ArenaTiltakgjennomforing.class);
 
-        boolean isTiltaksakIgnored = eventRepository.findByArenaIdAndArenaTable(
-                tiltakgjennomforing.getSakId().toString(),
-                ArenaTable.TILTAKSAK.getTable()
-            )
-            .map((tiltak) -> ArenaEventStatus.IGNORED == tiltak.getStatus())
-            .orElse(false);
-
-        if (isTiltaksakIgnored) {
-            log.info("Arena-event ignorert fordi tilhørende tiltaksak er ignorert");
-
-            delete(
-                tiltakgjennomforing,
-                () -> log.info("Sletter tidligere håndtert tiltak som nå skal ignoreres")
-            );
-            ordsService.attemptDeleteArbeidsgiver(tiltakgjennomforing.getArbgivIdArrangor());
-
-            return ArenaEventStatus.IGNORED;
-        }
-
         if (!tiltakgjennomforing.isArbeidstrening()) {
             log.info("Arena-event ignorert fordi den ikke er arbeidstrening");
-            delete(
-                tiltakgjennomforing,
-                () -> log.info("Sletter tidligere håndtert tiltak som nå skal ignoreres")
-            );
+            delete(tiltakgjennomforing, () -> log.info("Sletter tidligere håndtert tiltak som nå skal ignoreres"));
             return ArenaEventStatus.IGNORED;
         }
 
@@ -75,14 +44,7 @@ public class TiltakgjennomforingArenaEventProcessingService implements IArenaEve
 
         if (Operation.DELETE == arenaEvent.getOperation()) {
             delete(tiltakgjennomforing, () -> log.info("Arena-event har operasjon DELETE og slettet"));
-            ordsService.attemptDeleteArbeidsgiver(tiltakgjennomforing.getArbgivIdArrangor());
             return ArenaEventStatus.DONE;
-        }
-
-        boolean tiltakssakExists = tiltakssakRepository.existsById(tiltakgjennomforing.getSakId());
-        if (!tiltakssakExists) {
-            log.info("Arena-event settes på vent; tilhørende tiltakssak er ikke prossesert ennå");
-            return ArenaEventStatus.RETRY;
         }
 
         ordsService.fetchArbeidsgiver(tiltakgjennomforing.getArbgivIdArrangor());
@@ -102,7 +64,20 @@ public class TiltakgjennomforingArenaEventProcessingService implements IArenaEve
                 (existingTiltaksak) -> {
                     onBeforeDelete.run();
                     tiltakgjennomforingRepository.delete(existingTiltaksak);
+                    deleteArbeidsgiver(arenaTiltakgjennomforing.getArbgivIdArrangor());
                 }
             );
+    }
+
+    private void deleteArbeidsgiver(Integer arbeidsgiverId) {
+        if (arbeidsgiverId == null) {
+            return;
+        }
+
+        if (!tiltakgjennomforingRepository.findByArbgivIdArrangor(arbeidsgiverId).isEmpty()) {
+            log.info("Arbeidsgiver {} er fortsatt i bruk", arbeidsgiverId);
+            return;
+        }
+        ordsService.attemptDeleteArbeidsgiver(arbeidsgiverId);
     }
 }

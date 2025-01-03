@@ -1,57 +1,39 @@
-package no.nav.tag.tiltaksgjennomforing.avtale.jobber;
+package no.nav.tag.tiltaksgjennomforing.avtale.service;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleUtlopHandling;
-import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
-import no.nav.tag.tiltaksgjennomforing.leader.LeaderPodCheck;
-import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleUtlopHandling.START_DATO_FOR_RYDDING;
-
 @Slf4j
-@Component
+@Service
 @Profile({ Miljø.DEV_FSS, Miljø.PROD_FSS })
-public class PabegynteAvtalerRyddejobb {
-    private List<Status> avtaleStatuserSomSkalRyddes = List.of(Status.PÅBEGYNT, Status.MANGLER_GODKJENNING);
-
+public class PabegynteAvtalerRyddeService {
     private final AvtaleRepository avtaleRepository;
     private final FeatureToggleService featureToggleService;
-    private final LeaderPodCheck leaderPodCheck;
 
-    public PabegynteAvtalerRyddejobb(
+    public PabegynteAvtalerRyddeService(
         AvtaleRepository avtaleRepository,
-        FeatureToggleService featureToggleService,
-        LeaderPodCheck leaderPodCheck
+        FeatureToggleService featureToggleService
     ) {
         this.featureToggleService = featureToggleService;
         this.avtaleRepository = avtaleRepository;
-        this.leaderPodCheck = leaderPodCheck;
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
-    public void run() {
-        if (!leaderPodCheck.isLeaderPod()) {
-            return;
-        }
-
-        List<Avtale> avtaler = avtaleRepository.findAvtalerSomErPabegyntEllerManglerGodkjenning().stream()
-            .filter(avtale -> avtaleStatuserSomSkalRyddes.contains(avtale.statusSomEnum()))
-            .toList();
+    @Transactional
+    public void ryddAvtalerSomErPabegyntEllerManglerGodkjenning() {
+        List<Avtale> avtaler = avtaleRepository.findAvtalerSomErPabegyntEllerManglerGodkjenning();
 
         if (avtaler.isEmpty()) {
             return;
@@ -69,14 +51,6 @@ public class PabegynteAvtalerRyddejobb {
                 Optional.ofNullable(avtaleHandling.get(AvtaleUtlopHandling.VARSEL_EN_UKE)).map(List::size).orElse(0)
             );
             return;
-        }
-
-        if (START_DATO_FOR_RYDDING.isAfter(Now.instant())) {
-            log.info(
-                "Det står {} avtaler i kø til å utløpe {}.",
-                avtaler.stream().map(AvtaleUtlopHandling::parseDangerously).filter(AvtaleUtlopHandling.UTLOP::equals).count(),
-                START_DATO_FOR_RYDDING.atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_LOCAL_DATE)
-            );
         }
 
         log.info(
@@ -101,7 +75,7 @@ public class PabegynteAvtalerRyddejobb {
                     log.info(
                         "Utløper avtale {} med status {} som sist var endret {}",
                         avtale.getId(),
-                        avtale.statusSomEnum(),
+                        avtale.getStatus(),
                         avtale.getSistEndret()
                     );
                     avtale.utlop(AvtaleUtlopHandling.UTLOP);

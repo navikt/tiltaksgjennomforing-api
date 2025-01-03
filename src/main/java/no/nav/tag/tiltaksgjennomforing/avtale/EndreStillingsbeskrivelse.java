@@ -10,6 +10,6 @@ public class EndreStillingsbeskrivelse {
     String arbeidsoppgaver;
     Integer stillingStyrk08;
     Integer stillingKonseptId;
-    Integer stillingprosent;
-    Integer antallDagerPerUke;
+    Double stillingprosent;
+    Double antallDagerPerUke;
 }

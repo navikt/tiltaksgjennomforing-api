@@ -128,7 +128,7 @@ public class AvtaleMelding {
 
         AvtaleMelding avtaleMelding = new AvtaleMelding();
         avtaleMelding.setHendelseType(hendelseType);
-        avtaleMelding.setAvtaleStatus(avtale.statusSomEnum());
+        avtaleMelding.setAvtaleStatus(avtale.getStatus());
         avtaleMelding.setDeltakerFnr(avtale.getDeltakerFnr());
         avtaleMelding.setMentorFnr(avtale.getMentorFnr());
         avtaleMelding.setBedriftNr(avtale.getBedriftNr());
@@ -165,13 +165,13 @@ public class AvtaleMelding {
         avtaleMelding.setTilrettelegging(avtaleInnhold.getTilrettelegging());
         avtaleMelding.setStartDato(avtaleInnhold.getStartDato());
         avtaleMelding.setSluttDato(avtaleInnhold.getSluttDato());
-        avtaleMelding.setStillingprosent(avtaleInnhold.getStillingprosent());
+        avtaleMelding.setStillingprosent(avtaleInnhold.getStillingprosent() != null ? Long.valueOf(Math.round(avtaleInnhold.getStillingprosent())).intValue() : null);
         avtaleMelding.setJournalpostId(avtaleInnhold.getJournalpostId());
         avtaleMelding.setArbeidsoppgaver(avtaleInnhold.getArbeidsoppgaver());
         avtaleMelding.setStillingstittel(avtaleInnhold.getStillingstittel());
         avtaleMelding.setStillingStyrk08(avtaleInnhold.getStillingStyrk08());
         avtaleMelding.setStillingKonseptId(avtaleInnhold.getStillingKonseptId());
-        avtaleMelding.setAntallDagerPerUke(avtaleInnhold.getAntallDagerPerUke());
+        avtaleMelding.setAntallDagerPerUke(avtaleMelding.getAntallDagerPerUke() != null ? Long.valueOf(Math.round(avtaleInnhold.getAntallDagerPerUke())).intValue() : null);
         avtaleMelding.setRefusjonKontaktperson(avtaleInnhold.getRefusjonKontaktperson());
         avtaleMelding.setMentorFornavn(avtaleInnhold.getMentorFornavn());
         avtaleMelding.setMentorEtternavn(avtaleInnhold.getMentorEtternavn());

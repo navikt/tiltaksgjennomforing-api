@@ -50,8 +50,9 @@ public class ArenaAgreementAggregate {
     private String antallDagerPrUke;
     private LocalDateTime tiltakStartdato;
     private LocalDateTime tiltakSluttdato;
-    private String eksternId;
-    private Integer prosentDeltid;
+    private String eksternIdTiltak;
+    private String eksternIdDeltaker;
+    private String prosentDeltid;
     private Tiltakstatuskode tiltakstatuskode;
     private Deltakerstatuskode deltakerstatuskode;
     private LocalDateTime deltakerStartdato;
@@ -72,12 +73,25 @@ public class ArenaAgreementAggregate {
             .findFirst();
     }
 
+    public boolean isDublett() {
+        return isDublett(eksternIdTiltak) || isDublett(eksternIdDeltaker);
+    }
+
     public Optional<UUID> getEksternIdAsUuid() throws IllegalArgumentException {
+        Optional<String> eksternId = Stream.of(eksternIdTiltak, eksternIdDeltaker)
+            .filter(id -> !Strings.isNullOrEmpty(id) && !isDublett(id))
+            .findFirst();
         try {
-            return Strings.isNullOrEmpty(eksternId) ?  Optional.empty() : Optional.of(UUID.fromString(eksternId));
+            return eksternId.map(UUID::fromString);
         } catch (IllegalArgumentException e) {
-            log.error("Arena-avtale har ugyldig UUID som ekstern id: {}. Fortsetter uten.", eksternId);
+            log.error("Arena-avtale har ugyldig UUID som ekstern id: {}. Fortsetter uten.", eksternId.orElse(null));
             return Optional.empty();
         }
+    }
+
+    private static boolean isDublett(String eksternId) {
+        return Optional.ofNullable(eksternId)
+            .map(id -> id.toLowerCase().contains("dublett"))
+            .orElse(false);
     }
 }

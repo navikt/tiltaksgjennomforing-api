@@ -11,7 +11,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Component
 @Profile({ Miljø.DEV_FSS, Miljø.PROD_FSS })
@@ -30,7 +29,7 @@ public class ArenaEventProcessingJob {
         this.leaderPodCheck = leaderPodCheck;
     }
 
-    @Scheduled(fixedRate = 15, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(cron = "0 */5 1-23 * * *")
     public void run() {
         if (!leaderPodCheck.isLeaderPod() || !featureToggleService.isEnabled(FeatureToggle.ARENA_PROSESSERINGS_JOBB)) {
             return;

@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -19,35 +21,44 @@ public class ArenaAgreementService {
     private final ArenaAgreementMigrationRepository arenaAgreementMigrationRepository;
 
     public ArenaAgreementService(
-            ArenaAgreementProcessingService arenaAgreementProcessingService,
-            ArenaAgreementMigrationRepository arenaAgreementMigrationRepository
+        ArenaAgreementProcessingService arenaAgreementProcessingService,
+        ArenaAgreementMigrationRepository arenaAgreementMigrationRepository
     ) {
         this.arenaAgreementProcessingService = arenaAgreementProcessingService;
         this.arenaAgreementMigrationRepository = arenaAgreementMigrationRepository;
     }
 
     @Transactional
-    public List<ArenaAgreementAggregate> getArenaAgreementsForProcessing() {
-        List<ArenaAgreementAggregate> agreementAggregates = arenaAgreementMigrationRepository.findMigrationAgreementAggregates();
+    public Map<UUID, ArenaAgreementAggregate> getArenaAgreementsForProcessing() {
+        Map<UUID, ArenaAgreementAggregate> agreementAggregates = arenaAgreementMigrationRepository.findMigrationAgreementAggregates()
+                .stream()
+                .collect(Collectors.toMap(aggregate -> UUID.randomUUID(), aggregate -> aggregate));
 
-        agreementAggregates.forEach(aggregate -> {
-            ArenaAgreementMigration migration = ArenaAgreementMigration.builder()
-                    .tiltakgjennomforingId(aggregate.getTiltakgjennomforingId())
-                    .status(ArenaAgreementMigrationStatus.PENDING)
-                    .modified(LocalDateTime.now())
-                    .build();
-
-            arenaAgreementMigrationRepository.save(migration);
-        });
+        arenaAgreementMigrationRepository.saveAll(
+            agreementAggregates
+                .entrySet()
+                .stream()
+                .map(entry ->
+                    ArenaAgreementMigration.builder()
+                        .id(entry.getKey())
+                        .tiltakgjennomforingId(entry.getValue().getTiltakgjennomforingId())
+                        .tiltakdeltakerId(entry.getValue().getTiltakdeltakerId())
+                        .eksternId(entry.getValue().getEksternIdAsUuid().orElse(null))
+                        .status(ArenaAgreementMigrationStatus.PROCESSING)
+                        .modified(LocalDateTime.now())
+                        .build()
+                )
+                .toList()
+        );
 
         return agreementAggregates;
     }
 
-    public void processAgreements(List<ArenaAgreementAggregate> agreements) {
+    public void processAgreements(Map<UUID, ArenaAgreementAggregate> agreements) {
         log.info("Prosseserer {} avtaler fra Arena", agreements.size());
 
-        for (ArenaAgreementAggregate agreement : agreements) {
-            arenaAgreementProcessingService.process(agreement);
+        for (Map.Entry<UUID, ArenaAgreementAggregate> entry : agreements.entrySet()) {
+            arenaAgreementProcessingService.process(entry.getKey(), entry.getValue());
         }
     }
 

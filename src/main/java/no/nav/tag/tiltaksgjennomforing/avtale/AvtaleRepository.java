@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import io.micrometer.core.annotation.Timed;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -61,6 +62,8 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     List<Avtale> findAll();
 
     List<Avtale> findAllByGjeldendeInnhold_AvtaleInngåttNotNull();
+
+    List<Avtale> findAllByGjeldendeTilskuddsperiodeIsNullAndTiltakstypeIsIn(List<Tiltakstype> tiltakstyper, Limit limit);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Override
@@ -127,19 +130,17 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             @Param("avtaleNr") Integer avtaleNr,
             Pageable pageable);
 
-    @Query(value = "SELECT avtale.* " +
-            "FROM avtale, avtale_innhold " +
-            "WHERE avtale.gjeldende_innhold_id = avtale_innhold.id " +
-            "AND avtale_innhold.avtale_inngått IS NULL " +
-            "AND avtale.annullert_tidspunkt IS NULL " +
-            "AND avtale.avbrutt IS FALSE",
-            nativeQuery = true)
+    @Query("""
+        SELECT a
+        FROM Avtale a
+        WHERE a.status = no.nav.tag.tiltaksgjennomforing.avtale.Status.PÅBEGYNT OR a.status = no.nav.tag.tiltaksgjennomforing.avtale.Status.MANGLER_GODKJENNING
+    """)
     List<Avtale> findAvtalerSomErPabegyntEllerManglerGodkjenning();
 
     @Query("""
         SELECT a
         FROM Avtale a
-        WHERE (a.status = no.nav.tag.tiltaksgjennomforing.avtale.Status.KLAR_FOR_OPPSTART AND a.gjeldendeInnhold.startDato >= current_date)
+        WHERE (a.status = no.nav.tag.tiltaksgjennomforing.avtale.Status.KLAR_FOR_OPPSTART AND a.gjeldendeInnhold.startDato <= current_date)
            OR (a.status = no.nav.tag.tiltaksgjennomforing.avtale.Status.GJENNOMFØRES AND a.gjeldendeInnhold.sluttDato < current_date)
     """)
     List<Avtale> findAvtalerForEndringAvStatus();

@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.arena.service;
 
+import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.arena.client.acl.AktivitetArenaAclClient;
 import no.nav.tag.tiltaksgjennomforing.arena.client.hendelse.HendelseAktivitetsplanClient;
@@ -76,10 +77,10 @@ public class ArenaAgreementProcessingService {
     @Transactional
     @ArenaAgreementLogging
     @Async("arenaThreadPoolExecutor")
-    public void process(ArenaAgreementAggregate agreementAggregate) {
+    public void process(UUID migrationId, ArenaAgreementAggregate agreementAggregate) {
         UUID eksternId = agreementAggregate.getEksternIdAsUuid().orElse(null);
         Integer tiltaksgjennomforingId = agreementAggregate.getTiltakgjennomforingId();
-        updateMigrationStatus(tiltaksgjennomforingId, ArenaAgreementMigrationStatus.PROCESSING, null, null, null);
+        Integer tiltakdeltakerId = agreementAggregate.getTiltakdeltakerId();
 
         try {
             ArenaMigrationProcessResult result = agreementAggregate.getEksternIdAsUuid()
@@ -92,23 +93,27 @@ public class ArenaAgreementProcessingService {
                     if (agreementAggregate.getTiltakdeltakerId() != null) {
                         transferAktivitetsplankort(completed.avtale(), agreementAggregate.getTiltakdeltakerId());
                     }
-                    avtaleRepository.save(completed.avtale());
+                    Avtale nyAvtale = avtaleRepository.save(completed.avtale());
                     log.info(
                         "Lagrer avtale med id {}. Status for avtalen etter migrering {}",
-                        completed.avtale().getId(),
-                        completed.avtale().statusSomEnum()
+                        nyAvtale.getId(),
+                        completed.avtale().getStatus()
                     );
-                    updateMigrationStatus(
+                    saveMigrationStatus(
+                        migrationId,
                         tiltaksgjennomforingId,
+                        tiltakdeltakerId,
                         ArenaAgreementMigrationStatus.COMPLETED,
                         completed.action(),
                         eksternId,
-                        completed.avtale().getId()
+                        nyAvtale.getId()
                     );
                 }
                 case ArenaMigrationProcessResult.Ignored ignored ->
-                    updateMigrationStatus(
+                    saveMigrationStatus(
+                        migrationId,
                         tiltaksgjennomforingId,
+                        tiltakdeltakerId,
                         ArenaAgreementMigrationStatus.COMPLETED,
                         ignored.action(),
                         eksternId,
@@ -117,8 +122,10 @@ public class ArenaAgreementProcessingService {
             }
         } catch(Exception e) {
             log.error("Feil ved prossesering av avtale fra Arena", e);
-            updateMigrationStatus(
+            saveMigrationStatus(
+                migrationId,
                 tiltaksgjennomforingId,
+                tiltakdeltakerId,
                 ArenaAgreementMigrationStatus.FAILED,
                 null,
                 eksternId,
@@ -127,8 +134,10 @@ public class ArenaAgreementProcessingService {
         }
     }
 
-    private void updateMigrationStatus(
-            Integer id,
+    private void saveMigrationStatus(
+            UUID id,
+            Integer tiltakgjennomforingId,
+            Integer tiltakdeltakerId,
             ArenaAgreementMigrationStatus status,
             ArenaMigrationAction action,
             UUID eksternId,
@@ -136,7 +145,9 @@ public class ArenaAgreementProcessingService {
     ) {
         arenaAgreementMigrationRepository.save(
             ArenaAgreementMigration.builder()
-                .tiltakgjennomforingId(id)
+                .id(id)
+                .tiltakgjennomforingId(tiltakgjennomforingId)
+                .tiltakdeltakerId(tiltakdeltakerId)
                 .status(status)
                 .action(action)
                 .avtaleId(agreementId)
@@ -147,64 +158,48 @@ public class ArenaAgreementProcessingService {
     }
 
     private ArenaMigrationProcessResult updateAvtale(Avtale avtale, ArenaAgreementAggregate agreementAggregate) {
-        if (
-            agreementAggregate.getFnr() != null &&
-            !avtale.getDeltakerFnr().equals(new Fnr(agreementAggregate.getFnr()))
-        ) {
-            throw new IllegalStateException("Fnr i avtale stemmer ikke med fnr fra Arena");
-        }
-
-        if (
-            agreementAggregate.getVirksomhetsnummer() != null &&
-            !avtale.getBedriftNr().equals(new BedriftNr(agreementAggregate.getVirksomhetsnummer()))
-        ) {
-            throw new IllegalStateException("Virksomhetsnummer i avtale stemmer ikke med virksomhetsnummer fra Arena");
-        }
-
-        if (agreementAggregate.getFnr() != null) {
-            PdlRespons personalData = persondataService.hentPersondata(new Fnr(agreementAggregate.getFnr()));
-            if (persondataService.erKode6(personalData)) {
-                throw new IllegalStateException("Ikke tilgang til deltaker");
-            }
-        }
-
         ArenaMigrationAction action = ArenaMigrationAction.map(avtale, agreementAggregate);
         switch (action) {
             case IGNORER -> {
                 log.info(
-                    "Avtale med id {} og status {} har tiltakstatus {} og deltakerstatus {} i Arena. Ignorerer avtalen.",
+                    "Avtale med id {} og status {} har tiltakstatus {}, deltakerstatus {} og tiltaket er {} i Arena. Ignorerer avtalen.",
                     avtale.getId(),
-                    avtale.statusSomEnum(),
+                    avtale.getStatus(),
                     agreementAggregate.getTiltakstatuskode(),
-                    agreementAggregate.getDeltakerstatuskode()
+                    agreementAggregate.getDeltakerstatuskode(),
+                    agreementAggregate.isDublett() ? "dublett" : "ikke dublett"
                 );
                 return new ArenaMigrationProcessResult.Ignored(action);
             }
             case OPPRETT -> {
+                validate(avtale, agreementAggregate);
+
                 log.info(
                     "Avtale med id {} og status {} har tiltakstatus {} og deltakerstatus {} i Arena, " +
                     "men er satt som feilregistrert eller annullert med status 'ANNET' hos oss. " +
                     "Opprettet ny avtale.",
                     avtale.getId(),
-                    avtale.statusSomEnum(),
+                    avtale.getStatus(),
                     agreementAggregate.getTiltakstatuskode(),
                     agreementAggregate.getDeltakerstatuskode()
                 );
                 return createAvtale(agreementAggregate);
             }
             case GJENOPPRETT, OPPDATER, AVSLUTT, ANNULLER -> {
+                validate(avtale, agreementAggregate);
+
                 EndreAvtaleArena endreAvtale = EndreAvtaleArena.builder()
                     .startdato(agreementAggregate.findStartdato().orElse(null))
                     .sluttdato(agreementAggregate.findSluttdato().orElse(null))
-                    .antallDagerPerUke(agreementAggregate.getAntallDagerPrUke() != null ? Integer.parseInt(agreementAggregate.getAntallDagerPrUke()) : null)
-                    .stillingprosent(agreementAggregate.getProsentDeltid())
+                    .antallDagerPerUke(Strings.isNullOrEmpty(agreementAggregate.getAntallDagerPrUke()) ? null : Double.parseDouble(agreementAggregate.getAntallDagerPrUke()))
+                    .stillingprosent(Strings.isNullOrEmpty(agreementAggregate.getProsentDeltid()) ? null : Double.parseDouble(agreementAggregate.getProsentDeltid()))
                     .handling(EndreAvtaleArena.Handling.map(action))
                     .build();
 
                 log.info(
                     "Avtale med id {} og status {} har tiltakstatus {} og deltakerstatus {} i Arena. {}.",
                     avtale.getId(),
-                    avtale.statusSomEnum(),
+                    avtale.getStatus(),
                     agreementAggregate.getTiltakstatuskode(),
                     agreementAggregate.getDeltakerstatuskode(),
                     switch (action) {
@@ -227,10 +222,11 @@ public class ArenaAgreementProcessingService {
 
         if (ArenaMigrationAction.IGNORER == action) {
             log.info(
-                "Avtale har tiltaksstatus {}, deltakerstatus {} og sluttdato {} i Arena. Ignorerer avtalen.",
+                "Avtale har tiltaksstatus {}, deltakerstatus {}, sluttdato {} og er {} i Arena. Ignorerer avtalen.",
                 agreementAggregate.getTiltakstatuskode(),
                 agreementAggregate.getDeltakerstatuskode(),
-                agreementAggregate.findSluttdato().orElse(null)
+                agreementAggregate.findSluttdato().orElse(null),
+                agreementAggregate.isDublett() ? "dublett" : "ikke dublett"
             );
             return new ArenaMigrationProcessResult.Ignored(action);
         }
@@ -280,9 +276,9 @@ public class ArenaAgreementProcessingService {
             .ifPresent(avtaleinnhold::setStartDato);
         agreementAggregate.findSluttdato()
             .ifPresent(avtaleinnhold::setSluttDato);
-        Optional.ofNullable(agreementAggregate.getAntallDagerPrUke() != null ? Integer.parseInt(agreementAggregate.getAntallDagerPrUke()) : null)
+        Optional.ofNullable(Strings.isNullOrEmpty(agreementAggregate.getAntallDagerPrUke()) ? null : Double.parseDouble(agreementAggregate.getAntallDagerPrUke()))
             .ifPresent(avtaleinnhold::setAntallDagerPerUke);
-        Optional.ofNullable(agreementAggregate.getProsentDeltid())
+        Optional.ofNullable(Strings.isNullOrEmpty(agreementAggregate.getProsentDeltid()) ? null : Double.parseDouble(agreementAggregate.getProsentDeltid()))
             .ifPresent(avtaleinnhold::setStillingprosent);
 
         avtale.setGodkjentForEtterregistrering(true);
@@ -308,4 +304,26 @@ public class ArenaAgreementProcessingService {
         hendelseAktivitetsplanClient.putAktivietsplanId(avtale.getId(), aktivitetsplanId);
     }
 
+    private void validate(Avtale avtale, ArenaAgreementAggregate agreementAggregate) {
+        if (
+            agreementAggregate.getFnr() != null &&
+                !avtale.getDeltakerFnr().asString().equals(agreementAggregate.getFnr())
+        ) {
+            throw new IllegalStateException("Fnr i avtale stemmer ikke med fnr fra Arena");
+        }
+
+        if (
+            agreementAggregate.getVirksomhetsnummer() != null &&
+                !avtale.getBedriftNr().asString().equals(agreementAggregate.getVirksomhetsnummer())
+        ) {
+            throw new IllegalStateException("Virksomhetsnummer i avtale stemmer ikke med virksomhetsnummer fra Arena");
+        }
+
+        if (agreementAggregate.getFnr() != null) {
+            PdlRespons personalData = persondataService.hentPersondata(new Fnr(agreementAggregate.getFnr()));
+            if (persondataService.erKode6(personalData)) {
+                throw new IllegalStateException("Ikke tilgang til deltaker");
+            }
+        }
+    }
 }

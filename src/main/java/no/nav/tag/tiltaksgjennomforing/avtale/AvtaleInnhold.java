@@ -54,13 +54,13 @@ public class AvtaleInnhold {
     private String tilrettelegging;
     private LocalDate startDato;
     private LocalDate sluttDato;
-    private Integer stillingprosent;
+    private Double stillingprosent;
     private String journalpostId;
     private String arbeidsoppgaver;
     private String stillingstittel;
     private Integer stillingStyrk08;
     private Integer stillingKonseptId;
-    private Integer antallDagerPerUke;
+    private Double antallDagerPerUke;
 
     @Embedded
     private RefusjonKontaktperson refusjonKontaktperson;
