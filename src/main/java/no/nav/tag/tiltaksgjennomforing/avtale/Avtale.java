@@ -198,6 +198,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     @Transient
     private AtomicReference<LonnstilskuddAvtaleBeregningStrategy> lonnstilskuddAvtaleBeregningStrategy = new AtomicReference<>();
 
+    private LocalDate kreverOppfolgingFom = null;
+
+    private Instant oppfolgingVarselSendt = null;
+
     public void leggtilNyeTilskuddsperioder(List<TilskuddPeriode> tilskuddsperioder) {
         this.tilskuddPeriode.addAll(tilskuddsperioder);
     }
@@ -590,6 +594,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     private void avtaleInngått(LocalDateTime tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
         gjeldendeInnhold.setAvtaleInngått(tidspunkt);
+        if(this.getTiltakstype().equals(Tiltakstype.VTAO)){
+            this.setKreverOppfolgingFom(this.getGjeldendeInnhold().getStartDato().plusMonths(6));
+        }
         utforEndring(new AvtaleInngått(this, AvtaleHendelseUtførtAvRolle.fraAvtalerolle(utførtAvRolle), utførtAv));
     }
 
