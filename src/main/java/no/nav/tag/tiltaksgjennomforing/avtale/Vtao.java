@@ -16,6 +16,7 @@ public class Vtao {
     private String fadderFornavn;
     private String fadderEtternavn;
     private String fadderTlf;
+
     @OneToOne
     @JoinColumn(name = "avtale_innhold_id")
     @JsonIgnore

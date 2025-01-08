@@ -185,4 +185,6 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
         boolean ufordelt,
         Pageable pageable
     );
+
+    List<Avtale> findAllByKreverOppfolgingFomLessThanAndOppfolgingVarselSendtIsNull(LocalDate date);
 }
