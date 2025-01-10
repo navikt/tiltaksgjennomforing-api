@@ -117,6 +117,9 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
         if (Now.localDate().isBefore(kanBesluttesFom())) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_BEHANDLE_FOR_TIDLIG);
         }
+        if (avtale.getKreverOppfolgingFom() != null && startDato.isAfter(avtale.getKreverOppfolgingFom())) {
+            throw new FeilkodeException(Feilkode.KREVER_OPPFØLGING_AV_VTAO);
+        }
     }
 
     private LocalDate tidligstI2026() {

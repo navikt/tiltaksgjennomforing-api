@@ -10,13 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
-import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeAdminTilgangException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6Exception;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
@@ -28,11 +22,7 @@ import org.springframework.data.domain.Pageable;
 import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
+import java.util.*;
 
 import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
@@ -88,7 +78,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
         boolean harTilgang = tilgangskontrollService.harSkrivetilgangTilKandidat(this, avtale.getDeltakerFnr());
-        if(!harTilgang) {
+        if (!harTilgang) {
             log.info("Har ikke tilgang til avtale {}", avtale.getAvtaleNr());
         }
         return harTilgang;
@@ -99,15 +89,15 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         NavIdent veilederNavIdent = queryParametre.harFilterPaEnEntitet() ? queryParametre.getVeilederNavIdent() : getIdentifikator();
 
         return avtaleRepository.sokEtterAvtale(
-            veilederNavIdent,
-            queryParametre.getAvtaleNr(),
-            queryParametre.getDeltakerFnr(),
-            queryParametre.getBedriftNr(),
-            queryParametre.getNavEnhet(),
-            queryParametre.getTiltakstype(),
-            queryParametre.getStatus(),
-            queryParametre.erUfordelt(),
-            pageable
+                veilederNavIdent,
+                queryParametre.getAvtaleNr(),
+                queryParametre.getDeltakerFnr(),
+                queryParametre.getBedriftNr(),
+                queryParametre.getNavEnhet(),
+                queryParametre.getTiltakstype(),
+                queryParametre.getStatus(),
+                queryParametre.erUfordelt(),
+                pageable
         );
     }
 
@@ -278,12 +268,12 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     private void sjekkTilgangskontroll(Fnr deltakerFnr) {
-        if(!tilgangskontrollService.harSkrivetilgangTilKandidat(this, deltakerFnr)) {
+        if (!tilgangskontrollService.harSkrivetilgangTilKandidat(this, deltakerFnr)) {
             throw new IkkeTilgangTilDeltakerException();
         }
     }
 
-    protected void leggTilEnheter(Avtale avtale){
+    protected void leggTilEnheter(Avtale avtale) {
         final PdlRespons persondata = this.hentPersonDataForOpprettelseAvAvtale(avtale);
         this.hentOppfølgingFraArena(avtale, veilarboppfolgingService);
         super.hentGeoEnhetFraNorg2(avtale, persondata, norg2Client);
@@ -306,7 +296,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             Avtale avtale,
             VeilarboppfolgingService veilarboppfolgingService
     ) {
-        if(avtale.harOppfølgingsStatus()) return;
+        if (avtale.harOppfølgingsStatus()) return;
         Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
         if (oppfølgingsstatus == null) return;
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
@@ -427,7 +417,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             LocalDate sluttDato,
             AvtaleRepository avtaleRepository
     ) {
-        if(avtaleId != null && startDato != null && sluttDato != null) {
+        if (avtaleId != null && startDato != null && sluttDato != null) {
             return AlleredeRegistrertAvtale.filtrerAvtaleDeltakerAlleredeErRegistrertPaa(
                     avtaleRepository.finnAvtalerSomOverlapperForDeltakerVedGodkjenningAvAvtale(
                             deltakerFnr.asString(),
@@ -448,11 +438,24 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         );
     }
 
-    @Override public UUID getAzureOid() {
+    /* TODO: Bør denne ligge 1) i Avtale.java eller 2) I Avtale.java, eller 3) i Avtalepart.java og implementeres kun i Veileder.java? */
+    /* Copilot: det kan være mer hensiktsmessig å definere metoden utførOppfølging i Avtalepart.java hvis det er en metode som kan være relevant for flere subklasser av Avtalepart.
+    Hvis metoden kun er relevant for Veileder, kan det være greit å beholde den der den er.  */
+    public Avtale utførOppfølging(Avtale avtale) {
+        super.sjekkTilgang(avtale);
+        LocalDate nesteOppfølgingsdato = avtale.getKreverOppfolgingFom().plusMonths(6);
+        avtale.setOppfolgingVarselSendt(null);
+        avtale.setKreverOppfolgingFom(nesteOppfølgingsdato);
+        return avtale;
+    }
+
+    @Override
+    public UUID getAzureOid() {
         return azureOid;
     }
 
-    @Override public NavIdent getNavIdent() {
+    @Override
+    public NavIdent getNavIdent() {
         return getIdentifikator();
     }
 }

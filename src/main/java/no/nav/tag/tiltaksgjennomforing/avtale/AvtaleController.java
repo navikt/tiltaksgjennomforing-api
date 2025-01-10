@@ -879,6 +879,15 @@ public class AvtaleController {
         return oppdatertAvtale;
     }
 
+    @PostMapping("/{avtaleId}/utfør-oppfølging")
+    public Avtale utførOppfølging(@PathVariable UUID avtaleId) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        veileder.utførOppfølging(avtale);
+        return avtaleRepository.save(avtale);
+    }
+
+
     private Avtale sjekkArbeidstreningToggle(Avtale avtale) {
         if (featureToggleService.isEnabled(FeatureToggle.ARBEIDSTRENING_READONLY) &&
                 avtale.getTiltakstype() == Tiltakstype.ARBEIDSTRENING) {

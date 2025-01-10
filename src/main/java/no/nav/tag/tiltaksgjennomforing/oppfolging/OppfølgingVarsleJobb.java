@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
@@ -22,7 +23,7 @@ public class OppfølgingVarsleJobb {
     private final VarselRepository varselRepository;
 
 
-    @Scheduled(cron = "*/30 * * * * *")
+    @Scheduled(fixedDelay = 30, timeUnit = TimeUnit.SECONDS)
     public void varsleVeilederOmOppfølging() {
         LocalDate tomånederFremiTid = Now.localDate().plusMonths(2);
         List<Avtale> avtaler = avtaleRepository.findAllByKreverOppfolgingFomLessThanAndOppfolgingVarselSendtIsNull(tomånederFremiTid);
