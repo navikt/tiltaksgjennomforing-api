@@ -54,7 +54,8 @@ public enum HendelseType {
     ENDRET_AV_ARENA("Avtale synkronisert med fagsystem (Arena)"),
     OPPRETTET_AV_ARENA("Avtale er opprettet av fagsystem (Arena)"),
     UTLOPER_OM_1_UKE("Avtale vil automatisk slettes om 1 uke dersom det ikke foretas noen endringer"),
-    UTLOPER_OM_24_TIMER("Avtale vil automatisk slettes i dag dersom det ikke foretas noen endringer innen kl 23:59");
+    UTLOPER_OM_24_TIMER("Avtale vil automatisk slettes i dag dersom det ikke foretas noen endringer innen kl 23:59"),
+    OPPFØLGING_KREVES_VARSEL("Oppfølging av tiltaket kreves");
 
     private final String tekst;
 }
