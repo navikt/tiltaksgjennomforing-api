@@ -63,7 +63,12 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
 
     List<Avtale> findAllByGjeldendeInnhold_AvtaleInngåttNotNull();
 
-    List<Avtale> findAllByGjeldendeTilskuddsperiodeIsNullAndTiltakstypeIsIn(List<Tiltakstype> tiltakstyper, Limit limit);
+    @Query(value = """
+        select Avtale from Avtale a
+            where a.tiltakstype in (:tiltakstyper)
+            and (select count(*) from TilskuddPeriode t where t.aktiv = true and t.avtale = a) > 0
+    """)
+    List<Avtale> finnAvtaleHvorGjeldendeTilskuddsperiodeKanSettes(Set<Tiltakstype> tiltakstyper, Limit limit);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     @Override
