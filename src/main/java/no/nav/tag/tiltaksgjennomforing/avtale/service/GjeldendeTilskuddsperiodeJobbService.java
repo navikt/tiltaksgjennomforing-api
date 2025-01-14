@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -21,8 +22,8 @@ public class GjeldendeTilskuddsperiodeJobbService {
     @Transactional
     public void settGjeldendeTilskuddsperiodeJobb() {
         log.info("Starter jobb for å oppdatere gjeldedeTilskuddsperiode-felt");
-        var avtaler = avtaleRepository.findAllByGjeldendeTilskuddsperiodeIsNullAndTiltakstypeIsIn(
-                List.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB, Tiltakstype.VTAO),
+        var avtaler = avtaleRepository.finnAvtaleHvorGjeldendeTilskuddsperiodeKanSettes(
+                Set.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB, Tiltakstype.VTAO),
                 Limit.of(200)
         );
         if (avtaler.isEmpty()) {
