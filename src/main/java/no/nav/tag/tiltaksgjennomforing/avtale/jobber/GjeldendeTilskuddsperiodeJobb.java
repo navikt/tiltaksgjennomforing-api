@@ -20,7 +20,7 @@ class GjeldendeTilskuddsperiodeJobb {
         this.leaderPodCheck = leaderPodCheck;
     }
 
-    @Scheduled(cron = "0 5/5 1-4 * * *")
+    @Scheduled(cron = "0 5/5 * * * *")
     public void settGjeldendeTilskuddsperiodeJobb() {
         if (leaderPodCheck.isLeaderPod()) {
             gjeldendeTilskuddsperiodeJobbService.settGjeldendeTilskuddsperiodeJobb();
