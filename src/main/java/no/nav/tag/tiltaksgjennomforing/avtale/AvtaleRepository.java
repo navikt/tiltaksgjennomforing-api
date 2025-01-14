@@ -65,7 +65,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
 
     @Query(value = """
         select Avtale from Avtale a
-            where a.tiltakstype in (:tiltakstyper)
+            where a.tiltakstype in :tiltakstyper
             and (select count(*) from TilskuddPeriode t where t.aktiv = true and t.avtale = a) > 0
     """)
     List<Avtale> finnAvtaleHvorGjeldendeTilskuddsperiodeKanSettes(Set<Tiltakstype> tiltakstyper, Limit limit);
