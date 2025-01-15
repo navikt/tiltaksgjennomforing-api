@@ -119,6 +119,16 @@ public class ArenaAgreementProcessingService {
                         eksternId,
                         null
                     );
+                case ArenaMigrationProcessResult.Failed failed ->
+                    saveMigrationStatus(
+                        migrationId,
+                        tiltaksgjennomforingId,
+                        tiltakdeltakerId,
+                        ArenaAgreementMigrationStatus.FAILED,
+                        failed.action(),
+                        eksternId,
+                        null
+                    );
             }
         } catch(Exception e) {
             log.error("Feil ved prossesering av avtale fra Arena", e);
@@ -172,7 +182,10 @@ public class ArenaAgreementProcessingService {
                 return new ArenaMigrationProcessResult.Ignored();
             }
             case OPPRETT -> {
-                validate(avtale, agreementAggregate);
+                Optional<ArenaMigrationAction> validationAction = validate(avtale, agreementAggregate);
+                if (validationAction.isPresent()) {
+                    return new ArenaMigrationProcessResult.Failed(validationAction.get());
+                }
 
                 log.info(
                     "Avtale med id {} og status {} har tiltakstatus {} og deltakerstatus {} i Arena, " +
@@ -186,7 +199,10 @@ public class ArenaAgreementProcessingService {
                 return createAvtale(agreementAggregate);
             }
             case GJENOPPRETT, OPPDATER, AVSLUTT, ANNULLER -> {
-                validate(avtale, agreementAggregate);
+                Optional<ArenaMigrationAction> validationAction = validate(avtale, agreementAggregate);
+                if (validationAction.isPresent()) {
+                    return new ArenaMigrationProcessResult.Failed(validationAction.get());
+                }
 
                 EndreAvtaleArena endreAvtale = EndreAvtaleArena.builder()
                     .startdato(agreementAggregate.findStartdato().orElse(null))
@@ -233,14 +249,14 @@ public class ArenaAgreementProcessingService {
 
         if (agreementAggregate.getFnr() == null || agreementAggregate.getVirksomhetsnummer() == null) {
             log.info("Avtale mangler fnr eller virksomhetsnummer og kan derfor ikke opprettes. Ignorerer avtalen.");
-            return new ArenaMigrationProcessResult.Ignored();
+            return new ArenaMigrationProcessResult.Failed(ArenaMigrationAction.MANGLER_FNR_ELLER_BED_NR);
         }
 
         Fnr deltakerFnr = new Fnr(agreementAggregate.getFnr());
         PdlRespons personalData = persondataService.hentPersondata(deltakerFnr);
         if (persondataService.erKode6(personalData)) {
             log.info("Ikke tilgang til deltaker. Ignorerer.");
-            return new ArenaMigrationProcessResult.Ignored();
+            return new ArenaMigrationProcessResult.Failed(ArenaMigrationAction.KODE_6);
         }
 
         OpprettAvtale opprettAvtale = OpprettAvtale.builder()
@@ -304,26 +320,28 @@ public class ArenaAgreementProcessingService {
         hendelseAktivitetsplanClient.putAktivietsplanId(avtale.getId(), aktivitetsplanId);
     }
 
-    private void validate(Avtale avtale, ArenaAgreementAggregate agreementAggregate) {
+    private Optional<ArenaMigrationAction> validate(Avtale avtale, ArenaAgreementAggregate agreementAggregate) {
         if (
             agreementAggregate.getFnr() != null &&
                 !avtale.getDeltakerFnr().asString().equals(agreementAggregate.getFnr())
         ) {
-            throw new IllegalStateException("Fnr i avtale stemmer ikke med fnr fra Arena");
+            return Optional.of(ArenaMigrationAction.FNR_STEMMER_IKKE);
         }
 
         if (
             agreementAggregate.getVirksomhetsnummer() != null &&
                 !avtale.getBedriftNr().asString().equals(agreementAggregate.getVirksomhetsnummer())
         ) {
-            throw new IllegalStateException("Virksomhetsnummer i avtale stemmer ikke med virksomhetsnummer fra Arena");
+            return Optional.of(ArenaMigrationAction.BED_NR_STEMMER_IKKE);
         }
 
         if (agreementAggregate.getFnr() != null) {
             PdlRespons personalData = persondataService.hentPersondata(new Fnr(agreementAggregate.getFnr()));
             if (persondataService.erKode6(personalData)) {
-                throw new IllegalStateException("Ikke tilgang til deltaker");
+                return Optional.of(ArenaMigrationAction.KODE_6);
             }
         }
+
+        return Optional.empty();
     }
 }

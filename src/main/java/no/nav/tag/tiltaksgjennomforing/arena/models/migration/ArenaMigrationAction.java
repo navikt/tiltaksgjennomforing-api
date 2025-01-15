@@ -13,7 +13,11 @@ public enum ArenaMigrationAction {
     OPPDATER,
     IGNORER,
     ANNULLER,
-    AVSLUTT;
+    AVSLUTT,
+    KODE_6,
+    FNR_STEMMER_IKKE,
+    BED_NR_STEMMER_IKKE,
+    MANGLER_FNR_ELLER_BED_NR;
 
     public static ArenaMigrationAction map(ArenaAgreementAggregate agreementAggregate) {
         Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
