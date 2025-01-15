@@ -23,7 +23,9 @@ class GjeldendeTilskuddsperiodeJobb {
     @Scheduled(cron = "0 5/5 1-4 * * *")
     public void settGjeldendeTilskuddsperiodeJobb() {
         if (leaderPodCheck.isLeaderPod()) {
+            log.info("Jobb for å oppdatere gjeldedeTilskuddsperiode-felt startet...");
             gjeldendeTilskuddsperiodeJobbService.settGjeldendeTilskuddsperiodeJobb();
+            log.info("Jobb for å oppdatere gjeldedeTilskuddsperiode-felt fullført!");
         }
     }
 }
