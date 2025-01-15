@@ -21,7 +21,7 @@ public class ArenaAgreementLoggingAspect {
     @Around("@annotation(arenaAgreementLogging)")
     public Object logArenaEvent(ProceedingJoinPoint joinPoint, ArenaAgreementLogging arenaAgreementLogging) throws Throwable {
         Object[] args = joinPoint.getArgs();
-        Object arg0 = args[0];
+        Object arg0 = args[1];
 
         if (!(arg0 instanceof ArenaAgreementAggregate agreementAggregate)) {
             return joinPoint.proceed();

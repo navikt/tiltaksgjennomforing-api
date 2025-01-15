@@ -115,7 +115,7 @@ public class ArenaAgreementProcessingService {
                         tiltaksgjennomforingId,
                         tiltakdeltakerId,
                         ArenaAgreementMigrationStatus.COMPLETED,
-                        ignored.action(),
+                        ArenaMigrationAction.IGNORER,
                         eksternId,
                         null
                     );
@@ -169,7 +169,7 @@ public class ArenaAgreementProcessingService {
                     agreementAggregate.getDeltakerstatuskode(),
                     agreementAggregate.isDublett() ? "dublett" : "ikke dublett"
                 );
-                return new ArenaMigrationProcessResult.Ignored(action);
+                return new ArenaMigrationProcessResult.Ignored();
             }
             case OPPRETT -> {
                 validate(avtale, agreementAggregate);
@@ -228,19 +228,19 @@ public class ArenaAgreementProcessingService {
                 agreementAggregate.findSluttdato().orElse(null),
                 agreementAggregate.isDublett() ? "dublett" : "ikke dublett"
             );
-            return new ArenaMigrationProcessResult.Ignored(action);
+            return new ArenaMigrationProcessResult.Ignored();
         }
 
         if (agreementAggregate.getFnr() == null || agreementAggregate.getVirksomhetsnummer() == null) {
             log.info("Avtale mangler fnr eller virksomhetsnummer og kan derfor ikke opprettes. Ignorerer avtalen.");
-            return new ArenaMigrationProcessResult.Ignored(action);
+            return new ArenaMigrationProcessResult.Ignored();
         }
 
         Fnr deltakerFnr = new Fnr(agreementAggregate.getFnr());
         PdlRespons personalData = persondataService.hentPersondata(deltakerFnr);
         if (persondataService.erKode6(personalData)) {
             log.info("Ikke tilgang til deltaker. Ignorerer.");
-            return new ArenaMigrationProcessResult.Ignored(action);
+            return new ArenaMigrationProcessResult.Ignored();
         }
 
         OpprettAvtale opprettAvtale = OpprettAvtale.builder()
