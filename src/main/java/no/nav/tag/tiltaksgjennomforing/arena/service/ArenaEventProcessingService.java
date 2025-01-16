@@ -90,9 +90,10 @@ public class ArenaEventProcessingService {
                 .map(exisitingArenaEvent ->
                     exisitingArenaEvent.toBuilder()
                         .operation(operation)
+                        .operationTime(message.opTimestamp())
                         .payload(payload)
-                        .status(ArenaEventStatus.CREATED)
                         .retryCount(0)
+                        .status(ArenaEventStatus.CREATED)
                         .build()
                 )
                 .orElse(
