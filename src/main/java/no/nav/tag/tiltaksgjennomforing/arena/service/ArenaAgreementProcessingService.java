@@ -171,14 +171,20 @@ public class ArenaAgreementProcessingService {
         ArenaMigrationAction action = ArenaMigrationAction.map(avtale, agreementAggregate);
         switch (action) {
             case IGNORER -> {
-                log.info(
-                    "Avtale med id {} og status {} har tiltakstatus {}, deltakerstatus {} og tiltaket er {} i Arena. Ignorerer avtalen.",
-                    avtale.getId(),
-                    avtale.getStatus(),
-                    agreementAggregate.getTiltakstatuskode(),
-                    agreementAggregate.getDeltakerstatuskode(),
-                    agreementAggregate.isDublett() ? "dublett" : "ikke dublett"
-                );
+                if (agreementAggregate.isDublett()) {
+                    log.info(
+                        "Avtale med id {} er dublett i Arena. Ignorerer avtalen.",
+                        avtale.getId()
+                    );
+                } else {
+                    log.info(
+                        "Avtale med id {} og status {} har tiltakstatus {}, deltakerstatus {}. Ignorerer avtalen.",
+                        avtale.getId(),
+                        avtale.getStatus(),
+                        agreementAggregate.getTiltakstatuskode(),
+                        agreementAggregate.getDeltakerstatuskode()
+                    );
+                }
                 return new ArenaMigrationProcessResult.Ignored();
             }
             case OPPRETT -> {
@@ -237,25 +243,35 @@ public class ArenaAgreementProcessingService {
         ArenaMigrationAction action = ArenaMigrationAction.map(agreementAggregate);
 
         if (ArenaMigrationAction.IGNORER == action) {
-            log.info(
-                "Avtale har tiltaksstatus {}, deltakerstatus {}, sluttdato {} og er {} i Arena. Ignorerer avtalen.",
-                agreementAggregate.getTiltakstatuskode(),
-                agreementAggregate.getDeltakerstatuskode(),
-                agreementAggregate.findSluttdato().orElse(null),
-                agreementAggregate.isDublett() ? "dublett" : "ikke dublett"
-            );
+            if (agreementAggregate.isDublett()) {
+                log.info(
+                    "Avtalen er dublett i Arena. Ignorerer avtalen."
+                );
+            } else {
+                log.info(
+                    "Avtale har tiltaksstatus {}, deltakerstatus {}, sluttdato {} i Arena. Ignorerer avtalen.",
+                    agreementAggregate.getTiltakstatuskode(),
+                    agreementAggregate.getDeltakerstatuskode(),
+                    agreementAggregate.findSluttdato().orElse(null)
+                );
+            }
             return new ArenaMigrationProcessResult.Ignored();
         }
 
-        if (agreementAggregate.getFnr() == null || agreementAggregate.getVirksomhetsnummer() == null) {
-            log.info("Avtale mangler fnr eller virksomhetsnummer og kan derfor ikke opprettes. Ignorerer avtalen.");
-            return new ArenaMigrationProcessResult.Failed(ArenaMigrationAction.MANGLER_FNR_ELLER_BED_NR);
+        if (agreementAggregate.getFnr() == null) {
+            log.info("Avtale mangler fnr og kan derfor ikke opprettes.");
+            return new ArenaMigrationProcessResult.Failed(ArenaMigrationAction.MANGLER_FNR);
+        }
+
+        if (agreementAggregate.getVirksomhetsnummer() == null) {
+            log.info("Avtale mangler virksomhetsnummer og kan derfor ikke opprettes.");
+            return new ArenaMigrationProcessResult.Failed(ArenaMigrationAction.MANGLER_VIRKSOMHETSNUMMER);
         }
 
         Fnr deltakerFnr = new Fnr(agreementAggregate.getFnr());
         PdlRespons personalData = persondataService.hentPersondata(deltakerFnr);
         if (persondataService.erKode6(personalData)) {
-            log.info("Ikke tilgang til deltaker. Ignorerer.");
+            log.info("Ikke tilgang til deltaker.");
             return new ArenaMigrationProcessResult.Failed(ArenaMigrationAction.KODE_6);
         }
 
@@ -332,7 +348,7 @@ public class ArenaAgreementProcessingService {
             agreementAggregate.getVirksomhetsnummer() != null &&
                 !avtale.getBedriftNr().asString().equals(agreementAggregate.getVirksomhetsnummer())
         ) {
-            return Optional.of(ArenaMigrationAction.BED_NR_STEMMER_IKKE);
+            return Optional.of(ArenaMigrationAction.VIRKSOMHETSNUMMER_STEMMER_IKKE);
         }
 
         if (agreementAggregate.getFnr() != null) {
