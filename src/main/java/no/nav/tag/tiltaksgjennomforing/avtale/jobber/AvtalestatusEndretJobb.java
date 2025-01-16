@@ -27,7 +27,9 @@ public class AvtalestatusEndretJobb {
     @Scheduled(cron = "0 5 0 * * *")
     public void run() {
         if (leaderPodCheck.isLeaderPod()) {
+            log.info("Jobb for å endre avtalestatus startet...");
             avtalestatusService.oppdaterAvtalerSomKreverEndringAvStatus();
+            log.info("Jobb for å endre avtalestatus fullført!");
         }
     }
 
