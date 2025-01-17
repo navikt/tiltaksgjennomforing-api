@@ -10,7 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.AvbruttAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndretAvArena;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvSystem;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlenget;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleGjenopprettet;
@@ -231,8 +231,8 @@ public class LagVarselFraAvtaleHendelser {
     }
 
     @EventListener
-    public void forkortAvtale(AvtaleForkortetAvSystem event) {
-        VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.SYSTEM, event.getUtførtAv(), HendelseType.AVTALE_FORKORTET);
+    public void forkortAvtaleAvArena(AvtaleForkortetAvArena event) {
+        VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.SYSTEM, Identifikator.ARENA, HendelseType.AVTALE_FORKORTET);
         varselRepository.saveAll(factory.alleParter());
     }
 

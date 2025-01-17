@@ -5,8 +5,9 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvSystem;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndretAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvSystem;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlenget;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.InkluderingstilskuddEndret;
@@ -45,8 +46,8 @@ public class DvhAvtalehendelseLytter {
     }
 
     @EventListener
-    public void avtaleForkortet(AvtaleForkortetAvSystem event) {
-        lagHendelse(event.getAvtale(), DvhHendelseType.FORKORTET, event.getUtførtAv());
+    public void avtaleForkortet(AvtaleForkortetAvArena event) {
+        lagHendelse(event.getAvtale(), DvhHendelseType.FORKORTET, Identifikator.ARENA);
     }
 
     @EventListener
@@ -67,6 +68,11 @@ public class DvhAvtalehendelseLytter {
     @EventListener
     public void stillingsbeskrivelseEndret(StillingsbeskrivelseEndret event) {
         lagHendelse(event.getAvtale(), DvhHendelseType.ENDRET, event.getUtførtAv());
+    }
+
+    @EventListener
+    public void stillingsbeskrivelseEndret(AvtaleEndretAvArena event) {
+        lagHendelse(event.getAvtale(), DvhHendelseType.ENDRET, Identifikator.ARENA);
     }
 
     @EventListener

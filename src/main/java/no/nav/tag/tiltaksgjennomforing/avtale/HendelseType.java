@@ -21,7 +21,7 @@ public enum HendelseType {
     DELT_MED_MENTOR("Avtale delt med mentor"),
     ENDRET("Avtale endret"),
     AVBRUTT("Avtale avbrutt av veileder"),
-    ANNULLERT("Avtale annullert av veileder"),
+    ANNULLERT("Avtale annullert"),
     LÅST_OPP("Avtale låst opp av veileder"),
     GJENOPPRETTET("Avtale gjenopprettet"),
     OPPRETTET_AV_ARBEIDSGIVER("Avtale er opprettet av arbeidsgiver"),
@@ -53,6 +53,7 @@ public enum HendelseType {
     ARBEIDSGIVERS_GODKJENNING_OPPHEVET_AV_VEILEDER("Arbeidsgivers godkjenning opphevet av veileder"),
     ENDRET_AV_ARENA("Avtale synkronisert med fagsystem (Arena)"),
     OPPRETTET_AV_ARENA("Avtale er opprettet av fagsystem (Arena)"),
+    AVTALE_FORKORTET_AV_ARENA("Avtale forkortet av fagsystem (Arena)"),
     UTLOPER_OM_1_UKE("Avtale vil automatisk slettes om 1 uke dersom det ikke foretas noen endringer"),
     UTLOPER_OM_24_TIMER("Avtale vil automatisk slettes i dag dersom det ikke foretas noen endringer innen kl 23:59");
 

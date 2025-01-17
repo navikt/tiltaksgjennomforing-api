@@ -69,8 +69,8 @@ public class AvtaleHendelseLytter {
     }
 
     @EventListener
-    public void avtaleForkortet(AvtaleForkortetAvSystem event) {
-        lagHendelse(event.getAvtale(), HendelseType.AVTALE_FORKORTET, event.getUtførtAv(), AvtaleHendelseUtførtAvRolle.SYSTEM, event.getGrunn());
+    public void avtaleForkortetAvArena(AvtaleForkortetAvArena event) {
+        lagHendelse(event.getAvtale(), HendelseType.AVTALE_FORKORTET_AV_ARENA, Identifikator.ARENA, AvtaleHendelseUtførtAvRolle.SYSTEM, event.getGrunn());
     }
 
     @EventListener

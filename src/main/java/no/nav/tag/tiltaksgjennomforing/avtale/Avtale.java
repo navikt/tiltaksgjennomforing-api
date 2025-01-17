@@ -28,7 +28,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.ArbeidsgiversGodkjenningOpp
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndretAvArena;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvSystem;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlenget;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
@@ -339,7 +339,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             getGjeldendeInnhold().setStartDato(startDato);
             getGjeldendeInnhold().setSluttDato(sluttDato);
 
-            utforEndring(new AvtaleForkortetAvSystem(this, gjeldendeInnhold, sluttDato, ForkortetGrunn.AVSLUTTET_I_ARENA, Identifikator.ARENA));
+            utforEndring(new AvtaleForkortetAvArena(this, gjeldendeInnhold, sluttDato, ForkortetGrunn.AVSLUTTET_I_ARENA));
             return;
         }
 

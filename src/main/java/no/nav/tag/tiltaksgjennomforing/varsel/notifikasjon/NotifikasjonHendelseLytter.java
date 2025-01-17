@@ -183,7 +183,7 @@ public class NotifikasjonHendelseLytter {
     }
 
     @EventListener
-    public void forkortAvtale(AvtaleForkortetAvSystem event) {
+    public void forkortAvtale(AvtaleForkortetAvArena event) {
         if (smsMinSideArbeidsgiverToggleErPå()) return;
         opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.AVTALE_FORKORTET,
                 NotifikasjonTekst.TILTAK_AVTALE_FORKORTET);
