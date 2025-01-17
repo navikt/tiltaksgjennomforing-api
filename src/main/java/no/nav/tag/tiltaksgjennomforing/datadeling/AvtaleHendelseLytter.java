@@ -34,12 +34,6 @@ public class AvtaleHendelseLytter {
     }
 
     @EventListener
-    public void avtaleEndretAvArena(AvtaleEndretAvArena event) {
-        Avtale avtale = event.getAvtale();
-        lagHendelse(avtale, HendelseType.ENDRET_AV_ARENA, Identifikator.ARENA, AvtaleHendelseUtførtAvRolle.SYSTEM);
-    }
-
-    @EventListener
     public void avtaleOpprettetAvVeileder(AvtaleOpprettetAvVeileder event) {
         Avtale avtale = event.getAvtale();
         lagHendelse(avtale, HendelseType.OPPRETTET, event.getUtfortAv(), AvtaleHendelseUtførtAvRolle.VEILEDER);
@@ -49,6 +43,12 @@ public class AvtaleHendelseLytter {
     public void avtaleEndret(AvtaleEndret event) {
         Avtale avtale = event.getAvtale();
         lagHendelse(avtale, HendelseType.ENDRET, event.getUtfortAv(), event.getUtfortAvRolle());
+    }
+
+    @EventListener
+    public void avtaleEndretAvArena(AvtaleEndretAvArena event) {
+        Avtale avtale = event.getAvtale();
+        lagHendelse(avtale, HendelseType.ENDRET_AV_ARENA, Identifikator.ARENA, AvtaleHendelseUtførtAvRolle.SYSTEM);
     }
 
     @EventListener
@@ -63,9 +63,14 @@ public class AvtaleHendelseLytter {
     }
 
     @EventListener
-    public void avtaleForkortet(AvtaleForkortet event) {
+    public void avtaleForkortet(AvtaleForkortetAvVeileder event) {
         String forkortetGrunn = event.getAnnetGrunn() != null ? event.getAnnetGrunn() : event.getGrunn();
         lagHendelse(event.getAvtale(), HendelseType.AVTALE_FORKORTET, event.getUtførtAv(), AvtaleHendelseUtførtAvRolle.VEILEDER, forkortetGrunn);
+    }
+
+    @EventListener
+    public void avtaleForkortet(AvtaleForkortetAvSystem event) {
+        lagHendelse(event.getAvtale(), HendelseType.AVTALE_FORKORTET, event.getUtførtAv(), AvtaleHendelseUtførtAvRolle.SYSTEM, event.getGrunn());
     }
 
     @EventListener

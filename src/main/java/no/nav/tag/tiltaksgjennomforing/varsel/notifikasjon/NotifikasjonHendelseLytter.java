@@ -128,6 +128,12 @@ public class NotifikasjonHendelseLytter {
     }
 
     @EventListener
+    public void avtaleAnnullert(AnnullertAvSystem event) {
+        if (smsMinSideArbeidsgiverToggleErPå()) return; // notifikasjon henter alle notifikasjoner på avtalen og softdeleter de
+        notifikasjonService.softDeleteNotifikasjoner(event.getAvtale());
+    }
+
+    @EventListener
     public void målEndret(MålEndret event) {
         if (smsMinSideArbeidsgiverToggleErPå()) return;
         opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.MÅL_ENDRET,
@@ -177,7 +183,7 @@ public class NotifikasjonHendelseLytter {
     }
 
     @EventListener
-    public void forkortAvtale(AvtaleForkortet event) {
+    public void forkortAvtale(AvtaleForkortetAvSystem event) {
         if (smsMinSideArbeidsgiverToggleErPå()) return;
         opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.AVTALE_FORKORTET,
                 NotifikasjonTekst.TILTAK_AVTALE_FORKORTET);

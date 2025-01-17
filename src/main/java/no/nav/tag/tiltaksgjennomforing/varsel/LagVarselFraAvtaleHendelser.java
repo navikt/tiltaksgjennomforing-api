@@ -4,12 +4,14 @@ import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvSystem;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvbruttAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndretAvArena;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortet;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvSystem;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlenget;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleGjenopprettet;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
@@ -70,12 +72,6 @@ public class LagVarselFraAvtaleHendelser {
     }
 
     @EventListener
-    public void avtaleEndretAvArena(AvtaleEndretAvArena event) {
-        VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.SYSTEM, Identifikator.ARENA, HendelseType.ENDRET_AV_ARENA);
-        varselRepository.save(factory.veileder());
-    }
-
-    @EventListener
     public void avtaleDeltMedAvtalepart(AvtaleDeltMedAvtalepart event) {
         if (event.getAvtalepart() == Avtalerolle.ARBEIDSGIVER) {
             VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.VEILEDER, null, HendelseType.DELT_MED_ARBEIDSGIVER);
@@ -107,6 +103,12 @@ public class LagVarselFraAvtaleHendelser {
     public void avtaleEndret(AvtaleEndret event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), event.getUtfortAvRolle(), event.getUtfortAv(), HendelseType.ENDRET);
         varselRepository.saveAll(factory.alleParter());
+    }
+
+    @EventListener
+    public void avtaleEndret(AvtaleEndretAvArena event) {
+        VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.SYSTEM, Identifikator.ARENA, HendelseType.ENDRET_AV_ARENA);
+        varselRepository.save(factory.veileder());
     }
 
     @EventListener
@@ -205,6 +207,12 @@ public class LagVarselFraAvtaleHendelser {
     }
 
     @EventListener
+    public void annullert(AnnullertAvSystem event) {
+        VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.SYSTEM, event.getUtfortAv(), HendelseType.ANNULLERT);
+        varselRepository.saveAll(factory.alleParter());
+    }
+
+    @EventListener
     public void låstOpp(AvtaleLåstOpp event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.VEILEDER, null, HendelseType.LÅST_OPP);
         varselRepository.saveAll(factory.alleParter());
@@ -217,8 +225,14 @@ public class LagVarselFraAvtaleHendelser {
     }
 
     @EventListener
-    public void forkortAvtale(AvtaleForkortet event) {
+    public void forkortAvtale(AvtaleForkortetAvVeileder event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.VEILEDER, event.getUtførtAv(), HendelseType.AVTALE_FORKORTET);
+        varselRepository.saveAll(factory.alleParter());
+    }
+
+    @EventListener
+    public void forkortAvtale(AvtaleForkortetAvSystem event) {
+        VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.SYSTEM, event.getUtførtAv(), HendelseType.AVTALE_FORKORTET);
         varselRepository.saveAll(factory.alleParter());
     }
 
