@@ -39,7 +39,7 @@ public class ArenaCleanUpService {
                 avtale.getTiltakstype(),
                 avtale.getStatus()
             );
-            avtale.annuller(Identifikator.ARENA, AnnullertGrunn.FINNES_IKKE_I_ARENA);
+            avtale.annuller(AnnullertGrunn.FINNES_IKKE_I_ARENA, Identifikator.ARENA);
         }
 
         avtaleRepository.saveAll(avtaleList);

@@ -74,11 +74,6 @@ public class LagSporingsloggFraAvtaleHendelser {
     }
 
     @EventListener
-    public void avtaleEndrettAvArena(AvtaleEndretAvArena event) {
-        sporingsloggRepository.save(Sporingslogg.nyHendelse(event.getAvtale(), HendelseType.ENDRET_AV_ARENA));
-    }
-
-    @EventListener
     public void avtaleDeltMedAvtalepart(AvtaleDeltMedAvtalepart event) {
         if (event.getAvtalepart() == Avtalerolle.ARBEIDSGIVER) {
             sporingsloggRepository.save(Sporingslogg.nyHendelse(event.getAvtale(), HendelseType.DELT_MED_ARBEIDSGIVER));
@@ -102,6 +97,11 @@ public class LagSporingsloggFraAvtaleHendelser {
     @EventListener
     public void avtaleEndret(AvtaleEndret event) {
         sporingsloggRepository.save(Sporingslogg.nyHendelse(event.getAvtale(), HendelseType.ENDRET));
+    }
+
+    @EventListener
+    public void avtaleEndret(AvtaleEndretAvArena event) {
+        sporingsloggRepository.save(Sporingslogg.nyHendelse(event.getAvtale(), HendelseType.ENDRET_AV_ARENA));
     }
 
     @EventListener

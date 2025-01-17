@@ -64,17 +64,17 @@ public class MetrikkRegistrering {
     }
 
     @EventListener
-    public void avtaleEndretAvArena(AvtaleEndretAvArena event) {
-        Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
-        log.info("Avtale endret av Arena, avtaleId={}, tiltakstype={}", event.getAvtale().getId(), tiltakstype);
-        counter("avtale.endret", AvtaleHendelseUtførtAvRolle.SYSTEM, tiltakstype).increment();
-    }
-
-    @EventListener
     public void avtaleEndret(AvtaleEndret event) {
         Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
         log.info("Avtale endret, avtaleId={}, avtalepart={}, tiltakstype={}", event.getAvtale().getId(), event.getUtfortAvRolle(), tiltakstype);
         counter("avtale.endret", event.getUtfortAvRolle(), tiltakstype).increment();
+    }
+
+    @EventListener
+    public void avtaleEndretAvArena(AvtaleEndretAvArena event) {
+        Tiltakstype tiltakstype = event.getAvtale().getTiltakstype();
+        log.info("Avtale endret av Arena, avtaleId={}, tiltakstype={}", event.getAvtale().getId(), tiltakstype);
+        counter("avtale.endret", AvtaleHendelseUtførtAvRolle.SYSTEM, tiltakstype).increment();
     }
 
     @EventListener

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum HendelseType {
     OPPRETTET("Avtale er opprettet av veileder"),
+    OPPRETTET_AV_ARENA("Avtale er opprettet av fagsystem (Arena)"),
     GODKJENT_AV_ARBEIDSGIVER("Avtale er godkjent av arbeidsgiver"),
     GODKJENT_AV_VEILEDER("Avtale er godkjent av veileder"),
     GODKJENT_AV_DELTAKER("Avtale er godkjent av deltaker"),
@@ -20,8 +21,9 @@ public enum HendelseType {
     DELT_MED_ARBEIDSGIVER("Avtale delt med arbeidsgiver"),
     DELT_MED_MENTOR("Avtale delt med mentor"),
     ENDRET("Avtale endret"),
+    ENDRET_AV_ARENA("Avtale synkronisert med fagsystem (Arena)"),
     AVBRUTT("Avtale avbrutt av veileder"),
-    ANNULLERT("Avtale annullert av veileder"),
+    ANNULLERT("Avtale annullert"),
     LÅST_OPP("Avtale låst opp av veileder"),
     GJENOPPRETTET("Avtale gjenopprettet"),
     OPPRETTET_AV_ARBEIDSGIVER("Avtale er opprettet av arbeidsgiver"),
@@ -29,8 +31,10 @@ public enum HendelseType {
     AVTALE_FORDELT("Avtale tildelt veileder"),
     TILSKUDDSPERIODE_AVSLATT("Tilskuddsperiode har blitt sendt i retur av "),
     TILSKUDDSPERIODE_GODKJENT("Tilskuddsperiode har blitt godkjent av beslutter"),
-    AVTALE_FORKORTET("Avtale forkortet"),
+    AVTALE_FORKORTET("Avtale forkortet av veileder"),
+    AVTALE_FORKORTET_AV_ARENA("Avtale forkortet av fagsystem (Arena)"),
     AVTALE_FORLENGET("Avtale forlenget av veileder"),
+    AVTALE_FORLENGET_AV_ARENA("Avtale forlenget av fagsystem (Arena)"),
     MÅL_ENDRET("Mål endret av veileder"),
     INKLUDERINGSTILSKUDD_ENDRET("Inkluderingstilskudd endret av veileder"),
     OM_MENTOR_ENDRET("Om mentor endret av veileder"),
@@ -51,8 +55,6 @@ public enum HendelseType {
     DELTAKERS_GODKJENNING_OPPHEVET_AV_VEILEDER("Deltakers godkjenning opphevet av veileder"),
     DELTAKERS_GODKJENNING_OPPHEVET_AV_ARBEIDSGIVER("Deltakers godkjenning opphevet av arbeidsgiver"),
     ARBEIDSGIVERS_GODKJENNING_OPPHEVET_AV_VEILEDER("Arbeidsgivers godkjenning opphevet av veileder"),
-    ENDRET_AV_ARENA("Avtale synkronisert med fagsystem (Arena)"),
-    OPPRETTET_AV_ARENA("Avtale er opprettet av fagsystem (Arena)"),
     UTLOPER_OM_1_UKE("Avtale vil automatisk slettes om 1 uke dersom det ikke foretas noen endringer"),
     UTLOPER_OM_24_TIMER("Avtale vil automatisk slettes i dag dersom det ikke foretas noen endringer innen kl 23:59");
 
