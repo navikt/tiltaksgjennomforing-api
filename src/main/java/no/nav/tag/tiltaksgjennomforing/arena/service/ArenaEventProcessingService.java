@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.arena.logging.ArenaEventLogging;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaKafkaMessage;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaPos;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Operation;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEvent;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEventStatus;
@@ -67,19 +68,22 @@ public class ArenaEventProcessingService {
             Optional<ArenaEvent> existingArenaEventOpt = arenaEventRepository.findByArenaIdAndArenaTable(key, table);
 
             boolean isAlreadyProcessed = existingArenaEventOpt
-                .map(e -> message.opTimestamp().isBefore(e.getOperationTime()))
+                .map(e -> e.getArenaPos().compareTo(ArenaPos.parse(message.pos())) > 0)
                 .orElse(false);
 
             if (isAlreadyProcessed) {
                 log.info(
-                    "Ignorerer arena-event {} som allerede er prossesert med et OP-tidspunkt fremover i tid.",
-                    existingArenaEventOpt.get().getLogId()
+                    "Ignorerer arena-event {} som allerede er prossesert med et pos fremover i tid. " +
+                    "Melding har pos: {}, mens eksisterende har pos: {}",
+                    existingArenaEventOpt.get().getLogId(),
+                    message.pos(),
+                    existingArenaEventOpt.get().getPos()
                 );
                 return;
             }
 
             boolean isEqual = existingArenaEventOpt
-                .map(e -> message.opTimestamp().isEqual(e.getOperationTime()) && e.getPayload().equals(payload))
+                .map(e -> message.pos().equals(e.getPos()) && e.getPayload().equals(payload))
                 .orElse(false);
 
             if (isEqual) {
@@ -91,6 +95,8 @@ public class ArenaEventProcessingService {
                     exisitingArenaEvent.toBuilder()
                         .operation(operation)
                         .operationTime(message.opTimestamp())
+                        .currentTs(message.currentTimestamp())
+                        .pos(message.pos())
                         .payload(payload)
                         .retryCount(0)
                         .status(ArenaEventStatus.CREATED)
@@ -101,6 +107,8 @@ public class ArenaEventProcessingService {
                         key,
                         table,
                         operation,
+                        message.pos(),
+                        message.currentTimestamp(),
                         message.opTimestamp(),
                         payload,
                         ArenaEventStatus.CREATED
@@ -128,6 +136,8 @@ public class ArenaEventProcessingService {
                         key,
                         table,
                         operation,
+                        message.pos(),
+                        message.currentTimestamp(),
                         message.opTimestamp(),
                         message.after(),
                         ArenaEventStatus.FAILED
@@ -206,4 +216,5 @@ public class ArenaEventProcessingService {
     private String sanitize(String value) {
         return value.replace("\u0000", "").replace("\\u0000", "");
     }
+
 }
