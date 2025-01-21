@@ -296,7 +296,7 @@ public class VeilederTest {
         );
         Mockito.doReturn(nyOppfølgingsstatusSomSkalIkkeSettes).when(veilarboppfolgingService).hentOppfolgingsstatus(Mockito.anyString());
 
-        nyVeileder.oppdaterOppfølgingFraArenaForAvtale(avtale );
+        nyVeileder.oppdaterOppfølgingsStatusOgSettRiktigLønnstilskuddProsentsatsForAvtale(avtale );
 
         assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(avtale.getKvalifiseringsgruppe());
 

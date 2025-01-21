@@ -285,7 +285,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     protected void leggTilEnheter(Avtale avtale){
         final PdlRespons persondata = this.hentPersonDataForOpprettelseAvAvtale(avtale);
-        this.oppdaterOppfølgingFraArenaForAvtale(avtale);
+        this.oppdaterOppfølgingsStatusOgSettRiktigLønnstilskuddProsentsatsForAvtale(avtale);
         super.hentGeoEnhetFraNorg2(avtale, persondata, norg2Client);
         this.hentOppfolgingEnhetsnavnFraNorg2(avtale, norg2Client);
     }
@@ -302,7 +302,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         avtale.setEnhetsnavnOppfolging(response.getNavn());
     }
 
-    public void oppdaterOppfølgingFraArenaForAvtale(Avtale avtale) {
+    public void oppdaterOppfølgingsStatusOgSettRiktigLønnstilskuddProsentsatsForAvtale(Avtale avtale) {
         if(avtale.harOppfølgingsStatus()) return;
         this.oppdaterOppfølgningsStatusForAvtale(avtale);
         this.settLonntilskuddProsentsats(avtale);
