@@ -1,8 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 import java.util.EnumSet;
 
@@ -20,6 +19,14 @@ public class AvtalepartTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Deltaker deltaker = TestData.enDeltaker(avtale);
         assertThatThrownBy(() -> deltaker.endreAvtale(avtale.getSistEndret(), TestData.ingenEndring(), avtale, EnumSet.of(avtale.getTiltakstype()))).isInstanceOf(KanIkkeEndreException.class);
+    }
+
+    @Test
+    public void settLonntilskuddProsentsats__skal_ikke_sette_LonnstilskuddProsent_om_Kvalifiseringsgruppe_er_null() {
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setKvalifiseringsgruppe(null);
+        Veileder veileder = TestData.enVeileder(avtale);
+        assertThatNoException().isThrownBy(() -> veileder.settLonntilskuddProsentsats(avtale));
     }
 
     @Test
