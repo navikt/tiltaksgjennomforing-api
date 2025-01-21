@@ -131,7 +131,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
-        veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
+        settOppfølgingsStatus(avtale,veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale));
         avtale.godkjennForVeileder(getIdentifikator());
     }
 
@@ -362,7 +362,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     protected void oppdatereEnheterEtterForespørsel(Avtale avtale) {
         final PdlRespons persondata = this.hentPersonDataForOpprettelseAvAvtale(avtale);
-        this.sjekkOgHentOppfølgingStatus(avtale, veilarboppfolgingService);
+        this.sjekkOgHentOppfølgingStatus(avtale, veilarboppfolgingService); // TODO: Fjern meg ( Vi skal KUN endre oppfølgningsenhet her -  Vi skal ikke noe annet som Oppfølgningstatus)
         super.hentGeoEnhetFraNorg2(avtale, persondata, norg2Client);
         this.hentOppfolgingEnhetsnavnFraNorg2(avtale, norg2Client);
     }

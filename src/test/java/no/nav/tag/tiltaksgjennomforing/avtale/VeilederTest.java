@@ -50,12 +50,20 @@ public class VeilederTest {
 
     @Test
     public void godkjennAvtale__kan_godkjenne_sist() {
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        // GITT
+        Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
-        Veileder veileder = TestData.enVeileder(avtale);
+        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        // NÅR
+        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
+        Veileder veileder = TestData.enVeileder(TestData.enNavIdent(),veilarboppfolgingService);
         veileder.godkjennAvtale(avtale.getSistEndret(), avtale);
+
+        // SÅ
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
+        assertThat(avtale.getKvalifiseringsgruppe().getKvalifiseringskode()).isEqualTo(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS.getKvalifiseringskode());
     }
 
     @Test

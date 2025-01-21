@@ -2,6 +2,69 @@
   "mappings": [
     {
       "priority": 1,
+      "scenarioName": "innsatsgruppe",
+      "requiredScenarioState": "Started",
+      "newScenarioState": "second",
+      "request": {
+        "method": "POST",
+        "urlPattern": "/veilarboppfolging/api/v2/person/hent-oppfolgingsstatus",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"fnr\":\"27024702117\"}",
+            "ignoreArrayOrder": true
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "oppfolgingsenhet": {
+            "navn": "NAV Test",
+            "enhetId": "0906"
+          },
+          "veilederId": "V123456",
+          "formidlingsgruppe": "ARBS",
+          "servicegruppe": "VARIG",
+          "hovedmaalkode": "NO"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "scenarioName": "innsatsgruppe",
+      "requiredScenarioState": "second",
+      "request": {
+        "method": "POST",
+        "urlPattern": "/veilarboppfolging/api/v2/person/hent-oppfolgingsstatus",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"fnr\":\"27024702117\"}",
+            "ignoreArrayOrder": true
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "oppfolgingsenhet": {
+            "navn": "NAV Test",
+            "enhetId": "0906"
+          },
+          "veilederId": "V123456",
+          "formidlingsgruppe": "ARBS",
+          "servicegruppe": "BFORM",
+          "hovedmaalkode": "NO"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
       "request": {
         "method": "POST",
         "urlPattern": "/veilarboppfolging/api/v2/person/hent-oppfolgingsstatus",

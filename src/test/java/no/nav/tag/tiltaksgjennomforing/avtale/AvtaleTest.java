@@ -3,8 +3,10 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
+import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilLonnstilskuddsprosentException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
@@ -1530,6 +1532,7 @@ public class AvtaleTest {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
 
         TilskuddsperiodeConfig tilskuddsperiodeConfig = new TilskuddsperiodeConfig();
+        VeilarboppfolgingService veilarboppfolgingServiceMock = mock(VeilarboppfolgingService.class);
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
@@ -1539,8 +1542,10 @@ public class AvtaleTest {
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
                 false,
-                mock(VeilarboppfolgingService.class)
+                veilarboppfolgingServiceMock
         );
+        when(veilarboppfolgingServiceMock.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
+
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 eq(veileder),
                 any(Fnr.class)
@@ -1568,6 +1573,8 @@ public class AvtaleTest {
         // Gi veileder tilgang til deltaker
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
 
+        VeilarboppfolgingService veilarboppfolgingServiceMock = mock(VeilarboppfolgingService.class);
+        when(veilarboppfolgingServiceMock.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
                 tilgangskontrollService,
@@ -1576,7 +1583,7 @@ public class AvtaleTest {
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
                 false,
-                mock(VeilarboppfolgingService.class)
+                veilarboppfolgingServiceMock
         );
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
@@ -1673,7 +1680,8 @@ public class AvtaleTest {
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         // Gi veileder tilgang til deltaker
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-
+        VeilarboppfolgingService veilarboppfolgingServiceMock = mock(VeilarboppfolgingService.class);
+        when(veilarboppfolgingServiceMock.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
                 tilgangskontrollService,
@@ -1682,7 +1690,7 @@ public class AvtaleTest {
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
                 false,
-                mock(VeilarboppfolgingService.class)
+                veilarboppfolgingServiceMock
         );
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
@@ -1711,7 +1719,8 @@ public class AvtaleTest {
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         // Gi veileder tilgang til deltaker
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-
+        VeilarboppfolgingService veilarboppfolgingServiceMock = mock(VeilarboppfolgingService.class);
+        when(veilarboppfolgingServiceMock.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
                 tilgangskontrollService,
@@ -1720,7 +1729,7 @@ public class AvtaleTest {
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
                 false,
-                mock(VeilarboppfolgingService.class)
+                veilarboppfolgingServiceMock
         );
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
