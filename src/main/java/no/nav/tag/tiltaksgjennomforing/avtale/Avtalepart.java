@@ -195,7 +195,7 @@ public abstract class Avtalepart<T extends Identifikator> {
     }
 
     public void settLonntilskuddProsentsats(Avtale avtale) {
-        if (avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD) {
+        if (avtale.getTiltakstype() == Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD && avtale.getKvalifiseringsgruppe() != null)  {
             avtale.getGjeldendeInnhold().setLonnstilskuddProsent(
                     avtale.getKvalifiseringsgruppe().finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(
                             40,
