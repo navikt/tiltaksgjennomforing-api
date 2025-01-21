@@ -131,7 +131,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
-        this.settOppfølgingsStatus(avtale,veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale));
+        this.oppdaterOppfølgningsStatusForAvtale(avtale);
         avtale.godkjennForVeileder(getIdentifikator());
     }
 
@@ -145,7 +145,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
-        this.settOppfølgingsStatus(avtale,veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale));
+        this.oppdaterOppfølgningsStatusForAvtale(avtale);
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
     }
 
@@ -161,7 +161,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     ) {
         super.sjekkTilgang(avtale);
         this.blokkereKode6Prosessering(avtale.getDeltakerFnr());
-        this.settOppfølgingsStatus(avtale, veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale));
+        this.oppdaterOppfølgningsStatusForAvtale(avtale);
         avtale.godkjennForVeilederOgArbeidsgiver(getIdentifikator(), paVegneAvArbeidsgiverGrunn);
     }
 
@@ -171,7 +171,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     ) {
         super.sjekkTilgang(avtale);
         this.blokkereKode6Prosessering(avtale.getDeltakerFnr());
-        this.settOppfølgingsStatus(avtale, veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale));
+        this.oppdaterOppfølgningsStatusForAvtale(avtale);
         avtale.godkjennForVeilederOgDeltakerOgArbeidsgiver(getIdentifikator(), paVegneAvDeltakerOgArbeidsgiverGrunn);
     }
 
@@ -285,7 +285,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     protected void leggTilEnheter(Avtale avtale){
         final PdlRespons persondata = this.hentPersonDataForOpprettelseAvAvtale(avtale);
-        this.hentOppfølgingFraArena(avtale, veilarboppfolgingService);
+        this.oppdaterOppfølgingFraArenaForAvtale(avtale);
         super.hentGeoEnhetFraNorg2(avtale, persondata, norg2Client);
         this.hentOppfolgingEnhetsnavnFraNorg2(avtale, norg2Client);
     }
@@ -302,14 +302,9 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         avtale.setEnhetsnavnOppfolging(response.getNavn());
     }
 
-    public void hentOppfølgingFraArena(
-            Avtale avtale,
-            VeilarboppfolgingService veilarboppfolgingService
-    ) {
+    public void oppdaterOppfølgingFraArenaForAvtale(Avtale avtale) {
         if(avtale.harOppfølgingsStatus()) return;
-        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
-        if (oppfølgingsstatus == null) return;
-        this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
+        this.oppdaterOppfølgningsStatusForAvtale(avtale);
         this.settLonntilskuddProsentsats(avtale);
     }
 
@@ -319,8 +314,9 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         return persondata;
     }
 
-    public void sjekkOgHentOppfølgingStatus(Avtale avtale, VeilarboppfolgingService veilarboppfolgingService) {
+    public void oppdaterOppfølgningsStatusForAvtale(Avtale avtale) {
         Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
+        if(oppfølgingsstatus == null) return;
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
     }
 
@@ -356,7 +352,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     public void forlengAvtale(LocalDate sluttDato, Avtale avtale) {
         super.sjekkTilgang(avtale);
-        sjekkOgHentOppfølgingStatus(avtale, veilarboppfolgingService);
+        oppdaterOppfølgningsStatusForAvtale(avtale);
         avtale.forlengAvtale(sluttDato, getIdentifikator());
     }
 
