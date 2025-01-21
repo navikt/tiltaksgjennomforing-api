@@ -67,6 +67,24 @@ public class VeilederTest {
     }
 
     @Test
+    public void godkjennForVeilederOgDeltaker__kan_godkjenne_med_riktig_oppfølgingsstatus() {
+        // GITT
+        Avtale avtale = TestData.enVarigLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        // NÅR
+        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
+        Veileder veileder = TestData.enVeileder(TestData.enNavIdent(),veilarboppfolgingService);
+        GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
+        veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
+
+        // SÅ
+        assertThat(avtale.erGodkjentAvVeileder()).isTrue();
+        assertThat(avtale.getKvalifiseringsgruppe().getKvalifiseringskode()).isEqualTo(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS.getKvalifiseringskode());
+    }
+
+    @Test
     public void godkjennAvtale__kan_ikke_godkjenne_kode6() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
@@ -152,6 +170,8 @@ public class VeilederTest {
 
         // Gi veileder tilgang til deltaker
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        VeilarboppfolgingService veilarboppfolgingServiceMock = mock(VeilarboppfolgingService.class);
+        when(veilarboppfolgingServiceMock.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
                 tilgangskontrollService,
@@ -161,7 +181,7 @@ public class VeilederTest {
                 mock(SlettemerkeProperties.class),
 
                 false,
-                mock(VeilarboppfolgingService.class));
+                veilarboppfolgingServiceMock);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class)))
                 .thenReturn(true);
 

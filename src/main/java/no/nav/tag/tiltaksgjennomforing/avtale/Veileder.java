@@ -145,7 +145,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
-        veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
+        settOppfølgingsStatus(avtale,veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale));
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
     }
 
