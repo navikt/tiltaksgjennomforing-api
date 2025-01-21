@@ -545,8 +545,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         }
     }
 
-    //TODO TEST MEG
-    void godkjennForArbeidsgiver(Identifikator utfortAv) {
+    public void godkjennForArbeidsgiver(Identifikator utfortAv) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErKlarTilGodkjenning();
         if (erGodkjentAvArbeidsgiver()) {
@@ -556,7 +555,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         utforEndring(new GodkjentAvArbeidsgiver(this, utfortAv));
     }
 
-    void godkjennForVeileder(NavIdent utfortAv) {
+    public void godkjennForVeileder(NavIdent utfortAv) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErKlarTilGodkjenning();
         if (erGodkjentAvVeileder()) {
@@ -697,7 +696,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         utforEndring(new GodkjentPaVegneAvDeltakerOgArbeidsgiver(this, utfortAv));
     }
 
-    void godkjennForDeltaker(Identifikator utfortAv) {
+    public void godkjennForDeltaker(Identifikator utfortAv) {
         sjekkOmAltErKlarTilGodkjenning();
         if (erGodkjentAvDeltaker()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_DELTAKER_HAR_ALLEREDE_GODKJENT);
