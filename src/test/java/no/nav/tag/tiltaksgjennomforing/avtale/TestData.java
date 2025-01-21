@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.*;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.enhet.*;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
@@ -847,6 +848,12 @@ public class TestData {
         GodkjentPaVegneGrunn paVegneGrunn = new GodkjentPaVegneGrunn();
         paVegneGrunn.setIkkeBankId(true);
         return paVegneGrunn;
+    }
+
+    public static GodkjentPaVegneAvArbeidsgiverGrunn enGodkjentPaVegneAvArbeidsgiverGrunn() {
+        GodkjentPaVegneAvArbeidsgiverGrunn godkjentPaVegneAvArbeidsgiverGrunn = new GodkjentPaVegneAvArbeidsgiverGrunn();
+        godkjentPaVegneAvArbeidsgiverGrunn.setKlarerIkkeGiFaTilgang(true);
+        return  godkjentPaVegneAvArbeidsgiverGrunn;
     }
 
     public static GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn enGodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn() {

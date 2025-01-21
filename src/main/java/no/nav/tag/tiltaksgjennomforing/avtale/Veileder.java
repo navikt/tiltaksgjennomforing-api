@@ -161,7 +161,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     ) {
         super.sjekkTilgang(avtale);
         this.blokkereKode6Prosessering(avtale.getDeltakerFnr());
-        veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
+        this.settOppfølgingsStatus(avtale, veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale));
         avtale.godkjennForVeilederOgArbeidsgiver(getIdentifikator(), paVegneAvArbeidsgiverGrunn);
     }
 
