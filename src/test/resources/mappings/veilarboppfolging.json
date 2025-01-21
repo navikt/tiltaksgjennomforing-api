@@ -10,7 +10,7 @@
         "urlPattern": "/veilarboppfolging/api/v2/person/hent-oppfolgingsstatus",
         "bodyPatterns": [
           {
-            "equalToJson": "{\"fnr\":\"27024702117\"}",
+            "equalToJson": "{\"fnr\":\"01040276609\"}",
             "ignoreArrayOrder": true
           }
         ]
@@ -41,7 +41,7 @@
         "urlPattern": "/veilarboppfolging/api/v2/person/hent-oppfolgingsstatus",
         "bodyPatterns": [
           {
-            "equalToJson": "{\"fnr\":\"27024702117\"}",
+            "equalToJson": "{\"fnr\":\"01040276609\"}",
             "ignoreArrayOrder": true
           }
         ]
