@@ -17,7 +17,7 @@ public interface ArenaEventRepository extends JpaRepository<ArenaEvent, UUID> {
         SELECT ae
         FROM ArenaEvent ae
         WHERE ae.status = :status
-        ORDER BY ae.status LIMIT 5000
+        ORDER BY ae.status LIMIT 2500
     """)
     List<ArenaEvent> findByStatus(ArenaEventStatus status);
 
@@ -25,7 +25,7 @@ public interface ArenaEventRepository extends JpaRepository<ArenaEvent, UUID> {
         SELECT ae
         FROM ArenaEvent ae
         WHERE ae.status = :status AND ae.arenaTable = :arenaTable
-        ORDER BY ae.status, ae.arenaTable LIMIT 5000
+        ORDER BY ae.status, ae.arenaTable LIMIT 2500
     """)
     List<ArenaEvent> findByStatusAndArenaTable(ArenaEventStatus status, String arenaTable);
 
