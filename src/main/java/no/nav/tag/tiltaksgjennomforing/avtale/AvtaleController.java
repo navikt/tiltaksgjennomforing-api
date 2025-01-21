@@ -76,7 +76,6 @@ public class AvtaleController {
     private final DokgenService dokgenService;
     private final TilskuddsperiodeConfig tilskuddsperiodeConfig;
     private final SalesforceKontorerConfig salesforceKontorerConfig;
-    private final VeilarboppfolgingService veilarboppfolgingService;
     private final FilterSokRepository filterSokRepository;
     private final MeterRegistry meterRegistry;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -768,7 +767,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .map(this::sjekkArbeidstreningToggle)
                 .orElseThrow(RessursFinnesIkkeException::new);
-        veileder.hentOppfølgingFraArena(avtale, veilarboppfolgingService);
+        veileder.oppdaterOppfølgingFraArenaForAvtale(avtale);
         veileder.overtaAvtale(avtale);
         avtaleRepository.save(avtale);
     }
