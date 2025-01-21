@@ -68,14 +68,9 @@ public enum ArenaMigrationAction {
                     case null, default -> ANNULLER;
                 };
                 case AVLYST -> ANNULLER;
-                case AVSLUTT -> switch(deltakerstatuskode) {
+                case AVSLUTT, GJENNOMFOR -> switch(deltakerstatuskode) {
                     case FULLF -> AVSLUTT;
                     case GJENN, TILBUD -> isSluttdatoIFremtiden ? OPPDATER : AVSLUTT;
-                    case null, default -> ANNULLER;
-                };
-                case GJENNOMFOR -> switch(deltakerstatuskode) {
-                    case FULLF -> AVSLUTT;
-                    case GJENN, TILBUD -> OPPDATER;
                     case null, default -> ANNULLER;
                 };
                 case null, default -> throw new IllegalStateException(formatExceptionMsg(tiltakstatuskode, deltakerstatuskode));
