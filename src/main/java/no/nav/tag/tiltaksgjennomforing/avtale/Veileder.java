@@ -131,7 +131,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
-        settOppfølgingsStatus(avtale,veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale));
+        this.settOppfølgingsStatus(avtale,veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale));
         avtale.godkjennForVeileder(getIdentifikator());
     }
 
@@ -145,7 +145,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
-        settOppfølgingsStatus(avtale,veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale));
+        this.settOppfølgingsStatus(avtale,veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale));
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
     }
 
@@ -171,7 +171,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     ) {
         super.sjekkTilgang(avtale);
         this.blokkereKode6Prosessering(avtale.getDeltakerFnr());
-        veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
+        this.settOppfølgingsStatus(avtale, veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale));
         avtale.godkjennForVeilederOgDeltakerOgArbeidsgiver(getIdentifikator(), paVegneAvDeltakerOgArbeidsgiverGrunn);
     }
 
