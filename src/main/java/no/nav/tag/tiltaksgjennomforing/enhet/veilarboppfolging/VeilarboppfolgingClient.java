@@ -32,9 +32,10 @@ class VeilarboppfolgingClient {
         this.restTemplate = azureRestTemplate;
         this.properties = properties;
     }
-
+    /*
+    TODO: SKAPER STORE PROBLEMER MED CACHE OG KVALIFISERINGSgRUPPE ENDRINGER BØR REFRESHES UTEN CACHE
     @Retryable(backoff = @Backoff(delayExpression = "${tiltaksgjennomforing.retry.delay}", maxDelayExpression = "${tiltaksgjennomforing.retry.max-delay}", multiplier = 2))
-    @Cacheable(CacheConfig.VEILARBOPPFOLGING_CACHE)
+    @Cacheable(CacheConfig.VEILARBOPPFOLGING_CACHE)*/
     public Optional<HentOppfolgingsstatusRespons> hentOppfolgingsstatus(HentOppfolgingsstatusRequest request) {
         log.info("Henter oppfølgingenhet fra veilarboppfolging");
 
