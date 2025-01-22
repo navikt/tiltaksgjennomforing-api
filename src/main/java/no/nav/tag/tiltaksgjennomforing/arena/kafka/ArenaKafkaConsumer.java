@@ -32,6 +32,7 @@ public class ArenaKafkaConsumer {
     @KafkaListener(topics = "${tiltaksgjennomforing.arena.kafka.tiltakgjennomforing-endret-topic}", containerFactory = "arenaContainerFactory")
     public void arenaTiltakgjennomforingEndret(ConsumerRecord<String, String> record) {
         if (featureToggleService.isEnabled(FeatureToggle.ARENA_KAFKA)) {
+            log.info("Mottatt melding for {}: {}", arenaKafkaProperties.getTiltakgjennomforingEndretTopic(), record.key());
             arenaEventProcessingService.create(record.key(), record.value());
         }
     }
@@ -39,6 +40,7 @@ public class ArenaKafkaConsumer {
     @KafkaListener(topics = "${tiltaksgjennomforing.arena.kafka.tiltakdeltaker-endret-topic}", containerFactory = "arenaContainerFactory")
     public void arenaTiltakdeltakerEndret(ConsumerRecord<String, String> record) {
         if (featureToggleService.isEnabled(FeatureToggle.ARENA_KAFKA)) {
+            log.info("Mottatt melding for {}: {}", arenaKafkaProperties.getTiltakdeltakerEndretTopic(), record.key());
             arenaEventProcessingService.create(record.key(), record.value());
         }
     }
