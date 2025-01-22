@@ -115,10 +115,11 @@ public class ArenaEventProcessingService {
                 );
 
             log.info(
-                "Oppretter arena-event {} med id {} og operasjon {}",
+                "Oppretter arena-event {} med id {}, operasjon {} og pos {}",
                 arenaEvent.getLogId(),
                 arenaEvent.getId(),
-                arenaEvent.getOperation().name()
+                arenaEvent.getOperation().name(),
+                arenaEvent.getPos()
             );
 
             arenaEventRepository.save(arenaEvent);
