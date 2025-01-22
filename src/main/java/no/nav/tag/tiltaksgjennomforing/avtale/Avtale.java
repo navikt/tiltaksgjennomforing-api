@@ -28,8 +28,10 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.ArbeidsgiversGodkjenningOpp
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndretAvArena;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortet;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlenget;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvArena;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlengetAvArena;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlengetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
@@ -316,6 +318,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             return;
         }
 
+        if (EndreAvtaleArena.Handling.ANNULLER == action) {
+            annuller(AnnullertGrunn.ANNULLERT_I_ARENA, Identifikator.ARENA);
+            return;
+        }
+
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRET_AV_ARENA);
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
 
@@ -332,18 +339,19 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
             getGjeldendeInnhold().setStartDato(startDato);
             getGjeldendeInnhold().setSluttDato(sluttDato);
-        } else {
-            Optional.ofNullable(endreAvtaleArena.getStartdato()).ifPresent(getGjeldendeInnhold()::setStartDato);
-            Optional.ofNullable(endreAvtaleArena.getSluttdato()).ifPresent(getGjeldendeInnhold()::setSluttDato);
-        }
 
-        Optional.ofNullable(endreAvtaleArena.getStillingprosent()).ifPresent(getGjeldendeInnhold()::setStillingprosent);
-        Optional.ofNullable(endreAvtaleArena.getAntallDagerPerUke()).ifPresent(getGjeldendeInnhold()::setAntallDagerPerUke);
-
-        if (EndreAvtaleArena.Handling.ANNULLER == action) {
-            annuller(Identifikator.ARENA, AnnullertGrunn.ANNULLERT_I_ARENA);
+            utforEndring(new AvtaleForkortetAvArena(this, gjeldendeInnhold, sluttDato, ForkortetGrunn.AVSLUTTET_I_ARENA));
             return;
         }
+
+        boolean isForlengelse = Optional.ofNullable(endreAvtaleArena.getStartdato())
+            .map(arenaStartdato -> arenaStartdato.isAfter(gjeldendeInnhold.getSluttDato()))
+            .orElse(false);
+
+        Optional.ofNullable(endreAvtaleArena.getStartdato()).ifPresent(getGjeldendeInnhold()::setStartDato);
+        Optional.ofNullable(endreAvtaleArena.getSluttdato()).ifPresent(getGjeldendeInnhold()::setSluttDato);
+        Optional.ofNullable(endreAvtaleArena.getStillingprosent()).ifPresent(getGjeldendeInnhold()::setStillingprosent);
+        Optional.ofNullable(endreAvtaleArena.getAntallDagerPerUke()).ifPresent(getGjeldendeInnhold()::setAntallDagerPerUke);
 
         setAnnullertTidspunkt(null);
         setAnnullertGrunn(null);
@@ -354,7 +362,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         if (tiltakstyperMedTilskuddsperioder != null && tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
             nyeTilskuddsperioder();
         }
-        utforEndring(new AvtaleEndretAvArena(this));
+
+        if (isForlengelse) {
+            utforEndring(new AvtaleForlengetAvArena(this));
+        } else {
+            utforEndring(new AvtaleEndretAvArena(this));
+        }
     }
 
     public void delMedAvtalepart(Avtalerolle avtalerolle) {
@@ -740,10 +753,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     public void annuller(Veileder veileder, String annullerGrunn) {
-        annuller(veileder.getNavIdent(), annullerGrunn);
+        annuller(annullerGrunn, veileder.getNavIdent());
     }
 
-    public void annuller(Identifikator identifikator, String annullerGrunn) {
+    public void annuller(String annullerGrunn, Identifikator identifikator) {
         sjekkAtIkkeAvtalenInneholderUtbetaltTilskuddsperiode();
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
 
@@ -773,7 +786,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         switch (handling) {
             case VARSEL_EN_UKE -> registerEvent(new AvtaleUtloperVarsel(this, AvtaleUtloperVarsel.Type.OM_EN_UKE));
             case VARSEL_24_TIMER -> registerEvent(new AvtaleUtloperVarsel(this, AvtaleUtloperVarsel.Type.OM_24_TIMER));
-            case UTLOP -> annuller(Identifikator.SYSTEM, AnnullertGrunn.UTLØPT);
+            case UTLOP -> annuller(AnnullertGrunn.UTLØPT, Identifikator.SYSTEM);
         }
     }
 
@@ -1219,7 +1232,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         getGjeldendeInnhold().endreSluttDato(nySluttDato);
         sendTilbakeTilBeslutter();
         forkortTilskuddsperioder(nySluttDato);
-        utforEndring(new AvtaleForkortet(this, nyAvtaleInnholdVersjon, nySluttDato, grunn, annetGrunn, utførtAv));
+        utforEndring(new AvtaleForkortetAvVeileder(this, nyAvtaleInnholdVersjon, nySluttDato, grunn, annetGrunn, utførtAv));
     }
 
     public void forlengAvtale(LocalDate nySluttDato, NavIdent utførtAv) {
@@ -1237,7 +1250,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         getGjeldendeInnhold().endreSluttDato(nySluttDato);
         sendTilbakeTilBeslutter();
         forlengTilskuddsperioder(gammelSluttDato, nySluttDato);
-        utforEndring(new AvtaleForlenget(this, utførtAv));
+        utforEndring(new AvtaleForlengetAvVeileder(this, utførtAv));
     }
 
     private void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {

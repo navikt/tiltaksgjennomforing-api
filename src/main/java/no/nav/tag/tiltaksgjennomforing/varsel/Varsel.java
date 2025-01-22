@@ -62,9 +62,9 @@ public class Varsel extends AbstractAggregateRoot<Varsel> {
                     yield hendelseType.getTekst();
                 }
             }
-            case AVTALE_FORKORTET ->
+            case AVTALE_FORKORTET, AVTALE_FORKORTET_AV_ARENA ->
                     "Avtale forkortet til " + avtale.getGjeldendeInnhold().getSluttDato().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
-            case AVTALE_FORLENGET ->
+            case AVTALE_FORLENGET, AVTALE_FORLENGET_AV_ARENA ->
                     "Avtale forlenget til " + avtale.getGjeldendeInnhold().getSluttDato().format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
             default -> hendelseType.getTekst();
         };
