@@ -344,9 +344,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             return;
         }
 
-        boolean isForlengelse = Optional.ofNullable(endreAvtaleArena.getStartdato())
-            .map(arenaStartdato -> arenaStartdato.isAfter(gjeldendeInnhold.getSluttDato()))
-            .orElse(false);
+        boolean isForlengelse = EndreAvtaleArena.Handling.GJENOPPRETT == action ||
+            Optional.ofNullable(endreAvtaleArena.getStartdato())
+                .map(arenaStartdato -> arenaStartdato.isAfter(gjeldendeInnhold.getSluttDato()))
+                .orElse(false);
 
         Optional.ofNullable(endreAvtaleArena.getStartdato()).ifPresent(getGjeldendeInnhold()::setStartDato);
         Optional.ofNullable(endreAvtaleArena.getSluttdato()).ifPresent(getGjeldendeInnhold()::setSluttDato);
