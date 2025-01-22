@@ -5,8 +5,10 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.UUID;
 
 public class Deltaker extends Avtalepart<Fnr> {
@@ -28,16 +30,19 @@ public class Deltaker extends Avtalepart<Fnr> {
 
     @Override
     public boolean avtalenEksisterer(Avtale avtale) {
-        if (avtale.getOpphav().equals(Avtaleopphav.ARENA) && !avtale.erAvtaleInngått()) {
-            return false;
-        }
         return super.avtalenEksisterer(avtale);
     }
 
     @Override
     Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtaleQueryParameter queryParametre, Pageable pageable) {
-        Page<Avtale> avtaler = avtaleRepository.findAllByDeltakerFnrAndFeilregistrertIsFalse(getIdentifikator(), pageable);
-        return avtaler;
+        Page<Avtale> avtalePage = avtaleRepository.findAllByDeltakerFnrAndFeilregistrertIsFalse(getIdentifikator(), pageable);
+
+        List<Avtale> avtaleListe = avtalePage
+            .stream()
+            .filter(avtale -> avtale.getOpphav() != Avtaleopphav.ARENA || avtale.erAvtaleInngått())
+            .toList();
+
+        return new PageImpl<>(avtaleListe, avtalePage.getPageable(), avtaleListe.size());
     }
 
     @Override
