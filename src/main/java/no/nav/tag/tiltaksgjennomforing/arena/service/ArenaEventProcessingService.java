@@ -18,13 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
 @Service
 public class ArenaEventProcessingService {
-    private final ConcurrentHashMap<String, Lock> locks = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ReentrantLock> locks = new ConcurrentHashMap<>();
 
     private final ObjectMapper objectMapper;
     private final ArenaEventRepository arenaEventRepository;
@@ -57,7 +56,7 @@ public class ArenaEventProcessingService {
         String operation = message.opType();
         String table = message.table();
 
-        Lock lock = locks.computeIfAbsent(key + table, k -> new ReentrantLock());
+        ReentrantLock lock = locks.computeIfAbsent(key + table, k -> new ReentrantLock());
         lock.lock();
 
         try {
@@ -154,7 +153,9 @@ public class ArenaEventProcessingService {
             saveExceptionally(arenaEvent);
         } finally {
             lock.unlock();
-            locks.remove(key + table);
+            if (!lock.hasQueuedThreads()) {
+                locks.remove(key + table);
+            }
         }
     }
 
