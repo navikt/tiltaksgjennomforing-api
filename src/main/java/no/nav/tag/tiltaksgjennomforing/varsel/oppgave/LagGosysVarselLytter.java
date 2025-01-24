@@ -21,7 +21,7 @@ import static java.lang.String.format;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class LagGosysVarselLytter {
+class LagGosysVarselLytter {
     private final OppgaveVarselService oppgaveVarselService;
     private final PersondataService persondataService;
 
@@ -32,7 +32,7 @@ public class LagGosysVarselLytter {
     protected final static String GOSYS_AVTALE_HENTET_FRA_ARENA = "Avtale hentet fra Arena på tiltak %s. Se avtalen her: https://tiltaksgjennomforing.intern.nav.no/tiltaksgjennomforing/avtale/%s";
     protected final static String VTAO_INNGÅTT = "Brukeren har fått innvilget tiltaksplass og har startet på varig tilrettelagt arbeid i skjermet/ordinær bedrift %s.";
 
-    public void varsleGosysOmOpprettetAvtale(Avtale avtale) {
+    private void varsleGosysOmOpprettetAvtale(Avtale avtale) {
         final String aktørid = persondataService.hentAktørId(avtale.getDeltakerFnr());
         Tiltakstype tiltakstype = avtale.getTiltakstype();
 
