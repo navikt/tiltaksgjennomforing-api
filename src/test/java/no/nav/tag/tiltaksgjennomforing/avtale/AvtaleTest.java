@@ -681,7 +681,7 @@ public class AvtaleTest {
 
     @Test
     public void nyAvtaleSkalFeileHvisDeltakerErForUng() {
-        assertFeilkode(Feilkode.SOMMERJOBB_IKKE_GAMMEL_NOK, () -> Avtale.opprett(new OpprettAvtale(new Fnr("24010970772"), new BedriftNr("000111222"), Tiltakstype.ARBEIDSTRENING), Avtaleopphav.VEILEDER, null));
+        assertFeilkode(Feilkode.SOMMERJOBB_IKKE_GAMMEL_NOK, () -> Avtale.opprett(new OpprettAvtale(new Fnr("24011070772"), new BedriftNr("000111222"), Tiltakstype.ARBEIDSTRENING), Avtaleopphav.VEILEDER, null));
     }
 
     @Test
