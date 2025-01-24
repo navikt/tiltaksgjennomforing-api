@@ -13,6 +13,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -36,7 +38,7 @@ class OppgaveVarselService {
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set(CORR_ID, CorrelationIdSupplier.get());
+        headers.set(CORR_ID, Optional.ofNullable(CorrelationIdSupplier.get()).orElse(UUID.randomUUID().toString()));
 
         try {
             oppgaveResponse = azureRestTemplate.postForObject(
