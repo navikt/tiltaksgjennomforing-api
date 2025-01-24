@@ -283,9 +283,18 @@ public class ArenaAgreementProcessingService {
 
         Avtale avtale = Avtale.opprett(opprettAvtale, Avtaleopphav.ARENA);
 
-        Organisasjon org = eregService.hentVirksomhet(avtale.getBedriftNr());
-        avtale.leggTilBedriftNavn(org.getBedriftNavn());
-        avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(personalData));
+        if ("100004368".equals(avtale.getBedriftNr().asString())) {
+            avtale.leggTilBedriftNavn("FÖRSÄKRINGSKASSAN");
+            try {
+                avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(personalData));
+            } catch (Exception e) {
+                log.error("Feil ved henting av navn fra PDL", e);
+            }
+        } else {
+            Organisasjon org = eregService.hentVirksomhet(avtale.getBedriftNr());
+            avtale.leggTilBedriftNavn(org.getBedriftNavn());
+            avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(personalData));
+        }
 
         getGeoEnhetFromNorg2(personalData).ifPresent((norg2GeoResponse) -> {
             avtale.setEnhetGeografisk(norg2GeoResponse.getEnhetNr());
