@@ -143,7 +143,7 @@ public class AvtaleRepositoryTest {
         endreAvtale.setStartDato(lagretAvtale.getGjeldendeInnhold().getStartDato());
         endreAvtale.setSluttDato(lagretAvtale.getGjeldendeInnhold().getSluttDato());
         endreAvtale.setManedslonn(20000);
-        endreAvtale.setStillingprosent(100.0);
+        endreAvtale.setStillingprosent(BigDecimal.valueOf(100.0));
         endreAvtale.setOtpSats(0.02);
         endreAvtale.setFeriepengesats(BigDecimal.valueOf(0.12));
         endreAvtale.setArbeidsgiveravgift(BigDecimal.valueOf(0.141));

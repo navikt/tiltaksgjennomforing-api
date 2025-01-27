@@ -126,11 +126,11 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         return BigDecimal.valueOf(value);
     }
 
-    private Integer getLønnVedFullStilling(Integer sumUtgifter, Double stillingsProsent) {
-        if (sumUtgifter == null || stillingsProsent == null || stillingsProsent == 0) {
+    private Integer getLønnVedFullStilling(Integer sumUtgifter, BigDecimal stillingsProsent) {
+        if (sumUtgifter == null || stillingsProsent == null || stillingsProsent.compareTo(BigDecimal.ZERO) == 0) {
             return null;
         }
-        return (int) Math.round((sumUtgifter * 100) / stillingsProsent);
+        return BigDecimal.valueOf(sumUtgifter).multiply(new BigDecimal(100)).divide(stillingsProsent, RoundingMode.HALF_UP).intValue();
     }
 
     Integer getSumLonnsTilskudd(Integer sumLonnsutgifter, Integer lonnstilskuddProsent) {

@@ -57,7 +57,7 @@ class BeregningLonnstilskuddTest {
     public void test_regn_ut_sumUtgifter() {
         // GIVEN
         EndreAvtale endreAvtale = new EndreAvtale();
-        endreAvtale.setStillingprosent(40.0);
+        endreAvtale.setStillingprosent(BigDecimal.valueOf(40.0));
         endreAvtale.setManedslonn(16666);
         endreAvtale.setFeriepengesats(new BigDecimal(0.102));
         endreAvtale.setOtpSats(0.02);
@@ -164,7 +164,7 @@ class BeregningLonnstilskuddTest {
     public void test_regn_ut_lonn_ved_100_prosent() {
         // GIVEN
         EndreAvtale endreAvtale = new EndreAvtale();
-        endreAvtale.setStillingprosent(50.0);
+        endreAvtale.setStillingprosent(BigDecimal.valueOf(50.0));
         endreAvtale.setManedslonn(10000);
         endreAvtale.setOtpSats(0.02);
         endreAvtale.setFeriepengesats(new BigDecimal(0.125));

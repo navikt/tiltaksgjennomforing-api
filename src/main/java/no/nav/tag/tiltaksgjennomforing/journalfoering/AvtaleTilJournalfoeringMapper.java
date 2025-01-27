@@ -58,8 +58,8 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setStartDato(avtaleInnhold.getStartDato());
         avtaleTilJournalfoering.setOpprettetAar(avtale.getOpprettetTidspunkt().getYear());
         avtaleTilJournalfoering.setSluttDato(avtaleInnhold.getSluttDato());
-        avtaleTilJournalfoering.setStillingprosent(avtale.getGjeldendeInnhold().getStillingprosent() != null ? Long.valueOf(Math.round(avtale.getGjeldendeInnhold().getStillingprosent())).intValue() : null);
-        avtaleTilJournalfoering.setAntallDagerPerUke(avtale.getGjeldendeInnhold().getAntallDagerPerUke() != null ? Long.valueOf(Math.round(avtale.getGjeldendeInnhold().getAntallDagerPerUke())).intValue() : null);
+        avtaleTilJournalfoering.setStillingprosent(avtale.getGjeldendeInnhold().getStillingprosent());
+        avtaleTilJournalfoering.setAntallDagerPerUke(avtale.getGjeldendeInnhold().getAntallDagerPerUke());
         avtaleTilJournalfoering.setMaal(maalListToMaalTilJournalfoeringList(avtaleInnhold.getMaal()));
         avtaleTilJournalfoering.setGodkjentPaVegneGrunn(godkjentPaVegneGrunn(avtaleInnhold.getGodkjentPaVegneGrunn()));
         avtaleTilJournalfoering.setGodkjentPaVegneAv(avtaleInnhold.isGodkjentPaVegneAv());

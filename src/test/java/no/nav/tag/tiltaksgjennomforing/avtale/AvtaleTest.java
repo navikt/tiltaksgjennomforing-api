@@ -102,7 +102,7 @@ public class AvtaleTest {
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusYears(6).minusDays(1));
-        endreAvtale.setStillingprosent(50.7239);
+        endreAvtale.setStillingprosent(BigDecimal.valueOf(50.7239));
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
         endreAvtale.setArbeidsgiverKontonummer("000111222");
         endreAvtale.setStillingstittel("Butikkbetjent");
@@ -114,7 +114,7 @@ public class AvtaleTest {
         endreAvtale.setArbeidsgiveravgift(BigDecimal.ONE);
         endreAvtale.setOtpSats(0.02);
         endreAvtale.setStillingstype(Stillingstype.FAST);
-        endreAvtale.setAntallDagerPerUke(5.0);
+        endreAvtale.setAntallDagerPerUke(BigDecimal.valueOf(5.0));
         endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678", true));
         avtale.opphevGodkjenningerSomVeileder();
         final int FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_6_AAR_VARIG_AVTALE = 14;
@@ -195,7 +195,7 @@ public class AvtaleTest {
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusYears(6).minusDays(1));
-        endreAvtale.setStillingprosent(50.259);
+        endreAvtale.setStillingprosent(BigDecimal.valueOf(50.259));
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
         endreAvtale.setArbeidsgiverKontonummer("000111222");
         endreAvtale.setStillingstittel("Butikkbetjent");
@@ -207,7 +207,7 @@ public class AvtaleTest {
         endreAvtale.setArbeidsgiveravgift(BigDecimal.ONE);
         endreAvtale.setOtpSats(0.02);
         endreAvtale.setStillingstype(Stillingstype.FAST);
-        endreAvtale.setAntallDagerPerUke(5.0);
+        endreAvtale.setAntallDagerPerUke(BigDecimal.valueOf(5.0));
         endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678", true));
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
         final int FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_6_AAR_VARIG_AVTALE = 74;
@@ -264,7 +264,7 @@ public class AvtaleTest {
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusYears(6).minusDays(1));
-        endreAvtale.setStillingprosent(50.222);
+        endreAvtale.setStillingprosent(BigDecimal.valueOf(50.222));
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
         endreAvtale.setArbeidsgiverKontonummer("000111222");
         endreAvtale.setStillingstittel("Butikkbetjent");
@@ -276,7 +276,7 @@ public class AvtaleTest {
         endreAvtale.setArbeidsgiveravgift(BigDecimal.ONE);
         endreAvtale.setOtpSats(0.02);
         endreAvtale.setStillingstype(Stillingstype.FAST);
-        endreAvtale.setAntallDagerPerUke(5.0);
+        endreAvtale.setAntallDagerPerUke(BigDecimal.valueOf(5.0));
         endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678", true));
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
         final int FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_6_AAR_VARIG_AVTALE = 73;
@@ -380,7 +380,7 @@ public class AvtaleTest {
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusYears(1).minusDays(1));
-        endreAvtale.setStillingprosent(100.0);
+        endreAvtale.setStillingprosent(BigDecimal.valueOf(100.0));
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
         endreAvtale.setArbeidsgiverKontonummer("000111222");
         endreAvtale.setStillingstittel("Butikkbetjent");
@@ -392,7 +392,7 @@ public class AvtaleTest {
         endreAvtale.setArbeidsgiveravgift(BigDecimal.ONE);
         endreAvtale.setOtpSats(0.02);
         endreAvtale.setStillingstype(Stillingstype.FAST);
-        endreAvtale.setAntallDagerPerUke(5.0);
+        endreAvtale.setAntallDagerPerUke(BigDecimal.valueOf(5.0));
         endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678", true));
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
         final int FORVENTET_ANTALL_TILSKUDDSPERIODER_FOR_1_AAR_VARIG_AVTALE = 13;
@@ -424,7 +424,7 @@ public class AvtaleTest {
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
         endreAvtale.setSluttDato(endreAvtale.getStartDato().plusYears(1).minusDays(1));
-        endreAvtale.setStillingprosent(100.0);
+        endreAvtale.setStillingprosent(BigDecimal.valueOf(100.0));
         endreAvtale.setArbeidsoppgaver("Butikkarbeid");
         endreAvtale.setArbeidsgiverKontonummer("000111222");
         endreAvtale.setStillingstittel("Butikkbetjent");
@@ -436,7 +436,7 @@ public class AvtaleTest {
         endreAvtale.setArbeidsgiveravgift(BigDecimal.ONE);
         endreAvtale.setOtpSats(0.02);
         endreAvtale.setStillingstype(Stillingstype.FAST);
-        endreAvtale.setAntallDagerPerUke(5.0);
+        endreAvtale.setAntallDagerPerUke(BigDecimal.valueOf(5.0));
         endreAvtale.setRefusjonKontaktperson(new RefusjonKontaktperson("Ola", "Olsen", "12345678", true));
         avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
 
@@ -1385,8 +1385,8 @@ public class AvtaleTest {
         String arbeidsoppgaver = "Lage mat";
         Integer stillingStyrk08 = 1234;
         Integer stillingKonseptId = 9999;
-        Double stillingprosent = 90.0;
-        Double antallDagerPerUke = 4.0;
+        BigDecimal stillingprosent = BigDecimal.valueOf(90.0);
+        BigDecimal antallDagerPerUke = BigDecimal.valueOf(4.0);
         var endreStillingsbeskrivelse = new EndreStillingsbeskrivelse(stillingstittel, arbeidsoppgaver, stillingStyrk08, stillingKonseptId, stillingprosent, antallDagerPerUke);
 
         assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(1);

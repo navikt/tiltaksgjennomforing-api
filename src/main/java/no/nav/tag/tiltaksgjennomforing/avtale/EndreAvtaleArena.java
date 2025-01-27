@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaMigrationAction;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -34,8 +35,8 @@ public class EndreAvtaleArena implements Comparable<Avtale> {
 
     private LocalDate startdato;
     private LocalDate sluttdato;
-    private Double stillingprosent;
-    private Double antallDagerPerUke;
+    private BigDecimal stillingprosent;
+    private BigDecimal antallDagerPerUke;
     private Handling handling;
 
     @Override

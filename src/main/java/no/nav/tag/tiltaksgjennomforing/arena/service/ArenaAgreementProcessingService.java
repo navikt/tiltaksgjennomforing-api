@@ -34,6 +34,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -213,8 +214,8 @@ public class ArenaAgreementProcessingService {
                 EndreAvtaleArena endreAvtale = EndreAvtaleArena.builder()
                     .startdato(agreementAggregate.findStartdato().orElse(null))
                     .sluttdato(agreementAggregate.findSluttdato().orElse(null))
-                    .antallDagerPerUke(Strings.isNullOrEmpty(agreementAggregate.getAntallDagerPrUke()) ? null : Double.parseDouble(agreementAggregate.getAntallDagerPrUke()))
-                    .stillingprosent(Strings.isNullOrEmpty(agreementAggregate.getProsentDeltid()) ? null : Double.parseDouble(agreementAggregate.getProsentDeltid()))
+                    .antallDagerPerUke(Strings.isNullOrEmpty(agreementAggregate.getAntallDagerPrUke()) ? null : new BigDecimal(agreementAggregate.getAntallDagerPrUke()))
+                    .stillingprosent(Strings.isNullOrEmpty(agreementAggregate.getProsentDeltid()) ? null : new BigDecimal(agreementAggregate.getProsentDeltid()))
                     .handling(EndreAvtaleArena.Handling.map(action))
                     .build();
 
@@ -308,9 +309,9 @@ public class ArenaAgreementProcessingService {
             .ifPresent(avtaleinnhold::setStartDato);
         agreementAggregate.findSluttdato()
             .ifPresent(avtaleinnhold::setSluttDato);
-        Optional.ofNullable(Strings.isNullOrEmpty(agreementAggregate.getAntallDagerPrUke()) ? null : Double.parseDouble(agreementAggregate.getAntallDagerPrUke()))
+        Optional.ofNullable(Strings.isNullOrEmpty(agreementAggregate.getAntallDagerPrUke()) ? null : new BigDecimal(agreementAggregate.getAntallDagerPrUke()))
             .ifPresent(avtaleinnhold::setAntallDagerPerUke);
-        Optional.ofNullable(Strings.isNullOrEmpty(agreementAggregate.getProsentDeltid()) ? null : Double.parseDouble(agreementAggregate.getProsentDeltid()))
+        Optional.ofNullable(Strings.isNullOrEmpty(agreementAggregate.getProsentDeltid()) ? null : new BigDecimal(agreementAggregate.getProsentDeltid()))
             .ifPresent(avtaleinnhold::setStillingprosent);
 
         avtale.setGodkjentForEtterregistrering(true);

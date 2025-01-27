@@ -30,12 +30,12 @@ public class EndreAvtale {
 
     private LocalDate startDato;
     private LocalDate sluttDato;
-    private Double stillingprosent;
+    private BigDecimal stillingprosent;
     private String arbeidsoppgaver;
     private String stillingstittel;
     private Integer stillingStyrk08;
     private Integer stillingKonseptId;
-    private Double antallDagerPerUke;
+    private BigDecimal antallDagerPerUke;
 
     private String refusjonKontaktpersonFornavn;
     private String refusjonKontaktpersonEtternavn;
