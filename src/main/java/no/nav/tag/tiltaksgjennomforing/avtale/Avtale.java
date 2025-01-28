@@ -103,6 +103,7 @@ import org.springframework.data.domain.AbstractAggregateRoot;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
@@ -612,11 +613,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     private void avtaleInngått(LocalDateTime tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
         gjeldendeInnhold.setAvtaleInngått(tidspunkt);
         if(this.getTiltakstype().equals(Tiltakstype.VTAO)){
-            LocalDate startdatoTest = this.gjeldendeInnhold.getStartDato().plusMonths(4);
-            LocalDate firstOFMonth =  startdatoTest.withMonth(startdatoTest.getMonthValue()).withDayOfMonth(1);
-            LocalDate lastDayOfMonth = startdatoTest.withDayOfMonth(startdatoTest.lengthOfMonth());
-            this.setKreverOppfolgingFom(lastDayOfMonth);
-
+            LocalDate sluttenAvMnd4MndFremITid = YearMonth.from(this.gjeldendeInnhold.getStartDato()).plusMonths(4).atEndOfMonth();
+            this.setKreverOppfolgingFom(sluttenAvMnd4MndFremITid);
         }
         utforEndring(new AvtaleInngått(this, AvtaleHendelseUtførtAvRolle.fraAvtalerolle(utførtAvRolle), utførtAv));
     }
