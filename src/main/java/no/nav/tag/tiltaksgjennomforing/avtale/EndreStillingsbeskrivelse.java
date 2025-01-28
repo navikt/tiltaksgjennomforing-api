@@ -3,6 +3,8 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import lombok.Builder;
 import lombok.Value;
 
+import java.math.BigDecimal;
+
 @Value
 @Builder
 public class EndreStillingsbeskrivelse {
@@ -10,6 +12,6 @@ public class EndreStillingsbeskrivelse {
     String arbeidsoppgaver;
     Integer stillingStyrk08;
     Integer stillingKonseptId;
-    Double stillingprosent;
-    Double antallDagerPerUke;
+    BigDecimal stillingprosent;
+    BigDecimal antallDagerPerUke;
 }

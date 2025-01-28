@@ -34,6 +34,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.math.BigDecimal;
 import java.util.EnumSet;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.AVTALE_FORDELT;
@@ -174,7 +175,7 @@ class LagVarselFraAvtaleHendelserTest {
         assertIngenHendelse(TILSKUDDSPERIODE_GODKJENT, Avtalerolle.ARBEIDSGIVER);
         assertIngenHendelse(TILSKUDDSPERIODE_GODKJENT, Avtalerolle.DELTAKER);
 
-        veileder.endreStillingbeskrivelse(EndreStillingsbeskrivelse.builder().stillingstittel("Tittel").arbeidsoppgaver("Oppgaver").stillingprosent(100.0).stillingKonseptId(1).stillingStyrk08(1).antallDagerPerUke(5.0).build(), avtale);
+        veileder.endreStillingbeskrivelse(EndreStillingsbeskrivelse.builder().stillingstittel("Tittel").arbeidsoppgaver("Oppgaver").stillingprosent(BigDecimal.valueOf(100.0)).stillingKonseptId(1).stillingStyrk08(1).antallDagerPerUke(BigDecimal.valueOf(5.0)).build(), avtale);
         avtale = avtaleRepository.save(avtale);
         assertHendelse(STILLINGSBESKRIVELSE_ENDRET, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.VEILEDER, false);
         assertHendelse(STILLINGSBESKRIVELSE_ENDRET, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);

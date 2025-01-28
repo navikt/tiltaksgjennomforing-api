@@ -113,14 +113,14 @@
       "name": "stillingprosent",
       "type": [
         "null",
-        "int"
+        "float"
       ]
     },
     {
       "name": "antallDagerPerUke",
       "type": [
         "null",
-        "int"
+        "float"
       ]
     },
     {
