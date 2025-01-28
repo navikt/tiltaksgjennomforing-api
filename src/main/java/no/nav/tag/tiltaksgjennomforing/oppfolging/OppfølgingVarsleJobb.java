@@ -25,8 +25,8 @@ public class OppfølgingVarsleJobb {
 
     @Scheduled(fixedDelay = 30, timeUnit = TimeUnit.SECONDS)
     public void varsleVeilederOmOppfølging() {
-        LocalDate tomånederFremiTid = Now.localDate().plusMonths(2);
-        List<Avtale> avtaler = avtaleRepository.findAllByKreverOppfolgingFomLessThanAndOppfolgingVarselSendtIsNull(tomånederFremiTid);
+        LocalDate dagenDato = Now.localDate();
+        List<Avtale> avtaler = avtaleRepository.findAllByKreverOppfolgingFomLessThanAndOppfolgingVarselSendtIsNull(dagenDato);
         log.info("Fant {} avtaler som krever oppfølging. Oppretter varsel på disse.", avtaler.size());
         avtaler.forEach(avtale -> {
             //TODO: Send varsel til veileder

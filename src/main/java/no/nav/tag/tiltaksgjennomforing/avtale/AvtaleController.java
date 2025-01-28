@@ -647,6 +647,19 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
+    @PostMapping("/{avtaleId}/oppfolging-av-deltaker")
+    @Transactional
+    public void oppfolgingAvDeltaker(
+            @PathVariable("avtaleId") UUID avtaleId
+    ) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId)
+                .map(this::sjekkArbeidstreningToggle)
+                .orElseThrow(RessursFinnesIkkeException::new);
+        veileder.oppfolgingAvDeltaker(avtale);
+        avtaleRepository.save(avtale);
+    }
+
     @PostMapping("/{avtaleId}/endre-tilskuddsberegning")
     @Transactional
     public void endreTilskuddsberegning(@PathVariable("avtaleId") UUID avtaleId,

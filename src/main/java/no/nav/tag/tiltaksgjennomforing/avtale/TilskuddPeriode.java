@@ -17,7 +17,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
@@ -117,7 +116,7 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
         if (Now.localDate().isBefore(kanBesluttesFom())) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_BEHANDLE_FOR_TIDLIG);
         }
-        if (avtale.getKreverOppfolgingFom() != null && startDato.isAfter(avtale.getKreverOppfolgingFom())) {
+        if (avtale.getKreverOppfølgingFrist() != null && startDato.isAfter(avtale.getKreverOppfølgingFrist())) {
             throw new FeilkodeException(Feilkode.KREVER_OPPFØLGING_AV_VTAO);
         }
     }

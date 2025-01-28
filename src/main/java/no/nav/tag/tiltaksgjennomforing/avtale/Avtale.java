@@ -22,51 +22,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvSystem;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.ArbeidsgiversGodkjenningOpphevetAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndretAvArena;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortet;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlenget;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiverErFordelt;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArena;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleSlettemerket;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleUtloperVarsel;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.DeltakersGodkjenningOpphevetAvArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.DeltakersGodkjenningOpphevetAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.FjernetEtterregistrering;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GamleVerdier;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvDeltaker;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvVeileder;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentForEtterregistrering;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltaker;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltakerOgArbeidsgiver;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.InkluderingstilskuddEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.KontaktinformasjonEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.MålEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.OmMentorEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.OppfølgingOgTilretteleggingEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonFristForlenget;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKlar;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKlarRevarsel;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKorrigert;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.SignertAvMentor;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.StillingsbeskrivelseEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsberegningEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAnnullert;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAvslått;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeForkortet;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeGodkjent;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
 import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttDatoStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAvRolle;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
@@ -497,6 +453,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         return gjeldendeInnhold.isGodkjentPaVegneAvArbeidsgiver();
     }
 
+    @JsonProperty
+    public LocalDate getKreverOppfølgingFrist() { return this.kreverOppfolgingFom == null ? null : this.kreverOppfolgingFom.plusMonths(2);}
+
     private void sjekkOmAvtalenKanEndres() {
         if (erGodkjentAvDeltaker() || erGodkjentAvArbeidsgiver() || erGodkjentAvVeileder()) {
             throw new TilgangskontrollException("Godkjenninger må oppheves før avtalen kan endres.");
@@ -595,7 +554,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     private void avtaleInngått(LocalDateTime tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
         gjeldendeInnhold.setAvtaleInngått(tidspunkt);
         if(this.getTiltakstype().equals(Tiltakstype.VTAO)){
-            this.setKreverOppfolgingFom(this.getGjeldendeInnhold().getStartDato().plusMonths(6));
+            LocalDate startdatoTest = this.gjeldendeInnhold.getStartDato().plusMonths(4);
+            LocalDate firstOFMonth =  startdatoTest.withMonth(startdatoTest.getMonthValue()).withDayOfMonth(1);
+            LocalDate lastDayOfMonth = startdatoTest.withDayOfMonth(startdatoTest.lengthOfMonth());
+            this.setKreverOppfolgingFom(lastDayOfMonth);
+
         }
         utforEndring(new AvtaleInngått(this, AvtaleHendelseUtførtAvRolle.fraAvtalerolle(utførtAvRolle), utførtAv));
     }
@@ -1345,6 +1308,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         sendTilbakeTilBeslutter();
         utforEndring(new KontaktinformasjonEndret(this, utførtAv));
+    }
+
+    public void godkjennOppfolgingAvDeltaker(NavIdent utførtAv){
+        setOppfolgingVarselSendt(null);
+        setKreverOppfolgingFom(getKreverOppfolgingFom().plusMonths(6));
+                utforEndring(new OppfolgingAvDeltakerGodkjent(this, utførtAv));
     }
 
     public void endreStillingsbeskrivelse(EndreStillingsbeskrivelse endreStillingsbeskrivelse, NavIdent utførtAv) {

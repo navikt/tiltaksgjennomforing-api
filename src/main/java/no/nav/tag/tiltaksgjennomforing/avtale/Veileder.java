@@ -380,6 +380,11 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         avtale.endreKontaktInformasjon(endreKontaktInformasjon, getIdentifikator());
     }
 
+    public void oppfolgingAvDeltaker(Avtale avtale) {
+        super.sjekkTilgang(avtale);
+        avtale.godkjennOppfolgingAvDeltaker(getIdentifikator());
+    }
+
     public void endreTilskuddsberegning(EndreTilskuddsberegning endreTilskuddsberegning, Avtale avtale) {
         super.sjekkTilgang(avtale);
         avtale.endreTilskuddsberegning(endreTilskuddsberegning, getIdentifikator());
