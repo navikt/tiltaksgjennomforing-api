@@ -64,6 +64,8 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         avtaler.add(TestData.enAvtaleOpprettetAvArbeidsgiver(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD));
         avtaler.add(TestData.enAvtaleOpprettetAvArbeidsgiver(Tiltakstype.VARIG_LONNSTILSKUDD));
         avtaler.add(TestData.enVarigLonnstilskuddAvtaleMedBehandletIArenaPerioder());
+        avtaler.add(TestData.enVtaoAvtaleGodkjentAvVeileder());
+        avtaler.add(TestData.enEtterRegistrerdVtaoAvtaleGodkjentAvVeileder());
         avtaler.add(TestData.enVtaoAvtaleGodkjentAvArbeidsgiver());
 
         Now.fixedDate(LocalDate.of(2024, 10, 1));

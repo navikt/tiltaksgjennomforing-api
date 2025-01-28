@@ -56,7 +56,8 @@ public enum HendelseType {
     DELTAKERS_GODKJENNING_OPPHEVET_AV_ARBEIDSGIVER("Deltakers godkjenning opphevet av arbeidsgiver"),
     ARBEIDSGIVERS_GODKJENNING_OPPHEVET_AV_VEILEDER("Arbeidsgivers godkjenning opphevet av veileder"),
     UTLOPER_OM_1_UKE("Avtale vil automatisk slettes om 1 uke dersom det ikke foretas noen endringer"),
-    UTLOPER_OM_24_TIMER("Avtale vil automatisk slettes i dag dersom det ikke foretas noen endringer innen kl 23:59");
+    UTLOPER_OM_24_TIMER("Avtale vil automatisk slettes i dag dersom det ikke foretas noen endringer innen kl 23:59"),
+    OPPFØLGING_KREVES_VARSEL("Oppfølging av tiltaket kreves");
 
     private final String tekst;
 }

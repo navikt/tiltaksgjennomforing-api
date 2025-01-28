@@ -57,6 +57,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.InkluderingstilskuddEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.KontaktinformasjonEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.MålEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.OmMentorEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.OppfolgingAvAvtaleGodkjent;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.OppfølgingOgTilretteleggingEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonFristForlenget;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKlar;
@@ -103,6 +104,7 @@ import org.springframework.data.domain.AbstractAggregateRoot;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
@@ -199,6 +201,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     @JsonIgnore
     @Transient
     private AtomicReference<LonnstilskuddAvtaleBeregningStrategy> lonnstilskuddAvtaleBeregningStrategy = new AtomicReference<>();
+
+    private LocalDate kreverOppfolgingFom = null;
+
+    private Instant oppfolgingVarselSendt = null;
 
     public void leggtilNyeTilskuddsperioder(List<TilskuddPeriode> tilskuddsperioder) {
         this.tilskuddPeriode.addAll(tilskuddsperioder);
@@ -345,9 +351,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         }
 
         boolean isForlengelse = EndreAvtaleArena.Handling.GJENOPPRETT == action ||
-            Optional.ofNullable(endreAvtaleArena.getStartdato())
-                .map(arenaStartdato -> arenaStartdato.isAfter(gjeldendeInnhold.getSluttDato()))
-                .orElse(false);
+                Optional.ofNullable(endreAvtaleArena.getStartdato())
+                        .map(arenaStartdato -> arenaStartdato.isAfter(gjeldendeInnhold.getSluttDato()))
+                        .orElse(false);
 
         Optional.ofNullable(endreAvtaleArena.getStartdato()).ifPresent(getGjeldendeInnhold()::setStartDato);
         Optional.ofNullable(endreAvtaleArena.getSluttdato()).ifPresent(getGjeldendeInnhold()::setSluttDato);
@@ -507,6 +513,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         return gjeldendeInnhold.isGodkjentPaVegneAvArbeidsgiver();
     }
 
+    @JsonProperty
+    public LocalDate getKreverOppfølgingFrist() {
+        return this.kreverOppfolgingFom == null ? null : this.kreverOppfolgingFom.plusMonths(2);
+    }
+
     private void sjekkOmAvtalenKanEndres() {
         if (erGodkjentAvDeltaker() || erGodkjentAvArbeidsgiver() || erGodkjentAvVeileder()) {
             throw new TilgangskontrollException("Godkjenninger må oppheves før avtalen kan endres.");
@@ -604,6 +615,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     private void avtaleInngått(LocalDateTime tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
         gjeldendeInnhold.setAvtaleInngått(tidspunkt);
+        if (this.getTiltakstype().equals(Tiltakstype.VTAO)) {
+            LocalDate sluttenAvMnd4MndFremITid = YearMonth.from(this.gjeldendeInnhold.getStartDato()).plusMonths(4).atEndOfMonth();
+            this.setKreverOppfolgingFom(sluttenAvMnd4MndFremITid);
+        }
         utforEndring(new AvtaleInngått(this, AvtaleHendelseUtførtAvRolle.fraAvtalerolle(utførtAvRolle), utførtAv));
     }
 
@@ -767,8 +782,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         setFeilregistrert(AnnullertGrunn.skalFeilregistreres(annullerGrunn));
 
         Optional<NavIdent> veilederNavIdentOpt = Optional.ofNullable(identifikator)
-            .filter(i -> i instanceof NavIdent)
-            .map(i -> (NavIdent) i);
+                .filter(i -> i instanceof NavIdent)
+                .map(i -> (NavIdent) i);
 
         if (veilederNavIdentOpt.isEmpty()) {
             utforEndring(new AnnullertAvSystem(this, identifikator));
@@ -1352,6 +1367,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         sendTilbakeTilBeslutter();
         utforEndring(new KontaktinformasjonEndret(this, utførtAv));
+    }
+
+    public void godkjennOppfolgingAvAvtale(NavIdent utførtAv) {
+        setOppfolgingVarselSendt(null);
+        setKreverOppfolgingFom(YearMonth.from(getKreverOppfolgingFom()).plusMonths(6).atEndOfMonth());
+        utforEndring(new OppfolgingAvAvtaleGodkjent(this, utførtAv));
     }
 
     public void endreStillingsbeskrivelse(EndreStillingsbeskrivelse endreStillingsbeskrivelse, NavIdent utførtAv) {

@@ -665,6 +665,19 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
+    @PostMapping("/{avtaleId}/oppfolging-av-avtale")
+    @Transactional
+    public void oppfolgingAvAvtale(
+            @PathVariable("avtaleId") UUID avtaleId
+    ) {
+        Veileder veileder = innloggingService.hentVeileder();
+        Avtale avtale = avtaleRepository.findById(avtaleId)
+                .map(this::sjekkArbeidstreningToggle)
+                .orElseThrow(RessursFinnesIkkeException::new);
+        veileder.oppfolgingAvAvtale(avtale);
+        avtaleRepository.save(avtale);
+    }
+
     @PostMapping("/{avtaleId}/endre-tilskuddsberegning")
     @Transactional
     public void endreTilskuddsberegning(@PathVariable("avtaleId") UUID avtaleId,
@@ -896,6 +909,7 @@ public class AvtaleController {
 
         return oppdatertAvtale;
     }
+
 
     private Avtale sjekkArbeidstreningToggle(Avtale avtale) {
         if (missmatchAvtaler.contains(avtale.getId().toString())) {

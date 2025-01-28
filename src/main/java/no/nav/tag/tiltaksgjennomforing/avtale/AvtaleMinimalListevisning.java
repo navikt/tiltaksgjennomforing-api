@@ -25,6 +25,7 @@ public class AvtaleMinimalListevisning implements AvtaleMedFnrOgBedriftNr {
     private LocalDate sluttDato;
     private Status status;
     private Tiltakstype tiltakstype;
+    private LocalDate kreverOppfolgingFom;
     private boolean erGodkjentTaushetserklæringAvMentor;
     private TilskuddPeriodeStatus gjeldendeTilskuddsperiodeStatus;
     private Instant sistEndret;
@@ -42,6 +43,7 @@ public class AvtaleMinimalListevisning implements AvtaleMedFnrOgBedriftNr {
                 .sluttDato(avtale.getGjeldendeInnhold().getSluttDato())
                 .status(avtale.getStatus())
                 .tiltakstype(avtale.getTiltakstype())
+                .kreverOppfolgingFom(avtale.getKreverOppfolgingFom())
                 .erGodkjentTaushetserklæringAvMentor(avtale.erGodkjentTaushetserklæringAvMentor())
                 .gjeldendeTilskuddsperiodeStatus(avtale.getGjeldendeTilskuddsperiodestatus())
                 .sistEndret(avtale.getSistEndret())

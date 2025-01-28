@@ -88,7 +88,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
         boolean harTilgang = tilgangskontrollService.harSkrivetilgangTilKandidat(this, avtale.getDeltakerFnr());
-        if(!harTilgang) {
+        if (!harTilgang) {
             log.info("Har ikke tilgang til avtale {}", avtale.getAvtaleNr());
         }
         return harTilgang;
@@ -99,15 +99,15 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         NavIdent veilederNavIdent = queryParametre.harFilterPaEnEntitet() ? queryParametre.getVeilederNavIdent() : getIdentifikator();
 
         return avtaleRepository.sokEtterAvtale(
-            veilederNavIdent,
-            queryParametre.getAvtaleNr(),
-            queryParametre.getDeltakerFnr(),
-            queryParametre.getBedriftNr(),
-            queryParametre.getNavEnhet(),
-            queryParametre.getTiltakstype(),
-            queryParametre.getStatus(),
-            queryParametre.erUfordelt(),
-            pageable
+                veilederNavIdent,
+                queryParametre.getAvtaleNr(),
+                queryParametre.getDeltakerFnr(),
+                queryParametre.getBedriftNr(),
+                queryParametre.getNavEnhet(),
+                queryParametre.getTiltakstype(),
+                queryParametre.getStatus(),
+                queryParametre.erUfordelt(),
+                pageable
         );
     }
 
@@ -278,12 +278,12 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     private void sjekkTilgangskontroll(Fnr deltakerFnr) {
-        if(!tilgangskontrollService.harSkrivetilgangTilKandidat(this, deltakerFnr)) {
+        if (!tilgangskontrollService.harSkrivetilgangTilKandidat(this, deltakerFnr)) {
             throw new IkkeTilgangTilDeltakerException();
         }
     }
 
-    protected void leggTilEnheter(Avtale avtale){
+    protected void leggTilEnheter(Avtale avtale) {
         final PdlRespons persondata = this.hentPersonDataForOpprettelseAvAvtale(avtale);
         this.hentOppfølgingFraArena(avtale, veilarboppfolgingService);
         super.hentGeoEnhetFraNorg2(avtale, persondata, norg2Client);
@@ -306,7 +306,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             Avtale avtale,
             VeilarboppfolgingService veilarboppfolgingService
     ) {
-        if(avtale.harOppfølgingsStatus()) return;
+        if (avtale.harOppfølgingsStatus()) return;
         Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
         if (oppfølgingsstatus == null) return;
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
@@ -390,6 +390,11 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         avtale.endreKontaktInformasjon(endreKontaktInformasjon, getIdentifikator());
     }
 
+    public void oppfolgingAvAvtale(Avtale avtale) {
+        super.sjekkTilgang(avtale);
+        avtale.godkjennOppfolgingAvAvtale(getIdentifikator());
+    }
+
     public void endreTilskuddsberegning(EndreTilskuddsberegning endreTilskuddsberegning, Avtale avtale) {
         super.sjekkTilgang(avtale);
         avtale.endreTilskuddsberegning(endreTilskuddsberegning, getIdentifikator());
@@ -427,7 +432,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             LocalDate sluttDato,
             AvtaleRepository avtaleRepository
     ) {
-        if(avtaleId != null && startDato != null && sluttDato != null) {
+        if (avtaleId != null && startDato != null && sluttDato != null) {
             return AlleredeRegistrertAvtale.filtrerAvtaleDeltakerAlleredeErRegistrertPaa(
                     avtaleRepository.finnAvtalerSomOverlapperForDeltakerVedGodkjenningAvAvtale(
                             deltakerFnr.asString(),
@@ -448,11 +453,13 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         );
     }
 
-    @Override public UUID getAzureOid() {
+    @Override
+    public UUID getAzureOid() {
         return azureOid;
     }
 
-    @Override public NavIdent getNavIdent() {
+    @Override
+    public NavIdent getNavIdent() {
         return getIdentifikator();
     }
 }
