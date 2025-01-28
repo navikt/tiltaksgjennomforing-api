@@ -22,7 +22,53 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldNameConstants;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvSystem;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.ArbeidsgiversGodkjenningOpphevetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleDeltMedAvtalepart;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndretAvArena;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvArena;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlengetAvArena;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlengetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleNyVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiverErFordelt;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArena;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleSlettemerket;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleUtloperVarsel;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.DeltakersGodkjenningOpphevetAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.DeltakersGodkjenningOpphevetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.FjernetEtterregistrering;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GamleVerdier;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjenningerOpphevetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvDeltaker;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentForEtterregistrering;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltaker;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.GodkjentPaVegneAvDeltakerOgArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.InkluderingstilskuddEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.KontaktinformasjonEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.MålEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.OmMentorEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.OppfølgingOgTilretteleggingEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonFristForlenget;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKlar;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKlarRevarsel;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKorrigert;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.SignertAvMentor;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.StillingsbeskrivelseEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsberegningEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAnnullert;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeAvslått;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeForkortet;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsperiodeGodkjent;
 import no.nav.tag.tiltaksgjennomforing.avtale.startOgSluttDatoStrategy.StartOgSluttDatoStrategyFactory;
 import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAvRolle;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
@@ -276,6 +322,11 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             return;
         }
 
+        if (EndreAvtaleArena.Handling.ANNULLER == action) {
+            annuller(AnnullertGrunn.ANNULLERT_I_ARENA, Identifikator.ARENA);
+            return;
+        }
+
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRET_AV_ARENA);
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
 
@@ -292,18 +343,20 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
             getGjeldendeInnhold().setStartDato(startDato);
             getGjeldendeInnhold().setSluttDato(sluttDato);
-        } else {
-            Optional.ofNullable(endreAvtaleArena.getStartdato()).ifPresent(getGjeldendeInnhold()::setStartDato);
-            Optional.ofNullable(endreAvtaleArena.getSluttdato()).ifPresent(getGjeldendeInnhold()::setSluttDato);
-        }
 
-        Optional.ofNullable(endreAvtaleArena.getStillingprosent()).ifPresent(getGjeldendeInnhold()::setStillingprosent);
-        Optional.ofNullable(endreAvtaleArena.getAntallDagerPerUke()).ifPresent(getGjeldendeInnhold()::setAntallDagerPerUke);
-
-        if (EndreAvtaleArena.Handling.ANNULLER == action) {
-            annuller(Identifikator.ARENA, AnnullertGrunn.ANNULLERT_I_ARENA);
+            utforEndring(new AvtaleForkortetAvArena(this, gjeldendeInnhold, sluttDato, ForkortetGrunn.AVSLUTTET_I_ARENA));
             return;
         }
+
+        boolean isForlengelse = EndreAvtaleArena.Handling.GJENOPPRETT == action ||
+            Optional.ofNullable(endreAvtaleArena.getStartdato())
+                .map(arenaStartdato -> arenaStartdato.isAfter(gjeldendeInnhold.getSluttDato()))
+                .orElse(false);
+
+        Optional.ofNullable(endreAvtaleArena.getStartdato()).ifPresent(getGjeldendeInnhold()::setStartDato);
+        Optional.ofNullable(endreAvtaleArena.getSluttdato()).ifPresent(getGjeldendeInnhold()::setSluttDato);
+        Optional.ofNullable(endreAvtaleArena.getStillingprosent()).ifPresent(getGjeldendeInnhold()::setStillingprosent);
+        Optional.ofNullable(endreAvtaleArena.getAntallDagerPerUke()).ifPresent(getGjeldendeInnhold()::setAntallDagerPerUke);
 
         setAnnullertTidspunkt(null);
         setAnnullertGrunn(null);
@@ -314,7 +367,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         if (tiltakstyperMedTilskuddsperioder != null && tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
             nyeTilskuddsperioder();
         }
-        utforEndring(new AvtaleEndretAvArena(this));
+
+        if (isForlengelse) {
+            utforEndring(new AvtaleForlengetAvArena(this));
+        } else {
+            utforEndring(new AvtaleEndretAvArena(this));
+        }
     }
 
     public void delMedAvtalepart(Avtalerolle avtalerolle) {
@@ -710,10 +768,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     public void annuller(Veileder veileder, String annullerGrunn) {
-        annuller(veileder.getNavIdent(), annullerGrunn);
+        annuller(annullerGrunn, veileder.getNavIdent());
     }
 
-    public void annuller(Identifikator identifikator, String annullerGrunn) {
+    public void annuller(String annullerGrunn, Identifikator identifikator) {
         sjekkAtIkkeAvtalenInneholderUtbetaltTilskuddsperiode();
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
 
@@ -743,7 +801,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         switch (handling) {
             case VARSEL_EN_UKE -> registerEvent(new AvtaleUtloperVarsel(this, AvtaleUtloperVarsel.Type.OM_EN_UKE));
             case VARSEL_24_TIMER -> registerEvent(new AvtaleUtloperVarsel(this, AvtaleUtloperVarsel.Type.OM_24_TIMER));
-            case UTLOP -> annuller(Identifikator.SYSTEM, AnnullertGrunn.UTLØPT);
+            case UTLOP -> annuller(AnnullertGrunn.UTLØPT, Identifikator.SYSTEM);
         }
     }
 
@@ -1189,7 +1247,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         getGjeldendeInnhold().endreSluttDato(nySluttDato);
         sendTilbakeTilBeslutter();
         forkortTilskuddsperioder(nySluttDato);
-        utforEndring(new AvtaleForkortet(this, nyAvtaleInnholdVersjon, nySluttDato, grunn, annetGrunn, utførtAv));
+        utforEndring(new AvtaleForkortetAvVeileder(this, nyAvtaleInnholdVersjon, nySluttDato, grunn, annetGrunn, utførtAv));
     }
 
     public void forlengAvtale(LocalDate nySluttDato, NavIdent utførtAv) {
@@ -1207,7 +1265,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         getGjeldendeInnhold().endreSluttDato(nySluttDato);
         sendTilbakeTilBeslutter();
         forlengTilskuddsperioder(gammelSluttDato, nySluttDato);
-        utforEndring(new AvtaleForlenget(this, utførtAv));
+        utforEndring(new AvtaleForlengetAvVeileder(this, utførtAv));
     }
 
     private void sjekkStartOgSluttDato(LocalDate startDato, LocalDate sluttDato) {

@@ -8,7 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import java.time.LocalDate;
 
 @Value
-public class AvtaleForkortet {
+public class AvtaleForkortetAvVeileder {
     Avtale avtale;
     AvtaleInnhold avtaleInnhold;
     LocalDate nySluttDato;

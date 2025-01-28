@@ -40,18 +40,22 @@ public class AvtaleTilJournalfoering {
     private String veilederFornavn;
     private String veilederEtternavn;
     private String veilederTlf;
+    private String fadderFornavn;
+    private String fadderEtternavn;
+    private String fadderTlf;
     private Integer versjon;
 
     private String oppfolging;
     private String tilrettelegging;
 
     private LocalDate startDato;
+    private Integer opprettetAar;
     private LocalDate sluttDato;
-    private Integer stillingprosent;
+    private BigDecimal stillingprosent;
     private String stillingstittel;
     private Stillingstype stillingstype;
     private String arbeidsoppgaver;
-    private Integer antallDagerPerUke;
+    private BigDecimal antallDagerPerUke;
     private String enhetOppfolging;
 
     private RefusjonKontaktperson refusjonKontaktperson;

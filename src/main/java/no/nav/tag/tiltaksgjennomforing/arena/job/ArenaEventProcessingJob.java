@@ -29,7 +29,7 @@ public class ArenaEventProcessingJob {
         this.leaderPodCheck = leaderPodCheck;
     }
 
-    @Scheduled(cron = "0 */5 1-23 * * *")
+    @Scheduled(cron = "*/15 * 1-23 * * *")
     public void run() {
         if (!leaderPodCheck.isLeaderPod() || !featureToggleService.isEnabled(FeatureToggle.ARENA_PROSESSERINGS_JOBB)) {
             return;

@@ -78,9 +78,14 @@ public class ArenaAgreementAggregate {
     }
 
     public Optional<UUID> getEksternIdAsUuid() throws IllegalArgumentException {
-        Optional<String> eksternId = Stream.of(eksternIdTiltak, eksternIdDeltaker)
-            .filter(id -> !Strings.isNullOrEmpty(id) && !isDublett(id))
-            .findFirst();
+        Optional<String> eksternId = Optional.ofNullable(eksternIdDeltaker)
+            .filter(id -> !Strings.isNullOrEmpty(id) && !isDublett(id));
+
+        if (eksternId.isEmpty() && tiltakdeltakerId == null) {
+            eksternId = Optional.ofNullable(eksternIdTiltak)
+                .filter(id -> !Strings.isNullOrEmpty(id) && !isDublett(id));
+        }
+
         try {
             return eksternId.map(UUID::fromString);
         } catch (IllegalArgumentException e) {

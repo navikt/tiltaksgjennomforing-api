@@ -1,0 +1,2 @@
+ALTER TABLE arena_event ADD COLUMN pos VARCHAR;
+ALTER TABLE arena_event ADD COLUMN current_ts TIMESTAMP;

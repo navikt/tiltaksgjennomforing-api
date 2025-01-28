@@ -2,8 +2,22 @@ package no.nav.tag.tiltaksgjennomforing.datavarehus;
 
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvSystem;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleEndretAvArena;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvArena;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlengetAvArena;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForlengetAvVeileder;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.InkluderingstilskuddEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.KontaktinformasjonEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.MålEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.OmMentorEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.OppfølgingOgTilretteleggingEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.StillingsbeskrivelseEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsberegningEndret;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -23,17 +37,32 @@ public class DvhAvtalehendelseLytter {
     }
 
     @EventListener
-    public void avtaleForlenget(AvtaleForlenget event) {
+    public void avtaleForlengetAvVeileder(AvtaleForlengetAvVeileder event) {
         lagHendelse(event.getAvtale(), DvhHendelseType.FORLENGET, event.getUtførtAv());
     }
 
     @EventListener
-    public void avtaleForkortet(AvtaleForkortet event) {
+    public void avtaleForlengetAvArena(AvtaleForlengetAvArena event) {
+        lagHendelse(event.getAvtale(), DvhHendelseType.FORLENGET,  Identifikator.ARENA);
+    }
+
+    @EventListener
+    public void avtaleForkortetAvVeileder(AvtaleForkortetAvVeileder event) {
         lagHendelse(event.getAvtale(), DvhHendelseType.FORKORTET, event.getUtførtAv());
     }
 
     @EventListener
-    public void avtaleAnnullert(AnnullertAvVeileder event) {
+    public void avtaleForkortetAvArena(AvtaleForkortetAvArena event) {
+        lagHendelse(event.getAvtale(), DvhHendelseType.FORKORTET, Identifikator.ARENA);
+    }
+
+    @EventListener
+    public void avtaleAnnullertAvVeileder(AnnullertAvVeileder event) {
+        lagHendelse(event.getAvtale(), DvhHendelseType.ANNULLERT, event.getUtfortAv());
+    }
+
+    @EventListener
+    public void avtaleAnnullertAvSystem(AnnullertAvSystem event) {
         lagHendelse(event.getAvtale(), DvhHendelseType.ANNULLERT, event.getUtfortAv());
     }
 
@@ -45,6 +74,11 @@ public class DvhAvtalehendelseLytter {
     @EventListener
     public void stillingsbeskrivelseEndret(StillingsbeskrivelseEndret event) {
         lagHendelse(event.getAvtale(), DvhHendelseType.ENDRET, event.getUtførtAv());
+    }
+
+    @EventListener
+    public void stillingsbeskrivelseEndret(AvtaleEndretAvArena event) {
+        lagHendelse(event.getAvtale(), DvhHendelseType.ENDRET, Identifikator.ARENA);
     }
 
     @EventListener
@@ -72,7 +106,7 @@ public class DvhAvtalehendelseLytter {
         lagHendelse(event.getAvtale(), DvhHendelseType.ENDRET, event.getUtførtAv());
     }
 
-    private void lagHendelse(Avtale avtale, DvhHendelseType endret, NavIdent utførtAv) {
+    private void lagHendelse(Avtale avtale, DvhHendelseType endret, Identifikator utførtAv) {
         if(avtale.erAvtaleInngått()) {
             LocalDateTime tidspunkt = Now.localDateTime();
             UUID meldingId = UUID.randomUUID();

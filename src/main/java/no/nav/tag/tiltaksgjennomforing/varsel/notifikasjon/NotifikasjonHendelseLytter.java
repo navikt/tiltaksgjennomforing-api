@@ -122,7 +122,13 @@ public class NotifikasjonHendelseLytter {
     }
 
     @EventListener
-    public void avtaleAnnullert(AnnullertAvVeileder event) {
+    public void avtaleAnnullertAvVeileder(AnnullertAvVeileder event) {
+        if (smsMinSideArbeidsgiverToggleErPå()) return; // notifikasjon henter alle notifikasjoner på avtalen og softdeleter de
+        notifikasjonService.softDeleteNotifikasjoner(event.getAvtale());
+    }
+
+    @EventListener
+    public void avtaleAnnullertAvSystem(AnnullertAvSystem event) {
         if (smsMinSideArbeidsgiverToggleErPå()) return; // notifikasjon henter alle notifikasjoner på avtalen og softdeleter de
         notifikasjonService.softDeleteNotifikasjoner(event.getAvtale());
     }
@@ -177,17 +183,31 @@ public class NotifikasjonHendelseLytter {
     }
 
     @EventListener
-    public void forkortAvtale(AvtaleForkortet event) {
-        if (smsMinSideArbeidsgiverToggleErPå()) return;
-        opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.AVTALE_FORKORTET,
-                NotifikasjonTekst.TILTAK_AVTALE_FORKORTET);
-    }
-
-    @EventListener
-    public void forlengAvtale(AvtaleForlenget event) {
+    public void forlengetAvtaleAvVeileder(AvtaleForlengetAvVeileder event) {
         if (smsMinSideArbeidsgiverToggleErPå()) return;
         opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.AVTALE_FORLENGET,
                 NotifikasjonTekst.TILTAK_AVTALE_FORLENGET);
+    }
+
+    @EventListener
+    public void forlengetAvtaleAvArena(AvtaleForlengetAvArena event) {
+        if (smsMinSideArbeidsgiverToggleErPå()) return;
+        opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.AVTALE_FORLENGET_AV_ARENA,
+            NotifikasjonTekst.TILTAK_AVTALE_FORLENGET);
+    }
+
+    @EventListener
+    public void forkortAvtaleAvVeileder(AvtaleForlengetAvVeileder event) {
+        if (smsMinSideArbeidsgiverToggleErPå()) return;
+        opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.AVTALE_FORKORTET,
+            NotifikasjonTekst.TILTAK_AVTALE_FORKORTET);
+    }
+
+    @EventListener
+    public void forkortAvtaleAvArena(AvtaleForkortetAvArena event) {
+        if (smsMinSideArbeidsgiverToggleErPå()) return;
+        opprettOgSendNyBeskjed(event.getAvtale(), HendelseType.AVTALE_FORKORTET_AV_ARENA,
+            NotifikasjonTekst.TILTAK_AVTALE_FORKORTET);
     }
 
     private boolean smsMinSideArbeidsgiverToggleErPå() {

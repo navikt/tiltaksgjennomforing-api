@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.arena.logging.ArenaEventLogging;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaKafkaMessage;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaPos;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Operation;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEvent;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEventStatus;
@@ -17,13 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
 @Service
 public class ArenaEventProcessingService {
-    private final ConcurrentHashMap<String, Lock> locks = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ReentrantLock> locks = new ConcurrentHashMap<>();
 
     private final ObjectMapper objectMapper;
     private final ArenaEventRepository arenaEventRepository;
@@ -56,7 +56,7 @@ public class ArenaEventProcessingService {
         String operation = message.opType();
         String table = message.table();
 
-        Lock lock = locks.computeIfAbsent(key + table, k -> new ReentrantLock());
+        ReentrantLock lock = locks.computeIfAbsent(key + table, k -> new ReentrantLock());
         lock.lock();
 
         try {
@@ -67,19 +67,22 @@ public class ArenaEventProcessingService {
             Optional<ArenaEvent> existingArenaEventOpt = arenaEventRepository.findByArenaIdAndArenaTable(key, table);
 
             boolean isAlreadyProcessed = existingArenaEventOpt
-                .map(e -> message.opTimestamp().isBefore(e.getOperationTime()))
+                .map(e -> e.getArenaPos().compareTo(ArenaPos.parse(message.pos())) > 0)
                 .orElse(false);
 
             if (isAlreadyProcessed) {
                 log.info(
-                    "Ignorerer arena-event {} som allerede er prossesert med et OP-tidspunkt fremover i tid.",
-                    existingArenaEventOpt.get().getLogId()
+                    "Ignorerer arena-event {} som allerede er prossesert med et pos fremover i tid. " +
+                    "Melding har pos: {}, mens eksisterende har pos: {}",
+                    existingArenaEventOpt.get().getLogId(),
+                    message.pos(),
+                    existingArenaEventOpt.get().getPos()
                 );
                 return;
             }
 
             boolean isEqual = existingArenaEventOpt
-                .map(e -> message.opTimestamp().isEqual(e.getOperationTime()) && e.getPayload().equals(payload))
+                .map(e -> message.pos().equals(e.getPos()) && e.getPayload().equals(payload))
                 .orElse(false);
 
             if (isEqual) {
@@ -90,9 +93,12 @@ public class ArenaEventProcessingService {
                 .map(exisitingArenaEvent ->
                     exisitingArenaEvent.toBuilder()
                         .operation(operation)
+                        .operationTime(message.opTimestamp())
+                        .currentTs(message.currentTimestamp())
+                        .pos(message.pos())
                         .payload(payload)
-                        .status(ArenaEventStatus.CREATED)
                         .retryCount(0)
+                        .status(ArenaEventStatus.CREATED)
                         .build()
                 )
                 .orElse(
@@ -100,6 +106,8 @@ public class ArenaEventProcessingService {
                         key,
                         table,
                         operation,
+                        message.pos(),
+                        message.currentTimestamp(),
                         message.opTimestamp(),
                         payload,
                         ArenaEventStatus.CREATED
@@ -107,10 +115,11 @@ public class ArenaEventProcessingService {
                 );
 
             log.info(
-                "Oppretter arena-event {} med id {} og operasjon {}",
+                "Oppretter arena-event {} med id {}, operasjon {} og pos {}",
                 arenaEvent.getLogId(),
                 arenaEvent.getId(),
-                arenaEvent.getOperation().name()
+                arenaEvent.getOperation().name(),
+                arenaEvent.getPos()
             );
 
             arenaEventRepository.save(arenaEvent);
@@ -127,6 +136,8 @@ public class ArenaEventProcessingService {
                         key,
                         table,
                         operation,
+                        message.pos(),
+                        message.currentTimestamp(),
                         message.opTimestamp(),
                         message.after(),
                         ArenaEventStatus.FAILED
@@ -143,7 +154,9 @@ public class ArenaEventProcessingService {
             saveExceptionally(arenaEvent);
         } finally {
             lock.unlock();
-            locks.remove(key + table);
+            if (!lock.hasQueuedThreads()) {
+                locks.remove(key + table);
+            }
         }
     }
 
@@ -205,4 +218,5 @@ public class ArenaEventProcessingService {
     private String sanitize(String value) {
         return value.replace("\u0000", "").replace("\\u0000", "");
     }
+
 }

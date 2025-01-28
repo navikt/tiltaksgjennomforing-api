@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaPos;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTable;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Operation;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -37,11 +38,15 @@ public class ArenaEvent {
     private LocalDateTime operationTime;
     @JdbcTypeCode(SqlTypes.JSON)
     private JsonNode payload;
+    private String pos;
+    private LocalDateTime currentTs;
 
     public static ArenaEvent create(
         String id,
         String arenaTable,
         String operation,
+        String pos,
+        LocalDateTime currentTs,
         LocalDateTime operationTime,
         JsonNode payload,
         ArenaEventStatus status
@@ -52,11 +57,17 @@ public class ArenaEvent {
             .id(UUID.randomUUID())
             .operation(operation)
             .operationTime(operationTime)
+            .currentTs(currentTs)
             .payload(payload)
             .created(Now.localDateTime())
             .retryCount(0)
             .status(status)
+            .pos(pos)
             .build();
+    }
+
+    public ArenaPos getArenaPos() {
+        return ArenaPos.parse(this.pos);
     }
 
     public ArenaTable getArenaTable() {

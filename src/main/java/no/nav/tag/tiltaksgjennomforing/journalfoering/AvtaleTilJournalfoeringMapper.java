@@ -6,9 +6,12 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.Maal;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static no.nav.tag.tiltaksgjennomforing.satser.Sats.VTAO_SATS;
 
 public class AvtaleTilJournalfoeringMapper {
 
@@ -53,9 +56,10 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setOppfolging(avtaleInnhold.getOppfolging());
         avtaleTilJournalfoering.setTilrettelegging(avtaleInnhold.getTilrettelegging());
         avtaleTilJournalfoering.setStartDato(avtaleInnhold.getStartDato());
+        avtaleTilJournalfoering.setOpprettetAar(avtale.getOpprettetTidspunkt().getYear());
         avtaleTilJournalfoering.setSluttDato(avtaleInnhold.getSluttDato());
-        avtaleTilJournalfoering.setStillingprosent(avtale.getGjeldendeInnhold().getStillingprosent() != null ? Long.valueOf(Math.round(avtale.getGjeldendeInnhold().getStillingprosent())).intValue() : null);
-        avtaleTilJournalfoering.setAntallDagerPerUke(avtale.getGjeldendeInnhold().getAntallDagerPerUke() != null ? Long.valueOf(Math.round(avtale.getGjeldendeInnhold().getAntallDagerPerUke())).intValue() : null);
+        avtaleTilJournalfoering.setStillingprosent(avtale.getGjeldendeInnhold().getStillingprosent());
+        avtaleTilJournalfoering.setAntallDagerPerUke(avtale.getGjeldendeInnhold().getAntallDagerPerUke());
         avtaleTilJournalfoering.setMaal(maalListToMaalTilJournalfoeringList(avtaleInnhold.getMaal()));
         avtaleTilJournalfoering.setGodkjentPaVegneGrunn(godkjentPaVegneGrunn(avtaleInnhold.getGodkjentPaVegneGrunn()));
         avtaleTilJournalfoering.setGodkjentPaVegneAv(avtaleInnhold.isGodkjentPaVegneAv());
@@ -74,11 +78,20 @@ public class AvtaleTilJournalfoeringMapper {
         avtaleTilJournalfoering.setInkluderingstilskuddsutgift(avtaleInnhold.getInkluderingstilskuddsutgift());
         avtaleTilJournalfoering.setInkluderingstilskuddBegrunnelse(avtaleInnhold.getInkluderingstilskuddBegrunnelse());
 
-        if(avtalerolle != null) {
-            avtaleTilJournalfoering.setAvtalerolle(avtalerolle) ;
+        if (avtalerolle != null) {
+            avtaleTilJournalfoering.setAvtalerolle(avtalerolle);
         }
-        if(avtaleInnhold.getGodkjentTaushetserklæringAvMentor() != null){
+        if (avtaleInnhold.getGodkjentTaushetserklæringAvMentor() != null) {
             avtaleTilJournalfoering.setGodkjentTaushetserklæringAvMentor(avtaleInnhold.getGodkjentTaushetserklæringAvMentor().toLocalDate());
+        }
+
+        if (avtale.getTiltakstype().equals(Tiltakstype.VTAO) && avtaleInnhold.getVtao() != null) {
+            avtaleTilJournalfoering.setSumLonnstilskudd(
+                    VTAO_SATS.hentGjeldendeSats(avtale.getOpprettetTidspunkt().toLocalDate())
+            );
+            avtaleTilJournalfoering.setFadderFornavn(avtaleInnhold.getVtao().getFadderFornavn());
+            avtaleTilJournalfoering.setFadderEtternavn(avtaleInnhold.getVtao().getFadderEtternavn());
+            avtaleTilJournalfoering.setFadderTlf(avtaleInnhold.getVtao().getFadderTlf());
         }
 
         return avtaleTilJournalfoering;

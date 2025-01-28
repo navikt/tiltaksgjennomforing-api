@@ -6,7 +6,7 @@ management.endpoints.web:
 
 spring:
   task:
-    scheduling.pool.size: 4
+    scheduling.pool.size: 8
   cache:
     type: caffeine
   jpa:
@@ -112,7 +112,7 @@ caches:
       expiryInMinutes: 60
       maximumSize: 1000
     - name: veilarboppfolging_cache
-      expiryInMinutes: 60
+      expiryInMinutes: 5
       maximumSize: 1000
     - name: axsys_cache
       expiryInMinutes: 60
