@@ -57,7 +57,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.InkluderingstilskuddEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.KontaktinformasjonEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.MålEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.OmMentorEndret;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.OppfolgingAvDeltakerGodkjent;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.OppfolgingAvAvtaleGodkjent;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.OppfølgingOgTilretteleggingEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonFristForlenget;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKlar;
@@ -1369,10 +1369,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         utforEndring(new KontaktinformasjonEndret(this, utførtAv));
     }
 
-    public void godkjennOppfolgingAvDeltaker(NavIdent utførtAv) {
+    public void godkjennOppfolgingAvAvtale(NavIdent utførtAv) {
         setOppfolgingVarselSendt(null);
         setKreverOppfolgingFom(YearMonth.from(getKreverOppfolgingFom()).plusMonths(6).atEndOfMonth());
-        utforEndring(new OppfolgingAvDeltakerGodkjent(this, utførtAv));
+        utforEndring(new OppfolgingAvAvtaleGodkjent(this, utførtAv));
     }
 
     public void endreStillingsbeskrivelse(EndreStillingsbeskrivelse endreStillingsbeskrivelse, NavIdent utførtAv) {

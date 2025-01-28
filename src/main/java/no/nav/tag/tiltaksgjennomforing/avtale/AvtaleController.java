@@ -665,16 +665,16 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
-    @PostMapping("/{avtaleId}/oppfolging-av-deltaker")
+    @PostMapping("/{avtaleId}/oppfolging-av-avtale")
     @Transactional
-    public void oppfolgingAvDeltaker(
+    public void oppfolgingAvAvtale(
             @PathVariable("avtaleId") UUID avtaleId
     ) {
         Veileder veileder = innloggingService.hentVeileder();
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .map(this::sjekkArbeidstreningToggle)
                 .orElseThrow(RessursFinnesIkkeException::new);
-        veileder.oppfolgingAvDeltaker(avtale);
+        veileder.oppfolgingAvAvtale(avtale);
         avtaleRepository.save(avtale);
     }
 

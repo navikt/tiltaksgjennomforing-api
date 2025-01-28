@@ -5,7 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 
 @Value
-public class OppfolgingAvDeltakerGodkjent {
+public class OppfolgingAvAvtaleGodkjent {
         Avtale avtale;
         NavIdent utførtAv;
 }
