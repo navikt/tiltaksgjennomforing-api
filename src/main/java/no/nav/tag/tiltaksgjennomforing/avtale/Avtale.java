@@ -515,7 +515,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     @JsonProperty
     public LocalDate getKreverOppfolgingFrist() {
-        return this.kreverOppfolgingFom == null ? null : this.kreverOppfolgingFom.plusMonths(2);
+        return this.kreverOppfolgingFom == null ? null : YearMonth.from(this.kreverOppfolgingFom).plusMonths(2).atEndOfMonth();
     }
 
     private void sjekkOmAvtalenKanEndres() {
