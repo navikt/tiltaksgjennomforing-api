@@ -57,6 +57,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.InkluderingstilskuddEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.KontaktinformasjonEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.MålEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.OmMentorEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.OppfolgingAvDeltakerGodkjent;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.OppfølgingOgTilretteleggingEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonFristForlenget;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.RefusjonKlar;
