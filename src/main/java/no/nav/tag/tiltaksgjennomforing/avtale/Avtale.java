@@ -351,9 +351,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         }
 
         boolean isForlengelse = EndreAvtaleArena.Handling.GJENOPPRETT == action ||
-            Optional.ofNullable(endreAvtaleArena.getStartdato())
-                .map(arenaStartdato -> arenaStartdato.isAfter(gjeldendeInnhold.getSluttDato()))
-                .orElse(false);
+                Optional.ofNullable(endreAvtaleArena.getStartdato())
+                        .map(arenaStartdato -> arenaStartdato.isAfter(gjeldendeInnhold.getSluttDato()))
+                        .orElse(false);
 
         Optional.ofNullable(endreAvtaleArena.getStartdato()).ifPresent(getGjeldendeInnhold()::setStartDato);
         Optional.ofNullable(endreAvtaleArena.getSluttdato()).ifPresent(getGjeldendeInnhold()::setSluttDato);
@@ -514,7 +514,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     }
 
     @JsonProperty
-    public LocalDate getKreverOppfølgingFrist() { return this.kreverOppfolgingFom == null ? null : this.kreverOppfolgingFom.plusMonths(2);}
+    public LocalDate getKreverOppfølgingFrist() {
+        return this.kreverOppfolgingFom == null ? null : this.kreverOppfolgingFom.plusMonths(2);
+    }
 
     private void sjekkOmAvtalenKanEndres() {
         if (erGodkjentAvDeltaker() || erGodkjentAvArbeidsgiver() || erGodkjentAvVeileder()) {
@@ -613,7 +615,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     private void avtaleInngått(LocalDateTime tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
         gjeldendeInnhold.setAvtaleInngått(tidspunkt);
-        if(this.getTiltakstype().equals(Tiltakstype.VTAO)){
+        if (this.getTiltakstype().equals(Tiltakstype.VTAO)) {
             LocalDate sluttenAvMnd4MndFremITid = YearMonth.from(this.gjeldendeInnhold.getStartDato()).plusMonths(4).atEndOfMonth();
             this.setKreverOppfolgingFom(sluttenAvMnd4MndFremITid);
         }
@@ -780,8 +782,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         setFeilregistrert(AnnullertGrunn.skalFeilregistreres(annullerGrunn));
 
         Optional<NavIdent> veilederNavIdentOpt = Optional.ofNullable(identifikator)
-            .filter(i -> i instanceof NavIdent)
-            .map(i -> (NavIdent) i);
+                .filter(i -> i instanceof NavIdent)
+                .map(i -> (NavIdent) i);
 
         if (veilederNavIdentOpt.isEmpty()) {
             utforEndring(new AnnullertAvSystem(this, identifikator));
@@ -1367,10 +1369,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         utforEndring(new KontaktinformasjonEndret(this, utførtAv));
     }
 
-    public void godkjennOppfolgingAvDeltaker(NavIdent utførtAv){
+    public void godkjennOppfolgingAvDeltaker(NavIdent utførtAv) {
         setOppfolgingVarselSendt(null);
-        setKreverOppfolgingFom(getKreverOppfolgingFom().plusMonths(6));
-                utforEndring(new OppfolgingAvDeltakerGodkjent(this, utførtAv));
+        setKreverOppfolgingFom(YearMonth.from(getKreverOppfolgingFom()).plusMonths(6).atEndOfMonth());
+        utforEndring(new OppfolgingAvDeltakerGodkjent(this, utførtAv));
     }
 
     public void endreStillingsbeskrivelse(EndreStillingsbeskrivelse endreStillingsbeskrivelse, NavIdent utførtAv) {
