@@ -31,15 +31,26 @@ import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class VeilederTest {
 
+    @Test
+    public void oppdatereEnheterEtterForespørsel_skal_ikke_oppdatere_oppfølgningsSTATUS_men_kun_ENHET(){
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        VeilarboppfolgingService VeilarboppfolgingServiceMock = mock(VeilarboppfolgingService.class);
+        Veileder veileder = new Veileder(
+                avtale.getVeilederNavIdent(),
+                mock(TilgangskontrollService.class),
+                mock(PersondataService.class),
+                mock(Norg2Client.class),
+                Set.of(new NavEnhet("4802", "Trysil")),
+                mock(SlettemerkeProperties.class),
+                false,
+                VeilarboppfolgingServiceMock);
+        veileder.oppdatereEnheterEtterForespørsel(avtale);
+        verify(VeilarboppfolgingServiceMock, never()).hentOgSjekkOppfolgingstatus(avtale);
+    }
     @Test
     public void godkjennAvtale__kan_ikke_godkjenne_foerst() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
