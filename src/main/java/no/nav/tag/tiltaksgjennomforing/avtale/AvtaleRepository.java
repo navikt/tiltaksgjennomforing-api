@@ -37,7 +37,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     Page<Avtale> findAllByBedriftNrInAndFeilregistrertIsFalse(Set<BedriftNr> bedriftNrList, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    Page<Avtale> findAllByBedriftNrInAndTiltakstypeAndFeilregistrertIsFalse(Set<BedriftNr> bedriftNrList, Tiltakstype tiltakstype, Pageable pageable);
+    Page<Avtale> findAllByBedriftNrInAndTiltakstypeInAndFeilregistrertIsFalse(Set<BedriftNr> bedriftNrList, Set<Tiltakstype> tiltakstyper, Pageable pageable);
 
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     Page<Avtale> findAllByDeltakerFnrAndFeilregistrertIsFalse(Fnr deltakerFnr, Pageable pageable);
@@ -163,7 +163,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                   (:deltakerFnr IS NULL OR a.deltakerFnr = :deltakerFnr) AND
                   (:bedriftNr IS NULL OR a.bedriftNr = :bedriftNr) AND
                   (:enhet IS NULL OR a.enhetGeografisk = :enhet OR a.enhetOppfolging = :enhet) AND
-                  (:tiltakstype IS NULL OR a.tiltakstype = :tiltakstype) AND
+                  (:tiltakstype IS NULL OR a.tiltakstype in :tiltakstype) AND
                   (:status IS NULL OR a.status = :status)
         """,
         countQuery = """
@@ -176,7 +176,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
                   (:deltakerFnr IS NULL OR a.deltakerFnr = :deltakerFnr) AND
                   (:bedriftNr IS NULL OR a.bedriftNr = :bedriftNr) AND
                   (:enhet IS NULL OR a.enhetGeografisk = :enhet OR a.enhetOppfolging = :enhet) AND
-                  (:tiltakstype IS NULL OR a.tiltakstype = :tiltakstype) AND
+                  (:tiltakstype IS NULL OR a.tiltakstype in :tiltakstype) AND
                   (:status IS NULL OR a.status = :status)
         """
     )
@@ -186,7 +186,7 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
         Fnr deltakerFnr,
         BedriftNr bedriftNr,
         String enhet,
-        Tiltakstype tiltakstype,
+        Set<Tiltakstype> tiltakstype,
         Status status,
         boolean ufordelt,
         Pageable pageable
