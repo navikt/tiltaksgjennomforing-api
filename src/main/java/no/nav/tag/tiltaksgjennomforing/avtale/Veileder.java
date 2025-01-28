@@ -453,17 +453,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         );
     }
 
-    /* TODO: Bør denne ligge 1) i Avtale.java eller 2) I Avtale.java, eller 3) i Avtalepart.java og implementeres kun i Veileder.java? */
-    /* Copilot: det kan være mer hensiktsmessig å definere metoden utførOppfølging i Avtalepart.java hvis det er en metode som kan være relevant for flere subklasser av Avtalepart.
-    Hvis metoden kun er relevant for Veileder, kan det være greit å beholde den der den er.  */
-    public Avtale utførOppfølging(Avtale avtale) {
-        super.sjekkTilgang(avtale);
-        LocalDate nesteOppfølgingsdato = avtale.getKreverOppfolgingFom().plusMonths(6);
-        avtale.setOppfolgingVarselSendt(null);
-        avtale.setKreverOppfolgingFom(nesteOppfølgingsdato);
-        return avtale;
-    }
-
     @Override
     public UUID getAzureOid() {
         return azureOid;
