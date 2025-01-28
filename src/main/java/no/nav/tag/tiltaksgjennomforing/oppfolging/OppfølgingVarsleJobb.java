@@ -29,7 +29,6 @@ public class OppfølgingVarsleJobb {
         List<Avtale> avtaler = avtaleRepository.findAllByKreverOppfolgingFomLessThanAndOppfolgingVarselSendtIsNull(dagenDato);
         log.info("Fant {} avtaler som krever oppfølging. Oppretter varsel på disse.", avtaler.size());
         avtaler.forEach(avtale -> {
-            //TODO: Send varsel til veileder
             Varsel varsel = Varsel.nyttVarsel(avtale.getVeilederNavIdent(), true, avtale, Avtalerolle.VEILEDER, AvtaleHendelseUtførtAvRolle.SYSTEM, Identifikator.SYSTEM, HendelseType.OPPFØLGING_KREVES_VARSEL, null);
             varselRepository.save(varsel);
             avtale.setOppfolgingVarselSendt(Now.instant());
