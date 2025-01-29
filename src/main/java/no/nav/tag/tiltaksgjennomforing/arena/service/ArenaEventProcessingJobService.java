@@ -45,7 +45,7 @@ public class ArenaEventProcessingJobService {
     }
 
     public void process(List<ArenaEvent> arenaEvents) {
-        log.info("Kjører retry på {} eventer", arenaEvents.size());
+        log.info("Kjører prossesering av {} eventer", arenaEvents.size());
 
         for (ArenaEvent arenaEvent : arenaEvents) {
             arenaEventProcessingService.process(arenaEvent);

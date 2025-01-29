@@ -279,7 +279,7 @@ public class ArenaAgreementProcessingService {
         OpprettAvtale opprettAvtale = OpprettAvtale.builder()
             .bedriftNr(new BedriftNr(agreementAggregate.getVirksomhetsnummer()))
             .deltakerFnr(deltakerFnr)
-            .tiltakstype(Tiltakstype.ARBEIDSTRENING)
+            .tiltakstype(Tiltakstype.VTAO)
             .build();
 
         Avtale avtale = Avtale.opprett(opprettAvtale, Avtaleopphav.ARENA);
