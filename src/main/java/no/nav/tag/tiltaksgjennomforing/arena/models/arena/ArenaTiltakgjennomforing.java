@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ArenaTiltakgjennomforing {
-    private static final String ARBEIDSTRENING = "ARBTREN";
+    private static final String VTAO = "VATIAROR";
 
     @Id
     @JsonProperty("TILTAKGJENNOMFORING_ID")
@@ -155,8 +155,8 @@ public class ArenaTiltakgjennomforing {
     @JsonProperty("EKSTERN_ID")
     private String eksternId;
 
-    public boolean isArbeidstrening() {
-        return ARBEIDSTRENING.equals(tiltakskode);
+    public boolean isVtao() {
+        return VTAO.equals(tiltakskode);
     }
 
 
