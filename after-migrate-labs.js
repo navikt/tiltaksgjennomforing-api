@@ -5,7 +5,7 @@
  *
  * Fremgangsmåte:
  * 1. Kjør opp tiltaksgjennomføring og skriv "SCRIPT TO 'dump.sql';" i H2-konsollen.
- * 2. Kjør dette scriptet i terminal "node ./after-migrate-h2.js"
+ * 2. Kjør dette scriptet i terminal "node ./after-migrate-labs.js"
  */
 
 const fs = require('node:fs');
