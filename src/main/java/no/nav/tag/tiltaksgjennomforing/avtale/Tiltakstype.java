@@ -45,6 +45,8 @@ public enum Tiltakstype {
         return this == Tiltakstype.SOMMERJOBB;
     }
 
+    public boolean isVTAO() { return this == Tiltakstype.VTAO; }
+
     public boolean skalBesluttes() {
         return this == Tiltakstype.SOMMERJOBB ||
             this == Tiltakstype.VARIG_LONNSTILSKUDD ||
