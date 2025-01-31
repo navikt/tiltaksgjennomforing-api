@@ -10,6 +10,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -43,13 +44,18 @@ public class AxsysService {
         try {
             AxsysRespons respons = restTemplate.exchange(uri, HttpMethod.GET, new HttpEntity<>(headers), AxsysRespons.class).getBody();
             return respons.tilEnheter();
+        } catch (HttpClientErrorException.NotFound klientfeil) {
+            // Nav-identer kan mangle informasjon i Axsys
+            // (feks test-ident opprettet i IDA hvor Axsys-info ikke er fylt ut)
+            log.warn("Nav-veileder {} ble ikke funnet i axsys", ident);
+            return List.of();
         } catch (RestClientException exception) {
             log.warn("Feil ved henting av enheter for ident {}", ident, exception);
             throw exception;
         }
     }
 
-    @CacheEvict(cacheNames= CacheConfig.AXSYS_CACHE, allEntries=true)
+    @CacheEvict(cacheNames = CacheConfig.AXSYS_CACHE, allEntries = true)
     public void cacheEvict() {
         log.info("Tømmer axsys cache for data");
     }
