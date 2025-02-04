@@ -1,6 +1,10 @@
 <configuration>
     <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <jsonGeneratorDecorator class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">
+                <valueMasker class="no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrMasker"/>
+            </jsonGeneratorDecorator>
+        </encoder>
     </appender>
     <logger name="jsonLogger" additivity="false" level="DEBUG">
         <appender-ref ref="consoleAppender"/>
