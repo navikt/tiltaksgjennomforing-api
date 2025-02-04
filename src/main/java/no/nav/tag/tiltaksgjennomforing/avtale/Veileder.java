@@ -363,7 +363,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     protected void oppdatereEnheterEtterForespørsel(Avtale avtale) {
         final PdlRespons persondata = this.hentPersonDataForOpprettelseAvAvtale(avtale);
-        this.sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale); // TODO: Fjern denne slik at veileder kan oppdatere enhet uten å oppdatere oppfolgingstatus
         super.hentGeoEnhetFraNorg2(avtale, persondata, norg2Client);
         this.hentOppfolgingEnhetsnavnFraNorg2(avtale, norg2Client);
     }
