@@ -42,8 +42,8 @@ public enum ArenaMigrationAction {
         Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
         Tiltakstatuskode tiltakstatuskode = agreementAggregate.getTiltakstatuskode();
         boolean isFeilregistrert = avtale.isFeilregistrert();
-        boolean isSluttdatoIFremtiden = agreementAggregate.findSluttdato()
-            .map(sluttdato -> sluttdato.isAfter(LocalDate.now())).orElse(false);
+        boolean isSluttdatoIDagEllerFremtiden = agreementAggregate.findSluttdato()
+            .map(sluttdato -> sluttdato.isAfter(LocalDate.now().minusDays(1))).orElse(false);
 
         if (agreementAggregate.isDublett()) {
             return IGNORER;
@@ -51,11 +51,11 @@ public enum ArenaMigrationAction {
 
         return switch (avtalestatus) {
             case ANNULLERT, AVBRUTT -> switch (deltakerstatuskode) {
-                case GJENN, TILBUD -> isSluttdatoIFremtiden ? (isFeilregistrert ? OPPRETT : GJENOPPRETT) : IGNORER;
+                case GJENN, TILBUD -> isSluttdatoIDagEllerFremtiden ? (isFeilregistrert ? OPPRETT : GJENOPPRETT) : IGNORER;
                 case null, default -> IGNORER;
             };
             case AVSLUTTET -> switch (deltakerstatuskode) {
-                case GJENN, TILBUD -> isSluttdatoIFremtiden ? GJENOPPRETT : IGNORER;
+                case GJENN, TILBUD -> isSluttdatoIDagEllerFremtiden ? GJENOPPRETT : IGNORER;
                 case null, default -> IGNORER;
             };
             case KLAR_FOR_OPPSTART -> switch(deltakerstatuskode) {
@@ -70,7 +70,7 @@ public enum ArenaMigrationAction {
                 case AVLYST -> ANNULLER;
                 case AVSLUTT, GJENNOMFOR -> switch(deltakerstatuskode) {
                     case FULLF -> AVSLUTT;
-                    case GJENN, TILBUD -> isSluttdatoIFremtiden ? OPPDATER : AVSLUTT;
+                    case GJENN, TILBUD -> isSluttdatoIDagEllerFremtiden ? OPPDATER : AVSLUTT;
                     case null, default -> ANNULLER;
                 };
                 case null, default -> throw new IllegalStateException(formatExceptionMsg(tiltakstatuskode, deltakerstatuskode));

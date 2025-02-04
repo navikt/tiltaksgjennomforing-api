@@ -57,6 +57,10 @@ public enum Kvalifiseringsgruppe {
         return this == VARIG_TILPASSET_INNSATS;
     }
 
+    public boolean isKvalifisererTilVTAO(){
+        return this == VARIG_TILPASSET_INNSATS;
+    }
+
     public Integer finnLonntilskuddProsentsatsUtifraKvalifiseringsgruppe(Integer prosentsatsLiten, Integer prosentsatsStor) {
         return switch (this) {
             case SPESIELT_TILPASSET_INNSATS, VARIG_TILPASSET_INNSATS -> prosentsatsStor;

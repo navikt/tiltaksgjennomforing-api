@@ -875,6 +875,12 @@ public class TestData {
         return paVegneGrunn;
     }
 
+    public static GodkjentPaVegneAvArbeidsgiverGrunn enGodkjentPaVegneAvArbeidsgiverGrunn() {
+        GodkjentPaVegneAvArbeidsgiverGrunn godkjentPaVegneAvArbeidsgiverGrunn = new GodkjentPaVegneAvArbeidsgiverGrunn();
+        godkjentPaVegneAvArbeidsgiverGrunn.setKlarerIkkeGiFaTilgang(true);
+        return  godkjentPaVegneAvArbeidsgiverGrunn;
+    }
+
     public static GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn enGodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn() {
         GodkjentPaVegneAvArbeidsgiverGrunn arbeidsgiverGrunn = new GodkjentPaVegneAvArbeidsgiverGrunn();
         arbeidsgiverGrunn.setArenaMigreringArbeidsgiver(true);

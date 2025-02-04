@@ -80,6 +80,11 @@ public class VeilarboppfolgingService {
             throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_VARIG_LONNTILSKUDD_FEIL);
         }
 
+        if (avtale.getTiltakstype().isVTAO() &&
+            !oppfølgingStatus.getKvalifiseringsgruppe().isKvalifisererTilVTAO()) {
+            throw new FeilkodeException(Feilkode.KVALIFISERINGSGRUPPE_VTAO_FEIL);
+        }
+
         return oppfølgingStatus;
     }
 
