@@ -515,7 +515,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     @JsonProperty
     public LocalDate getKreverOppfolgingFrist() {
-        return this.kreverOppfolgingFom == null ? null : YearMonth.from(this.kreverOppfolgingFom).plusMonths(2).atEndOfMonth();
+        return this.kreverOppfolgingFom == null ? null : YearMonth.from(this.kreverOppfolgingFom).plusMonths(1).atEndOfMonth();
     }
 
     private void sjekkOmAvtalenKanEndres() {
@@ -616,7 +616,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
     private void avtaleInngått(LocalDateTime tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
         gjeldendeInnhold.setAvtaleInngått(tidspunkt);
         if (this.getTiltakstype().equals(Tiltakstype.VTAO)) {
-            LocalDate sluttenAvMnd4MndFremITid = YearMonth.from(this.gjeldendeInnhold.getStartDato()).plusMonths(4).atEndOfMonth();
+            LocalDate sluttenAvMnd4MndFremITid = YearMonth.from(this.gjeldendeInnhold.getStartDato()).plusMonths(4).atDay(1);
             this.setKreverOppfolgingFom(sluttenAvMnd4MndFremITid);
         }
         utforEndring(new AvtaleInngått(this, AvtaleHendelseUtførtAvRolle.fraAvtalerolle(utførtAvRolle), utførtAv));
@@ -1371,7 +1371,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     public void godkjennOppfolgingAvAvtale(NavIdent utførtAv) {
         setOppfolgingVarselSendt(null);
-        setKreverOppfolgingFom(YearMonth.from(getKreverOppfolgingFom()).plusMonths(6).atEndOfMonth());
+        setKreverOppfolgingFom(getKreverOppfolgingFom().plusMonths(6));
         utforEndring(new OppfolgingAvAvtaleGodkjent(this, utførtAv));
     }
 
