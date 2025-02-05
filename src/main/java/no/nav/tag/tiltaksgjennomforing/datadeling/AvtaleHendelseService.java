@@ -56,9 +56,10 @@ public class AvtaleHendelseService {
     public void sendAvtaleHendelseMeldingPåAvtalerSomManglerAntallDagerPerUker() {
         AtomicInteger antallSendt = new AtomicInteger();
         log.info("Henter avtaler som mangler antallDagerPerUke for å lage patchehendelsemeldinger");
-        List<UUID> hendelsemeldinger = avtaleMeldingEntitetRepository.findAlleAvtalerFraAvtaleMeldingerSomManglerAntallDagerPerUke();
+        List<UUID> avtaleIder = avtaleMeldingEntitetRepository.findAlleAvtalerFraAvtaleMeldingerSomManglerAntallDagerPerUke();
+        log.info("Fant {} antall avtaler som mangler antallDagerPerUke, looper og sender hendelsemeldinger", avtaleIder.size());
 
-        hendelsemeldinger.forEach(avtaleId -> {
+        avtaleIder.forEach(avtaleId -> {
             Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow();
             lagMelding(avtale, HendelseType.PATCH);
             antallSendt.getAndIncrement();
