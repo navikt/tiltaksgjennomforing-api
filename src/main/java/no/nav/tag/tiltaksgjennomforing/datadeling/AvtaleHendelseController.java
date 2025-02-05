@@ -57,4 +57,12 @@ public class AvtaleHendelseController {
         sjekkTilgang();
         avtaleHendelseService.sendAvtaleHendelseMeldingPåAlleAvtaler();
     }
+
+    @PostMapping("send-melding-alle-avtaler-som-mangler-antall-dager-per-uke")
+    @Transactional
+    public void sendMeldingAlleAvtalerSomMAnglerAntalDagerPerUke() {
+        log.info("Sender alle avtaler som mangler antallDagerPerUke som hendelsemeldinger på topic");
+        sjekkTilgang();
+        avtaleHendelseService.sendAvtaleHendelseMeldingPåAvtalerSomManglerAntallDagerPerUker();
+    }
 }
