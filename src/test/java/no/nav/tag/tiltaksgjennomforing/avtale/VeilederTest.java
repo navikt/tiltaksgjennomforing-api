@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
@@ -20,7 +21,11 @@ import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.util.EnumSet;
@@ -634,5 +639,21 @@ public class VeilederTest {
         query.setStatus(Status.MANGLER_GODKJENNING);
         veileder.hentAlleAvtalerMedMuligTilgang(avtaleRepository, query, Pageable.unpaged());
         verify(avtaleRepository).sokEtterAvtale(new NavIdent("Z000000"), 1, new Fnr("12345678901"), new BedriftNr("123456789"), "4802", Tiltakstype.ARBEIDSTRENING, Status.MANGLER_GODKJENNING, false, Pageable.unpaged());
+    }
+
+    @Test
+    public void oppdaterOppfølgingOgGeoEnhetEtterForespørsel_skal_endre_oppfølgingsenhet() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.setEnhetOppfolging("0101");
+        avtale.setDeltakerFnr(new Fnr("31129118213"));
+        Veileder veileder = TestData.enVeileder(avtale);
+        veileder.oppdaterOppfølgingOgGeoEnhetEtterForespørsel(avtale);
+
+        // Oppdaterer oppfølgingsenhet
+        assertThat(avtale.getEnhetOppfolging()).isEqualTo("0906");
+        // Og ingen andre oppfølgingstatus reltaterte endringer:
+        assertThat(avtale.getFormidlingsgruppe()).isNull();
+        assertThat(avtale.getKvalifiseringsgruppe()).isNull();
+
     }
 }
