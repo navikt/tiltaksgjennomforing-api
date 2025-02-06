@@ -307,7 +307,7 @@ public class VeilederTest {
         );
         Mockito.doReturn(nyOppfølgingsstatusSomSkalIkkeSettes).when(veilarboppfolgingService).hentOppfolgingsstatus(Mockito.anyString());
 
-        nyVeileder.hentOppfølgingFraArena(avtale,veilarboppfolgingService );
+        nyVeileder.sjekkOgOppdaterOppfølgningsstatusPaaAvtale(avtale);
 
         assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(avtale.getKvalifiseringsgruppe());
 
@@ -318,7 +318,7 @@ public class VeilederTest {
                 "0906"
         );
         Mockito.doReturn(nyOppfølgingsstatusSomSkalSettes).when(veilarboppfolgingService).hentOppfolgingsstatus(Mockito.anyString());
-        nyVeileder.oppdatereOppfølgingStatusVedEndreAvtale(avtale);
+        nyVeileder.oppdaterOppfølgningsstatusPaaAvtale(avtale);
         assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(nyOppfølgingsstatusSomSkalSettes.getKvalifiseringsgruppe());
     }
 

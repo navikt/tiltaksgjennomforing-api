@@ -131,7 +131,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
-        this.sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
+        this.sjekkOgOppdaterOppfølgningsstatusPaaAvtale(avtale);
         avtale.godkjennForVeileder(getIdentifikator());
     }
 
@@ -145,7 +145,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         if (persondataService.erKode6(avtale.getDeltakerFnr())) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
-        this.sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
+        this.sjekkOgOppdaterOppfølgningsstatusPaaAvtale(avtale);
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
     }
 
@@ -161,7 +161,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     ) {
         super.sjekkTilgang(avtale);
         this.blokkereKode6Prosessering(avtale.getDeltakerFnr());
-        this.sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
+        this.sjekkOgOppdaterOppfølgningsstatusPaaAvtale(avtale);
         avtale.godkjennForVeilederOgArbeidsgiver(getIdentifikator(), paVegneAvArbeidsgiverGrunn);
     }
 
@@ -171,7 +171,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     ) {
         super.sjekkTilgang(avtale);
         this.blokkereKode6Prosessering(avtale.getDeltakerFnr());
-        this.sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
+        this.sjekkOgOppdaterOppfølgningsstatusPaaAvtale(avtale);
         avtale.godkjennForVeilederOgDeltakerOgArbeidsgiver(getIdentifikator(), paVegneAvDeltakerOgArbeidsgiverGrunn);
     }
 
@@ -220,7 +220,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     protected void oppdatereEnheterVedEndreAvtale(Avtale avtale) {
         PdlRespons pdlRespons = this.oppdaterePersondataFraPdlVedEndreAvtale(avtale.getDeltakerFnr());
-        this.oppdatereOppfølgingStatusVedEndreAvtale(avtale);
+        this.oppdaterOppfølgningsstatusPaaAvtale(avtale);
         this.oppdatereGeoEnhetVedEndreAvtale(avtale, pdlRespons);
         this.oppdatereOppfølgingEnhetsnavnVedEndreAvtale(avtale);
 
@@ -247,14 +247,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         );
         if (response == null) return;
         avtale.setEnhetsnavnOppfolging(response.getNavn());
-    }
-
-    public void oppdatereOppfølgingStatusVedEndreAvtale(Avtale avtale) {
-        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOppfolgingsstatus(
-                avtale.getDeltakerFnr().asString()
-        );
-        if (oppfølgingsstatus == null) return;
-        this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
     }
 
     private void sjekkKode6(PdlRespons persondata) {
@@ -285,9 +277,12 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     protected void leggTilEnheter(Avtale avtale) {
         final PdlRespons persondata = this.hentPersonDataForOpprettelseAvAvtale(avtale);
-        this.hentOppfølgingFraArena(avtale, veilarboppfolgingService);
+        if (!avtale.harOppfølgingsStatus()) {
+            this.sjekkOgOppdaterOppfølgningsstatusPaaAvtale(avtale);
+            this.settLonntilskuddProsentsats(avtale);
+        }
         super.hentGeoEnhetFraNorg2(avtale, persondata, norg2Client);
-        this.hentOppfolgingEnhetsnavnFraNorg2(avtale, norg2Client);
+        this.oppdaterOppfolgingEnhetsnavnFraNorg2PaaAvtale(avtale);
     }
 
     private PdlRespons hentPersonDataForOpprettelseAvAvtale(Avtale avtale) {
@@ -296,21 +291,10 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         return persondata;
     }
 
-    public void hentOppfolgingEnhetsnavnFraNorg2(Avtale avtale, Norg2Client norg2Client) {
+    public void oppdaterOppfolgingEnhetsnavnFraNorg2PaaAvtale(Avtale avtale) {
         final Norg2OppfølgingResponse response = norg2Client.hentOppfølgingsEnhet(avtale.getEnhetOppfolging());
         if (response == null) return;
         avtale.setEnhetsnavnOppfolging(response.getNavn());
-    }
-
-    public void hentOppfølgingFraArena(
-            Avtale avtale,
-            VeilarboppfolgingService veilarboppfolgingService
-    ) {
-        if (avtale.harOppfølgingsStatus()) return;
-        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
-        if (oppfølgingsstatus == null) return;
-        this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
-        this.settLonntilskuddProsentsats(avtale);
     }
 
     private PdlRespons hentPersondata(Fnr deltakerFnr) {
@@ -319,13 +303,24 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         return persondata;
     }
 
-    public void sjekkOgOppdaterOppfølgningsstatusForAvtale(Avtale avtale) {
-        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
-        if(oppfølgingsstatus == null) return;
-        this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
+    public void oppdaterOppfolgingsenhetPaaAvtale(Avtale avtale) {
+        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOppfolgingsstatus(
+            avtale.getDeltakerFnr().asString()
+        );
+        avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
     }
 
-    protected void settOppfølgingsStatus(Avtale avtale, Oppfølgingsstatus oppfølgingsstatus) {
+    public void oppdaterOppfølgningsstatusPaaAvtale(Avtale avtale) {
+        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOppfolgingsstatus(
+            avtale.getDeltakerFnr().asString()
+        );
+        avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
+        avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
+        avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
+    }
+
+    public void sjekkOgOppdaterOppfølgningsstatusPaaAvtale(Avtale avtale) {
+        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
         avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
         avtale.setKvalifiseringsgruppe(oppfølgingsstatus.getKvalifiseringsgruppe());
         avtale.setFormidlingsgruppe(oppfølgingsstatus.getFormidlingsgruppe());
@@ -357,14 +352,15 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     public void forlengAvtale(LocalDate sluttDato, Avtale avtale) {
         super.sjekkTilgang(avtale);
-        sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
+        sjekkOgOppdaterOppfølgningsstatusPaaAvtale(avtale);
         avtale.forlengAvtale(sluttDato, getIdentifikator());
     }
 
     protected void oppdatereEnheterEtterForespørsel(Avtale avtale) {
         final PdlRespons persondata = this.hentPersonDataForOpprettelseAvAvtale(avtale);
         super.hentGeoEnhetFraNorg2(avtale, persondata, norg2Client);
-        this.hentOppfolgingEnhetsnavnFraNorg2(avtale, norg2Client);
+        this.oppdaterOppfolgingsenhetPaaAvtale(avtale);
+        this.oppdaterOppfolgingEnhetsnavnFraNorg2PaaAvtale(avtale);
     }
 
     public void endreStillingbeskrivelse(EndreStillingsbeskrivelse endreStillingsbeskrivelse, Avtale avtale) {
