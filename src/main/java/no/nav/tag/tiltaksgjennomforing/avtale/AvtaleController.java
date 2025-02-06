@@ -904,7 +904,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .map(this::sjekkArbeidstreningToggle)
                 .orElseThrow(RessursFinnesIkkeException::new);
-        veileder.oppdaterOppfølgingsenhet(avtale);
+        veileder.oppdaterOppfølgingOgGeoEnhetEtterForespørsel(avtale);
         var oppdatertAvtale = avtaleRepository.save(avtale);
 
         return oppdatertAvtale;
