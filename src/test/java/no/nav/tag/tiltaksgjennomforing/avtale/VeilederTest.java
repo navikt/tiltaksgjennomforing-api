@@ -19,6 +19,7 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,23 +40,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 public class VeilederTest {
-
-    @Test
-    public void oppdatereEnheterEtterForespørsel_skal_ikke_oppdatere_oppfølgningsSTATUS_men_kun_ENHET(){
-        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        VeilarboppfolgingService VeilarboppfolgingServiceMock = mock(VeilarboppfolgingService.class);
-        Veileder veileder = new Veileder(
-                avtale.getVeilederNavIdent(),
-                mock(TilgangskontrollService.class),
-                mock(PersondataService.class),
-                mock(Norg2Client.class),
-                Set.of(new NavEnhet("4802", "Trysil")),
-                mock(SlettemerkeProperties.class),
-                false,
-                VeilarboppfolgingServiceMock);
-        veileder.oppdaterOppfølgingOgGeoEnhetEtterForespørsel(avtale);
-        verify(VeilarboppfolgingServiceMock, never()).hentOgSjekkOppfolgingstatus(avtale);
-    }
     @Test
     public void godkjennAvtale__kan_ikke_godkjenne_foerst() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
@@ -642,18 +626,24 @@ public class VeilederTest {
     }
 
     @Test
-    public void oppdaterOppfølgingOgGeoEnhetEtterForespørsel_skal_endre_oppfølgingsenhet() {
+    public void oppdaterOppfølgingOgGeoEnhetEtterForespørsel_skal_endre_oppfølgingsenhet_men_ikke_noe_annet() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setEnhetOppfolging("0101");
         avtale.setDeltakerFnr(new Fnr("31129118213"));
+        avtale.setFormidlingsgruppe(Formidlingsgruppe.FRA_NAV_NO);
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         Veileder veileder = TestData.enVeileder(avtale);
+
+        assertThat(avtale.getEnhetOppfolging()).isEqualTo("0101");
+        assertThat(avtale.getFormidlingsgruppe()).isEqualTo(Formidlingsgruppe.FRA_NAV_NO);
+        assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
         veileder.oppdaterOppfølgingOgGeoEnhetEtterForespørsel(avtale);
 
         // Oppdaterer oppfølgingsenhet
         assertThat(avtale.getEnhetOppfolging()).isEqualTo("0906");
         // Og ingen andre oppfølgingstatus reltaterte endringer:
-        assertThat(avtale.getFormidlingsgruppe()).isNull();
-        assertThat(avtale.getKvalifiseringsgruppe()).isNull();
+        assertThat(avtale.getFormidlingsgruppe()).isEqualTo(Formidlingsgruppe.FRA_NAV_NO);
+        assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
 
     }
 }
