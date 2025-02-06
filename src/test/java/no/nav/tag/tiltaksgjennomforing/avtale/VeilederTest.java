@@ -48,7 +48,7 @@ public class VeilederTest {
                 mock(SlettemerkeProperties.class),
                 false,
                 VeilarboppfolgingServiceMock);
-        veileder.oppdatereEnheterEtterForespørsel(avtale);
+        veileder.oppdaterOppfølgingsenhet(avtale);
         verify(VeilarboppfolgingServiceMock, never()).hentOgSjekkOppfolgingstatus(avtale);
     }
     @Test

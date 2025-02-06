@@ -361,12 +361,10 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         avtale.forlengAvtale(sluttDato, getIdentifikator());
     }
 
-    protected void oppdatereEnheterEtterForespørsel(Avtale avtale) {
-        final PdlRespons persondata = this.hentPersonDataForOpprettelseAvAvtale(avtale);
-        super.hentGeoEnhetFraNorg2(avtale, persondata, norg2Client);
-        this.hentOppfolgingEnhetsnavnFraNorg2(avtale, norg2Client);
+    protected void oppdaterOppfølgingsenhet(Avtale avtale) {
         String oppfolgingsenhet = veilarboppfolgingService.hentOppfolgingsenhet(avtale.getDeltakerFnr().asString());
         avtale.setEnhetOppfolging(oppfolgingsenhet);
+        this.hentOppfolgingEnhetsnavnFraNorg2(avtale, norg2Client);
     }
 
     public void endreStillingbeskrivelse(EndreStillingsbeskrivelse endreStillingsbeskrivelse, Avtale avtale) {
