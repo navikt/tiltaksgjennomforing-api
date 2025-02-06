@@ -23,6 +23,10 @@ public class VeilarboppfolgingService {
         this.client = client;
     }
 
+    public String hentOppfolgingsenhet(String fnr) {
+        return hentOppfolgingsstatus(fnr).getOppfolgingsenhet();
+    }
+
     public Oppfølgingsstatus hentOppfolgingsstatus(String fnr) {
         Optional<HentOppfolgingsstatusRespons> responsOpt;
 
