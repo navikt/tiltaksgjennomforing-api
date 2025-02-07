@@ -124,8 +124,7 @@ public class AvtaleMelding {
         return create(avtale, avtaleInnhold, utførtAv, utførtAvAvtaleRolle, hendelseType, null);
     }
 
-    public static AvtaleMelding create(Avtale avtale, AvtaleInnhold avtaleInnhold, Identifikator utførtAv, AvtaleHendelseUtførtAvRolle utførtAvAvtaleRolle, HendelseType hendelseType, String forkortetGrunn) {
-
+    public static AvtaleMelding create(Avtale avtale, AvtaleInnhold avtaleInnhold, Identifikator utførtAv, AvtaleHendelseUtførtAvRolle utførtAvAvtaleRolle, HendelseType hendelseType, ForkortetGrunn forkortetGrunn) {
         AvtaleMelding avtaleMelding = new AvtaleMelding();
         avtaleMelding.setHendelseType(hendelseType);
         avtaleMelding.setAvtaleStatus(avtale.getStatus());
@@ -216,7 +215,7 @@ public class AvtaleMelding {
         avtaleMelding.setInnholdType(avtaleInnhold.getInnholdType());
         avtaleMelding.setUtførtAv(utførtAv);
         avtaleMelding.setUtførtAvRolle(utførtAvAvtaleRolle);
-        avtaleMelding.setForkortetGrunn(forkortetGrunn);
+        avtaleMelding.setForkortetGrunn(Optional.ofNullable(forkortetGrunn).flatMap(ForkortetGrunn::utled).orElse(null));
         avtaleMelding.setOpphav(avtale.getOpphav());
 
         //Lister

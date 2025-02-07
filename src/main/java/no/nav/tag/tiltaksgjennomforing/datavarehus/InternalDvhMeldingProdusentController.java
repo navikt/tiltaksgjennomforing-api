@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,8 +34,8 @@ public class InternalDvhMeldingProdusentController {
         avtaleRepository.findAllById(request.avtaleIder()).forEach(avtale -> {
             UUID meldingId = UUID.randomUUID();
             String utførtAv = tokenUtils.hentBrukerOgIssuer().map(TokenUtils.BrukerOgIssuer::getBrukerIdent).orElse("patch");
-            AvroTiltakHendelse avroTiltakHendelse = AvroTiltakHendelseFabrikk.konstruer(avtale, Now.localDateTime(), meldingId, DvhHendelseType.PATCHING, utførtAv);
-            dvhMeldingRepository.save(new DvhMeldingEntitet(meldingId, avtale.getId(), Now.localDateTime(), avtale.getStatus(), avroTiltakHendelse));
+            AvroTiltakHendelse avroTiltakHendelse = AvroTiltakHendelseFabrikk.konstruer(avtale, DvhHendelseType.PATCHING, utførtAv);
+            dvhMeldingRepository.save(new DvhMeldingEntitet(avtale, avroTiltakHendelse));
             log.info("Patchet avtale {}, sendt melding med id {} til datavarehus", avtale.getId(), meldingId);
         });
     }

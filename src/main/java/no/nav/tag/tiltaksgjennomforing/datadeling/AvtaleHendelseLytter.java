@@ -69,13 +69,12 @@ public class AvtaleHendelseLytter {
 
     @EventListener
     public void avtaleForkortet(AvtaleForkortetAvVeileder event) {
-        String forkortetGrunn = event.getAnnetGrunn() != null ? event.getAnnetGrunn() : event.getGrunn();
-        lagHendelse(event.getAvtale(), HendelseType.AVTALE_FORKORTET, event.getUtførtAv(), AvtaleHendelseUtførtAvRolle.VEILEDER, forkortetGrunn);
+        lagHendelse(event.getAvtale(), HendelseType.AVTALE_FORKORTET, event.getUtførtAv(), AvtaleHendelseUtførtAvRolle.VEILEDER, event.getForkortetGrunn());
     }
 
     @EventListener
     public void avtaleForkortetAvArena(AvtaleForkortetAvArena event) {
-        lagHendelse(event.getAvtale(), HendelseType.AVTALE_FORKORTET_AV_ARENA, Identifikator.ARENA, AvtaleHendelseUtførtAvRolle.SYSTEM, event.getGrunn());
+        lagHendelse(event.getAvtale(), HendelseType.AVTALE_FORKORTET_AV_ARENA, Identifikator.ARENA, AvtaleHendelseUtførtAvRolle.SYSTEM, event.getForkortetGrunn());
     }
 
     @EventListener
@@ -181,11 +180,12 @@ public class AvtaleHendelseLytter {
     private void lagHendelse(Avtale avtale, HendelseType hendelseType, Identifikator utførtAv, AvtaleHendelseUtførtAvRolle utførtAvRolle) {
         lagHendelse(avtale, hendelseType, utførtAv, utførtAvRolle, null);
     }
-    private void lagHendelse(Avtale avtale, HendelseType hendelseType, Identifikator utførtAv, AvtaleHendelseUtførtAvRolle utførtAvRolle, String forkortetGrunn) {
+    private void lagHendelse(Avtale avtale, HendelseType hendelseType, Identifikator utførtAv, AvtaleHendelseUtførtAvRolle utførtAvRolle, ForkortetGrunn forkortetGrunn) {
         LocalDateTime tidspunkt = Now.localDateTime();
         UUID meldingId = UUID.randomUUID();
 
-        var melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), utførtAv, utførtAvRolle, hendelseType, forkortetGrunn);
+
+        AvtaleMelding melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), utførtAv, utførtAvRolle, hendelseType, forkortetGrunn);
         try {
             String meldingSomString = objectMapper.writeValueAsString(melding);
             AvtaleMeldingEntitet entitet = new AvtaleMeldingEntitet(meldingId, avtale.getId(), tidspunkt, hendelseType, avtale.getStatus(), meldingSomString);
