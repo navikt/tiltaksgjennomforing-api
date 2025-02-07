@@ -17,6 +17,9 @@ no.nav.security.jwt:
     system:
       discoveryurl: http://security-token-service.default.svc.nais.local/rest/v1/sts/.well-known/openid-configuration
       accepted_audience: ${tiltaksgjennomforing.audience.system}
+    azure-access-token:
+      discoveryurl: "https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/.well-known/openid-configuration"
+      accepted_audience: "https://management.core.windows.net/"
   client:
     registration:
       ag-notifikasjon-produsent-api:

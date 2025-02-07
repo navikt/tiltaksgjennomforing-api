@@ -19,7 +19,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/utvikler-admin/tilskuddsperioder")
 @RequiredArgsConstructor
-@ProtectedWithClaims(issuer = "aad")
+@ProtectedWithClaims(issuer = "azure-access-token", claimMap = { "groups=fb516b74-0f2e-4b62-bad8-d70b82c3ae0b" })
 @ConditionalOnProperty("tiltaksgjennomforing.kafka.enabled")
 @Slf4j
 public class TilskuddsperiodeAdminController {
