@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@ProtectedWithClaims(issuer = "aad")
+@ProtectedWithClaims(issuer = "azure-access-token", claimMap = { "groups=fb516b74-0f2e-4b62-bad8-d70b82c3ae0b" })
 @RestController
 @RequestMapping("/utvikler-admin/")
 @Slf4j

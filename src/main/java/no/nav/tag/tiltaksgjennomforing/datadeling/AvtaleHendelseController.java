@@ -21,7 +21,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/utvikler-admin/avtale-hendelse")
 @RequiredArgsConstructor
-@ProtectedWithClaims(issuer = "aad")
+@ProtectedWithClaims(issuer = "azure-access-token", claimMap = { "groups=fb516b74-0f2e-4b62-bad8-d70b82c3ae0b" })
 @Slf4j
 public class AvtaleHendelseController {
 
