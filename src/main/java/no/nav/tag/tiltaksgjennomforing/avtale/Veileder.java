@@ -89,7 +89,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     public boolean harTilgangTilAvtale(Avtale avtale) {
         boolean harTilgang = tilgangskontrollService.harSkrivetilgangTilKandidat(this, avtale.getDeltakerFnr());
         if (!harTilgang) {
-            log.info("Har ikke tilgang til avtale {}", avtale.getAvtaleNr());
+            log.info("Har ikke tilgang til avtalenr {}, id: {}", avtale.getAvtaleNr(), avtale.getId());
         }
         return harTilgang;
     }
