@@ -77,6 +77,7 @@ public class InnloggingService {
                 var navEnheter = hentNavEnheter(navIdent);
                 return new Beslutter(navIdent, tokenUtils.hentAzureOid(), navEnheter, tilgangskontrollService, norg2Client);
             } else {
+                log.warn("//////////////  MANGLER_AD_GRUPPE_BESLUTTER For Beslutter={} og rolle={} /////////////", issuer, avtalerolle);
                 throw new FeilkodeException(Feilkode.MANGLER_AD_GRUPPE_BESLUTTER);
             }
         } else {

@@ -64,11 +64,15 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
-        return tilgangskontrollService.harSkrivetilgangTilKandidat(this, avtale.getDeltakerFnr());
+        boolean harTilgang = tilgangskontrollService.harSkrivetilgangTilKandidat(this, avtale.getDeltakerFnr());
+        log.info("////////////// Avtale {} harTilgang: {} ////////////// ", avtale.getAvtaleNr(),harTilgang);
+        return harTilgang;
     }
 
     public boolean harTilgangTilFnr(Fnr fnr) {
-        return tilgangskontrollService.harSkrivetilgangTilKandidat(this, fnr);
+        boolean harTilgang = tilgangskontrollService.harSkrivetilgangTilKandidat(this, fnr);
+        log.info("//////////////  har tilgang til kandidat: {} ////////////// ", fnr);
+        return harTilgang;
     }
 
     @Override
