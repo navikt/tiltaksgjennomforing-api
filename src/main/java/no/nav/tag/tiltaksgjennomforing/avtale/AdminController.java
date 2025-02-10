@@ -3,9 +3,21 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.BeslutterAdGruppeProperties;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,8 +28,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleSorterer.getSortingOrderForPageableVeileder;
 
 @ProtectedWithClaims(issuer = "azure-access-token", claimMap = { "groups=fb516b74-0f2e-4b62-bad8-d70b82c3ae0b" })
 @RestController
@@ -28,6 +43,31 @@ public class AdminController {
     private final AvtaleRepository avtaleRepository;
     private final TilskuddPeriodeRepository tilskuddPeriodeRepository;
     private final VeilarboppfolgingService veilarboppfolgingService;
+    // BESLUTTER DEBUGGING I DEV
+    private final TokenUtils tokenUtils;
+    private final AxsysService axsysService;
+    private final BeslutterAdGruppeProperties beslutterAdGruppeProperties;
+    private final TilgangskontrollService tilgangskontrollService;
+    private final Norg2Client norg2Client;
+
+    @PostMapping("/beslutter/{beslutterId}/avtaleNr/{avtaleNr}")
+    public String hentBeslutter(@PathVariable("beslutterId") String beslutterId, @PathVariable("avtaleNr") int avtaleNr) {
+        TokenUtils.BrukerOgIssuer brukerOgIssuer = tokenUtils.hentBrukerOgIssuer().orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget."));
+        TokenUtils.Issuer issuer = brukerOgIssuer.getIssuer();
+        boolean harAdGruppeForBeslutter = tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId());
+        var navIdent = new NavIdent(beslutterId);
+        List<NavEnhet> navEnheter = axsysService.hentEnheterNavAnsattHarTilgangTil(navIdent);
+        Pageable pageable = PageRequest.of(Math.abs(0), Math.abs(1000));
+
+        Page<Avtale> page =  avtaleRepository.findAllByAvtaleNrAndFeilregistrertIsFalse(avtaleNr, pageable);
+        Beslutter beslutter = new Beslutter(navIdent, tokenUtils.hentAzureOid(), Set.copyOf(navEnheter), tilgangskontrollService, norg2Client);
+        Avtale avtale = avtaleRepository.findByAvtaleNr(avtaleNr).orElseThrow(RessursFinnesIkkeException::new);
+        boolean harTilgangTilAvtale = beslutter.harTilgangTilAvtale(avtale);
+        boolean harTilgangTilFnrIAvtale = beslutter.harTilgangTilFnr(avtale.getDeltakerFnr());
+
+    return "Issuer: "+ issuer + " harAdGruppeForBeslutter: " + harAdGruppeForBeslutter + " navIdent: " + navIdent + " navEnheter: " + navEnheter + " antall avtaler: " + page.getTotalElements()+ " harTilgangTilAvtale: " + harTilgangTilAvtale + " harTilgangTilFnrIAvtale: " + harTilgangTilFnrIAvtale;
+
+    }
 
     @PostMapping("reberegn")
     public void reberegnLønnstilskudd(@RequestBody List<UUID> avtaleIder) {
