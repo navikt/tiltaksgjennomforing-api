@@ -56,6 +56,8 @@ tiltaksgjennomforing:
     uri: http://localhost:8090/kontoregister/api/v1/hent-kontonr-org
     consumerId: tiltak-refusjon-api
     realClient: true
+  beslutter-ad-gruppe:
+    id: 1a1d2745-952f-4a0f-839f-9530145b1d4a
   kafka:
     enabled: false
     fake-url: http://localhost:8081/fake-kafka

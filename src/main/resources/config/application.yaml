@@ -56,6 +56,8 @@ tiltaksgjennomforing:
   retry: # Delay i millisekunder mellom hver retry
     delay: 1000
     max-delay: 20000
+  beslutter-ad-gruppe:
+    id: ${beslutter.ad.gruppe}
   kafka:
     enabled: true
   dokgen:
