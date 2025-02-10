@@ -21,7 +21,7 @@ public interface AvtaleMeldingEntitetRepository extends JpaRepository<AvtaleMeld
           AND a.id = am.avtale_id
           AND am.melding_id = sm.melding_id
           AND ai.antall_dager_per_uke IS NOT NULL
-          AND json::jsonb ->> 'antallDagerPerUke' IS NULL;
+          AND CAST(json AS jsonb) ->> 'antallDagerPerUke' IS NULL;
       """, nativeQuery = true)
     List<UUID> findAlleAvtalerFraAvtaleMeldingerSomManglerAntallDagerPerUke();
 }
