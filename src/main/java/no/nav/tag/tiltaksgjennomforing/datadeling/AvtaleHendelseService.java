@@ -53,6 +53,23 @@ public class AvtaleHendelseService {
     }
 
     @Async
+    public void sendAvtaleHendelseMeldingPåAvtalerSomManglerAntallDagerPerUker() {
+        AtomicInteger antallSendt = new AtomicInteger();
+        log.info("Henter avtaler som mangler antallDagerPerUke for å lage patchehendelsemeldinger");
+        List<UUID> avtaleIder = avtaleMeldingEntitetRepository.findAlleAvtalerFraAvtaleMeldingerSomManglerAntallDagerPerUke();
+        log.info("Fant {} antall avtaler som mangler antallDagerPerUke, looper og sender hendelsemeldinger", avtaleIder.size());
+
+        avtaleIder.forEach(avtaleId -> {
+            Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow();
+            lagMelding(avtale, HendelseType.PATCH);
+            antallSendt.getAndIncrement();
+            if (antallSendt.get() % 100 == 0) {
+                log.info("Gått igjennom {} antall avtaler", antallSendt.get());
+            }
+        });
+    }
+
+    @Async
     public void sendAvtaleHendelseMeldingPåAlleAvtalerDRYRun() {
         AtomicInteger antallSendt = new AtomicInteger();
 
@@ -75,6 +92,19 @@ public class AvtaleHendelseService {
     // Skal alt sendes egentlig?
     private boolean skalSendes(Avtale avtale) {
         return true;
+    }
+
+    private void lagMelding(Avtale avtale, HendelseType hendelseType) {
+        var melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), new Identifikator("tiltaksgjennomforing-api"), AvtaleHendelseUtførtAvRolle.SYSTEM, hendelseType);
+        UUID meldingId = UUID.randomUUID();
+        LocalDateTime tidspunkt = Now.localDateTime();
+        try {
+            String meldingSomString = objectMapper.writeValueAsString(melding);
+            AvtaleMeldingEntitet entitet = new AvtaleMeldingEntitet(meldingId, avtale.getId(), tidspunkt, hendelseType, avtale.getStatus(), meldingSomString);
+            avtaleMeldingEntitetRepository.save(entitet);;
+        } catch (JsonProcessingException e) {
+            log.error("Feil ved parsing av AvtaleHendelseMelding til json for avtale med id: {}", avtale.getId());
+        }
     }
 
     private void lagMelding(Avtale avtale) {
