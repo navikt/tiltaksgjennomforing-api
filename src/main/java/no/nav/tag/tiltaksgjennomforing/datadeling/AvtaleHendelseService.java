@@ -54,7 +54,6 @@ public class AvtaleHendelseService {
 
     @Async
     public void sendAvtaleHendelseMeldingPåAvtalerSomManglerAntallDagerPerUker() {
-        AtomicInteger antallSendt = new AtomicInteger();
         log.info("Henter avtaler som mangler antallDagerPerUke for å lage patchehendelsemeldinger");
         List<UUID> avtaleIder = avtaleMeldingEntitetRepository.findAlleAvtalerFraAvtaleMeldingerSomManglerAntallDagerPerUke();
         log.info("Fant {} antall avtaler som mangler antallDagerPerUke, looper og sender hendelsemeldinger", avtaleIder.size());
@@ -62,11 +61,9 @@ public class AvtaleHendelseService {
         avtaleIder.forEach(avtaleId -> {
             Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow();
             lagMelding(avtale, HendelseType.PATCH);
-            antallSendt.getAndIncrement();
-            if (antallSendt.get() % 100 == 0) {
-                log.info("Gått igjennom {} antall avtaler", antallSendt.get());
-            }
         });
+
+        log.info("Sendt PATCH meldinger for {} avtaler", avtaleIder.size());
     }
 
     @Async

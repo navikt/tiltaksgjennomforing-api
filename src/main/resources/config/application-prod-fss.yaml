@@ -158,10 +158,6 @@ tiltaksgjennomforing:
     uri: https://ag-notifikasjon-produsent-api.intern.nav.no/api/graphql
     lenke: https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/
     enabled: true
-  dvh-melding:
-    gruppe-tilgang: fb516b74-0f2e-4b62-bad8-d70b82c3ae0b
-  utvikler-tilgang:
-    gruppe-tilgang: fb516b74-0f2e-4b62-bad8-d70b82c3ae0b
   arena:
     kafka:
       tiltakdeltaker-endret-topic: 'teamarenanais.aapen-arena-tiltakdeltakerendret-v1-p'

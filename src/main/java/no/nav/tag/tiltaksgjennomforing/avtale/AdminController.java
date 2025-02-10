@@ -3,20 +3,16 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.UtviklerTilgangProperties;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -31,19 +27,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class AdminController {
     private final AvtaleRepository avtaleRepository;
     private final TilskuddPeriodeRepository tilskuddPeriodeRepository;
-    private final UtviklerTilgangProperties utviklerTilgangProperties;
-    private final TokenUtils tokenUtils;
     private final VeilarboppfolgingService veilarboppfolgingService;
-
-    private void sjekkTilgang() {
-        if (!tokenUtils.harAdGruppe(utviklerTilgangProperties.getGruppeTilgang())) {
-            throw new HttpClientErrorException(HttpStatus.FORBIDDEN);
-        }
-    }
 
     @PostMapping("reberegn")
     public void reberegnLønnstilskudd(@RequestBody List<UUID> avtaleIder) {
-        sjekkTilgang();
         for (UUID avtaleId : avtaleIder) {
             Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow();
             avtale.reberegnLønnstilskudd();
@@ -54,7 +41,6 @@ public class AdminController {
     @PostMapping("/reberegn-mangler-dato-for-redusert-prosent/{migreringsDato}")
     @Transactional
     public void reberegnVarigLønnstilskuddSomIkkeHarRedusertDato(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate migreringsDato) {
-        sjekkTilgang();
         log.info("Starter jobb for å fikse manglende redusert prosent og redusert sum");
         // 1. Generer dato for redusert prosent og sumRedusert
         List<Avtale> varigeLønnstilskudd = avtaleRepository.findAllByTiltakstypeAndGjeldendeInnhold_DatoForRedusertProsentNullAndGjeldendeInnhold_AvtaleInngåttNotNull(Tiltakstype.VARIG_LONNSTILSKUDD);
@@ -80,7 +66,6 @@ public class AdminController {
 
     @PostMapping("/reberegn-mangler-dato-for-redusert-prosent-dry-run/{migreringsDato}")
     public void reberegnVarigLønnstilskuddSomIkkeHarRedusertDatoDryRun(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate migreringsDato) {
-        sjekkTilgang();
         log.info("DRY-RUN: Starter DRY-RUN jobb for å fikse manglende redusert prosent og redusert sum");
         // 1. Generer dato for redusert prosent og sumRedusert
         List<Avtale> varigeLønnstilskudd = avtaleRepository.findAllByTiltakstypeAndGjeldendeInnhold_DatoForRedusertProsentNullAndGjeldendeInnhold_AvtaleInngåttNotNull(Tiltakstype.VARIG_LONNSTILSKUDD);
@@ -104,7 +89,6 @@ public class AdminController {
     @PostMapping("/annuller-tilskuddsperiode/{tilskuddsperiodeId}")
     @Transactional
     public void annullerTilskuddsperiode(@PathVariable("tilskuddsperiodeId") UUID id) {
-        sjekkTilgang();
         log.info("Annullerer tilskuddsperiode {}", id);
         TilskuddPeriode tilskuddPeriode = tilskuddPeriodeRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
         Avtale avtale = tilskuddPeriode.getAvtale();
@@ -116,7 +100,6 @@ public class AdminController {
     @PostMapping("/annuller-og-resend-tilskuddsperiode/{tilskuddsperiodeId}")
     @Transactional
     public void annullerOgResendTilskuddsperiode(@PathVariable("tilskuddsperiodeId") UUID id) {
-        sjekkTilgang();
         log.info("Annullerer tilskuddsperiode {} og resender som godkjent", id);
         TilskuddPeriode tilskuddPeriode = tilskuddPeriodeRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
         Avtale avtale = tilskuddPeriode.getAvtale();
@@ -128,7 +111,6 @@ public class AdminController {
     @PostMapping("/annuller-og-generer-tilskuddsperiode/{tilskuddsperiodeId}")
     @Transactional
     public void annullerOgGenererTilskuddsperiode(@PathVariable("tilskuddsperiodeId") UUID id) {
-        sjekkTilgang();
         log.info("Annullerer tilskuddsperiode {} og genererer ny ubehandlet", id);
         TilskuddPeriode tilskuddPeriode = tilskuddPeriodeRepository.findById(id).orElseThrow(RessursFinnesIkkeException::new);
         Avtale avtale = tilskuddPeriode.getAvtale();
@@ -142,7 +124,6 @@ public class AdminController {
     @PostMapping("/annuller-og-generer-behandlet-i-arena-perioder/{avtaleId}/{dato}")
     @Transactional
     public void annullerOgGenererBehandletIArenaPerioder(@PathVariable("avtaleId") UUID avtaleId, @PathVariable("dato") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate dato) {
-        sjekkTilgang();
         log.info("Annullerer tilskuddsperioder med sluttdato før {} på avtale {} og lager nye med status behandlet i arena", dato, avtaleId);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         List<TilskuddPeriode> tilskuddsperioder = tilskuddPeriodeRepository.findAllByAvtaleAndSluttDatoBefore(avtale, dato);
@@ -160,7 +141,6 @@ public class AdminController {
     @PostMapping("/lag-tilskuddsperioder-for-en-avtale/{avtaleId}/{migreringsDato}")
     @Transactional
     public void lagTilskuddsperioderPåEnAvtale(@PathVariable("avtaleId") UUID id, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate migreringsDato) {
-        sjekkTilgang();
         log.info("Lager tilskuddsperioder på en enkelt avtale {} fra dato {}", id, migreringsDato);
         Avtale avtale = avtaleRepository.findById(id)
                 .orElseThrow(RessursFinnesIkkeException::new);
@@ -171,7 +151,6 @@ public class AdminController {
     @PostMapping("/reberegn-ubehandlede-tilskuddsperioder/{avtaleId}")
     @Transactional
     public void reberegnUbehandledeTilskuddsperioder(@PathVariable("avtaleId") UUID avtaleId) {
-        sjekkTilgang();
         log.info("Reberegner ubehandlede tilskuddsperioder for avtale: {}", avtaleId);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         avtale.reberegnUbehandledeTilskuddsperioder();
@@ -180,7 +159,6 @@ public class AdminController {
 
     @PostMapping("/finn-avtaler-med-tilskuddsperioder-feil-datoer")
     public void finnTilskuddsperioderMedFeilDatoer() {
-        sjekkTilgang();
         log.info("Finner avtaler som har tilskuddsperioder med mindre startdato enn en periode med lavere løpenummer");
         List<Avtale> midlertidige = avtaleRepository.findAllByTiltakstype(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         midlertidige.removeIf(a -> a.getGjeldendeInnhold().getAvtaleInngått() == null);
@@ -198,7 +176,6 @@ public class AdminController {
 
     @PostMapping("/hent-oppfolgingsstatus")
     public Oppfølgingsstatus hentOppfølgingsstatus(@RequestBody AvtaleRequest request) {
-        sjekkTilgang();
         Avtale avtale;
         if (request.avtaleId() != null) {
             avtale = avtaleRepository.findById(UUID.fromString(request.avtaleId())).orElseThrow(RessursFinnesIkkeException::new);
