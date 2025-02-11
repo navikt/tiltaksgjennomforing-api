@@ -23,6 +23,7 @@ public class AvtaleQueryParameter {
     private TilskuddPeriodeStatus tilskuddPeriodeStatus;
     private String navEnhet;
     private Integer avtaleNr;
+    private Boolean erSokPaEnkeltperson;
 
     public boolean harFilterPaEnEntitet() {
         return erUfordelt != null ||
@@ -31,6 +32,11 @@ public class AvtaleQueryParameter {
             deltakerFnr != null ||
             navEnhet != null ||
             avtaleNr != null;
+    }
+
+    //TODO metode for å sjekke om søk er på enkel person
+    public boolean erSokPaEnkeltperson() {
+        return deltakerFnr != null || avtaleNr != null;
     }
 
     public boolean erUfordelt() {
