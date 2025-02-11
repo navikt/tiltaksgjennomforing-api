@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -192,10 +193,10 @@ public class AdminController {
     }
 
     @PostMapping("/avtale/{id}/sjekk-tilgang")
-    public ResponseEntity<String> sjekkTilgang(@PathVariable UUID id, @RequestBody UUID ident) {
+    public ResponseEntity<String> sjekkTilgang(@PathVariable UUID id, @RequestBody Map<String, UUID> body) {
         Optional<Avtale> avtale = avtaleRepository.findById(id);
 
-        return avtale.map(value -> tilgangskontrollService.hentGrunnForAvslag(ident, value.getDeltakerFnr())
+        return avtale.map(value -> tilgangskontrollService.hentGrunnForAvslag(body.get("ident"), value.getDeltakerFnr())
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.badRequest().body("Fant ingen grunn for avslag")))
             .orElseGet(() -> ResponseEntity.notFound().build());
