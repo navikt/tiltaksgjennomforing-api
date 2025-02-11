@@ -8,7 +8,9 @@ import no.nav.tag.tiltaksgjennomforing.avtale.InternBruker;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,10 +22,19 @@ public class TilgangskontrollServiceImpl implements TilgangskontrollService {
 
     public boolean harSkrivetilgangTilKandidat(InternBruker internBruker, Fnr fnr) {
         try {
-            return poaoTilgangService.harSkriveTilgang(internBruker.getAzureOid(), fnr.asString());
+            return poaoTilgangService.harSkrivetilgang(internBruker.getAzureOid(), fnr.asString());
         } catch (Exception e) {
             log.error("Feil ved tilgangskontroll-sjekk", e);
             return false;
+        }
+    }
+
+    public Optional<String> hentGrunnForAvslag(UUID ident, Fnr fnr) {
+        try {
+            return poaoTilgangService.hentGrunn(ident, fnr.asString());
+        } catch (Exception e) {
+            log.error("Feil ved tilgangskontroll-sjekk", e);
+            return Optional.empty();
         }
     }
 

@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.rest.client.RestClient;
+import no.nav.poao_tilgang.client.Decision;
 import no.nav.poao_tilgang.client.NavAnsattTilgangTilEksternBrukerPolicyInput;
 import no.nav.poao_tilgang.client.PoaoTilgangCachedClient;
 import no.nav.poao_tilgang.client.PoaoTilgangClient;
@@ -17,6 +18,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -46,11 +48,28 @@ public class PoaoTilgangServiceImpl implements PoaoTilgangService {
                         .build());
     }
 
-    public boolean harSkriveTilgang(UUID beslutterAzureUUID, String deltakerFnr) {
+    public boolean harSkrivetilgang(UUID beslutterAzureUUID, String deltakerFnr) {
+        return Optional.ofNullable(hentSkrivetilgang(beslutterAzureUUID, deltakerFnr))
+            .map(Decision::isPermit)
+            .orElse(false);
+    }
+
+    public Optional<String> hentGrunn(UUID beslutterAzureUUID, String deltakerFnr) {
+        return Optional.ofNullable(hentSkrivetilgang(beslutterAzureUUID, deltakerFnr))
+            .map(decision -> {
+                if (decision.isDeny() && decision instanceof Decision.Deny deny) {
+                    return deny.getReason();
+                } else {
+                    return null;
+                }
+            });
+    }
+
+    private Decision hentSkrivetilgang(UUID beslutterAzureUUID, String deltakerFnr) {
         return klient.evaluatePolicy(new NavAnsattTilgangTilEksternBrukerPolicyInput(
-                beslutterAzureUUID,
-                TilgangType.SKRIVE,
-                deltakerFnr)
-        ).get().isPermit();
+            beslutterAzureUUID,
+            TilgangType.SKRIVE,
+            deltakerFnr)
+        ).get();
     }
 }

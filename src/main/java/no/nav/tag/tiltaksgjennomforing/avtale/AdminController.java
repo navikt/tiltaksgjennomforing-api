@@ -3,10 +3,12 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -28,6 +31,7 @@ public class AdminController {
     private final AvtaleRepository avtaleRepository;
     private final TilskuddPeriodeRepository tilskuddPeriodeRepository;
     private final VeilarboppfolgingService veilarboppfolgingService;
+    private final TilgangskontrollService tilgangskontrollService;
 
     @PostMapping("reberegn")
     public void reberegnLønnstilskudd(@RequestBody List<UUID> avtaleIder) {
@@ -185,6 +189,17 @@ public class AdminController {
             throw new RessursFinnesIkkeException();
         }
         return veilarboppfolgingService.hentOppfolgingsstatus(avtale.getDeltakerFnr().asString());
+    }
+
+    @PostMapping("/avtale/{id}/sjekk-tilgang")
+    public ResponseEntity<String> sjekkTilgang(@PathVariable UUID id, @RequestBody UUID ident) {
+        Optional<Avtale> avtale = avtaleRepository.findById(id);
+
+        return avtale.map(value -> tilgangskontrollService.hentGrunnForAvslag(ident, value.getDeltakerFnr())
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.badRequest().body("Fant ingen grunn for avslag")))
+            .orElseGet(() -> ResponseEntity.notFound().build());
+
     }
 
 }
