@@ -10,18 +10,14 @@ public interface AvtaleMeldingEntitetRepository extends JpaRepository<AvtaleMeld
     List<AvtaleMeldingEntitet> findAllByAvtaleId(UUID avtaleId);
 
     @Query(value = """
-        WITH siste_meldinger AS (
-            SELECT DISTINCT ON (avtale_id) melding_id, avtale_id, tidspunkt
-            FROM avtale_melding am
-            ORDER BY avtale_id, tidspunkt DESC
-        )
-        SELECT distinct a.id
-        FROM avtale a, avtale_innhold ai, avtale_melding am, siste_meldinger sm
+        SELECT distinct avtale_id
+        FROM avtale a, avtale_innhold ai, arena_agreement_migration aam, arena_tiltakdeltaker atd
         WHERE a.gjeldende_innhold_id = ai.id
-          AND a.id = am.avtale_id
-          AND am.melding_id = sm.melding_id
-          AND ai.antall_dager_per_uke IS NOT NULL
-          AND CAST(json AS jsonb) ->> 'antallDagerPerUke' IS NULL;
+          AND aam.avtale_id = a.id
+          AND aam.tiltakdeltaker_id = atd.tiltakdeltaker_id
+          AND ai.innhold_type = 'ENDRET_AV_ARENA'
+          AND atd.dato_til = '2025-01-24'
+          AND ai.slutt_dato = '2025-01-23'
       """, nativeQuery = true)
-    List<UUID> findAlleAvtalerFraAvtaleMeldingerSomManglerAntallDagerPerUke();
+    List<UUID> finaAlleAvtalerSomHarFeilDatoFraMigrering();
 }

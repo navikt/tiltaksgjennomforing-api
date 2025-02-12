@@ -18,7 +18,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @ProtectedWithClaims(issuer = "azure-access-token", claimMap = { "groups=fb516b74-0f2e-4b62-bad8-d70b82c3ae0b" })
 @Slf4j
-public class AvtaleHendelseController {
+public class AvtaleHendelseAdminController {
 
     private final AvtaleHendelseService avtaleHendelseService;
     private final AvtaleRepository avtaleRepository;
@@ -42,9 +42,9 @@ public class AvtaleHendelseController {
         avtaleHendelseService.sendAvtaleHendelseMeldingPåAlleAvtaler();
     }
 
-    @PostMapping("send-melding-alle-avtaler-som-mangler-antall-dager-per-uke")
-    public void sendMeldingAlleAvtalerSomMAnglerAntalDagerPerUke() {
-        log.info("Sender alle avtaler som mangler antallDagerPerUke som hendelsemeldinger på topic");
-        avtaleHendelseService.sendAvtaleHendelseMeldingPåAvtalerSomManglerAntallDagerPerUker();
+    @PostMapping("korriger-og-send-meldinger-paa-avtaler-med-feil-dato-fra-migrering")
+    public void korrigerOgSendMeldingPaaAvtalerSomHarFeilDatoFraMigrering() {
+        log.info("Retter opp i og sender alle avtaler som har feil dato fra migrering av arbeidstrening");
+        avtaleHendelseService.korrigerOgSendMeldingPaaAvtalerSomHarFeilDatoFraMigrering();
     }
 }
