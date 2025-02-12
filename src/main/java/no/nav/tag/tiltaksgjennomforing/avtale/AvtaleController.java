@@ -6,17 +6,17 @@ import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.Protected;
-import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditLogging;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.dokgen.DokgenService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditLogging;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
@@ -51,7 +51,6 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.Map.entry;
@@ -68,7 +67,6 @@ public class AvtaleController {
 
     private final AvtaleRepository avtaleRepository;
     private final AvtaleInnholdRepository avtaleInnholdRepository;
-    private final ArenaRyddeAvtaleRepository arenaRyddeAvtaleRepository;
     private final InnloggingService innloggingService;
     private final EregService eregService;
     private final Norg2Client norg2Client;
@@ -802,45 +800,6 @@ public class AvtaleController {
         veileder.hentOppfølgingFraArena(avtale, veilarboppfolgingService);
         veileder.overtaAvtale(avtale);
         avtaleRepository.save(avtale);
-    }
-
-    @PostMapping("/{avtaleId}/juster-arena-migreringsdato")
-    @Transactional
-    public void justerArenaMigreringsdato(@PathVariable("avtaleId") UUID avtaleId, @RequestBody JusterArenaMigreringsdato justerArenaMigreringsdato) {
-        Veileder veileder = innloggingService.hentVeileder();
-        Avtale avtale = avtaleRepository.findById(avtaleId)
-                .map(this::sjekkArbeidstreningToggle)
-                .orElseThrow(RessursFinnesIkkeException::new);
-        if (avtale.erAvtaleInngått()) {
-            throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_ARENA_MIGRERINGSDATO_INNGAATT_AVTALE);
-        }
-        veileder.sjekkTilgang(avtale);
-        avtale.nyeTilskuddsperioderEtterMigreringFraArena(justerArenaMigreringsdato.getMigreringsdato(), false);
-        Optional<ArenaRyddeAvtale> lagretAvtaleSomRyddeAvtale = arenaRyddeAvtaleRepository.findByAvtale(avtale);
-
-        if (lagretAvtaleSomRyddeAvtale.isEmpty()) {
-            ArenaRyddeAvtale arenaRyddeAvtale = new ArenaRyddeAvtale();
-            arenaRyddeAvtale.setAvtale(avtale);
-            arenaRyddeAvtale.setMigreringsdato(justerArenaMigreringsdato.getMigreringsdato());
-            arenaRyddeAvtaleRepository.save(arenaRyddeAvtale);
-        } else {
-            ArenaRyddeAvtale oppdatertRyddeAvtale = lagretAvtaleSomRyddeAvtale.get();
-            oppdatertRyddeAvtale.setMigreringsdato(justerArenaMigreringsdato.getMigreringsdato());
-            arenaRyddeAvtaleRepository.save(oppdatertRyddeAvtale);
-        }
-        avtaleRepository.save(avtale);
-    }
-
-    @AuditLogging("Justering av migreringsdato i avtale om arbeidsmarkedstiltak")
-    @PostMapping("/{avtaleId}/juster-arena-migreringsdato/dry-run")
-    public Avtale justerArenaMigreringsdatoDryRun(@PathVariable("avtaleId") UUID avtaleId, @RequestBody JusterArenaMigreringsdato justerArenaMigreringsdato) {
-        Veileder veileder = innloggingService.hentVeileder();
-        Avtale avtale = avtaleRepository.findById(avtaleId)
-                .map(this::sjekkArbeidstreningToggle)
-                .orElseThrow(RessursFinnesIkkeException::new);
-        veileder.sjekkTilgang(avtale);
-        avtale.nyeTilskuddsperioderEtterMigreringFraArena(justerArenaMigreringsdato.getMigreringsdato(), false);
-        return avtale;
     }
 
     @PostMapping("/{avtaleId}/godkjenn-tilskuddsperiode")
