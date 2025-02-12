@@ -15,6 +15,7 @@ public interface AvtaleMeldingEntitetRepository extends JpaRepository<AvtaleMeld
         WHERE a.gjeldende_innhold_id = ai.id
           AND aam.avtale_id = a.id
           AND aam.tiltakdeltaker_id = atd.tiltakdeltaker_id
+          AND ai.innhold_type = 'ENDRET_AV_ARENA'
           AND atd.dato_til = '2025-01-24'
           AND ai.slutt_dato = '2025-01-23'
       """, nativeQuery = true)
