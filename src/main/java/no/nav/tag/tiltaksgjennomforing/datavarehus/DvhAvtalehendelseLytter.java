@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.datavarehus;
 
 import lombok.RequiredArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.ForkortetGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvSystem;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AnnullertAvVeileder;
@@ -18,12 +19,8 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.OmMentorEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.OppfølgingOgTilretteleggingEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.StillingsbeskrivelseEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.TilskuddsberegningEndret;
-import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -48,7 +45,7 @@ public class DvhAvtalehendelseLytter {
 
     @EventListener
     public void avtaleForkortetAvVeileder(AvtaleForkortetAvVeileder event) {
-        lagHendelse(event.getAvtale(), DvhHendelseType.FORKORTET, event.getUtførtAv());
+        lagHendelse(event.getAvtale(), DvhHendelseType.FORKORTET, event.getUtførtAv(), event.getForkortetGrunn());
     }
 
     @EventListener
@@ -107,13 +104,15 @@ public class DvhAvtalehendelseLytter {
     }
 
     private void lagHendelse(Avtale avtale, DvhHendelseType endret, Identifikator utførtAv) {
-        if(avtale.erAvtaleInngått()) {
-            LocalDateTime tidspunkt = Now.localDateTime();
-            UUID meldingId = UUID.randomUUID();
-            DvhHendelseType hendelseType = endret;
-            var melding = AvroTiltakHendelseFabrikk.konstruer(avtale, tidspunkt, meldingId, hendelseType, utførtAv.asString());
-            DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, avtale.getId(), tidspunkt, avtale.getStatus(), melding);
-            repository.save(entitet);
+        lagHendelse(avtale, endret, utførtAv, null);
+    }
+
+    private void lagHendelse(Avtale avtale, DvhHendelseType hendelseType, Identifikator utførtAv, ForkortetGrunn forkortetGrunn) {
+        if (!avtale.erAvtaleInngått()) {
+            return;
         }
+        var melding = AvroTiltakHendelseFabrikk.konstruer(avtale, hendelseType, utførtAv.asString(), forkortetGrunn);
+        DvhMeldingEntitet entitet = new DvhMeldingEntitet(avtale, melding);
+        repository.save(entitet);
     }
 }
