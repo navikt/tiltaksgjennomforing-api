@@ -93,6 +93,7 @@ import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.Tilskuddsperio
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Generated;
@@ -117,7 +118,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.ForkortetGrunn.AVSLUTTET_I_ARENA;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 
@@ -346,7 +346,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             getGjeldendeInnhold().setStartDato(startDato);
             getGjeldendeInnhold().setSluttDato(sluttDato);
 
-            utforEndring(new AvtaleForkortetAvArena(this, gjeldendeInnhold, sluttDato, ForkortetGrunn.av(AVSLUTTET_I_ARENA, null)));
+            utforEndring(new AvtaleForkortetAvArena(this, gjeldendeInnhold, sluttDato, ForkortetGrunn.AVSLUTTET_I_ARENA));
             return;
         }
 
@@ -1218,7 +1218,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         tilskuddPeriode.add(nyUbehandletPeriode);
     }
 
-    public void forkortAvtale(LocalDate nySluttDato, ForkortetGrunn forkortetGrunn, NavIdent utførtAv) {
+    public void forkortAvtale(LocalDate nySluttDato, String grunn, String annetGrunn, NavIdent utførtAv) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
 
         if (!erGodkjentAvVeileder()) {
@@ -1240,8 +1240,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_FOR_UTBETALT_TILSKUDDSPERIODE);
         }
         sjekkStartOgSluttDato(gjeldendeInnhold.getStartDato(), nySluttDato);
-
-        if (forkortetGrunn.mangler()) {
+        if (StringUtils.isBlank(grunn) || (grunn.equals("Annet") && StringUtils.isBlank(annetGrunn))) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_GRUNN_MANGLER);
         }
         AvtaleInnhold nyAvtaleInnholdVersjon = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORKORTE);
@@ -1249,7 +1248,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
         getGjeldendeInnhold().endreSluttDato(nySluttDato);
         sendTilbakeTilBeslutter();
         forkortTilskuddsperioder(nySluttDato);
-        utforEndring(new AvtaleForkortetAvVeileder(this, nyAvtaleInnholdVersjon, nySluttDato, forkortetGrunn, utførtAv));
+        utforEndring(new AvtaleForkortetAvVeileder(this, nyAvtaleInnholdVersjon, nySluttDato, grunn, annetGrunn, utførtAv));
     }
 
     public void forlengAvtale(LocalDate nySluttDato, NavIdent utførtAv) {

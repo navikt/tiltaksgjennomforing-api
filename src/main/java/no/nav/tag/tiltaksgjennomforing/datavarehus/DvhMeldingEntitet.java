@@ -2,13 +2,11 @@ package no.nav.tag.tiltaksgjennomforing.datavarehus;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.UUID;
 
 @Entity
@@ -25,11 +23,11 @@ public class DvhMeldingEntitet extends AbstractAggregateRoot<DvhMeldingEntitet> 
     private String json;
     private boolean sendt;
 
-    public DvhMeldingEntitet(Avtale avtale, AvroTiltakHendelse avroTiltakHendelse) {
-        this.meldingId = UUID.fromString(avroTiltakHendelse.getMeldingId());
-        this.avtaleId = avtale.getId();
-        this.tidspunkt = LocalDateTime.ofInstant(avroTiltakHendelse.getTidspunkt(), ZoneId.systemDefault());
-        this.tiltakStatus = avtale.getStatus();
+    public DvhMeldingEntitet(UUID meldingId, UUID avtaleId, LocalDateTime tidspunkt, Status tiltakStatus, AvroTiltakHendelse avroTiltakHendelse) {
+        this.meldingId = meldingId;
+        this.avtaleId = avtaleId;
+        this.tidspunkt = tidspunkt;
+        this.tiltakStatus = tiltakStatus;
         this.json = avroTiltakHendelse.toString();
         registerEvent(new DvhMeldingOpprettet(this, avroTiltakHendelse));
     }

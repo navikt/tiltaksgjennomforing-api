@@ -1267,7 +1267,7 @@ public class AvtaleTest {
     public void utforEndring__kalles_ved_forkortAvtale() {
         Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         Instant sistEndret = avtale.getSistEndret();
-        avtale.forkortAvtale(avtale.getGjeldendeInnhold().getSluttDato().minusDays(1), ForkortetGrunn.av("lala", null), TestData.enNavIdent());
+        avtale.forkortAvtale(avtale.getGjeldendeInnhold().getSluttDato().minusDays(1), "lala", null, TestData.enNavIdent());
         assertThat(avtale.getSistEndret()).isAfter(sistEndret);
     }
 
@@ -1432,7 +1432,7 @@ public class AvtaleTest {
         LocalDate nySluttDato = avtale.getGjeldendeInnhold().getSluttDato().minusDays(1);
 
         assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(1);
-        avtale.forkortAvtale(nySluttDato, ForkortetGrunn.av("grunn", ""), TestData.enNavIdent());
+        avtale.forkortAvtale(nySluttDato, "grunn", "", TestData.enNavIdent());
 
         assertThat(avtale.getGjeldendeInnhold().getVersjon()).isEqualTo(2);
         assertThat(avtale.erGodkjentAvVeileder()).isTrue();
@@ -1644,7 +1644,7 @@ public class AvtaleTest {
         assertThat(avtale.getGjeldendeInnhold().getDatoForRedusertProsent()).isEqualTo(Now.localDate().plusMonths(12));
         assertThat(avtale.getGjeldendeInnhold().getSumLønnstilskuddRedusert()).isNotNull();
 
-        avtale.forkortAvtale(Now.localDate().plusMonths(12).minusDays(1), ForkortetGrunn.av("grunn", ""), TestData.enNavIdent());
+        avtale.forkortAvtale(Now.localDate().plusMonths(12).minusDays(1), "grunn", "", TestData.enNavIdent());
         assertThat(avtale.getGjeldendeInnhold().getDatoForRedusertProsent()).isNull();
         assertThat(avtale.getGjeldendeInnhold().getSumLønnstilskuddRedusert()).isNull();
     }
@@ -1695,9 +1695,9 @@ public class AvtaleTest {
         avtale.tilskuddsperiode(0).setRefusjonStatus(RefusjonStatus.UTBETALT);
         avtale.tilskuddsperiode(1).setRefusjonStatus(RefusjonStatus.UTBETALT);
 
-        avtale.forkortAvtale(LocalDate.of(2023, 2, 28), ForkortetGrunn.av("Grunn", "Grunn2"), veileder.getNavIdent());
+        avtale.forkortAvtale(LocalDate.of(2023, 2, 28), "Grunn", "Grunn2", veileder.getNavIdent());
         assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(LocalDate.of(2023, 2, 28));
-        assertFeilkode(Feilkode.KAN_IKKE_FORKORTE_FOR_UTBETALT_TILSKUDDSPERIODE, () -> avtale.forkortAvtale(LocalDate.of(2023, 2, 27), ForkortetGrunn.av("Grunn", "Grunn2"), veileder.getNavIdent()));
+        assertFeilkode(Feilkode.KAN_IKKE_FORKORTE_FOR_UTBETALT_TILSKUDDSPERIODE, () -> avtale.forkortAvtale(LocalDate.of(2023, 2, 27), "Grunn", "Grunn2", veileder.getNavIdent()));
 
         assertThat(avtale.getGjeldendeTilskuddsperiodestatus()).isEqualTo(GODKJENT);
     }
@@ -1740,9 +1740,9 @@ public class AvtaleTest {
             System.out.print(tilskuddPeriode.getRefusjonStatus() + " ");
             System.out.println(tilskuddPeriode.getStartDato());
         });
-        avtale.forkortAvtale(LocalDate.of(2023, 7, 14), ForkortetGrunn.av("Grunn", "Grunn2"), veileder.getNavIdent());
+        avtale.forkortAvtale(LocalDate.of(2023, 7, 14), "Grunn", "Grunn2", veileder.getNavIdent());
         assertThat(avtale.getGjeldendeInnhold().getSluttDato()).isEqualTo(LocalDate.of(2023, 7, 14));
-        assertFeilkode(Feilkode.KAN_IKKE_FORKORTE_FOR_UTBETALT_TILSKUDDSPERIODE, () -> avtale.forkortAvtale(LocalDate.of(2023, 7, 13), ForkortetGrunn.av("Grunn", "Grunn2"), veileder.getNavIdent()));
+        assertFeilkode(Feilkode.KAN_IKKE_FORKORTE_FOR_UTBETALT_TILSKUDDSPERIODE, () -> avtale.forkortAvtale(LocalDate.of(2023, 7, 13), "Grunn", "Grunn2", veileder.getNavIdent()));
     }
 
     //40%

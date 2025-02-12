@@ -350,9 +350,9 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         avtale.endreInkluderingstilskudd(endreInkluderingstilskudd, getIdentifikator());
     }
 
-    public void forkortAvtale(Avtale avtale, LocalDate sluttDato, ForkortetGrunn forkortetGrunn) {
+    public void forkortAvtale(Avtale avtale, LocalDate sluttDato, String grunn, String annetGrunn) {
         super.sjekkTilgang(avtale);
-        avtale.forkortAvtale(sluttDato, forkortetGrunn, getIdentifikator());
+        avtale.forkortAvtale(sluttDato, grunn, annetGrunn, getIdentifikator());
     }
 
     public void forlengAvtale(LocalDate sluttDato, Avtale avtale) {

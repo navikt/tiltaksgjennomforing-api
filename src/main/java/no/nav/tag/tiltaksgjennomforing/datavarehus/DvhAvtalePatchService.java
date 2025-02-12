@@ -4,11 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
@@ -39,8 +42,10 @@ public class DvhAvtalePatchService {
 
     @Transactional
     public void lagDvhPatchMelding(Avtale avtale) {
-        var melding = AvroTiltakHendelseFabrikk.konstruer(avtale, DvhHendelseType.PATCHING, "system");
-        DvhMeldingEntitet entitet = new DvhMeldingEntitet(avtale, melding);
+        LocalDateTime tidspunkt = Now.localDateTime();
+        UUID meldingId = UUID.randomUUID();
+        var melding = AvroTiltakHendelseFabrikk.konstruer(avtale, tidspunkt, meldingId, DvhHendelseType.PATCHING, "system");
+        DvhMeldingEntitet entitet = new DvhMeldingEntitet(meldingId, avtale.getId(), tidspunkt, avtale.getStatus(), melding);
         dvhRepository.save(entitet);
     }
 

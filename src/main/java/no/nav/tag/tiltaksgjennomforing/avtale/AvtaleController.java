@@ -535,7 +535,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .map(this::sjekkArbeidstreningToggle)
                 .orElseThrow(RessursFinnesIkkeException::new);
-        veileder.forkortAvtale(avtale, forkortAvtale.getSluttDato(), ForkortetGrunn.av(forkortAvtale.getGrunn(), forkortAvtale.getAnnetGrunn()));
+        veileder.forkortAvtale(avtale, forkortAvtale.getSluttDato(), forkortAvtale.getGrunn(), forkortAvtale.getAnnetGrunn());
         avtaleRepository.save(avtale);
     }
 
@@ -550,7 +550,7 @@ public class AvtaleController {
         Avtale avtale = avtaleRepository.findById(avtaleId)
                 .map(this::sjekkArbeidstreningToggle)
                 .orElseThrow(RessursFinnesIkkeException::new);
-        veileder.forkortAvtale(avtale, forkortAvtale.getSluttDato(), ForkortetGrunn.av("dry run", ""));
+        veileder.forkortAvtale(avtale, forkortAvtale.getSluttDato(), "dry run", "");
         return avtale;
     }
 

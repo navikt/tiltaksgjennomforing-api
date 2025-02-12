@@ -13,25 +13,11 @@ public class AvtaleForkortetLytter {
 
     @EventListener
     public void avtaleForkortet(AvtaleForkortetAvVeileder event) {
-        avtaleForkortetRepository.save(new AvtaleForkortetEntitet(
-            event.getAvtale(),
-            event.getAvtaleInnhold(),
-            event.getUtførtAv(),
-            event.getNySluttDato(),
-            event.getForkortetGrunn().getGrunn(),
-            event.getForkortetGrunn().getAnnetGrunn()
-        ));
+        avtaleForkortetRepository.save(new AvtaleForkortetEntitet(event.getAvtale(), event.getAvtaleInnhold(), event.getUtførtAv(), event.getNySluttDato(), event.getGrunn(), event.getAnnetGrunn()));
     }
 
     @EventListener
     public void avtaleForkortet(AvtaleForkortetAvArena event) {
-        avtaleForkortetRepository.save(new AvtaleForkortetEntitet(
-            event.getAvtale(),
-            event.getAvtaleInnhold(),
-            Identifikator.ARENA,
-            event.getNySluttDato(),
-            event.getForkortetGrunn().getGrunn(),
-            event.getForkortetGrunn().getAnnetGrunn()
-        ));
+        avtaleForkortetRepository.save(new AvtaleForkortetEntitet(event.getAvtale(), event.getAvtaleInnhold(), Identifikator.ARENA, event.getNySluttDato(), event.getGrunn(), null));
     }
 }
