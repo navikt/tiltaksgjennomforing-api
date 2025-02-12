@@ -12,7 +12,6 @@ import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -51,23 +50,6 @@ public class AvtaleHendelseService {
             }
         });
         log.info("Sendt totalt {} antall hendelsemeldinger", antallSendt.get());
-    }
-
-    @Async
-    public void korrigerOgSendMeldingPaaAvtalerSomHarFeilDatoFraMigrering() {
-        log.info("Henter avtaler som har feil dato fra migrering av arbeidstrening");
-        List<UUID> avtaleIder = avtaleMeldingEntitetRepository.finaAlleAvtalerSomHarFeilDatoFraMigrering();
-        log.info("Fant {} som har feil dato fra migrering", avtaleIder.size());
-
-        avtaleIder.forEach(avtaleId -> {
-            Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow();
-            avtale.getGjeldendeInnhold().setSluttDato(LocalDate.of(2025, 1, 24));
-            avtaleRepository.save(avtale);
-
-            lagMelding(avtale, HendelseType.PATCH);
-        });
-
-        log.info("Sendt PATCH meldinger for {} avtaler", avtaleIder.size());
     }
 
     @Async

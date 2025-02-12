@@ -41,10 +41,4 @@ public class AvtaleHendelseAdminController {
         log.info("Sender alle avtaler som hendelsemeldinger på topic");
         avtaleHendelseService.sendAvtaleHendelseMeldingPåAlleAvtaler();
     }
-
-    @PostMapping("korriger-og-send-meldinger-paa-avtaler-med-feil-dato-fra-migrering")
-    public void korrigerOgSendMeldingPaaAvtalerSomHarFeilDatoFraMigrering() {
-        log.info("Retter opp i og sender alle avtaler som har feil dato fra migrering av arbeidstrening");
-        avtaleHendelseService.korrigerOgSendMeldingPaaAvtalerSomHarFeilDatoFraMigrering();
-    }
 }
