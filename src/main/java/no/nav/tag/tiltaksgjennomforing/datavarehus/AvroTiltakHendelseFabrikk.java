@@ -3,19 +3,26 @@ package no.nav.tag.tiltaksgjennomforing.datavarehus;
 import lombok.experimental.UtilityClass;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
+import no.nav.tag.tiltaksgjennomforing.avtale.ForkortetGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Optional;
 import java.util.UUID;
 
 @UtilityClass
 public class AvroTiltakHendelseFabrikk {
-    public static AvroTiltakHendelse konstruer(Avtale avtale, LocalDateTime tidspunkt, UUID meldingId, DvhHendelseType hendelseType, String utførtAv) {
+    public static AvroTiltakHendelse konstruer(Avtale avtale, DvhHendelseType hendelseType, String utførtAv) {
+        return konstruer(avtale, hendelseType, utførtAv, null);
+    }
+
+    public static AvroTiltakHendelse konstruer(Avtale avtale, DvhHendelseType hendelseType, String utførtAv, ForkortetGrunn forkortetGrunn) {
         AvroTiltakHendelse hendelse = new AvroTiltakHendelse();
-        hendelse.setMeldingId(meldingId.toString());
-        hendelse.setTidspunkt(toInstant(tidspunkt));
+        hendelse.setMeldingId(UUID.randomUUID().toString());
+        hendelse.setTidspunkt(Now.instant());
         hendelse.setAvtaleId(avtale.getId().toString());
         hendelse.setAvtaleInnholdId(avtale.getGjeldendeInnhold().getId().toString());
         hendelse.setTiltakstype(TiltakType.valueOf(avtale.getTiltakstype().name()));
@@ -64,6 +71,7 @@ public class AvroTiltakHendelseFabrikk {
         hendelse.setAnnullertTidspunkt(avtale.getAnnullertTidspunkt());
         hendelse.setAnnullertGrunn(avtale.getAnnullertGrunn());
         hendelse.setMaster(erMaster(avtale));
+        hendelse.setForkortetGrunn(Optional.ofNullable(forkortetGrunn).flatMap(ForkortetGrunn::utled).orElse(null));
         return hendelse;
     }
 
