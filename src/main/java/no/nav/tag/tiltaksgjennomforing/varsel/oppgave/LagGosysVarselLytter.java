@@ -61,7 +61,7 @@ class LagGosysVarselLytter {
                     null,
                     format(VTAO_INNGÅTT, NORSK_DATO.format(avtale.getGjeldendeInnhold().getStartDato())))
             );
-            log.info("Opprettet oppgave for 'vtao-avtale inngått' (avtaleid = {})", avtale.getId());
+            log.info("Opprettet gosys-oppgave for 'vtao-avtale inngått' (avtaleid = {})", avtale.getId());
         } catch (Exception e) {
             log.error("Klarte ikke opprette oppgave for 'vtao-avtale inngått' (avtaleid = {})", avtale.getId(), e);
             throw e;
