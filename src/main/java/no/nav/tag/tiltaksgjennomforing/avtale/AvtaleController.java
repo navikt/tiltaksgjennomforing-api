@@ -163,7 +163,6 @@ public class AvtaleController {
                 );
     }
 
-    @AuditLogging("Hent liste over avtaler om arbeidsmarkedstiltak")
     @GetMapping
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTil(
@@ -184,7 +183,6 @@ public class AvtaleController {
         return avtaler;
     }
 
-    @AuditLogging("Hent liste over avtaler om arbeidsmarkedstiltak")
     @GetMapping("/sok")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTilMedGet(
@@ -236,7 +234,6 @@ public class AvtaleController {
         }
     }
 
-    @AuditLogging("Hent liste over avtaler om arbeidsmarkedstiltak")
     @PostMapping("/sok")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTilMedPost(
@@ -277,7 +274,6 @@ public class AvtaleController {
         return stringObjectHashMap;
     }
 
-    @AuditLogging("Hent liste over avtaler om arbeidsmarkedstiltak")
     @GetMapping("/beslutter-liste")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public Map<String, Object> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
@@ -404,7 +400,6 @@ public class AvtaleController {
 
     // Arbeidsgiver-operasjoner
 
-    @AuditLogging("Hent liste over avtaler om arbeidsmarkedstiltak")
     @GetMapping("/min-side-arbeidsgiver")
     public List<Avtale> hentAlleAvtalerForMinSideArbeidsgiver(@RequestParam("bedriftNr") BedriftNr bedriftNr) {
         Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
@@ -438,7 +433,6 @@ public class AvtaleController {
     /**
      * VEILEDER-OPERASJONER
      **/
-    @AuditLogging("Hent liste over registrerte avtaler for bruker")
     @GetMapping("/deltaker-allerede-paa-tiltak")
     @Transactional
     public ResponseEntity<List<AlleredeRegistrertAvtale>> sjekkOmDeltakerAlleredeErRegistrertPaaTiltak(
@@ -464,7 +458,6 @@ public class AvtaleController {
     /**
      * VEILEDER-OPERASJONER
      **/
-    @AuditLogging("Hent liste over registrerte avtaler for bruker")
     @PostMapping("/deltaker-allerede-paa-tiltak")
     @Transactional
     public ResponseEntity<List<AlleredeRegistrertAvtale>> sjekkOmDeltakerAlleredeErRegistrertPaaTiltak(
