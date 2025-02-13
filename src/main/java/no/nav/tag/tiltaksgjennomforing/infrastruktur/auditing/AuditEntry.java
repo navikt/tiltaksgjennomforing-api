@@ -7,6 +7,7 @@ public record AuditEntry(
         String appNavn,
         String utførtAv,
         String oppslagPå,
+        String entitetId,
         EventType eventType,
         boolean forespørselTillatt,
         Instant oppslagUtførtTid,

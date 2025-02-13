@@ -84,7 +84,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AvtaleMedFnrOgBedriftNr;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditerbarEntitet;
 import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
@@ -129,7 +129,7 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
 @NoArgsConstructor
 @FieldNameConstants
 @Builder
-public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFnrOgBedriftNr {
+public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarEntitet {
 
     @Id
     @EqualsAndHashCode.Include

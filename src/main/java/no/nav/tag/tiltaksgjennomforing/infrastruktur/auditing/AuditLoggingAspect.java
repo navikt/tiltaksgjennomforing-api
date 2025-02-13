@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -63,7 +62,7 @@ public class AuditLoggingAspect {
      * Hvis returverdien er en ResponseEntity eller HashMap, så "unboxer" vi disse og kaller funksjonen igjen.
      * I tilfellet hvor objektet er et HashMap prøver vi å hente ut avtaler fra "avtaler"-nøkkelen.
      */
-    private Set<FnrOgBedrift> hentEntiteterSomKanAuditlogges(Object resultatobjekt) {
+    private Set<AuditElement> hentEntiteterSomKanAuditlogges(Object resultatobjekt) {
         if (resultatobjekt instanceof ResponseEntity<?> responseEntity) {
             // Rekursivt kall for å "unboxe" ResponseEntity
             return hentEntiteterSomKanAuditlogges(responseEntity.getBody());
@@ -72,10 +71,10 @@ public class AuditLoggingAspect {
             return hentEntiteterSomKanAuditlogges(hashmap.get("avtaler"));
         }
 
-        var entiteter = new ArrayList<AvtaleMedFnrOgBedriftNr>();
+        var entiteter = new ArrayList<AuditerbarEntitet>();
         if (resultatobjekt instanceof Collection<?> avtaler) {
             avtaler.forEach(avtale -> {
-                if (avtale instanceof AvtaleMedFnrOgBedriftNr ae) {
+                if (avtale instanceof AuditerbarEntitet ae) {
                     entiteter.add(ae);
                 }
             });
@@ -83,7 +82,7 @@ public class AuditLoggingAspect {
                 log.error("AuditLoggingAspect fant en respons som ikke inneholdt avtaler: {}",
                         avtaler.stream().findFirst().map(Object::getClass).map(Class::getName).orElse("null"));
             }
-        } else if (resultatobjekt instanceof AvtaleMedFnrOgBedriftNr ae) {
+        } else if (resultatobjekt instanceof AuditerbarEntitet ae) {
             // Responsen var en enkelt auditentitet
             entiteter.add(ae);
         } else {
@@ -101,13 +100,11 @@ public class AuditLoggingAspect {
      * Konverterer auditerbare avtaler til et FnrOgBedrift-sett for å sikre at vi får ut unike
      * oppslag (hvis vi ikke gjør dette vil man feks logge oppslag mot samme deltaker i to avtaler dobbelt).
      */
-    private static @NotNull Set<FnrOgBedrift> hentOppslagsdata(Collection<AvtaleMedFnrOgBedriftNr> result) {
-        return result.stream().map(
-                AvtaleMedFnrOgBedriftNr::getFnrOgBedrift
-        ).collect(Collectors.toSet());
+    private static @NotNull Set<AuditElement> hentOppslagsdata(Collection<AuditerbarEntitet> result) {
+        return result.stream().map(AuditElement::of).collect(Collectors.toSet());
     }
 
-    private void sendAuditmeldingerTilKafka(HttpServletRequest request, String apiBeskrivelse, Set<FnrOgBedrift> auditElementer) {
+    private void sendAuditmeldingerTilKafka(HttpServletRequest request, String apiBeskrivelse, Set<AuditElement> auditelementer) {
         try {
             String innloggetBrukerId = tokenUtils.hentBrukerOgIssuer().map(TokenUtils.BrukerOgIssuer::getBrukerIdent).orElse(null);
             // Logger kun oppslag dersom en innlogget bruker utførte oppslaget
@@ -116,17 +113,18 @@ public class AuditLoggingAspect {
                 var utførtTid = Now.instant();
 
                 var innloggetBrukerErPrivatperson = Fnr.erGyldigFnr(innloggetBrukerId);
-                auditElementer.forEach(fnrOgBedrift -> {
+                auditelementer.forEach(auditelement -> {
                     // Vi er ikke interessert i oppslag som bruker gjør på seg selv
-                    if (fnrOgBedrift.deltakerFnr().asString().equals(innloggetBrukerId)) {
+                    if (auditelement.deltakerFnr().asString().equals(innloggetBrukerId)) {
                         return;
                     }
                     auditLogger.logg(
                             new AuditEntry(
                                     "tiltaksgjennomforing-api",
                                     // ArcSight vil ikke ha oppslag som er utført av en privatperson; oppslaget må derfor være "utført av" en bedrift
-                                    innloggetBrukerErPrivatperson ? fnrOgBedrift.bedriftNr().asString() : innloggetBrukerId,
-                                    fnrOgBedrift.deltakerFnr().asString(),
+                                    innloggetBrukerErPrivatperson ? auditelement.bedriftNr().asString() : innloggetBrukerId,
+                                    auditelement.deltakerFnr().asString(),
+                                    "%s-%s".formatted(auditelement.id(), auditelement.sistEndret()),
                                     EventType.READ,
                                     true,
                                     utførtTid,

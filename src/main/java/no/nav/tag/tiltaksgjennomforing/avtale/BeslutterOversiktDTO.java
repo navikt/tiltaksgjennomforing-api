@@ -1,14 +1,14 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AvtaleMedFnrOgBedriftNr;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public interface BeslutterOversiktDTO {
-    String getId();
+    UUID getId();
     Integer getAvtaleNr();
     Tiltakstype getTiltakstype();
     NavIdent getVeilederNavIdent();
@@ -24,5 +24,5 @@ public interface BeslutterOversiktDTO {
     String getStatus();
     String getAntallUbehandlet();
     LocalDateTime getOpprettetTidspunkt();
-    LocalDateTime getSistEndret();
+    Instant getSistEndret();
 }
