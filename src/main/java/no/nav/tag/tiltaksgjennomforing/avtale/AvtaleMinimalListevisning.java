@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -28,8 +27,6 @@ public class AvtaleMinimalListevisning {
     private boolean erGodkjentTaushetserklæringAvMentor;
     private TilskuddPeriodeStatus gjeldendeTilskuddsperiodeStatus;
     private Instant sistEndret;
-    @JsonIgnore
-    private FnrOgBedrift fnrOgBedrift;
 
     public static AvtaleMinimalListevisning fromAvtale(Avtale avtale) {
         return AvtaleMinimalListevisning.builder()
@@ -46,7 +43,6 @@ public class AvtaleMinimalListevisning {
                 .erGodkjentTaushetserklæringAvMentor(avtale.erGodkjentTaushetserklæringAvMentor())
                 .gjeldendeTilskuddsperiodeStatus(avtale.getGjeldendeTilskuddsperiodestatus())
                 .sistEndret(avtale.getSistEndret())
-                .fnrOgBedrift(new FnrOgBedrift(avtale.getDeltakerFnr(), avtale.getBedriftNr()))
                 .build();
     }
 }
