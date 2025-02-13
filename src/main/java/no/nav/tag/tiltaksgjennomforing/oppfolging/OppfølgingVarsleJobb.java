@@ -26,7 +26,7 @@ public class OppfølgingVarsleJobb {
     @Scheduled(fixedDelay = 30, timeUnit = TimeUnit.SECONDS)
     public void varsleVeilederOmOppfølging() {
         LocalDate dagenDato = Now.localDate();
-        List<Avtale> avtaler = avtaleRepository.findAllByKreverOppfolgingFomLessThanAndOppfolgingVarselSendtIsNull(dagenDato);
+        List<Avtale> avtaler = avtaleRepository.finnAvtalerSomSnartSkalFølgesOpp(dagenDato);
         log.info("Fant {} avtaler som krever oppfølging. Oppretter varsel på disse.", avtaler.size());
         avtaler.forEach(avtale -> {
             Varsel varsel = Varsel.nyttVarsel(avtale.getVeilederNavIdent(), true, avtale, Avtalerolle.VEILEDER, AvtaleHendelseUtførtAvRolle.SYSTEM, Identifikator.SYSTEM, HendelseType.OPPFØLGING_KREVES_VARSEL, null);

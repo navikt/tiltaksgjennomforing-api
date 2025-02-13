@@ -192,5 +192,10 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
         Pageable pageable
     );
 
-    List<Avtale> findAllByKreverOppfolgingFomLessThanAndOppfolgingVarselSendtIsNull(LocalDate date);
+    @Query(value = """
+            SELECT a from Avtale a
+            where a.status in ("GJENNOMFØRES", "KLAR_FOR_OPPSTART")
+            and a.oppfolgingVarselSendt is null
+            and a.kreverOppfolgingFom < :date""")
+    List<Avtale> finnAvtalerSomSnartSkalFølgesOpp(LocalDate date);
 }
