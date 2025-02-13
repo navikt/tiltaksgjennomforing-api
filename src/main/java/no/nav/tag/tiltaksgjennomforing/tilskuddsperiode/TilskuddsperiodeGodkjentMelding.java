@@ -46,6 +46,7 @@ public class TilskuddsperiodeGodkjentMelding {
     String veilederFornavn;
     String veilederEtternavn;
     LocalDateTime godkjentTidspunkt;
+    String arbeidsgiverKontonummer;
 
     public static TilskuddsperiodeGodkjentMelding create(Avtale avtale, TilskuddPeriode tilskuddsperiode, Integer resendingsnummer) {
         return new TilskuddsperiodeGodkjentMelding(
@@ -78,7 +79,8 @@ public class TilskuddsperiodeGodkjentMelding {
                 tilskuddsperiode.getGodkjentAvNavIdent(),
                 avtale.getGjeldendeInnhold().getVeilederFornavn(),
                 avtale.getGjeldendeInnhold().getVeilederEtternavn(),
-                tilskuddsperiode.getGodkjentTidspunkt()
+                tilskuddsperiode.getGodkjentTidspunkt(),
+                avtale.getGjeldendeInnhold().getArbeidsgiverKontonummer()
         );
     }
 }
