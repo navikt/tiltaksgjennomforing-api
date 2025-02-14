@@ -421,6 +421,7 @@ public class AvtaleControllerTest {
         ).isInstanceOf(IkkeTilgangTilDeltakerException.class);
     }
 
+    @Disabled("Kode 6-sjekk skrudd av for alt utenom prod pt.")
     @Test
     public void opprettAvtaleSomVeileder__skal_feile_hvis_kode6() {
         PersondataService persondataServiceIMetode = mock(PersondataService.class);

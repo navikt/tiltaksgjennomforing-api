@@ -910,6 +910,8 @@ public class AvtaleController {
         return oppdatertAvtale;
     }
 
+    @GetMapping("/{avtaleId}/er-skjermet")
+
 
     private Avtale sjekkArbeidstreningToggle(Avtale avtale) {
         if (missmatchAvtaler.contains(avtale.getId().toString())) {
