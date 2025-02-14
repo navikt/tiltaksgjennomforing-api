@@ -847,6 +847,14 @@ public class TestData {
                                 "0906"
                         )
                 );
+        lenient().when(veilarboppfolgingService.hentOppfolgingsstatus(any()))
+                .thenReturn(
+                        new Oppfølgingsstatus(
+                                Formidlingsgruppe.ARBEIDSSOKER,
+                                Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
+                                "0906"
+                        )
+                );
 
         return veileder;
     }

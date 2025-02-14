@@ -7,7 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public interface BeslutterOversiktDTO extends AvtaleMedFnrOgBedriftNr {
+public interface BeslutterOversiktDTO {
     String getId();
     Integer getAvtaleNr();
     Tiltakstype getTiltakstype();
@@ -25,10 +25,4 @@ public interface BeslutterOversiktDTO extends AvtaleMedFnrOgBedriftNr {
     String getAntallUbehandlet();
     LocalDateTime getOpprettetTidspunkt();
     LocalDateTime getSistEndret();
-
-    @JsonIgnore
-    @Override
-    default FnrOgBedrift getFnrOgBedrift() {
-        return new FnrOgBedrift(getDeltakerFnr(), getBedriftNr());
-    }
 }

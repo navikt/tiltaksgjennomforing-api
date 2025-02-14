@@ -77,6 +77,19 @@ public class AvtaleHendelseService {
         return true;
     }
 
+    private void lagMelding(Avtale avtale, HendelseType hendelseType) {
+        var melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), new Identifikator("tiltaksgjennomforing-api"), AvtaleHendelseUtførtAvRolle.SYSTEM, hendelseType);
+        UUID meldingId = UUID.randomUUID();
+        LocalDateTime tidspunkt = Now.localDateTime();
+        try {
+            String meldingSomString = objectMapper.writeValueAsString(melding);
+            AvtaleMeldingEntitet entitet = new AvtaleMeldingEntitet(meldingId, avtale.getId(), tidspunkt, hendelseType, avtale.getStatus(), meldingSomString);
+            avtaleMeldingEntitetRepository.save(entitet);;
+        } catch (JsonProcessingException e) {
+            log.error("Feil ved parsing av AvtaleHendelseMelding til json for avtale med id: {}", avtale.getId());
+        }
+    }
+
     private void lagMelding(Avtale avtale) {
         var melding = AvtaleMelding.create(avtale, avtale.getGjeldendeInnhold(), new Identifikator("tiltaksgjennomforing-api"), AvtaleHendelseUtførtAvRolle.SYSTEM, HendelseType.STATUSENDRING);
         UUID meldingId = UUID.randomUUID();

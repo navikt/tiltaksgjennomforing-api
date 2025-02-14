@@ -123,15 +123,10 @@ tiltaksgjennomforing:
     uri: http://localhost:8090/api/graphql
     lenke: http://localhost:3000/tiltaksgjennomforing/avtale/
     enabled: false
-  dvh-melding:
-    gruppe-tilgang: 1a1d2745-952f-4a0f-839f-9530145b1d4a
-    fixed-delay: 10
   tilskuddsperioder:
     tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, VTAO
   salesforcekontorer:
     enheter: 0906
-  utvikler-tilgang:
-    gruppe-tilgang: 1a1d2745-952f-4a0f-839f-9530145b1d4a
   arena:
     kafka:
       tiltakdeltaker-endret-topic: 'teamarenanais.aapen-arena-tiltakdeltakerendret-v1'

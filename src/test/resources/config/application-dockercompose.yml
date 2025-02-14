@@ -85,11 +85,6 @@ tiltaksgjennomforing:
       url: http://localhost:8090/norg2/api/v1/enhet/
   dokgen:
     uri: http://localhost:9000/template/tiltak-avtale/create-pdf
-  dvh-melding:
-    gruppe-tilgang: 1a1d2745-952f-4a0f-839f-9530145b1d4a
-    fixed-delay: 10
-  avtale-hendelse-melding:
-    fixed-delay: 120
   tilskuddsperioder:
     tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, VTAO
 

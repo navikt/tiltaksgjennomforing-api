@@ -89,7 +89,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     public boolean harTilgangTilAvtale(Avtale avtale) {
         boolean harTilgang = tilgangskontrollService.harSkrivetilgangTilKandidat(this, avtale.getDeltakerFnr());
         if (!harTilgang) {
-            log.info("Har ikke tilgang til avtale {}", avtale.getAvtaleNr());
+            log.info("Har ikke tilgang til avtalenr {}, id: {}", avtale.getAvtaleNr(), avtale.getId());
         }
         return harTilgang;
     }
@@ -350,9 +350,9 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         avtale.endreInkluderingstilskudd(endreInkluderingstilskudd, getIdentifikator());
     }
 
-    public void forkortAvtale(Avtale avtale, LocalDate sluttDato, String grunn, String annetGrunn) {
+    public void forkortAvtale(Avtale avtale, LocalDate sluttDato, ForkortetGrunn forkortetGrunn) {
         super.sjekkTilgang(avtale);
-        avtale.forkortAvtale(sluttDato, grunn, annetGrunn, getIdentifikator());
+        avtale.forkortAvtale(sluttDato, forkortetGrunn, getIdentifikator());
     }
 
     public void forlengAvtale(LocalDate sluttDato, Avtale avtale) {
@@ -361,9 +361,13 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         avtale.forlengAvtale(sluttDato, getIdentifikator());
     }
 
-    protected void oppdatereEnheterEtterForespørsel(Avtale avtale) {
+    protected void oppdaterOppfølgingOgGeoEnhetEtterForespørsel(Avtale avtale) {
+        // Geo enhet
         final PdlRespons persondata = this.hentPersonDataForOpprettelseAvAvtale(avtale);
         super.hentGeoEnhetFraNorg2(avtale, persondata, norg2Client);
+        // Oppfølgingsenhet
+        Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOppfolgingsstatus(avtale.getDeltakerFnr().asString());
+        avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());
         this.hentOppfolgingEnhetsnavnFraNorg2(avtale, norg2Client);
     }
 

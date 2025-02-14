@@ -68,9 +68,8 @@ public class AvtalestatusService {
     }
 
     private void sendMeldingTilDvh(Avtale avtale) {
-        LocalDateTime tidspunkt = Now.localDateTime();
-        AvroTiltakHendelse avroTiltakHendelse = AvroTiltakHendelseFabrikk.konstruer(avtale, tidspunkt, UUID.randomUUID(), DvhHendelseType.STATUSENDRING, "system");
-        dvhMeldingRepository.save(new DvhMeldingEntitet(UUID.randomUUID(), avtale.getId(), tidspunkt, avtale.getStatus(), avroTiltakHendelse));
+        AvroTiltakHendelse avroTiltakHendelse = AvroTiltakHendelseFabrikk.konstruer(avtale, DvhHendelseType.STATUSENDRING, "system");
+        dvhMeldingRepository.save(new DvhMeldingEntitet(avtale, avroTiltakHendelse));
     }
 
     private void sendAvtaleMelding(Avtale avtale) {

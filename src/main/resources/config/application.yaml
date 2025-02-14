@@ -65,10 +65,6 @@ tiltaksgjennomforing:
   notifikasjoner:
     uri: https://ag-notifikasjon-produsent-api.dev.intern.nav.no/api/graphql
     lenke: https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/
-  dvh-melding:
-    fixed-delay: 120
-  avtale-hendelse-melding:
-    fixed-delay: 120
   tilskuddsperioder:
     tiltakstyper: SOMMERJOBB,MIDLERTIDIG_LONNSTILSKUDD,VARIG_LONNSTILSKUDD, VTAO
   salesforcekontorer:
