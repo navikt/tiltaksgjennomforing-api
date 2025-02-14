@@ -53,7 +53,7 @@ public abstract class Avtalepart<T extends Identifikator> {
                 .toList();;
 
         if (queryParametre.erSokPaEnkeltperson() && avtalerMedTilgang.isEmpty()) {
-            avtaler.getContent().stream().forEach(this::sjekkTilgang);
+            avtaler.getContent().forEach(this::sjekkTilgang);
         }
 
         List<AvtaleMinimalListevisning> listMinimal = avtalerMedTilgang.stream().map(AvtaleMinimalListevisning::fromAvtale).toList();

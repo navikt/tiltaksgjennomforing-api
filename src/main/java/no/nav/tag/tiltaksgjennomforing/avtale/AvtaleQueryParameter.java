@@ -23,7 +23,6 @@ public class AvtaleQueryParameter {
     private TilskuddPeriodeStatus tilskuddPeriodeStatus;
     private String navEnhet;
     private Integer avtaleNr;
-    private Boolean erSokPaEnkeltperson;
 
     public boolean harFilterPaEnEntitet() {
         return erUfordelt != null ||
