@@ -21,8 +21,11 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -65,6 +68,21 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
         return tilgangskontrollService.harSkrivetilgangTilKandidat(this, avtale.getDeltakerFnr());
+    }
+
+    @Override
+    Predicate<Avtale> harTilgangTilAvtale(List<Avtale> avtaler) {
+        Map<Fnr, Boolean> map = tilgangskontrollService.harSkrivetilgangTilKandidater(
+            this,
+            avtaler.stream().map(Avtale::getDeltakerFnr).collect(Collectors.toSet())
+        );
+        return avtale -> {
+            boolean resultat = map.getOrDefault(avtale.getDeltakerFnr(), false);
+            if (!resultat) {
+                log.info("Har ikke tilgang til avtalenr {}, id: {}", avtale.getAvtaleNr(), avtale.getId());
+            }
+            return resultat;
+        };
     }
 
     public boolean harTilgangTilFnr(Fnr fnr) {

@@ -30,9 +30,12 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
@@ -92,6 +95,21 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             log.info("Har ikke tilgang til avtalenr {}, id: {}", avtale.getAvtaleNr(), avtale.getId());
         }
         return harTilgang;
+    }
+
+    @Override
+    Predicate<Avtale> harTilgangTilAvtale(List<Avtale> avtaler) {
+        Map<Fnr, Boolean> map = tilgangskontrollService.harSkrivetilgangTilKandidater(
+            this,
+            avtaler.stream().map(Avtale::getDeltakerFnr).collect(Collectors.toSet())
+        );
+        return avtale -> {
+            boolean resultat = map.getOrDefault(avtale.getDeltakerFnr(), false);
+            if (!resultat) {
+                log.info("Har ikke tilgang til avtalenr {}, id: {}", avtale.getAvtaleNr(), avtale.getId());
+            }
+            return resultat;
+        };
     }
 
     @Override
