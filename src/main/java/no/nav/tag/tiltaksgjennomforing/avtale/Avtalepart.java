@@ -45,24 +45,15 @@ public abstract class Avtalepart<T extends Identifikator> {
     abstract AvtaleMinimalListevisning skjulData(AvtaleMinimalListevisning avtaleMinimalListevisning);
 
     public Map<String, Object> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtaleQueryParameter queryParametre, Pageable pageable) {
-        return hentAlleAvtalerMedLesetilgang(avtaleRepository, queryParametre, pageable, false);
-    }
-
-    public Map<String, Object> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtaleQueryParameter queryParametre, Pageable pageable, Boolean kastExceptionHvisIngenTilgang) {
         Page<Avtale> avtaler = hentAlleAvtalerMedMuligTilgang(avtaleRepository, queryParametre, pageable);
 
-        List<Avtale> avtalerMedTilgang;
+        List<Avtale> avtalerMedTilgang = avtaler.getContent().stream()
+                .filter(this::avtalenEksisterer)
+                .filter(this::harTilgangTilAvtale)
+                .toList();;
 
-        if (kastExceptionHvisIngenTilgang) {
-            avtalerMedTilgang = avtaler.getContent().stream()
-                    .filter(this::avtalenEksisterer)
-                    .toList();
-                    avtalerMedTilgang.forEach(this::sjekkTilgang);
-        } else {
-            avtalerMedTilgang = avtaler.getContent().stream()
-                    .filter(this::avtalenEksisterer)
-                    .filter(this::harTilgangTilAvtale)
-                    .toList();
+        if (queryParametre.erSokPaEnkeltperson() && avtalerMedTilgang.isEmpty()) {
+            avtaler.getContent().stream().forEach(this::sjekkTilgang);
         }
 
         List<AvtaleMinimalListevisning> listMinimal = avtalerMedTilgang.stream().map(AvtaleMinimalListevisning::fromAvtale).toList();

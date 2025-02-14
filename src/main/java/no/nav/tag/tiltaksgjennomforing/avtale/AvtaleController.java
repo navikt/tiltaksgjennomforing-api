@@ -251,8 +251,7 @@ public class AvtaleController {
         Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
                 avtaleRepository,
                 queryParametre,
-                pageable,
-                queryParametre.erSokPaEnkeltperson()
+                pageable
         );
         HashMap<String, Object> stringObjectHashMap = new HashMap<>(avtaler);
         stringObjectHashMap.put("sokeParametere", queryParametre);

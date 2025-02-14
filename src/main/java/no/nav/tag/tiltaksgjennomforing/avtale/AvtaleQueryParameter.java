@@ -34,7 +34,6 @@ public class AvtaleQueryParameter {
             avtaleNr != null;
     }
 
-    //TODO metode for å sjekke om søk er på enkel person
     public boolean erSokPaEnkeltperson() {
         return deltakerFnr != null || avtaleNr != null;
     }
