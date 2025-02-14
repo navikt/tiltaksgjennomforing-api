@@ -4,7 +4,6 @@ import no.nav.tag.tiltaksgjennomforing.Miljø;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -12,9 +11,6 @@ import java.util.UUID;
 public class PoaoTilgangServiceLabs implements PoaoTilgangService {
 
     public boolean harSkriveTilgang(UUID beslutterAzureUUID, String deltakerFnr) {
-        if(Objects.equals(deltakerFnr, "11111111111")){
-            return false;
-        }
         return true;
     }
 }
