@@ -315,7 +315,11 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     private PdlRespons hentPersondata(Fnr deltakerFnr) {
         final PdlRespons persondata = persondataService.hentPersondata(deltakerFnr);
-        this.sjekkKode6(persondata);
+        String miljø = System.getenv().get("MILJO");
+        log.info("Miljø ved persondatahenting: {}", miljø);
+        if ("prod-fss".equals(miljø)) {
+            this.sjekkKode6(persondata);
+        }
         return persondata;
     }
 
