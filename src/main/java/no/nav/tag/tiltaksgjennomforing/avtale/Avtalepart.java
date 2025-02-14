@@ -50,7 +50,7 @@ public abstract class Avtalepart<T extends Identifikator> {
         List<Avtale> avtalerMedTilgang = avtaler.getContent().stream()
                 .filter(this::avtalenEksisterer)
                 .filter(this::harTilgangTilAvtale)
-                .toList();;
+                .toList();
 
         if (queryParametre.erSokPaEnkeltperson() && avtalerMedTilgang.isEmpty()) {
             avtaler.getContent().forEach(this::sjekkTilgang);
