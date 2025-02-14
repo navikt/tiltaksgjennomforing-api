@@ -910,6 +910,7 @@ public class AvtaleController {
         return oppdatertAvtale;
     }
 
+
     private Avtale sjekkArbeidstreningToggle(Avtale avtale) {
         if (missmatchAvtaler.contains(avtale.getId().toString())) {
             throw new FeilkodeException(Feilkode.IKKE_ADMIN_TILGANG);
