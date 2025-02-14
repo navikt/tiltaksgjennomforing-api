@@ -910,19 +910,6 @@ public class AvtaleController {
         return oppdatertAvtale;
     }
 
-    @PostMapping("/{avtaleId}/oppdater-bedriftnavn")
-    @Transactional
-    public Avtale oppdaterBedriftnavn(@PathVariable("avtaleId") UUID avtaleId) {
-        Veileder veileder = innloggingService.hentVeileder();
-        Avtale avtale = avtaleRepository.findById(avtaleId)
-                .map(this::sjekkArbeidstreningToggle)
-                .orElseThrow(RessursFinnesIkkeException::new);
-        veileder.sjekkTilgang(avtale);
-        avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
-        return avtaleRepository.save(avtale);
-    }
-
-
     private Avtale sjekkArbeidstreningToggle(Avtale avtale) {
         if (missmatchAvtaler.contains(avtale.getId().toString())) {
             throw new FeilkodeException(Feilkode.IKKE_ADMIN_TILGANG);
