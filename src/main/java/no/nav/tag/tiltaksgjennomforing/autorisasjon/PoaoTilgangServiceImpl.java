@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
-import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.common.rest.client.RestClient;
 import no.nav.poao_tilgang.client.Decision;
@@ -20,7 +19,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -42,19 +40,13 @@ public class PoaoTilgangServiceImpl implements PoaoTilgangService {
             ClientConfigurationProperties clientConfigurationProperties, OAuth2AccessTokenService oAuth2AccessTokenService
     ) {
         ClientProperties clientProperties = clientConfigurationProperties.getRegistration().get("poao-tilgang");
-        klient = new PoaoTilgangCachedClient(
-                new PoaoTilgangHttpClient(poaoTilgangUrl,
-                        () -> oAuth2AccessTokenService.getAccessToken(clientProperties).getAccessToken(),
-                        RestClient.baseClient()),
-                Caffeine.newBuilder()
-                        .expireAfterWrite(Duration.ofMinutes(30))
-                        .build(),
-                Caffeine.newBuilder()
-                        .expireAfterWrite(Duration.ofMinutes(30))
-                        .build(),
-                Caffeine.newBuilder()
-                        .expireAfterWrite(Duration.ofMinutes(30))
-                        .build());
+        klient = PoaoTilgangCachedClient.createDefaultCacheClient(
+                new PoaoTilgangHttpClient(
+                    poaoTilgangUrl,
+                    () -> oAuth2AccessTokenService.getAccessToken(clientProperties).getAccessToken(),
+                    RestClient.baseClient()
+                )
+        );
     }
 
     public boolean harSkrivetilgang(UUID beslutterAzureUUID, Fnr fnr) {
