@@ -8,7 +8,9 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 public class Mentor extends Avtalepart<Fnr> {
 
@@ -19,6 +21,11 @@ public class Mentor extends Avtalepart<Fnr> {
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
         return avtale.getMentorFnr().equals(getIdentifikator());
+    }
+
+    @Override
+    Predicate<Avtale> harTilgangTilAvtale(List<Avtale> avtaler) {
+        return this::harTilgangTilAvtale;
     }
 
     @Override
