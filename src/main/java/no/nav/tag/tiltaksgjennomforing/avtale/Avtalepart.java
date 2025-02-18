@@ -52,6 +52,10 @@ public abstract class Avtalepart<T extends Identifikator> {
                 .filter(this::harTilgangTilAvtale)
                 .toList();
 
+        if (queryParametre.erSokPaEnkeltperson() && avtalerMedTilgang.isEmpty()) {
+            avtaler.getContent().forEach(this::sjekkTilgang);
+        }
+
         List<AvtaleMinimalListevisning> listMinimal = avtalerMedTilgang.stream().map(AvtaleMinimalListevisning::fromAvtale).toList();
 
         // Fjern data her og ikke i entity
@@ -66,6 +70,7 @@ public abstract class Avtalepart<T extends Identifikator> {
                 entry("totalPages", avtaler.getTotalPages())
         );
     }
+
 
     public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);

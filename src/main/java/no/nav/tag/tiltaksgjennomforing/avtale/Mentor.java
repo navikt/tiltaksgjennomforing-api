@@ -58,7 +58,7 @@ public class Mentor extends Avtalepart<Fnr> {
 
     @Override
     void opphevGodkjenningerSomAvtalepart(Avtale avtale) {
-        throw new TilgangskontrollException("Deltaker kan ikke oppheve godkjenninger");
+        throw new TilgangskontrollException("Mentor kan ikke oppheve godkjenninger");
     }
 
     @Override

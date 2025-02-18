@@ -457,6 +457,19 @@ public class TestData {
         return avtale;
     }
 
+    public static Avtale enVtaoAvtaleGodkjentAvVeilederFraAnnentOmråde(){
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(new Fnr("11111111111"), new BedriftNr("999999999"), Tiltakstype.VTAO), Avtaleopphav.VEILEDER, new NavIdent("A123456"));
+        avtale.setEnhetOppfolging("0904");
+        avtale.setEnhetsnavnOppfolging("Vinstra");
+        EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvNavIdent(avtale.getVeilederNavIdent());
+        return avtale;
+    }
+
     public static Avtale enEtterRegistrerdVtaoAvtaleGodkjentAvVeileder(){
         Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
         setOppfølgingPåAvtale(avtale);

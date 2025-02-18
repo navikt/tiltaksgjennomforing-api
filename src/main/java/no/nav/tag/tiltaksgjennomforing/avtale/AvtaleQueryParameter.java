@@ -33,6 +33,10 @@ public class AvtaleQueryParameter {
             avtaleNr != null;
     }
 
+    public boolean erSokPaEnkeltperson() {
+        return deltakerFnr != null || avtaleNr != null;
+    }
+
     public boolean erUfordelt() {
         return Optional.ofNullable(this.erUfordelt).orElse(false);
     }

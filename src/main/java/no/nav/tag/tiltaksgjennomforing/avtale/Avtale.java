@@ -524,7 +524,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AvtaleMedFn
 
     private void sjekkOmAvtalenKanEndres() {
         if (erGodkjentAvDeltaker() || erGodkjentAvArbeidsgiver() || erGodkjentAvVeileder()) {
-            throw new TilgangskontrollException("Godkjenninger må oppheves før avtalen kan endres.");
+            throw new FeilkodeException(Feilkode.SAMTIDIGE_ENDRINGER);
         }
     }
 
