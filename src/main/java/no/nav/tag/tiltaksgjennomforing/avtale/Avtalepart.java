@@ -25,6 +25,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 import static java.util.Map.entry;
 
@@ -40,6 +41,8 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     abstract boolean harTilgangTilAvtale(Avtale avtale);
 
+    abstract Predicate<Avtale> harTilgangTilAvtale(List<Avtale> avtaler);
+
     abstract Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtaleQueryParameter queryParametre, Pageable pageable);
 
     abstract AvtaleMinimalListevisning skjulData(AvtaleMinimalListevisning avtaleMinimalListevisning);
@@ -49,7 +52,7 @@ public abstract class Avtalepart<T extends Identifikator> {
 
         List<Avtale> avtalerMedTilgang = avtaler.getContent().stream()
                 .filter(this::avtalenEksisterer)
-                .filter(this::harTilgangTilAvtale)
+                .filter(this.harTilgangTilAvtale(avtaler.getContent()))
                 .toList();
 
         if (queryParametre.erSokPaEnkeltperson() && avtalerMedTilgang.isEmpty()) {

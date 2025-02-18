@@ -11,7 +11,7 @@ import java.util.UUID;
 public interface TilgangskontrollService {
   boolean harSkrivetilgangTilKandidat(InternBruker internBruker, Fnr fnr);
 
-  Map<Fnr, Boolean> skriveTilganger(InternBruker internBruker, Set<Fnr> fnr);
+  Map<Fnr, Boolean> harSkrivetilgangTilKandidater(InternBruker internBruker, Set<Fnr> fnr);
 
   Optional<String> hentGrunnForAvslag(UUID internBruker, Fnr fnr);
 }

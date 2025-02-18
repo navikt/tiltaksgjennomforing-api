@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 public class Deltaker extends Avtalepart<Fnr> {
 
@@ -26,6 +27,11 @@ public class Deltaker extends Avtalepart<Fnr> {
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
         return avtale.getDeltakerFnr().equals(getIdentifikator());
+    }
+
+    @Override
+    Predicate<Avtale> harTilgangTilAvtale(List<Avtale> avtaler) {
+        return this::harTilgangTilAvtale;
     }
 
     @Override

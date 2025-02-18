@@ -7,11 +7,11 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.InternBruker;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -22,7 +22,7 @@ public class TilgangskontrollServiceImpl implements TilgangskontrollService {
 
     public boolean harSkrivetilgangTilKandidat(InternBruker internBruker, Fnr fnr) {
         try {
-            return poaoTilgangService.harSkrivetilgang(internBruker.getAzureOid(), fnr.asString());
+            return poaoTilgangService.harSkrivetilgang(internBruker.getAzureOid(), fnr);
         } catch (Exception e) {
             log.error("Feil ved tilgangskontroll-sjekk", e);
             return false;
@@ -31,16 +31,19 @@ public class TilgangskontrollServiceImpl implements TilgangskontrollService {
 
     public Optional<String> hentGrunnForAvslag(UUID ident, Fnr fnr) {
         try {
-            return poaoTilgangService.hentGrunn(ident, fnr.asString());
+            return poaoTilgangService.hentGrunn(ident, fnr);
         } catch (Exception e) {
             log.error("Feil ved tilgangskontroll-sjekk", e);
             return Optional.empty();
         }
     }
 
-    public Map<Fnr, Boolean> skriveTilganger(InternBruker internBruker, Set<Fnr> fnrListe) {
-        return fnrListe.stream()
-                .map(fnr -> Map.entry(fnr, harSkrivetilgangTilKandidat(internBruker, fnr)))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    public Map<Fnr, Boolean> harSkrivetilgangTilKandidater(InternBruker internBruker, Set<Fnr> fnrListe) {
+        try {
+            return poaoTilgangService.harSkrivetilgang(internBruker.getAzureOid(), fnrListe);
+        } catch (Exception e) {
+            log.error("Feil ved tilgangskontroll-sjekk", e);
+            return Collections.emptyMap();
+        }
     }
 }

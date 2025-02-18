@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
@@ -137,6 +138,11 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
             return false;
         }
         return harTilgangPåTiltakIBedrift(avtale.getBedriftNr(), avtale.getTiltakstype());
+    }
+
+    @Override
+    Predicate<Avtale> harTilgangTilAvtale(List<Avtale> avtaler) {
+        return this::harTilgangTilAvtale;
     }
 
     @Override
