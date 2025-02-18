@@ -1,5 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class VtaoStrategy extends BaseAvtaleInnholdStrategy {
     public VtaoStrategy(AvtaleInnhold avtaleInnhold) {
         super(avtaleInnhold);
@@ -27,5 +30,17 @@ public class VtaoStrategy extends BaseAvtaleInnholdStrategy {
         avtaleInnhold.setStillingstype(nyAvtale.getStillingstype());
 
         super.endre(nyAvtale);
+    }
+
+    @Override
+    public Map<String, Object> alleFelterSomMåFyllesUt() {
+        Map<String, Object> alleFelter = super.alleFelterSomMåFyllesUt();
+        if (avtaleInnhold.getVtao() != null) {
+            alleFelter.put(Vtao.Fields.fadderFornavn, avtaleInnhold.getVtao().getFadderFornavn());
+            alleFelter.put(Vtao.Fields.fadderEtternavn, avtaleInnhold.getVtao().getFadderEtternavn());
+            alleFelter.put(Vtao.Fields.fadderTlf, avtaleInnhold.getVtao().getFadderTlf());
+        }
+        alleFelter.put(AvtaleInnhold.Fields.arbeidsgiverKontonummer, avtaleInnhold.getArbeidsgiverKontonummer());
+        return alleFelter;
     }
 }

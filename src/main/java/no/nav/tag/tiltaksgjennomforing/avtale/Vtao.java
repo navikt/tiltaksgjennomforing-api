@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
+import lombok.experimental.FieldNameConstants;
 
 import java.util.UUID;
 
 @Data
 @Entity
+@FieldNameConstants
 public class Vtao {
     @Id
     @GeneratedValue
