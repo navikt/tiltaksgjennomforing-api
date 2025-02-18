@@ -31,8 +31,8 @@ public class TiltakgjennomforingArenaEventProcessingService implements IArenaEve
     public ArenaEventStatus process(ArenaEvent arenaEvent) throws JsonProcessingException {
         ArenaTiltakgjennomforing tiltakgjennomforing = this.objectMapper.treeToValue(arenaEvent.getPayload(), ArenaTiltakgjennomforing.class);
 
-        if (!tiltakgjennomforing.isArbeidstrening()) {
-            log.info("Arena-event ignorert fordi den ikke er arbeidstrening");
+        if (!tiltakgjennomforing.isVtao()) {
+            log.info("Arena-event ignorert fordi den ikke er VTAO");
             delete(tiltakgjennomforing, () -> log.info("Sletter tidligere håndtert tiltak som nå skal ignoreres"));
             return ArenaEventStatus.IGNORED;
         }
