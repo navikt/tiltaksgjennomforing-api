@@ -4,6 +4,8 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;
+import no.nav.tag.tiltaksgjennomforing.persondata.aktorId.AktorId;
+import no.nav.tag.tiltaksgjennomforing.persondata.aktorId.AktorIdService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.Resource;
@@ -16,14 +18,19 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class PersondataService {
+    private static final String BEHANDLINGSNUMMER = "B662";
+
     private final RestTemplate azureRestTemplate;
     private final PersondataProperties persondataProperties;
-    private static final String BEHANDLINGSNUMMER = "B662";
+    private final AktorIdService aktorIdService;
 
     @Value("classpath:pdl/hentPerson.adressebeskyttelse.graphql")
     private Resource adressebeskyttelseQueryResource;
@@ -36,10 +43,12 @@ public class PersondataService {
 
     public PersondataService(
         RestTemplate azureRestTemplate,
-        PersondataProperties persondataProperties
+        PersondataProperties persondataProperties,
+        AktorIdService aktorIdService
     ) {
         this.azureRestTemplate = azureRestTemplate;
         this.persondataProperties = persondataProperties;
+        this.aktorIdService = aktorIdService;
     }
 
     @SneakyThrows
@@ -101,9 +110,26 @@ public class PersondataService {
         }
     }
 
-    public String hentAktørId(Fnr fnr) {
-        PdlRequest pdlRequest = new PdlRequest(resourceAsString(identerQueryResource), new Variables(fnr.asString()));
-        return hentAktørIdFraPdlRespons(utførKallTilPdl(pdlRequest));
+    public Map<Fnr, AktorId> hentAktorId(Set<Fnr> fnrSet) {
+        Map<Fnr, AktorId> aktorId = aktorIdService.hentAktorId(fnrSet);
+        return fnrSet.stream().collect(Collectors.toMap(
+            fnr -> fnr,
+            fnr -> aktorId.computeIfAbsent(fnr, this::hentAktorId)
+        ));
+    }
+
+    public AktorId hentAktorId(Fnr fnr) {
+        return aktorIdService.hentAktorId(fnr)
+            .orElseGet(() -> {
+                PdlRequest pdlRequest = new PdlRequest(
+                    resourceAsString(identerQueryResource),
+                    new Variables(fnr.asString())
+                );
+                String aktorId = hentAktørIdFraPdlRespons(utførKallTilPdl(pdlRequest));
+                aktorIdService.lagreAktorId(fnr, aktorId);
+
+                return AktorId.av(aktorId);
+            });
     }
 
     public boolean erKode6Eller7(Fnr fnr) {

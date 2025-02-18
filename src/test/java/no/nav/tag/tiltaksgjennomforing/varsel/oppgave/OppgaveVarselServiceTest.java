@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.varsel.oppgave;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.GosysFeilException;
+import no.nav.tag.tiltaksgjennomforing.persondata.aktorId.AktorId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -59,13 +60,17 @@ public class OppgaveVarselServiceTest {
         avtale.setId(UUID.randomUUID());
 
         oppgaveVarselService.opprettOppgave(new OppgaveRequest(
-                "aktørId",
-                GosysTema.TILTAK,
-                GosysBehandlingstype.SOKNAD,
-                avtale.getTiltakstype(),
-                format(GOSYS_OPPRETTET_AVTALE_BESKRIVELSE, avtale.getTiltakstype().getBeskrivelse())
+            AktorId.av("aktørId"),
+            GosysTema.TILTAK,
+            GosysBehandlingstype.SOKNAD,
+            avtale.getTiltakstype(),
+            format(GOSYS_OPPRETTET_AVTALE_BESKRIVELSE, avtale.getTiltakstype().getBeskrivelse())
         ));
-        verify(stsRestTemplate).postForObject(eq(uri), requestCaptor.capture(), eq(OppgaveVarselService.OppgaveResponse.class));
+        verify(stsRestTemplate).postForObject(
+            eq(uri),
+            requestCaptor.capture(),
+            eq(OppgaveVarselService.OppgaveResponse.class)
+        );
         OppgaveRequest request = requestCaptor.getValue().getBody();
 
         assertThat(request.getAktivDato()).isToday();
@@ -86,9 +91,15 @@ public class OppgaveVarselServiceTest {
         avtale.setTiltakstype(VARIG_LONNSTILSKUDD);
         avtale.setId(UUID.randomUUID());
 
-        assertThrows(GosysFeilException.class, () ->
+        assertThrows(
+            GosysFeilException.class, () ->
                 oppgaveVarselService.opprettOppgave(new OppgaveRequest(
-                        "aktørId", GosysTema.TILTAK, GosysBehandlingstype.INGEN, Tiltakstype.INKLUDERINGSTILSKUDD, ""
-                )));
+                    AktorId.av("aktørId"),
+                    GosysTema.TILTAK,
+                    GosysBehandlingstype.INGEN,
+                    Tiltakstype.INKLUDERINGSTILSKUDD,
+                    ""
+                ))
+        );
     }
 }
