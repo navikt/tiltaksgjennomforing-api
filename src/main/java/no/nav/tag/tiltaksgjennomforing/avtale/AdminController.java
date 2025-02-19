@@ -200,7 +200,21 @@ public class AdminController {
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.badRequest().body("Fant ingen grunn for avslag")))
             .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 
+    @PostMapping("/avtale/{id}/enhet")
+    public ResponseEntity<Map<String, String>> sjekkEnhet(@PathVariable UUID id) {
+        Optional<Avtale> avtaleOpt = avtaleRepository.findById(id);
+
+        return avtaleOpt.map(avtale -> {
+            Oppfølgingsstatus status = veilarboppfolgingService.hentOppfolgingsstatus(avtale.getDeltakerFnr().asString());
+            return Map.of(
+                "enhetAvtale", avtale.getEnhetOppfolging(),
+                "enhetOppfolging", status.getOppfolgingsenhet()
+            );
+        })
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.badRequest().build());
     }
 
 }
