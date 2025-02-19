@@ -120,6 +120,7 @@ public class PersondataService {
         }
     }
 
+    @Cacheable(CacheConfig.PDL_CACHE)
     public boolean erKode6(Fnr fnr) {
         String gradering = hentAdressebeskyttelse(fnr).getGradering();
         return "STRENGT_FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG_UTLAND".equals(gradering);
