@@ -3,20 +3,21 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.Protected;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditEntry;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditLogger;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditLogging;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.dokgen.DokgenService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.EventType;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
@@ -79,8 +80,8 @@ public class AvtaleController {
     private final VeilarboppfolgingService veilarboppfolgingService;
     private final FilterSokRepository filterSokRepository;
     private final MeterRegistry meterRegistry;
-    private final ApplicationEventPublisher applicationEventPublisher;
     private final FeatureToggleService featureToggleService;
+    private final AuditLogger auditLogger;
     private final static List<String> missmatchAvtaler = List.of(
             "21436c5c-2184-4e72-a7d0-be69c7fc6706",
             "75674528-86cb-4986-9eb4-e665b1a51e34",
@@ -481,19 +482,38 @@ public class AvtaleController {
     @PostMapping
     @Transactional
     public ResponseEntity<?> opprettAvtaleSomVeileder(
+            HttpServletRequest request,
             @RequestBody OpprettAvtale opprettAvtale
     ) {
         if (opprettAvtale.getTiltakstype().equals(Tiltakstype.VTAO) && !featureToggleService.isEnabled(FeatureToggle.VTAO_TILTAK_TOGGLE)) {
             throw new FeilkodeException(Feilkode.IKKE_ADMIN_TILGANG);
         }
         Veileder veileder = innloggingService.hentVeileder();
-        Avtale avtale = veileder.opprettAvtale(opprettAvtale);
-        sjekkArbeidstreningToggle(avtale);
-        avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
+        try {
 
-        Avtale opprettetAvtale = avtaleRepository.save(avtale);
-        URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
-        return ResponseEntity.created(uri).build();
+            Avtale avtale = veileder.opprettAvtale(opprettAvtale);
+            sjekkArbeidstreningToggle(avtale);
+            avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
+
+            Avtale opprettetAvtale = avtaleRepository.save(avtale);
+            URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
+            return ResponseEntity.created(uri).build();
+        } catch (IkkeTilgangTilDeltakerException exception) {
+            auditLogger.logg(new AuditEntry(
+                    "tiltaksgjennomforing-api",
+                    veileder.getNavIdent().asString(),
+                    opprettAvtale.getDeltakerFnr().asString(),
+                    null,
+                    EventType.CREATE,
+                    false,
+                    Now.instant(),
+                    "Opprett avtale om arbeidsmarkedstiltak",
+                    URI.create(request.getRequestURI()),
+                    request.getMethod(),
+                    request.getAttribute("correlationId").toString()
+            ));
+            throw exception;
+        }
     }
 
     @PostMapping("/opprett-mentor-avtale")

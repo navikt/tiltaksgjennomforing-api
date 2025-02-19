@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import jakarta.servlet.http.HttpServletRequest;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
@@ -80,6 +81,8 @@ public class AvtaleControllerTest {
     private KontoregisterService kontoregisterService;
 
     private Pageable pageable = PageRequest.of(0, 100);
+    @Autowired
+    private HttpServletRequest httpServletRequest;
 
     private static List<Avtale> lagListeMedAvtaler(Avtale avtale, int antall) {
         List<Avtale> avtaler = new ArrayList<>();
@@ -304,7 +307,8 @@ public class AvtaleControllerTest {
                         )
                 );
 
-        ResponseEntity svar = avtaleController.opprettAvtaleSomVeileder(opprettAvtale);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        ResponseEntity svar = avtaleController.opprettAvtaleSomVeileder(request, opprettAvtale);
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(svar.getHeaders().getLocation().getPath()).isEqualTo("/avtaler/" + avtale.getId());
     }
@@ -413,8 +417,16 @@ public class AvtaleControllerTest {
         when(
                 tilgangskontrollService.harSkrivetilgangTilKandidat(enNavAnsatt, deltakerFnr)
         ).thenReturn(false);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        when(
+                request.getRequestURI()
+        ).thenReturn("/avtaler");
+        when(
+                request.getAttribute("correlationId")
+        ).thenReturn("123");
         assertThatThrownBy(
                 () -> avtaleController.opprettAvtaleSomVeileder(
+                        request,
                         new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING)
 
                 )
@@ -442,8 +454,10 @@ public class AvtaleControllerTest {
         PdlRespons pdlRespons = TestData.enPdlrespons(true);
         when(persondataServiceIMetode.hentPersondata(deltakerFnr)).thenReturn(pdlRespons);
         when(persondataServiceIMetode.erKode6(pdlRespons)).thenCallRealMethod();
+        HttpServletRequest request = mock(HttpServletRequest.class);
         assertThatThrownBy(
                 () -> avtaleController.opprettAvtaleSomVeileder(
+                        request,
                         new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING)
                 )
         ).isInstanceOf(KanIkkeOppretteAvtalePåKode6Exception.class);
