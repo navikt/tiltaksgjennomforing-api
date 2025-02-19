@@ -10,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -202,7 +203,7 @@ public class AdminController {
             .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/avtale/{id}/enhet")
+    @GetMapping("/avtale/{id}/enhet")
     public ResponseEntity<Map<String, String>> sjekkEnhet(@PathVariable UUID id) {
         Optional<Avtale> avtaleOpt = avtaleRepository.findById(id);
 
