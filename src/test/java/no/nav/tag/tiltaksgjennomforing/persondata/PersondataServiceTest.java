@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.persondata;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,25 +30,25 @@ public class PersondataServiceTest {
     @Test
     public void hentGradering__returnerer_strengt_fortrolig_person() {
         Adressebeskyttelse adressebeskyttelse = persondataService.hentAdressebeskyttelse(STRENGT_FORTROLIG_PERSON);
-        assertThat(adressebeskyttelse.getGradering()).isEqualTo("STRENGT_FORTROLIG");
+        assertThat(adressebeskyttelse.getGradering()).isEqualTo(Diskresjonskode.STRENGT_FORTROLIG);
     }
 
     @Test
     public void hentGradering__returnerer_strengt_fortrolig_utland_person() {
         Adressebeskyttelse adressebeskyttelse = persondataService.hentAdressebeskyttelse(STRENGT_FORTROLIG_UTLAND_PERSON);
-        assertThat(adressebeskyttelse.getGradering()).isEqualTo("STRENGT_FORTROLIG_UTLAND");
+        assertThat(adressebeskyttelse.getGradering()).isEqualTo(Diskresjonskode.STRENGT_FORTROLIG_UTLAND);
     }
 
     @Test
     public void hentGradering__returnerer_fortrolig_person() {
         Adressebeskyttelse adressebeskyttelse = persondataService.hentAdressebeskyttelse(FORTROLIG_PERSON);
-        assertThat(adressebeskyttelse.getGradering()).isEqualTo("FORTROLIG");
+        assertThat(adressebeskyttelse.getGradering()).isEqualTo(Diskresjonskode.FORTROLIG);
     }
 
     @Test
     public void hentGradering__returnerer_ugradert_person() {
         Adressebeskyttelse adressebeskyttelse = persondataService.hentAdressebeskyttelse(UGRADERT_PERSON);
-        assertThat(adressebeskyttelse.getGradering()).isEqualTo("UGRADERT");
+        assertThat(adressebeskyttelse.getGradering()).isEqualTo(Diskresjonskode.UGRADERT);
     }
 
     @Test
