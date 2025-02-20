@@ -15,6 +15,7 @@ import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.spring.ClientConfigurationProperties;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -62,8 +63,8 @@ public class PoaoTilgangServiceImpl implements PoaoTilgangService {
             .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().isPermit()));
     }
 
-    public Optional<String> hentGrunn(UUID beslutterAzureUUID, Fnr fnr) {
-        return Optional.ofNullable(hentSkrivetilgang(beslutterAzureUUID, fnr.asString()))
+    public Optional<String> hentGrunn(UUID beslutterAzureUUID, Identifikator identifikator) {
+        return Optional.ofNullable(hentSkrivetilgang(beslutterAzureUUID, identifikator.asString()))
             .map(decision -> {
                 if (decision.isDeny() && decision instanceof Decision.Deny deny) {
                     return deny.getReason();

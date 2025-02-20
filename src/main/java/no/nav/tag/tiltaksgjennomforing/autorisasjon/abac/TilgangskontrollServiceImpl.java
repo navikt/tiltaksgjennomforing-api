@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.PoaoTilgangService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.InternBruker;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,6 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 public class TilgangskontrollServiceImpl implements TilgangskontrollService {
-
     private final PoaoTilgangService poaoTilgangService;
 
     public boolean harSkrivetilgangTilKandidat(InternBruker internBruker, Fnr fnr) {
@@ -29,7 +29,7 @@ public class TilgangskontrollServiceImpl implements TilgangskontrollService {
         }
     }
 
-    public Optional<String> hentGrunnForAvslag(UUID ident, Fnr fnr) {
+    public Optional<String> hentGrunnForAvslag(UUID ident, Identifikator fnr) {
         try {
             return poaoTilgangService.hentGrunn(ident, fnr);
         } catch (Exception e) {

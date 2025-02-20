@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;
+import no.nav.tag.tiltaksgjennomforing.persondata.aktorId.AktorId;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.Resource;
@@ -101,9 +102,9 @@ public class PersondataService {
         }
     }
 
-    public String hentAktørId(Fnr fnr) {
+    public AktorId hentAktørId(Fnr fnr) {
         PdlRequest pdlRequest = new PdlRequest(resourceAsString(identerQueryResource), new Variables(fnr.asString()));
-        return hentAktørIdFraPdlRespons(utførKallTilPdl(pdlRequest));
+        return AktorId.av(hentAktørIdFraPdlRespons(utførKallTilPdl(pdlRequest)));
     }
 
     public boolean erKode6Eller7(Fnr fnr) {

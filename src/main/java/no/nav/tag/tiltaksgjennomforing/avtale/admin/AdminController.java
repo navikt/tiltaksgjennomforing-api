@@ -1,12 +1,20 @@
-package no.nav.tag.tiltaksgjennomforing.avtale;
+package no.nav.tag.tiltaksgjennomforing.avtale.admin;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +42,7 @@ public class AdminController {
     private final TilskuddPeriodeRepository tilskuddPeriodeRepository;
     private final VeilarboppfolgingService veilarboppfolgingService;
     private final TilgangskontrollService tilgangskontrollService;
+    private final PersondataService persondataService;
 
     @PostMapping("reberegn")
     public void reberegnLønnstilskudd(@RequestBody List<UUID> avtaleIder) {
@@ -49,7 +58,8 @@ public class AdminController {
     public void reberegnVarigLønnstilskuddSomIkkeHarRedusertDato(@PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate migreringsDato) {
         log.info("Starter jobb for å fikse manglende redusert prosent og redusert sum");
         // 1. Generer dato for redusert prosent og sumRedusert
-        List<Avtale> varigeLønnstilskudd = avtaleRepository.findAllByTiltakstypeAndGjeldendeInnhold_DatoForRedusertProsentNullAndGjeldendeInnhold_AvtaleInngåttNotNull(Tiltakstype.VARIG_LONNSTILSKUDD);
+        List<Avtale> varigeLønnstilskudd = avtaleRepository.findAllByTiltakstypeAndGjeldendeInnhold_DatoForRedusertProsentNullAndGjeldendeInnhold_AvtaleInngåttNotNull(
+            Tiltakstype.VARIG_LONNSTILSKUDD);
         log.info("Fant {} varige lønnstilskudd avtaler som mangler redusert prosent til fiksing.", varigeLønnstilskudd.size());
         AtomicInteger antallUnder67 = new AtomicInteger();
         varigeLønnstilskudd.forEach(avtale -> {
@@ -180,42 +190,42 @@ public class AdminController {
         }));
     }
 
-    @PostMapping("/hent-oppfolgingsstatus")
-    public Oppfølgingsstatus hentOppfølgingsstatus(@RequestBody AvtaleRequest request) {
-        Avtale avtale;
-        if (request.avtaleId() != null) {
-            avtale = avtaleRepository.findById(UUID.fromString(request.avtaleId())).orElseThrow(RessursFinnesIkkeException::new);
-        } else if (request.avtaleNr() != null) {
-            avtale = avtaleRepository.findByAvtaleNr(request.avtaleNr()).orElseThrow(RessursFinnesIkkeException::new);
-        } else {
-            throw new RessursFinnesIkkeException();
-        }
-        return veilarboppfolgingService.hentOppfolgingsstatus(avtale.getDeltakerFnr().asString());
-    }
-
-    @PostMapping("/avtale/{id}/sjekk-tilgang")
-    public ResponseEntity<String> sjekkTilgang(@PathVariable UUID id, @RequestBody Map<String, UUID> body) {
+    @PostMapping("/{id}/sjekk-tilgang")
+    public ResponseEntity<String> sjekkTilgang(@PathVariable UUID id, @RequestBody AvtaleAdminSjekkTilgangRequest body) {
         Optional<Avtale> avtale = avtaleRepository.findById(id);
 
-        return avtale.map(value -> tilgangskontrollService.hentGrunnForAvslag(body.get("ident"), value.getDeltakerFnr())
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.badRequest().body("Fant ingen grunn for avslag")))
+        return avtale.map(value -> {
+                Identifikator aktorId = body.brukAktorId()
+                    ? persondataService.hentAktørId(value.getDeltakerFnr())
+                    : value.getDeltakerFnr();
+                return tilgangskontrollService.hentGrunnForAvslag(body.veilederAzureOid(), aktorId)
+                    .map(ResponseEntity::ok)
+                    .orElse(ResponseEntity.badRequest().body("Fant ingen grunn for avslag"));
+            })
             .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/avtale/{id}/enhet")
-    public ResponseEntity<Map<String, String>> sjekkEnhet(@PathVariable UUID id) {
+    @GetMapping("/{id}/sjekk-oppfolginsstatus")
+    public ResponseEntity<Map<String, Map<String, String>>> sjekkOppfolgingsstatus(@PathVariable UUID id) {
         Optional<Avtale> avtaleOpt = avtaleRepository.findById(id);
 
         return avtaleOpt.map(avtale -> {
-            Oppfølgingsstatus status = veilarboppfolgingService.hentOppfolgingsstatus(avtale.getDeltakerFnr().asString());
-            return Map.of(
-                "enhetAvtale", avtale.getEnhetOppfolging(),
-                "enhetOppfolging", status.getOppfolgingsenhet()
-            );
-        })
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.badRequest().build());
+                Oppfølgingsstatus status = veilarboppfolgingService.hentOppfolgingsstatus(avtale.getDeltakerFnr().asString());
+                return Map.of(
+                    "avtaleOppfolginsstatus", Map.of(
+                        "formidlingsgruppe", avtale.getFormidlingsgruppe().name(),
+                        "kvalifiseringsgruppe", avtale.getKvalifiseringsgruppe().name(),
+                        "oppfolginsenhet", avtale.getEnhetOppfolging()
+                    ),
+                    "veilarbOppfolginsstatus", Map.of(
+                        "formidlingsgruppe", status.getFormidlingsgruppe().name(),
+                        "kvalifiseringsgruppe", status.getKvalifiseringsgruppe().name(),
+                        "oppfolginsenhet", status.getOppfolgingsenhet()
+                    )
+                );
+            })
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
 
 }

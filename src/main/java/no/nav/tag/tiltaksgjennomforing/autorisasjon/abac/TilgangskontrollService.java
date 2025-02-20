@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.abac;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.InternBruker;
 
 import java.util.Map;
@@ -13,5 +14,5 @@ public interface TilgangskontrollService {
 
   Map<Fnr, Boolean> harSkrivetilgangTilKandidater(InternBruker internBruker, Set<Fnr> fnr);
 
-  Optional<String> hentGrunnForAvslag(UUID internBruker, Fnr fnr);
+  Optional<String> hentGrunnForAvslag(UUID internBruker, Identifikator identifikator);
 }

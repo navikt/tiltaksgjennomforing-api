@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +26,7 @@ public class PoaoTilgangServiceLabs implements PoaoTilgangService {
     }
 
     @Override
-    public Optional<String> hentGrunn(UUID beslutterAzureUUID, Fnr deltakerFnr) {
+    public Optional<String> hentGrunn(UUID beslutterAzureUUID, Identifikator identifikator) {
         return Optional.empty();
     }
 }
