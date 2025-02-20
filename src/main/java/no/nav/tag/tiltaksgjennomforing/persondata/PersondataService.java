@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.persondata;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;
 import no.nav.tag.tiltaksgjennomforing.persondata.aktorId.AktorId;
@@ -18,13 +19,22 @@ import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
+import java.util.Set;
 
 @Slf4j
 @Service
 public class PersondataService {
+    private static final String BEHANDLINGSNUMMER = "B662";
+    private static final Set<Diskresjonskode> KODE_6 = Set.of(
+        Diskresjonskode.STRENGT_FORTROLIG,
+        Diskresjonskode.STRENGT_FORTROLIG_UTLAND
+    );
+    private static final Set<Diskresjonskode> KODE_7 = Set.of(
+        Diskresjonskode.FORTROLIG
+    );
+
     private final RestTemplate azureRestTemplate;
     private final PersondataProperties persondataProperties;
-    private static final String BEHANDLINGSNUMMER = "B662";
 
     @Value("classpath:pdl/hentPerson.adressebeskyttelse.graphql")
     private Resource adressebeskyttelseQueryResource;
@@ -49,7 +59,7 @@ public class PersondataService {
         return filinnhold.replaceAll("\\s+", " ");
     }
 
-    protected Adressebeskyttelse hentAdressebeskyttelse(Fnr fnr) {
+    public Adressebeskyttelse hentAdressebeskyttelse(Fnr fnr) {
         PdlRequest pdlRequest = new PdlRequest(resourceAsString(adressebeskyttelseQueryResource), new Variables(fnr.asString()));
         return hentAdressebeskyttelseFraPdlRespons(utførKallTilPdl(pdlRequest));
     }
@@ -108,22 +118,22 @@ public class PersondataService {
     }
 
     public boolean erKode6Eller7(Fnr fnr) {
-        String gradering = hentAdressebeskyttelse(fnr).getGradering();
-        return "FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG_UTLAND".equals(gradering);
+        Diskresjonskode gradering = hentAdressebeskyttelse(fnr).getGradering();
+        return KODE_6.contains(gradering) || KODE_7.contains(gradering);
     }
 
     public boolean erKode6(PdlRespons pdlRespons) {
         try {
-            String gradering = hentAdressebeskyttelseFraPdlRespons(pdlRespons).getGradering();
-            return "STRENGT_FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG_UTLAND".equals(gradering);
+            Diskresjonskode gradering = hentAdressebeskyttelseFraPdlRespons(pdlRespons).getGradering();
+            return KODE_6.contains(gradering);
         } catch (NullPointerException e) {
             return false;
         }
     }
 
     public boolean erKode6(Fnr fnr) {
-        String gradering = hentAdressebeskyttelse(fnr).getGradering();
-        return "STRENGT_FORTROLIG".equals(gradering) || "STRENGT_FORTROLIG_UTLAND".equals(gradering);
+        Diskresjonskode gradering = hentAdressebeskyttelse(fnr).getGradering();
+        return KODE_6.contains(gradering);
     }
 
     @Cacheable(CacheConfig.PDL_CACHE)

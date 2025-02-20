@@ -110,7 +110,7 @@
         <dependency>
             <groupId>no.nav.poao-tilgang</groupId>
             <artifactId>client</artifactId>
-            <version>2023.09.25_09.26-72043f243cad</version>
+            <version>2025.02.18_14.13-ac4265f31ef3</version>
         </dependency>
 
         <!-- OIDC Support -->
