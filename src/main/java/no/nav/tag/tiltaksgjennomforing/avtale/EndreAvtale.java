@@ -9,6 +9,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Optional.ofNullable;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -87,5 +89,55 @@ public class EndreAvtale {
         this.refusjonKontaktpersonEtternavn = refusjonKontaktperson.getRefusjonKontaktpersonEtternavn();
         this.refusjonKontaktpersonTlf = refusjonKontaktperson.getRefusjonKontaktpersonTlf();
         this.ønskerVarslingOmRefusjon = refusjonKontaktperson.getØnskerVarslingOmRefusjon();
+    }
+
+    public static EndreAvtale fraAvtale(Avtale avtale) {
+        var innhold = avtale.getGjeldendeInnhold();
+        var refusjonKontakt = ofNullable(innhold.getRefusjonKontaktperson());
+        return new EndreAvtale(
+                innhold.getDeltakerFornavn(),
+                innhold.getDeltakerEtternavn(),
+                innhold.getDeltakerTlf(),
+                innhold.getBedriftNavn(),
+                innhold.getArbeidsgiverFornavn(),
+                innhold.getArbeidsgiverEtternavn(),
+                innhold.getArbeidsgiverTlf(),
+                innhold.getVeilederFornavn(),
+                innhold.getVeilederEtternavn(),
+                innhold.getVeilederTlf(),
+                innhold.getOppfolging(),
+                innhold.getTilrettelegging(),
+                innhold.getStartDato(),
+                innhold.getSluttDato(),
+                innhold.getStillingprosent(),
+                innhold.getArbeidsoppgaver(),
+                innhold.getStillingstittel(),
+                innhold.getStillingStyrk08(),
+                innhold.getStillingKonseptId(),
+                innhold.getAntallDagerPerUke(),
+                refusjonKontakt.map(RefusjonKontaktperson::getRefusjonKontaktpersonFornavn).orElse(null),
+                refusjonKontakt.map(RefusjonKontaktperson::getRefusjonKontaktpersonEtternavn).orElse(null),
+                refusjonKontakt.map(RefusjonKontaktperson::getRefusjonKontaktpersonTlf).orElse(null),
+                refusjonKontakt.map(RefusjonKontaktperson::getØnskerVarslingOmRefusjon).orElse(null),
+                innhold.getMaal(),
+                innhold.getInkluderingstilskuddsutgift(),
+                innhold.getInkluderingstilskuddBegrunnelse(),
+                innhold.getArbeidsgiverKontonummer(),
+                innhold.getLonnstilskuddProsent(),
+                innhold.getManedslonn(),
+                innhold.getFeriepengesats(),
+                innhold.getArbeidsgiveravgift(),
+                innhold.getOtpSats(),
+                innhold.getHarFamilietilknytning(),
+                innhold.getFamilietilknytningForklaring(),
+                innhold.getStillingstype(),
+                innhold.getMentorFornavn(),
+                innhold.getMentorEtternavn(),
+                innhold.getMentorOppgaver(),
+                innhold.getMentorAntallTimer(),
+                innhold.getMentorTlf(),
+                innhold.getMentorTimelonn(),
+                ofNullable(innhold.getVtao()).map(Vtao::hentFelter).orElse(null)
+        );
     }
 }
