@@ -3,7 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.autorisasjon.abac;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.PoaoTilgangService;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgangsattributter;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.InternBruker;
 import org.springframework.stereotype.Service;
@@ -20,17 +20,15 @@ import java.util.UUID;
 public class TilgangskontrollServiceImpl implements TilgangskontrollService {
     private final PoaoTilgangService poaoTilgangService;
 
-    @Override
-    public boolean harSkrivetilgangTilKandidat(InternBruker internBruker, Identifikator id) {
+    public boolean harSkrivetilgangTilKandidat(InternBruker internBruker, Fnr fnr) {
         try {
-            return poaoTilgangService.harSkrivetilgang(internBruker.getAzureOid(), id);
+            return poaoTilgangService.harSkrivetilgang(internBruker.getAzureOid(), fnr);
         } catch (Exception e) {
             log.error("Feil ved tilgangskontroll-sjekk", e);
             return false;
         }
     }
 
-    @Override
     public Optional<String> hentGrunnForAvslag(UUID ident, Identifikator fnr) {
         try {
             return poaoTilgangService.hentGrunn(ident, fnr);
@@ -40,23 +38,12 @@ public class TilgangskontrollServiceImpl implements TilgangskontrollService {
         }
     }
 
-    @Override
-    public Map<Identifikator, Boolean> harSkrivetilgangTilKandidater(InternBruker internBruker, Set<Identifikator> idSet) {
+    public Map<Fnr, Boolean> harSkrivetilgangTilKandidater(InternBruker internBruker, Set<Fnr> fnrListe) {
         try {
-            return poaoTilgangService.harSkrivetilgang(internBruker.getAzureOid(), idSet);
+            return poaoTilgangService.harSkrivetilgang(internBruker.getAzureOid(), fnrListe);
         } catch (Exception e) {
             log.error("Feil ved tilgangskontroll-sjekk", e);
             return Collections.emptyMap();
-        }
-    }
-
-    @Override
-    public Optional<Tilgangsattributter> hentTilgangsattributter(Identifikator id) {
-        try {
-            return Optional.of(poaoTilgangService.hentTilgangsattributter(id));
-        } catch (Exception e) {
-            log.error("Feil ved tilgangskontroll-sjekk", e);
-            return Optional.empty();
         }
     }
 }

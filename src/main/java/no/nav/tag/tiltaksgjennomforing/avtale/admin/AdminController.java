@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.avtale.admin;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgangsattributter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
@@ -15,7 +14,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
-import no.nav.tag.tiltaksgjennomforing.persondata.Adressebeskyttelse;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -192,7 +190,7 @@ public class AdminController {
         }));
     }
 
-    @PostMapping("/avtale/{id}/sjekk-tilgang")
+    @PostMapping("/{id}/sjekk-tilgang")
     public ResponseEntity<String> sjekkTilgang(@PathVariable UUID id, @RequestBody AvtaleAdminSjekkTilgangRequest body) {
         Optional<Avtale> avtale = avtaleRepository.findById(id);
 
@@ -202,34 +200,12 @@ public class AdminController {
                     : value.getDeltakerFnr();
                 return tilgangskontrollService.hentGrunnForAvslag(body.veilederAzureOid(), aktorId)
                     .map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.ok().body("Fant ingen grunn for avslag"));
+                    .orElse(ResponseEntity.badRequest().body("Fant ingen grunn for avslag"));
             })
             .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/avtale/{id}/sjekk-tilgangsattributter")
-    public ResponseEntity<Map<String, String>> sjekkTilgangsatrributter(@PathVariable UUID id) {
-        Optional<Avtale> avtaleOpt = avtaleRepository.findById(id);
-
-        return avtaleOpt.map(avtale -> {
-                Optional<Tilgangsattributter> tilgangsattributter = tilgangskontrollService
-                    .hentTilgangsattributter(avtale.getDeltakerFnr());
-
-                Adressebeskyttelse adressebeskyttelse = persondataService
-                    .hentAdressebeskyttelse(avtale.getDeltakerFnr());
-
-                return Map.of(
-                    "pdlAdressebeskyttelse", adressebeskyttelse.getGradering().name(),
-                    "kontor", tilgangsattributter.map(Tilgangsattributter::kontor).orElse(""),
-                    "skjermet", tilgangsattributter.map(t -> String.valueOf(t.skjermet())).orElse("false"),
-                    "diskresjonskode", tilgangsattributter.map(t -> t.diskresjonskode().name()).orElse("")
-                );
-            })
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/avtale/{id}/sjekk-oppfolginsstatus")
+    @GetMapping("/{id}/sjekk-oppfolginsstatus")
     public ResponseEntity<Map<String, Map<String, String>>> sjekkOppfolgingsstatus(@PathVariable UUID id) {
         Optional<Avtale> avtaleOpt = avtaleRepository.findById(id);
 

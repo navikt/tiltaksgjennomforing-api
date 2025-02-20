@@ -1016,7 +1016,7 @@ public class TestData {
     public static PdlRespons enPdlrespons(boolean harKode6) {
         Adressebeskyttelse[] adressebeskyttelser = new Adressebeskyttelse[1];
         if (harKode6) {
-            adressebeskyttelser[0] = new Adressebeskyttelse(Diskresjonskode.STRENGT_FORTROLIG);
+            adressebeskyttelser[0] = new Adressebeskyttelse("STRENGT_FORTROLIG");
         }
 
         HentPerson hentPerson = new HentPerson(adressebeskyttelser, new Navn[]{new Navn("Donald", null, "Duck")});

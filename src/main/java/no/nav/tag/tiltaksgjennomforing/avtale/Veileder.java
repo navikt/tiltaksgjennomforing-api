@@ -99,7 +99,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     Predicate<Avtale> harTilgangTilAvtale(List<Avtale> avtaler) {
-        Map<Identifikator, Boolean> map = tilgangskontrollService.harSkrivetilgangTilKandidater(
+        Map<Fnr, Boolean> map = tilgangskontrollService.harSkrivetilgangTilKandidater(
             this,
             avtaler.stream().map(Avtale::getDeltakerFnr).collect(Collectors.toSet())
         );
