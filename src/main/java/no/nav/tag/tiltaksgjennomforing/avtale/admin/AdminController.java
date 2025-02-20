@@ -15,6 +15,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -226,6 +227,15 @@ public class AdminController {
             })
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/endre-startdato-for-avtale/{id}")
+    public void oppdaterStartdatoForAvtale(@PathVariable UUID id, @RequestBody Map<String, Object> parametere) {
+        Avtale avtale = avtaleRepository.findById(id).orElseThrow();
+
+        LocalDate startDato = LocalDate.parse((String) parametere.getOrDefault("startDato", null));
+        avtale.midlertidigEndreAvtale(Now.instant(), startDato);
+        avtaleRepository.save(avtale);
     }
 
 }
