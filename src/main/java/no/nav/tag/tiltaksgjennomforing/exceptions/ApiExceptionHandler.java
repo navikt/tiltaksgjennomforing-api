@@ -19,25 +19,32 @@ import java.util.stream.Collectors;
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String FEILKODE = "feilkode";
 
-    @ExceptionHandler({ FeilkodeException.class })
+    @ExceptionHandler({FeilkodeException.class})
     public ResponseEntity<Object> feilkodeException(FeilkodeException e) {
         log.info("Feilkode inntruffet: {}", e.getFeilkode());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .header(FEILKODE, e.getFeilkode().name())
                 .build();
     }
-    
-    @ExceptionHandler({ ConstraintViolationException.class })
+
+    @ExceptionHandler({IkkeTilgangTilDeltakerException.class, IkkeTilgangTilAvtaleException.class})
+    public ResponseEntity<Object> ikkeTilgang(FeilkodeException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .header(FEILKODE, e.getFeilkode().name())
+                .build();
+    }
+
+    @ExceptionHandler({ConstraintViolationException.class})
     public ResponseEntity<Object> constraintException(ConstraintViolationException e) {
         log.info("Validering failet: {}", e.getMessage());
-        
+
         Map<String, String> errors = e.getConstraintViolations()
                 .stream()
                 .collect(Collectors.toMap(
                         ConstraintViolation::getMessageTemplate,
                         (violation) -> violation.getInvalidValue().toString()
                 ));
-        
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(errors);

@@ -17,6 +17,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditLogging;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.EventType;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
@@ -163,6 +164,7 @@ public class AvtaleController {
         return avtaler;
     }
 
+    @AuditLogging("Oppslag på arbeidsmarkedstiltak")
     @GetMapping("/sok")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTilMedGet(
@@ -214,6 +216,7 @@ public class AvtaleController {
         }
     }
 
+    @AuditLogging("Oppslag på arbeidsmarkedstiltak")
     @PostMapping("/sok")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTilMedPost(
@@ -451,9 +454,8 @@ public class AvtaleController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<?> opprettAvtaleSomVeileder(
-            @RequestBody OpprettAvtale opprettAvtale
-    ) {
+    @AuditLogging(value = "Opprett avtale om arbeidsmarkedstiltak", type = EventType.CREATE)
+    public ResponseEntity<?> opprettAvtaleSomVeileder(@RequestBody OpprettAvtale opprettAvtale) {
         if (opprettAvtale.getTiltakstype().equals(Tiltakstype.VTAO) && !featureToggleService.isEnabled(FeatureToggle.VTAO_TILTAK_TOGGLE)) {
             throw new FeilkodeException(Feilkode.IKKE_ADMIN_TILGANG);
         }
@@ -466,6 +468,7 @@ public class AvtaleController {
         return ResponseEntity.created(uri).build();
     }
 
+    @AuditLogging(value = "Opprett avtale om arbeidsmarkedstiltak", type = EventType.CREATE)
     @PostMapping("/opprett-mentor-avtale")
     @Transactional
     public ResponseEntity<?> opprettMentorAvtale(@RequestBody OpprettMentorAvtale opprettMentorAvtale) {
@@ -778,7 +781,7 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
-    @AuditLogging("Oppdater avtale om arbeidsmarkedstiltak")
+    @AuditLogging(value = "Oppdater avtale om arbeidsmarkedstiltak", type = EventType.UPDATE)
     @PostMapping("/{avtaleId}/set-om-avtalen-kan-etterregistreres")
     @Transactional
     public Avtale setOmAvtalenKanEtterregistreres(@PathVariable("avtaleId") UUID avtaleId) {
@@ -789,7 +792,7 @@ public class AvtaleController {
         return oppdatertAvtale;
     }
 
-    @AuditLogging("Oppdater avtale om arbeidsmarkedstiltak")
+    @AuditLogging(value = "Oppdater avtale om arbeidsmarkedstiltak", type = EventType.UPDATE)
     @PostMapping("/{avtaleId}/endre-kostnadssted")
     @Transactional
     public Avtale endreKostnadssted(
@@ -812,7 +815,7 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
-    @AuditLogging("Oppdater avtale om arbeidsmarkedstiltak")
+    @AuditLogging(value = "Oppdater avtale om arbeidsmarkedstiltak", type = EventType.UPDATE)
     @PostMapping("/{avtaleId}/oppdaterOppfølgingsEnhet")
     public Avtale oppdaterOppfølgingsEnhet(
             @PathVariable("avtaleId") UUID avtaleId
