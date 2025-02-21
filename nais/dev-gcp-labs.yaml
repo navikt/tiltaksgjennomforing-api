@@ -26,6 +26,8 @@ spec:
     timeout: 1
     periodSeconds: 30
     failureThreshold: 10
+  secureLogs:
+    enabled: true
   resources:
     limits:
       cpu: 2000m
