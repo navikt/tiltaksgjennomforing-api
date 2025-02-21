@@ -22,6 +22,8 @@ import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -41,6 +43,7 @@ import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentN
 
 @Slf4j
 public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
+    private static final Marker SECURE_LOG = MarkerFactory.getMarker("SECURE_LOG");
     private final TilgangskontrollService tilgangskontrollService;
 
     private final PersondataService persondataService;
@@ -90,6 +93,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
+        log.info(SECURE_LOG, "Sjekker tilgang for veileder {} til avtale {}", getIdentifikator(), avtale.getId());
         boolean harTilgang = tilgangskontrollService.harSkrivetilgangTilKandidat(this, avtale.getDeltakerFnr());
         if (!harTilgang) {
             log.info("Har ikke tilgang til avtalenr {}, id: {}", avtale.getAvtaleNr(), avtale.getId());
@@ -100,8 +104,8 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     @Override
     Predicate<Avtale> harTilgangTilAvtale(List<Avtale> avtaler) {
         Map<Identifikator, Boolean> map = tilgangskontrollService.harSkrivetilgangTilKandidater(
-            this,
-            avtaler.stream().map(Avtale::getDeltakerFnr).collect(Collectors.toSet())
+                this,
+                avtaler.stream().map(Avtale::getDeltakerFnr).collect(Collectors.toSet())
         );
         return avtale -> {
             boolean resultat = map.getOrDefault(avtale.getDeltakerFnr(), false);
@@ -339,7 +343,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     public void sjekkOgOppdaterOppfølgningsstatusForAvtale(Avtale avtale) {
         Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
-        if(oppfølgingsstatus == null) return;
+        if (oppfølgingsstatus == null) return;
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
     }
 
