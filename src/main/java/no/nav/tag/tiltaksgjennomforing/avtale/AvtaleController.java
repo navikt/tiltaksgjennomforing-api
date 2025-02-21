@@ -19,7 +19,7 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditLogging;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
-import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.persondata.AktsomhetService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.apache.commons.lang3.StringUtils;
@@ -80,7 +80,7 @@ public class AvtaleController {
     private final FilterSokRepository filterSokRepository;
     private final MeterRegistry meterRegistry;
     private final FeatureToggleService featureToggleService;
-    private final PersondataService persondataService;
+    private final AktsomhetService aktsomhetService;
 
     @AuditLogging("Hent detaljer for avtale om arbeidsmarkedstiltak")
     @GetMapping("/{avtaleId}")
@@ -827,25 +827,12 @@ public class AvtaleController {
         return oppdatertAvtale;
     }
 
-    /**
-     * Sjekk om en avtale krever ekstra aksomhet fra avtalepart som skal ha innsyn i avtalen
-     * for eksempel ved at avtalen er tilknyttet en kode-6 deltaker.
-     *
-     * @param avtaleId id til avtalen
-     * @return true hvis avtalen krever ekstra aktsomhet, false ellers
-     */
     @GetMapping("/{avtaleId}/krever-aktsomhet")
     public Boolean kreverAktsomhet(
         @PathVariable("avtaleId") UUID avtaleId,
         @CookieValue("innlogget-part") Avtalerolle innloggetPart
     ) {
-        try {
-            Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-            Avtale avtale = avtalepart.hentAvtale(avtaleRepository, avtaleId);
-            return persondataService.erKode6(avtale.getDeltakerFnr());
-        } catch (Exception e) {
-            return false;
-        }
+        return aktsomhetService.kreverAktsomhet(innloggetPart, avtaleId);
     }
 
 }
