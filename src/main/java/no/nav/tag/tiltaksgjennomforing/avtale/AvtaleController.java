@@ -3,7 +3,6 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.MeterRegistry;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.Protected;
@@ -11,11 +10,12 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.dokgen.DokgenService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
-import no.nav.tag.tiltaksgjennomforing.exceptions.*;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditEntry;
-import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditLogger;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditLogging;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.EventType;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
@@ -32,14 +32,27 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 import static java.util.Map.entry;
 import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleSorterer.getSortingOrderForPageableVeileder;
@@ -67,7 +80,6 @@ public class AvtaleController {
     private final FilterSokRepository filterSokRepository;
     private final MeterRegistry meterRegistry;
     private final FeatureToggleService featureToggleService;
-    private final AuditLogger auditLogger;
 
     @AuditLogging("Hent detaljer for avtale om arbeidsmarkedstiltak")
     @GetMapping("/{avtaleId}")
@@ -152,6 +164,7 @@ public class AvtaleController {
         return avtaler;
     }
 
+    @AuditLogging("Oppslag på arbeidsmarkedstiltak")
     @GetMapping("/sok")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTilMedGet(
@@ -203,6 +216,7 @@ public class AvtaleController {
         }
     }
 
+    @AuditLogging("Oppslag på arbeidsmarkedstiltak")
     @PostMapping("/sok")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTilMedPost(
@@ -440,39 +454,21 @@ public class AvtaleController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<?> opprettAvtaleSomVeileder(
-            HttpServletRequest request,
-            @RequestBody OpprettAvtale opprettAvtale
-    ) {
+    @AuditLogging(value = "Opprett avtale om arbeidsmarkedstiltak", type = EventType.CREATE)
+    public ResponseEntity<?> opprettAvtaleSomVeileder(@RequestBody OpprettAvtale opprettAvtale) {
         if (opprettAvtale.getTiltakstype().equals(Tiltakstype.VTAO) && !featureToggleService.isEnabled(FeatureToggle.VTAO_TILTAK_TOGGLE)) {
             throw new FeilkodeException(Feilkode.IKKE_ADMIN_TILGANG);
         }
         Veileder veileder = innloggingService.hentVeileder();
-        try {
-            Avtale avtale = veileder.opprettAvtale(opprettAvtale);
-            avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
+        Avtale avtale = veileder.opprettAvtale(opprettAvtale);
+        avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
 
-            Avtale opprettetAvtale = avtaleRepository.save(avtale);
-            URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
-            return ResponseEntity.created(uri).build();
-        } catch (IkkeTilgangTilDeltakerException exception) {
-            auditLogger.logg(new AuditEntry(
-                    "tiltaksgjennomforing-api",
-                    veileder.getNavIdent().asString(),
-                    opprettAvtale.getDeltakerFnr().asString(),
-                    null,
-                    EventType.CREATE,
-                    false,
-                    Now.instant(),
-                    "Opprett avtale om arbeidsmarkedstiltak",
-                    URI.create(request.getRequestURI()),
-                    request.getMethod(),
-                    request.getAttribute("correlationId").toString()
-            ));
-            throw exception;
-        }
+        Avtale opprettetAvtale = avtaleRepository.save(avtale);
+        URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
+        return ResponseEntity.created(uri).build();
     }
 
+    @AuditLogging(value = "Opprett avtale om arbeidsmarkedstiltak", type = EventType.CREATE)
     @PostMapping("/opprett-mentor-avtale")
     @Transactional
     public ResponseEntity<?> opprettMentorAvtale(@RequestBody OpprettMentorAvtale opprettMentorAvtale) {
@@ -785,7 +781,7 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
-    @AuditLogging("Oppdater avtale om arbeidsmarkedstiltak")
+    @AuditLogging(value = "Oppdater avtale om arbeidsmarkedstiltak", type = EventType.UPDATE)
     @PostMapping("/{avtaleId}/set-om-avtalen-kan-etterregistreres")
     @Transactional
     public Avtale setOmAvtalenKanEtterregistreres(@PathVariable("avtaleId") UUID avtaleId) {
@@ -796,7 +792,7 @@ public class AvtaleController {
         return oppdatertAvtale;
     }
 
-    @AuditLogging("Oppdater avtale om arbeidsmarkedstiltak")
+    @AuditLogging(value = "Oppdater avtale om arbeidsmarkedstiltak", type = EventType.UPDATE)
     @PostMapping("/{avtaleId}/endre-kostnadssted")
     @Transactional
     public Avtale endreKostnadssted(
@@ -819,7 +815,7 @@ public class AvtaleController {
         avtaleRepository.save(avtale);
     }
 
-    @AuditLogging("Oppdater avtale om arbeidsmarkedstiltak")
+    @AuditLogging(value = "Oppdater avtale om arbeidsmarkedstiltak", type = EventType.UPDATE)
     @PostMapping("/{avtaleId}/oppdaterOppfølgingsEnhet")
     public Avtale oppdaterOppfølgingsEnhet(
             @PathVariable("avtaleId") UUID avtaleId

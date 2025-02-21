@@ -297,7 +297,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     private void sjekkTilgangskontroll(Fnr deltakerFnr) {
         if (!tilgangskontrollService.harSkrivetilgangTilKandidat(this, deltakerFnr)) {
-            throw new IkkeTilgangTilDeltakerException();
+            throw new IkkeTilgangTilDeltakerException(deltakerFnr);
         }
     }
 

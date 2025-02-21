@@ -4,9 +4,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilAvtaleException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.jetbrains.annotations.NotNull;
@@ -18,6 +21,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -47,10 +51,41 @@ public class AuditLoggingAspect {
     public void postProcess(JoinPoint joinPoint, Object resultatFraEndepunkt) {
         try {
             var httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-
-            sendAuditmeldingerTilKafka(httpServletRequest, hentAuditLoggingAnnotasjonsverdi(joinPoint), hentEntiteterSomKanAuditlogges(resultatFraEndepunkt));
+            AuditLogging annotasjon = hentAuditLoggingAnnotasjon(joinPoint);
+            sendAuditmeldingerTilKafka(
+                    httpServletRequest,
+                    annotasjon.value(),
+                    true,
+                    annotasjon.type(),
+                    hentEntiteterSomKanAuditlogges(resultatFraEndepunkt)
+            );
         } catch (Exception ex) {
             log.error("{}: Logging feilet", this.getClass().getName(), ex);
+        }
+    }
+
+    @AfterThrowing(value = "@annotation(no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditLogging)", throwing = "ex")
+    public void afterThrowing(JoinPoint joinPoint, Exception ex) {
+        if (ex instanceof IkkeTilgangTilDeltakerException ikkeTilgangTilDeltakerException) {
+            if (ikkeTilgangTilDeltakerException.getFnr() == null) {
+                return;
+            }
+            var request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+            AuditLogging annotasjon = hentAuditLoggingAnnotasjon(joinPoint);
+            sendAuditmeldingerTilKafka(
+                    request,
+                    annotasjon.value(),
+                    false,
+                    annotasjon.type(),
+                    Set.of(
+                            new AuditElement(null, null, ikkeTilgangTilDeltakerException.getFnr(), null)
+                    ));
+        } else if (ex instanceof IkkeTilgangTilAvtaleException ikkeTilgangTilAvtaleException) {
+            var request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+            AuditLogging annotasjon = hentAuditLoggingAnnotasjon(joinPoint);
+
+            sendAuditmeldingerTilKafka(request, annotasjon.value(), false, annotasjon.type(),
+                    hentOppslagsdata(List.of(ikkeTilgangTilAvtaleException.getAvtale())));
         }
     }
 
@@ -91,9 +126,9 @@ public class AuditLoggingAspect {
         return hentOppslagsdata(entiteter);
     }
 
-    private static String hentAuditLoggingAnnotasjonsverdi(JoinPoint joinPoint) {
+    private static AuditLogging hentAuditLoggingAnnotasjon(JoinPoint joinPoint) {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-        return methodSignature.getMethod().getAnnotation(AuditLogging.class).value();
+        return methodSignature.getMethod().getAnnotation(AuditLogging.class);
     }
 
     /**
@@ -104,7 +139,7 @@ public class AuditLoggingAspect {
         return result.stream().map(AuditElement::of).collect(Collectors.toSet());
     }
 
-    private void sendAuditmeldingerTilKafka(HttpServletRequest request, String apiBeskrivelse, Set<AuditElement> auditelementer) {
+    private void sendAuditmeldingerTilKafka(HttpServletRequest request, String apiBeskrivelse, boolean allowed, EventType eventType, Set<AuditElement> auditelementer) {
         try {
             String innloggetBrukerId = tokenUtils.hentBrukerOgIssuer().map(TokenUtils.BrukerOgIssuer::getBrukerIdent).orElse(null);
             // Logger kun oppslag dersom en innlogget bruker utførte oppslaget
@@ -124,9 +159,10 @@ public class AuditLoggingAspect {
                                     // ArcSight vil ikke ha oppslag som er utført av en privatperson; oppslaget må derfor være "utført av" en bedrift
                                     innloggetBrukerErPrivatperson ? auditelement.bedriftNr().asString() : innloggetBrukerId,
                                     auditelement.deltakerFnr().asString(),
-                                    "%s-%s".formatted(auditelement.id(), auditelement.sistEndret()),
-                                    EventType.READ,
-                                    true,
+                                    auditelement.id() == null && auditelement.sistEndret() == null ? null :
+                                            "%s-%s".formatted(auditelement.id(), auditelement.sistEndret()),
+                                    eventType,
+                                    allowed,
                                     utførtTid,
                                     apiBeskrivelse,
                                     uri,
