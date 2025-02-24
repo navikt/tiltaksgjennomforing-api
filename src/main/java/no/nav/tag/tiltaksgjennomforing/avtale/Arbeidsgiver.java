@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 
 import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
+@Slf4j
 public class Arbeidsgiver extends Avtalepart<Fnr> {
     private final Map<BedriftNr, Collection<Tiltakstype>> tilganger;
     private final Set<AltinnReportee> altinnOrganisasjoner;
@@ -193,12 +195,20 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     public List<Avtale> hentAvtalerForMinsideArbeidsgiver(AvtaleRepository avtaleRepository, BedriftNr bedriftNr) {
-        return avtaleRepository.findAllByBedriftNrAndFeilregistrertIsFalse(bedriftNr).stream()
+        long start = System.currentTimeMillis();
+
+        List<Avtale> liste = avtaleRepository.findAllByBedriftNrAndFeilregistrertIsFalse(bedriftNr).stream()
                 .filter(this::avtalenEksisterer)
                 .filter(this::harTilgangTilAvtale)
                 .map(Arbeidsgiver::fjernAvbruttGrunn)
                 .map(Arbeidsgiver::fjernAnnullertGrunn)
                 .collect(Collectors.toList());
+
+        if (System.currentTimeMillis() - start > 10_000) {
+            log.warn("Det tok mer enn 10 sek å hente {} avtaler for bedrift {}", liste.size(), bedriftNr.asString());
+        }
+
+        return liste;
     }
 
     private void tilgangTilBedriftVedOpprettelseAvAvtale(BedriftNr bedriftNr, Tiltakstype tiltakstype) {
