@@ -15,10 +15,9 @@ import no.nav.security.token.support.client.core.ClientProperties;
 import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService;
 import no.nav.security.token.support.client.spring.ClientConfigurationProperties;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -31,8 +30,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@Profile(value = { Miljø.DEV_FSS, Miljø.PROD_FSS })
 @Slf4j
+@Profile(value = { Miljø.DEV_FSS, Miljø.PROD_FSS })
 public class PoaoTilgangServiceImpl implements PoaoTilgangService {
     private final PoaoTilgangClient klient;
 
@@ -50,21 +49,21 @@ public class PoaoTilgangServiceImpl implements PoaoTilgangService {
         );
     }
 
-    public boolean harSkrivetilgang(UUID beslutterAzureUUID, Identifikator id) {
-        return Optional.ofNullable(hentSkrivetilgang(beslutterAzureUUID, id.asString()))
+    public boolean harSkrivetilgang(UUID beslutterAzureUUID, Fnr fnr) {
+        return Optional.ofNullable(hentSkrivetilgang(beslutterAzureUUID, fnr.asString()))
             .map(Decision::isPermit)
             .orElse(false);
     }
 
-    public Map<Identifikator, Boolean> harSkrivetilgang(UUID beslutterAzureUUID, Set<Identifikator> idSet) {
-        return hentSkrivetilganger(beslutterAzureUUID, idSet)
+    public Map<Fnr, Boolean> harSkrivetilgang(UUID beslutterAzureUUID, Set<Fnr> fnrSet) {
+        return hentSkrivetilganger(beslutterAzureUUID, fnrSet)
             .entrySet()
             .stream()
             .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().isPermit()));
     }
 
-    public Optional<String> hentGrunn(UUID beslutterAzureUUID, Identifikator id) {
-        return Optional.ofNullable(hentSkrivetilgang(beslutterAzureUUID, id.asString()))
+    public Optional<String> hentGrunn(UUID beslutterAzureUUID, Fnr fnr) {
+        return Optional.ofNullable(hentSkrivetilgang(beslutterAzureUUID, fnr.asString()))
             .map(decision -> {
                 if (decision.isDeny() && decision instanceof Decision.Deny deny) {
                     return deny.getReason();
@@ -74,8 +73,8 @@ public class PoaoTilgangServiceImpl implements PoaoTilgangService {
             });
     }
 
-    public Optional<Tilgangsattributter> hentTilgangsattributter(Identifikator id) {
-        return Optional.ofNullable(hentTilgangsattributter(id.asString()))
+    public Optional<Tilgangsattributter> hentTilgangsattributter(Fnr fnr) {
+        return Optional.ofNullable(hentTilgangsattributter(fnr.asString()))
             .map(response -> new Tilgangsattributter(
                 response.getKontor(),
                 response.getSkjermet(),
@@ -85,10 +84,10 @@ public class PoaoTilgangServiceImpl implements PoaoTilgangService {
             ));
     }
 
-    private Map<Identifikator, Decision> hentSkrivetilganger(UUID beslutterAzureUUID, Set<Identifikator> idSet) {
-       Map<UUID, Identifikator> requestIdOgIdent = new HashMap<>();
+    private Map<Fnr, Decision> hentSkrivetilganger(UUID beslutterAzureUUID, Set<Fnr> fnrSet) {
+       Map<UUID, Fnr> requestIdOgIdent = new HashMap<>();
 
-        List<PolicyRequest> policyRequestList = idSet.stream()
+        List<PolicyRequest> policyRequestList = fnrSet.stream()
             .map(fnr -> {
                 UUID requestId = UUID.randomUUID();
                 requestIdOgIdent.put(requestId, fnr);
@@ -114,17 +113,17 @@ public class PoaoTilgangServiceImpl implements PoaoTilgangService {
             .orElse(Collections.emptyMap());
     }
 
-    private Decision hentSkrivetilgang(UUID beslutterAzureUUID, String id) {
+    private Decision hentSkrivetilgang(UUID beslutterAzureUUID, String fnr) {
         return klient.evaluatePolicy(
             new NavAnsattTilgangTilEksternBrukerPolicyInput(
                 beslutterAzureUUID,
                 TilgangType.SKRIVE,
-                id
+                fnr
             )
         ).get();
     }
 
-    private TilgangsattributterResponse hentTilgangsattributter(String id) {
-        return klient.hentTilgangsAttributter(id).get();
+    private TilgangsattributterResponse hentTilgangsattributter(String fnr) {
+        return klient.hentTilgangsAttributter(fnr).get();
     }
 }

@@ -34,7 +34,9 @@ class LagGosysVarselLytter {
     protected final static String VTAO_INNGÅTT = "Brukeren har fått innvilget tiltaksplass og har startet på varig tilrettelagt arbeid i ordinær virksomhet %s.";
 
     private void varsleGosysOmOpprettetAvtale(Avtale avtale) {
-        final AktorId aktørid = persondataService.hentAktørId(avtale.getDeltakerFnr());
+        final AktorId aktørid = persondataService
+            .hentGjeldendeAktørId(avtale.getDeltakerFnr())
+            .orElseThrow(() -> new IllegalStateException("Kan ikke opprette gosys-varsel uten aktørId"));
         Tiltakstype tiltakstype = avtale.getTiltakstype();
 
         String beskrivelse;
@@ -53,7 +55,10 @@ class LagGosysVarselLytter {
     }
 
     private void varsleGosysOmInngaattVTAOAvtale(Avtale avtale) {
-        final AktorId aktørid = persondataService.hentAktørId(avtale.getDeltakerFnr());
+        final AktorId aktørid = persondataService
+            .hentGjeldendeAktørId(avtale.getDeltakerFnr())
+            .orElseThrow(() -> new IllegalStateException("Kan ikke opprette gosys-varsel uten aktørId"));
+
         try {
             oppgaveVarselService.opprettOppgave(new OppgaveRequest(
                     aktørid,

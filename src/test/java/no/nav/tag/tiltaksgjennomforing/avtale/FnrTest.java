@@ -1,12 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.time.LocalDate;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class FnrTest {
 
@@ -139,7 +140,13 @@ public class FnrTest {
         assertThat(fnr.erOver30år()).isFalse();
         Now.resetClock();
     }
+
+    @Test
+    void equalsOgHashCode() {
+        assertThat(new Fnr("00000000000").equals(new Fnr("00000000000"))).isTrue();
+        assertThat(new Fnr("12345678910").equals(new Fnr("12345678910"))).isTrue();
+
+        assertThat(new Fnr("00000000000").hashCode()).isEqualTo(new Fnr("00000000000").hashCode());
+        assertThat(new Fnr("12345678910").hashCode()).isEqualTo(new Fnr("12345678910").hashCode());
+    }
 }
-
-
-
