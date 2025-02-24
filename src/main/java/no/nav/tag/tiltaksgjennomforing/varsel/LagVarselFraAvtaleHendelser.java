@@ -37,6 +37,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.InkluderingstilskuddEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.KontaktinformasjonEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.MålEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.OmMentorEndret;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.OppfolgingAvAvtaleGodkjent;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.OppfølgingOgTilretteleggingEndret;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.SignertAvMentor;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.StillingsbeskrivelseEndret;
@@ -123,6 +124,7 @@ public class LagVarselFraAvtaleHendelser {
         VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.VEILEDER, null, HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER);
         varselRepository.saveAll(factory.alleParter());
     }
+
     @EventListener
     public void godkjentAvDeltaker(GodkjentAvDeltaker event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.DELTAKER, event.getUtfortAv(), HendelseType.GODKJENT_AV_DELTAKER);
@@ -167,13 +169,13 @@ public class LagVarselFraAvtaleHendelser {
 
     @EventListener
     public void godkjentForEtterregistrering(GodkjentForEtterregistrering event) {
-        VarselFactory factory = new VarselFactory (event.getAvtale(), AvtaleHendelseUtførtAvRolle.BESLUTTER, event.getUtfortAv(), HendelseType.GODKJENT_FOR_ETTERREGISTRERING);
+        VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.BESLUTTER, event.getUtfortAv(), HendelseType.GODKJENT_FOR_ETTERREGISTRERING);
         varselRepository.save(factory.veileder());
     }
 
     @EventListener
     public void fjernetEtterregistrering(FjernetEtterregistrering event) {
-        VarselFactory factory = new VarselFactory (event.getAvtale(), AvtaleHendelseUtførtAvRolle.BESLUTTER, event.getUtfortAv(), HendelseType.FJERNET_ETTERREGISTRERING);
+        VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.BESLUTTER, event.getUtfortAv(), HendelseType.FJERNET_ETTERREGISTRERING);
         varselRepository.save(factory.veileder());
     }
 
@@ -289,6 +291,15 @@ public class LagVarselFraAvtaleHendelser {
     public void endreOppfølgingOgTilretteleggingInformasjon(OppfølgingOgTilretteleggingEndret event) {
         VarselFactory factory = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.VEILEDER, event.getUtførtAv(), HendelseType.OPPFØLGING_OG_TILRETTELEGGING_ENDRET);
         varselRepository.saveAll(factory.alleParter());
+    }
+
+    @EventListener
+    public void oppfølgingAvAvtaleGodkjent(OppfolgingAvAvtaleGodkjent event) {
+        Varsel veilederVarsel = new VarselFactory(event.getAvtale(), AvtaleHendelseUtførtAvRolle.VEILEDER, event.getUtførtAv(), HendelseType.OPPFØLGING_AV_TILTAK_UTFØRT).veileder();
+        // Veileder utfører handlingen, så vi behøver ingen varsel
+        veilederVarsel.setLest(true);
+        veilederVarsel.setBjelle(false);
+        varselRepository.save(veilederVarsel);
     }
 
     @EventListener
