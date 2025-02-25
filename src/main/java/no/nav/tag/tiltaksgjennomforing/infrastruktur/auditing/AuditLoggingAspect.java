@@ -31,6 +31,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AuditLoggingAspect {
 
+    private Set<Utfall> feilUtfall = Set.of(Utfall.ALLE, Utfall.FEIL);
+    private Set<Utfall> suksessUtfall = Set.of(Utfall.ALLE, Utfall.SUKSESS);
+
     public AuditLoggingAspect(TokenUtils tokenUtils, AuditLogger auditLogger) {
         this.tokenUtils = tokenUtils;
         this.auditLogger = auditLogger;
@@ -52,13 +55,15 @@ public class AuditLoggingAspect {
         try {
             var httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
             AuditLogging annotasjon = hentAuditLoggingAnnotasjon(joinPoint);
-            sendAuditmeldingerTilKafka(
-                    httpServletRequest,
-                    annotasjon.value(),
-                    true,
-                    annotasjon.type(),
-                    hentEntiteterSomKanAuditlogges(resultatFraEndepunkt)
-            );
+            if (suksessUtfall.contains(annotasjon.utfall())) {
+                sendAuditmeldingerTilKafka(
+                        httpServletRequest,
+                        annotasjon.value(),
+                        true,
+                        annotasjon.type(),
+                        hentEntiteterSomKanAuditlogges(resultatFraEndepunkt)
+                );
+            }
         } catch (Exception ex) {
             log.error("{}: Logging feilet", this.getClass().getName(), ex);
         }
@@ -66,26 +71,28 @@ public class AuditLoggingAspect {
 
     @AfterThrowing(value = "@annotation(no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditLogging)", throwing = "ex")
     public void afterThrowing(JoinPoint joinPoint, Exception ex) {
-        if (ex instanceof IkkeTilgangTilDeltakerException ikkeTilgangTilDeltakerException) {
-            if (ikkeTilgangTilDeltakerException.getFnr() == null) {
-                return;
-            }
-            var request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-            AuditLogging annotasjon = hentAuditLoggingAnnotasjon(joinPoint);
-            sendAuditmeldingerTilKafka(
-                    request,
-                    annotasjon.value(),
-                    false,
-                    annotasjon.type(),
-                    Set.of(
-                            new AuditElement(null, null, ikkeTilgangTilDeltakerException.getFnr(), null)
-                    ));
-        } else if (ex instanceof IkkeTilgangTilAvtaleException ikkeTilgangTilAvtaleException) {
-            var request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-            AuditLogging annotasjon = hentAuditLoggingAnnotasjon(joinPoint);
+        AuditLogging annotasjon = hentAuditLoggingAnnotasjon(joinPoint);
+        if (feilUtfall.contains(annotasjon.utfall())) {
+            if (ex instanceof IkkeTilgangTilDeltakerException ikkeTilgangTilDeltakerException) {
+                if (ikkeTilgangTilDeltakerException.getFnr() == null) {
+                    return;
+                }
+                var request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 
-            sendAuditmeldingerTilKafka(request, annotasjon.value(), false, annotasjon.type(),
-                    hentOppslagsdata(List.of(ikkeTilgangTilAvtaleException.getAvtale())));
+                sendAuditmeldingerTilKafka(
+                        request,
+                        annotasjon.value(),
+                        false,
+                        annotasjon.type(),
+                        Set.of(
+                                new AuditElement(null, null, ikkeTilgangTilDeltakerException.getFnr(), null)
+                        ));
+            } else if (ex instanceof IkkeTilgangTilAvtaleException ikkeTilgangTilAvtaleException) {
+                var request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+
+                sendAuditmeldingerTilKafka(request, annotasjon.value(), false, annotasjon.type(),
+                        hentOppslagsdata(List.of(ikkeTilgangTilAvtaleException.getAvtale())));
+            }
         }
     }
 

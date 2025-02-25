@@ -10,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilAvtaleException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6Exception;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KontoregisterFeilException;
@@ -48,12 +49,7 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enArbeidstreningAv
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enNavIdent;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ActiveProfiles(Miljø.TEST)
@@ -107,7 +103,7 @@ public class AvtaleControllerTest {
     }
 
     @Test
-    public void hentSkalKastTilgangskontrollExceptionHvisInnloggetNavAnsattIkkeHarTilgang() {
+    public void hentSkalKasteExceptionHvisInnloggetNavAnsattIkkeHarTilgang() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         værInnloggetSom(
                 new Veileder(
@@ -118,13 +114,13 @@ public class AvtaleControllerTest {
                         Collections.emptySet(),
                         new SlettemerkeProperties(),
                         false,
-                    veilarboppfolgingService
+                        veilarboppfolgingService
                 )
         );
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         assertThatThrownBy(
                 () -> avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER, null)
-        ).isExactlyInstanceOf(TilgangskontrollException.class);
+        ).isExactlyInstanceOf(IkkeTilgangTilAvtaleException.class);
     }
 
     @Disabled("må skrives om")
@@ -141,7 +137,7 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-            veilarboppfolgingService
+                veilarboppfolgingService
         );
         værInnloggetSom(veileder);
         Avtale exampleAvtale = Avtale.builder()
@@ -179,7 +175,7 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-            veilarboppfolgingService
+                veilarboppfolgingService
         );
         værInnloggetSom(veileder);
 
@@ -217,7 +213,7 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-            veilarboppfolgingService
+                veilarboppfolgingService
         );
         værInnloggetSom(veileder);
 
@@ -237,7 +233,7 @@ public class AvtaleControllerTest {
     }
 
     @Test
-    public void hentSkalKastTilgangskontrollExceptionHvisInnloggetSelvbetjeningBrukerIkkeHarTilgang() {
+    public void hentSkalKasteExceptionHvisInnloggetSelvbetjeningBrukerIkkeHarTilgang() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         værInnloggetSom(
                 new Arbeidsgiver(
@@ -251,7 +247,7 @@ public class AvtaleControllerTest {
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         assertThatThrownBy(
                 () -> avtaleController.hent(avtale.getId(), Avtalerolle.ARBEIDSGIVER, null)
-        ).isExactlyInstanceOf(TilgangskontrollException.class);
+        ).isExactlyInstanceOf(IkkeTilgangTilAvtaleException.class);
     }
 
     @Test
@@ -275,7 +271,7 @@ public class AvtaleControllerTest {
                 Set.of(navEnhet),
                 new SlettemerkeProperties(),
                 false,
-            veilarboppfolgingService
+                veilarboppfolgingService
         );
         værInnloggetSom(veileder);
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
@@ -335,7 +331,7 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-            veilarboppfolgingService
+                veilarboppfolgingService
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
@@ -365,7 +361,7 @@ public class AvtaleControllerTest {
                         TestData.ingenEndring(),
                         Avtalerolle.ARBEIDSGIVER
                 )
-        ).isInstanceOf(TilgangskontrollException.class);
+        ).isInstanceOf(IkkeTilgangTilAvtaleException.class);
     }
 
     @Test
@@ -406,7 +402,7 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-            veilarboppfolgingService
+                veilarboppfolgingService
         );
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = new Fnr("11111100000");
@@ -432,7 +428,7 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-            veilarboppfolgingService
+                veilarboppfolgingService
         );
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = new Fnr("11111100000");
@@ -516,7 +512,7 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-            veilarboppfolgingService
+                veilarboppfolgingService
         );
         værInnloggetSom(veileder);
         when(kontoregisterService.hentKontonummer(anyString())).thenReturn("990983666");
@@ -532,7 +528,7 @@ public class AvtaleControllerTest {
     }
 
     @Test
-    public void hentBedriftKontonummer_skal_kaste_en_feil_når_innlogget_part_ikke_har_tilgang_til_Avtale() throws TilgangskontrollException {
+    public void hentBedriftKontonummer_skal_kaste_en_feil_når_innlogget_part_ikke_har_tilgang_til_Avtale() {
         NavIdent veilederNavIdent = new NavIdent("Z222222");
         Avtale avtale = Avtale.opprett(lagOpprettAvtale(), Avtaleopphav.VEILEDER, veilederNavIdent);
         NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
@@ -544,7 +540,7 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-            veilarboppfolgingService
+                veilarboppfolgingService
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
@@ -554,7 +550,7 @@ public class AvtaleControllerTest {
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         assertThatThrownBy(
                 () -> avtaleController.hentBedriftKontonummer(avtale.getId(), Avtalerolle.VEILEDER)
-        ).isInstanceOf(TilgangskontrollException.class);
+        ).isInstanceOf(IkkeTilgangTilAvtaleException.class);
     }
 
     @Test
@@ -570,7 +566,7 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-            veilarboppfolgingService
+                veilarboppfolgingService
         );
         værInnloggetSom(veileder);
         when(kontoregisterService.hentKontonummer(anyString())).thenThrow(KontoregisterFeilException.class);

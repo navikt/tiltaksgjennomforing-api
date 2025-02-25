@@ -11,4 +11,13 @@ public @interface AuditLogging {
     String value();
 
     EventType type() default EventType.READ;
+
+    /**
+     * Hvilke utfall skal auditlogges?
+     * <p>
+     * Hensikten med dette feltet er å kunne utelukke auditlogging som lykkes på feks
+     * opprettelse av avtale. Da vil det ikke returneres data og auditlogging vil feile
+     * fordi det ikke returneres noen "auditerbare elementer".
+     */
+    Utfall utfall() default Utfall.ALLE;
 }
