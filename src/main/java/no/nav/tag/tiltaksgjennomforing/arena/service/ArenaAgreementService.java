@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.arena.service;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakskode;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementAggregate;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigration;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigrationStatus;
@@ -30,7 +31,8 @@ public class ArenaAgreementService {
 
     @Transactional
     public Map<UUID, ArenaAgreementAggregate> getArenaAgreementsForProcessing() {
-        Map<UUID, ArenaAgreementAggregate> agreementAggregates = arenaAgreementMigrationRepository.findMigrationAgreementAggregates()
+        Map<UUID, ArenaAgreementAggregate> agreementAggregates = arenaAgreementMigrationRepository
+                .findMigrationAgreementAggregates(ArenaTiltakskode.GJELDENDE_MIGRERING)
                 .stream()
                 .collect(Collectors.toMap(aggregate -> UUID.randomUUID(), aggregate -> aggregate));
 
@@ -46,6 +48,7 @@ public class ArenaAgreementService {
                         .eksternId(entry.getValue().getEksternIdAsUuid().orElse(null))
                         .status(ArenaAgreementMigrationStatus.PROCESSING)
                         .modified(LocalDateTime.now())
+                        .tiltakstype(entry.getValue().getTiltakskode())
                         .build()
                 )
                 .toList()

@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.arena.models.migration;
 
 import com.google.common.base.Strings;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
@@ -8,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakskode;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Deltakerstatuskode;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Tiltakstatuskode;
 
@@ -58,6 +60,8 @@ public class ArenaAgreementAggregate {
     private LocalDateTime deltakerStartdato;
     private LocalDateTime deltakerSluttdato;
     private LocalDateTime regDato;
+    @Convert(converter = ArenaTiltakskode.Convert.class)
+    private ArenaTiltakskode tiltakskode;
 
     public Optional<LocalDate> findStartdato() {
         return Stream.of(deltakerStartdato, tiltakStartdato)
