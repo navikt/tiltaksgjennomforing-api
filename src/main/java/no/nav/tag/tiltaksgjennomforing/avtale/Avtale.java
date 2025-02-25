@@ -304,6 +304,22 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         utforEndring(new AvtaleEndret(this, AvtaleHendelseUtførtAvRolle.fraAvtalerolle(utfortAvRolle), identifikator));
     }
 
+    /**
+     * En midlertidig metode for å oppdatere startdatoen til en gammel avtale som har fått feil startdato
+     */
+    public void midlertidigEndreAvtale(
+            Instant sistEndret,
+            LocalDate nyStartDato
+    ) {
+        sjekkSistEndret(sistEndret);
+        gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.FORLENGE);
+        if (getGjeldendeInnhold().getStartDato().equals(nyStartDato)) {
+            return;
+        }
+        getGjeldendeInnhold().setStartDato(nyStartDato);
+        utforEndring(new AvtaleEndret(this, AvtaleHendelseUtførtAvRolle.SYSTEM, Identifikator.SYSTEM));
+    }
+
     public void endreAvtale(
             Instant sistEndret,
             EndreAvtale nyAvtale,

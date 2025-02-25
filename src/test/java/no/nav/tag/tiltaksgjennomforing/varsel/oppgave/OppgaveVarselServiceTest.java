@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.varsel.oppgave;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.GosysFeilException;
+import no.nav.tag.tiltaksgjennomforing.persondata.aktorId.AktorId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -59,7 +60,7 @@ public class OppgaveVarselServiceTest {
         avtale.setId(UUID.randomUUID());
 
         oppgaveVarselService.opprettOppgave(new OppgaveRequest(
-                "aktørId",
+                AktorId.av("aktørId"),
                 GosysTema.TILTAK,
                 GosysBehandlingstype.SOKNAD,
                 avtale.getTiltakstype(),
@@ -87,8 +88,13 @@ public class OppgaveVarselServiceTest {
         avtale.setId(UUID.randomUUID());
 
         assertThrows(GosysFeilException.class, () ->
-                oppgaveVarselService.opprettOppgave(new OppgaveRequest(
-                        "aktørId", GosysTema.TILTAK, GosysBehandlingstype.INGEN, Tiltakstype.INKLUDERINGSTILSKUDD, ""
-                )));
+            oppgaveVarselService.opprettOppgave(new OppgaveRequest(
+                AktorId.av("aktørId"),
+                GosysTema.TILTAK,
+                GosysBehandlingstype.INGEN,
+                Tiltakstype.INKLUDERINGSTILSKUDD,
+                ""
+            ))
+        );
     }
 }

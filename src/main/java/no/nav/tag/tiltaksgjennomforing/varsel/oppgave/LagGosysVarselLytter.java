@@ -9,6 +9,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleInngått;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleOpprettetAvArena;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
+import no.nav.tag.tiltaksgjennomforing.persondata.aktorId.AktorId;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
@@ -33,7 +34,7 @@ class LagGosysVarselLytter {
     protected final static String VTAO_INNGÅTT = "Brukeren har fått innvilget tiltaksplass og har startet på varig tilrettelagt arbeid i ordinær virksomhet %s.";
 
     private void varsleGosysOmOpprettetAvtale(Avtale avtale) {
-        final String aktørid = persondataService.hentAktørId(avtale.getDeltakerFnr());
+        final AktorId aktørid = persondataService.hentAktørId(avtale.getDeltakerFnr());
         Tiltakstype tiltakstype = avtale.getTiltakstype();
 
         String beskrivelse;
@@ -52,7 +53,7 @@ class LagGosysVarselLytter {
     }
 
     private void varsleGosysOmInngaattVTAOAvtale(Avtale avtale) {
-        final String aktørid = persondataService.hentAktørId(avtale.getDeltakerFnr());
+        final AktorId aktørid = persondataService.hentAktørId(avtale.getDeltakerFnr());
         try {
             oppgaveVarselService.opprettOppgave(new OppgaveRequest(
                     aktørid,
