@@ -19,5 +19,5 @@ public @interface AuditLogging {
      * opprettelse av avtale. Da vil det ikke returneres data og auditlogging vil feile
      * fordi det ikke returneres noen "auditerbare elementer".
      */
-    Utfall utfall() default Utfall.ALLE;
+    Utfall utfallSomLogges() default Utfall.ALLE;
 }

@@ -165,7 +165,7 @@ public class AvtaleController {
         return avtaler;
     }
 
-    @AuditLogging(value = "Oppslag på arbeidsmarkedstiltak", utfall = Utfall.FEIL)
+    @AuditLogging(value = "Oppslag på arbeidsmarkedstiltak", utfallSomLogges = Utfall.FEIL)
     @GetMapping("/sok")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTilMedGet(
@@ -217,7 +217,7 @@ public class AvtaleController {
         }
     }
 
-    @AuditLogging(value = "Oppslag på arbeidsmarkedstiltak", utfall = Utfall.FEIL)
+    @AuditLogging(value = "Oppslag på arbeidsmarkedstiltak", utfallSomLogges = Utfall.FEIL)
     @PostMapping("/sok")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
     public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTilMedPost(
@@ -455,7 +455,7 @@ public class AvtaleController {
 
     @PostMapping
     @Transactional
-    @AuditLogging(value = "Opprett avtale om arbeidsmarkedstiltak", type = EventType.CREATE, utfall = Utfall.FEIL)
+    @AuditLogging(value = "Opprett avtale om arbeidsmarkedstiltak", type = EventType.CREATE, utfallSomLogges = Utfall.FEIL)
     public ResponseEntity<?> opprettAvtaleSomVeileder(@RequestBody OpprettAvtale opprettAvtale) {
         if (opprettAvtale.getTiltakstype().equals(Tiltakstype.VTAO) && !featureToggleService.isEnabled(FeatureToggle.VTAO_TILTAK_TOGGLE)) {
             throw new FeilkodeException(Feilkode.IKKE_ADMIN_TILGANG);
@@ -469,7 +469,7 @@ public class AvtaleController {
         return ResponseEntity.created(uri).build();
     }
 
-    @AuditLogging(value = "Opprett avtale om arbeidsmarkedstiltak", type = EventType.CREATE, utfall = Utfall.FEIL)
+    @AuditLogging(value = "Opprett avtale om arbeidsmarkedstiltak", type = EventType.CREATE, utfallSomLogges = Utfall.FEIL)
     @PostMapping("/opprett-mentor-avtale")
     @Transactional
     public ResponseEntity<?> opprettMentorAvtale(@RequestBody OpprettMentorAvtale opprettMentorAvtale) {
