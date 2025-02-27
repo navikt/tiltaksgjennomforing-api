@@ -478,10 +478,10 @@ public class AvtaleController {
         }
 
         if (opprettMentorAvtale.getAvtalerolle().equals(Avtalerolle.VEILEDER)) {
-            avtale = innloggingService.hentVeileder().opprettMentorAvtale(opprettMentorAvtale);
+            avtale = innloggingService.hentVeileder().opprettAvtale(opprettMentorAvtale);
 
         } else if (opprettMentorAvtale.getAvtalerolle().equals(Avtalerolle.ARBEIDSGIVER)) {
-            avtale = innloggingService.hentArbeidsgiver().opprettMentorAvtale(opprettMentorAvtale);
+            avtale = innloggingService.hentArbeidsgiver().opprettAvtale(opprettMentorAvtale);
         }
         if (avtale == null) {
             throw new RuntimeException("Opprett Mentor fant ingen avtale å behandle.");

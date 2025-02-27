@@ -264,8 +264,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public static Avtale opprett(OpprettAvtale opprettAvtale, Avtaleopphav opphav, NavIdent navIdent) {
-        Avtale avtale = (opprettAvtale instanceof OpprettMentorAvtale opprettMetorAvtale)
-                ? new Avtale(opprettMetorAvtale)
+        Avtale avtale = (opprettAvtale instanceof OpprettMentorAvtale opprettMentorAvtale)
+                ? new Avtale(opprettMentorAvtale)
                 : new Avtale(opprettAvtale);
 
         switch (opphav) {

@@ -291,13 +291,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         return avtale;
     }
 
-    public Avtale opprettMentorAvtale(OpprettMentorAvtale opprettMentorAvtale) {
-        this.sjekkTilgangskontroll(opprettMentorAvtale.getDeltakerFnr());
-        Avtale avtale = Avtale.opprett(opprettMentorAvtale, Avtaleopphav.VEILEDER, getIdentifikator());
-        leggTilEnheter(avtale);
-        return avtale;
-    }
-
     private void sjekkTilgangskontroll(Fnr deltakerFnr) {
         if (!tilgangskontrollService.harSkrivetilgangTilKandidat(this, deltakerFnr)) {
             throw new IkkeTilgangTilDeltakerException();
