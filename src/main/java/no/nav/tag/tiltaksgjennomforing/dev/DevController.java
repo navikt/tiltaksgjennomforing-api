@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.dev;
 
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
@@ -9,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddsperiodeConfig;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -34,15 +36,17 @@ public class DevController {
     private final String miljo;
     private final AvtaleRepository avtaleRepository;
     private final TilskuddsperiodeConfig tilskuddsperiodeConfig;
+    private final InnloggingService innloggingService;
 
-    public DevController(@Value("${MILJO:}") String miljo, AvtaleRepository avtaleRepository, TilskuddsperiodeConfig tilskuddsperiodeConfig) {
+    public DevController(@Value("${MILJO:}") String miljo, AvtaleRepository avtaleRepository, TilskuddsperiodeConfig tilskuddsperiodeConfig, InnloggingService innloggingService) {
         this.miljo = miljo;
         this.avtaleRepository = avtaleRepository;
         this.tilskuddsperiodeConfig = tilskuddsperiodeConfig;
+        this.innloggingService = innloggingService;
     }
 
     @PutMapping("godkjenn/{avtaleNr}")
-    public ResponseEntity<String> godkjennAvtale(@PathVariable("avtaleNr") Integer avtaleNr) {
+    public ResponseEntity<String> godkjennAvtale(@PathVariable("avtaleNr") Integer avtaleNr, @RequestBody Godkjenning godkjenning) {
         Optional<Avtale> kanskjeAvtale = avtaleRepository.findByAvtaleNr(avtaleNr);
 
         if (kanskjeAvtale.isEmpty()) {
@@ -66,7 +70,7 @@ public class DevController {
             avtale.godkjennForVeileder(avtale.getVeilederNavIdent());
         }
         if (!avtale.erAvtaleInngått()) {
-            avtale.godkjennTilskuddsperiode(hentBeslutter(), hentKostnadssted());
+            avtale.godkjennTilskuddsperiode(godkjenning.beslutterIdent(), godkjenning.kostnadssted());
         }
         avtaleRepository.save(avtale);
         return ResponseEntity.ok().build();
@@ -91,8 +95,18 @@ public class DevController {
     @PutMapping("etterregistrering/{avtaleNr}")
     public void etterregistrering(@PathVariable("avtaleNr") Integer avtaleNr) {
         Avtale avtale = avtaleRepository.findByAvtaleNr(avtaleNr).orElseThrow();
-        avtale.togglegodkjennEtterregistrering(hentBeslutter());
+        avtale.togglegodkjennEtterregistrering(hentVeileder());
         avtaleRepository.save(avtale);
+    }
+
+    @PutMapping("ny-oppfolging-dato/{avtaleNr}")
+    public void nyOppfolgingDato(@PathVariable("avtaleNr") Integer avtaleNr) {
+        Avtale avtale = avtaleRepository.findByAvtaleNr(avtaleNr).orElseThrow();
+        if (avtale.getTiltakstype().equals(Tiltakstype.VTAO)) {
+            avtale.setKreverOppfolgingFom(Now.localDate().minusDays(1));
+            avtale.setOppfolgingVarselSendt(null);
+            avtaleRepository.save(avtale);
+        }
     }
 
     @PostMapping("opprett-avtale")
@@ -106,23 +120,6 @@ public class DevController {
     }
 
     private NavIdent hentVeileder() {
-        if (Objects.equals(this.miljo, Miljø.DEV_FSS)) {
-            return new NavIdent("Z994980");
-        }
-        return new NavIdent("Z123456");
-    }
-
-    private NavIdent hentBeslutter() {
-        if (Objects.equals(this.miljo, Miljø.DEV_FSS)) {
-            return new NavIdent("Z992800");
-        }
-        return new NavIdent("X123456");
-    }
-
-    private String hentKostnadssted() {
-        if (Objects.equals(this.miljo, Miljø.DEV_FSS)) {
-            return "0805";
-        }
-        return "0906";
+        return innloggingService.hentVeileder().getNavIdent();
     }
 }
