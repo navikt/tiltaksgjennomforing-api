@@ -131,7 +131,6 @@ public class PersondataService {
         }
     }
 
-    @Cacheable(CacheConfig.PDL_CACHE)
     public boolean erKode6(Fnr fnr) {
         Diskresjonskode gradering = hentAdressebeskyttelse(fnr).getGradering();
         return KODE_6.contains(gradering);
