@@ -19,6 +19,7 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditLogging;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
+import no.nav.tag.tiltaksgjennomforing.persondata.AktsomhetService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.apache.commons.lang3.StringUtils;
@@ -79,6 +80,7 @@ public class AvtaleController {
     private final FilterSokRepository filterSokRepository;
     private final MeterRegistry meterRegistry;
     private final FeatureToggleService featureToggleService;
+    private final AktsomhetService aktsomhetService;
 
     @AuditLogging("Hent detaljer for avtale om arbeidsmarkedstiltak")
     @GetMapping("/{avtaleId}")
@@ -826,5 +828,12 @@ public class AvtaleController {
         return oppdatertAvtale;
     }
 
+    @GetMapping("/{avtaleId}/krever-aktsomhet")
+    public Boolean kreverAktsomhet(
+        @PathVariable("avtaleId") UUID avtaleId,
+        @CookieValue("innlogget-part") Avtalerolle innloggetPart
+    ) {
+        return aktsomhetService.kreverAktsomhet(innloggetPart, avtaleId);
+    }
 
 }
