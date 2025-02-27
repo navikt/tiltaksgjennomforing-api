@@ -25,7 +25,8 @@ public class BeOmAltinnRettighetUrlerController {
                 Tiltakstype.MENTOR, beOmRettighetUrl(orgNr),
                 Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, beOmRettighetUrl(orgNr),
                 Tiltakstype.VARIG_LONNSTILSKUDD, beOmRettighetUrl(orgNr),
-                Tiltakstype.SOMMERJOBB, beOmRettighetUrl(orgNr)
+                Tiltakstype.SOMMERJOBB, beOmRettighetUrl(orgNr),
+                Tiltakstype.VTAO, beOmRettighetUrl(orgNr)
         );
     }
 
