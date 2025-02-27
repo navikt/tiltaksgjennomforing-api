@@ -27,14 +27,14 @@ public class AktsomhetService {
                 case VEILEDER -> {
                     Avtalepart avtalepart = innloggingService.hentAvtalepart(avtalerolle);
                     return Optional.ofNullable(avtalepart.hentAvtale(avtaleRepository, avtaleId))
-                            .map(avtale -> persondataService.erKode6(avtale.getDeltakerFnr()))
+                            .map(avtale -> persondataService.erKode6Eller7(avtale.getDeltakerFnr()))
                             .orElse(false);
                 }
                 case ARBEIDSGIVER, MENTOR -> {
                     Avtalepart avtalepart = innloggingService.hentAvtalepart(avtalerolle);
                     return Optional.ofNullable(avtalepart.hentAvtale(avtaleRepository, avtaleId))
                         .filter(avtale -> !avtale.erUfordelt())
-                        .map(avtale -> persondataService.erKode6(avtale.getDeltakerFnr()))
+                        .map(avtale -> persondataService.erKode6Eller7(avtale.getDeltakerFnr()))
                         .orElse(false);
                 }
                 default -> {
