@@ -84,10 +84,6 @@ public class AuditLoggingAspect {
             var request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 
             if (ex instanceof IkkeTilgangTilDeltakerException ikkeTilgangTilDeltakerException) {
-                if (ikkeTilgangTilDeltakerException.getFnr() == null) {
-                    log.error("Forsøkte å auditlogge på ikkeTilgangTilDeltaker, men deltaker hadde ikke fnr");
-                    return;
-                }
                 sendAuditmeldingerTilKafka(
                         request,
                         annotasjon.value(),
