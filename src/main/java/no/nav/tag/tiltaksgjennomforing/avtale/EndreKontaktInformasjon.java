@@ -13,6 +13,7 @@ public class EndreKontaktInformasjon {
     String arbeidsgiverFornavn;
     String arbeidsgiverEtternavn;
     String arbeidsgiverTlf;
+    String bedriftNavn;
     RefusjonKontaktperson refusjonKontaktperson;
     VtaoFelter vtao;
 }

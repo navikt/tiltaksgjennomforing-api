@@ -112,6 +112,7 @@ public class VtaoTest {
                 lagretAvtale.getGjeldendeInnhold().getArbeidsgiverFornavn(),
                 lagretAvtale.getGjeldendeInnhold().getArbeidsgiverEtternavn(),
                 lagretAvtale.getGjeldendeInnhold().getArbeidsgiverTlf(),
+                lagretAvtale.getGjeldendeInnhold().getBedriftNavn(),
                 null,
                 new VtaoFelter(lagretAvtale.getGjeldendeInnhold().getVtao())
         ));

@@ -245,6 +245,9 @@ public class AvtaleInnhold {
         setArbeidsgiverFornavn(endreKontaktInformasjon.getArbeidsgiverFornavn());
         setArbeidsgiverEtternavn(endreKontaktInformasjon.getArbeidsgiverEtternavn());
         setArbeidsgiverTlf(endreKontaktInformasjon.getArbeidsgiverTlf());
+        if (endreKontaktInformasjon.getBedriftNavn() != null) {
+            setBedriftNavn(endreKontaktInformasjon.getBedriftNavn());
+        }
         setRefusjonKontaktperson(endreKontaktInformasjon.getRefusjonKontaktperson());
         if (endreKontaktInformasjon.getVtao() != null) {
             getVtao().setFadderFornavn(endreKontaktInformasjon.getVtao().fadderFornavn());
