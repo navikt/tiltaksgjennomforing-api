@@ -7,7 +7,6 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgangsattributter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
@@ -15,7 +14,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
-import no.nav.tag.tiltaksgjennomforing.logging.SecureLog;
 import no.nav.tag.tiltaksgjennomforing.persondata.Adressebeskyttelse;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -198,14 +196,11 @@ public class AdminController {
     public ResponseEntity<String> sjekkTilgang(@PathVariable UUID id, @RequestBody AvtaleAdminSjekkTilgangRequest body) {
         Optional<Avtale> avtale = avtaleRepository.findById(id);
 
-        return avtale.map(value -> {
-                Identifikator aktorId = body.brukAktorId()
-                    ? persondataService.hentAktørId(value.getDeltakerFnr())
-                    : value.getDeltakerFnr();
-                return tilgangskontrollService.hentGrunnForAvslag(body.veilederAzureOid(), aktorId)
+        return avtale.map(value ->
+                tilgangskontrollService.hentGrunnForAvslag(body.veilederAzureOid(), value.getDeltakerFnr())
                     .map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.ok().body("Fant ingen grunn for avslag"));
-            })
+                    .orElseGet(() -> ResponseEntity.ok().body("Fant ingen grunn for avslag"))
+            )
             .orElseGet(() -> ResponseEntity.notFound().build());
     }
 

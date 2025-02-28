@@ -72,10 +72,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     Predicate<Avtale> harTilgangTilAvtale(List<Avtale> avtaler) {
-        Map<Identifikator, Boolean> map = tilgangskontrollService.harSkrivetilgangTilKandidater(
-            this,
-            avtaler.stream().map(Avtale::getDeltakerFnr).collect(Collectors.toSet())
-        );
+        Map<Fnr, Boolean> map = tilgangskontrollService.harSkrivetilgangTilAvtaler(this, avtaler);
         return avtale -> {
             boolean resultat = map.getOrDefault(avtale.getDeltakerFnr(), false);
             if (!resultat) {

@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@EqualsAndHashCode
 @ToString
+@EqualsAndHashCode(of = "verdi")
 public class Identifikator {
     public static final Identifikator ARENA = new Identifikator("Arena");
     public static final Identifikator SYSTEM = new Identifikator("System");
