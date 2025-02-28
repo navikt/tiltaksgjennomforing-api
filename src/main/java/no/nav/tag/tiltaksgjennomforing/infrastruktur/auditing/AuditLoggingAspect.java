@@ -4,9 +4,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilAvtaleException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.jetbrains.annotations.NotNull;
@@ -18,6 +21,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,6 +30,9 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 public class AuditLoggingAspect {
+
+    private final Set<Utfall> feilUtfall = Set.of(Utfall.ALLE, Utfall.FEIL);
+    private final Set<Utfall> suksessUtfall = Set.of(Utfall.ALLE, Utfall.SUKSESS);
 
     public AuditLoggingAspect(TokenUtils tokenUtils, AuditLogger auditLogger) {
         this.tokenUtils = tokenUtils;
@@ -47,9 +54,49 @@ public class AuditLoggingAspect {
     public void postProcess(JoinPoint joinPoint, Object resultatFraEndepunkt) {
         try {
             var httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+            AuditLogging annotasjon = hentAuditLoggingAnnotasjon(joinPoint);
 
-            sendAuditmeldingerTilKafka(httpServletRequest, hentAuditLoggingAnnotasjonsverdi(joinPoint), hentEntiteterSomKanAuditlogges(resultatFraEndepunkt));
+            if (!suksessUtfall.contains(annotasjon.utfallSomLogges())) {
+                return;
+            }
+
+            sendAuditmeldingerTilKafka(
+                    httpServletRequest,
+                    annotasjon.value(),
+                    true,
+                    annotasjon.type(),
+                    hentEntiteterSomKanAuditlogges(resultatFraEndepunkt)
+            );
         } catch (Exception ex) {
+            log.error("{}: Logging feilet", this.getClass().getName(), ex);
+        }
+    }
+
+    @AfterThrowing(value = "@annotation(no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditLogging)", throwing = "ex")
+    public void afterThrowing(JoinPoint joinPoint, Exception ex) {
+        try {
+            AuditLogging annotasjon = hentAuditLoggingAnnotasjon(joinPoint);
+
+            if (!feilUtfall.contains(annotasjon.utfallSomLogges())) {
+                return;
+            }
+
+            var request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+
+            if (ex instanceof IkkeTilgangTilDeltakerException ikkeTilgangTilDeltakerException) {
+                sendAuditmeldingerTilKafka(
+                        request,
+                        annotasjon.value(),
+                        false,
+                        annotasjon.type(),
+                        Set.of(
+                                AuditElement.fraException(ikkeTilgangTilDeltakerException)
+                        ));
+            } else if (ex instanceof IkkeTilgangTilAvtaleException ikkeTilgangTilAvtaleException) {
+                sendAuditmeldingerTilKafka(request, annotasjon.value(), false, annotasjon.type(),
+                        hentOppslagsdata(List.of(ikkeTilgangTilAvtaleException.getAvtale())));
+            }
+        } catch (Exception e) {
             log.error("{}: Logging feilet", this.getClass().getName(), ex);
         }
     }
@@ -58,7 +105,7 @@ public class AuditLoggingAspect {
      * På grunn av at Collection, HashMap og ResponseEntity er generics, er vi nødt til å kverne igjennom mange
      * instanceof-sjekker for å finne ut om responsen fra controller-metoden som wrappes av Auditlogging-annotasjonen
      * faktisk inneholder en "auditerbar" avtale.
-     * <br/>
+     * <p>
      * Hvis returverdien er en ResponseEntity eller HashMap, så "unboxer" vi disse og kaller funksjonen igjen.
      * I tilfellet hvor objektet er et HashMap prøver vi å hente ut avtaler fra "avtaler"-nøkkelen.
      */
@@ -91,9 +138,9 @@ public class AuditLoggingAspect {
         return hentOppslagsdata(entiteter);
     }
 
-    private static String hentAuditLoggingAnnotasjonsverdi(JoinPoint joinPoint) {
+    private static AuditLogging hentAuditLoggingAnnotasjon(JoinPoint joinPoint) {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-        return methodSignature.getMethod().getAnnotation(AuditLogging.class).value();
+        return methodSignature.getMethod().getAnnotation(AuditLogging.class);
     }
 
     /**
@@ -104,7 +151,7 @@ public class AuditLoggingAspect {
         return result.stream().map(AuditElement::of).collect(Collectors.toSet());
     }
 
-    private void sendAuditmeldingerTilKafka(HttpServletRequest request, String apiBeskrivelse, Set<AuditElement> auditelementer) {
+    private void sendAuditmeldingerTilKafka(HttpServletRequest request, String apiBeskrivelse, boolean allowed, EventType eventType, Set<AuditElement> auditelementer) {
         try {
             String innloggetBrukerId = tokenUtils.hentBrukerOgIssuer().map(TokenUtils.BrukerOgIssuer::getBrukerIdent).orElse(null);
             // Logger kun oppslag dersom en innlogget bruker utførte oppslaget
@@ -124,9 +171,10 @@ public class AuditLoggingAspect {
                                     // ArcSight vil ikke ha oppslag som er utført av en privatperson; oppslaget må derfor være "utført av" en bedrift
                                     innloggetBrukerErPrivatperson ? auditelement.bedriftNr().asString() : innloggetBrukerId,
                                     auditelement.deltakerFnr().asString(),
-                                    "%s-%s".formatted(auditelement.id(), auditelement.sistEndret()),
-                                    EventType.READ,
-                                    true,
+                                    auditelement.id() == null && auditelement.sistEndret() == null ? null :
+                                            "%s-%s".formatted(auditelement.id(), auditelement.sistEndret()),
+                                    eventType,
+                                    allowed,
                                     utførtTid,
                                     apiBeskrivelse,
                                     uri,
