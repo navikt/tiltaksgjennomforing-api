@@ -306,8 +306,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     private void oppdaterKreverOppfolgingFom() {
         if (Tiltakstype.VTAO.equals(this.getTiltakstype()) && this.gjeldendeInnhold.getStartDato() != null) {
-            LocalDate tidligsteDato = maksDato(this.gjeldendeInnhold.getStartDato(), Now.localDate());
-            LocalDate sluttenAvMnd4MndFremITid = YearMonth.from(tidligsteDato).plusMonths(4).atDay(1);
+            LocalDate tidligstMuligeDato = maksDato(this.gjeldendeInnhold.getStartDato(), Now.localDate());
+            LocalDate sluttenAvMnd4MndFremITid = YearMonth.from(tidligstMuligeDato).plusMonths(4).atDay(1);
             this.setKreverOppfolgingFom(sluttenAvMnd4MndFremITid);
         }
     }
