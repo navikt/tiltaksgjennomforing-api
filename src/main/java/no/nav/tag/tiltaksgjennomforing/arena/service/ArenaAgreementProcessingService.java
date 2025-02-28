@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.arena.client.acl.AktivitetArenaAclClient;
 import no.nav.tag.tiltaksgjennomforing.arena.client.hendelse.HendelseAktivitetsplanClient;
 import no.nav.tag.tiltaksgjennomforing.arena.logging.ArenaAgreementLogging;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakskode;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementAggregate;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigration;
 import no.nav.tag.tiltaksgjennomforing.arena.models.migration.ArenaAgreementMigrationStatus;
@@ -20,7 +21,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtaleArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddsperiodeConfig;
-import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
@@ -107,7 +107,8 @@ public class ArenaAgreementProcessingService {
                         ArenaAgreementMigrationStatus.COMPLETED,
                         completed.action(),
                         eksternId,
-                        nyAvtale.getId()
+                        nyAvtale.getId(),
+                        agreementAggregate.getTiltakskode()
                     );
                 }
                 case ArenaMigrationProcessResult.Ignored ignored ->
@@ -118,7 +119,8 @@ public class ArenaAgreementProcessingService {
                         ArenaAgreementMigrationStatus.COMPLETED,
                         ArenaMigrationAction.IGNORER,
                         eksternId,
-                        null
+                        null,
+                        agreementAggregate.getTiltakskode()
                     );
                 case ArenaMigrationProcessResult.Failed failed ->
                     saveMigrationStatus(
@@ -128,7 +130,8 @@ public class ArenaAgreementProcessingService {
                         ArenaAgreementMigrationStatus.FAILED,
                         failed.action(),
                         eksternId,
-                        null
+                        null,
+                        agreementAggregate.getTiltakskode()
                     );
             }
         } catch(Exception e) {
@@ -140,7 +143,8 @@ public class ArenaAgreementProcessingService {
                 ArenaAgreementMigrationStatus.FAILED,
                 null,
                 eksternId,
-                null
+                null,
+                agreementAggregate.getTiltakskode()
             );
         }
     }
@@ -152,7 +156,8 @@ public class ArenaAgreementProcessingService {
             ArenaAgreementMigrationStatus status,
             ArenaMigrationAction action,
             UUID eksternId,
-            UUID agreementId
+            UUID agreementId,
+            ArenaTiltakskode tiltakskode
     ) {
         arenaAgreementMigrationRepository.save(
             ArenaAgreementMigration.builder()
@@ -164,6 +169,7 @@ public class ArenaAgreementProcessingService {
                 .avtaleId(agreementId)
                 .eksternId(eksternId)
                 .modified(LocalDateTime.now())
+                .tiltakstype(tiltakskode)
                 .build()
         );
     }
@@ -271,15 +277,10 @@ public class ArenaAgreementProcessingService {
 
         Fnr deltakerFnr = new Fnr(agreementAggregate.getFnr());
         PdlRespons personalData = persondataService.hentPersondata(deltakerFnr);
-        if (persondataService.erKode6(personalData)) {
-            log.info("Ikke tilgang til deltaker.");
-            return new ArenaMigrationProcessResult.Failed(ArenaMigrationAction.KODE_6);
-        }
-
         OpprettAvtale opprettAvtale = OpprettAvtale.builder()
             .bedriftNr(new BedriftNr(agreementAggregate.getVirksomhetsnummer()))
             .deltakerFnr(deltakerFnr)
-            .tiltakstype(Tiltakstype.ARBEIDSTRENING)
+            .tiltakstype(agreementAggregate.getTiltakskode().getTiltakstype())
             .build();
 
         Avtale avtale = Avtale.opprett(opprettAvtale, Avtaleopphav.ARENA);

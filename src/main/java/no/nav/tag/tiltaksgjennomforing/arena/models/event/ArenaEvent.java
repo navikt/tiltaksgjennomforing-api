@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.arena.models.event;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -18,6 +19,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Getter
@@ -76,6 +78,13 @@ public class ArenaEvent {
 
     public Operation getOperation() {
         return Operation.parse(this.operation);
+    }
+
+    public Optional<String> getPayloadFieldAsText(String fieldName) {
+        return Optional.ofNullable(this.payload.get(fieldName))
+            .flatMap(node ->
+                node instanceof NullNode || !node.isValueNode() ? Optional.empty() : Optional.of(node.asText())
+            );
     }
 
     public String getLogId() {

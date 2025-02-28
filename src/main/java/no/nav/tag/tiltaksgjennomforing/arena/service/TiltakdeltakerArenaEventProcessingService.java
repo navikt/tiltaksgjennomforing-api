@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTable;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakdeltaker;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakskode;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Operation;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEvent;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEventStatus;
@@ -12,6 +13,8 @@ import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaEventRepository;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaTiltakdeltakerRepository;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaTiltakgjennomforingRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -38,11 +41,12 @@ public class TiltakdeltakerArenaEventProcessingService implements IArenaEventPro
 
     public ArenaEventStatus process(ArenaEvent arenaEvent) throws JsonProcessingException {
         ArenaTiltakdeltaker tiltakdeltaker = this.objectMapper.treeToValue(arenaEvent.getPayload(), ArenaTiltakdeltaker.class);
+        Optional<ArenaEvent> tiltaksgjennomforingEvent = eventRepository.findByArenaIdAndArenaTable(
+            tiltakdeltaker.getTiltakgjennomforingId().toString(),
+            ArenaTable.TILTAKGJENNOMFORING.getTable()
+        );
 
-        boolean isTiltakgjennomforingIgnoredOrDeleted = eventRepository.findByArenaIdAndArenaTable(
-                tiltakdeltaker.getTiltakgjennomforingId().toString(),
-                ArenaTable.TILTAKGJENNOMFORING.getTable()
-            )
+        boolean isTiltakgjennomforingIgnoredOrDeleted = tiltaksgjennomforingEvent
             .map((tiltak) -> ArenaEventStatus.IGNORED == tiltak.getStatus() || Operation.DELETE == tiltak.getOperation())
             .orElse(false);
 
@@ -50,6 +54,16 @@ public class TiltakdeltakerArenaEventProcessingService implements IArenaEventPro
             log.info("Arena-event ignorert fordi tilhørende tiltakgjennomføring er ignorert eller slettet");
             delete(tiltakdeltaker, () -> log.info("Sletter tidligere håndtert deltaker som nå skal ignoreres"));
             return ArenaEventStatus.IGNORED;
+        }
+
+        ArenaTiltakskode tiltakskode = tiltaksgjennomforingEvent
+            .flatMap((tiltak) -> tiltak.getPayloadFieldAsText("TILTAKSKODE"))
+            .map(ArenaTiltakskode::parse)
+            .orElse(ArenaTiltakskode.UKJENT);
+
+        if (tiltakskode.isFerdigMigrert()) {
+            log.info("Arena-event tilhører et tiltak som er ferdig migrert");
+            return ArenaEventStatus.DONE;
         }
 
         log.info(

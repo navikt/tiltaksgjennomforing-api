@@ -22,14 +22,14 @@ public enum ArenaMigrationAction {
 
     public static ArenaMigrationAction map(ArenaAgreementAggregate agreementAggregate) {
         Deltakerstatuskode deltakerstatuskode = agreementAggregate.getDeltakerstatuskode();
-        boolean isSluttdatoInTheFuture = agreementAggregate.findSluttdato()
-            .map(sluttdato -> sluttdato.isAfter(LocalDate.now())).orElse(false);
+        boolean isSluttdatoIDagEllerFremtiden = agreementAggregate.findSluttdato()
+            .map(sluttdato -> sluttdato.isAfter(LocalDate.now().minusDays(1))).orElse(false);
 
         if (agreementAggregate.isDublett()) {
             return IGNORER;
         }
         return switch (deltakerstatuskode) {
-            case GJENN, TILBUD -> isSluttdatoInTheFuture ? OPPRETT : IGNORER;
+            case GJENN, TILBUD -> isSluttdatoIDagEllerFremtiden ? OPPRETT : IGNORER;
             case null, default -> IGNORER;
         };
     }

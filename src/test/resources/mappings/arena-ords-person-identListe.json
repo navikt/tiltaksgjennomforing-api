@@ -1,10 +1,7 @@
 {
   "request": {
     "method": "POST",
-    "urlPathPattern": "/arena-ords/arena/api/v1/person/identListe",
-    "bodyPatterns": [{
-      "matches": "\\{\"personListe\":\\[\\d*\\]\\}"
-    }]
+    "urlPathPattern": "/arena-ords/arena/api/v1/person/identListe"
   },
   "response": {
     "status": 200,
