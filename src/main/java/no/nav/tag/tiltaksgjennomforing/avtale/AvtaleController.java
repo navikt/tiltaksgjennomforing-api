@@ -21,6 +21,7 @@ import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.EventType;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.Utfall;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
+import no.nav.tag.tiltaksgjennomforing.persondata.AktsomhetService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.apache.commons.lang3.StringUtils;
@@ -81,6 +82,7 @@ public class AvtaleController {
     private final FilterSokRepository filterSokRepository;
     private final MeterRegistry meterRegistry;
     private final FeatureToggleService featureToggleService;
+    private final AktsomhetService aktsomhetService;
 
     @AuditLogging("Hent detaljer for avtale om arbeidsmarkedstiltak")
     @GetMapping("/{avtaleId}")
@@ -402,6 +404,7 @@ public class AvtaleController {
         }
         Arbeidsgiver arbeidsgiver = innloggingService.hentArbeidsgiver();
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
+        avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
@@ -479,10 +482,10 @@ public class AvtaleController {
         }
 
         if (opprettMentorAvtale.getAvtalerolle().equals(Avtalerolle.VEILEDER)) {
-            avtale = innloggingService.hentVeileder().opprettMentorAvtale(opprettMentorAvtale);
+            avtale = innloggingService.hentVeileder().opprettAvtale(opprettMentorAvtale);
 
         } else if (opprettMentorAvtale.getAvtalerolle().equals(Avtalerolle.ARBEIDSGIVER)) {
-            avtale = innloggingService.hentArbeidsgiver().opprettMentorAvtale(opprettMentorAvtale);
+            avtale = innloggingService.hentArbeidsgiver().opprettAvtale(opprettMentorAvtale);
         }
         if (avtale == null) {
             throw new RuntimeException("Opprett Mentor fant ingen avtale å behandle.");
@@ -829,5 +832,12 @@ public class AvtaleController {
         return oppdatertAvtale;
     }
 
+    @GetMapping("/{avtaleId}/krever-aktsomhet")
+    public Boolean kreverAktsomhet(
+        @PathVariable("avtaleId") UUID avtaleId,
+        @CookieValue("innlogget-part") Avtalerolle innloggetPart
+    ) {
+        return aktsomhetService.kreverAktsomhet(innloggetPart, avtaleId);
+    }
 
 }

@@ -90,6 +90,7 @@ import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.LonnstilskuddAvtaleBeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.TilskuddsperioderBeregningStrategyFactory;
+import no.nav.tag.tiltaksgjennomforing.utils.DatoUtils;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.tag.tiltaksgjennomforing.utils.TelefonnummerValidator;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
@@ -118,8 +119,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.ForkortetGrunn.AVSLUTTET_I_ARENA;
+import static no.nav.tag.tiltaksgjennomforing.utils.DatoUtils.maksDato;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.sjekkAtIkkeNull;
+import static org.apache.commons.lang3.ObjectUtils.max;
 
 @Slf4j
 @Data
@@ -264,8 +267,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public static Avtale opprett(OpprettAvtale opprettAvtale, Avtaleopphav opphav, NavIdent navIdent) {
-        Avtale avtale = (opprettAvtale instanceof OpprettMentorAvtale opprettMetorAvtale)
-                ? new Avtale(opprettMetorAvtale)
+        Avtale avtale = (opprettAvtale instanceof OpprettMentorAvtale opprettMentorAvtale)
+                ? new Avtale(opprettMentorAvtale)
                 : new Avtale(opprettAvtale);
 
         switch (opphav) {
@@ -297,11 +300,16 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
             nyeTilskuddsperioder();
         }
+        oppdaterKreverOppfolgingFom();
+        utforEndring(new AvtaleEndret(this, AvtaleHendelseUtførtAvRolle.fraAvtalerolle(utfortAvRolle), identifikator));
+    }
+
+    private void oppdaterKreverOppfolgingFom() {
         if (Tiltakstype.VTAO.equals(this.getTiltakstype()) && this.gjeldendeInnhold.getStartDato() != null) {
-            LocalDate sluttenAvMnd4MndFremITid = YearMonth.from(this.gjeldendeInnhold.getStartDato()).plusMonths(4).atDay(1);
+            LocalDate tidligstMuligeDato = maksDato(this.gjeldendeInnhold.getStartDato(), Now.localDate());
+            LocalDate sluttenAvMnd4MndFremITid = YearMonth.from(tidligstMuligeDato).plusMonths(4).atDay(1);
             this.setKreverOppfolgingFom(sluttenAvMnd4MndFremITid);
         }
-        utforEndring(new AvtaleEndret(this, AvtaleHendelseUtførtAvRolle.fraAvtalerolle(utfortAvRolle), identifikator));
     }
 
     /**
@@ -590,8 +598,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
     }
 
-    //TODO TEST MEG
-    void godkjennForArbeidsgiver(Identifikator utfortAv) {
+    public void godkjennForArbeidsgiver(Identifikator utfortAv) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErKlarTilGodkjenning();
         if (erGodkjentAvArbeidsgiver()) {
@@ -601,7 +608,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         utforEndring(new GodkjentAvArbeidsgiver(this, utfortAv));
     }
 
-    void godkjennForVeileder(NavIdent utfortAv) {
+    public void godkjennForVeileder(NavIdent utfortAv) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
         sjekkOmAltErKlarTilGodkjenning();
         if (erGodkjentAvVeileder()) {
@@ -635,6 +642,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
 
     private void avtaleInngått(LocalDateTime tidspunkt, Avtalerolle utførtAvRolle, NavIdent utførtAv) {
         gjeldendeInnhold.setAvtaleInngått(tidspunkt);
+        oppdaterKreverOppfolgingFom();
         utforEndring(new AvtaleInngått(this, AvtaleHendelseUtførtAvRolle.fraAvtalerolle(utførtAvRolle), utførtAv));
     }
 
@@ -742,7 +750,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         utforEndring(new GodkjentPaVegneAvDeltakerOgArbeidsgiver(this, utfortAv));
     }
 
-    void godkjennForDeltaker(Identifikator utfortAv) {
+    public void godkjennForDeltaker(Identifikator utfortAv) {
         sjekkOmAltErKlarTilGodkjenning();
         if (erGodkjentAvDeltaker()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_GODKJENNE_DELTAKER_HAR_ALLEREDE_GODKJENT);

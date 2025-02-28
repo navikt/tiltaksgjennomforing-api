@@ -29,7 +29,7 @@ public class OppfølgingVarsleJobb {
         List<Avtale> avtaler = avtaleRepository.finnAvtalerSomSnartSkalFølgesOpp(dagenDato);
         if (!avtaler.isEmpty()) log.info("Fant {} avtaler som krever oppfølging. Oppretter varsel til veileder på disse.", avtaler.size());
         avtaler.forEach(avtale -> {
-            Varsel varsel = Varsel.nyttVarsel(avtale.getVeilederNavIdent(), true, avtale, Avtalerolle.VEILEDER, AvtaleHendelseUtførtAvRolle.SYSTEM, Identifikator.SYSTEM, HendelseType.OPPFØLGING_KREVES_VARSEL, null);
+            Varsel varsel = Varsel.nyttVarsel(avtale.getVeilederNavIdent(), true, avtale, Avtalerolle.VEILEDER, AvtaleHendelseUtførtAvRolle.SYSTEM, Identifikator.SYSTEM, HendelseType.OPPFØLGING_AV_TILTAK_KREVES, null);
             varselRepository.save(varsel);
             avtale.setOppfolgingVarselSendt(Now.instant());
         });

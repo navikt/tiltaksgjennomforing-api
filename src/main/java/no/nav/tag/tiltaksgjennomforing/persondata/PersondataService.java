@@ -20,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -60,7 +61,7 @@ public class PersondataService {
     }
 
     public Adressebeskyttelse hentAdressebeskyttelse(Fnr fnr) {
-        PdlRequest pdlRequest = new PdlRequest(resourceAsString(adressebeskyttelseQueryResource), new Variables(fnr.asString()));
+        PdlRequest pdlRequest = new PdlRequest(resourceAsString(adressebeskyttelseQueryResource), new PdlRequestVariables(fnr.asString()));
         return hentAdressebeskyttelseFraPdlRespons(utførKallTilPdl(pdlRequest));
     }
 
@@ -87,11 +88,14 @@ public class PersondataService {
         }
     }
 
-    private static String hentAktørIdFraPdlRespons(PdlRespons pdlRespons) {
+    private static Optional<String> hentGjeldendeIdentFraPdlRespons(PdlRespons pdlRespons) {
         try {
-            return pdlRespons.getData().getHentIdenter().getIdenter()[0].getIdent();
+            return Stream.of(pdlRespons.getData().getHentIdenter().getIdenter())
+                .filter(i -> !i.isHistorisk())
+                .map(Identer::getIdent)
+                .findFirst();
         } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
-            return "";
+            return Optional.empty();
         }
     }
 
@@ -112,9 +116,16 @@ public class PersondataService {
         }
     }
 
-    public AktorId hentAktørId(Fnr fnr) {
-        PdlRequest pdlRequest = new PdlRequest(resourceAsString(identerQueryResource), new Variables(fnr.asString()));
-        return AktorId.av(hentAktørIdFraPdlRespons(utførKallTilPdl(pdlRequest)));
+    public Optional<AktorId> hentGjeldendeAktørId(Fnr fnr) {
+        if (fnr == null) {
+            return Optional.empty();
+        }
+
+        PdlRequest pdlRequest = new PdlRequest(
+            resourceAsString(identerQueryResource),
+            new PdlRequestVariables(fnr.asString())
+        );
+        return hentGjeldendeIdentFraPdlRespons(utførKallTilPdl(pdlRequest)).map(AktorId::av);
     }
 
     public boolean erKode6Eller7(Fnr fnr) {
@@ -138,12 +149,12 @@ public class PersondataService {
 
     @Cacheable(CacheConfig.PDL_CACHE)
     public PdlRespons hentPersondataFraPdl(Fnr fnr) {
-        PdlRequest pdlRequest = new PdlRequest(resourceAsString(persondataQueryResource), new Variables(fnr.asString()));
+        PdlRequest pdlRequest = new PdlRequest(resourceAsString(persondataQueryResource), new PdlRequestVariables(fnr.asString()));
         return utførKallTilPdl(pdlRequest);
     }
 
     public PdlRespons hentPersondata(Fnr fnr) {
-        PdlRequest pdlRequest = new PdlRequest(resourceAsString(persondataQueryResource), new Variables(fnr.asString()));
+        PdlRequest pdlRequest = new PdlRequest(resourceAsString(persondataQueryResource), new PdlRequestVariables(fnr.asString()));
         return utførKallTilPdl(pdlRequest);
     }
 }

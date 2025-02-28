@@ -1,16 +1,24 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import java.time.LocalDate;
+import lombok.EqualsAndHashCode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
+import java.time.LocalDate;
+
+@EqualsAndHashCode(callSuper = true)
 public class Fnr extends Identifikator {
+    private static final Fnr NULL_FNR = new Fnr("00000000000");
 
     public Fnr(String fnr) {
         super(fnr);
         if (fnr != null && !erGyldigFnr(fnr)) {
             throw new TiltaksgjennomforingException("Ugyldig fødselsnummer. Må bestå av 11 tegn.");
         }
+    }
+
+    public static Fnr av(String verdi) {
+        return new Fnr(verdi);
     }
 
     public static boolean erGyldigFnr(String fnr) {
@@ -25,14 +33,14 @@ public class Fnr extends Identifikator {
     }
 
     public boolean erUnder16år() {
-        if (this.asString().equals("00000000000")) {
+        if (NULL_FNR.equals(this)) {
             return false;
         }
         return this.fødselsdato().isAfter(Now.localDate().minusYears(16));
     }
 
     public boolean erOver30år() {
-        if (this.asString().equals("00000000000")) {
+        if (NULL_FNR.equals(this)) {
             return false;
         }
         return this.fødselsdato().isBefore(Now.localDate().minusYears(30));
@@ -44,31 +52,35 @@ public class Fnr extends Identifikator {
     }
 
     public boolean erOver30årFørsteJanuar() {
-        if (this.asString().equals("00000000000")) {
+        if (NULL_FNR.equals(this)) {
             return false;
         }
         return this.fødselsdato().isBefore(førsteJanuarIÅr().minusYears(30));
     }
 
     public boolean erOver30årFraOppstartDato(LocalDate opprettetTidspunkt) {
-        if (this.asString().equals("00000000000")) {
+        if (NULL_FNR.equals(this)) {
             return false;
         }
         return this.fødselsdato().isBefore(opprettetTidspunkt.minusYears(30));
     }
 
     public boolean erOver67ÅrFraSluttDato(LocalDate sluttDato) {
-        if (this.asString().equals("00000000000")) {
+        if (NULL_FNR.equals(this)) {
             return false;
         }
         return this.fødselsdato().isBefore(sluttDato.minusYears(67).plusDays(1));
     }
 
     public boolean erOver72ÅrFraSluttDato(LocalDate sluttDato) {
-        if (this.asString().equals("00000000000")) {
+        if (NULL_FNR.equals(this)) {
             return false;
         }
         return this.fødselsdato().isBefore(sluttDato.minusYears(72).plusDays(1));
+    }
+
+    public boolean erDNummer() {
+        return isDNumber(this.asString());
     }
 
     private String getDayInMonth() {

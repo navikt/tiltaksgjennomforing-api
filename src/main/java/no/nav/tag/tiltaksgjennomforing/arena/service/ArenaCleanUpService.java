@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.arena.service;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakskode;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaAgreementMigrationRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.AnnullertGrunn;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -29,7 +30,10 @@ public class ArenaCleanUpService {
 
     @Transactional
     public void cleanUp() {
-        List<Avtale> avtaleList = arenaAgreementMigrationRepository.findAgreementsForCleanUp(Limit.of(1000));
+        List<Avtale> avtaleList = arenaAgreementMigrationRepository.findAgreementsForCleanUp(
+            ArenaTiltakskode.GJELDENDE_MIGRERING.getTiltakstype(),
+            Limit.of(1000)
+        );
         log.info("Rydder opp {} avtaler som ikke ble migrert fra Arena", avtaleList.size());
 
         for (Avtale avtale : avtaleList) {

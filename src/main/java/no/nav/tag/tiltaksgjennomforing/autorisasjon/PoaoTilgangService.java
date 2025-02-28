@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
-import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 
 import java.util.Map;
 import java.util.Optional;
@@ -8,8 +8,8 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface PoaoTilgangService {
-    boolean harSkrivetilgang(UUID beslutterAzureUUID, Identifikator id);
-    Map<Identifikator, Boolean> harSkrivetilgang(UUID beslutterAzureUUID, Set<Identifikator> isSet);
-    Optional<String> hentGrunn(UUID beslutterAzureUUID, Identifikator id);
-    Optional<Tilgangsattributter> hentTilgangsattributter(Identifikator id);
+    boolean harSkrivetilgang(UUID beslutterAzureUUID, Fnr fnr);
+    Map<Fnr, Boolean> harSkrivetilgang(UUID beslutterAzureUUID, Set<Fnr> fnrSet);
+    Optional<String> hentGrunn(UUID beslutterAzureUUID, Fnr fnr);
+    Optional<Tilgangsattributter> hentTilgangsattributter(Fnr fnr);
 }

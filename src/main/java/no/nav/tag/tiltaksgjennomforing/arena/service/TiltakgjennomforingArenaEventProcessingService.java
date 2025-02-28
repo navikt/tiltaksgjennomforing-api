@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakgjennomforing;
+import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakskode;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Operation;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEvent;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEventStatus;
@@ -30,11 +31,17 @@ public class TiltakgjennomforingArenaEventProcessingService implements IArenaEve
 
     public ArenaEventStatus process(ArenaEvent arenaEvent) throws JsonProcessingException {
         ArenaTiltakgjennomforing tiltakgjennomforing = this.objectMapper.treeToValue(arenaEvent.getPayload(), ArenaTiltakgjennomforing.class);
+        ArenaTiltakskode tiltakskode = tiltakgjennomforing.getTiltakskode();
 
-        if (!tiltakgjennomforing.isArbeidstrening()) {
-            log.info("Arena-event ignorert fordi den ikke er arbeidstrening");
+        if (!tiltakskode.skalBehandles()) {
+            log.info("Arena-event ignorert fordi tiltakstypen ikke skal behandles");
             delete(tiltakgjennomforing, () -> log.info("Sletter tidligere håndtert tiltak som nå skal ignoreres"));
             return ArenaEventStatus.IGNORED;
+        }
+
+        if (tiltakskode.isFerdigMigrert()) {
+            log.info("Arena-event tilhører et tiltak som er ferdig migrert");
+            return ArenaEventStatus.DONE;
         }
 
         log.info(

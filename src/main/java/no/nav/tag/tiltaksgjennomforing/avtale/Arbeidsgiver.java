@@ -225,17 +225,6 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         return avtale;
     }
 
-    public Avtale opprettMentorAvtale(OpprettMentorAvtale opprettMentorAvtale) {
-        this.tilgangTilBedriftVedOpprettelseAvAvtale(
-                opprettMentorAvtale.getBedriftNr(),
-                opprettMentorAvtale.getTiltakstype()
-        );
-        Avtale avtale = Avtale.opprett(opprettMentorAvtale, Avtaleopphav.ARBEIDSGIVER);
-        leggEnheterVedOpprettelseAvAvtale(avtale);
-
-        return avtale;
-    }
-
     protected void leggEnheterVedOpprettelseAvAvtale(Avtale avtale) {
         final PdlRespons persondata = this.hentPersonDataForOpprettelseAvAvtale(avtale);
         super.hentGeoEnhetFraNorg2(avtale, persondata, norg2Client);

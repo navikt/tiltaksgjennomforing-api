@@ -22,8 +22,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ArenaTiltakgjennomforing {
-    private static final String ARBEIDSTRENING = "ARBTREN";
-
     @Id
     @JsonProperty("TILTAKGJENNOMFORING_ID")
     private Integer tiltakgjennomforingId;
@@ -32,7 +30,9 @@ public class ArenaTiltakgjennomforing {
     private Integer sakId;
 
     @JsonProperty("TILTAKSKODE")
-    private String tiltakskode;
+    @Enumerated(EnumType.STRING)
+    @JsonDeserialize(using = ArenaTiltakskode.Deserializer.class)
+    private ArenaTiltakskode tiltakskode;
 
     @JsonProperty("ANTALL_DELTAKERE")
     private Integer antallDeltakere;
@@ -84,8 +84,8 @@ public class ArenaTiltakgjennomforing {
     @JsonProperty("LOKALTNAVN")
     private String lokaltnavn;
 
-    @JsonProperty("TILTAKSTATUSKODE")
     @Enumerated(EnumType.STRING)
+    @JsonProperty("TILTAKSTATUSKODE")
     private Tiltakstatuskode tiltakstatuskode;
 
     @JsonProperty("PROSENT_DELTID")
@@ -154,10 +154,5 @@ public class ArenaTiltakgjennomforing {
 
     @JsonProperty("EKSTERN_ID")
     private String eksternId;
-
-    public boolean isArbeidstrening() {
-        return ARBEIDSTRENING.equals(tiltakskode);
-    }
-
 
 }

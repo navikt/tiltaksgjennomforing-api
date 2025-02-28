@@ -1,0 +1,5 @@
+<template name="seclog" value="private static final SecureLog secureLog = SecureLog.getLogger(log);" description="Securelogs declaration" toReformat="true" toShortenFQNames="true">
+  <context>
+    <option name="JAVA_DECLARATION" value="true" />
+  </context>
+</template>

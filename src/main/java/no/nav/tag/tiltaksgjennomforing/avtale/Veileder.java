@@ -22,6 +22,7 @@ import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import no.nav.tag.tiltaksgjennomforing.logging.SecureLog;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -35,14 +36,14 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
 @Slf4j
 public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
-    private final TilgangskontrollService tilgangskontrollService;
+    private static final SecureLog secureLog = SecureLog.getLogger(log);
 
+    private final TilgangskontrollService tilgangskontrollService;
     private final PersondataService persondataService;
     private final SlettemerkeProperties slettemerkeProperties;
     private final boolean harAdGruppeForBeslutter;
@@ -90,6 +91,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
+        secureLog.info("Sjekker tilgang for veileder {} til avtale {}", getIdentifikator(), avtale.getId());
         boolean harTilgang = tilgangskontrollService.harSkrivetilgangTilKandidat(this, avtale.getDeltakerFnr());
         if (!harTilgang) {
             log.info("Har ikke tilgang til avtalenr {}, id: {}", avtale.getAvtaleNr(), avtale.getId());
@@ -99,10 +101,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     Predicate<Avtale> harTilgangTilAvtale(List<Avtale> avtaler) {
-        Map<Identifikator, Boolean> map = tilgangskontrollService.harSkrivetilgangTilKandidater(
-            this,
-            avtaler.stream().map(Avtale::getDeltakerFnr).collect(Collectors.toSet())
-        );
+        Map<Fnr, Boolean> map = tilgangskontrollService.harSkrivetilgangTilAvtaler(this, avtaler);
         return avtale -> {
             boolean resultat = map.getOrDefault(avtale.getDeltakerFnr(), false);
             if (!resultat) {
@@ -288,13 +287,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         return avtale;
     }
 
-    public Avtale opprettMentorAvtale(OpprettMentorAvtale opprettMentorAvtale) {
-        this.sjekkTilgangskontroll(opprettMentorAvtale.getDeltakerFnr());
-        Avtale avtale = Avtale.opprett(opprettMentorAvtale, Avtaleopphav.VEILEDER, getIdentifikator());
-        leggTilEnheter(avtale);
-        return avtale;
-    }
-
     private void sjekkTilgangskontroll(Fnr deltakerFnr) {
         if (!tilgangskontrollService.harSkrivetilgangTilKandidat(this, deltakerFnr)) {
             throw new IkkeTilgangTilDeltakerException(deltakerFnr);
@@ -339,7 +331,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     public void sjekkOgOppdaterOppfølgningsstatusForAvtale(Avtale avtale) {
         Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale);
-        if(oppfølgingsstatus == null) return;
+        if (oppfølgingsstatus == null) return;
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
     }
 

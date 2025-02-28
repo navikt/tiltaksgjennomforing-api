@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +22,7 @@ public class AvtaleMinimalListevisning {
     private LocalDate sluttDato;
     private Status status;
     private Tiltakstype tiltakstype;
-    private LocalDate kreverOppfolgingFom;
+    private Instant oppfolgingVarselSendt;
     private boolean erGodkjentTaushetserklæringAvMentor;
     private TilskuddPeriodeStatus gjeldendeTilskuddsperiodeStatus;
     private Instant sistEndret;
@@ -39,7 +38,7 @@ public class AvtaleMinimalListevisning {
                 .sluttDato(avtale.getGjeldendeInnhold().getSluttDato())
                 .status(avtale.getStatus())
                 .tiltakstype(avtale.getTiltakstype())
-                .kreverOppfolgingFom(avtale.getKreverOppfolgingFom())
+                .oppfolgingVarselSendt(avtale.getOppfolgingVarselSendt())
                 .erGodkjentTaushetserklæringAvMentor(avtale.erGodkjentTaushetserklæringAvMentor())
                 .gjeldendeTilskuddsperiodeStatus(avtale.getGjeldendeTilskuddsperiodestatus())
                 .sistEndret(avtale.getSistEndret())
