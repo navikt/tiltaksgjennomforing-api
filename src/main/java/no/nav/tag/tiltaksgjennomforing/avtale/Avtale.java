@@ -962,7 +962,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         var gjeldendePeriodeKalkulertId = gjeldendePeriode != null ? gjeldendePeriode.getId() : null;
         var gjeldendeFraDbId = this.gjeldendeTilskuddsperiode != null ? this.gjeldendeTilskuddsperiode.getId() : null;
         if (!Objects.equals(gjeldendePeriodeKalkulertId, gjeldendeFraDbId)) {
-            log.warn("Gjeldende tilskuddsperiode ikke oppdatert? Fant {}, men kalkulerte {}", gjeldendeFraDbId, gjeldendePeriodeKalkulertId);
+            log.warn("Gjeldende tilskuddsperiode ikke oppdatert på avtale {}? Fant {}, men kalkulerte {}",
+                    id, gjeldendeFraDbId, gjeldendePeriodeKalkulertId);
         }
         return gjeldendePeriode;
     }
