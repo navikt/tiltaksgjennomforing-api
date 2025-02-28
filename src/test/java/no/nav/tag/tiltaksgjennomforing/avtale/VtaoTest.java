@@ -167,51 +167,7 @@ public class VtaoTest {
         avtaleRepository.save(hentetAvtale);
         //avtaleController.opphevGodkjenninger(lagretAvtale.getId(), Avtalerolle.VEILEDER);
 
-        var endretData = new EndreAvtale(
-                lagretAvtale.getGjeldendeInnhold().getDeltakerFornavn(),
-                lagretAvtale.getGjeldendeInnhold().getDeltakerEtternavn(),
-                lagretAvtale.getGjeldendeInnhold().getDeltakerTlf(),
-                lagretAvtale.getGjeldendeInnhold().getBedriftNavn(),
-                lagretAvtale.getGjeldendeInnhold().getArbeidsgiverFornavn(),
-                lagretAvtale.getGjeldendeInnhold().getArbeidsgiverEtternavn(),
-                lagretAvtale.getGjeldendeInnhold().getArbeidsgiverTlf(),
-                lagretAvtale.getGjeldendeInnhold().getVeilederFornavn(),
-                lagretAvtale.getGjeldendeInnhold().getVeilederEtternavn(),
-                lagretAvtale.getGjeldendeInnhold().getVeilederTlf(),
-                lagretAvtale.getGjeldendeInnhold().getOppfolging(),
-                lagretAvtale.getGjeldendeInnhold().getTilrettelegging(),
-                lagretAvtale.getGjeldendeInnhold().getStartDato(),
-                lagretAvtale.getGjeldendeInnhold().getSluttDato(),
-                lagretAvtale.getGjeldendeInnhold().getStillingprosent(),
-                lagretAvtale.getGjeldendeInnhold().getArbeidsoppgaver(),
-                lagretAvtale.getGjeldendeInnhold().getStillingstittel(),
-                lagretAvtale.getGjeldendeInnhold().getStillingStyrk08(),
-                lagretAvtale.getGjeldendeInnhold().getStillingKonseptId(),
-                lagretAvtale.getGjeldendeInnhold().getAntallDagerPerUke(),
-                Optional.ofNullable(lagretAvtale.getGjeldendeInnhold().getRefusjonKontaktperson()).map(RefusjonKontaktperson::getRefusjonKontaktpersonFornavn).orElse(null),
-                Optional.ofNullable(lagretAvtale.getGjeldendeInnhold().getRefusjonKontaktperson()).map(RefusjonKontaktperson::getRefusjonKontaktpersonEtternavn).orElse(null),
-                Optional.ofNullable(lagretAvtale.getGjeldendeInnhold().getRefusjonKontaktperson()).map(RefusjonKontaktperson::getRefusjonKontaktpersonTlf).orElse(null),
-                Optional.ofNullable(lagretAvtale.getGjeldendeInnhold().getRefusjonKontaktperson()).map(RefusjonKontaktperson::getØnskerVarslingOmRefusjon).orElse(null),
-                lagretAvtale.getGjeldendeInnhold().getMaal(),
-                lagretAvtale.getGjeldendeInnhold().getInkluderingstilskuddsutgift(),
-                lagretAvtale.getGjeldendeInnhold().getInkluderingstilskuddBegrunnelse(),
-                lagretAvtale.getGjeldendeInnhold().getArbeidsgiverKontonummer(),
-                lagretAvtale.getGjeldendeInnhold().getLonnstilskuddProsent(),
-                lagretAvtale.getGjeldendeInnhold().getManedslonn(),
-                lagretAvtale.getGjeldendeInnhold().getFeriepengesats(),
-                lagretAvtale.getGjeldendeInnhold().getArbeidsgiveravgift(),
-                lagretAvtale.getGjeldendeInnhold().getOtpSats(),
-                lagretAvtale.getGjeldendeInnhold().getHarFamilietilknytning(),
-                lagretAvtale.getGjeldendeInnhold().getFamilietilknytningForklaring(),
-                lagretAvtale.getGjeldendeInnhold().getStillingstype(),
-                lagretAvtale.getGjeldendeInnhold().getMentorFornavn(),
-                lagretAvtale.getGjeldendeInnhold().getMentorEtternavn(),
-                lagretAvtale.getGjeldendeInnhold().getMentorOppgaver(),
-                lagretAvtale.getGjeldendeInnhold().getMentorAntallTimer(),
-                lagretAvtale.getGjeldendeInnhold().getMentorTlf(),
-                lagretAvtale.getGjeldendeInnhold().getMentorTimelonn(),
-                lagretAvtale.getGjeldendeInnhold().getVtao().hentFelter()
-        );
+        var endretData = EndreAvtale.fraAvtale(avtale);
 
         avtaleController.endreAvtale(lagretAvtale.getId(), hentetAvtale.getSistEndret(), endretData, Avtalerolle.VEILEDER);
         var endretAvtale = avtaleController.hent(lagretAvtale.getId(), Avtalerolle.VEILEDER, null);
@@ -279,51 +235,8 @@ public class VtaoTest {
                 "87654321"
         );
 
-        var endretData = new EndreAvtale(
-                lagretAvtale.getGjeldendeInnhold().getDeltakerFornavn(),
-                lagretAvtale.getGjeldendeInnhold().getDeltakerEtternavn(),
-                lagretAvtale.getGjeldendeInnhold().getDeltakerTlf(),
-                lagretAvtale.getGjeldendeInnhold().getBedriftNavn(),
-                lagretAvtale.getGjeldendeInnhold().getArbeidsgiverFornavn(),
-                lagretAvtale.getGjeldendeInnhold().getArbeidsgiverEtternavn(),
-                lagretAvtale.getGjeldendeInnhold().getArbeidsgiverTlf(),
-                lagretAvtale.getGjeldendeInnhold().getVeilederFornavn(),
-                lagretAvtale.getGjeldendeInnhold().getVeilederEtternavn(),
-                lagretAvtale.getGjeldendeInnhold().getVeilederTlf(),
-                lagretAvtale.getGjeldendeInnhold().getOppfolging(),
-                lagretAvtale.getGjeldendeInnhold().getTilrettelegging(),
-                lagretAvtale.getGjeldendeInnhold().getStartDato(),
-                lagretAvtale.getGjeldendeInnhold().getSluttDato(),
-                lagretAvtale.getGjeldendeInnhold().getStillingprosent(),
-                lagretAvtale.getGjeldendeInnhold().getArbeidsoppgaver(),
-                lagretAvtale.getGjeldendeInnhold().getStillingstittel(),
-                lagretAvtale.getGjeldendeInnhold().getStillingStyrk08(),
-                lagretAvtale.getGjeldendeInnhold().getStillingKonseptId(),
-                lagretAvtale.getGjeldendeInnhold().getAntallDagerPerUke(),
-                Optional.ofNullable(lagretAvtale.getGjeldendeInnhold().getRefusjonKontaktperson()).map(RefusjonKontaktperson::getRefusjonKontaktpersonFornavn).orElse(null),
-                Optional.ofNullable(lagretAvtale.getGjeldendeInnhold().getRefusjonKontaktperson()).map(RefusjonKontaktperson::getRefusjonKontaktpersonEtternavn).orElse(null),
-                Optional.ofNullable(lagretAvtale.getGjeldendeInnhold().getRefusjonKontaktperson()).map(RefusjonKontaktperson::getRefusjonKontaktpersonTlf).orElse(null),
-                Optional.ofNullable(lagretAvtale.getGjeldendeInnhold().getRefusjonKontaktperson()).map(RefusjonKontaktperson::getØnskerVarslingOmRefusjon).orElse(null),
-                lagretAvtale.getGjeldendeInnhold().getMaal(),
-                lagretAvtale.getGjeldendeInnhold().getInkluderingstilskuddsutgift(),
-                lagretAvtale.getGjeldendeInnhold().getInkluderingstilskuddBegrunnelse(),
-                lagretAvtale.getGjeldendeInnhold().getArbeidsgiverKontonummer(),
-                lagretAvtale.getGjeldendeInnhold().getLonnstilskuddProsent(),
-                lagretAvtale.getGjeldendeInnhold().getManedslonn(),
-                lagretAvtale.getGjeldendeInnhold().getFeriepengesats(),
-                lagretAvtale.getGjeldendeInnhold().getArbeidsgiveravgift(),
-                lagretAvtale.getGjeldendeInnhold().getOtpSats(),
-                lagretAvtale.getGjeldendeInnhold().getHarFamilietilknytning(),
-                lagretAvtale.getGjeldendeInnhold().getFamilietilknytningForklaring(),
-                lagretAvtale.getGjeldendeInnhold().getStillingstype(),
-                lagretAvtale.getGjeldendeInnhold().getMentorFornavn(),
-                lagretAvtale.getGjeldendeInnhold().getMentorEtternavn(),
-                lagretAvtale.getGjeldendeInnhold().getMentorOppgaver(),
-                lagretAvtale.getGjeldendeInnhold().getMentorAntallTimer(),
-                lagretAvtale.getGjeldendeInnhold().getMentorTlf(),
-                lagretAvtale.getGjeldendeInnhold().getMentorTimelonn(),
-                endretVtao
-        );
+        var endretData = EndreAvtale.fraAvtale(lagretAvtale);
+        endretData.setVtao(endretVtao);
 
         avtaleController.endreAvtale(lagretAvtale.getId(), hentetAvtale.getSistEndret(), endretData, Avtalerolle.VEILEDER);
         var endretAvtale = avtaleController.hent(lagretAvtale.getId(), Avtalerolle.VEILEDER, null);
