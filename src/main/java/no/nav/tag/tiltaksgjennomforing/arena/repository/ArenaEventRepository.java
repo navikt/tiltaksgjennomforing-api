@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.arena.repository;
 
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEvent;
 import no.nav.tag.tiltaksgjennomforing.arena.models.event.ArenaEventStatus;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -17,16 +18,15 @@ public interface ArenaEventRepository extends JpaRepository<ArenaEvent, UUID> {
         SELECT ae
         FROM ArenaEvent ae
         WHERE ae.status = :status
-        ORDER BY ae.status LIMIT 5000
     """)
-    List<ArenaEvent> findByStatus(ArenaEventStatus status);
+    List<ArenaEvent> findByStatus(ArenaEventStatus status, Limit limit);
 
     @Query("""
         SELECT ae
         FROM ArenaEvent ae
         WHERE ae.status = :status AND ae.arenaTable = :arenaTable
-        ORDER BY ae.status, ae.arenaTable LIMIT 5000
     """)
-    List<ArenaEvent> findByStatusAndArenaTable(ArenaEventStatus status, String arenaTable);
+    List<ArenaEvent> findByStatusAndArenaTable(ArenaEventStatus status, String arenaTable, Limit limit);
 
+    long countByStatus(ArenaEventStatus status);
 }
