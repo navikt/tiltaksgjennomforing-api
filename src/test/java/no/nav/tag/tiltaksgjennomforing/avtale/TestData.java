@@ -226,7 +226,23 @@ public class TestData {
     }
 
     public static Avtale enVarigLonnstilskuddAvtaleMedAltUtfylt() {
-        return enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        Avtale avtale = enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusYears(1));
+        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().plusYears(1));
+        return avtale;
+    }
+
+    public static Avtale enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjent() {
+        Avtale avtale = enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VARIG_LONNSTILSKUDD);
+        avtale.getGjeldendeInnhold().setStartDato(Now.localDate().minusYears(1));
+        avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().plusYears(1));
+
+        // Godkjenning
+        Arbeidsgiver arbeidsgiver = enArbeidsgiver(avtale);
+        arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
+        Veileder veileder = enVeileder(avtale);
+        veileder.godkjennForVeilederOgDeltaker(enGodkjentPaVegneGrunn(), avtale);
+        return avtale;
     }
 
     public static Avtale enMidlertidigLonnstilskuddAvtaleMedAltUtfyltUtenTilskuddsperioder() {
@@ -453,7 +469,6 @@ public class TestData {
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
-        avtale.getGjeldendeInnhold().setGodkjentAvNavIdent(avtale.getVeilederNavIdent());
         return avtale;
     }
 

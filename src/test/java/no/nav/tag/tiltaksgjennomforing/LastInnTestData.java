@@ -2,20 +2,22 @@ package no.nav.tag.tiltaksgjennomforing;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.avtale.Status;
-import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
-import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.fnrgen.FnrGen;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import org.apache.commons.text.RandomStringGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.IntStream;
+
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.*;
 
 @Component
 @RequiredArgsConstructor
@@ -23,7 +25,9 @@ import java.util.List;
 @Profile({ Miljø.TESTDATA, Miljø.DEV_GCP_LABS })
 public class LastInnTestData implements ApplicationListener<ApplicationReadyEvent> {
     private final AvtaleRepository avtaleRepository;
-
+    @Autowired
+    private Environment environment;
+    
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         if (avtaleRepository.count() != 0) {
@@ -93,9 +97,78 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         avtaler.add(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
         Now.resetClock();
 
+        List<Avtale> avtalerDataForLabs = hentMyeMerAvtalerDataForLabs(avtaler);
+        avtaler.addAll(avtalerDataForLabs);
         avtaler.forEach(avtale -> {
             avtale.setStatus(Status.fra(avtale));
             avtaleRepository.save(avtale);
         });
+    }
+
+    private List<Avtale> hentMyeMerAvtalerDataForLabs(List<Avtale> avtaler) {
+        List<Avtale> veldigMangeFlereAvtaler = new ArrayList<>();
+
+        String[] activeProfiles = environment.getActiveProfiles();
+        for (String activeProfile : activeProfiles) {
+            if (!activeProfile.equals(Miljø.DEV_GCP_LABS)) {
+                return Collections.emptyList();
+            }
+        }
+
+        IntStream.range(0,5000).forEach(i -> {
+            BedriftNr bedriftNrTilfeldig = new BedriftNr(genererTilfeldigGyldigBedriftNr());
+            String BedriftNavnTilfeldig = genererTilfedligOrd(10);
+            List.of(enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder(),
+                    enVtaoAvtaleGodkjentAvVeileder(),
+                            enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjent())
+                   .forEach( currAvtale -> {
+               currAvtale.setId(UUID.randomUUID());
+               currAvtale.setBedriftNr(bedriftNrTilfeldig);
+               currAvtale.getGjeldendeInnhold().setBedriftNavn(BedriftNavnTilfeldig);
+               currAvtale.getGjeldendeInnhold().setId(UUID.randomUUID());
+               currAvtale.getGjeldendeInnhold().setDeltakerFornavn(genererTilfedligOrd(5));
+               currAvtale.getGjeldendeInnhold().setDeltakerEtternavn(genererTilfedligOrd(5));
+               currAvtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent());
+               currAvtale.setDeltakerFnr(new Fnr(FnrGen.singleFnr().toString()));
+
+               veldigMangeFlereAvtaler.add(currAvtale);
+            });
+        });
+        return veldigMangeFlereAvtaler;
+    }
+
+
+    public static String genererTilfedligOrd(int length) {
+        StringBuilder ord = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+                RandomStringGenerator currGenerertOrd = new RandomStringGenerator.Builder()
+                        .withinRange('a', 'z')
+                        .build();
+            ord.append(currGenerertOrd.generate(1));
+        }
+        return ord.toString();
+    }
+
+    public static String genererTilfeldigGyldigBedriftNr(){
+        int num1 = (int) Math.floor(Math.random()*10);
+        int num2 = (int) Math.floor(Math.random()*10);
+        int num3 = (int) Math.floor(Math.random()*10);
+        int num4 = (int) Math.floor(Math.random()*10);
+        int num5 = (int) Math.floor(Math.random()*10);
+        int num6 = (int) Math.floor(Math.random()*10);
+        int num7 = (int) Math.floor(Math.random()*10);
+        int num8 = (int) Math.floor(Math.random()*10);
+
+        // vekt: 3 2 7 6 5 4 3 2
+        var weighted = num1*3 + num2*2 + num3*7 + num4*6 + num5*5 + num6*4 + num7*3 + num8*2;
+        var remainder = weighted % 11;
+        var contr = 11 - remainder;
+
+        if (contr == 11)
+            contr = 0;
+        if (contr == 10)
+            return null; // feil orgnr
+        else
+            return "" + num1 + num2 + num3 + num4 + num5 + num6 + num7 + num8 + contr; // valid orgnr
     }
 }
