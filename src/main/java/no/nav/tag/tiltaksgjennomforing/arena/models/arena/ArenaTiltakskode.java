@@ -40,7 +40,7 @@ public enum ArenaTiltakskode {
 
     public static ArenaTiltakskode parse(String kode) {
         for (ArenaTiltakskode arenaTiltakskode : values()) {
-            if (arenaTiltakskode.kode.equals(kode)) {
+            if (arenaTiltakskode.kode.equalsIgnoreCase(kode)) {
                 return arenaTiltakskode;
             }
         }
