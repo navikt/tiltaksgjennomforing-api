@@ -109,10 +109,9 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         List<Avtale> veldigMangeFlereAvtaler = new ArrayList<>();
 
         String[] activeProfiles = environment.getActiveProfiles();
-        for (String activeProfile : activeProfiles) {
-            if (!activeProfile.equals(Miljø.DEV_GCP_LABS)) {
-                return Collections.emptyList();
-            }
+        if (Arrays.stream(activeProfiles)
+                .noneMatch(profile -> profile.equals(Miljø.DEV_GCP_LABS))) {
+            return Collections.emptyList();
         }
 
         IntStream.range(0,5000).forEach(i -> {
