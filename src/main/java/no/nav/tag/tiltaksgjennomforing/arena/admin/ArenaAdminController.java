@@ -52,8 +52,9 @@ public class ArenaAdminController {
                         }
                         return Optional.of(e.getMessage());
                     }
-                })
-            );
+                },
+                (first, second) -> first.isPresent() ? first : second
+            ));
 
         return Map.of(
             "totalt", enheter.size(),
