@@ -25,15 +25,12 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.*;
 @Profile({ Miljø.TESTDATA, Miljø.DEV_GCP_LABS })
 public class LastInnTestData implements ApplicationListener<ApplicationReadyEvent> {
     private final AvtaleRepository avtaleRepository;
-    @Autowired
-    private Environment environment;
-    
+
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         if (avtaleRepository.count() != 0) {
             return;
         }
-
         List<Avtale> avtaler = new ArrayList<>();
 
         log.info("Laster testdata");
@@ -97,7 +94,7 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         avtaler.add(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
         Now.resetClock();
 
-        List<Avtale> avtalerDataForLabs = hentMyeMerAvtalerDataForLabs(avtaler);
+        List<Avtale> avtalerDataForLabs = hentMyeMerAvtalerDataForLabs();
         avtaler.addAll(avtalerDataForLabs);
         avtaler.forEach(avtale -> {
             avtale.setStatus(Status.fra(avtale));
@@ -105,13 +102,8 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         });
     }
 
-    private List<Avtale> hentMyeMerAvtalerDataForLabs(List<Avtale> avtaler) {
+    private List<Avtale> hentMyeMerAvtalerDataForLabs() {
         List<Avtale> veldigMangeFlereAvtaler = new ArrayList<>();
-
-        if (Arrays.stream(environment.getActiveProfiles())
-                .noneMatch(profile -> profile.equals(Miljø.DEV_GCP_LABS))) {
-            return Collections.emptyList();
-        }
 
         IntStream.range(0,5000).forEach(i -> {
             BedriftNr bedriftNrTilfeldig = new BedriftNr(genererTilfeldigGyldigBedriftNr());
