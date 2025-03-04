@@ -10,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.persondata.*;
 import no.nav.tag.tiltaksgjennomforing.sporingslogg.Sporingslogg;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -244,6 +245,17 @@ public class TestData {
         veileder.godkjennForVeilederOgDeltaker(enGodkjentPaVegneGrunn(), avtale);
         return avtale;
     }
+   public static Avtale enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjentAvslåttePerioderSomMåFølgesOpp() {
+        Avtale avtale = enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjent();
+        avtale.getGjeldendeTilskuddsperiode().avslå(TestData.enNavIdent2(),EnumSet.of(Avslagsårsak.FEIL_I_PROSENTSATS), "Feil i prosentsats");
+        return avtale;
+    }
+   public static Avtale enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjentAvslåttePerioderSomHarBlittRettetAvVeileder() {
+        Avtale avtale = enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjentAvslåttePerioderSomMåFølgesOpp();
+       Veileder veileder = enVeileder(avtale);
+       veileder.sendTilbakeTilBeslutter(avtale);
+        return avtale;
+    }
 
     public static Avtale enMidlertidigLonnstilskuddAvtaleMedAltUtfyltUtenTilskuddsperioder() {
         return enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
@@ -337,6 +349,19 @@ public class TestData {
         avtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent());
         avtale.getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
         avtale.getGjeldendeInnhold().setJournalpostId("1");
+        return avtale;
+    }
+
+    public static Avtale enMidlertidigLonnstilskuddAvtaleGodkjentAvVeilederAvslåttePerioderSomMåFølgesOpp() {
+        Avtale avtale = enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder();
+        avtale.getGjeldendeTilskuddsperiode().avslå(TestData.enNavIdent2(),EnumSet.of(Avslagsårsak.FEIL_I_PROSENTSATS), "Feil i prosentsats");
+        return avtale;
+    }
+
+    public static Avtale enMidlertidigLonnstilskuddAvtaleGodkjentAvVeilederAvslåttePerioderSomHarBlittRettetAvVeileder() {
+        Avtale avtale = enMidlertidigLonnstilskuddAvtaleGodkjentAvVeilederAvslåttePerioderSomMåFølgesOpp();
+        Veileder veileder = enVeileder(avtale);
+        veileder.sendTilbakeTilBeslutter(avtale);
         return avtale;
     }
 
@@ -469,6 +494,25 @@ public class TestData {
         avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        return avtale;
+    }
+
+    public static Avtale enVtaoAvtaleGodkjentAvVeilederAvslåttePerioderSomMåFølgesOpp(){
+        Avtale avtale = Avtale.opprett(new OpprettAvtale(TestData.etFodselsnummer(), new BedriftNr("999999999"), Tiltakstype.VTAO), Avtaleopphav.VEILEDER, new NavIdent("Z123456"));
+        setOppfølgingPåAvtale(avtale);
+        EndreAvtale endreAvtale = endringPåAlleVTAOFelter();
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+        avtale.getGjeldendeInnhold().setGodkjentAvVeileder(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
+        avtale.getGjeldendeTilskuddsperiode().avslå(TestData.enNavIdent2(),EnumSet.of(Avslagsårsak.FEIL_I_PROSENTSATS), "Feil i prosentsats");
+        return avtale;
+    }
+
+    public static Avtale enVtaoAvtaleGodkjentAvVeilederAvslåttePerioderSomHarBlittRettetAvVeileder(){
+        Avtale avtale = enVtaoAvtaleGodkjentAvVeilederAvslåttePerioderSomMåFølgesOpp();
+        Veileder veileder = enVeileder(avtale);
+        veileder.sendTilbakeTilBeslutter(avtale);
         return avtale;
     }
 
