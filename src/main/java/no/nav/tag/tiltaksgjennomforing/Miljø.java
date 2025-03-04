@@ -11,4 +11,5 @@ public class Miljø {
     public static final String DOCKER_COMPOSE = "dockercompose";
     public static final String WIREMOCK = "wiremock";
     public static final String TESTDATA = "testdata";
+    public static final String MASSE_TESTDATA = "masse-testdata";
 }
