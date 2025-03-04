@@ -45,7 +45,7 @@ public class LastInnMasseTestData implements ApplicationListener<ApplicationRead
     private List<Avtale> hentMyeMerAvtalerDataForLabs() {
         List<Avtale> veldigMangeFlereAvtaler = new ArrayList<>();
 
-        IntStream.range(0, 2000).forEach(i -> {
+        IntStream.range(0, 1500).forEach(i -> {
             BedriftNr bedriftNrTilfeldig = new BedriftNr(genererTilfeldigGyldigBedriftNr());
             List.of(
                             enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder(),
