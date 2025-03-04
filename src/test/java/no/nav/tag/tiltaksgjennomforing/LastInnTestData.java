@@ -3,26 +3,33 @@ package no.nav.tag.tiltaksgjennomforing;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.fnrgen.FnrGen;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Status;
+import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
-import org.apache.commons.text.RandomStringGenerator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.IntStream;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.*;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjent;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enVtaoAvtaleGodkjentAvVeileder;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
-@Profile({ Miljø.TESTDATA, Miljø.DEV_GCP_LABS })
+@Profile({ Miljø.TESTDATA })
 public class LastInnTestData implements ApplicationListener<ApplicationReadyEvent> {
     private final AvtaleRepository avtaleRepository;
 
@@ -105,38 +112,27 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
     private List<Avtale> hentMyeMerAvtalerDataForLabs() {
         List<Avtale> veldigMangeFlereAvtaler = new ArrayList<>();
 
-        IntStream.range(0,5000).forEach(i -> {
+        IntStream.range(0, 5000).forEach(i -> {
             BedriftNr bedriftNrTilfeldig = new BedriftNr(genererTilfeldigGyldigBedriftNr());
-            String BedriftNavnTilfeldig = genererTilfedligOrd(10);
-            List.of(enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder(),
+            List.of(
+                    enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder(),
                     enVtaoAvtaleGodkjentAvVeileder(),
-                            enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjent())
-                   .forEach( currAvtale -> {
-               currAvtale.setId(UUID.randomUUID());
-               currAvtale.setBedriftNr(bedriftNrTilfeldig);
-               currAvtale.getGjeldendeInnhold().setBedriftNavn(BedriftNavnTilfeldig);
-               currAvtale.getGjeldendeInnhold().setId(UUID.randomUUID());
-               currAvtale.getGjeldendeInnhold().setDeltakerFornavn(genererTilfedligOrd(5));
-               currAvtale.getGjeldendeInnhold().setDeltakerEtternavn(genererTilfedligOrd(5));
-               currAvtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent());
-               currAvtale.setDeltakerFnr(new Fnr(FnrGen.singleFnr().toString()));
+                    enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjent()
+                )
+                .forEach(currAvtale -> {
+                    currAvtale.setId(UUID.randomUUID());
+                    currAvtale.setBedriftNr(bedriftNrTilfeldig);
+                    currAvtale.getGjeldendeInnhold().setId(UUID.randomUUID());
+                    currAvtale.getGjeldendeInnhold().setDeltakerFornavn(NavnGenerator.genererFornavn());
+                    currAvtale.getGjeldendeInnhold().setDeltakerEtternavn(NavnGenerator.genererEtternavn());
+                    currAvtale.getGjeldendeInnhold().setBedriftNavn(NavnGenerator.genererBedriftsnavn());
+                    currAvtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent());
+                    currAvtale.setDeltakerFnr(new Fnr(FnrGen.singleFnr()));
 
-               veldigMangeFlereAvtaler.add(currAvtale);
-            });
+                    veldigMangeFlereAvtaler.add(currAvtale);
+                });
         });
         return veldigMangeFlereAvtaler;
-    }
-
-
-    public static String genererTilfedligOrd(int length) {
-        StringBuilder ord = new StringBuilder(length);
-        for (int i = 0; i < length; i++) {
-                RandomStringGenerator currGenerertOrd = new RandomStringGenerator.Builder()
-                        .withinRange('a', 'z')
-                        .build();
-            ord.append(currGenerertOrd.generate(1));
-        }
-        return ord.toString();
     }
 
     public static String genererTilfeldigGyldigBedriftNr(){
