@@ -34,23 +34,30 @@ public class LastInnMasseTestData implements ApplicationListener<ApplicationRead
             avtale.getGjeldendeInnhold().setBedriftNavn(NavnGenerator.genererBedriftsnavn());
             avtaleRepository.save(avtale);
         }*/
-
-        List<Avtale> avtalerDataForLabs = hentMyeMerAvtalerDataForLabs();
-        avtalerDataForLabs.forEach(avtale -> {
+        hentMyeMerAvtalerDataForLabs().forEach(avtale -> {
             avtale.setStatus(Status.fra(avtale));
             avtaleRepository.save(avtale);
         });
     }
 
     private List<Avtale> hentMyeMerAvtalerDataForLabs() {
-        List<Avtale> veldigMangeFlereAvtaler = new ArrayList<>();
+        List<Avtale> avtaler = new ArrayList<>();
 
-        IntStream.range(0, 1100).forEach(i -> {
+        IntStream.range(0, 500).forEach(i -> {
             BedriftNr bedriftNrTilfeldig = new BedriftNr(genererTilfeldigGyldigBedriftNr());
             List.of(
+                    // Midlertidig Lonnstilskudd Avtale
                             enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder(),
+                            enMidlertidigLonnstilskuddAvtaleGodkjentAvVeilederAvslåttePerioderSomMåFølgesOpp(),
+                            enMidlertidigLonnstilskuddAvtaleGodkjentAvVeilederAvslåttePerioderSomHarBlittRettetAvVeileder(),
+                            // VTAO Avtale
                             enVtaoAvtaleGodkjentAvVeileder(),
-                            enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjent()
+                            enVtaoAvtaleGodkjentAvVeilederAvslåttePerioderSomMåFølgesOpp(),
+                            enVtaoAvtaleGodkjentAvVeilederAvslåttePerioderSomHarBlittRettetAvVeileder(),
+                            // Varig Lonnstilskudd Avtale
+                            enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjent(),
+                            enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjentAvslåttePerioderSomMåFølgesOpp(),
+                            enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjentAvslåttePerioderSomHarBlittRettetAvVeileder()
                     )
                     .forEach(currAvtale -> {
                         currAvtale.setId(UUID.randomUUID());
@@ -62,10 +69,10 @@ public class LastInnMasseTestData implements ApplicationListener<ApplicationRead
                         currAvtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent());
                         currAvtale.setDeltakerFnr(new Fnr(FnrGen.singleFnr()));
 
-                        veldigMangeFlereAvtaler.add(currAvtale);
+                        avtaler.add(currAvtale);
                     });
         });
-        return veldigMangeFlereAvtaler;
+        return avtaler;
     }
 
     public static String genererTilfeldigGyldigBedriftNr(){
