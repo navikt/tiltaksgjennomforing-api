@@ -26,38 +26,23 @@ public class LastInnMasseTestData implements ApplicationListener<ApplicationRead
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         log.info("Laster inn masse testdata");
-/*
-        for (int i = 0; i < 555; i++) {
-            Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeilederTilbakeITid();
-            avtale.getGjeldendeInnhold().setDeltakerFornavn(NavnGenerator.genererFornavn());
-            avtale.getGjeldendeInnhold().setDeltakerEtternavn(NavnGenerator.genererEtternavn());
-            avtale.getGjeldendeInnhold().setBedriftNavn(NavnGenerator.genererBedriftsnavn());
-            avtaleRepository.save(avtale);
-        }*/
-        hentMyeMerAvtalerDataForLabs().forEach(avtale -> {
-            avtale.setStatus(Status.fra(avtale));
-            avtaleRepository.save(avtale);
-        });
-    }
 
-    private List<Avtale> hentMyeMerAvtalerDataForLabs() {
-        List<Avtale> avtaler = new ArrayList<>();
-
-        IntStream.range(0, 390).forEach(i -> {
+        // ØK DENNE FOR Å GENERERE MYE MER DATA FOR LABS
+        IntStream.range(0, 10).forEach(i -> {
             BedriftNr bedriftNrTilfeldig = new BedriftNr(genererTilfeldigGyldigBedriftNr());
             List.of(
                     // Midlertidig Lonnstilskudd Avtale
-                            enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder(),
-                            enMidlertidigLonnstilskuddAvtaleGodkjentAvVeilederAvslåttePerioderSomMåFølgesOpp(),
-                            enMidlertidigLonnstilskuddAvtaleGodkjentAvVeilederAvslåttePerioderSomHarBlittRettetAvVeileder(),
-                            // VTAO Avtale
-                            enVtaoAvtaleGodkjentAvVeileder(),
-                            enVtaoAvtaleGodkjentAvVeilederAvslåttePerioderSomMåFølgesOpp(),
-                            enVtaoAvtaleGodkjentAvVeilederAvslåttePerioderSomHarBlittRettetAvVeileder(),
-                            // Varig Lonnstilskudd Avtale
-                            enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjent(),
-                            enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjentAvslåttePerioderSomMåFølgesOpp(),
-                            enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjentAvslåttePerioderSomHarBlittRettetAvVeileder()
+                    enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder(),
+                    enMidlertidigLonnstilskuddAvtaleGodkjentAvVeilederAvslåttePerioderSomMåFølgesOpp(),
+                    enMidlertidigLonnstilskuddAvtaleGodkjentAvVeilederAvslåttePerioderSomHarBlittRettetAvVeileder(),
+                    // VTAO Avtale
+                    enVtaoAvtaleGodkjentAvVeileder(),
+                    enVtaoAvtaleGodkjentAvVeilederAvslåttePerioderSomMåFølgesOpp(),
+                    enVtaoAvtaleGodkjentAvVeilederAvslåttePerioderSomHarBlittRettetAvVeileder(),
+                    // Varig Lonnstilskudd Avtale
+                    enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjent(),
+                    enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjentAvslåttePerioderSomMåFølgesOpp(),
+                    enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjentAvslåttePerioderSomHarBlittRettetAvVeileder()
                     )
                     .forEach(currAvtale -> {
                         currAvtale.setId(UUID.randomUUID());
@@ -69,10 +54,11 @@ public class LastInnMasseTestData implements ApplicationListener<ApplicationRead
                         currAvtale.getGjeldendeInnhold().setGodkjentAvNavIdent(TestData.enNavIdent());
                         currAvtale.setDeltakerFnr(new Fnr(FnrGen.singleFnr()));
 
-                        avtaler.add(currAvtale);
+                        currAvtale.setStatus(Status.fra(currAvtale));
+                        avtaleRepository.save(currAvtale);
                     });
         });
-        return avtaler;
+
     }
 
     public static String genererTilfeldigGyldigBedriftNr(){
