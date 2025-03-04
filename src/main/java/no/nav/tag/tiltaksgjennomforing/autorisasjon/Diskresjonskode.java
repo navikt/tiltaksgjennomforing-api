@@ -22,6 +22,18 @@ public enum Diskresjonskode {
         };
     }
 
+    public boolean erKode6() {
+        return STRENGT_FORTROLIG.equals(this) || STRENGT_FORTROLIG_UTLAND.equals(this);
+    }
+
+    public boolean erKode7() {
+        return FORTROLIG.equals(this);
+    }
+
+    public boolean erKode6Eller7() {
+        return erKode6() || erKode7();
+    }
+
     public static class DiskresjonskodeDeserializer extends JsonDeserializer<Diskresjonskode> {
         @Override
         public Diskresjonskode deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {

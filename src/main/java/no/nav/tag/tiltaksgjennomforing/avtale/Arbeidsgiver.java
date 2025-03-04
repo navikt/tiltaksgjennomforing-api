@@ -23,8 +23,6 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
-
 @Slf4j
 public class Arbeidsgiver extends Avtalepart<Fnr> {
     private final Map<BedriftNr, Collection<Tiltakstype>> tilganger;
@@ -232,9 +230,9 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     private PdlRespons hentPersonDataForOpprettelseAvAvtale(Avtale avtale) {
-        final PdlRespons persondata = persondataService.hentPersondata(avtale.getDeltakerFnr());
-        avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(persondata));
-        return persondata;
+        final PdlRespons pdlRespons = persondataService.hentPersondata(avtale.getDeltakerFnr());
+        avtale.leggTilDeltakerNavn(pdlRespons.utledNavnEllerTomtNavn());
+        return pdlRespons;
     }
 
     @Override

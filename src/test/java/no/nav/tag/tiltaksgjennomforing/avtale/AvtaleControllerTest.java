@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
@@ -49,7 +50,12 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enArbeidstreningAv
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enNavIdent;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles(Miljø.TEST)
@@ -284,6 +290,7 @@ public class AvtaleControllerTest {
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
         when(persondataService.hentPersondata(fnr)).thenReturn(pdlRespons);
+        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
                 .thenReturn(
                         new Norg2GeoResponse(
@@ -340,6 +347,7 @@ public class AvtaleControllerTest {
         )).thenReturn(true);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         when(avtaleRepository.save(avtale)).thenReturn(avtale);
+        when(persondataService.hentPersondata(any(Fnr.class))).thenReturn(new PdlRespons(null));
         ResponseEntity svar = avtaleController.endreAvtale(
                 avtale.getId(),
                 avtale.getSistEndret(),
@@ -437,7 +445,6 @@ public class AvtaleControllerTest {
         ).thenReturn(true);
         PdlRespons pdlRespons = TestData.enPdlrespons(true);
         when(persondataServiceIMetode.hentPersondata(deltakerFnr)).thenReturn(pdlRespons);
-        when(persondataServiceIMetode.erKode6(pdlRespons)).thenCallRealMethod();
         assertThatThrownBy(
                 () -> avtaleController.opprettAvtaleSomVeileder(
                         new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING)

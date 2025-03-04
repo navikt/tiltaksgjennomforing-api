@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
@@ -13,6 +14,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangArbeidstreningException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
+import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -1526,25 +1528,26 @@ public class AvtaleTest {
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         Deltaker deltaker = TestData.enDeltaker(avtale);
 
-        // Gi veileder tilgang til deltaker
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        PersondataService persondataService = mock(PersondataService.class);
 
         TilskuddsperiodeConfig tilskuddsperiodeConfig = new TilskuddsperiodeConfig();
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
                 tilgangskontrollService,
-                mock(PersondataService.class),
+                persondataService,
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
                 false,
                 mock(VeilarboppfolgingService.class)
         );
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(
-                eq(veileder),
-                any(Fnr.class)
-        )).thenReturn(true);
+
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
+        when(persondataService.hentPersondata(any(Fnr.class))).thenReturn(new PdlRespons(null));
+        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
+
         veileder.endreAvtale(
                 Now.instant(),
                 TestData.endringPåAlleArbeidstreningFelter(),
@@ -1565,13 +1568,13 @@ public class AvtaleTest {
         Deltaker deltaker = TestData.enDeltaker(avtale);
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
 
-        // Gi veileder tilgang til deltaker
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        PersondataService persondataService = mock(PersondataService.class);
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
                 tilgangskontrollService,
-                mock(PersondataService.class),
+                persondataService,
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
@@ -1580,6 +1583,7 @@ public class AvtaleTest {
         );
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
+        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
 
         deltaker.godkjennAvtale(Now.instant(), avtale);
         arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
@@ -1671,13 +1675,14 @@ public class AvtaleTest {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         Deltaker deltaker = TestData.enDeltaker(avtale);
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        // Gi veileder tilgang til deltaker
+
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        PersondataService persondataService = mock(PersondataService.class);
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
                 tilgangskontrollService,
-                mock(PersondataService.class),
+                persondataService,
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
@@ -1686,6 +1691,8 @@ public class AvtaleTest {
         );
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
+        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
+
         deltaker.godkjennAvtale(Now.instant(), avtale);
         arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
         veileder.godkjennAvtale(Now.instant(), avtale);
@@ -1709,13 +1716,14 @@ public class AvtaleTest {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         Deltaker deltaker = TestData.enDeltaker(avtale);
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        // Gi veileder tilgang til deltaker
+
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        PersondataService persondataService = mock(PersondataService.class);
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
                 tilgangskontrollService,
-                mock(PersondataService.class),
+                persondataService,
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
@@ -1724,6 +1732,8 @@ public class AvtaleTest {
         );
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
+        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
+
         deltaker.godkjennAvtale(Now.instant(), avtale);
         arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
         veileder.godkjennAvtale(Now.instant(), avtale);
