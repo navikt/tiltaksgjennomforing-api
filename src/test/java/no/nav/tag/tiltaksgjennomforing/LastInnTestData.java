@@ -2,11 +2,8 @@ package no.nav.tag.tiltaksgjennomforing;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.fnrgen.FnrGen;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
-import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
@@ -19,12 +16,8 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.IntStream;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enVarigLonnstilskuddAvtaleMedAltUtfyltOgGodkjent;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enVtaoAvtaleGodkjentAvVeileder;
+import static no.nav.tag.tiltaksgjennomforing.TestDataGenerator.genererAvtaler;
 
 @Component
 @RequiredArgsConstructor
@@ -101,6 +94,7 @@ public class LastInnTestData implements ApplicationListener<ApplicationReadyEven
         avtaler.add(TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt());
         Now.resetClock();
 
+        avtaler.addAll(avtaleRepository.saveAll(genererAvtaler(10)));
         avtaler.forEach(avtale -> {
             avtale.setStatus(Status.fra(avtale));
             avtaleRepository.save(avtale);
