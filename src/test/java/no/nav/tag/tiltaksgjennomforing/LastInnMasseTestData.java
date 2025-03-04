@@ -26,14 +26,14 @@ public class LastInnMasseTestData implements ApplicationListener<ApplicationRead
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         log.info("Laster inn masse testdata");
-
+/*
         for (int i = 0; i < 555; i++) {
             Avtale avtale = TestData.enLonnstilskuddAvtaleGodkjentAvVeilederTilbakeITid();
             avtale.getGjeldendeInnhold().setDeltakerFornavn(NavnGenerator.genererFornavn());
             avtale.getGjeldendeInnhold().setDeltakerEtternavn(NavnGenerator.genererEtternavn());
             avtale.getGjeldendeInnhold().setBedriftNavn(NavnGenerator.genererBedriftsnavn());
             avtaleRepository.save(avtale);
-        }
+        }*/
 
         List<Avtale> avtalerDataForLabs = hentMyeMerAvtalerDataForLabs();
         avtalerDataForLabs.forEach(avtale -> {
@@ -45,7 +45,7 @@ public class LastInnMasseTestData implements ApplicationListener<ApplicationRead
     private List<Avtale> hentMyeMerAvtalerDataForLabs() {
         List<Avtale> veldigMangeFlereAvtaler = new ArrayList<>();
 
-        IntStream.range(0, 5000).forEach(i -> {
+        IntStream.range(0, 2000).forEach(i -> {
             BedriftNr bedriftNrTilfeldig = new BedriftNr(genererTilfeldigGyldigBedriftNr());
             List.of(
                             enMidlertidigLonnstilskuddAvtaleGodkjentAvVeileder(),
