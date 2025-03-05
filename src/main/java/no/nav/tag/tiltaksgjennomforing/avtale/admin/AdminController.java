@@ -8,6 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgangsattributter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
@@ -35,6 +36,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -268,7 +270,16 @@ public class AdminController {
         @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
         @RequestParam(value = "size", required = false, defaultValue = "1000") Integer size
     ) {
-        Page<Avtale> pagable = avtaleRepository.findAll(PageRequest.of(Math.abs(page), Math.abs(size)));
+        Page<Avtale> pagable = avtaleRepository.findByStatusIn(
+            Set.of(
+                Status.GJENNOMFØRES,
+                Status.AVSLUTTET,
+                Status.PÅBEGYNT,
+                Status.MANGLER_GODKJENNING,
+                Status.KLAR_FOR_OPPSTART
+            ),
+            PageRequest.of(Math.abs(page), Math.abs(size))
+        );
 
         List<Map<String, ?>> avtaler = pagable
             .getContent()
@@ -277,6 +288,7 @@ public class AdminController {
                 Adressebeskyttelse adressebeskyttelse = persondataService.hentAdressebeskyttelse(avtale.getDeltakerFnr());
                 return Map.of(
                     "id", avtale.getId(),
+                    "status", avtale.getStatus(),
                     "gradering", adressebeskyttelse.getGradering()
                 );
             })
