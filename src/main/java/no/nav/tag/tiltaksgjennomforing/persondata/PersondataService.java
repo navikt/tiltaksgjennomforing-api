@@ -25,14 +25,15 @@ import java.util.stream.Stream;
 @Slf4j
 @Service
 public class PersondataService {
-    private static final String BEHANDLINGSNUMMER = "B662";
-    private static final Set<Diskresjonskode> KODE_6 = Set.of(
+    public static final Set<Diskresjonskode> KODE_6 = Set.of(
         Diskresjonskode.STRENGT_FORTROLIG,
         Diskresjonskode.STRENGT_FORTROLIG_UTLAND
     );
-    private static final Set<Diskresjonskode> KODE_7 = Set.of(
+    public static final Set<Diskresjonskode> KODE_7 = Set.of(
         Diskresjonskode.FORTROLIG
     );
+
+    private static final String BEHANDLINGSNUMMER = "B662";
 
     private final RestTemplate azureRestTemplate;
     private final PersondataProperties persondataProperties;

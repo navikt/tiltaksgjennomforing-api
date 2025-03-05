@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale.admin;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgangsattributter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -17,6 +18,8 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.persondata.Adressebeskyttelse;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
@@ -33,6 +37,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @ProtectedWithClaims(issuer = "azure-access-token", claimMap = { "groups=fb516b74-0f2e-4b62-bad8-d70b82c3ae0b" })
 @RestController
@@ -256,6 +261,37 @@ public class AdminController {
         LocalDate startDato = LocalDate.parse((String) parametere.getOrDefault("startDato", null));
         avtale.midlertidigEndreAvtale(Now.instant(), startDato);
         avtaleRepository.save(avtale);
+    }
+
+    @GetMapping("/avtale/diskresjonssjekk")
+    public Map<String, ?> sjekkDiskresjonskoder(
+        @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
+        @RequestParam(value = "size", required = false, defaultValue = "1000") Integer size
+    ) {
+        Page<Avtale> pagable = avtaleRepository.findAll(PageRequest.of(Math.abs(page), Math.abs(size)));
+
+        List<Map<String, ?>> avtaler = pagable
+            .getContent()
+            .stream()
+            .map(avtale -> {
+                Adressebeskyttelse adressebeskyttelse = persondataService.hentAdressebeskyttelse(avtale.getDeltakerFnr());
+                return Map.of(
+                    "id", avtale.getId(),
+                    "gradering", adressebeskyttelse.getGradering()
+                );
+            })
+            .filter(map -> {
+                Diskresjonskode kode = (Diskresjonskode) map.get("gradering");
+                return PersondataService.KODE_6.contains(kode) || PersondataService.KODE_7.contains(kode);
+            })
+            .collect(Collectors.toList());
+
+        return Map.of(
+            "totaltAntallElementer", pagable.getTotalElements(),
+            "antallSider", pagable.getTotalPages(),
+            "gjeldendeSide", pagable.getNumber(),
+            "avtaler", avtaler
+        );
     }
 
 }
