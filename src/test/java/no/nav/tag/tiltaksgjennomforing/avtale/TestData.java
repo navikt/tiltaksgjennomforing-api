@@ -1001,6 +1001,7 @@ public class TestData {
                         avtale.getGjeldendeInnhold().getArbeidsgiverFornavn(),
                         avtale.getGjeldendeInnhold().getArbeidsgiverEtternavn(),
                         avtale.getGjeldendeInnhold().getArbeidsgiverTlf(),
+                        avtale.getGjeldendeInnhold().getBedriftNavn(),
                         new RefusjonKontaktperson("Atle", "Jørgensen", "12345678", true),
                         null),
                 TestData.enNavIdent());
