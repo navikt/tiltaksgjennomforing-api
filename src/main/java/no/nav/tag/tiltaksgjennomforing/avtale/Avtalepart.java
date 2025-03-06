@@ -14,7 +14,6 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
-import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -184,8 +183,7 @@ public abstract class Avtalepart<T extends Identifikator> {
     }
 
     protected void hentGeoEnhetFraNorg2(Avtale avtale, PdlRespons pdlRespons, Norg2Client norg2Client) {
-        Norg2GeoResponse enhet = PersondataService.hentGeoLokasjonFraPdlRespons(pdlRespons)
-                .map(norg2Client::hentGeografiskEnhet).orElse(null);
+        Norg2GeoResponse enhet = pdlRespons.utledGeoLokasjon().map(norg2Client::hentGeografiskEnhet).orElse(null);
         if (enhet == null) return;
         avtale.setEnhetGeografisk(enhet.getEnhetNr());
         avtale.setEnhetsnavnGeografisk(enhet.getNavn());

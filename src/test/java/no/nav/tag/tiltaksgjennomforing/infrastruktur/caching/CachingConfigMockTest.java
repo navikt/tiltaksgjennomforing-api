@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.infrastruktur.caching;
 
 
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
@@ -54,9 +55,10 @@ public class CachingConfigMockTest {
     private final PdlRespons FØRSTE_PDL_RESPONSE = TestData.enPdlrespons(false);
     private PdlRespons ANDRE_PDL_RESPONSE = new PdlRespons(
             new Data(
-                    new HentPerson(null, new Navn[]{new Navn("ola", "", "Norman")}),
-                    null,
-                    new HentGeografiskTilknytning("", "030202", "", "3")
+                null,
+                new HentPerson(null, null, new Navn[]{new Navn("ola", "", "Norman")}),
+                null,
+                new HentGeografiskTilknytning("", "030202", "", "3")
             )
     );
     private final Norg2OppfølgingResponse FØRSTE_NORG2_OPPFØLGNING_RESPONSE = new Norg2OppfølgingResponse(
@@ -103,7 +105,9 @@ public class CachingConfigMockTest {
 
         @Bean
         public PersondataService persondataServiceMockImplementation() {
-            return mock(PersondataService.class);
+            PersondataService persondataService = mock(PersondataService.class);
+            when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
+            return persondataService;
         }
 
         @Bean
@@ -145,7 +149,7 @@ public class CachingConfigMockTest {
                 eq(avtale.getDeltakerFnr())
         )).thenReturn(true, true, true);
 
-        when(mockPersondataService.hentPersondataFraPdl(avtale.getDeltakerFnr())).thenReturn(FØRSTE_PDL_RESPONSE, ANDRE_PDL_RESPONSE);
+        when(mockPersondataService.hentPersondata(avtale.getDeltakerFnr())).thenReturn(FØRSTE_PDL_RESPONSE, ANDRE_PDL_RESPONSE);
         when(mockNorg2Client.hentOppfølgingsEnhetFraCacheNorg2(any())).thenReturn(
                 FØRSTE_NORG2_OPPFØLGNING_RESPONSE,
                 ANDRE_NORG2_OPPFØLGNING_RESPONSE
@@ -180,7 +184,7 @@ public class CachingConfigMockTest {
 
     @Test
     public void bekreft_antall_ganger_Cacheable_endepunkter_blir_kalt_ved_norg2Client_geoEnhet() {
-        Optional<String> optionalGeoEnhet = PersondataService.hentGeoLokasjonFraPdlRespons(FØRSTE_PDL_RESPONSE);
+        Optional<String> optionalGeoEnhet = FØRSTE_PDL_RESPONSE.utledGeoLokasjon();
         String geoEnhet = optionalGeoEnhet.get();
 
         Norg2GeoResponse norg2GeoResponse = norg2Client.hentGeoEnhetFraCacheEllerNorg2(geoEnhet);
@@ -198,16 +202,16 @@ public class CachingConfigMockTest {
 
     @Test
     public void bekreft_antall_ganger_Cacheable_endepunkter_blir_kalt_ved_pdl() {
-        PdlRespons pdlRespons = persondataService.hentPersondataFraPdl(avtale.getDeltakerFnr());
-        PdlRespons pdlRespons2 = persondataService.hentPersondataFraPdl(avtale.getDeltakerFnr());
+        PdlRespons pdlRespons = persondataService.hentPersondata(avtale.getDeltakerFnr());
+        PdlRespons pdlRespons2 = persondataService.hentPersondata(avtale.getDeltakerFnr());
 
         Assertions.assertEquals(
-                persondataService.hentGeoLokasjonFraPdlRespons(FØRSTE_PDL_RESPONSE).get(),
-                persondataService.hentGeoLokasjonFraPdlRespons(pdlRespons).get()
+                FØRSTE_PDL_RESPONSE.utledGeoLokasjon().get(),
+                pdlRespons.utledGeoLokasjon().get()
         );
         Assertions.assertEquals(
-                persondataService.hentGeoLokasjonFraPdlRespons(FØRSTE_PDL_RESPONSE).get(),
-                persondataService.hentGeoLokasjonFraPdlRespons(pdlRespons2).get()
+                FØRSTE_PDL_RESPONSE.utledGeoLokasjon().get(),
+                pdlRespons2.utledGeoLokasjon().get()
         );
 
 
@@ -221,30 +225,30 @@ public class CachingConfigMockTest {
         );
 
         Assertions.assertEquals(
-                persondataService.hentNavnFraPdlRespons(FØRSTE_PDL_RESPONSE).getFornavn(),
-                persondataService.hentNavnFraPdlRespons(pdlRespons).getFornavn()
+                FØRSTE_PDL_RESPONSE.utledNavnEllerTomtNavn().getFornavn(),
+                pdlRespons.utledNavnEllerTomtNavn().getFornavn()
         );
         Assertions.assertEquals(
-                persondataService.hentNavnFraPdlRespons(FØRSTE_PDL_RESPONSE).getFornavn(),
-                persondataService.hentNavnFraPdlRespons(pdlRespons2).getFornavn()
+                FØRSTE_PDL_RESPONSE.utledNavnEllerTomtNavn().getFornavn(),
+                pdlRespons2.utledNavnEllerTomtNavn().getFornavn()
         );
 
         Assertions.assertEquals(
-                persondataService.hentNavnFraPdlRespons(FØRSTE_PDL_RESPONSE).getEtternavn(),
-                persondataService.hentNavnFraPdlRespons(pdlRespons).getEtternavn()
+                FØRSTE_PDL_RESPONSE.utledNavnEllerTomtNavn().getEtternavn(),
+                pdlRespons.utledNavnEllerTomtNavn().getEtternavn()
         );
         Assertions.assertEquals(
-                persondataService.hentNavnFraPdlRespons(FØRSTE_PDL_RESPONSE).getEtternavn(),
-                persondataService.hentNavnFraPdlRespons(pdlRespons2).getEtternavn()
+                FØRSTE_PDL_RESPONSE.utledNavnEllerTomtNavn().getEtternavn(),
+                pdlRespons2.utledNavnEllerTomtNavn().getEtternavn()
         );
 
         /** Blir kalt 2 ganger. Andre iterasjon så treffer vi cache response istedenfor endepunkt */
-        verify(mockPersondataService, times(1)).hentPersondataFraPdl(avtale.getDeltakerFnr());
+        verify(mockPersondataService, times(1)).hentPersondata(avtale.getDeltakerFnr());
     }
 
     @Test
     public void bekreft_antall_ganger_Cacheable_endepunkter_blir_kalt_ved_endreAvtale() {
-        Optional<String> optionalGeoEnhet = PersondataService.hentGeoLokasjonFraPdlRespons(FØRSTE_PDL_RESPONSE);
+        Optional<String> optionalGeoEnhet = FØRSTE_PDL_RESPONSE.utledGeoLokasjon();
         String geoEnhet = optionalGeoEnhet.get();
 
         Veileder veileder = new Veileder(
@@ -274,6 +278,6 @@ public class CachingConfigMockTest {
         /** Blir kalt 2 ganger. Andre iterasjon så treffer vi cache response istedenfor endepunkt */
         verify(mockNorg2Client, times(1)).hentOppfølgingsEnhetFraCacheNorg2(avtale.getEnhetOppfolging());
         verify(mockNorg2Client, times(1)).hentGeoEnhetFraCacheEllerNorg2(geoEnhet);
-        verify(mockPersondataService, times(1)).hentPersondataFraPdl(avtale.getDeltakerFnr());
+        verify(mockPersondataService, times(1)).hentPersondata(avtale.getDeltakerFnr());
     }
 }

@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
@@ -46,21 +47,21 @@ class BeslutterTest {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
 
-        // Gi veileder tilgang til deltaker
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        PersondataService persondataService = mock(PersondataService.class);
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
                 tilgangskontrollService,
-                mock(PersondataService.class),
+                persondataService,
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
                 false,
                 mock(VeilarboppfolgingService.class));
 
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class)))
-                .thenReturn(true);
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
+        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
 
         avtale.endreAvtale(
                 Now.instant(),

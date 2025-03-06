@@ -6,7 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
-import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
+import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Collections;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,12 +45,10 @@ public class VtaoTest {
     private TilgangskontrollService tilgangskontrollService;
     @Mock
     private PersondataService persondataService;
-    @MockBean
-    AxsysService axsysService;
     @Mock
-    VeilarboppfolgingService veilarboppfolgingService;
+    private VeilarboppfolgingService veilarboppfolgingService;
     @Mock
-    Norg2Client norg2Client;
+    private Norg2Client norg2Client;
     @Autowired
     private AvtaleInnholdRepository avtaleInnholdRepository;
 
@@ -156,16 +153,15 @@ public class VtaoTest {
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
+        when(persondataService.hentPersondata(any(Fnr.class))).thenReturn(new PdlRespons(null));
 
         // Hent avtalen fra databasen
         var hentetAvtale = avtaleController.hent(lagretAvtale.getId(), Avtalerolle.VEILEDER, null);
 
-        // Ingrid Espelid: "Så juksar me lite"
         hentetAvtale.getGjeldendeInnhold().setGodkjentAvDeltaker(null);
         hentetAvtale.getGjeldendeInnhold().setGodkjentAvVeileder(null);
         hentetAvtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(null);
         avtaleRepository.save(hentetAvtale);
-        //avtaleController.opphevGodkjenninger(lagretAvtale.getId(), Avtalerolle.VEILEDER);
 
         var endretData = EndreAvtale.fraAvtale(avtale);
 
@@ -218,6 +214,7 @@ public class VtaoTest {
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
+        when(persondataService.hentPersondata(any(Fnr.class))).thenReturn(new PdlRespons(null));
 
         // Hent avtalen fra databasen
         var hentetAvtale = avtaleController.hent(lagretAvtale.getId(), Avtalerolle.VEILEDER, null);
@@ -227,7 +224,6 @@ public class VtaoTest {
         hentetAvtale.getGjeldendeInnhold().setGodkjentAvVeileder(null);
         hentetAvtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(null);
         avtaleRepository.save(hentetAvtale);
-        //avtaleController.opphevGodkjenninger(lagretAvtale.getId(), Avtalerolle.VEILEDER);
 
         var endretVtao = new VtaoFelter(
                 "Freddy",

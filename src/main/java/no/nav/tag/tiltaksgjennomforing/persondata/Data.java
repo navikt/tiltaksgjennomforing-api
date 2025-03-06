@@ -4,6 +4,7 @@ import lombok.Value;
 
 @Value
 public class Data {
+    private final HentPersonBolk hentPersonBolk;
     private final HentPerson hentPerson;
     private final HentIdenter hentIdenter;
     private final HentGeografiskTilknytning hentGeografiskTilknytning;

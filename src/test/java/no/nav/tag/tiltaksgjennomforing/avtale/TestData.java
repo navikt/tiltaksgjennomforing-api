@@ -1,22 +1,50 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.*;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetMentor;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.enhet.*;
+import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2EnhetStatus;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
+import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
-import no.nav.tag.tiltaksgjennomforing.persondata.*;
+import no.nav.tag.tiltaksgjennomforing.persondata.Adressebeskyttelse;
+import no.nav.tag.tiltaksgjennomforing.persondata.Data;
+import no.nav.tag.tiltaksgjennomforing.persondata.HentGeografiskTilknytning;
+import no.nav.tag.tiltaksgjennomforing.persondata.HentPerson;
+import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
+import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.sporingslogg.Sporingslogg;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
-import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 public class TestData {
 
@@ -823,7 +851,6 @@ public class TestData {
                         )
                 );
         when(persondataService.hentPersondata(avtale.getDeltakerFnr())).thenReturn(pdlRespons);
-        when(persondataService.erKode6(pdlRespons)).thenCallRealMethod();
 
         when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
                 .thenReturn(new Norg2GeoResponse(
@@ -879,11 +906,12 @@ public class TestData {
     public static Veileder enVeileder(Avtale avtale) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        PersondataService persondataService  = mock(PersondataService.class);
 
         var veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
                 tilgangskontrollService,
-                mock(PersondataService.class),
+                persondataService,
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Oslo gamlebyen")),
                 new SlettemerkeProperties(),
@@ -891,29 +919,32 @@ public class TestData {
                 veilarboppfolgingService
         );
 
-        lenient().when(
-                tilgangskontrollService.harSkrivetilgangTilKandidat(
-                        eq(veileder),
-                        eq(avtale.getDeltakerFnr())
-                )
+        when(persondataService.hentPersondata(any(Fnr.class))).thenReturn(new PdlRespons(null));
+        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
+
+        when(
+            tilgangskontrollService.harSkrivetilgangTilKandidat(
+                eq(veileder),
+                eq(avtale.getDeltakerFnr())
+            )
         ).thenReturn(true);
 
-        lenient().when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any()))
-                .thenReturn(
-                        new Oppfølgingsstatus(
-                                Formidlingsgruppe.ARBEIDSSOKER,
-                                Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
-                                "0906"
-                        )
-                );
-        lenient().when(veilarboppfolgingService.hentOppfolgingsstatus(any()))
-                .thenReturn(
-                        new Oppfølgingsstatus(
-                                Formidlingsgruppe.ARBEIDSSOKER,
-                                Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
-                                "0906"
-                        )
-                );
+        when(veilarboppfolgingService.hentOgSjekkOppfolgingstatus(any()))
+            .thenReturn(
+                new Oppfølgingsstatus(
+                    Formidlingsgruppe.ARBEIDSSOKER,
+                    Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
+                    "0906"
+                )
+            );
+        when(veilarboppfolgingService.hentOppfolgingsstatus(any()))
+            .thenReturn(
+                new Oppfølgingsstatus(
+                    Formidlingsgruppe.ARBEIDSSOKER,
+                    Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS,
+                    "0906"
+                )
+            );
 
         return veileder;
     }
@@ -1039,10 +1070,11 @@ public class TestData {
 
     public static Veileder enVeileder(NavIdent navIdent, VeilarboppfolgingService veilarboppfolgingService) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        PersondataService persondataService = mock(PersondataService.class);
         var veileder = new Veileder(
                 navIdent,
                 tilgangskontrollService,
-                mock(PersondataService.class),
+                persondataService,
                 mock(Norg2Client.class),
                 Set.of(ENHET_OPPFØLGING),
                 new SlettemerkeProperties(),
@@ -1050,6 +1082,7 @@ public class TestData {
                 veilarboppfolgingService
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
+        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         return veileder;
     }
 
@@ -1078,8 +1111,8 @@ public class TestData {
             adressebeskyttelser[0] = new Adressebeskyttelse(Diskresjonskode.STRENGT_FORTROLIG);
         }
 
-        HentPerson hentPerson = new HentPerson(adressebeskyttelser, new Navn[]{new Navn("Donald", null, "Duck")});
-        return new PdlRespons(new Data(hentPerson, null, new HentGeografiskTilknytning(null, "030101", null, null)));
+        HentPerson hentPerson = new HentPerson(adressebeskyttelser, null, new Navn[]{new Navn("Donald", null, "Duck")});
+        return new PdlRespons(new Data(null, hentPerson, null, new HentGeografiskTilknytning(null, "030101", null, null)));
     }
 
     public static TilskuddPeriode enTilskuddPeriode() {

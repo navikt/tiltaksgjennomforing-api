@@ -18,11 +18,11 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerExceptio
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6Exception;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
+import no.nav.tag.tiltaksgjennomforing.logging.SecureLog;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
-import no.nav.tag.tiltaksgjennomforing.logging.SecureLog;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -36,8 +36,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 import java.util.function.Predicate;
-
-import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
 @Slf4j
 public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
@@ -145,7 +143,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     void godkjennForAvtalepart(Avtale avtale) {
-        if (persondataService.erKode6(avtale.getDeltakerFnr())) {
+        if (persondataService.hentDiskresjonskode(avtale.getDeltakerFnr()).erKode6()) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
         this.sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
@@ -159,7 +157,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     public void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn, Avtale avtale) {
         sjekkTilgang(avtale);
-        if (persondataService.erKode6(avtale.getDeltakerFnr())) {
+        if (persondataService.hentDiskresjonskode(avtale.getDeltakerFnr()).erKode6()) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
         this.sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
@@ -167,7 +165,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     private void blokkereKode6Prosessering(Fnr deltakerFnr) {
-        if (persondataService.erKode6(deltakerFnr)) {
+        if (persondataService.hentDiskresjonskode(deltakerFnr).erKode6()) {
             throw new KanIkkeGodkjenneAvtalePåKode6Exception();
         }
     }
@@ -244,13 +242,13 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     public PdlRespons oppdaterePersondataFraPdlVedEndreAvtale(Fnr deltakerFnr) {
-        final PdlRespons persondata = persondataService.hentPersondataFraPdl(deltakerFnr);
+        final PdlRespons persondata = persondataService.hentPersondata(deltakerFnr);
         this.sjekkKode6(persondata);
         return persondata;
     }
 
     private void oppdatereGeoEnhetVedEndreAvtale(Avtale avtale, PdlRespons pdlRespons) {
-        Norg2GeoResponse norg2GeoResponse = PersondataService.hentGeoLokasjonFraPdlRespons(pdlRespons)
+        Norg2GeoResponse norg2GeoResponse = pdlRespons.utledGeoLokasjon()
                 .map(norg2Client::hentGeoEnhetFraCacheEllerNorg2)
                 .orElse(null);
         if (norg2GeoResponse == null) return;
@@ -274,8 +272,8 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
     }
 
-    private void sjekkKode6(PdlRespons persondata) {
-        if (persondataService.erKode6(persondata)) {
+    private void sjekkKode6(PdlRespons pdlRespons) {
+        if (pdlRespons.utledDiskresjonskodeEllerUgradert().erKode6()) {
             throw new KanIkkeOppretteAvtalePåKode6Exception();
         }
     }
@@ -301,9 +299,9 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     private PdlRespons hentPersonDataForOpprettelseAvAvtale(Avtale avtale) {
-        final PdlRespons persondata = hentPersondata(avtale.getDeltakerFnr());
-        avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(persondata));
-        return persondata;
+        final PdlRespons pdlRespons = hentPersondata(avtale.getDeltakerFnr());
+        avtale.leggTilDeltakerNavn(pdlRespons.utledNavnEllerTomtNavn());
+        return pdlRespons;
     }
 
     public void hentOppfolgingEnhetsnavnFraNorg2(Avtale avtale, Norg2Client norg2Client) {

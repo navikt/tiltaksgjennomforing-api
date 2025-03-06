@@ -39,8 +39,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
-import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
-
 @Slf4j
 @Service
 public class ArenaAgreementProcessingService {
@@ -287,7 +285,7 @@ public class ArenaAgreementProcessingService {
 
         Organisasjon org = eregService.hentVirksomhet(avtale.getBedriftNr());
         avtale.leggTilBedriftNavn(org.getBedriftNavn());
-        avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(personalData));
+        avtale.leggTilDeltakerNavn(personalData.utledNavnEllerTomtNavn());
 
         getGeoEnhetFromNorg2(personalData).ifPresent((norg2GeoResponse) -> {
             avtale.setEnhetGeografisk(norg2GeoResponse.getEnhetNr());
@@ -321,7 +319,7 @@ public class ArenaAgreementProcessingService {
     }
 
     private Optional<Norg2GeoResponse> getGeoEnhetFromNorg2(PdlRespons pdlRespons) {
-        return PersondataService.hentGeoLokasjonFraPdlRespons(pdlRespons).map(norg2Client::hentGeografiskEnhet);
+        return pdlRespons.utledGeoLokasjon().map(norg2Client::hentGeografiskEnhet);
     }
 
     private Optional<Oppfølgingsstatus> getOppfolgingsstatusFromVeilarbarena(Fnr fnr) {
@@ -355,7 +353,7 @@ public class ArenaAgreementProcessingService {
 
         if (agreementAggregate.getFnr() != null) {
             PdlRespons personalData = persondataService.hentPersondata(new Fnr(agreementAggregate.getFnr()));
-            if (persondataService.erKode6(personalData)) {
+            if (personalData.utledDiskresjonskodeEllerUgradert().erKode6()) {
                 return Optional.of(ArenaMigrationAction.KODE_6);
             }
         }

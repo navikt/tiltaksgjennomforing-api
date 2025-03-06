@@ -16,7 +16,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
-import no.nav.tag.tiltaksgjennomforing.persondata.Adressebeskyttelse;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.data.domain.Page;
@@ -219,11 +218,10 @@ public class AdminController {
                 Optional<Tilgangsattributter> tilgangsattributter = tilgangskontrollService
                     .hentTilgangsattributter(avtale.getDeltakerFnr());
 
-                Adressebeskyttelse adressebeskyttelse = persondataService
-                    .hentAdressebeskyttelse(avtale.getDeltakerFnr());
+                Diskresjonskode diskresjonskode = persondataService.hentDiskresjonskode(avtale.getDeltakerFnr());
 
                 return Map.of(
-                    "pdlAdressebeskyttelse", adressebeskyttelse.getGradering(),
+                    "pdlAdressebeskyttelse", diskresjonskode,
                     "kontor", tilgangsattributter.map(Tilgangsattributter::kontor).orElse(""),
                     "skjermet", tilgangsattributter.map(Tilgangsattributter::skjermet).orElse(false),
                     "diskresjonskode", tilgangsattributter.map(t -> t.diskresjonskode().name()).orElse("")
@@ -285,16 +283,15 @@ public class AdminController {
             .getContent()
             .stream()
             .map(avtale -> {
-                Adressebeskyttelse adressebeskyttelse = persondataService.hentAdressebeskyttelse(avtale.getDeltakerFnr());
                 return Map.of(
                     "id", avtale.getId(),
                     "status", avtale.getStatus(),
-                    "gradering", adressebeskyttelse.getGradering()
+                    "gradering", persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())
                 );
             })
             .filter(map -> {
                 Diskresjonskode kode = (Diskresjonskode) map.get("gradering");
-                return PersondataService.KODE_6.contains(kode) || PersondataService.KODE_7.contains(kode);
+                return kode.erKode6Eller7();
             })
             .collect(Collectors.toList());
 

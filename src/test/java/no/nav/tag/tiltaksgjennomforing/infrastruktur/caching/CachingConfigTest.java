@@ -122,7 +122,7 @@ public class CachingConfigTest {
     @Test
     public void sjekk_at_caching_fanger_opp_data_fra_norggeoenhet_cache() {
         PdlRespons pdlRespons = TestData.enPdlrespons(false);
-        Optional<String> optionalGeoEnhet = PersondataService.hentGeoLokasjonFraPdlRespons(pdlRespons);
+        Optional<String> optionalGeoEnhet = pdlRespons.utledGeoLokasjon();
         String geoEnhet = optionalGeoEnhet.get();
 
         Norg2GeoResponse norg2GeoResponse = norg2Client.hentGeoEnhetFraCacheEllerNorg2(geoEnhet);
@@ -137,29 +137,29 @@ public class CachingConfigTest {
     @Test
     public void sjekk_at_caching_fanger_opp_data_fra_pdl_cache() {
         Fnr brukerFnr = new Fnr("00000000000");
-        PdlRespons pdlRespons = persondataService.hentPersondataFraPdl(brukerFnr);
+        PdlRespons pdlRespons = persondataService.hentPersondata(brukerFnr);
 
         PdlRespons pdlCache = getCacheValue(PDL_CACHE, brukerFnr, PdlRespons.class);
 
-        Assertions.assertEquals("030104", persondataService.hentGeoLokasjonFraPdlRespons(pdlCache).get());
+        Assertions.assertEquals("030104", pdlCache.utledGeoLokasjon().get());
         Assertions.assertEquals("3", pdlCache.getData().getHentGeografiskTilknytning().getRegel());
-        Assertions.assertEquals("Donald", persondataService.hentNavnFraPdlRespons(pdlCache).getFornavn());
-        Assertions.assertEquals("Duck", persondataService.hentNavnFraPdlRespons(pdlCache).getEtternavn());
+        Assertions.assertEquals("Donald", pdlCache.utledNavnEllerTomtNavn().getFornavn());
+        Assertions.assertEquals("Duck", pdlCache.utledNavnEllerTomtNavn().getEtternavn());
         Assertions.assertEquals(
-                persondataService.hentGeoLokasjonFraPdlRespons(pdlRespons).get(),
-                persondataService.hentGeoLokasjonFraPdlRespons(pdlCache).get()
+                pdlRespons.utledGeoLokasjon().get(),
+                pdlCache.utledGeoLokasjon().get()
         );
         Assertions.assertEquals(
                 pdlRespons.getData().getHentGeografiskTilknytning().getRegel(),
                 pdlCache.getData().getHentGeografiskTilknytning().getRegel()
         );
         Assertions.assertEquals(
-                persondataService.hentNavnFraPdlRespons(pdlRespons).getFornavn(),
-                persondataService.hentNavnFraPdlRespons(pdlCache).getFornavn()
+                pdlRespons.utledNavnEllerTomtNavn().getFornavn(),
+                pdlCache.utledNavnEllerTomtNavn().getFornavn()
         );
         Assertions.assertEquals(
-                persondataService.hentNavnFraPdlRespons(pdlRespons).getEtternavn(),
-                persondataService.hentNavnFraPdlRespons(pdlCache).getEtternavn()
+                pdlRespons.utledNavnEllerTomtNavn().getEtternavn(),
+                pdlCache.utledNavnEllerTomtNavn().getEtternavn()
         );
     }
 
@@ -226,10 +226,10 @@ public class CachingConfigTest {
         Assertions.assertEquals("NAV Agder", norgnavnCacheForEnhet.getNavn());
         Assertions.assertEquals("1000", norgnavnCacheForEnhet.getEnhetNr());
 
-        Assertions.assertEquals("030104", persondataService.hentGeoLokasjonFraPdlRespons(pdlCache).get());
+        Assertions.assertEquals("030104", pdlCache.utledGeoLokasjon().get());
         Assertions.assertEquals("3", pdlCache.getData().getHentGeografiskTilknytning().getRegel());
-        Assertions.assertEquals("Donald", persondataService.hentNavnFraPdlRespons(pdlCache).getFornavn());
-        Assertions.assertEquals("Duck", persondataService.hentNavnFraPdlRespons(pdlCache).getEtternavn());
+        Assertions.assertEquals("Donald", pdlCache.utledNavnEllerTomtNavn().getFornavn());
+        Assertions.assertEquals("Duck", pdlCache.utledNavnEllerTomtNavn().getEtternavn());
 
         Assertions.assertEquals("0906", arenaCache.oppfolgingsenhet().enhetId());
     }
