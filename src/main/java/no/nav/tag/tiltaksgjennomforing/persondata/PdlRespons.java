@@ -55,7 +55,7 @@ public class PdlRespons {
 
     public Map<Fnr, Optional<Diskresjonskode>> utledDiskresjonskode(Set<Fnr> fnrSet) {
         Set<String> fnrStringSet = fnrSet.stream().map(Fnr::asString).collect(Collectors.toSet());
-        return Stream.of(getData().getHentPersonBolk().getHentPerson())
+        return Stream.of(getData().getHentPersonBolk().getPerson())
             .map(person -> {
                 String folkeregisteridentifikator = Stream.of(person.getFolkeregisteridentifikator())
                     .map(Folkeregisteridentifikator::getIdentifikasjonsnummer)
