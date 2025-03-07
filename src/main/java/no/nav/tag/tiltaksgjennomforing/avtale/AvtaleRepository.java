@@ -201,4 +201,19 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
     List<Avtale> finnAvtalerSomSnartSkalFølgesOpp(LocalDate date);
 
     Page<Avtale> findByStatusIn(Collection<Status> statuses, Pageable pageable);
+
+    @Query("""
+        SELECT distinct a.deltakerFnr
+        FROM Avtale a
+        WHERE a.status IN ('GJENNOMFØRES', 'AVSLUTTET', 'PÅBEGYNT', 'MANGLER_GODKJENNING', 'KLAR_FOR_OPPSTART')
+    """)
+    Page<Fnr> findDistinctDeltakerFnr(Pageable pageable);
+
+    @Query("""
+        SELECT a
+        FROM Avtale a
+        WHERE a.deltakerFnr = :deltakerFnr
+          AND a.status IN ('GJENNOMFØRES', 'AVSLUTTET', 'PÅBEGYNT', 'MANGLER_GODKJENNING', 'KLAR_FOR_OPPSTART')
+    """)
+    List<Avtale> findByDeltakerFnr(Fnr deltakerFnr);
 }
