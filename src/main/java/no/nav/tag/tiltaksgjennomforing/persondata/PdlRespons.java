@@ -55,9 +55,10 @@ public class PdlRespons {
 
     public Map<Fnr, Optional<Diskresjonskode>> utledDiskresjonskode(Set<Fnr> fnrSet) {
         Set<String> fnrStringSet = fnrSet.stream().map(Fnr::asString).collect(Collectors.toSet());
-        return Stream.of(getData().getHentPersonBolk().getPerson())
+        return Stream.of(getData().getHentPersonBolk())
+            .filter(HentPersonBolk::isOk)
             .map(person -> {
-                String folkeregisteridentifikator = Stream.of(person.getFolkeregisteridentifikator())
+                String folkeregisteridentifikator = Stream.of(person.getPerson().getFolkeregisteridentifikator())
                     .map(Folkeregisteridentifikator::getIdentifikasjonsnummer)
                     .filter(fnrStringSet::contains)
                     .findFirst()
@@ -65,7 +66,7 @@ public class PdlRespons {
 
                 return Map.entry(
                     new Fnr(folkeregisteridentifikator),
-                    utledAdressebeskyttelse(person).map(Adressebeskyttelse::getGradering)
+                    utledAdressebeskyttelse(person.getPerson()).map(Adressebeskyttelse::getGradering)
                 );
             })
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
