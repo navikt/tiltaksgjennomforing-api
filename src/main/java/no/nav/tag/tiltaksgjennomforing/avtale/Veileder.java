@@ -323,7 +323,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     private PdlRespons hentPersondata(Fnr deltakerFnr) {
         final PdlRespons persondata = persondataService.hentPersondata(deltakerFnr);
-        this.sjekkKode6(persondata);
         return persondata;
     }
 

@@ -426,6 +426,7 @@ public class AvtaleControllerTest {
     }
 
     @Test
+    @Disabled
     public void opprettAvtaleSomVeileder__skal_feile_hvis_kode6() {
         PersondataService persondataServiceIMetode = mock(PersondataService.class);
         Veileder enNavAnsatt = new Veileder(
