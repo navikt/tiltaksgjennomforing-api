@@ -19,7 +19,6 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6Exception;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.logging.SecureLog;
-import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -234,21 +233,15 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     protected void oppdatereEnheterVedEndreAvtale(Avtale avtale) {
-        PdlRespons pdlRespons = this.oppdaterePersondataFraPdlVedEndreAvtale(avtale.getDeltakerFnr());
+        this.sjekkKode6(avtale.getDeltakerFnr());
         this.oppdatereOppfølgingStatusVedEndreAvtale(avtale);
-        this.oppdatereGeoEnhetVedEndreAvtale(avtale, pdlRespons);
+        this.oppdatereGeoEnhetVedEndreAvtale(avtale);
         this.oppdatereOppfølgingEnhetsnavnVedEndreAvtale(avtale);
 
     }
 
-    public PdlRespons oppdaterePersondataFraPdlVedEndreAvtale(Fnr deltakerFnr) {
-        final PdlRespons persondata = persondataService.hentPersondata(deltakerFnr);
-        this.sjekkKode6(persondata);
-        return persondata;
-    }
-
-    private void oppdatereGeoEnhetVedEndreAvtale(Avtale avtale, PdlRespons pdlRespons) {
-        Norg2GeoResponse norg2GeoResponse = pdlRespons.utledGeoLokasjon()
+    private void oppdatereGeoEnhetVedEndreAvtale(Avtale avtale) {
+        Norg2GeoResponse norg2GeoResponse = persondataService.hentGeografiskTilknytning(avtale.getDeltakerFnr())
                 .map(norg2Client::hentGeoEnhetFraCacheEllerNorg2)
                 .orElse(null);
         if (norg2GeoResponse == null) return;
@@ -272,15 +265,18 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
     }
 
-    private void sjekkKode6(PdlRespons pdlRespons) {
-        if (pdlRespons.utledDiskresjonskodeEllerUgradert().erKode6()) {
+    private void sjekkKode6(Fnr fnr) {
+        if (persondataService.hentDiskresjonskode(fnr).erKode6()) {
             throw new KanIkkeOppretteAvtalePåKode6Exception();
         }
     }
 
     public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
         this.sjekkTilgangskontroll(opprettAvtale.getDeltakerFnr());
+        this.sjekkKode6(opprettAvtale.getDeltakerFnr());
+
         Avtale avtale = Avtale.opprett(opprettAvtale, Avtaleopphav.VEILEDER, getIdentifikator());
+        avtale.leggTilDeltakerNavn(persondataService.hentNavn(avtale.getDeltakerFnr()));
         leggTilEnheter(avtale);
         return avtale;
     }
@@ -292,16 +288,9 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     protected void leggTilEnheter(Avtale avtale) {
-        final PdlRespons persondata = this.hentPersonDataForOpprettelseAvAvtale(avtale);
+        super.hentGeoEnhetFraNorg2(avtale, norg2Client, persondataService);
         this.hentOppfølgingFraArena(avtale, veilarboppfolgingService);
-        super.hentGeoEnhetFraNorg2(avtale, persondata, norg2Client);
         this.hentOppfolgingEnhetsnavnFraNorg2(avtale, norg2Client);
-    }
-
-    private PdlRespons hentPersonDataForOpprettelseAvAvtale(Avtale avtale) {
-        final PdlRespons pdlRespons = hentPersondata(avtale.getDeltakerFnr());
-        avtale.leggTilDeltakerNavn(pdlRespons.utledNavnEllerTomtNavn());
-        return pdlRespons;
     }
 
     public void hentOppfolgingEnhetsnavnFraNorg2(Avtale avtale, Norg2Client norg2Client) {
@@ -319,12 +308,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         if (oppfølgingsstatus == null) return;
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
         this.settLonntilskuddProsentsats(avtale);
-    }
-
-    private PdlRespons hentPersondata(Fnr deltakerFnr) {
-        final PdlRespons persondata = persondataService.hentPersondata(deltakerFnr);
-        this.sjekkKode6(persondata);
-        return persondata;
     }
 
     public void sjekkOgOppdaterOppfølgningsstatusForAvtale(Avtale avtale) {
@@ -371,8 +354,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     protected void oppdaterOppfølgingOgGeoEnhetEtterForespørsel(Avtale avtale) {
         // Geo enhet
-        final PdlRespons persondata = this.hentPersonDataForOpprettelseAvAvtale(avtale);
-        super.hentGeoEnhetFraNorg2(avtale, persondata, norg2Client);
+        super.hentGeoEnhetFraNorg2(avtale, norg2Client, persondataService);
         // Oppfølgingsenhet
         Oppfølgingsstatus oppfølgingsstatus = veilarboppfolgingService.hentOppfolgingsstatus(avtale.getDeltakerFnr().asString());
         avtale.setEnhetOppfolging(oppfølgingsstatus.getOppfolgingsenhet());

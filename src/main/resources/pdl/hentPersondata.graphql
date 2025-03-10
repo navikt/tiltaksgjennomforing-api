@@ -1,19 +1,26 @@
 query($ident: ID!) {
-  hentPerson(ident: $ident) {
-	  navn {
-		  fornavn
-		  mellomnavn
-		  etternavn
-	  }
-	  adressebeskyttelse {
-      	  gradering
-      }
-  }
-  hentGeografiskTilknytning(ident: $ident){
-      gtType
-      gtKommune
-      gtBydel
-      gtLand
-      regel
+    hentPerson(ident: $ident) {
+        navn {
+            fornavn
+            mellomnavn
+            etternavn
+        }
+        adressebeskyttelse {
+            gradering
+        }
+    }
+    hentIdenter(ident: $ident, grupper: [AKTORID]) {
+        identer {
+            ident
+            gruppe
+            historisk
+        }
+    }
+    hentGeografiskTilknytning(ident: $ident){
+        gtType
+        gtKommune
+        gtBydel
+        gtLand
+        regel
     }
 }

@@ -77,14 +77,12 @@ public class PersondataServiceTest {
 
     @Test
     public void hentNavn__tomt_navn_hvis_person_ikke_finens() {
-        PdlRespons pdlRespons = persondataService.hentPersondata(PERSON_FINNES_IKKE);
-        assertThat(pdlRespons.utledNavnEllerTomtNavn()).isEqualTo(Navn.TOMT_NAVN);
+        assertThat(persondataService.hentNavn(PERSON_FINNES_IKKE)).isEqualTo(Navn.TOMT_NAVN);
     }
 
     @Test
     public void hentNavn__navn_hvis_person_finnes() {
-        PdlRespons pdlRespons = persondataService.hentPersondata(DONALD_DUCK);
-        assertThat(pdlRespons.utledNavnEllerTomtNavn()).isEqualTo(new Navn("Donald", null, "Duck"));
+        assertThat(persondataService.hentNavn(DONALD_DUCK)).isEqualTo(new Navn("Donald", null, "Duck"));
     }
 
     @Test
@@ -124,8 +122,7 @@ public class PersondataServiceTest {
 
     @Test
     public void henterGeoTilhørighet() {
-        PdlRespons pdlRespons = persondataService.hentPersondata(DONALD_DUCK);
-        assertThat(pdlRespons.utledGeoLokasjon().get()).isEqualTo("030104");
+        assertThat(persondataService.hentGeografiskTilknytning(DONALD_DUCK).get()).isEqualTo("030104");
     }
 
 }

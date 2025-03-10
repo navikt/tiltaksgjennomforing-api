@@ -1,12 +1,12 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
-import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
@@ -153,7 +153,7 @@ public class VtaoTest {
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
-        when(persondataService.hentPersondata(any(Fnr.class))).thenReturn(new PdlRespons(null));
+        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
 
         // Hent avtalen fra databasen
         var hentetAvtale = avtaleController.hent(lagretAvtale.getId(), Avtalerolle.VEILEDER, null);
@@ -214,7 +214,7 @@ public class VtaoTest {
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
-        when(persondataService.hentPersondata(any(Fnr.class))).thenReturn(new PdlRespons(null));
+        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
 
         // Hent avtalen fra databasen
         var hentetAvtale = avtaleController.hent(lagretAvtale.getId(), Avtalerolle.VEILEDER, null);

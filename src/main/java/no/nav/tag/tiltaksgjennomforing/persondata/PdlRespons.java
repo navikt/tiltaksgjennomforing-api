@@ -54,21 +54,22 @@ public class PdlRespons {
     }
 
     public Map<Fnr, Optional<Diskresjonskode>> utledDiskresjonskode(Set<Fnr> fnrSet) {
-        Set<String> fnrStringSet = fnrSet.stream().map(Fnr::asString).collect(Collectors.toSet());
-        return Stream.of(getData().getHentPersonBolk().getHentPerson())
-            .map(person -> {
-                String folkeregisteridentifikator = Stream.of(person.getFolkeregisteridentifikator())
-                    .map(Folkeregisteridentifikator::getIdentifikasjonsnummer)
-                    .filter(fnrStringSet::contains)
-                    .findFirst()
-                    .orElseThrow();
+        Map<String, Optional<Diskresjonskode>> diskresjonskodeMap = Stream.of(getData().getHentPersonBolk())
+            .filter(HentPersonBolk::isOk)
+            .flatMap(person -> Stream.of(person.getPerson().getFolkeregisteridentifikator()).map(a -> Map.entry(
+                a.getIdentifikasjonsnummer(),
+                utledAdressebeskyttelse(person.getPerson()).map(Adressebeskyttelse::getGradering)
+            )))
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                Map.Entry::getValue,
+                (a, b) -> a.isEmpty() ? b : a
+            ));
 
-                return Map.entry(
-                    new Fnr(folkeregisteridentifikator),
-                    utledAdressebeskyttelse(person).map(Adressebeskyttelse::getGradering)
-                );
-            })
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return fnrSet.stream().collect(Collectors.toMap(
+            fnr -> fnr,
+            fnr -> diskresjonskodeMap.getOrDefault(fnr.asString(), Optional.empty())
+        ));
     }
 
     public Optional<Adressebeskyttelse> utledAdressebeskyttelse() {

@@ -2,7 +2,9 @@ package no.nav.tag.tiltaksgjennomforing.persondata;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -16,25 +18,19 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-public class PersondataKlient {
+public class PersondataClient {
     private static final String BEHANDLINGSNUMMER = "B662";
 
     private final RestTemplate azureRestTemplate;
     private final PersondataProperties persondataProperties;
 
-    @Value("classpath:pdl/hentPerson.adressebeskyttelse.graphql")
-    private Resource adressebeskyttelseQueryResource;
-
-    @Value("classpath:pdl/hentPersonBolk.adressebeskyttelse.graphql")
+    @Value("classpath:pdl/hentPersonBolk.graphql")
     private Resource adressebeskyttelseBolkQueryResource;
 
     @Value("classpath:pdl/hentPersondata.graphql")
     private Resource persondataQueryResource;
 
-    @Value("classpath:pdl/hentIdenter.graphql")
-    private Resource identerQueryResource;
-
-    public PersondataKlient(
+    public PersondataClient(
         RestTemplate azureRestTemplate,
         PersondataProperties persondataProperties
     ) {
@@ -42,15 +38,7 @@ public class PersondataKlient {
         this.persondataProperties = persondataProperties;
     }
 
-    public PdlRespons hentAdressebeskyttelse(Fnr fnr) {
-        PdlRequest<PdlRequestVariables.Ident> pdlRequest = new PdlRequest<>(
-            adressebeskyttelseQueryResource,
-            new PdlRequestVariables.Ident(fnr.asString())
-        );
-        return utførKallTilPdl(pdlRequest);
-    }
-
-    public PdlRespons hentAdressebeskyttelse(Set<Fnr> fnr) {
+    public PdlRespons hentPersonBolk(Set<Fnr> fnr) {
         PdlRequest<PdlRequestVariables.IdentBolk> pdlRequest = new PdlRequest<>(
             adressebeskyttelseBolkQueryResource,
             new PdlRequestVariables.IdentBolk(fnr.stream().map(Fnr::asString).collect(Collectors.toList()))
@@ -58,14 +46,7 @@ public class PersondataKlient {
         return utførKallTilPdl(pdlRequest);
     }
 
-    public PdlRespons hentIdenter(Fnr fnr) {
-        PdlRequest<PdlRequestVariables.Ident> pdlRequest = new PdlRequest<>(
-            identerQueryResource,
-            new PdlRequestVariables.Ident(fnr.asString())
-        );
-        return utførKallTilPdl(pdlRequest);
-    }
-
+    @Cacheable(CacheConfig.PDL_CACHE)
     public PdlRespons hentPersondata(Fnr fnr) {
         PdlRequest<PdlRequestVariables.Ident> pdlRequest = new PdlRequest<>(
             persondataQueryResource,

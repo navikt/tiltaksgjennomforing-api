@@ -12,6 +12,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.HentOppfolgingsst
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataClient;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Assertions;
@@ -44,18 +45,18 @@ public class CachingConfigTest {
     private final CacheManager cacheManager;
     private final VeilarboppfolgingService veilarboppfolgingService;
     private final Norg2Client norg2Client;
-    private final PersondataService persondataService;
+    private final PersondataClient persondataClient;
 
     public CachingConfigTest(
             @Autowired CacheManager cacheManager,
             @Autowired VeilarboppfolgingService veilarboppfolgingService,
             @Autowired Norg2Client norg2Client,
-            @Autowired PersondataService persondataService
+            @Autowired PersondataClient persondataClient
     ){
         this.cacheManager = cacheManager;
         this.veilarboppfolgingService = veilarboppfolgingService;
         this.norg2Client = norg2Client;
-        this.persondataService = persondataService;
+        this.persondataClient = persondataClient;
     }
 
     private  <T,K> T getCacheValue(String cacheName, K cacheKey, Class<T> clazz) {
@@ -137,7 +138,7 @@ public class CachingConfigTest {
     @Test
     public void sjekk_at_caching_fanger_opp_data_fra_pdl_cache() {
         Fnr brukerFnr = new Fnr("00000000000");
-        PdlRespons pdlRespons = persondataService.hentPersondata(brukerFnr);
+        PdlRespons pdlRespons = persondataClient.hentPersondata(brukerFnr);
 
         PdlRespons pdlCache = getCacheValue(PDL_CACHE, brukerFnr, PdlRespons.class);
 
@@ -176,7 +177,7 @@ public class CachingConfigTest {
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
                 mockTilgangskontrollService,
-                persondataService,
+                new PersondataService(persondataClient),
                 norg2Client,
                 Set.of(new NavEnhet(avtale.getEnhetOppfolging(), avtale.getEnhetsnavnOppfolging())),
                 new SlettemerkeProperties(),

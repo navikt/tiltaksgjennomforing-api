@@ -22,6 +22,7 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
+import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -259,7 +260,6 @@ public class AvtaleControllerTest {
     @Test
     public void opprettAvtaleSkalReturnereCreatedOgOpprettetLokasjon() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        Fnr fnr = avtale.getDeltakerFnr();
 
         final NavIdent navIdent = new NavIdent("Z123456");
         final NavEnhet navEnhet = TestData.ENHET_OPPFØLGING;
@@ -289,8 +289,8 @@ public class AvtaleControllerTest {
                 )
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
-        when(persondataService.hentPersondata(fnr)).thenReturn(pdlRespons);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
+        when(persondataService.hentNavn(any(Fnr.class))).thenReturn(Navn.TOMT_NAVN);
         when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
                 .thenReturn(
                         new Norg2GeoResponse(
@@ -347,7 +347,7 @@ public class AvtaleControllerTest {
         )).thenReturn(true);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         when(avtaleRepository.save(avtale)).thenReturn(avtale);
-        when(persondataService.hentPersondata(any(Fnr.class))).thenReturn(new PdlRespons(null));
+        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         ResponseEntity svar = avtaleController.endreAvtale(
                 avtale.getId(),
                 avtale.getSistEndret(),
@@ -443,13 +443,12 @@ public class AvtaleControllerTest {
         when(
                 tilgangskontrollService.harSkrivetilgangTilKandidat(enNavAnsatt, deltakerFnr)
         ).thenReturn(true);
-        PdlRespons pdlRespons = TestData.enPdlrespons(true);
-        when(persondataServiceIMetode.hentPersondata(deltakerFnr)).thenReturn(pdlRespons);
+        when(persondataServiceIMetode.hentDiskresjonskode(deltakerFnr)).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
         assertThatThrownBy(
                 () -> avtaleController.opprettAvtaleSomVeileder(
                         new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING)
                 )
-        ).isInstanceOf(KanIkkeOppretteAvtalePåKode6Exception.class);
+         ).isInstanceOf(KanIkkeOppretteAvtalePåKode6Exception.class);
     }
 
     @Test

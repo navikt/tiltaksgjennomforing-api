@@ -1,15 +1,28 @@
 package no.nav.tag.tiltaksgjennomforing.infrastruktur.caching;
 
 
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
-import no.nav.tag.tiltaksgjennomforing.enhet.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
+import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2EnhetStatus;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
+import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;
-import no.nav.tag.tiltaksgjennomforing.persondata.*;
+import no.nav.tag.tiltaksgjennomforing.persondata.Data;
+import no.nav.tag.tiltaksgjennomforing.persondata.HentGeografiskTilknytning;
+import no.nav.tag.tiltaksgjennomforing.persondata.HentPerson;
+import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
+import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataClient;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,18 +32,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.AopTestUtils;
 
 import java.util.Optional;
 import java.util.Set;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ActiveProfiles("cache-test")
 @ContextConfiguration
@@ -38,14 +57,14 @@ import static org.mockito.Mockito.*;
 public class CachingConfigMockTest {
 
     private TilgangskontrollService mockTilgangskontrollService;
-    private PersondataService mockPersondataService;
+    private PersondataClient mockPersondataClient;
     private Norg2Client mockNorg2Client;
     private VeilarboppfolgingService mockVeilarboppfolgingService;
 
     @Autowired
     private TilgangskontrollService tilgangskontrollService;
     @Autowired
-    private PersondataService persondataService;
+    private PersondataClient persondataClient;
     @Autowired
     private Norg2Client norg2Client;
     @Autowired
@@ -104,10 +123,8 @@ public class CachingConfigMockTest {
         }
 
         @Bean
-        public PersondataService persondataServiceMockImplementation() {
-            PersondataService persondataService = mock(PersondataService.class);
-            when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
-            return persondataService;
+        public PersondataClient persondataClientMockImplementation() {
+            return mock(PersondataClient.class);
         }
 
         @Bean
@@ -140,7 +157,7 @@ public class CachingConfigMockTest {
         TestData.setOppfolgingNavEnhet(avtale, oppfolgingNavEnhet);
 
         mockTilgangskontrollService = AopTestUtils.getTargetObject(tilgangskontrollService);
-        mockPersondataService = AopTestUtils.getTargetObject(persondataService);
+        mockPersondataClient = AopTestUtils.getTargetObject(persondataClient);
         mockNorg2Client = AopTestUtils.getTargetObject(norg2Client);
         mockVeilarboppfolgingService = AopTestUtils.getTargetObject(veilarboppfolgingService);
 
@@ -149,7 +166,7 @@ public class CachingConfigMockTest {
                 eq(avtale.getDeltakerFnr())
         )).thenReturn(true, true, true);
 
-        when(mockPersondataService.hentPersondata(avtale.getDeltakerFnr())).thenReturn(FØRSTE_PDL_RESPONSE, ANDRE_PDL_RESPONSE);
+        when(mockPersondataClient.hentPersondata(avtale.getDeltakerFnr())).thenReturn(FØRSTE_PDL_RESPONSE, ANDRE_PDL_RESPONSE);
         when(mockNorg2Client.hentOppfølgingsEnhetFraCacheNorg2(any())).thenReturn(
                 FØRSTE_NORG2_OPPFØLGNING_RESPONSE,
                 ANDRE_NORG2_OPPFØLGNING_RESPONSE
@@ -202,8 +219,8 @@ public class CachingConfigMockTest {
 
     @Test
     public void bekreft_antall_ganger_Cacheable_endepunkter_blir_kalt_ved_pdl() {
-        PdlRespons pdlRespons = persondataService.hentPersondata(avtale.getDeltakerFnr());
-        PdlRespons pdlRespons2 = persondataService.hentPersondata(avtale.getDeltakerFnr());
+        PdlRespons pdlRespons = persondataClient.hentPersondata(avtale.getDeltakerFnr());
+        PdlRespons pdlRespons2 = persondataClient.hentPersondata(avtale.getDeltakerFnr());
 
         Assertions.assertEquals(
                 FØRSTE_PDL_RESPONSE.utledGeoLokasjon().get(),
@@ -243,7 +260,7 @@ public class CachingConfigMockTest {
         );
 
         /** Blir kalt 2 ganger. Andre iterasjon så treffer vi cache response istedenfor endepunkt */
-        verify(mockPersondataService, times(1)).hentPersondata(avtale.getDeltakerFnr());
+        verify(mockPersondataClient, times(1)).hentPersondata(avtale.getDeltakerFnr());
     }
 
     @Test
@@ -254,7 +271,7 @@ public class CachingConfigMockTest {
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
                 tilgangskontrollService,
-                persondataService,
+                new PersondataService(persondataClient),
                 norg2Client,
                 Set.of(new NavEnhet(avtale.getEnhetOppfolging(), avtale.getEnhetsnavnOppfolging())),
                 new SlettemerkeProperties(),
@@ -278,6 +295,6 @@ public class CachingConfigMockTest {
         /** Blir kalt 2 ganger. Andre iterasjon så treffer vi cache response istedenfor endepunkt */
         verify(mockNorg2Client, times(1)).hentOppfølgingsEnhetFraCacheNorg2(avtale.getEnhetOppfolging());
         verify(mockNorg2Client, times(1)).hentGeoEnhetFraCacheEllerNorg2(geoEnhet);
-        verify(mockPersondataService, times(1)).hentPersondata(avtale.getDeltakerFnr());
+        verify(mockPersondataClient, times(1)).hentPersondata(avtale.getDeltakerFnr());
     }
 }

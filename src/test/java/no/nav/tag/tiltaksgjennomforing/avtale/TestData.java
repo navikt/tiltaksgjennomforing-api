@@ -850,7 +850,7 @@ public class TestData {
                                 avtale.getEnhetOppfolging()
                         )
                 );
-        when(persondataService.hentPersondata(avtale.getDeltakerFnr())).thenReturn(pdlRespons);
+        when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.UGRADERT);
 
         when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
                 .thenReturn(new Norg2GeoResponse(
@@ -919,8 +919,8 @@ public class TestData {
                 veilarboppfolgingService
         );
 
-        when(persondataService.hentPersondata(any(Fnr.class))).thenReturn(new PdlRespons(null));
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
+        when(persondataService.hentNavn(any(Fnr.class))).thenReturn(Navn.TOMT_NAVN);
 
         when(
             tilgangskontrollService.harSkrivetilgangTilKandidat(

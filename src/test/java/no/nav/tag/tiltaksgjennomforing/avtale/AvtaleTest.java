@@ -14,7 +14,6 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetForLangArbeidstreningException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
-import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -1545,7 +1544,6 @@ public class AvtaleTest {
         );
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
-        when(persondataService.hentPersondata(any(Fnr.class))).thenReturn(new PdlRespons(null));
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
 
         veileder.endreAvtale(

@@ -17,6 +17,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6
 import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataClient;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
@@ -376,7 +377,6 @@ public class VeilederTest {
 
     @Test
     public void oprettAvtale__setter_startverdier_på_avtale() {
-        final Fnr fnr = TestData.etFodselsnummer();
         final NavIdent navIdent = new NavIdent("Q987654");
         final NavEnhet navEnhet = TestData.ENHET_GEOGRAFISK;
         OpprettAvtale opprettAvtale = new OpprettAvtale(
@@ -386,7 +386,7 @@ public class VeilederTest {
         );
 
         final TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        final PersondataService persondataService = mock(PersondataService.class);
+        final PersondataClient persondataClient = mock(PersondataClient.class);
         final Norg2Client norg2Client = mock(Norg2Client.class);
         final PdlRespons pdlRespons = TestData.enPdlrespons(false);
         final VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
@@ -394,7 +394,7 @@ public class VeilederTest {
         Veileder veileder = new Veileder(
                 navIdent,
                 tilgangskontrollService,
-                persondataService,
+                new PersondataService(persondataClient),
                 norg2Client,
                 Set.of(navEnhet),
                 new SlettemerkeProperties(),
@@ -403,7 +403,7 @@ public class VeilederTest {
         );
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
-        when(persondataService.hentPersondata(fnr)).thenReturn(pdlRespons);
+        when(persondataClient.hentPersondata(any(Fnr.class))).thenReturn(pdlRespons);
         when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
                 .thenReturn(new Norg2GeoResponse(
                         TestData.ENHET_GEOGRAFISK.getNavn(),
@@ -425,7 +425,6 @@ public class VeilederTest {
 
     @Test
     public void opprettAvtale__skal_ikke_slettemerkes() {
-        final Fnr fnr = TestData.etFodselsnummer();
         final NavIdent navIdent = new NavIdent("Z123456");
         final PdlRespons pdlRespons = TestData.enPdlrespons(false);
         final NavEnhet navEnhet = TestData.ENHET_OPPFØLGING;
@@ -438,13 +437,13 @@ public class VeilederTest {
 
         final VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
         final Norg2Client norg2Client = mock(Norg2Client.class);
-        final PersondataService persondataService = mock(PersondataService.class);
+        final PersondataClient persondataClient = mock(PersondataClient.class);
         final TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
 
         Veileder veileder = new Veileder(
                 navIdent,
                 tilgangskontrollService,
-                persondataService,
+                new PersondataService(persondataClient),
                 norg2Client,
                 Set.of(navEnhet),
                 new SlettemerkeProperties(),
@@ -453,7 +452,7 @@ public class VeilederTest {
         );
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
-        when(persondataService.hentPersondata(fnr)).thenReturn(pdlRespons);
+        when(persondataClient.hentPersondata(any(Fnr.class))).thenReturn(new PdlRespons(null));
         when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
                 .thenReturn(
                         new Norg2GeoResponse(TestData.ENHET_GEOGRAFISK.getNavn(),

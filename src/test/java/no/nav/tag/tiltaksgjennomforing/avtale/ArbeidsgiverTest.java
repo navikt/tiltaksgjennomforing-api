@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataClient;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -42,13 +44,13 @@ public class ArbeidsgiverTest {
     public void oprettAvtale__setter_startverdier_på_avtale() {
         OpprettAvtale opprettAvtale = new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.ARBEIDSTRENING);
 
-        PersondataService persondataService = mock(PersondataService.class);
+        PersondataClient persondataClient = mock(PersondataClient.class);
         Norg2Client norg2Client = mock(Norg2Client.class);
 
         final PdlRespons pdlRespons = TestData.enPdlrespons(false);
         final Norg2GeoResponse navEnhet = new Norg2GeoResponse("Nav Grorud", "0411");
 
-        when(persondataService.hentPersondata(TestData.etFodselsnummer())).thenReturn(pdlRespons);
+        when(persondataClient.hentPersondata(any(Fnr.class))).thenReturn(pdlRespons);
         when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel())).thenReturn(navEnhet);
 
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
@@ -65,7 +67,7 @@ public class ArbeidsgiverTest {
                     )
                 ),
                 Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-                persondataService,
+                new PersondataService(persondataClient),
                 norg2Client);
 
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
