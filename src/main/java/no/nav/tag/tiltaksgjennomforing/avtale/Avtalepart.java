@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
-import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
@@ -13,7 +12,6 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilAvtaleException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
-import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -183,12 +181,14 @@ public abstract class Avtalepart<T extends Identifikator> {
         return List.of(getIdentifikator());
     }
 
-    protected void hentGeoEnhetFraNorg2(Avtale avtale, PdlRespons pdlRespons, Norg2Client norg2Client) {
-        Norg2GeoResponse enhet = PersondataService.hentGeoLokasjonFraPdlRespons(pdlRespons)
-                .map(norg2Client::hentGeografiskEnhet).orElse(null);
-        if (enhet == null) return;
-        avtale.setEnhetGeografisk(enhet.getEnhetNr());
-        avtale.setEnhetsnavnGeografisk(enhet.getNavn());
+    protected void hentGeoEnhetFraNorg2(Avtale avtale, Norg2Client norg2Client, PersondataService persondataService) {
+        persondataService
+            .hentGeografiskTilknytning(avtale.getDeltakerFnr())
+            .map(norg2Client::hentGeografiskEnhet)
+            .ifPresent(enhet -> {
+                avtale.setEnhetGeografisk(enhet.getEnhetNr());
+                avtale.setEnhetsnavnGeografisk(enhet.getNavn());
+            });
     }
 
     protected void hentOppfølgingsenhetNavnFraNorg2(Avtale avtale, Norg2Client norg2Client) {

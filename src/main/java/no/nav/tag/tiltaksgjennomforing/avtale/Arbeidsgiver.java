@@ -7,7 +7,6 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
-import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.data.domain.Page;
@@ -22,8 +21,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
 @Slf4j
 public class Arbeidsgiver extends Avtalepart<Fnr> {
@@ -219,22 +216,17 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
     public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
         this.tilgangTilBedriftVedOpprettelseAvAvtale(opprettAvtale.getBedriftNr(), opprettAvtale.getTiltakstype());
+
         Avtale avtale = Avtale.opprett(opprettAvtale, Avtaleopphav.ARBEIDSGIVER);
+        avtale.leggTilDeltakerNavn(persondataService.hentNavn(avtale.getDeltakerFnr()));
         leggEnheterVedOpprettelseAvAvtale(avtale);
 
         return avtale;
     }
 
     protected void leggEnheterVedOpprettelseAvAvtale(Avtale avtale) {
-        final PdlRespons persondata = this.hentPersonDataForOpprettelseAvAvtale(avtale);
-        super.hentGeoEnhetFraNorg2(avtale, persondata, norg2Client);
+        super.hentGeoEnhetFraNorg2(avtale, norg2Client, persondataService);
         super.hentOppfølgingsenhetNavnFraNorg2(avtale, norg2Client);
-    }
-
-    private PdlRespons hentPersonDataForOpprettelseAvAvtale(Avtale avtale) {
-        final PdlRespons persondata = persondataService.hentPersondata(avtale.getDeltakerFnr());
-        avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(persondata));
-        return persondata;
     }
 
     @Override

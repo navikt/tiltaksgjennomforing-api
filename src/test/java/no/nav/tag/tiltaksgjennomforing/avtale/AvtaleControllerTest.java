@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
@@ -21,7 +22,8 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
-import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
+import no.nav.tag.tiltaksgjennomforing.persondata.domene.Navn;
+import no.nav.tag.tiltaksgjennomforing.persondata.domene.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Disabled;
@@ -49,7 +51,12 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enArbeidstreningAv
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enNavIdent;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles(Miljø.TEST)
@@ -253,7 +260,6 @@ public class AvtaleControllerTest {
     @Test
     public void opprettAvtaleSkalReturnereCreatedOgOpprettetLokasjon() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
-        Fnr fnr = avtale.getDeltakerFnr();
 
         final NavIdent navIdent = new NavIdent("Z123456");
         final NavEnhet navEnhet = TestData.ENHET_OPPFØLGING;
@@ -283,8 +289,9 @@ public class AvtaleControllerTest {
                 )
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
-        when(persondataService.hentPersondata(fnr)).thenReturn(pdlRespons);
-        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
+        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
+        when(persondataService.hentNavn(any(Fnr.class))).thenReturn(Navn.TOMT_NAVN);
+        when(norg2Client.hentGeografiskEnhet(pdlRespons.data().hentGeografiskTilknytning().gtBydel()))
                 .thenReturn(
                         new Norg2GeoResponse(
                                 TestData.ENHET_GEOGRAFISK.getNavn(),
@@ -340,6 +347,7 @@ public class AvtaleControllerTest {
         )).thenReturn(true);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         when(avtaleRepository.save(avtale)).thenReturn(avtale);
+        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         ResponseEntity svar = avtaleController.endreAvtale(
                 avtale.getId(),
                 avtale.getSistEndret(),
@@ -435,14 +443,12 @@ public class AvtaleControllerTest {
         when(
                 tilgangskontrollService.harSkrivetilgangTilKandidat(enNavAnsatt, deltakerFnr)
         ).thenReturn(true);
-        PdlRespons pdlRespons = TestData.enPdlrespons(true);
-        when(persondataServiceIMetode.hentPersondata(deltakerFnr)).thenReturn(pdlRespons);
-        when(persondataServiceIMetode.erKode6(pdlRespons)).thenCallRealMethod();
+        when(persondataServiceIMetode.hentDiskresjonskode(deltakerFnr)).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
         assertThatThrownBy(
                 () -> avtaleController.opprettAvtaleSomVeileder(
                         new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING)
                 )
-        ).isInstanceOf(KanIkkeOppretteAvtalePåKode6Exception.class);
+         ).isInstanceOf(KanIkkeOppretteAvtalePåKode6Exception.class);
     }
 
     @Test

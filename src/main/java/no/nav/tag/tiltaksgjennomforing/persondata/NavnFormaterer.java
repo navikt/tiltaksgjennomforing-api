@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.persondata;
 
+import no.nav.tag.tiltaksgjennomforing.persondata.domene.Navn;
 import org.apache.commons.text.WordUtils;
 import org.springframework.util.StringUtils;
 
@@ -11,13 +12,13 @@ public class NavnFormaterer {
     }
 
     public String getEtternavn() {
-        return storeForbokstaver(navn.getEtternavn());
+        return storeForbokstaver(navn.etternavn());
     }
 
     public String getFornavn() {
-        String fornavnOgMellomnavn = navn.getFornavn();
-        if (StringUtils.hasLength(navn.getMellomnavn())) {
-            fornavnOgMellomnavn += " " + navn.getMellomnavn();
+        String fornavnOgMellomnavn = navn.fornavn();
+        if (StringUtils.hasLength(navn.mellomnavn())) {
+            fornavnOgMellomnavn += " " + navn.mellomnavn();
         }
         return storeForbokstaver(fornavnOgMellomnavn);
     }
