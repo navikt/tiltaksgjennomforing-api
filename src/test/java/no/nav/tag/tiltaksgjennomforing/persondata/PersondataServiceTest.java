@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.persondata;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.persondata.domene.Navn;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,104 +30,100 @@ public class PersondataServiceTest {
 
     @Test
     public void hentGradering__returnerer_strengt_fortrolig_person() {
-        Adressebeskyttelse adressebeskyttelse = persondataService.hentAdressebeskyttelse(STRENGT_FORTROLIG_PERSON);
-        assertThat(adressebeskyttelse.getGradering()).isEqualTo(Diskresjonskode.STRENGT_FORTROLIG);
+        Diskresjonskode diskresjonskode = persondataService.hentDiskresjonskode(STRENGT_FORTROLIG_PERSON);
+        assertThat(diskresjonskode).isEqualTo(Diskresjonskode.STRENGT_FORTROLIG);
     }
 
     @Test
     public void hentGradering__returnerer_strengt_fortrolig_utland_person() {
-        Adressebeskyttelse adressebeskyttelse = persondataService.hentAdressebeskyttelse(STRENGT_FORTROLIG_UTLAND_PERSON);
-        assertThat(adressebeskyttelse.getGradering()).isEqualTo(Diskresjonskode.STRENGT_FORTROLIG_UTLAND);
+        Diskresjonskode diskresjonskode = persondataService.hentDiskresjonskode(STRENGT_FORTROLIG_UTLAND_PERSON);
+        assertThat(diskresjonskode).isEqualTo(Diskresjonskode.STRENGT_FORTROLIG_UTLAND);
     }
 
     @Test
     public void hentGradering__returnerer_fortrolig_person() {
-        Adressebeskyttelse adressebeskyttelse = persondataService.hentAdressebeskyttelse(FORTROLIG_PERSON);
-        assertThat(adressebeskyttelse.getGradering()).isEqualTo(Diskresjonskode.FORTROLIG);
+        Diskresjonskode diskresjonskode = persondataService.hentDiskresjonskode(FORTROLIG_PERSON);
+        assertThat(diskresjonskode).isEqualTo(Diskresjonskode.FORTROLIG);
     }
 
     @Test
     public void hentGradering__returnerer_ugradert_person() {
-        Adressebeskyttelse adressebeskyttelse = persondataService.hentAdressebeskyttelse(UGRADERT_PERSON);
-        assertThat(adressebeskyttelse.getGradering()).isEqualTo(Diskresjonskode.UGRADERT);
+        Diskresjonskode diskresjonskode = persondataService.hentDiskresjonskode(UGRADERT_PERSON);
+        assertThat(diskresjonskode).isEqualTo(Diskresjonskode.UGRADERT);
     }
 
     @Test
     public void hentGradering__returnerer_tom_gradering() {
-        Adressebeskyttelse adressebeskyttelse = persondataService.hentAdressebeskyttelse(USPESIFISERT_GRADERT_PERSON);
-        assertThat(adressebeskyttelse).isEqualTo(Adressebeskyttelse.INGEN_BESKYTTELSE);
+        Diskresjonskode diskresjonskode = persondataService.hentDiskresjonskode(USPESIFISERT_GRADERT_PERSON);
+        assertThat(diskresjonskode).isEqualTo(Diskresjonskode.UGRADERT);
     }
 
     @Test
     public void hentGradering__person_finnes_ikke_er_ok() {
-        Adressebeskyttelse adressebeskyttelse = persondataService.hentAdressebeskyttelse(PERSON_FINNES_IKKE);
-        assertThat(adressebeskyttelse).isEqualTo(Adressebeskyttelse.INGEN_BESKYTTELSE);
+        Diskresjonskode diskresjonskode = persondataService.hentDiskresjonskode(PERSON_FINNES_IKKE);
+        assertThat(diskresjonskode).isEqualTo(Diskresjonskode.UGRADERT);
     }
 
     @Test
     public void hentGradering__returnerer_ugradert_tom_gradering() {
-        Adressebeskyttelse adressebeskyttelse = persondataService.hentAdressebeskyttelse(UGRADERT_PERSON_TOM_RESPONSE);
-        assertThat(adressebeskyttelse).isEqualTo(Adressebeskyttelse.INGEN_BESKYTTELSE);
+        Diskresjonskode diskresjonskode = persondataService.hentDiskresjonskode(UGRADERT_PERSON_TOM_RESPONSE);
+        assertThat(diskresjonskode).isEqualTo(Diskresjonskode.UGRADERT);
     }
 
     @Test
     public void hentGradering__person_får_respons_uten_data() {
-        Adressebeskyttelse adressebeskyttelse = persondataService.hentAdressebeskyttelse(PERSON_FOR_RESPONS_UTEN_DATA);
-        assertThat(adressebeskyttelse).isEqualTo(Adressebeskyttelse.INGEN_BESKYTTELSE);
+        Diskresjonskode diskresjonskode = persondataService.hentDiskresjonskode(PERSON_FOR_RESPONS_UTEN_DATA);
+        assertThat(diskresjonskode).isEqualTo(Diskresjonskode.UGRADERT);
     }
 
     @Test
     public void hentNavn__tomt_navn_hvis_person_ikke_finens() {
-        PdlRespons pdlRespons = persondataService.hentPersondata(PERSON_FINNES_IKKE);
-        assertThat(PersondataService.hentNavnFraPdlRespons(pdlRespons)).isEqualTo(Navn.TOMT_NAVN);
+        assertThat(persondataService.hentNavn(PERSON_FINNES_IKKE)).isEqualTo(Navn.TOMT_NAVN);
     }
 
     @Test
     public void hentNavn__navn_hvis_person_finnes() {
-        PdlRespons pdlRespons = persondataService.hentPersondata(DONALD_DUCK);
-        Navn navn = PersondataService.hentNavnFraPdlRespons(pdlRespons);
-        assertThat(navn).isEqualTo(new Navn("Donald", null, "Duck"));
+        assertThat(persondataService.hentNavn(DONALD_DUCK)).isEqualTo(new Navn("Donald", null, "Duck"));
     }
 
     @Test
-    public void erKode6Eller7__strengt_fortrolig() {
-        assertThat(persondataService.erKode6(STRENGT_FORTROLIG_PERSON)).isTrue();
+    public void erKode6__strengt_fortrolig() {
+        assertThat(persondataService.hentDiskresjonskode(STRENGT_FORTROLIG_PERSON).erKode6()).isTrue();
     }
 
     @Test
-    public void erKode6Eller7__strengt_fortrolig_utland() {
-        assertThat(persondataService.erKode6(STRENGT_FORTROLIG_UTLAND_PERSON)).isTrue();
+    public void erKode6__strengt_fortrolig_utland() {
+        assertThat(persondataService.hentDiskresjonskode(STRENGT_FORTROLIG_UTLAND_PERSON).erKode6()).isTrue();
     }
 
     @Test
-    public void erKode6Eller7__fortrolig() {
-        assertThat(persondataService.erKode6(FORTROLIG_PERSON)).isFalse();
+    public void erKode6__fortrolig() {
+        assertThat(persondataService.hentDiskresjonskode(FORTROLIG_PERSON).erKode6()).isFalse();
     }
 
     @Test
-    public void erKode6Eller7__ugradert() {
-        assertThat(persondataService.erKode6(UGRADERT_PERSON)).isFalse();
+    public void erKode6__ugradert() {
+        assertThat(persondataService.hentDiskresjonskode(UGRADERT_PERSON).erKode6()).isFalse();
     }
 
     @Test
-    public void erKode6Eller7__ugradertTom() {
-        assertThat(persondataService.erKode6(UGRADERT_PERSON_TOM_RESPONSE)).isFalse();
+    public void erKode6__ugradertTom() {
+        assertThat(persondataService.hentDiskresjonskode(UGRADERT_PERSON_TOM_RESPONSE).erKode6()).isFalse();
     }
 
     @Test
-    public void erKode6Eller7__uspesifisert_gradering() {
-        assertThat(persondataService.erKode6(USPESIFISERT_GRADERT_PERSON)).isFalse();
+    public void erKode6__uspesifisert_gradering() {
+        assertThat(persondataService.hentDiskresjonskode(USPESIFISERT_GRADERT_PERSON).erKode6()).isFalse();
     }
 
     @Test
-    public void erKode6Eller7_person_finnes_ikke_er_ok() {
-        assertThat(persondataService.erKode6(PERSON_FINNES_IKKE)).isFalse();
+    public void erKode6_person_finnes_ikke_er_ok() {
+        assertThat(persondataService.hentDiskresjonskode(PERSON_FINNES_IKKE).erKode6()).isFalse();
     }
 
     @Test
     public void henterGeoTilhørighet() {
-        PdlRespons pdlRespons = persondataService.hentPersondata(DONALD_DUCK);
-        assertThat(PersondataService.hentGeoLokasjonFraPdlRespons(pdlRespons).get()).isEqualTo("030104");
+        assertThat(persondataService.hentGeografiskTilknytning(DONALD_DUCK).get()).isEqualTo("030104");
     }
 
 }

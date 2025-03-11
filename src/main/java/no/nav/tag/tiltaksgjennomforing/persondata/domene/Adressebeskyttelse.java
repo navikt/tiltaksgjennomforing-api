@@ -1,4 +1,4 @@
-package no.nav.tag.tiltaksgjennomforing.persondata;
+package no.nav.tag.tiltaksgjennomforing.persondata.domene;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Value;

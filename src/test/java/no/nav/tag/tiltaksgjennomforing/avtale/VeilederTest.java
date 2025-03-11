@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
@@ -16,17 +16,13 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeAdminTilgangException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
-import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
+import no.nav.tag.tiltaksgjennomforing.persondata.domene.PdlRespons;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataClient;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.util.EnumSet;
@@ -37,7 +33,12 @@ import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class VeilederTest {
     @Test
@@ -127,7 +128,7 @@ public class VeilederTest {
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         PersondataService persondataService = mock(PersondataService.class);
-        when(persondataService.erKode6(avtale.getDeltakerFnr())).thenReturn(true);
+        when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
         Veileder veileder = TestData.enVeileder(avtale, persondataService);
         assertThatThrownBy(() -> veileder.godkjennAvtale(avtale.getSistEndret(), avtale))
                 .isExactlyInstanceOf(KanIkkeGodkjenneAvtalePåKode6Exception.class);
@@ -139,7 +140,7 @@ public class VeilederTest {
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         PersondataService persondataService = mock(PersondataService.class);
-        when(persondataService.erKode6(avtale.getDeltakerFnr())).thenReturn(true);
+        when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
         Veileder veileder = TestData.enVeileder(avtale, persondataService);
         assertThatThrownBy(() -> veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale))
                 .isExactlyInstanceOf(KanIkkeGodkjenneAvtalePåKode6Exception.class);
@@ -208,19 +209,21 @@ public class VeilederTest {
         // Gi veileder tilgang til deltaker
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         VeilarboppfolgingService veilarboppfolgingServiceMock = mock(VeilarboppfolgingService.class);
+        PersondataService persondataService = mock(PersondataService.class);
         when(veilarboppfolgingServiceMock.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
                 tilgangskontrollService,
-                mock(PersondataService.class),
+                persondataService,
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
-
                 false,
-                veilarboppfolgingServiceMock);
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class)))
-                .thenReturn(true);
+                veilarboppfolgingServiceMock
+        );
+
+        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
 
         avtale.endreAvtale(
                 Now.instant(),
@@ -374,7 +377,6 @@ public class VeilederTest {
 
     @Test
     public void oprettAvtale__setter_startverdier_på_avtale() {
-        final Fnr fnr = TestData.etFodselsnummer();
         final NavIdent navIdent = new NavIdent("Q987654");
         final NavEnhet navEnhet = TestData.ENHET_GEOGRAFISK;
         OpprettAvtale opprettAvtale = new OpprettAvtale(
@@ -384,7 +386,7 @@ public class VeilederTest {
         );
 
         final TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        final PersondataService persondataService = mock(PersondataService.class);
+        final PersondataClient persondataClient = mock(PersondataClient.class);
         final Norg2Client norg2Client = mock(Norg2Client.class);
         final PdlRespons pdlRespons = TestData.enPdlrespons(false);
         final VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
@@ -392,7 +394,7 @@ public class VeilederTest {
         Veileder veileder = new Veileder(
                 navIdent,
                 tilgangskontrollService,
-                persondataService,
+                new PersondataService(persondataClient),
                 norg2Client,
                 Set.of(navEnhet),
                 new SlettemerkeProperties(),
@@ -401,14 +403,13 @@ public class VeilederTest {
         );
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
-        when(persondataService.hentPersondata(fnr)).thenReturn(pdlRespons);
-        when(persondataService.erKode6(pdlRespons)).thenCallRealMethod();
-        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
+        when(persondataClient.hentPersondata(any(Fnr.class))).thenReturn(pdlRespons);
+        when(norg2Client.hentGeografiskEnhet(pdlRespons.data().hentGeografiskTilknytning().gtBydel()))
                 .thenReturn(new Norg2GeoResponse(
                         TestData.ENHET_GEOGRAFISK.getNavn(),
                         TestData.ENHET_GEOGRAFISK.getVerdi()
                 ));
-        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
+        when(norg2Client.hentGeografiskEnhet(pdlRespons.data().hentGeografiskTilknytning().gtBydel()))
                 .thenReturn(new Norg2GeoResponse(
                         TestData.ENHET_GEOGRAFISK.getNavn(),
                         TestData.ENHET_GEOGRAFISK.getVerdi()
@@ -424,7 +425,6 @@ public class VeilederTest {
 
     @Test
     public void opprettAvtale__skal_ikke_slettemerkes() {
-        final Fnr fnr = TestData.etFodselsnummer();
         final NavIdent navIdent = new NavIdent("Z123456");
         final PdlRespons pdlRespons = TestData.enPdlrespons(false);
         final NavEnhet navEnhet = TestData.ENHET_OPPFØLGING;
@@ -437,13 +437,13 @@ public class VeilederTest {
 
         final VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
         final Norg2Client norg2Client = mock(Norg2Client.class);
-        final PersondataService persondataService = mock(PersondataService.class);
+        final PersondataClient persondataClient = mock(PersondataClient.class);
         final TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
 
         Veileder veileder = new Veileder(
                 navIdent,
                 tilgangskontrollService,
-                persondataService,
+                new PersondataService(persondataClient),
                 norg2Client,
                 Set.of(navEnhet),
                 new SlettemerkeProperties(),
@@ -452,8 +452,8 @@ public class VeilederTest {
         );
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
-        when(persondataService.hentPersondata(fnr)).thenReturn(pdlRespons);
-        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
+        when(persondataClient.hentPersondata(any(Fnr.class))).thenReturn(new PdlRespons(null));
+        when(norg2Client.hentGeografiskEnhet(pdlRespons.data().hentGeografiskTilknytning().gtBydel()))
                 .thenReturn(
                         new Norg2GeoResponse(TestData.ENHET_GEOGRAFISK.getNavn(),
                                 TestData.ENHET_GEOGRAFISK.getVerdi())

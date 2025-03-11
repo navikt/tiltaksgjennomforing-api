@@ -26,7 +26,7 @@
         "bodyPatterns": [
           {
             "equalToJson": {
-              "query": "query($ident: ID!) { hentPerson(ident: $ident) { adressebeskyttelse { gradering } } }",
+              "query": "query($ident: ID!) { hentPerson(ident: $ident) { navn { fornavn mellomnavn etternavn } adressebeskyttelse { gradering } } hentIdenter(ident: $ident, grupper: [AKTORID]) { identer { ident gruppe historisk } } hentGeografiskTilknytning(ident: $ident){ gtType gtKommune gtBydel gtLand regel } } ",
               "variables": {
                 "ident": "16053900422"
               }
@@ -55,7 +55,7 @@
         "bodyPatterns": [
           {
             "equalToJson": {
-              "query": "query($ident: ID!) { hentPerson(ident: $ident) { adressebeskyttelse { gradering } } }",
+              "query": "query($ident: ID!) { hentPerson(ident: $ident) { navn { fornavn mellomnavn etternavn } adressebeskyttelse { gradering } } hentIdenter(ident: $ident, grupper: [AKTORID]) { identer { ident gruppe historisk } } hentGeografiskTilknytning(ident: $ident){ gtType gtKommune gtBydel gtLand regel } } ",
               "variables": {
                 "ident": "28033114267"
               }
@@ -84,36 +84,7 @@
         "bodyPatterns": [
           {
             "equalToJson": {
-              "query": "query($ident: ID!) { hentPerson(ident: $ident) { adressebeskyttelse { gradering } } }",
-              "variables": {
-                "ident": "00000000000"
-              }
-            }
-          }
-        ]
-      },
-      "response": {
-        "status": 200,
-        "body": "{\"data\": {\"hentPerson\": {\"adressebeskyttelse\": [{\"gradering\": \"UGRADERT\"}]}}}",
-        "headers": {
-          "Content-Type": "application/json"
-        }
-      }
-    },
-    {
-      "request": {
-        "method": "POST",
-        "urlPath": "/persondata",
-        "headers": {
-          "Content-Type": {
-            "equalTo": "application/json",
-            "caseInsensitive": true
-          }
-        },
-        "bodyPatterns": [
-          {
-            "equalToJson": {
-              "query": "query($ident: ID!) { hentPerson(ident: $ident) { adressebeskyttelse { gradering } } }",
+              "query": "query($ident: ID!) { hentPerson(ident: $ident) { navn { fornavn mellomnavn etternavn } adressebeskyttelse { gradering } } hentIdenter(ident: $ident, grupper: [AKTORID]) { identer { ident gruppe historisk } } hentGeografiskTilknytning(ident: $ident){ gtType gtKommune gtBydel gtLand regel } } ",
               "variables": {
                 "ident": "26067114433"
               }
@@ -142,7 +113,7 @@
         "bodyPatterns": [
           {
             "equalToJson": {
-              "query": "query($ident: ID!) { hentPerson(ident: $ident) { adressebeskyttelse { gradering } } }",
+              "query": "query($ident: ID!) { hentPerson(ident: $ident) { navn { fornavn mellomnavn etternavn } adressebeskyttelse { gradering } } hentIdenter(ident: $ident, grupper: [AKTORID]) { identer { ident gruppe historisk } } hentGeografiskTilknytning(ident: $ident){ gtType gtKommune gtBydel gtLand regel } } ",
               "variables": {
                 "ident": "18076641842"
               }
@@ -171,7 +142,7 @@
         "bodyPatterns": [
           {
             "equalToJson": {
-              "query": "query($ident: ID!) { hentPerson(ident: $ident) { adressebeskyttelse { gradering } } }",
+              "query": "query($ident: ID!) { hentPerson(ident: $ident) { navn { fornavn mellomnavn etternavn } adressebeskyttelse { gradering } } hentIdenter(ident: $ident, grupper: [AKTORID]) { identer { ident gruppe historisk } } hentGeografiskTilknytning(ident: $ident){ gtType gtKommune gtBydel gtLand regel } } ",
               "variables": {
                 "ident": "23097010706"
               }
@@ -199,7 +170,7 @@
         "bodyPatterns": [
           {
             "equalToJson": {
-              "query": "query($ident: ID!) { hentPerson(ident: $ident) { navn { fornavn mellomnavn etternavn } adressebeskyttelse { gradering } } hentGeografiskTilknytning(ident: $ident){ gtType gtKommune gtBydel gtLand regel } }",
+              "query": "query($ident: ID!) { hentPerson(ident: $ident) { navn { fornavn mellomnavn etternavn } adressebeskyttelse { gradering } } hentIdenter(ident: $ident, grupper: [AKTORID]) { identer { ident gruppe historisk } } hentGeografiskTilknytning(ident: $ident){ gtType gtKommune gtBydel gtLand regel } } ",
               "variables": {
                 "ident": "00000000000"
               }
@@ -228,7 +199,7 @@
         "bodyPatterns": [
           {
             "equalToJson": {
-              "query": "query($ident: ID!) { hentIdenter(ident: $ident, grupper: [AKTORID]) { identer { ident gruppe historisk } } }",
+              "query": "query($ident: ID!) { hentPerson(ident: $ident) { navn { fornavn mellomnavn etternavn } adressebeskyttelse { gradering } } hentIdenter(ident: $ident, grupper: [AKTORID]) { identer { ident gruppe historisk } } hentGeografiskTilknytning(ident: $ident){ gtType gtKommune gtBydel gtLand regel } } ",
               "variables": {
                 "ident": "00000000000"
               }
@@ -238,7 +209,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{ \"data\": { \"hentIdenter\": { \"identer\": [{ \"ident\": \"2135315926224\", \"gruppe\": \"AKTORID\", \"historisk\": false }]}}}",
+        "body": "{\"data\":{\"hentPerson\":{\"adressebeskyttelse\": [{\"gradering\": \"UGRADERT\"}], \"navn\":[{\"fornavn\":\"Donald\",\"etternavn\":\"Duck\"}]},\"hentGeografiskTilknytning\":{\"gtType\":\"BYDEL\",\"gtKommune\":null,\"gtBydel\":\"030104\",\"gtLand\":null,\"regel\":\"3\"}},\"hentIdenter\": { \"identer\": [{ \"ident\": \"2135315926224\", \"gruppe\": \"AKTORID\", \"historisk\": false }]}}",
         "headers": {
           "Content-Type": "application/json"
         }

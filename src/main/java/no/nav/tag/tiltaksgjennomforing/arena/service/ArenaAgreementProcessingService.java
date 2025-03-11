@@ -28,7 +28,6 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
-import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -38,8 +37,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
-
-import static no.nav.tag.tiltaksgjennomforing.persondata.PersondataService.hentNavnFraPdlRespons;
 
 @Slf4j
 @Service
@@ -276,7 +273,6 @@ public class ArenaAgreementProcessingService {
         }
 
         Fnr deltakerFnr = new Fnr(agreementAggregate.getFnr());
-        PdlRespons personalData = persondataService.hentPersondata(deltakerFnr);
         OpprettAvtale opprettAvtale = OpprettAvtale.builder()
             .bedriftNr(new BedriftNr(agreementAggregate.getVirksomhetsnummer()))
             .deltakerFnr(deltakerFnr)
@@ -287,9 +283,9 @@ public class ArenaAgreementProcessingService {
 
         Organisasjon org = eregService.hentVirksomhet(avtale.getBedriftNr());
         avtale.leggTilBedriftNavn(org.getBedriftNavn());
-        avtale.leggTilDeltakerNavn(hentNavnFraPdlRespons(personalData));
+        avtale.leggTilDeltakerNavn(persondataService.hentNavn(deltakerFnr));
 
-        getGeoEnhetFromNorg2(personalData).ifPresent((norg2GeoResponse) -> {
+        getGeoEnhetFromNorg2(deltakerFnr).ifPresent((norg2GeoResponse) -> {
             avtale.setEnhetGeografisk(norg2GeoResponse.getEnhetNr());
             avtale.setEnhetsnavnGeografisk(norg2GeoResponse.getNavn());
         });
@@ -320,8 +316,8 @@ public class ArenaAgreementProcessingService {
         return new ArenaMigrationProcessResult.Completed(action, avtale);
     }
 
-    private Optional<Norg2GeoResponse> getGeoEnhetFromNorg2(PdlRespons pdlRespons) {
-        return PersondataService.hentGeoLokasjonFraPdlRespons(pdlRespons).map(norg2Client::hentGeografiskEnhet);
+    private Optional<Norg2GeoResponse> getGeoEnhetFromNorg2(Fnr fnr) {
+        return persondataService.hentGeografiskTilknytning(fnr).map(norg2Client::hentGeografiskEnhet);
     }
 
     private Optional<Oppfølgingsstatus> getOppfolgingsstatusFromVeilarbarena(Fnr fnr) {
@@ -354,8 +350,8 @@ public class ArenaAgreementProcessingService {
         }
 
         if (agreementAggregate.getFnr() != null) {
-            PdlRespons personalData = persondataService.hentPersondata(new Fnr(agreementAggregate.getFnr()));
-            if (persondataService.erKode6(personalData)) {
+            Fnr fnr = new Fnr(agreementAggregate.getFnr());
+            if (persondataService.hentDiskresjonskode(fnr).erKode6()) {
                 return Optional.of(ArenaMigrationAction.KODE_6);
             }
         }
