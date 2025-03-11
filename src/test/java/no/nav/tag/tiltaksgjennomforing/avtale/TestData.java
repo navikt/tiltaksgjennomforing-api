@@ -18,12 +18,11 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
-import no.nav.tag.tiltaksgjennomforing.persondata.Adressebeskyttelse;
-import no.nav.tag.tiltaksgjennomforing.persondata.Data;
-import no.nav.tag.tiltaksgjennomforing.persondata.HentGeografiskTilknytning;
-import no.nav.tag.tiltaksgjennomforing.persondata.HentPerson;
-import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
-import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
+import no.nav.tag.tiltaksgjennomforing.persondata.domene.Adressebeskyttelse;
+import no.nav.tag.tiltaksgjennomforing.persondata.domene.HentGeografiskTilknytning;
+import no.nav.tag.tiltaksgjennomforing.persondata.domene.HentPerson;
+import no.nav.tag.tiltaksgjennomforing.persondata.domene.Navn;
+import no.nav.tag.tiltaksgjennomforing.persondata.domene.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.sporingslogg.Sporingslogg;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
@@ -852,13 +851,13 @@ public class TestData {
                 );
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.UGRADERT);
 
-        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
+        when(norg2Client.hentGeografiskEnhet(pdlRespons.data().hentGeografiskTilknytning().gtBydel()))
                 .thenReturn(new Norg2GeoResponse(
                         avtale.getEnhetsnavnOppfolging(),
                         avtale.getEnhetOppfolging()
                 ));
 
-        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
+        when(norg2Client.hentGeografiskEnhet(pdlRespons.data().hentGeografiskTilknytning().gtBydel()))
                 .thenReturn(new Norg2GeoResponse(
                         avtale.getEnhetsnavnOppfolging(),
                         avtale.getEnhetOppfolging()
@@ -1106,13 +1105,13 @@ public class TestData {
     }
 
     public static PdlRespons enPdlrespons(boolean harKode6) {
-        Adressebeskyttelse[] adressebeskyttelser = new Adressebeskyttelse[1];
+        List<Adressebeskyttelse> adressebeskyttelser = Collections.emptyList();
         if (harKode6) {
-            adressebeskyttelser[0] = new Adressebeskyttelse(Diskresjonskode.STRENGT_FORTROLIG);
+            adressebeskyttelser = List.of(new Adressebeskyttelse(Diskresjonskode.STRENGT_FORTROLIG));
         }
 
-        HentPerson hentPerson = new HentPerson(adressebeskyttelser, null, new Navn[]{new Navn("Donald", null, "Duck")});
-        return new PdlRespons(new Data(null, hentPerson, null, new HentGeografiskTilknytning(null, "030101", null, null)));
+        HentPerson hentPerson = new HentPerson(adressebeskyttelser, null, List.of(new Navn("Donald", null, "Duck")));
+        return new PdlRespons(new PdlRespons.Data(hentPerson, null, new HentGeografiskTilknytning(null, "030101", null, null)));
     }
 
     public static TilskuddPeriode enTilskuddPeriode() {

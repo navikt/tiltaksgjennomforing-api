@@ -3,6 +3,9 @@ package no.nav.tag.tiltaksgjennomforing.persondata;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;
+import no.nav.tag.tiltaksgjennomforing.persondata.domene.PdlRequest;
+import no.nav.tag.tiltaksgjennomforing.persondata.domene.PdlRespons;
+import no.nav.tag.tiltaksgjennomforing.persondata.domene.PdlResponsBolk;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.Resource;
@@ -38,25 +41,26 @@ public class PersondataClient {
         this.persondataProperties = persondataProperties;
     }
 
-    public PdlRespons hentPersonBolk(Set<Fnr> fnr) {
-        PdlRequest<PdlRequestVariables.IdentBolk> pdlRequest = new PdlRequest<>(
-            adressebeskyttelseBolkQueryResource,
-            new PdlRequestVariables.IdentBolk(fnr.stream().map(Fnr::asString).collect(Collectors.toList()))
-        );
-        return utførKallTilPdl(pdlRequest);
+    public PdlResponsBolk hentPersonBolk(Set<Fnr> fnr) {
+        try {
+            PdlRequest<PdlRequest.BolkVariables> pdlRequest = new PdlRequest<>(
+                adressebeskyttelseBolkQueryResource,
+                new PdlRequest.BolkVariables(fnr.stream().map(Fnr::asString).collect(Collectors.toList()))
+            );
+            return azureRestTemplate.postForObject(persondataProperties.getUri(), createRequestEntity(pdlRequest), PdlResponsBolk.class);
+        } catch (RestClientException exception) {
+            log.error("Feil fra PDL med request-url: {}", persondataProperties.getUri(), exception);
+            throw exception;
+        }
     }
 
     @Cacheable(CacheConfig.PDL_CACHE)
     public PdlRespons hentPersondata(Fnr fnr) {
-        PdlRequest<PdlRequestVariables.Ident> pdlRequest = new PdlRequest<>(
-            persondataQueryResource,
-            new PdlRequestVariables.Ident(fnr.asString())
-        );
-        return utførKallTilPdl(pdlRequest);
-    }
-
-    private PdlRespons utførKallTilPdl(PdlRequest<?> pdlRequest) {
         try {
+            PdlRequest<PdlRequest.Varaibles> pdlRequest = new PdlRequest<>(
+                persondataQueryResource,
+                new PdlRequest.Varaibles(fnr.asString())
+            );
             return azureRestTemplate.postForObject(persondataProperties.getUri(), createRequestEntity(pdlRequest), PdlRespons.class);
         } catch (RestClientException exception) {
             log.error("Feil fra PDL med request-url: {}", persondataProperties.getUri(), exception);

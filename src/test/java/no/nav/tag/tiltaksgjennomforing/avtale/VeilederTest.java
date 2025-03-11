@@ -16,7 +16,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeAdminTilgangException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
-import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
+import no.nav.tag.tiltaksgjennomforing.persondata.domene.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataClient;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -404,12 +404,12 @@ public class VeilederTest {
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
         when(persondataClient.hentPersondata(any(Fnr.class))).thenReturn(pdlRespons);
-        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
+        when(norg2Client.hentGeografiskEnhet(pdlRespons.data().hentGeografiskTilknytning().gtBydel()))
                 .thenReturn(new Norg2GeoResponse(
                         TestData.ENHET_GEOGRAFISK.getNavn(),
                         TestData.ENHET_GEOGRAFISK.getVerdi()
                 ));
-        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
+        when(norg2Client.hentGeografiskEnhet(pdlRespons.data().hentGeografiskTilknytning().gtBydel()))
                 .thenReturn(new Norg2GeoResponse(
                         TestData.ENHET_GEOGRAFISK.getNavn(),
                         TestData.ENHET_GEOGRAFISK.getVerdi()
@@ -453,7 +453,7 @@ public class VeilederTest {
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
         when(persondataClient.hentPersondata(any(Fnr.class))).thenReturn(new PdlRespons(null));
-        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
+        when(norg2Client.hentGeografiskEnhet(pdlRespons.data().hentGeografiskTilknytning().gtBydel()))
                 .thenReturn(
                         new Norg2GeoResponse(TestData.ENHET_GEOGRAFISK.getNavn(),
                                 TestData.ENHET_GEOGRAFISK.getVerdi())

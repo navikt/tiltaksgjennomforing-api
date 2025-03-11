@@ -5,7 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
-import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
+import no.nav.tag.tiltaksgjennomforing.persondata.domene.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataClient;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -51,7 +51,7 @@ public class ArbeidsgiverTest {
         final Norg2GeoResponse navEnhet = new Norg2GeoResponse("Nav Grorud", "0411");
 
         when(persondataClient.hentPersondata(any(Fnr.class))).thenReturn(pdlRespons);
-        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel())).thenReturn(navEnhet);
+        when(norg2Client.hentGeografiskEnhet(pdlRespons.data().hentGeografiskTilknytning().gtBydel())).thenReturn(navEnhet);
 
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
                 TestData.etFodselsnummer(),

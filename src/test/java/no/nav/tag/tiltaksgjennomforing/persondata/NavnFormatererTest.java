@@ -1,5 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.persondata;
 
+import no.nav.tag.tiltaksgjennomforing.persondata.domene.Navn;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

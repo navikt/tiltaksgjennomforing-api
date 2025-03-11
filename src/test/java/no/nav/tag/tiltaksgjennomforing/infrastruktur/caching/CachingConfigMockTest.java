@@ -16,11 +16,10 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;
-import no.nav.tag.tiltaksgjennomforing.persondata.Data;
-import no.nav.tag.tiltaksgjennomforing.persondata.HentGeografiskTilknytning;
-import no.nav.tag.tiltaksgjennomforing.persondata.HentPerson;
-import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
-import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
+import no.nav.tag.tiltaksgjennomforing.persondata.domene.HentGeografiskTilknytning;
+import no.nav.tag.tiltaksgjennomforing.persondata.domene.HentPerson;
+import no.nav.tag.tiltaksgjennomforing.persondata.domene.Navn;
+import no.nav.tag.tiltaksgjennomforing.persondata.domene.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataClient;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -40,6 +39,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.AopTestUtils;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -73,9 +73,8 @@ public class CachingConfigMockTest {
     private Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
     private final PdlRespons FØRSTE_PDL_RESPONSE = TestData.enPdlrespons(false);
     private PdlRespons ANDRE_PDL_RESPONSE = new PdlRespons(
-            new Data(
-                null,
-                new HentPerson(null, null, new Navn[]{new Navn("ola", "", "Norman")}),
+            new PdlRespons.Data(
+                new HentPerson(null, null, List.of(new Navn("ola", "", "Norman"))),
                 null,
                 new HentGeografiskTilknytning("", "030202", "", "3")
             )
@@ -233,30 +232,30 @@ public class CachingConfigMockTest {
 
 
         Assertions.assertEquals(
-                FØRSTE_PDL_RESPONSE.getData().getHentGeografiskTilknytning().getRegel(),
-                pdlRespons.getData().getHentGeografiskTilknytning().getRegel()
+                FØRSTE_PDL_RESPONSE.data().hentGeografiskTilknytning().regel(),
+                pdlRespons.data().hentGeografiskTilknytning().regel()
         );
         Assertions.assertEquals(
-                FØRSTE_PDL_RESPONSE.getData().getHentGeografiskTilknytning().getRegel(),
-                pdlRespons2.getData().getHentGeografiskTilknytning().getRegel()
-        );
-
-        Assertions.assertEquals(
-                FØRSTE_PDL_RESPONSE.utledNavnEllerTomtNavn().getFornavn(),
-                pdlRespons.utledNavnEllerTomtNavn().getFornavn()
-        );
-        Assertions.assertEquals(
-                FØRSTE_PDL_RESPONSE.utledNavnEllerTomtNavn().getFornavn(),
-                pdlRespons2.utledNavnEllerTomtNavn().getFornavn()
+                FØRSTE_PDL_RESPONSE.data().hentGeografiskTilknytning().regel(),
+                pdlRespons2.data().hentGeografiskTilknytning().regel()
         );
 
         Assertions.assertEquals(
-                FØRSTE_PDL_RESPONSE.utledNavnEllerTomtNavn().getEtternavn(),
-                pdlRespons.utledNavnEllerTomtNavn().getEtternavn()
+                FØRSTE_PDL_RESPONSE.utledNavnEllerTomtNavn().fornavn(),
+                pdlRespons.utledNavnEllerTomtNavn().fornavn()
         );
         Assertions.assertEquals(
-                FØRSTE_PDL_RESPONSE.utledNavnEllerTomtNavn().getEtternavn(),
-                pdlRespons2.utledNavnEllerTomtNavn().getEtternavn()
+                FØRSTE_PDL_RESPONSE.utledNavnEllerTomtNavn().fornavn(),
+                pdlRespons2.utledNavnEllerTomtNavn().fornavn()
+        );
+
+        Assertions.assertEquals(
+                FØRSTE_PDL_RESPONSE.utledNavnEllerTomtNavn().etternavn(),
+                pdlRespons.utledNavnEllerTomtNavn().etternavn()
+        );
+        Assertions.assertEquals(
+                FØRSTE_PDL_RESPONSE.utledNavnEllerTomtNavn().etternavn(),
+                pdlRespons2.utledNavnEllerTomtNavn().etternavn()
         );
 
         /** Blir kalt 2 ganger. Andre iterasjon så treffer vi cache response istedenfor endepunkt */

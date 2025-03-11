@@ -22,8 +22,8 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
-import no.nav.tag.tiltaksgjennomforing.persondata.Navn;
-import no.nav.tag.tiltaksgjennomforing.persondata.PdlRespons;
+import no.nav.tag.tiltaksgjennomforing.persondata.domene.Navn;
+import no.nav.tag.tiltaksgjennomforing.persondata.domene.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Disabled;
@@ -291,7 +291,7 @@ public class AvtaleControllerTest {
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         when(persondataService.hentNavn(any(Fnr.class))).thenReturn(Navn.TOMT_NAVN);
-        when(norg2Client.hentGeografiskEnhet(pdlRespons.getData().getHentGeografiskTilknytning().getGtBydel()))
+        when(norg2Client.hentGeografiskEnhet(pdlRespons.data().hentGeografiskTilknytning().gtBydel()))
                 .thenReturn(
                         new Norg2GeoResponse(
                                 TestData.ENHET_GEOGRAFISK.getNavn(),

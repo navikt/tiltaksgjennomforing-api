@@ -233,7 +233,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     protected void oppdatereEnheterVedEndreAvtale(Avtale avtale) {
-        this.sjekkKode6(avtale.getDeltakerFnr());
         this.oppdatereOppfølgingStatusVedEndreAvtale(avtale);
         this.oppdatereGeoEnhetVedEndreAvtale(avtale);
         this.oppdatereOppfølgingEnhetsnavnVedEndreAvtale(avtale);
