@@ -50,7 +50,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     private final Set<NavEnhet> navEnheter;
     private final VeilarboppfolgingService veilarboppfolgingService;
     private final UUID azureOid;
-    private FeatureToggleService featureToggleService;
+    private final FeatureToggleService featureToggleService;
 
     public Veileder(
             NavIdent identifikator,
@@ -61,7 +61,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             Set<NavEnhet> navEnheter,
             SlettemerkeProperties slettemerkeProperties,
             boolean harAdGruppeForBeslutter,
-            VeilarboppfolgingService veilarboppfolgingService
+            VeilarboppfolgingService veilarboppfolgingService, FeatureToggleService featureToggleService
 
     ) {
 
@@ -74,6 +74,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         this.slettemerkeProperties = slettemerkeProperties;
         this.harAdGruppeForBeslutter = harAdGruppeForBeslutter;
         this.veilarboppfolgingService = veilarboppfolgingService;
+        this.featureToggleService = featureToggleService;
     }
 
     @Deprecated
@@ -85,9 +86,9 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             Set<NavEnhet> navEnheter,
             SlettemerkeProperties slettemerkeProperties,
             boolean harAdGruppeForBeslutter,
-            VeilarboppfolgingService veilarboppfolgingService
+            VeilarboppfolgingService veilarboppfolgingService, FeatureToggleService featureToggleService
     ) {
-        this(identifikator, null, tilgangskontrollService, persondataService, norg2Client, navEnheter, slettemerkeProperties, harAdGruppeForBeslutter, veilarboppfolgingService);
+        this(identifikator, null, tilgangskontrollService, persondataService, norg2Client, navEnheter, slettemerkeProperties, harAdGruppeForBeslutter, veilarboppfolgingService, featureToggleService);
     }
 
     @Override

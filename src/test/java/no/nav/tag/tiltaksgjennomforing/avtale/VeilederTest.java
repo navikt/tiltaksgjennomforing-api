@@ -15,6 +15,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeAdminTilgangException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.domene.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataClient;
@@ -210,6 +211,7 @@ public class VeilederTest {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         VeilarboppfolgingService veilarboppfolgingServiceMock = mock(VeilarboppfolgingService.class);
         PersondataService persondataService = mock(PersondataService.class);
+        FeatureToggleService featureToggleServiceMock = mock(FeatureToggleService.class);
         when(veilarboppfolgingServiceMock.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
@@ -219,7 +221,8 @@ public class VeilederTest {
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
                 false,
-                veilarboppfolgingServiceMock
+                veilarboppfolgingServiceMock,
+                featureToggleServiceMock
         );
 
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
@@ -390,6 +393,7 @@ public class VeilederTest {
         final Norg2Client norg2Client = mock(Norg2Client.class);
         final PdlRespons pdlRespons = TestData.enPdlrespons(false);
         final VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        FeatureToggleService featureToggleServiceMock = mock(FeatureToggleService.class);
 
         Veileder veileder = new Veileder(
                 navIdent,
@@ -399,7 +403,8 @@ public class VeilederTest {
                 Set.of(navEnhet),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleServiceMock
         );
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
@@ -439,6 +444,7 @@ public class VeilederTest {
         final Norg2Client norg2Client = mock(Norg2Client.class);
         final PersondataClient persondataClient = mock(PersondataClient.class);
         final TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        FeatureToggleService featureToggleServiceMock = mock(FeatureToggleService.class);
 
         Veileder veileder = new Veileder(
                 navIdent,
@@ -448,7 +454,8 @@ public class VeilederTest {
                 Set.of(navEnhet),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleServiceMock
         );
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
@@ -473,6 +480,7 @@ public class VeilederTest {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         SlettemerkeProperties slettemerkeProperties = new SlettemerkeProperties();
         slettemerkeProperties.setIdent(List.of(navIdent));
+        FeatureToggleService featureToggleServiceMock = mock(FeatureToggleService.class);
         Veileder veileder = new Veileder(
                 navIdent,
                 tilgangskontrollService,
@@ -481,7 +489,8 @@ public class VeilederTest {
                 Set.of(new NavEnhet("4802", "Trysil")),
                 slettemerkeProperties,
                 false,
-                mock(VeilarboppfolgingService.class)
+                mock(VeilarboppfolgingService.class),
+                featureToggleServiceMock
         );
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), eq(avtale.getDeltakerFnr())))
@@ -498,7 +507,7 @@ public class VeilederTest {
         NavIdent navIdent = new NavIdent("X123456");
 
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-
+        FeatureToggleService featureToggleServiceMock = mock(FeatureToggleService.class);
         SlettemerkeProperties slettemerkeProperties = new SlettemerkeProperties();
         slettemerkeProperties.setIdent(List.of(new NavIdent("Z123456")));
         Veileder veileder = new Veileder(
@@ -509,7 +518,8 @@ public class VeilederTest {
                 Set.of(new NavEnhet("4802", "Trysil")),
                 slettemerkeProperties,
                 false,
-                mock(VeilarboppfolgingService.class)
+                mock(VeilarboppfolgingService.class),
+                featureToggleServiceMock
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), eq(avtale.getDeltakerFnr()))).thenReturn(true);
         assertThatThrownBy(() -> veileder.slettemerk(avtale)).isExactlyInstanceOf(IkkeAdminTilgangException.class);

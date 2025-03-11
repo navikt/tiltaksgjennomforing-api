@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditConsoleLogger;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
@@ -51,6 +52,8 @@ public class AvtaleApiTest {
     @Mock
     VeilarboppfolgingService veilarboppfolgingService;
     @Mock
+    FeatureToggleService featureToggleService;
+    @Mock
     Norg2Client norg2Client;
     @Autowired
     private AvtaleRepository avtaleRepository;
@@ -60,6 +63,7 @@ public class AvtaleApiTest {
     private PersondataService persondataService;
     @SpyBean
     private AuditConsoleLogger auditConsoleLogger;
+
 
     @Test
     public void hentSkalReturnereRiktigAvtale() throws Exception {
@@ -73,7 +77,8 @@ public class AvtaleApiTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleService
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
         when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(List.of());

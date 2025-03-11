@@ -18,6 +18,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.KontoregisterFeilException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
@@ -81,6 +82,8 @@ public class AvtaleControllerTest {
     private PersondataService persondataService;
     @MockBean
     private KontoregisterService kontoregisterService;
+    @MockBean
+    private FeatureToggleService featureToggleServiceMock;
 
     private Pageable pageable = PageRequest.of(0, 100);
 
@@ -121,7 +124,8 @@ public class AvtaleControllerTest {
                         Collections.emptySet(),
                         new SlettemerkeProperties(),
                         false,
-                        veilarboppfolgingService
+                        veilarboppfolgingService,
+                        featureToggleServiceMock
                 )
         );
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
@@ -144,7 +148,8 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleServiceMock
         );
         værInnloggetSom(veileder);
         Avtale exampleAvtale = Avtale.builder()
@@ -182,7 +187,8 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleServiceMock
         );
         værInnloggetSom(veileder);
 
@@ -220,7 +226,8 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleServiceMock
         );
         værInnloggetSom(veileder);
 
@@ -277,7 +284,8 @@ public class AvtaleControllerTest {
                 Set.of(navEnhet),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleServiceMock
         );
         værInnloggetSom(veileder);
         when(avtaleRepository.save(any(Avtale.class))).thenReturn(avtale);
@@ -338,7 +346,8 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleServiceMock
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
@@ -410,7 +419,8 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleServiceMock
         );
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = new Fnr("11111100000");
@@ -436,7 +446,8 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleServiceMock
         );
         værInnloggetSom(enNavAnsatt);
         Fnr deltakerFnr = new Fnr("11111100000");
@@ -518,7 +529,8 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleServiceMock
         );
         værInnloggetSom(veileder);
         when(kontoregisterService.hentKontonummer(anyString())).thenReturn("990983666");
@@ -546,7 +558,8 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleServiceMock
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
@@ -572,7 +585,8 @@ public class AvtaleControllerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleServiceMock
         );
         værInnloggetSom(veileder);
         when(kontoregisterService.hentKontonummer(anyString())).thenThrow(KontoregisterFeilException.class);

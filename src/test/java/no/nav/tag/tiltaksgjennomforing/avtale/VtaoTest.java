@@ -7,6 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
@@ -49,6 +50,8 @@ public class VtaoTest {
     private VeilarboppfolgingService veilarboppfolgingService;
     @Mock
     private Norg2Client norg2Client;
+    @Mock
+    private FeatureToggleService featureToggleService;
     @Autowired
     private AvtaleInnholdRepository avtaleInnholdRepository;
 
@@ -63,7 +66,8 @@ public class VtaoTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleService
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
@@ -86,7 +90,8 @@ public class VtaoTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleService
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
@@ -149,7 +154,8 @@ public class VtaoTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleService
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
@@ -210,7 +216,8 @@ public class VtaoTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-            veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleService
         );
         værInnloggetSom(veileder);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
