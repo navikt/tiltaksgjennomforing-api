@@ -4,6 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -31,6 +32,7 @@ public class InnloggetBrukerTest {
     private Norg2Client norg2Client;
     private VeilarboppfolgingService veilarboppfolgingService;
     private AvtaleRepository avtaleRepository;
+    private FeatureToggleService featureToggleService;
 
     @BeforeEach
     public void setup() {
@@ -60,7 +62,8 @@ public class InnloggetBrukerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleService
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 veileder,
@@ -81,7 +84,8 @@ public class InnloggetBrukerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleService
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 veileder,
@@ -101,7 +105,8 @@ public class InnloggetBrukerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleService
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 veileder,
@@ -122,7 +127,8 @@ public class InnloggetBrukerTest {
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleService
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 veileder,
@@ -155,7 +161,8 @@ public class InnloggetBrukerTest {
                         Collections.emptySet(),
                         new SlettemerkeProperties(),
                         false,
-                        veilarboppfolgingService
+                        veilarboppfolgingService,
+                        featureToggleService
                 ).harTilgangTilAvtale(avtale)
         ).isFalse();
     }
@@ -171,7 +178,8 @@ public class InnloggetBrukerTest {
                         Collections.emptySet(),
                         new SlettemerkeProperties(),
                         false,
-                        veilarboppfolgingService
+                        veilarboppfolgingService,
+                        featureToggleService
                 ).harTilgangTilAvtale(avtale)
         ).isFalse();
     }

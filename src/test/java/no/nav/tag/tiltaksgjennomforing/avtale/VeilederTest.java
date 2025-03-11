@@ -9,12 +9,9 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
-import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeAdminTilgangException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
-import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.domene.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataClient;
@@ -31,6 +28,7 @@ import java.util.Set;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.featureToggleService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.any;
@@ -123,27 +121,53 @@ public class VeilederTest {
     }
 
     @Test
-    public void godkjennAvtale__kan_ikke_godkjenne_kode6() {
+    public void godkjennAvtale__kan_ikke_godkjenne_kode6_med_togglet_adressesperresjekk() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        when(featureToggleService.isEnabled(FeatureToggle.SKAL_SJEKKE_FOR_ADRESSESPERRE)).thenReturn(true);
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
         Veileder veileder = TestData.enVeileder(avtale, persondataService);
         assertThatThrownBy(() -> veileder.godkjennAvtale(avtale.getSistEndret(), avtale))
-                .isExactlyInstanceOf(KanIkkeGodkjenneAvtalePåKode6Exception.class);
+                .isExactlyInstanceOf(IkkeTilgangTilDeltakerKode6Exception.class);
     }
 
     @Test
-    public void godkjennForVeilederOgDeltaker__kan_ikke_godkjenne_kode6() {
+    public void godkjennAvtale__kan_godkjenne_kode6_uten_togglet_adressesperresjekk() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        when(featureToggleService.isEnabled(FeatureToggle.SKAL_SJEKKE_FOR_ADRESSESPERRE)).thenReturn(false);
+        PersondataService persondataService = mock(PersondataService.class);
+        when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
+        Veileder veileder = TestData.enVeileder(avtale, persondataService);
+        veileder.godkjennAvtale(avtale.getSistEndret(), avtale);
+        assertThat(avtale.erGodkjentAvVeileder()).isTrue();
+    }
+
+    @Test
+    public void godkjennForVeilederOgDeltaker__kan_ikke_godkjenne_kode6_med_togglet_adressesperresjekk() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        when(featureToggleService.isEnabled(FeatureToggle.SKAL_SJEKKE_FOR_ADRESSESPERRE)).thenReturn(true);
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
         Veileder veileder = TestData.enVeileder(avtale, persondataService);
         assertThatThrownBy(() -> veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale))
-                .isExactlyInstanceOf(KanIkkeGodkjenneAvtalePåKode6Exception.class);
+                .isExactlyInstanceOf(IkkeTilgangTilDeltakerKode6Exception.class);
+    }
+
+    @Test
+    public void godkjennForVeilederOgDeltaker__kan_godkjenne_kode6_uten_togglet_adressesperresjekk() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        when(featureToggleService.isEnabled(FeatureToggle.SKAL_SJEKKE_FOR_ADRESSESPERRE)).thenReturn(false);
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        PersondataService persondataService = mock(PersondataService.class);
+        when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
+        Veileder veileder = TestData.enVeileder(avtale, persondataService);
+        veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
+        assertThat(avtale.erGodkjentAvVeileder()).isTrue();
     }
 
     @Test
@@ -210,6 +234,7 @@ public class VeilederTest {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         VeilarboppfolgingService veilarboppfolgingServiceMock = mock(VeilarboppfolgingService.class);
         PersondataService persondataService = mock(PersondataService.class);
+        FeatureToggleService featureToggleServiceMock = mock(FeatureToggleService.class);
         when(veilarboppfolgingServiceMock.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
@@ -219,7 +244,8 @@ public class VeilederTest {
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
                 false,
-                veilarboppfolgingServiceMock
+                veilarboppfolgingServiceMock,
+                featureToggleServiceMock
         );
 
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
@@ -390,6 +416,7 @@ public class VeilederTest {
         final Norg2Client norg2Client = mock(Norg2Client.class);
         final PdlRespons pdlRespons = TestData.enPdlrespons(false);
         final VeilarboppfolgingService veilarboppfolgingService = mock(VeilarboppfolgingService.class);
+        FeatureToggleService featureToggleServiceMock = mock(FeatureToggleService.class);
 
         Veileder veileder = new Veileder(
                 navIdent,
@@ -399,7 +426,8 @@ public class VeilederTest {
                 Set.of(navEnhet),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleServiceMock
         );
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
@@ -439,6 +467,7 @@ public class VeilederTest {
         final Norg2Client norg2Client = mock(Norg2Client.class);
         final PersondataClient persondataClient = mock(PersondataClient.class);
         final TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        FeatureToggleService featureToggleServiceMock = mock(FeatureToggleService.class);
 
         Veileder veileder = new Veileder(
                 navIdent,
@@ -448,7 +477,8 @@ public class VeilederTest {
                 Set.of(navEnhet),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleServiceMock
         );
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
@@ -473,6 +503,7 @@ public class VeilederTest {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         SlettemerkeProperties slettemerkeProperties = new SlettemerkeProperties();
         slettemerkeProperties.setIdent(List.of(navIdent));
+        FeatureToggleService featureToggleServiceMock = mock(FeatureToggleService.class);
         Veileder veileder = new Veileder(
                 navIdent,
                 tilgangskontrollService,
@@ -481,7 +512,8 @@ public class VeilederTest {
                 Set.of(new NavEnhet("4802", "Trysil")),
                 slettemerkeProperties,
                 false,
-                mock(VeilarboppfolgingService.class)
+                mock(VeilarboppfolgingService.class),
+                featureToggleServiceMock
         );
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), eq(avtale.getDeltakerFnr())))
@@ -498,7 +530,7 @@ public class VeilederTest {
         NavIdent navIdent = new NavIdent("X123456");
 
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-
+        FeatureToggleService featureToggleServiceMock = mock(FeatureToggleService.class);
         SlettemerkeProperties slettemerkeProperties = new SlettemerkeProperties();
         slettemerkeProperties.setIdent(List.of(new NavIdent("Z123456")));
         Veileder veileder = new Veileder(
@@ -509,7 +541,8 @@ public class VeilederTest {
                 Set.of(new NavEnhet("4802", "Trysil")),
                 slettemerkeProperties,
                 false,
-                mock(VeilarboppfolgingService.class)
+                mock(VeilarboppfolgingService.class),
+                featureToggleServiceMock
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), eq(avtale.getDeltakerFnr()))).thenReturn(true);
         assertThatThrownBy(() -> veileder.slettemerk(avtale)).isExactlyInstanceOf(IkkeAdminTilgangException.class);
