@@ -15,8 +15,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeAdminTilgangException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeGodkjenneAvtalePåKode6Exception;
-import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppretteAvtalePåKode6Exception;
+import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerKode6Exception;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
@@ -147,7 +146,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     void godkjennForAvtalepart(Avtale avtale) {
-        this.sjekkKode6(avtale.getDeltakerFnr(), new KanIkkeGodkjenneAvtalePåKode6Exception());
+        this.sjekkKode6(avtale.getDeltakerFnr());
         this.sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         avtale.godkjennForVeileder(getIdentifikator());
     }
@@ -159,9 +158,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     public void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn, Avtale avtale) {
         sjekkTilgang(avtale);
-        if (persondataService.hentDiskresjonskode(avtale.getDeltakerFnr()).erKode6()) {
-            throw new KanIkkeGodkjenneAvtalePåKode6Exception();
-        }
+        sjekkKode6(avtale.getDeltakerFnr());
         this.sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
     }
@@ -171,7 +168,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             Avtale avtale
     ) {
         super.sjekkTilgang(avtale);
-        this.sjekkKode6(avtale.getDeltakerFnr(), new KanIkkeGodkjenneAvtalePåKode6Exception());
+        this.sjekkKode6(avtale.getDeltakerFnr());
         this.sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         avtale.godkjennForVeilederOgArbeidsgiver(getIdentifikator(), paVegneAvArbeidsgiverGrunn);
     }
@@ -181,7 +178,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             Avtale avtale
     ) {
         super.sjekkTilgang(avtale);
-        this.sjekkKode6(avtale.getDeltakerFnr(), new KanIkkeGodkjenneAvtalePåKode6Exception());
+        this.sjekkKode6(avtale.getDeltakerFnr());
         this.sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         avtale.godkjennForVeilederOgDeltakerOgArbeidsgiver(getIdentifikator(), paVegneAvDeltakerOgArbeidsgiverGrunn);
     }
@@ -261,18 +258,19 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
     }
 
-    private void sjekkKode6(Fnr fnr, RuntimeException exception) {
+    private void sjekkKode6(Fnr fnr) {
         if (!featureToggleService.isEnabled(FeatureToggle.SKAL_SJEKKE_FOR_ADRESSESPERRE)) {
             return;
         }
-        if (persondataService.hentDiskresjonskode(fnr).erKode6()) {
-            throw exception;
+        if (!persondataService.hentDiskresjonskode(fnr).erKode6()){
+            return;
         }
+        throw new IkkeTilgangTilDeltakerKode6Exception();
     }
 
     public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
         this.sjekkTilgangskontroll(opprettAvtale.getDeltakerFnr());
-        this.sjekkKode6(opprettAvtale.getDeltakerFnr(), new KanIkkeOppretteAvtalePåKode6Exception());
+        this.sjekkKode6(opprettAvtale.getDeltakerFnr());
         Avtale avtale = Avtale.opprett(opprettAvtale, Avtaleopphav.VEILEDER, getIdentifikator());
         avtale.leggTilDeltakerNavn(persondataService.hentNavn(avtale.getDeltakerFnr()));
         leggTilEnheter(avtale);
