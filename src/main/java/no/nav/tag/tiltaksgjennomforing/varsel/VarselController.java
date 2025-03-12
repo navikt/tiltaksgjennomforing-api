@@ -26,27 +26,28 @@ public class VarselController {
     private final AvtaleRepository avtaleRepository;
 
     @GetMapping("/oversikt")
-    public List<Varsel> hentVarslerMedBjelleForOversikt(
+    public List<VarselRespons> hentVarslerMedBjelleForOversikt(
             @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        return varselRepository.findAllByLestIsFalseAndBjelleIsTrueAndIdentifikatorIn(avtalepart.identifikatorer());
+        List<Varsel> varsler = varselRepository.findAllByLestIsFalseAndBjelleIsTrueAndIdentifikatorIn(avtalepart.identifikatorer());
+        return varsler.stream().map(varsel -> new VarselRespons(varsel, innloggetPart)).toList();
     }
 
     @GetMapping("/avtale-modal")
-    public List<Varsel> hentVarslerMedBjelleForAvtale(
+    public List<VarselRespons> hentVarslerMedBjelleForAvtale(
             @RequestParam(value = "avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        return varselRepository.findAllByLestIsFalseAndBjelleIsTrueAndAvtaleIdAndIdentifikatorIn(avtaleId, avtalepart.identifikatorer());
-    }
+        List<Varsel> varsler = varselRepository.findAllByLestIsFalseAndBjelleIsTrueAndAvtaleIdAndIdentifikatorIn(avtaleId, avtalepart.identifikatorer());
+        return varsler.stream().map(varsel -> new VarselRespons(varsel, innloggetPart)).toList();    }
 
     @GetMapping("/avtale-logg")
-    public List<Varsel> hentAlleVarslerForAvtale(
+    public List<VarselRespons> hentAlleVarslerForAvtale(
             @RequestParam(value = "avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow();
         avtalepart.sjekkTilgang(avtale);
-        return varselRepository.findAllByAvtaleIdAndMottaker(avtaleId, innloggetPart);
-    }
+        List<Varsel> varsler = varselRepository.findAllByAvtaleIdAndMottaker(avtaleId, innloggetPart);
+        return varsler.stream().map(varsel -> new VarselRespons(varsel, innloggetPart)).toList();    }
 
     @PostMapping("{varselId}/sett-til-lest")
     @Transactional
