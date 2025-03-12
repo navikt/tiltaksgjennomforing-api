@@ -31,7 +31,7 @@ public record VarselRespons(
 
     private static String hentUtførtAv(Varsel varsel, Avtalerolle innloggetPart) {
         if (innloggetPart.erInternBruker() && varsel.getUtførtAv().erInternBruker()) {
-            return varsel.getIdentifikator().asString();
+            return varsel.getUtførtAvIdentifikator().asString();
         }
         return varsel.getUtførtAv().name();
     }
