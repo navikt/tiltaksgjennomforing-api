@@ -26,28 +26,28 @@ public class VarselController {
     private final AvtaleRepository avtaleRepository;
 
     @GetMapping("/oversikt")
-    public List<VarselDTO> hentVarslerMedBjelleForOversikt(
+    public List<VarselRespons> hentVarslerMedBjelleForOversikt(
             @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         List<Varsel> varsler = varselRepository.findAllByLestIsFalseAndBjelleIsTrueAndIdentifikatorIn(avtalepart.identifikatorer());
-        return varsler.stream().map(varsel -> new VarselDTO(varsel, innloggetPart)).toList();
+        return varsler.stream().map(varsel -> new VarselRespons(varsel, innloggetPart)).toList();
     }
 
     @GetMapping("/avtale-modal")
-    public List<VarselDTO> hentVarslerMedBjelleForAvtale(
+    public List<VarselRespons> hentVarslerMedBjelleForAvtale(
             @RequestParam(value = "avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         List<Varsel> varsler = varselRepository.findAllByLestIsFalseAndBjelleIsTrueAndAvtaleIdAndIdentifikatorIn(avtaleId, avtalepart.identifikatorer());
-        return varsler.stream().map(varsel -> new VarselDTO(varsel, innloggetPart)).toList();    }
+        return varsler.stream().map(varsel -> new VarselRespons(varsel, innloggetPart)).toList();    }
 
     @GetMapping("/avtale-logg")
-    public List<VarselDTO> hentAlleVarslerForAvtale(
+    public List<VarselRespons> hentAlleVarslerForAvtale(
             @RequestParam(value = "avtaleId") UUID avtaleId, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow();
         avtalepart.sjekkTilgang(avtale);
         List<Varsel> varsler = varselRepository.findAllByAvtaleIdAndMottaker(avtaleId, innloggetPart);
-        return varsler.stream().map(varsel -> new VarselDTO(varsel, innloggetPart)).toList();    }
+        return varsler.stream().map(varsel -> new VarselRespons(varsel, innloggetPart)).toList();    }
 
     @PostMapping("{varselId}/sett-til-lest")
     @Transactional

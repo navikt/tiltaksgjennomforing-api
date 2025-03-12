@@ -2,12 +2,11 @@ package no.nav.tag.tiltaksgjennomforing.varsel;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
-import no.nav.tag.tiltaksgjennomforing.datadeling.AvtaleHendelseUtførtAvRolle;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record VarselDTO(
+public record VarselRespons(
         UUID id,
         boolean lest,
         String tekst,
@@ -17,7 +16,7 @@ public record VarselDTO(
         LocalDateTime tidspunkt,
         String utførtAv
 ) {
-    public VarselDTO(Varsel varsel, Avtalerolle innloggetPart) {
+    public VarselRespons(Varsel varsel, Avtalerolle innloggetPart) {
         this(
                 varsel.getId(),
                 varsel.isLest(),
