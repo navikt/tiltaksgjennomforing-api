@@ -1,7 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.abac;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Avslagskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.PoaoTilgangService;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgangsattributter;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
@@ -40,6 +42,15 @@ public class TilgangskontrollService {
         } catch (Exception e) {
             log.error("Feil ved tilgangskontroll-sjekk", e);
             return Optional.empty();
+        }
+    }
+
+    public Tilgang hentSkrivetilgang(InternBruker internBruker, Fnr fnr) {
+        try {
+            return poaoTilgangService.hentSkrivetilgang(internBruker.getAzureOid(), fnr);
+        } catch (Exception e) {
+            log.error("Feil ved tilgangskontroll-sjekk", e);
+            return new Tilgang.Avvis(Avslagskode.INGEN_RESPONS);
         }
     }
 
