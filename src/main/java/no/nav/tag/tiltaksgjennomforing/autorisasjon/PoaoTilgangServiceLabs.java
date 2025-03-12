@@ -15,18 +15,14 @@ import java.util.stream.Collectors;
 @Profile({ Miljø.LOCAL, Miljø.TEST, Miljø.DOCKER_COMPOSE, Miljø.DEV_GCP_LABS })
 public class PoaoTilgangServiceLabs implements PoaoTilgangService {
 
-    public boolean harSkrivetilgang(UUID beslutterAzureUUID, Fnr fnr) {
-        return true;
-    }
-
     @Override
-    public Map<Fnr, Boolean> harSkrivetilgang(UUID beslutterAzureUUID, Set<Fnr> fnrSet) {
+    public Map<Fnr, Boolean> harSkrivetilganger(UUID beslutterAzureUUID, Set<Fnr> fnrSet) {
         return fnrSet.stream().collect(Collectors.toMap(fnr -> fnr, fnr -> true));
     }
 
     @Override
-    public Optional<String> hentGrunn(UUID beslutterAzureUUID, Fnr fnr) {
-        return Optional.empty();
+    public Optional<Tilgang> hentSkrivetilgang(UUID beslutterAzureUUID, Fnr fnr) {
+        return Optional.of(new Tilgang.Tillat());
     }
 
     @Override

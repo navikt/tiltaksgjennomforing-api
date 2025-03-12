@@ -49,28 +49,19 @@ public class PoaoTilgangServiceImpl implements PoaoTilgangService {
         );
     }
 
-    public boolean harSkrivetilgang(UUID beslutterAzureUUID, Fnr fnr) {
+    public Optional<Tilgang> hentSkrivetilgang(UUID beslutterAzureUUID, Fnr fnr) {
         return Optional.ofNullable(hentSkrivetilgang(beslutterAzureUUID, fnr.asString()))
-            .map(Decision::isPermit)
-            .orElse(false);
+            .map(decision -> decision.isPermit()
+                ? new Tilgang.Tillat()
+                : new Tilgang.Avvis(Avslagskode.parse(decision), ((Decision.Deny) decision).getMessage())
+            );
     }
 
-    public Map<Fnr, Boolean> harSkrivetilgang(UUID beslutterAzureUUID, Set<Fnr> fnrSet) {
+    public Map<Fnr, Boolean> harSkrivetilganger(UUID beslutterAzureUUID, Set<Fnr> fnrSet) {
         return hentSkrivetilganger(beslutterAzureUUID, fnrSet)
             .entrySet()
             .stream()
             .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().isPermit()));
-    }
-
-    public Optional<String> hentGrunn(UUID beslutterAzureUUID, Fnr fnr) {
-        return Optional.ofNullable(hentSkrivetilgang(beslutterAzureUUID, fnr.asString()))
-            .map(decision -> {
-                if (decision.isDeny() && decision instanceof Decision.Deny deny) {
-                    return deny.getReason();
-                } else {
-                    return null;
-                }
-            });
     }
 
     public Optional<Tilgangsattributter> hentTilgangsattributter(Fnr fnr) {

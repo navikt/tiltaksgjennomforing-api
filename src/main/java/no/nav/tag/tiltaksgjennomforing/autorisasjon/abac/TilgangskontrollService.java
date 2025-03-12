@@ -1,7 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon.abac;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Avslagskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.PoaoTilgangService;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgangsattributter;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
@@ -27,19 +29,25 @@ public class TilgangskontrollService {
 
     public boolean harSkrivetilgangTilKandidat(InternBruker internBruker, Fnr fnr) {
         try {
-            return poaoTilgangService.harSkrivetilgang(internBruker.getAzureOid(), fnr);
+            return hentSkrivetilgang(internBruker, fnr).erTillat();
         } catch (Exception e) {
             log.error("Feil ved tilgangskontroll-sjekk", e);
             return false;
         }
     }
 
-    public Optional<String> hentGrunnForAvslag(UUID ident, Fnr fnr) {
+    public Tilgang hentSkrivetilgang(InternBruker internBruker, Fnr fnr) {
+        return hentSkrivetilgang(internBruker.getAzureOid(), fnr);
+    }
+
+    public Tilgang hentSkrivetilgang(UUID azureOid, Fnr fnr) {
         try {
-            return poaoTilgangService.hentGrunn(ident, fnr);
+            return poaoTilgangService
+                .hentSkrivetilgang(azureOid, fnr)
+                .orElse(new Tilgang.Avvis(Avslagskode.INGEN_RESPONS, "Tilgang mangler fra POAO-tilgang"));
         } catch (Exception e) {
             log.error("Feil ved tilgangskontroll-sjekk", e);
-            return Optional.empty();
+            return new Tilgang.Avvis(Avslagskode.INGEN_RESPONS, "Ingen respons fra POAO-tilgang");
         }
     }
 
@@ -50,7 +58,7 @@ public class TilgangskontrollService {
 
     public Map<Fnr, Boolean> harSkrivetilgangTilKandidater(InternBruker internBruker, Set<Fnr> fnrSet) {
         try {
-            return poaoTilgangService.harSkrivetilgang(internBruker.getAzureOid(), fnrSet);
+            return poaoTilgangService.harSkrivetilganger(internBruker.getAzureOid(), fnrSet);
         } catch (Exception e) {
             log.error("Feil ved tilgangskontroll-sjekk", e);
             return Collections.emptyMap();
