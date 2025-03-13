@@ -9,10 +9,6 @@ spring:
     scheduling.pool.size: 8
   cache:
     type: caffeine
-  jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
   application:
     name: tiltaksgjennomforing-api
   main:
