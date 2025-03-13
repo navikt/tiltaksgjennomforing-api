@@ -18,6 +18,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.KontoregisterFeilException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
@@ -409,8 +410,9 @@ public class AvtaleControllerTest {
     }
 
     @Test
-    public void opprettAvtaleSomVeileder__skal_feile_hvis_veileder_ikke_har_tilgang_til_bruker() {
+    public void opprettAvtaleSomVeileder__skal_feile_hvis_veileder_ikke_har_tilgang_til_bruker_med_togglet_adressesperresjekk() {
         PersondataService persondataServiceIMetode = mock(PersondataService.class);
+        when(featureToggleServiceMock.isEnabled(FeatureToggle.SKAL_SJEKKE_FOR_ADRESSESPERRE)).thenReturn(true);
         Veileder enNavAnsatt = new Veileder(
                 new NavIdent("T000000"),
                 tilgangskontrollService,
@@ -436,8 +438,37 @@ public class AvtaleControllerTest {
     }
 
     @Test
-    public void opprettAvtaleSomVeileder__skal_feile_hvis_kode6() {
+    public void opprettAvtaleSomVeileder__skal_fungere_hvis_veileder_har_tilgang_til_bruker_uten_togglet_adressesperresjekk() {
         PersondataService persondataServiceIMetode = mock(PersondataService.class);
+        when(featureToggleServiceMock.isEnabled(FeatureToggle.SKAL_SJEKKE_FOR_ADRESSESPERRE)).thenReturn(false);
+        Veileder enNavAnsatt = new Veileder(
+                new NavIdent("T000000"),
+                tilgangskontrollService,
+                persondataServiceIMetode,
+                norg2Client,
+                Collections.emptySet(),
+                new SlettemerkeProperties(),
+                false,
+                veilarboppfolgingService,
+                featureToggleServiceMock
+        );
+        værInnloggetSom(enNavAnsatt);
+        Fnr deltakerFnr = new Fnr("11111100000");
+        when(
+                tilgangskontrollService.harSkrivetilgangTilKandidat(enNavAnsatt, deltakerFnr)
+        ).thenReturn(false);
+        assertThatThrownBy(
+                () -> avtaleController.opprettAvtaleSomVeileder(
+                        new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING)
+
+                )
+        ).isInstanceOf(IkkeTilgangTilDeltakerException.class);
+    }
+
+    @Test
+    public void opprettAvtaleSomVeileder__skal_feile_hvis_kode6_med_togglet_adressesperresjekk() {
+        PersondataService persondataServiceIMetode = mock(PersondataService.class);
+        when(featureToggleServiceMock.isEnabled(FeatureToggle.SKAL_SJEKKE_FOR_ADRESSESPERRE)).thenReturn(true);
         Veileder enNavAnsatt = new Veileder(
                 new NavIdent("T000000"),
                 tilgangskontrollService,

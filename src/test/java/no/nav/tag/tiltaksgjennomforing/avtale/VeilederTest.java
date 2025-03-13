@@ -10,6 +10,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.*;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.domene.PdlRespons;
@@ -27,6 +28,7 @@ import java.util.Set;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.featureToggleService;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.any;
@@ -119,10 +121,11 @@ public class VeilederTest {
     }
 
     @Test
-    public void godkjennAvtale__kan_ikke_godkjenne_kode6() {
+    public void godkjennAvtale__kan_ikke_godkjenne_kode6_med_togglet_adressesperresjekk() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        when(featureToggleService.isEnabled(FeatureToggle.SKAL_SJEKKE_FOR_ADRESSESPERRE)).thenReturn(true);
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
         Veileder veileder = TestData.enVeileder(avtale, persondataService);
@@ -131,15 +134,40 @@ public class VeilederTest {
     }
 
     @Test
-    public void godkjennForVeilederOgDeltaker__kan_ikke_godkjenne_kode6() {
+    public void godkjennAvtale__kan_godkjenne_kode6_uten_togglet_adressesperresjekk() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        when(featureToggleService.isEnabled(FeatureToggle.SKAL_SJEKKE_FOR_ADRESSESPERRE)).thenReturn(false);
+        PersondataService persondataService = mock(PersondataService.class);
+        when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
+        Veileder veileder = TestData.enVeileder(avtale, persondataService);
+        veileder.godkjennAvtale(avtale.getSistEndret(), avtale);
+        assertThat(avtale.erGodkjentAvVeileder()).isTrue();
+    }
+
+    @Test
+    public void godkjennForVeilederOgDeltaker__kan_ikke_godkjenne_kode6_med_togglet_adressesperresjekk() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        when(featureToggleService.isEnabled(FeatureToggle.SKAL_SJEKKE_FOR_ADRESSESPERRE)).thenReturn(true);
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
         Veileder veileder = TestData.enVeileder(avtale, persondataService);
         assertThatThrownBy(() -> veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale))
                 .isExactlyInstanceOf(IkkeTilgangTilDeltakerKode6Exception.class);
+    }
+
+    @Test
+    public void godkjennForVeilederOgDeltaker__kan_godkjenne_kode6_uten_togglet_adressesperresjekk() {
+        Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        when(featureToggleService.isEnabled(FeatureToggle.SKAL_SJEKKE_FOR_ADRESSESPERRE)).thenReturn(false);
+        avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
+        PersondataService persondataService = mock(PersondataService.class);
+        when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
+        Veileder veileder = TestData.enVeileder(avtale, persondataService);
+        veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
+        assertThat(avtale.erGodkjentAvVeileder()).isTrue();
     }
 
     @Test

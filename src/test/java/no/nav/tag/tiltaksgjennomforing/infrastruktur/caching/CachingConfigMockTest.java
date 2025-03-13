@@ -70,8 +70,8 @@ public class CachingConfigMockTest {
     private Norg2Client norg2Client;
     @Autowired
     private VeilarboppfolgingService veilarboppfolgingService;
-    @Autowired
-    private FeatureToggleService featureToggleService;
+
+    private FeatureToggleService mockFeatureToggleService;
 
     private Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
     private final PdlRespons FØRSTE_PDL_RESPONSE = TestData.enPdlrespons(false);
@@ -279,7 +279,7 @@ public class CachingConfigMockTest {
                 new SlettemerkeProperties(),
                 false,
                 veilarboppfolgingService,
-                featureToggleService
+                mockFeatureToggleService
         );
 
         veileder.endreAvtale(
