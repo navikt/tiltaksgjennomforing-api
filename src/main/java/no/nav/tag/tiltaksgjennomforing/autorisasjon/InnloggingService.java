@@ -25,7 +25,6 @@ import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.Veilarboppfolging
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.UgyldigVirksomhetsnummerException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
@@ -67,7 +66,7 @@ public class InnloggingService {
             Set<AltinnReportee> altinnOrganisasjoner = altinnTilgangsstyringService
                     .hentAltinnOrganisasjoner(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
             Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
-            BedriftNr bedriftNr = hentBedriftNrFraRequest().orElseThrow(UgyldigVirksomhetsnummerException::new);
+            BedriftNr bedriftNr = hentBedriftNrFraRequest().orElse(BedriftNr.TOMT_BEDRIFT_NR);
             return new Arbeidsgiver(bedriftNr, new Fnr(brukerOgIssuer.getBrukerIdent()), altinnOrganisasjoner, tilganger, persondataService, norg2Client);
         } else if (issuer == Issuer.ISSUER_AAD && avtalerolle == Avtalerolle.VEILEDER) {
             NavIdent navIdent = new NavIdent(brukerOgIssuer.getBrukerIdent());
