@@ -17,8 +17,8 @@ class PersondataDiskresjonskodeCache {
 
     public PersondataDiskresjonskodeCache() {
         this.cache = Caffeine.newBuilder()
-            .expireAfterWrite(Duration.ofMinutes(30))
-            .maximumSize(10_000)
+            .expireAfterWrite(Duration.ofHours(24))
+            .maximumSize(25_000)
             .build();
     }
 
