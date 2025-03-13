@@ -34,16 +34,16 @@ jobs:
         run: node bygg-labs-pom.js
 
       - name: Flytt mappings
-        run: mv src/test/resources/mappings src/main/resources
+        run: mv src/test/resources/mappings src/main/resources/
 
       - name: Flytt testdata-klasse
-        run: mv src/test/no/nav/tag/tiltaksgjennomforing/avtale/TestData.java src/main/no/nav/tag/tiltaksgjennomforing/avtale/TestData.java
+        run: mv src/test/java/no/nav/tag/tiltaksgjennomforing/avtale/TestData.java src/main/java/no/nav/tag/tiltaksgjennomforing/avtale/TestData.java
 
       - name: Flytt last testdata-klasse
-        run: mv src/test/no/nav/tag/tiltaksgjennomforing/LastInnMasseTestData.java src/main/no/nav/tag/tiltaksgjennomforing/LastInnMasseTestData.java
+        run: mv src/test/java/no/nav/tag/tiltaksgjennomforing/LastInnMasseTestData.java src/main/java/no/nav/tag/tiltaksgjennomforing/LastInnMasseTestData.java
 
       - name: Flytt wiremock
-        run: mv src/test/no/nav/tag/tiltaksgjennomforing/IntegrasjonerMockServer.java src/main/no/nav/tag/tiltaksgjennomforing/IntegrasjonerMockServer.java
+        run: mv src/test/java/no/nav/tag/tiltaksgjennomforing/IntegrasjonerMockServer.java src/main/java/no/nav/tag/tiltaksgjennomforing/IntegrasjonerMockServer.java
 
       - name: Bygg og test med Maven
         run: mvn package -B -Dsurefire.useFile=false -f labs-pom.xml
