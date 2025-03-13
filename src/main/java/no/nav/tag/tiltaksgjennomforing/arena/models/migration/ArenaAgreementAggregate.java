@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+@EqualsAndHashCode
 class ArenaAgreementAggregateId {
     private Integer sakId;
     private Integer tiltakgjennomforingId;
