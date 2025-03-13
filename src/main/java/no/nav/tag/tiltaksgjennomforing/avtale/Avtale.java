@@ -84,8 +84,8 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VeilederSkalGodkjenneSistException;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.FnrOgBedrift;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.AuditerbarEntitet;
-import no.nav.tag.tiltaksgjennomforing.persondata.domene.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.NavnFormaterer;
+import no.nav.tag.tiltaksgjennomforing.persondata.domene.Navn;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.LonnstilskuddAvtaleBeregningStrategy;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.TilskuddsperioderBeregningStrategyFactory;
@@ -957,10 +957,17 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     public TilskuddPeriode getGjeldendeTilskuddsperiode() {
         var gjeldendePeriode = finnGjeldendeTilskuddsperiode();
         var gjeldendePeriodeKalkulertId = gjeldendePeriode != null ? gjeldendePeriode.getId() : null;
-        var gjeldendeFraDbId = this.gjeldendeTilskuddsperiode != null ? this.gjeldendeTilskuddsperiode.getId() : null;
+        var gjeldendeFraDb = this.gjeldendeTilskuddsperiode;
+        var gjeldendeFraDbId = gjeldendeFraDb != null ? gjeldendeFraDb.getId() : null;
         if (!Objects.equals(gjeldendePeriodeKalkulertId, gjeldendeFraDbId)) {
-            log.warn("Gjeldende tilskuddsperiode ikke oppdatert på avtale {}? Fant {}, men kalkulerte {}",
-                    id, gjeldendeFraDbId, gjeldendePeriodeKalkulertId);
+            log.warn("Gjeldende tilskuddsperiode ikke oppdatert på avtale {}? Fant {} {} {}, men kalkulerte {} {} {}",
+                    id,
+                    gjeldendeFraDbId,
+                    gjeldendeFraDb != null ? gjeldendeFraDb.getLøpenummer() : null,
+                    gjeldendeFraDb != null ? gjeldendeFraDb.getStatus() : null,
+                    gjeldendePeriodeKalkulertId,
+                    gjeldendePeriode != null ? gjeldendePeriode.getLøpenummer() : null,
+                    gjeldendePeriode != null ? gjeldendePeriode.getStatus() : null);
         }
         return gjeldendePeriode;
     }
