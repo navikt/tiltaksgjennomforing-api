@@ -24,9 +24,14 @@ public class HendelseAktivitetsplanClient {
     }
 
     public void putAktivietsplanId(UUID avtaleId, UUID aktivitetsplanId) {
+        putAktivietsplanId(avtaleId, aktivitetsplanId, false);
+    }
+
+    public void putAktivietsplanId(UUID avtaleId, UUID aktivitetsplanId, boolean resendSisteMelding) {
         HendelseAktivietsplanIdRequest request = new HendelseAktivietsplanIdRequest(
             avtaleId,
-            aktivitetsplanId
+            aktivitetsplanId,
+            resendSisteMelding
         );
 
         HttpHeaders headers = new HttpHeaders();
