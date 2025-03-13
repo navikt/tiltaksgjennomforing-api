@@ -9,6 +9,8 @@ spring:
     scheduling.pool.size: 8
   cache:
     type: caffeine
+  jpa:
+    open-in-view: true
   application:
     name: tiltaksgjennomforing-api
   main:
