@@ -18,19 +18,18 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.persondata.domene.Adressebeskyttelse;
 import no.nav.tag.tiltaksgjennomforing.persondata.domene.HentGeografiskTilknytning;
 import no.nav.tag.tiltaksgjennomforing.persondata.domene.HentPerson;
 import no.nav.tag.tiltaksgjennomforing.persondata.domene.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.domene.PdlRespons;
-import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.sporingslogg.Sporingslogg;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -792,7 +791,7 @@ public class TestData {
     }
 
     public static Arbeidsgiver enArbeidsgiver() {
-        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of(), null, null);
+        return new Arbeidsgiver(new BedriftNr("123456789"), new Fnr("01234567890"), Set.of(), Map.of(), null, null);
     }
 
     public static Mentor enMentor(Avtale avtale) {
@@ -801,6 +800,7 @@ public class TestData {
 
     public static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
         return new Arbeidsgiver(
+                TestData.etBedriftNr(),
                 TestData.etFodselsnummer(),
                 Set.of(new AltinnReportee("Bedriftnavn", "", null, avtale.getBedriftNr().asString(), "", "", null))
                 , Map.of(avtale.getBedriftNr(),
@@ -1000,16 +1000,6 @@ public class TestData {
         paVegneGrunn.setIkkeBankId(true);
         GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn paVegneAvDeltakerOgArbeidsgiverGrunn = new GodkjentPaVegneAvDeltakerOgArbeidsgiverGrunn(arbeidsgiverGrunn, paVegneGrunn);
         return paVegneAvDeltakerOgArbeidsgiverGrunn;
-    }
-
-    public static InnloggetArbeidsgiver innloggetArbeidsgiver(Avtalepart<Fnr> avtalepartMedFnr, BedriftNr bedriftNr) {
-        Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(bedriftNr, Set.of(Tiltakstype.values()));
-        AltinnReportee altinnOrganisasjon = new AltinnReportee("Bedriften AS", "Business", bedriftNr.asString(), "BEDR", "Active", null, null);
-        return new InnloggetArbeidsgiver(avtalepartMedFnr.getIdentifikator(), Set.of(altinnOrganisasjon), tilganger);
-    }
-
-    public static InnloggetDeltaker innloggetDeltaker(Avtalepart<Fnr> avtalepartMedFnr) {
-        return new InnloggetDeltaker(avtalepartMedFnr.getIdentifikator());
     }
 
     public static Identifikator enIdentifikator() {
