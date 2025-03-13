@@ -16,13 +16,19 @@ import java.util.stream.Collectors;
 @Service
 public class PersondataService {
     private final PersondataClient persondataClient;
+    private final PersondataDiskresjonskodeCache diskresjonskodeCache;
 
     public PersondataService(PersondataClient persondataClient) {
         this.persondataClient = persondataClient;
+        this.diskresjonskodeCache = new PersondataDiskresjonskodeCache();
     }
 
     public Diskresjonskode hentDiskresjonskode(Fnr fnr) {
-        return persondataClient.hentPersondata(fnr).utledDiskresjonskodeEllerUgradert();
+        return diskresjonskodeCache.get(fnr).orElseGet(() -> {
+            Diskresjonskode diskresjonskode = persondataClient.hentPersondata(fnr).utledDiskresjonskodeEllerUgradert();
+            diskresjonskodeCache.put(fnr, diskresjonskode);
+            return diskresjonskode;
+        });
     }
 
     public Map<Fnr, Diskresjonskode> hentDiskresjonskoder(Set<Fnr> fnrSet) {
@@ -30,11 +36,19 @@ public class PersondataService {
             throw new IllegalArgumentException("Kan ikke hente diskresjonkode for mer enn 1000 om gangen");
         }
 
-        return persondataClient.hentPersonBolk(fnrSet)
-            .utledDiskresjonskoder(fnrSet)
+        Map<Fnr, Diskresjonskode> diskresjonskoderFraCache = diskresjonskodeCache.getIfPresent(fnrSet);
+        Set<Fnr> fnrSomIkkeFinnesICache = fnrSet.stream()
+            .filter(fnr -> !diskresjonskoderFraCache.containsKey(fnr))
+            .collect(Collectors.toSet());
+
+        Map<Fnr, Diskresjonskode> diskresjonskodeFraPdl = persondataClient.hentPersonBolk(fnrSomIkkeFinnesICache)
+            .utledDiskresjonskoder(fnrSomIkkeFinnesICache)
             .entrySet()
             .stream()
             .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().orElse(Diskresjonskode.UGRADERT)));
+
+        diskresjonskodeCache.putAll(diskresjonskodeFraPdl);
+        return PersondataDiskresjonskodeCache.concat(diskresjonskoderFraCache, diskresjonskodeFraPdl);
     }
 
     public Optional<AktorId> hentGjeldendeAktørId(Fnr fnr) {
