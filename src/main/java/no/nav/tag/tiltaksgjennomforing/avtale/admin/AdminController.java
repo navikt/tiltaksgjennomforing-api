@@ -8,7 +8,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgangsattributter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
-import no.nav.tag.tiltaksgjennomforing.avtale.Status;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
@@ -32,10 +32,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -268,38 +268,27 @@ public class AdminController {
         @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
         @RequestParam(value = "size", required = false, defaultValue = "1000") Integer size
     ) {
-        Page<Avtale> pagable = avtaleRepository.findByStatusIn(
-            Set.of(
-                Status.GJENNOMFØRES,
-                Status.AVSLUTTET,
-                Status.PÅBEGYNT,
-                Status.MANGLER_GODKJENNING,
-                Status.KLAR_FOR_OPPSTART
-            ),
-            PageRequest.of(Math.abs(page), Math.abs(size))
-        );
+        Page<Fnr> pagable = avtaleRepository
+            .findDistinctDeltakerFnr(PageRequest.of(Math.abs(page), Math.abs(size)));
 
-        List<Map<String, ?>> avtaler = pagable
+        Map<Fnr, Diskresjonskode> diskresjonskodeMap = persondataService
+            .hentDiskresjonskoder(new HashSet<>(pagable.getContent()));
+
+        List<Map<String, ?>> avtalerMedDiskresjon = pagable
             .getContent()
             .stream()
-            .map(avtale -> {
-                return Map.of(
-                    "id", avtale.getId(),
-                    "status", avtale.getStatus(),
-                    "gradering", persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())
-                );
-            })
-            .filter(map -> {
-                Diskresjonskode kode = (Diskresjonskode) map.get("gradering");
-                return kode.erKode6Eller7();
-            })
+            .filter(fnr -> diskresjonskodeMap.getOrDefault(fnr, Diskresjonskode.UGRADERT).erKode6Eller7())
+            .flatMap(fnr -> avtaleRepository.findByDeltakerFnr(fnr).stream().map(avtale -> Map.of(
+                "id", avtale.getId(),
+                "status", avtale.getStatus(),
+                "gradering", diskresjonskodeMap.get(fnr)
+            )))
             .collect(Collectors.toList());
 
         return Map.of(
-            "totaltAntallElementer", pagable.getTotalElements(),
             "antallSider", pagable.getTotalPages(),
             "gjeldendeSide", pagable.getNumber(),
-            "avtaler", avtaler
+            "avtaler", avtalerMedDiskresjon
         );
     }
 
