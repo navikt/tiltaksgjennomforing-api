@@ -22,7 +22,7 @@ import static no.nav.tag.tiltaksgjennomforing.TestDataGenerator.genererAvtaler;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-@Profile({ Miljø.TESTDATA })
+@Profile({ Miljø.TESTDATA, Miljø.DEV_GCP_LABS })
 public class LastInnTestData implements ApplicationListener<ApplicationReadyEvent> {
     private final AvtaleRepository avtaleRepository;
 

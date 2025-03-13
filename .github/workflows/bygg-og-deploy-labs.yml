@@ -25,8 +25,28 @@ jobs:
           distribution: temurin
           cache: maven
 
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: latest
+      
+      - name: Prep labs
+        run: node bygg-labs-pom.js
+
+      - name: Flytt mappings
+        run: mv src/test/resources/mappings src/main/resources
+
+      - name: Flytt testdata-klasse
+        run: mv src/test/no/nav/tag/tiltaksgjennomforing/avtale/TestData.java src/main/no/nav/tag/tiltaksgjennomforing/avtale/TestData.java
+
+      - name: Flytt last testdata-klasse
+        run: mv src/test/no/nav/tag/tiltaksgjennomforing/LastInnMasseTestData.java src/main/no/nav/tag/tiltaksgjennomforing/LastInnMasseTestData.java
+
+      - name: Flytt wiremock
+        run: mv src/test/no/nav/tag/tiltaksgjennomforing/IntegrasjonerMockServer.java src/main/no/nav/tag/tiltaksgjennomforing/IntegrasjonerMockServer.java
+
       - name: Bygg og test med Maven
-        run: mvn package -B -Dsurefire.useFile=false
+        run: mvn package -B -Dsurefire.useFile=false -f labs-pom.xml
 
       - name: Push docker image to GAR
         uses: nais/docker-build-push@v0
