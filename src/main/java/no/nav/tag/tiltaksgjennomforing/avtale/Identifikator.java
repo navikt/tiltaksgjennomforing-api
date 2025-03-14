@@ -16,6 +16,10 @@ public class Identifikator {
         this.verdi = verdi;
     }
 
+    public boolean erTom() {
+        return this.verdi == null;
+    }
+
     @JsonValue
     public String asString() {
         return verdi;

@@ -12,6 +12,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilAvtaleException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +33,13 @@ import static java.util.Map.entry;
 @Data
 public abstract class Avtalepart<T extends Identifikator> {
     private final T identifikator;
+
+    public T getIdentifikator() {
+        if (identifikator.erTom()) {
+            throw new TilgangskontrollException("Identifikator magler");
+        }
+        return identifikator;
+    }
 
     public boolean avtalenEksisterer(Avtale avtale) {
         return !avtale.isFeilregistrert() && !avtale.isSlettemerket();

@@ -54,6 +54,7 @@ public class ArbeidsgiverTest {
         when(norg2Client.hentGeografiskEnhet(pdlRespons.data().hentGeografiskTilknytning().gtBydel())).thenReturn(navEnhet);
 
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
+                TestData.etBedriftNr(),
                 TestData.etFodselsnummer(),
                 Set.of(
                     new AltinnReportee(
@@ -85,6 +86,7 @@ public class ArbeidsgiverTest {
                 null,
                 null,
                 null,
+                null,
                 null
         );
         assertThatThrownBy(
@@ -96,6 +98,7 @@ public class ArbeidsgiverTest {
     public void endreAvtale_validererTilDato() {
         Avtale avtale = TestData.enArbeidstreningAvtaleOpprettetAvArbeidsgiverOgErUfordelt();
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
+                null,
                 null,
                 null,
                 null,

@@ -23,20 +23,23 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class Arbeidsgiver extends Avtalepart<Fnr> {
+public class Arbeidsgiver extends Avtalepart<BedriftNr> {
     private final Map<BedriftNr, Collection<Tiltakstype>> tilganger;
     private final Set<AltinnReportee> altinnOrganisasjoner;
     private final PersondataService persondataService;
     private final Norg2Client norg2Client;
+    private final Fnr arbeidsgiverFnr;
 
     public Arbeidsgiver(
-            Fnr identifikator,
+            BedriftNr identifikator,
+            Fnr arbeidsgiverFnr,
             Set<AltinnReportee> altinnOrganisasjoner,
             Map<BedriftNr, Collection<Tiltakstype>> tilganger,
             PersondataService persondataService,
             Norg2Client norg2Client
     ) {
         super(identifikator);
+        this.arbeidsgiverFnr = arbeidsgiverFnr;
         this.altinnOrganisasjoner = altinnOrganisasjoner;
         this.tilganger = tilganger;
         this.persondataService = persondataService;
@@ -117,7 +120,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
     @Override
     public InnloggetBruker innloggetBruker() {
-        return new InnloggetArbeidsgiver(getIdentifikator(), altinnOrganisasjoner, tilganger);
+        return new InnloggetArbeidsgiver(arbeidsgiverFnr, altinnOrganisasjoner, tilganger);
     }
 
     @Override

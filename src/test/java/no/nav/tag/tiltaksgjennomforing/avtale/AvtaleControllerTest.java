@@ -244,6 +244,7 @@ public class AvtaleControllerTest {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         værInnloggetSom(
                 new Arbeidsgiver(
+                        new BedriftNr("123456789"),
                         new Fnr("55555566666"),
                         Set.of(),
                         Map.of(),
@@ -454,6 +455,7 @@ public class AvtaleControllerTest {
     @Test
     public void opprettAvtaleSomArbeidsgiver__skal_feile_hvis_ag_ikke_har_tilgang_til_bedrift() {
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
+                TestData.etBedriftNr(),
                 TestData.etFodselsnummer(),
                 Set.of(),
                 Map.of(),

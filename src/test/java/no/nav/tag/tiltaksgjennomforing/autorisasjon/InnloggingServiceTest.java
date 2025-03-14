@@ -1,18 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
-import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.ENHET_OPPFØLGING;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.AltinnTilgangsstyringService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.altinntilgangsstyring.ArbeidsgiverTokenStrategyFactoryImpl;
@@ -27,6 +14,23 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.ENHET_OPPFØLGING;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class InnloggingServiceTest {
@@ -75,6 +79,10 @@ public class InnloggingServiceTest {
         værInnloggetArbeidsgiver(selvbetjeningBruker);
 
        when(arbeidsgiverTokenStrategyFactory.create(Issuer.ISSUER_TOKENX)).thenReturn(() -> "");
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("bedriftNr", "123456789");
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
         assertThat(innloggingService.hentInnloggetBruker(Optional.of(Avtalerolle.ARBEIDSGIVER).get())).isEqualTo(selvbetjeningBruker);
         verify(altinnTilgangsstyringService).hentTilganger(eq(selvbetjeningBruker.getIdentifikator()), any());
