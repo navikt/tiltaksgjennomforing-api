@@ -140,14 +140,14 @@ public interface LonnstilskuddAvtaleBeregningStrategy {
             datoPar.addAll(splittHvisNyttÅr(fra, til));
         }
         // Legg til siste periode hvis den ikke kom med i loopen
-        if (datoPar.get(datoPar.size() - 1).getSlutt() != datoTilOgMed) {
+        if (datoPar.getLast().getSlutt() != datoTilOgMed) {
             datoPar.addAll(splittHvisNyttÅr(førsteDatoIMnd(datoTilOgMed), datoTilOgMed));
         }
         return datoPar;
     }
 
     private static LocalDate førsteDatoIMnd(LocalDate dato) {
-        return LocalDate.of(dato.getYear(), dato.getMonth(), 01);
+        return LocalDate.of(dato.getYear(), dato.getMonth(), 1);
     }
 
     private static List<Periode> splittHvisNyttÅr (LocalDate fraDato, LocalDate tilDato) {

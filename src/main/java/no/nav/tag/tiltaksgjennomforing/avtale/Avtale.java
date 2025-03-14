@@ -988,7 +988,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
 
         // Finn første som kan behandles
-        Optional<TilskuddPeriode> førsteSomKanBehandles = aktiveTilskuddsperioder.stream().filter(TilskuddPeriode::kanBehandles).findFirst();
+        Optional<TilskuddPeriode> førsteSomKanBehandles = aktiveTilskuddsperioder.stream()
+                .filter(TilskuddPeriode::kanBehandles)
+                .findFirst();
         if (førsteSomKanBehandles.isPresent()) {
             return førsteSomKanBehandles.get();
         }
@@ -1127,7 +1129,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
      * - Tilskuddsperioder lages fra startdato til sluttdato, de som er før dato for migrering settes til en ny status, f eks. BEHANDLET_I_ARENA
      * - Sjekk logikk som skjer ved godkjenning av første perioden
      * - Tar ikke høyde for perioder med lengde tre måneder som i arena
-     * -
      */
     public boolean nyeTilskuddsperioderEtterMigreringFraArena(LocalDate migreringsDato, boolean dryRun) {
         if (sjekkRyddingAvTilskuddsperioder()) {
@@ -1187,7 +1188,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         List<TilskuddPeriode> godkjentePerioder = tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.GODKJENT).sorted(Comparator.comparing(TilskuddPeriode::getLøpenummer)).toList();
 
         if (!godkjentePerioder.isEmpty()) {
-            startDato = godkjentePerioder.get(godkjentePerioder.size() - 1).getSluttDato().plusDays(1);
+            startDato = godkjentePerioder.getLast().getSluttDato().plusDays(1);
         } else {
             startDato = tilskuddPeriode.stream().findFirst().map(TilskuddPeriode::getStartDato).orElse(null);
         }
@@ -1257,14 +1258,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_ETTER_SLUTTDATO);
         }
         // Kan ikke forkorte før en utbetalt/sendtkrav tilskuddsperiode
-        TreeSet<TilskuddPeriode> aktiveTilskuddsperioder = new TreeSet(tilskuddPeriode.stream().filter(t -> t.isAktiv()).collect(Collectors.toSet()));
+        TreeSet<TilskuddPeriode> aktiveTilskuddsperioder = new TreeSet(tilskuddPeriode.stream().filter(TilskuddPeriode::isAktiv).collect(Collectors.toSet()));
         Optional<TilskuddPeriode> sisteUtbetalt = aktiveTilskuddsperioder.descendingSet().stream().filter(tilskuddPeriode -> (
                 tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.SENDT_KRAV ||
                         tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.UTBETALT ||
                         tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.UTBETALING_FEILET ||
                         tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.GODKJENT_MINUSBELØP ||
                         tilskuddPeriode.getRefusjonStatus() == RefusjonStatus.GODKJENT_NULLBELØP)
-        ).max(Comparator.comparing(tilskuddPeriode1 -> tilskuddPeriode1.getStartDato()));
+        ).max(Comparator.comparing(TilskuddPeriode::getStartDato));
         if (sisteUtbetalt.isPresent() && nySluttDato.isBefore(sisteUtbetalt.get().getSluttDato())) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_FORKORTE_FOR_UTBETALT_TILSKUDDSPERIODE);
         }
@@ -1463,7 +1464,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_MÅL);
         getGjeldendeInnhold().getMaal().clear();
-        List<Maal> nyeMål = endreMål.getMaal().stream().map(m -> new Maal().setId(UUID.randomUUID()).setBeskrivelse(m.getBeskrivelse()).setKategori(m.getKategori())).collect(Collectors.toList());
+        List<Maal> nyeMål = endreMål.getMaal().stream()
+                .map(m -> new Maal()
+                        .setId(UUID.randomUUID())
+                        .setBeskrivelse(m.getBeskrivelse())
+                        .setKategori(m.getKategori()))
+                .toList();
         getGjeldendeInnhold().getMaal().addAll(nyeMål);
         getGjeldendeInnhold().getMaal().forEach(m -> m.setAvtaleInnhold(getGjeldendeInnhold()));
         getGjeldendeInnhold().setIkrafttredelsestidspunkt(Now.localDateTime());
@@ -1490,7 +1496,9 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             }
         }
         List<Inkluderingstilskuddsutgift> inkluderingstilskuddsutgifterPåForrigeVersjon = getGjeldendeInnhold().getInkluderingstilskuddsutgift();
-        List<Inkluderingstilskuddsutgift> forrigeVersjonFraKlient = endreInkluderingstilskudd.getInkluderingstilskuddsutgift().stream().filter(e -> e.getId() != null).collect(Collectors.toList());
+        List<Inkluderingstilskuddsutgift> forrigeVersjonFraKlient = endreInkluderingstilskudd.getInkluderingstilskuddsutgift().stream()
+                .filter(e -> e.getId() != null)
+                .toList();
 
         // Sjekk at det er like mange utgifter på forrige versjon som det er id'er i request. Hvis ikke er ikke frontend i sync
         if (inkluderingstilskuddsutgifterPåForrigeVersjon.size() != forrigeVersjonFraKlient.size()) {
@@ -1498,8 +1506,14 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         }
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_INKLUDERINGSTILSKUDD);
 
-        List<Inkluderingstilskuddsutgift> nye = endreInkluderingstilskudd.getInkluderingstilskuddsutgift().stream().filter(e -> e.getId() == null).collect(Collectors.toList());
-        List<Inkluderingstilskuddsutgift> nyeInkluderingstilskuddsutgifter = nye.stream().map(m -> new Inkluderingstilskuddsutgift().setId(UUID.randomUUID()).setBeløp(m.getBeløp()).setType(m.getType())).collect(Collectors.toList());
+        List<Inkluderingstilskuddsutgift> nyeInkluderingstilskuddsutgifter = endreInkluderingstilskudd.getInkluderingstilskuddsutgift()
+                .stream()
+                .filter(e -> e.getId() == null)
+                .map(m -> new Inkluderingstilskuddsutgift()
+                        .setId(UUID.randomUUID())
+                        .setBeløp(m.getBeløp())
+                        .setType(m.getType()))
+                .toList();
 
         getGjeldendeInnhold().getInkluderingstilskuddsutgift().addAll(nyeInkluderingstilskuddsutgifter);
         getGjeldendeInnhold().getInkluderingstilskuddsutgift().forEach(i -> i.setAvtaleInnhold(getGjeldendeInnhold()));
