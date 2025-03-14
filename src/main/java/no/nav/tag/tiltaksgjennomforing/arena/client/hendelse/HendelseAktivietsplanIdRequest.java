@@ -4,5 +4,6 @@ import java.util.UUID;
 
 public record HendelseAktivietsplanIdRequest(
     UUID avtaleId,
-    UUID aktivitetsplanId
+    UUID aktivitetsplanId,
+    boolean resendSisteMelding
 ) {}

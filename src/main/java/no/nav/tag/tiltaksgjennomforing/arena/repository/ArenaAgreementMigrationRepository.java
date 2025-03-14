@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ArenaAgreementMigrationRepository extends JpaRepository<ArenaAgreementMigration, Integer> {
 
@@ -56,5 +57,12 @@ public interface ArenaAgreementMigrationRepository extends JpaRepository<ArenaAg
           AND a.id NOT IN (SELECT aam.avtaleId FROM ArenaAgreementMigration aam WHERE aam.avtaleId IS NOT NULL)
     """)
     List<Avtale> findAgreementsForCleanUp(Tiltakstype tiltakstype, Limit limit);
+
+    @Query("""
+        SELECT distinct aam.tiltakdeltakerId
+        FROM ArenaAgreementMigration aam
+        WHERE aam.avtaleId = :avtaleId OR aam.eksternId = :avtaleId
+    """)
+    List<Integer> findTiltakdeltakerIdFromAvtaleId(UUID avtaleId);
 
 }
