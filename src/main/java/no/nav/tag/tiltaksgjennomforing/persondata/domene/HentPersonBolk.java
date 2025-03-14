@@ -5,7 +5,7 @@ public record HentPersonBolk(
     HentPerson person,
     String code
 ) {
-    private static final String OK = "ok";
+    public static final String OK = "ok";
     public boolean isOk() {
         return OK.equals(code);
     }

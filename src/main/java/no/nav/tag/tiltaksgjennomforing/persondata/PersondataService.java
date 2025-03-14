@@ -25,9 +25,9 @@ public class PersondataService {
 
     public Diskresjonskode hentDiskresjonskode(Fnr fnr) {
         return diskresjonskodeCache.get(fnr).orElseGet(() -> {
-            Diskresjonskode diskresjonskode = persondataClient.hentPersondata(fnr).utledDiskresjonskodeEllerUgradert();
-            diskresjonskodeCache.put(fnr, diskresjonskode);
-            return diskresjonskode;
+            Optional<Diskresjonskode> diskresjonskodeOpt = persondataClient.hentPersondata(fnr).utledDiskresjonskode();
+            diskresjonskodeCache.putIfPresent(fnr, diskresjonskodeOpt);
+            return diskresjonskodeOpt.orElse(Diskresjonskode.UGRADERT);
         });
     }
 
@@ -41,13 +41,22 @@ public class PersondataService {
             .filter(fnr -> !diskresjonskoderFraCache.containsKey(fnr))
             .collect(Collectors.toSet());
 
-        Map<Fnr, Diskresjonskode> diskresjonskodeFraPdl = persondataClient.hentPersonBolk(fnrSomIkkeFinnesICache)
+        Map<Fnr, Optional<Diskresjonskode>> diskresjonskodeOptFraPdl = persondataClient
+            .hentPersonBolk(fnrSomIkkeFinnesICache)
             .utledDiskresjonskoder(fnrSomIkkeFinnesICache)
             .entrySet()
             .stream()
-            .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().orElse(Diskresjonskode.UGRADERT)));
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        diskresjonskodeCache.putAll(diskresjonskodeFraPdl);
+        diskresjonskodeCache.putAllIfPresent(diskresjonskodeOptFraPdl);
+
+        Map<Fnr, Diskresjonskode> diskresjonskodeFraPdl = diskresjonskodeOptFraPdl.entrySet()
+            .stream()
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                entry -> entry.getValue().orElse(Diskresjonskode.UGRADERT)
+            ));
+
         return PersondataDiskresjonskodeCache.concat(diskresjonskoderFraCache, diskresjonskodeFraPdl);
     }
 

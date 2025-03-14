@@ -43,10 +43,6 @@ public record PdlRespons(Data data) {
         }
     }
 
-    public Diskresjonskode utledDiskresjonskodeEllerUgradert() {
-        return utledDiskresjonskode().orElse(Diskresjonskode.UGRADERT);
-    }
-
     public Optional<Diskresjonskode> utledDiskresjonskode() {
         return Optional.ofNullable(data())
             .flatMap(data -> utledAdressebeskyttelse(data.hentPerson()))

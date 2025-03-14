@@ -36,12 +36,31 @@ class PersondataDiskresjonskodeCache {
             ));
     }
 
+    public void putIfPresent(Fnr fnr, Optional<Diskresjonskode> diskresjonskodeOpt) {
+        diskresjonskodeOpt.ifPresent(diskresjonskode -> put(fnr, diskresjonskode));
+    }
+
     public void put(Fnr fnr, Diskresjonskode diskresjonskode) {
         cache.put(fnr, diskresjonskode);
     }
 
+    public void putAllIfPresent(Map<Fnr, Optional<Diskresjonskode>> diskresjonskodeOptMap) {
+        Map<Fnr, Diskresjonskode> diskresjonskodeMap = diskresjonskodeOptMap
+            .entrySet()
+            .stream()
+            .filter(entry -> entry.getValue().isPresent())
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                entry -> entry.getValue().get()
+            ));
+
+        putAll(diskresjonskodeMap);
+    }
+
     public void putAll(Map<Fnr, Diskresjonskode> diskresjonskodeMap) {
-        cache.putAll(diskresjonskodeMap);
+        if (!diskresjonskodeMap.isEmpty()) {
+            cache.putAll(diskresjonskodeMap);
+        }
     }
 
     public static Map<Fnr, Diskresjonskode> concat(Map<Fnr, Diskresjonskode> a, Map<Fnr, Diskresjonskode> b) {
