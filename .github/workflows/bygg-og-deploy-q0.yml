@@ -32,8 +32,6 @@ jobs:
         with:
           byosbom: target/bom.json
           team: arbeidsgiver
-          identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
-          project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
 
   deploy-gcp-q0:
     name: Deploy til q0
