@@ -10,7 +10,8 @@ public enum FeatureToggle {
     ARENA_CLEAN_UP_JOB("arenaCleanUpJobb"),
     ARENA_KAFKA("arenaKafka"),
     ARBEIDSTRENING_READONLY("arbeidstreningReadonly"),
-    PABEGYNT_AVTALE_RYDDE_JOBB("pabegyntAvtaleRyddeJobb"),;
+    PABEGYNT_AVTALE_RYDDE_JOBB("pabegyntAvtaleRyddeJobb"),
+    SKAL_SJEKKE_FOR_ADRESSESPERRE("skalSjekkeForAdressesperre"),;
 
     private String toggleNavn;
 

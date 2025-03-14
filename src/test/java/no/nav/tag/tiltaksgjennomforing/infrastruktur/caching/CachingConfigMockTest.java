@@ -14,6 +14,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;
 import no.nav.tag.tiltaksgjennomforing.persondata.domene.HentGeografiskTilknytning;
@@ -69,6 +70,8 @@ public class CachingConfigMockTest {
     private Norg2Client norg2Client;
     @Autowired
     private VeilarboppfolgingService veilarboppfolgingService;
+
+    private FeatureToggleService mockFeatureToggleService;
 
     private Avtale avtale = TestData.enMidlertidigLonnstilskuddsjobbAvtale();
     private final PdlRespons FØRSTE_PDL_RESPONSE = TestData.enPdlrespons(false);
@@ -275,7 +278,8 @@ public class CachingConfigMockTest {
                 Set.of(new NavEnhet(avtale.getEnhetOppfolging(), avtale.getEnhetsnavnOppfolging())),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                mockFeatureToggleService
         );
 
         veileder.endreAvtale(

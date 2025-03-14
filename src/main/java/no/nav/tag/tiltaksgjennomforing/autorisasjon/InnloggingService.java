@@ -25,6 +25,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.Veilarboppfolging
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.AxsysService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
@@ -50,6 +51,7 @@ public class InnloggingService {
     private final SlettemerkeProperties slettemerkeProperties;
     private final VeilarboppfolgingService veilarboppfolgingService;
     private final ArbeidsgiverTokenStrategyFactory arbeidsgiverTokenStrategyFactory;
+    private final FeatureToggleService featureToggleService;
 
     public Avtalepart hentAvtalepart(Avtalerolle avtalerolle) {
         BrukerOgIssuer brukerOgIssuer = tokenUtils.hentBrukerOgIssuer().orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget."));
@@ -69,7 +71,7 @@ public class InnloggingService {
             NavIdent navIdent = new NavIdent(brukerOgIssuer.getBrukerIdent());
             Set<NavEnhet> navEnheter = hentNavEnheter(navIdent);
             boolean harAdGruppeForBeslutter = tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId());
-            return new Veileder(navIdent, tokenUtils.hentAzureOid(), tilgangskontrollService, persondataService, norg2Client, navEnheter, slettemerkeProperties, harAdGruppeForBeslutter, veilarboppfolgingService);
+            return new Veileder(navIdent, tokenUtils.hentAzureOid(), tilgangskontrollService, persondataService, norg2Client, navEnheter, slettemerkeProperties, harAdGruppeForBeslutter, veilarboppfolgingService, featureToggleService);
         } else if (issuer == Issuer.ISSUER_AAD && avtalerolle == Avtalerolle.BESLUTTER) {
             boolean harAdGruppeForBeslutter = tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId());
             if (harAdGruppeForBeslutter) {
