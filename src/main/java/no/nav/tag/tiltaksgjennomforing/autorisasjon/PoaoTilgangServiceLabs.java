@@ -25,6 +25,11 @@ public class PoaoTilgangServiceLabs implements PoaoTilgangService {
     }
 
     @Override
+    public Tilgang hentSkrivetilgang(UUID beslutterAzureUUID, Fnr fnr) {
+        return new Tilgang.Tillat();
+    }
+
+    @Override
     public Optional<String> hentGrunn(UUID beslutterAzureUUID, Fnr fnr) {
         return Optional.empty();
     }

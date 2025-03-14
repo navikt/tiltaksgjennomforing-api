@@ -62,11 +62,20 @@ public class PoaoTilgangServiceImpl implements PoaoTilgangService {
             .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().isPermit()));
     }
 
+    public Tilgang hentSkrivetilgang(UUID beslutterAzureUUID, Fnr fnr) {
+        return Optional.ofNullable(hentSkrivetilgang(beslutterAzureUUID, fnr.asString()))
+            .map(decision -> decision.isPermit()
+                ? new Tilgang.Tillat()
+                : new Tilgang.Avvis(Avslagskode.parse(decision))
+            )
+            .orElse(new Tilgang.Avvis(Avslagskode.INGEN_RESPONS));
+    }
+
     public Optional<String> hentGrunn(UUID beslutterAzureUUID, Fnr fnr) {
         return Optional.ofNullable(hentSkrivetilgang(beslutterAzureUUID, fnr.asString()))
             .map(decision -> {
                 if (decision.isDeny() && decision instanceof Decision.Deny deny) {
-                    return deny.getReason();
+                    return deny.getMessage();
                 } else {
                     return null;
                 }
