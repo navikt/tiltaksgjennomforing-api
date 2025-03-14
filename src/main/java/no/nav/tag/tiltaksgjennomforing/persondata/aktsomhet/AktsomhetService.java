@@ -1,9 +1,10 @@
-package no.nav.tag.tiltaksgjennomforing.persondata;
+package no.nav.tag.tiltaksgjennomforing.persondata.aktsomhet;
 
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalepart;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -21,28 +22,28 @@ public class AktsomhetService {
         this.avtaleRepository = avtaleRepository;
     }
 
-    public boolean kreverAktsomhet(Avtalerolle avtalerolle, UUID avtaleId) {
+    public Aktsomhet kreverAktsomhet(Avtalerolle avtalerolle, UUID avtaleId) {
         try {
             switch (avtalerolle) {
                 case VEILEDER -> {
                     Avtalepart avtalepart = innloggingService.hentAvtalepart(avtalerolle);
                     return Optional.ofNullable(avtalepart.hentAvtale(avtaleRepository, avtaleId))
-                            .map(avtale -> persondataService.hentDiskresjonskode(avtale.getDeltakerFnr()).erKode6Eller7())
-                            .orElse(false);
+                        .map(avtale -> Aktsomhet.intern(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())))
+                        .orElse(Aktsomhet.tom());
                 }
                 case ARBEIDSGIVER, MENTOR -> {
                     Avtalepart avtalepart = innloggingService.hentAvtalepart(avtalerolle);
                     return Optional.ofNullable(avtalepart.hentAvtale(avtaleRepository, avtaleId))
                         .filter(avtale -> !avtale.erUfordelt())
-                        .map(avtale -> persondataService.hentDiskresjonskode(avtale.getDeltakerFnr()).erKode6Eller7())
-                        .orElse(false);
+                        .map(avtale -> Aktsomhet.ekstern(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())))
+                        .orElse(Aktsomhet.tom());
                 }
                 default -> {
-                    return false;
+                    return Aktsomhet.tom();
                 }
             }
         } catch (Exception e) {
-            return false;
+            return Aktsomhet.tom();
         }
     }
 }
