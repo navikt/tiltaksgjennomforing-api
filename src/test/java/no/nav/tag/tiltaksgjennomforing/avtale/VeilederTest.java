@@ -125,7 +125,7 @@ public class VeilederTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
-        when(featureToggleService.isEnabled(FeatureToggle.SKAL_SJEKKE_FOR_ADRESSESPERRE)).thenReturn(true);
+        when(featureToggleService.isEnabled(FeatureToggle.KODE_6_SPERRE)).thenReturn(true);
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
         Veileder veileder = TestData.enVeileder(avtale, persondataService);
@@ -138,7 +138,7 @@ public class VeilederTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
-        when(featureToggleService.isEnabled(FeatureToggle.SKAL_SJEKKE_FOR_ADRESSESPERRE)).thenReturn(false);
+        when(featureToggleService.isEnabled(FeatureToggle.KODE_6_SPERRE)).thenReturn(false);
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
         Veileder veileder = TestData.enVeileder(avtale, persondataService);
@@ -150,7 +150,7 @@ public class VeilederTest {
     public void godkjennForVeilederOgDeltaker__kan_ikke_godkjenne_kode6_med_togglet_adressesperresjekk() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
-        when(featureToggleService.isEnabled(FeatureToggle.SKAL_SJEKKE_FOR_ADRESSESPERRE)).thenReturn(true);
+        when(featureToggleService.isEnabled(FeatureToggle.KODE_6_SPERRE)).thenReturn(true);
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
         Veileder veileder = TestData.enVeileder(avtale, persondataService);
@@ -161,7 +161,7 @@ public class VeilederTest {
     @Test
     public void godkjennForVeilederOgDeltaker__kan_godkjenne_kode6_uten_togglet_adressesperresjekk() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        when(featureToggleService.isEnabled(FeatureToggle.SKAL_SJEKKE_FOR_ADRESSESPERRE)).thenReturn(false);
+        when(featureToggleService.isEnabled(FeatureToggle.KODE_6_SPERRE)).thenReturn(false);
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);

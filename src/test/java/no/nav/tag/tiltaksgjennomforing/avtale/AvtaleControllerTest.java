@@ -412,7 +412,7 @@ public class AvtaleControllerTest {
     @Test
     public void opprettAvtaleSomVeileder__skal_feile_hvis_veileder_ikke_har_tilgang_til_bruker_med_togglet_adressesperresjekk() {
         PersondataService persondataServiceIMetode = mock(PersondataService.class);
-        when(featureToggleServiceMock.isEnabled(FeatureToggle.SKAL_SJEKKE_FOR_ADRESSESPERRE)).thenReturn(true);
+        when(featureToggleServiceMock.isEnabled(FeatureToggle.KODE_6_SPERRE)).thenReturn(true);
         Veileder enNavAnsatt = new Veileder(
                 new NavIdent("T000000"),
                 tilgangskontrollService,
@@ -440,7 +440,7 @@ public class AvtaleControllerTest {
     @Test
     public void opprettAvtaleSomVeileder__skal_fungere_hvis_veileder_har_tilgang_til_bruker_uten_togglet_adressesperresjekk() {
         PersondataService persondataServiceIMetode = mock(PersondataService.class);
-        when(featureToggleServiceMock.isEnabled(FeatureToggle.SKAL_SJEKKE_FOR_ADRESSESPERRE)).thenReturn(false);
+        when(featureToggleServiceMock.isEnabled(FeatureToggle.KODE_6_SPERRE)).thenReturn(false);
         Veileder enNavAnsatt = new Veileder(
                 new NavIdent("T000000"),
                 tilgangskontrollService,
@@ -468,7 +468,7 @@ public class AvtaleControllerTest {
     @Test
     public void opprettAvtaleSomVeileder__skal_feile_hvis_kode6_med_togglet_adressesperresjekk() {
         PersondataService persondataServiceIMetode = mock(PersondataService.class);
-        when(featureToggleServiceMock.isEnabled(FeatureToggle.SKAL_SJEKKE_FOR_ADRESSESPERRE)).thenReturn(true);
+        when(featureToggleServiceMock.isEnabled(FeatureToggle.KODE_6_SPERRE)).thenReturn(true);
         Veileder enNavAnsatt = new Veileder(
                 new NavIdent("T000000"),
                 tilgangskontrollService,

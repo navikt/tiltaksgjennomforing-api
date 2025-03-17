@@ -11,7 +11,7 @@ public enum FeatureToggle {
     ARENA_KAFKA("arenaKafka"),
     ARBEIDSTRENING_READONLY("arbeidstreningReadonly"),
     PABEGYNT_AVTALE_RYDDE_JOBB("pabegyntAvtaleRyddeJobb"),
-    SKAL_SJEKKE_FOR_ADRESSESPERRE("skalSjekkeForAdressesperre"),;
+    KODE_6_SPERRE("kode6Sperre"),;
 
     private String toggleNavn;
 

@@ -259,7 +259,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     private void sjekkKode6(Fnr fnr) {
-        if (!featureToggleService.isEnabled(FeatureToggle.SKAL_SJEKKE_FOR_ADRESSESPERRE)) {
+        if (!featureToggleService.isEnabled(FeatureToggle.KODE_6_SPERRE)) {
             return;
         }
         if (!persondataService.hentDiskresjonskode(fnr).erKode6()){
