@@ -13,6 +13,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilAvtaleException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Kode6SperretForOpprettelseOgEndringException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KontoregisterFeilException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
@@ -489,7 +490,7 @@ public class AvtaleControllerTest {
                 () -> avtaleController.opprettAvtaleSomVeileder(
                         new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING)
                 )
-         ).isInstanceOf(IkkeTilgangTilDeltakerException.class);
+         ).isInstanceOf(Kode6SperretForOpprettelseOgEndringException.class);
     }
 
     @Test
