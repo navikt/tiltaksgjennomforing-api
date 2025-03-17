@@ -130,7 +130,7 @@ public class VeilederTest {
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
         Veileder veileder = TestData.enVeileder(avtale, persondataService);
         assertThatThrownBy(() -> veileder.godkjennAvtale(avtale.getSistEndret(), avtale))
-                .isExactlyInstanceOf(IkkeTilgangTilDeltakerKode6Exception.class);
+                .isExactlyInstanceOf(IkkeTilgangTilDeltakerException.class);
     }
 
     @Test
@@ -155,7 +155,7 @@ public class VeilederTest {
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
         Veileder veileder = TestData.enVeileder(avtale, persondataService);
         assertThatThrownBy(() -> veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale))
-                .isExactlyInstanceOf(IkkeTilgangTilDeltakerKode6Exception.class);
+                .isExactlyInstanceOf(IkkeTilgangTilDeltakerException.class);
     }
 
     @Test

@@ -15,7 +15,6 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeAdminTilgangException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerKode6Exception;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
@@ -266,7 +265,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         if (!persondataService.hentDiskresjonskode(fnr).erKode6()){
             return;
         }
-        throw new IkkeTilgangTilDeltakerKode6Exception();
+        throw new IkkeTilgangTilDeltakerException(fnr);
     }
 
     public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
