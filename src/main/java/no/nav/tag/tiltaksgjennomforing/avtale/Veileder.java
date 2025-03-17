@@ -85,7 +85,8 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             Set<NavEnhet> navEnheter,
             SlettemerkeProperties slettemerkeProperties,
             boolean harAdGruppeForBeslutter,
-            VeilarboppfolgingService veilarboppfolgingService, FeatureToggleService featureToggleService
+            VeilarboppfolgingService veilarboppfolgingService,
+            FeatureToggleService featureToggleService
     ) {
         this(identifikator, null, tilgangskontrollService, persondataService, norg2Client, navEnheter, slettemerkeProperties, harAdGruppeForBeslutter, veilarboppfolgingService, featureToggleService);
     }
