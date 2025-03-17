@@ -27,7 +27,11 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
                 .build();
     }
 
-    @ExceptionHandler({IkkeTilgangTilDeltakerException.class, IkkeTilgangTilAvtaleException.class})
+    @ExceptionHandler({
+            IkkeTilgangTilDeltakerException.class,
+            IkkeTilgangTilAvtaleException.class,
+            Kode6SperretForOpprettelseOgEndringException.class
+    })
     public ResponseEntity<Object> ikkeTilgang(FeilkodeException e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .header(FEILKODE, e.getFeilkode().name())

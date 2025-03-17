@@ -10,6 +10,8 @@ import no.nav.tag.tiltaksgjennomforing.enhet.*;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.HentOppfolgingsstatusRequest;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.HentOppfolgingsstatusRespons;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FakeUnleash;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.domene.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataClient;
@@ -46,6 +48,7 @@ public class CachingConfigTest {
     private final VeilarboppfolgingService veilarboppfolgingService;
     private final Norg2Client norg2Client;
     private final PersondataClient persondataClient;
+    private final FeatureToggleService featureToggleServiceMock = new FeatureToggleService(new FakeUnleash(), null);
 
     public CachingConfigTest(
             @Autowired CacheManager cacheManager,
@@ -182,7 +185,7 @@ public class CachingConfigTest {
                 Set.of(new NavEnhet(avtale.getEnhetOppfolging(), avtale.getEnhetsnavnOppfolging())),
                 new SlettemerkeProperties(),
                 false,
-            veilarboppfolgingService
+            veilarboppfolgingService, featureToggleServiceMock
         );
 
         lenient().when(mockTilgangskontrollService.harSkrivetilgangTilKandidat(

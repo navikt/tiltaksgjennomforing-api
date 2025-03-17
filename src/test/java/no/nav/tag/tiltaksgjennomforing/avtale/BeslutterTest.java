@@ -6,6 +6,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
@@ -49,6 +50,7 @@ class BeslutterTest {
 
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         PersondataService persondataService = mock(PersondataService.class);
+        FeatureToggleService featureToggleServiceMock = mock(FeatureToggleService.class);
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
@@ -58,7 +60,8 @@ class BeslutterTest {
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
                 false,
-                mock(VeilarboppfolgingService.class));
+                mock(VeilarboppfolgingService.class),
+                featureToggleServiceMock);
 
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);

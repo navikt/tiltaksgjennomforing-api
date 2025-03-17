@@ -17,6 +17,8 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FakeUnleash;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.domene.Adressebeskyttelse;
 import no.nav.tag.tiltaksgjennomforing.persondata.domene.HentGeografiskTilknytning;
@@ -53,6 +55,7 @@ public class TestData {
 
     public static EnumSet<Tiltakstype> avtalerMedTilskuddsperioder = EnumSet.of(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB, Tiltakstype.VTAO);
 
+    public static FeatureToggleService featureToggleService = mock(FeatureToggleService.class);
 
     public static Avtale enAvtale(Tiltakstype tiltakstype){
         switch (tiltakstype){
@@ -884,7 +887,8 @@ public class TestData {
                 Set.of(new NavEnhet(avtale.getEnhetOppfolging(), avtale.getEnhetsnavnOppfolging())),
                 new SlettemerkeProperties(),
                 false,
-                veilarbArenaClient
+                veilarbArenaClient,
+                featureToggleService
         );
 
         setupVeilederMock(
@@ -915,7 +919,8 @@ public class TestData {
                 Set.of(new NavEnhet("4802", "Oslo gamlebyen")),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleService
         );
 
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
@@ -1078,7 +1083,8 @@ public class TestData {
                 Set.of(ENHET_OPPFØLGING),
                 new SlettemerkeProperties(),
                 false,
-                veilarboppfolgingService
+                veilarboppfolgingService,
+                featureToggleService
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
@@ -1095,7 +1101,8 @@ public class TestData {
                 Set.of(ENHET_OPPFØLGING),
                 new SlettemerkeProperties(),
                 false,
-                mock(VeilarboppfolgingService.class)
+                mock(VeilarboppfolgingService.class),
+                featureToggleService
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 veileder,
