@@ -15,6 +15,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeAdminTilgangException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Kode6SperretForOpprettelseOgEndringException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
@@ -262,10 +263,10 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         if (!featureToggleService.isEnabled(FeatureToggle.KODE_6_SPERRE)) {
             return;
         }
-        if (!persondataService.hentDiskresjonskode(fnr).erKode6()){
+        if (!persondataService.hentDiskresjonskode(fnr).erKode6()) {
             return;
         }
-        throw new IkkeTilgangTilDeltakerException(fnr);
+        throw new Kode6SperretForOpprettelseOgEndringException();
     }
 
     public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
