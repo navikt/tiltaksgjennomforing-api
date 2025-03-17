@@ -146,7 +146,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     void godkjennForAvtalepart(Avtale avtale) {
-        this.sjekkKode6(avtale.getDeltakerFnr());
+        this.sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
         this.sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         avtale.godkjennForVeileder(getIdentifikator());
     }
@@ -158,7 +158,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     public void godkjennForVeilederOgDeltaker(GodkjentPaVegneGrunn paVegneAvGrunn, Avtale avtale) {
         sjekkTilgang(avtale);
-        sjekkKode6(avtale.getDeltakerFnr());
+        sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
         this.sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         avtale.godkjennForVeilederOgDeltaker(getIdentifikator(), paVegneAvGrunn);
     }
@@ -168,7 +168,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             Avtale avtale
     ) {
         super.sjekkTilgang(avtale);
-        this.sjekkKode6(avtale.getDeltakerFnr());
+        this.sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
         this.sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         avtale.godkjennForVeilederOgArbeidsgiver(getIdentifikator(), paVegneAvArbeidsgiverGrunn);
     }
@@ -178,7 +178,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             Avtale avtale
     ) {
         super.sjekkTilgang(avtale);
-        this.sjekkKode6(avtale.getDeltakerFnr());
+        this.sjekkOgBlokkereKode6(avtale.getDeltakerFnr());
         this.sjekkOgOppdaterOppfølgningsstatusForAvtale(avtale);
         avtale.godkjennForVeilederOgDeltakerOgArbeidsgiver(getIdentifikator(), paVegneAvDeltakerOgArbeidsgiverGrunn);
     }
@@ -258,7 +258,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         this.settOppfølgingsStatus(avtale, oppfølgingsstatus);
     }
 
-    private void sjekkKode6(Fnr fnr) {
+    private void sjekkOgBlokkereKode6(Fnr fnr) {
         if (!featureToggleService.isEnabled(FeatureToggle.KODE_6_SPERRE)) {
             return;
         }
@@ -270,7 +270,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
         this.sjekkTilgangskontroll(opprettAvtale.getDeltakerFnr());
-        this.sjekkKode6(opprettAvtale.getDeltakerFnr());
+        this.sjekkOgBlokkereKode6(opprettAvtale.getDeltakerFnr());
         Avtale avtale = Avtale.opprett(opprettAvtale, Avtaleopphav.VEILEDER, getIdentifikator());
         avtale.leggTilDeltakerNavn(persondataService.hentNavn(avtale.getDeltakerFnr()));
         leggTilEnheter(avtale);
