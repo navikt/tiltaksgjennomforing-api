@@ -21,7 +21,8 @@ import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.EventType;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.auditing.Utfall;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
-import no.nav.tag.tiltaksgjennomforing.persondata.AktsomhetService;
+import no.nav.tag.tiltaksgjennomforing.persondata.aktsomhet.Aktsomhet;
+import no.nav.tag.tiltaksgjennomforing.persondata.aktsomhet.AktsomhetService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.apache.commons.lang3.StringUtils;
@@ -833,7 +834,7 @@ public class AvtaleController {
     }
 
     @GetMapping("/{avtaleId}/krever-aktsomhet")
-    public Boolean kreverAktsomhet(
+    public Aktsomhet kreverAktsomhet(
         @PathVariable("avtaleId") UUID avtaleId,
         @CookieValue("innlogget-part") Avtalerolle innloggetPart
     ) {
