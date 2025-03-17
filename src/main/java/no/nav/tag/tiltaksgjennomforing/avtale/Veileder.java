@@ -60,8 +60,8 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             Set<NavEnhet> navEnheter,
             SlettemerkeProperties slettemerkeProperties,
             boolean harAdGruppeForBeslutter,
-            VeilarboppfolgingService veilarboppfolgingService, FeatureToggleService featureToggleService
-
+            VeilarboppfolgingService veilarboppfolgingService,
+            FeatureToggleService featureToggleService
     ) {
 
         super(identifikator);
