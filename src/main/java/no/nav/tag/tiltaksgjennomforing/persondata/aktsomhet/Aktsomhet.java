@@ -4,7 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
 
 public record Aktsomhet(
     boolean kreverAktsomhet,
-    Diskresjonskode Diskresjonskode
+    Diskresjonskode diskresjonskode
 ) {
     public static Aktsomhet intern(Diskresjonskode diskresjonskode) {
         return new Aktsomhet(
