@@ -22,7 +22,6 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         List<TilskuddPeriode> tilskuddsperioder = new ArrayList<>();
         avtale.getTilskuddPeriode().removeIf(t -> (t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) || (t.getStatus() == TilskuddPeriodeStatus.BEHANDLET_I_ARENA));
         AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
-        Tiltakstype tiltakstype = avtale.getTiltakstype();
 
         if (erIkkeTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato(), gjeldendeInnhold.getSumLonnstilskudd())) {
             tilskuddsperioder = hentTilskuddsperioderForPeriode(avtale,gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());

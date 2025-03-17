@@ -1099,7 +1099,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     private boolean sjekkRyddingAvTilskuddsperioder() {
-        if (Utils.erNoenTomme(
+        if (this.tiltakstype.equals(Tiltakstype.VTAO) && Utils.erNoenTomme(
+                gjeldendeInnhold.getStartDato(),
+                gjeldendeInnhold.getSluttDato()
+             )) {
+            return false;
+        } else if (!this.tiltakstype.equals(Tiltakstype.VTAO) && Utils.erNoenTomme(
                 gjeldendeInnhold.getStartDato(),
                 gjeldendeInnhold.getSluttDato(),
                 gjeldendeInnhold.getSumLonnstilskudd(),
@@ -1229,7 +1234,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void lagNyBehandletIArenaTilskuddsperiodeFraAnnullertPeriode(TilskuddPeriode annullertTilskuddPeriode) {
-        krevEnAvTiltakstyper(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
+        krevEnAvTiltakstyper(Tiltakstype.VTAO, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
         if (annullertTilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET);
         }
