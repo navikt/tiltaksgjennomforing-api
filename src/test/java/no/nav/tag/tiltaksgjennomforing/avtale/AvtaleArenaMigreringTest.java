@@ -33,4 +33,21 @@ public class AvtaleArenaMigreringTest {
 
         Now.resetClock();
     }
+
+    @Test
+    public void vtao_skal_generere_tilskuddsperioder_med_behandlet_status_om_ryddeavtale() {
+        Now.fixedDate(LocalDate.of(2025, 7, 15));
+        Avtale avtale = TestData.enVtaoRyddeAvtaleMedStartOgSluttGodkjentAvAlleParter(
+                LocalDate.of(2025, 5, 1),
+                LocalDate.of(2025, 12, 5)
+        );
+        assertThat(avtale.getTilskuddPeriode()).isNotEmpty();
+
+        TilskuddPeriode sisteBehandletIArena = avtale.getTilskuddPeriode().stream().filter(tilskuddPeriode -> tilskuddPeriode.getStartDato().isAfter(LocalDate.of(2011, 12, 31))).findFirst().get();
+        assertThat(sisteBehandletIArena.getStatus()).isEqualTo(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
+        TilskuddPeriode førsteUbehandlet = avtale.getTilskuddPeriode().stream().filter(tilskuddPeriode -> tilskuddPeriode.getStartDato().isAfter(LocalDate.of(2025, 6, 1))).findFirst().get();
+        assertThat(førsteUbehandlet.getStatus()).isEqualTo(TilskuddPeriodeStatus.UBEHANDLET);
+
+        Now.resetClock();
+    }
 }

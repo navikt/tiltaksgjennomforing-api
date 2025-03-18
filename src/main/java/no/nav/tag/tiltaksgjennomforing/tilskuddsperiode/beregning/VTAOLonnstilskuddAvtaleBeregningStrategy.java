@@ -27,7 +27,7 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilsk
 
         if (erIkkeTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato())) {
             tilskuddsperioder = beregnTilskuddsperioderForVTAO(avtale);
-            if ( avtale.getArenaRyddeAvtale() != null) {
+            if (avtale.getArenaRyddeAvtale() != null) {
                 LocalDate standardMigreringsdato = LocalDate.of(2025, 7, 1);
                 LocalDate migreringsdato = avtale.getArenaRyddeAvtale().getMigreringsdato() != null ? avtale.getArenaRyddeAvtale().getMigreringsdato() : standardMigreringsdato;
 
