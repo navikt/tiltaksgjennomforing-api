@@ -14,6 +14,7 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.time.Instant;
@@ -21,11 +22,8 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.function.Predicate;
-
-import static java.util.Map.entry;
 
 @AllArgsConstructor
 @Slf4j
@@ -43,35 +41,41 @@ public abstract class Avtalepart<T extends Identifikator> {
 
     abstract Page<Avtale> hentAlleAvtalerMedMuligTilgang(AvtaleRepository avtaleRepository, AvtaleQueryParameter queryParametre, Pageable pageable);
 
-    abstract AvtaleMinimalListevisning skjulData(AvtaleMinimalListevisning avtaleMinimalListevisning);
+    public Page<BegrensetAvtale> hentBegrensedeAvtalerMedLesetilgang(
+        AvtaleRepository avtaleRepository,
+        AvtaleQueryParameter queryParametre,
+        Pageable pageable
+    ) {
+        Page<Avtale> avtaler = hentAvtalerMedLesetilgang(avtaleRepository, queryParametre, pageable);
 
-    public Map<String, Object> hentAlleAvtalerMedLesetilgang(AvtaleRepository avtaleRepository, AvtaleQueryParameter queryParametre, Pageable pageable) {
+        List<BegrensetAvtale> begrensedeAvtaler = avtaler
+            .getContent()
+            .stream()
+            .map(BegrensetAvtale::fraAvtale)
+            .toList();
+
+        return new PageImpl<>(begrensedeAvtaler, pageable, avtaler.getTotalElements());
+    }
+
+    protected final Page<Avtale> hentAvtalerMedLesetilgang(
+        AvtaleRepository avtaleRepository,
+        AvtaleQueryParameter queryParametre,
+        Pageable pageable
+    ) {
         Page<Avtale> avtaler = hentAlleAvtalerMedMuligTilgang(avtaleRepository, queryParametre, pageable);
 
-        List<Avtale> avtalerMedTilgang = avtaler.getContent().stream()
-                .filter(this::avtalenEksisterer)
-                .filter(this.harTilgangTilAvtale(avtaler.getContent()))
-                .toList();
+        List<Avtale> avtalerMedTilgang = avtaler.getContent()
+            .stream()
+            .filter(this::avtalenEksisterer)
+            .filter(this.harTilgangTilAvtale(avtaler.getContent()))
+            .toList();
 
         if (queryParametre.erSokPaEnkeltperson() && avtalerMedTilgang.isEmpty()) {
             avtaler.getContent().forEach(this::sjekkTilgang);
         }
 
-        List<AvtaleMinimalListevisning> listMinimal = avtalerMedTilgang.stream().map(AvtaleMinimalListevisning::fromAvtale).toList();
-
-        // Fjern data her og ikke i entity
-        listMinimal = listMinimal.stream().map(this::skjulData).toList();
-
-        //TODO: ENDRE TOTAL ITEMS OG TOTAL PAGES
-        return Map.ofEntries(
-                entry("avtaler", listMinimal),
-                entry("size", avtaler.getSize()),
-                entry("currentPage", avtaler.getNumber()),
-                entry("totalItems", avtaler.getTotalElements()),
-                entry("totalPages", avtaler.getTotalPages())
-        );
+        return new PageImpl<>(avtalerMedTilgang, avtaler.getPageable(), avtaler.getTotalElements());
     }
-
 
     public Avtale hentAvtale(AvtaleRepository avtaleRepository, UUID avtaleId) {
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);

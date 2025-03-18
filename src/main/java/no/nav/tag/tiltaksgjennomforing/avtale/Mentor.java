@@ -44,11 +44,6 @@ public class Mentor extends Avtalepart<Fnr> {
     }
 
     @Override
-    AvtaleMinimalListevisning skjulData(AvtaleMinimalListevisning avtaleMinimalListevisning) {
-        return avtaleMinimalListevisning;
-    }
-
-    @Override
     public void godkjennForAvtalepart(Avtale avtale) {
         avtale.godkjennForMentor(getIdentifikator());
     }
