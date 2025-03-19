@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -309,6 +310,7 @@ public class ArenaAgreementProcessingService {
             .ifPresent(avtaleinnhold::setStillingprosent);
 
         avtale.setGodkjentForEtterregistrering(true);
+        avtale.nyeTilskuddsperioderEtterMigreringFraArena(LocalDate.now(), false);
         log.info("Opprettet avtale med id: {}", avtale.getId());
         return new ArenaMigrationProcessResult.Completed(action, avtale);
     }
