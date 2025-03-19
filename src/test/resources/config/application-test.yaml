@@ -50,8 +50,6 @@ tiltaksgjennomforing:
   retry:
     delay: 100
     max-delay: 1000
-  tilskuddsperioder:
-    tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, VTAO
   kontoregister:
     uri: http://localhost:8090/kontoregister/api/v1/hent-kontonr-org
     consumerId: tiltak-refusjon-api

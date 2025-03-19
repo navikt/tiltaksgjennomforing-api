@@ -196,15 +196,13 @@ public class CachingConfigTest {
         veileder.endreAvtale(
                 Now.instant(),
                 TestData.endringPåAlleLønnstilskuddFelter(),
-                avtale,
-                TestData.avtalerMedTilskuddsperioder
+                avtale
         );
 
         veileder.endreAvtale(
                 Now.instant(),
                 TestData.endringPåAlleLønnstilskuddFelter(),
-                avtale,
-                TestData.avtalerMedTilskuddsperioder
+                avtale
         );
 
         Norg2OppfølgingResponse norgnavnCacheForEnhet = getCacheValue(

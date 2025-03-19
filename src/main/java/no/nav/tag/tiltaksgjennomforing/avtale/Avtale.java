@@ -286,7 +286,6 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
             Instant sistEndret,
             EndreAvtale nyAvtale,
             Avtalerolle utfortAvRolle,
-            EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder,
             Identifikator identifikator
     ) {
         sjekkAtIkkeAvtaleErAnnullertEllerAvbrutt();
@@ -294,9 +293,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         sjekkSistEndret(sistEndret);
         sjekkStartOgSluttDato(nyAvtale.getStartDato(), nyAvtale.getSluttDato());
         getGjeldendeInnhold().endreAvtale(nyAvtale);
-        if (tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
-            nyeTilskuddsperioder();
-        }
+        nyeTilskuddsperioder();
         oppdaterKreverOppfolgingFom();
         utforEndring(new AvtaleEndret(this, AvtaleHendelseUtførtAvRolle.fraAvtalerolle(utfortAvRolle), identifikator));
     }
@@ -328,16 +325,12 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     public void endreAvtale(
             Instant sistEndret,
             EndreAvtale nyAvtale,
-            Avtalerolle utfortAv,
-            EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder
+            Avtalerolle utfortAv
     ) {
-        endreAvtale(sistEndret, nyAvtale, utfortAv, tiltakstyperMedTilskuddsperioder, null);
+        endreAvtale(sistEndret, nyAvtale, utfortAv, null);
     }
 
-    public void endreAvtaleArena(
-            EndreAvtaleArena endreAvtaleArena,
-            EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder
-    ) {
+    public void endreAvtaleArena(EndreAvtaleArena endreAvtaleArena) {
         if (!erGodkjentAvVeileder()) {
             throw new IllegalStateException("Dette skal ikke kunne skje. Avtale fra Arena skal være inngått og godkjent.");
         }
@@ -391,9 +384,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         setAvbruttDato(null);
         setAvbruttGrunn(null);
         setFeilregistrert(false);
-        if (tiltakstyperMedTilskuddsperioder != null && tiltakstyperMedTilskuddsperioder.contains(tiltakstype)) {
-            nyeTilskuddsperioder();
-        }
+        nyeTilskuddsperioder();
 
         if (isForlengelse) {
             utforEndring(new AvtaleForlengetAvArena(this));

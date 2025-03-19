@@ -57,7 +57,6 @@ import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.STILLINGSBESKR
 import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.TILSKUDDSBEREGNING_ENDRET;
 import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.TILSKUDDSPERIODE_AVSLATT;
 import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.TILSKUDDSPERIODE_GODKJENT;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -101,7 +100,7 @@ class LagVarselFraAvtaleHendelserTest {
         assertHendelse(OPPRETTET, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.ARBEIDSGIVER, true);
         assertHendelse(OPPRETTET, AvtaleHendelseUtførtAvRolle.VEILEDER, Avtalerolle.DELTAKER, true);
 
-        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleLønnstilskuddFelter(), Avtalerolle.ARBEIDSGIVER, avtalerMedTilskuddsperioder);
+        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleLønnstilskuddFelter(), Avtalerolle.ARBEIDSGIVER);
         avtale = avtaleRepository.save(avtale);
         assertHendelse(ENDRET, AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, Avtalerolle.VEILEDER, true);
         assertHendelse(ENDRET, AvtaleHendelseUtførtAvRolle.ARBEIDSGIVER, Avtalerolle.ARBEIDSGIVER, false);
@@ -226,7 +225,7 @@ class LagVarselFraAvtaleHendelserTest {
     void test_for_delt_med_mentor() {
         Avtale avtale = avtaleRepository.save(Avtale.opprett(new OpprettMentorAvtale(new Fnr("00000000000") , new Fnr("00000000000"), new BedriftNr("999999999"), Tiltakstype.MENTOR, Avtalerolle.VEILEDER), Avtaleopphav.VEILEDER, TestData.enNavIdent()));
         avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
-        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleMentorFelter(), Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+        avtale.endreAvtale(Now.instant(), TestData.endringPåAlleMentorFelter(), Avtalerolle.VEILEDER);
         avtale = avtaleRepository.save(avtale);
 
         avtale.delMedAvtalepart(Avtalerolle.DELTAKER);

@@ -85,8 +85,6 @@ tiltaksgjennomforing:
       url: http://localhost:8090/norg2/api/v1/enhet/
   dokgen:
     uri: http://localhost:9000/template/tiltak-avtale/create-pdf
-  tilskuddsperioder:
-    tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD, VTAO
 
 no.nav.security.jwt:
   issuer:

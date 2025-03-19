@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
 import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.MENTOR;
 
 public class MentorStartOgSluttDatoStrategyTest {
@@ -32,7 +31,7 @@ public class MentorStartOgSluttDatoStrategyTest {
     }
 
     private void endreAvtale(EndreAvtale endreAvtale) {
-        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+        avtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
     }
 
     @Test

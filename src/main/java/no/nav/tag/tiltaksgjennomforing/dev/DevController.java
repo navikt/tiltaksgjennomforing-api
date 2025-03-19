@@ -9,7 +9,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
 import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
-import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddsperiodeConfig;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.context.annotation.Profile;
@@ -31,12 +30,10 @@ import java.util.Optional;
 @ProtectedWithClaims(issuer = "aad")
 public class DevController {
     private final AvtaleRepository avtaleRepository;
-    private final TilskuddsperiodeConfig tilskuddsperiodeConfig;
     private final InnloggingService innloggingService;
 
-    public DevController(AvtaleRepository avtaleRepository, TilskuddsperiodeConfig tilskuddsperiodeConfig, InnloggingService innloggingService) {
+    public DevController(AvtaleRepository avtaleRepository, InnloggingService innloggingService) {
         this.avtaleRepository = avtaleRepository;
-        this.tilskuddsperiodeConfig = tilskuddsperiodeConfig;
         this.innloggingService = innloggingService;
     }
 
@@ -84,7 +81,6 @@ public class DevController {
                 Now.instant(),
                 endring,
                 Avtalerolle.ARBEIDSGIVER,
-                tilskuddsperiodeConfig.getTiltakstyper(),
                 avtale.getDeltakerFnr()
         );
         avtaleRepository.save(avtale);
@@ -110,9 +106,9 @@ public class DevController {
     @PostMapping("/avtale")
     ResponseEntity<String> opprettAvtale(@RequestBody OpprettAvtaleRequest avtale) {
         var lagretAvtale = avtaleRepository.save(Avtale.opprett(
-                avtale.opprett(), Avtaleopphav.VEILEDER, hentVeileder()));
-        lagretAvtale.endreAvtale(Now.instant(),
-                avtale.endre(), Avtalerolle.VEILEDER, tilskuddsperiodeConfig.getTiltakstyper());
+                avtale.opprett(), Avtaleopphav.VEILEDER, hentVeileder()
+        ));
+        lagretAvtale.endreAvtale(Now.instant(), avtale.endre(), Avtalerolle.VEILEDER);
         avtaleRepository.save(lagretAvtale);
         return ResponseEntity.ok().body(lagretAvtale.getId().toString());
     }

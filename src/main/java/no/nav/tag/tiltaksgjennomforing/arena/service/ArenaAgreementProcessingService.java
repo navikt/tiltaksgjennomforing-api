@@ -20,7 +20,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtaleArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddsperiodeConfig;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
@@ -34,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
@@ -42,7 +42,6 @@ import java.util.UUID;
 @Service
 public class ArenaAgreementProcessingService {
     private final ArenaAgreementMigrationRepository arenaAgreementMigrationRepository;
-    private final TilskuddsperiodeConfig tilskuddsperiodeConfig;
     private final AvtaleRepository avtaleRepository;
     private final EregService eregService;
     private final PersondataService persondataService;
@@ -58,16 +57,15 @@ public class ArenaAgreementProcessingService {
             PersondataService persondataService,
             Norg2Client norg2Client,
             VeilarboppfolgingService veilarboppfolgingService,
-            TilskuddsperiodeConfig tilskuddsperiodeConfig,
             AktivitetArenaAclClient aktivitetArenaAclClient,
-            HendelseAktivitetsplanClient hendelseAktivitetsplanClient) {
+            HendelseAktivitetsplanClient hendelseAktivitetsplanClient
+    ) {
         this.arenaAgreementMigrationRepository = arenaAgreementMigrationRepository;
         this.avtaleRepository = avtaleRepository;
         this.eregService = eregService;
         this.persondataService = persondataService;
         this.norg2Client = norg2Client;
         this.veilarboppfolgingService = veilarboppfolgingService;
-        this.tilskuddsperiodeConfig = tilskuddsperiodeConfig;
         this.aktivitetArenaAclClient = aktivitetArenaAclClient;
         this.hendelseAktivitetsplanClient = hendelseAktivitetsplanClient;
     }
@@ -236,7 +234,7 @@ public class ArenaAgreementProcessingService {
                     }
                 );
 
-                avtale.endreAvtaleArena(endreAvtale, tilskuddsperiodeConfig.getTiltakstyper());
+                avtale.endreAvtaleArena(endreAvtale);
                 return new ArenaMigrationProcessResult.Completed(action, avtale);
             }
             default -> throw new IllegalStateException("Ugyldig handling " + action + " for oppdatering av avtale");
@@ -312,6 +310,7 @@ public class ArenaAgreementProcessingService {
             .ifPresent(avtaleinnhold::setStillingprosent);
 
         avtale.setGodkjentForEtterregistrering(true);
+        avtale.nyeTilskuddsperioderEtterMigreringFraArena(LocalDate.now(), false);
         log.info("Opprettet avtale med id: {}", avtale.getId());
         return new ArenaMigrationProcessResult.Completed(action, avtale);
     }

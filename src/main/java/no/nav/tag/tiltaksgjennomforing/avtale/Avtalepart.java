@@ -19,7 +19,6 @@ import org.springframework.data.domain.Pageable;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -124,33 +123,25 @@ public abstract class Avtalepart<T extends Identifikator> {
     public void endreAvtale(
             Instant sistEndret,
             EndreAvtale endreAvtale,
-            Avtale avtale,
-            EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder
+            Avtale avtale
     ) {
         sjekkTilgang(avtale);
         if (!kanEndreAvtale()) {
             throw new KanIkkeEndreException();
         }
         avvisDatoerTilbakeITid(avtale, endreAvtale.getStartDato(), endreAvtale.getSluttDato());
-        avtale.endreAvtale(sistEndret, endreAvtale, rolle(), tiltakstyperMedTilskuddsperioder, identifikator);
+        avtale.endreAvtale(sistEndret, endreAvtale, rolle(), identifikator);
     }
 
     protected void sjekkTilgangOgEndreAvtale(
             Instant sistEndret,
             EndreAvtale endreAvtale,
-            Avtale avtale,
-            EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder
+            Avtale avtale
     ) {
         sjekkTilgang(avtale);
         avtalePartKanEndreAvtale();
         avvisDatoerTilbakeITid(avtale, endreAvtale.getStartDato(), endreAvtale.getSluttDato());
-        avtale.endreAvtale(
-                sistEndret,
-                endreAvtale,
-                rolle(),
-                tiltakstyperMedTilskuddsperioder,
-                identifikator
-        );
+        avtale.endreAvtale(sistEndret, endreAvtale, rolle(), identifikator);
     }
 
     protected void avvisDatoerTilbakeITid(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {

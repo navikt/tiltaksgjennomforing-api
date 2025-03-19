@@ -77,7 +77,6 @@ public class AvtaleController {
     private final Norg2Client norg2Client;
     private final KontoregisterService kontoregisterService;
     private final DokgenService dokgenService;
-    private final TilskuddsperiodeConfig tilskuddsperiodeConfig;
     private final SalesforceKontorerConfig salesforceKontorerConfig;
     private final VeilarboppfolgingService veilarboppfolgingService;
     private final FilterSokRepository filterSokRepository;
@@ -321,7 +320,7 @@ public class AvtaleController {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
 
-        avtalepart.endreAvtale(sistEndret, endreAvtale, avtale, tilskuddsperiodeConfig.getTiltakstyper());
+        avtalepart.endreAvtale(sistEndret, endreAvtale, avtale);
         Avtale lagretAvtale = avtaleRepository.save(avtale);
         return ResponseEntity.ok().lastModified(lagretAvtale.getSistEndret()).build();
     }
@@ -335,7 +334,7 @@ public class AvtaleController {
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        avtalepart.endreAvtale(sistEndret, endreAvtale, avtale, tilskuddsperiodeConfig.getTiltakstyper());
+        avtalepart.endreAvtale(sistEndret, endreAvtale, avtale);
         return avtale;
     }
 
