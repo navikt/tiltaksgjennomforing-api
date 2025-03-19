@@ -63,8 +63,6 @@ tiltaksgjennomforing:
   notifikasjoner:
     uri: https://ag-notifikasjon-produsent-api.dev.intern.nav.no/api/graphql
     lenke: https://arbeidsgiver.nav.no/tiltaksgjennomforing/avtale/
-  tilskuddsperioder:
-    tiltakstyper: SOMMERJOBB,MIDLERTIDIG_LONNSTILSKUDD,VARIG_LONNSTILSKUDD, VTAO
   salesforcekontorer:
     enheter: ${tiltaksgjennomforing.salesforce.enheter}
 

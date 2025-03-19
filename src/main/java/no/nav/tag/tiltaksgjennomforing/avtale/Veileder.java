@@ -29,7 +29,6 @@ import org.springframework.data.domain.Pageable;
 import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -215,15 +214,9 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     public void endreAvtale(
             Instant sistEndret,
             EndreAvtale endreAvtale,
-            Avtale avtale,
-            EnumSet<Tiltakstype> tiltakstyperMedTilskuddsperioder
+            Avtale avtale
     ) {
-        super.sjekkTilgangOgEndreAvtale(
-                sistEndret,
-                endreAvtale,
-                avtale,
-                tiltakstyperMedTilskuddsperioder
-        );
+        super.sjekkTilgangOgEndreAvtale(sistEndret, endreAvtale, avtale);
         this.oppdatereEnheterVedEndreAvtale(avtale);
     }
 

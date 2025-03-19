@@ -4,14 +4,12 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
-
 public class InkluderingstilskuddTest {
 
     @Test
     public void endreInkluderingstilskudd_verifisere_enkel_endring() {
         Avtale avtale = TestData.enInkluderingstilskuddAvtale();
-        avtale.endreAvtale(avtale.getSistEndret(), TestData.endringPåAlleInkluderingstilskuddFelter(), Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+        avtale.endreAvtale(avtale.getSistEndret(), TestData.endringPåAlleInkluderingstilskuddFelter(), Avtalerolle.VEILEDER);
     }
 
     @Test

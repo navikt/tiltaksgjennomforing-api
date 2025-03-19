@@ -285,14 +285,12 @@ public class CachingConfigMockTest {
         veileder.endreAvtale(
                 Now.instant(),
                 TestData.endringPåAlleLønnstilskuddFelter(),
-                avtale,
-                TestData.avtalerMedTilskuddsperioder
+                avtale
         );
         veileder.endreAvtale(
                 Now.instant(),
                 TestData.endringPåAlleLønnstilskuddFelter(),
-                avtale,
-                TestData.avtalerMedTilskuddsperioder
+                avtale
         );
 
         /** Blir kalt 2 ganger. Andre iterasjon så treffer vi cache response istedenfor endepunkt */

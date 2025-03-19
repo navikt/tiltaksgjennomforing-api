@@ -1,11 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-import java.util.EnumSet;
-
 import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørVeilederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
@@ -13,13 +7,17 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 
+import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 public class AvtalepartTest {
 
     @Test
     public void endreAvtale__skal_feile_for_deltaker() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Deltaker deltaker = TestData.enDeltaker(avtale);
-        assertThatThrownBy(() -> deltaker.endreAvtale(avtale.getSistEndret(), TestData.ingenEndring(), avtale, EnumSet.of(avtale.getTiltakstype()))).isInstanceOf(KanIkkeEndreException.class);
+        assertThatThrownBy(() -> deltaker.endreAvtale(avtale.getSistEndret(), TestData.ingenEndring(), avtale)).isInstanceOf(KanIkkeEndreException.class);
     }
 
     @Test
@@ -67,14 +65,14 @@ public class AvtalepartTest {
     public void endreAvtale__skal_fungere_for_arbeidsgiver() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        arbeidsgiver.endreAvtale(Now.instant(), TestData.ingenEndring(), avtale, EnumSet.of(avtale.getTiltakstype()));
+        arbeidsgiver.endreAvtale(Now.instant(), TestData.ingenEndring(), avtale);
     }
 
     @Test
     public void endreAvtale__skal_fungere_for_veileder() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Veileder veileder = TestData.enVeileder(avtale);
-        veileder.endreAvtale(Now.instant(), TestData.ingenEndring(), avtale, EnumSet.of(avtale.getTiltakstype()));
+        veileder.endreAvtale(Now.instant(), TestData.ingenEndring(), avtale);
     }
 
     @Test

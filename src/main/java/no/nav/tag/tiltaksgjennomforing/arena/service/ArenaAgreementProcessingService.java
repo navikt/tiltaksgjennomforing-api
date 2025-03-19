@@ -20,7 +20,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtaleArena;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddsperiodeConfig;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
@@ -42,7 +41,6 @@ import java.util.UUID;
 @Service
 public class ArenaAgreementProcessingService {
     private final ArenaAgreementMigrationRepository arenaAgreementMigrationRepository;
-    private final TilskuddsperiodeConfig tilskuddsperiodeConfig;
     private final AvtaleRepository avtaleRepository;
     private final EregService eregService;
     private final PersondataService persondataService;
@@ -58,16 +56,15 @@ public class ArenaAgreementProcessingService {
             PersondataService persondataService,
             Norg2Client norg2Client,
             VeilarboppfolgingService veilarboppfolgingService,
-            TilskuddsperiodeConfig tilskuddsperiodeConfig,
             AktivitetArenaAclClient aktivitetArenaAclClient,
-            HendelseAktivitetsplanClient hendelseAktivitetsplanClient) {
+            HendelseAktivitetsplanClient hendelseAktivitetsplanClient
+    ) {
         this.arenaAgreementMigrationRepository = arenaAgreementMigrationRepository;
         this.avtaleRepository = avtaleRepository;
         this.eregService = eregService;
         this.persondataService = persondataService;
         this.norg2Client = norg2Client;
         this.veilarboppfolgingService = veilarboppfolgingService;
-        this.tilskuddsperiodeConfig = tilskuddsperiodeConfig;
         this.aktivitetArenaAclClient = aktivitetArenaAclClient;
         this.hendelseAktivitetsplanClient = hendelseAktivitetsplanClient;
     }
@@ -236,7 +233,7 @@ public class ArenaAgreementProcessingService {
                     }
                 );
 
-                avtale.endreAvtaleArena(endreAvtale, tilskuddsperiodeConfig.getTiltakstyper());
+                avtale.endreAvtaleArena(endreAvtale);
                 return new ArenaMigrationProcessResult.Completed(action, avtale);
             }
             default -> throw new IllegalStateException("Ugyldig handling " + action + " for oppdatering av avtale");

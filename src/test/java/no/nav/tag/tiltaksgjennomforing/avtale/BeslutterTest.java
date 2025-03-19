@@ -16,7 +16,6 @@ import java.time.LocalDate;
 import java.util.Set;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -69,8 +68,7 @@ class BeslutterTest {
         avtale.endreAvtale(
                 Now.instant(),
                 TestData.endringPåAlleLønnstilskuddFelter(),
-                Avtalerolle.VEILEDER,
-                avtalerMedTilskuddsperioder
+                Avtalerolle.VEILEDER
         );
         arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);

@@ -82,8 +82,6 @@ tiltaksgjennomforing:
     uri: https://notifikasjon-fake-produsent-api.labs.nais.io/api/graphql
     lenke: https://arbeidsgiver.labs.nais.io/tiltaksgjennomforing/avtale/
     enabled: false
-  tilskuddsperioder:
-    tiltakstyper: SOMMERJOBB, MIDLERTIDIG_LONNSTILSKUDD, VARIG_LONNSTILSKUDD
   arena:
     kafka:
       tiltakdeltaker-endret-topic: 'teamarenanais.aapen-arena-tiltakdeltakerendret-v1-q2'

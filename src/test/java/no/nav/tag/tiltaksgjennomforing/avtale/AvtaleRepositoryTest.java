@@ -31,7 +31,6 @@ import java.util.Set;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.ENHET_GEOGRAFISK;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.ENHET_OPPFØLGING;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.avtalerMedTilskuddsperioder;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter;
 import static no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype.ARBEIDSTRENING;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -98,7 +97,7 @@ public class AvtaleRepositoryTest {
         EndreAvtale endreAvtale = new EndreAvtale();
         Maal maal = TestData.etMaal();
         endreAvtale.setMaal(List.of(maal));
-        lagretAvtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+        lagretAvtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
         avtaleRepository.save(lagretAvtale);
 
         // Lage ny avtale
@@ -108,7 +107,7 @@ public class AvtaleRepositoryTest {
         EndreAvtale endreAvtale2 = new EndreAvtale();
         Maal maal2 = TestData.etMaal();
         endreAvtale2.setMaal(List.of(maal2));
-        lagretAvtale2.endreAvtale(Now.instant(), endreAvtale2, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+        lagretAvtale2.endreAvtale(Now.instant(), endreAvtale2, Avtalerolle.VEILEDER);
         avtaleRepository.save(lagretAvtale2);
     }
 
@@ -119,7 +118,7 @@ public class AvtaleRepositoryTest {
 
         // Lagre maal skal fungere
         EndreAvtale endreAvtale = new EndreAvtale();
-        lagretAvtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+        lagretAvtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
         avtaleRepository.save(lagretAvtale);
 
         // Lage ny avtale
@@ -127,7 +126,7 @@ public class AvtaleRepositoryTest {
 
         // Lagre maal skal enda fungere
         EndreAvtale endreAvtale2 = new EndreAvtale();
-        lagretAvtale2.endreAvtale(Now.instant(), endreAvtale2, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+        lagretAvtale2.endreAvtale(Now.instant(), endreAvtale2, Avtalerolle.VEILEDER);
         avtaleRepository.save(lagretAvtale2);
     }
 
@@ -149,7 +148,7 @@ public class AvtaleRepositoryTest {
         endreAvtale.setArbeidsgiveravgift(BigDecimal.valueOf(0.141));
         endreAvtale.setLonnstilskuddProsent(40);
 
-        lagretAvtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+        lagretAvtale.endreAvtale(Now.instant(), endreAvtale, Avtalerolle.VEILEDER);
         Avtale nyLagretAvtale = avtaleRepository.save(lagretAvtale);
 
         var perioder = nyLagretAvtale.getTilskuddPeriode();
@@ -194,7 +193,7 @@ public class AvtaleRepositoryTest {
     public void endreAvtale__skal_publisere_domainevent() {
         Avtale avtale = avtaleRepository.save(TestData.enArbeidstreningAvtale());
         verify(metrikkRegistrering, never()).avtaleEndret(any());
-        avtale.endreAvtale(Now.instant(), TestData.ingenEndring(), Avtalerolle.VEILEDER, avtalerMedTilskuddsperioder);
+        avtale.endreAvtale(Now.instant(), TestData.ingenEndring(), Avtalerolle.VEILEDER);
         avtaleRepository.save(avtale);
         verify(metrikkRegistrering).avtaleEndret(any());
     }
