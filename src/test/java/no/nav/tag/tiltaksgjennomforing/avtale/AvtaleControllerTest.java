@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enArbeidstreningAvtale;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enNavIdent;
@@ -173,12 +174,12 @@ public class AvtaleControllerTest {
                 pageable
         );
 
-        List<String> avtaleIder = avtalerPageResponse.getContent()
+        List<UUID> avtaleIder = avtalerPageResponse.getContent()
             .stream()
             .map(BegrensetAvtale::id)
             .toList();
 
-        assertThat(avtaleIder).doesNotContain(avtaleForVeilederSomSøkesEtter.getId().toString());
+        assertThat(avtaleIder).doesNotContain(avtaleForVeilederSomSøkesEtter.getId());
     }
 
     @Disabled("må skrives om")

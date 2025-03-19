@@ -4,13 +4,14 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.UUID;
 
 public record BegrensetAvtale(
-    String id,
+    UUID id,
     String deltakerFornavn,
     String deltakerEtternavn,
     String bedriftNavn,
-    String veilederNavIdent,
+    NavIdent veilederNavIdent,
     LocalDate startDato,
     LocalDate sluttDato,
     Status status,
@@ -27,11 +28,11 @@ public record BegrensetAvtale(
 
     public static BegrensetAvtale fraAvtaleMedDiskresjonskode(Avtale avtale, Diskresjonskode diskresjonskode) {
         return new BegrensetAvtale(
-            avtale.getId().toString(),
+            avtale.getId(),
             avtale.getGjeldendeInnhold().getDeltakerFornavn(),
             avtale.getGjeldendeInnhold().getDeltakerEtternavn(),
             avtale.getGjeldendeInnhold().getBedriftNavn(),
-            avtale.getVeilederNavIdent() != null ? avtale.getVeilederNavIdent().asString() : null,
+            avtale.getVeilederNavIdent(),
             avtale.getGjeldendeInnhold().getStartDato(),
             avtale.getGjeldendeInnhold().getSluttDato(),
             avtale.getStatus(),
