@@ -1,9 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
-import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
-import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
-import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
-import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
+import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 
@@ -17,6 +14,8 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 
 public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilskuddAvtaleBeregningStrategy {
 
+    private  final LocalDate STANDARD_MIGRERINGSDATO = LocalDate.of(2025, 7, 1);
+
     public void genererNyeTilskuddsperioder(Avtale avtale) {
         if (avtale.erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LAGE_NYE_TILSKUDDSPRIODER_INNGAATT_AVTALE);
@@ -27,9 +26,13 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilsk
 
         if (erIkkeTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato())) {
             tilskuddsperioder = beregnTilskuddsperioderForVTAO(avtale);
-            if (avtale.getArenaRyddeAvtale() != null) {
-                LocalDate standardMigreringsdato = LocalDate.of(2025, 7, 1);
-                LocalDate migreringsdato = avtale.getArenaRyddeAvtale().getMigreringsdato() != null ? avtale.getArenaRyddeAvtale().getMigreringsdato() : standardMigreringsdato;
+            if (avtale.getArenaRyddeAvtale() != null || Avtaleopphav.ARENA.equals(avtale.getOpphav())) {
+                LocalDate migreringsdato;
+                if (avtale.getArenaRyddeAvtale() != null && avtale.getArenaRyddeAvtale().getMigreringsdato() != null) {
+                    migreringsdato = avtale.getArenaRyddeAvtale().getMigreringsdato();
+                } else {
+                    migreringsdato = STANDARD_MIGRERINGSDATO;
+                }
 
                 tilskuddsperioder.forEach(periode -> {
                     // Set status BEHANDLET_I_ARENA på tilskuddsperioder før migreringsdato
