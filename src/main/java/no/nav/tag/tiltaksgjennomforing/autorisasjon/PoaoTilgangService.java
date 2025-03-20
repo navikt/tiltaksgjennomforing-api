@@ -8,8 +8,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface PoaoTilgangService {
-    boolean harSkrivetilgang(UUID beslutterAzureUUID, Fnr fnr);
-    Map<Fnr, Boolean> harSkrivetilgang(UUID beslutterAzureUUID, Set<Fnr> fnrSet);
-    Optional<String> hentGrunn(UUID beslutterAzureUUID, Fnr fnr);
+    Optional<Tilgang> hentSkrivetilgang(UUID beslutterAzureUUID, Fnr fnr);
+    Map<Fnr, Boolean> harSkrivetilganger(UUID beslutterAzureUUID, Set<Fnr> fnrSet);
     Optional<Tilgangsattributter> hentTilgangsattributter(Fnr fnr);
 }

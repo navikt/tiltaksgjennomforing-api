@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgangsattributter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
@@ -200,13 +201,12 @@ public class AdminController {
 
     @PostMapping("/avtale/{id}/sjekk-tilgang")
     public ResponseEntity<String> sjekkTilgang(@PathVariable UUID id, @RequestBody AvtaleAdminSjekkTilgangRequest body) {
-        Optional<Avtale> avtale = avtaleRepository.findById(id);
-
-        return avtale.map(value ->
-                tilgangskontrollService.hentGrunnForAvslag(body.veilederAzureOid(), value.getDeltakerFnr())
-                    .map(ResponseEntity::ok)
-                    .orElseGet(() -> ResponseEntity.ok().body("Fant ingen grunn for avslag"))
-            )
+        return avtaleRepository.findById(id)
+            .map(avtale -> tilgangskontrollService.hentSkrivetilgang(body.veilederAzureOid(), avtale.getDeltakerFnr()))
+            .filter(tilgang -> tilgang instanceof Tilgang.Avvis)
+            .map(tilgang -> ResponseEntity.ok(
+                "[" + ((Tilgang.Avvis) tilgang).tilgangskode() + "] " + ((Tilgang.Avvis) tilgang).melding()
+            ))
             .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
