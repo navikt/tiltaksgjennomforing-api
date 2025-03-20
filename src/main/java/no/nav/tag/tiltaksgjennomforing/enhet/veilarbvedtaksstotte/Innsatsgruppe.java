@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Getter
-enum Innsatsgruppe {
+public enum Innsatsgruppe {
     GODE_MULIGHETER("GODE_MULIGHETER", "STANDARD_INNSATS", "IKVAL", "Gode muligheter"),
     TRENGER_VEILEDNING("TRENGER_VEILEDNING", "SITUASJONSBESTEMT_INNSATS", "BFORM", "Trenger veiledning"),
     TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE("TRENGER_VEILEDNING_NEDSATT_ARBEIDSEVNE", "SPESIELT_TILPASSET_INNSATS", "BATT", "Trenger veiledning, nedsatt arbeidsevne"),

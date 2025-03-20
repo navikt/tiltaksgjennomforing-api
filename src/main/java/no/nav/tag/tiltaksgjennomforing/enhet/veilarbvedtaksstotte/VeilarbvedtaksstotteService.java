@@ -23,9 +23,8 @@ public class VeilarbvedtaksstotteService {
         log.info("Henter gjeldende 14-a vedtak fra veilarbvedtaksstotte");
         Optional<Gjeldende14aVedtakResponse> gjeldende14aVedtakResponse = veilarbvedtaksstotteClient.hentGjeldende14aVedtak(new Gjeldende14aVedtakRequest(fnr));
         if (gjeldende14aVedtakResponse.isEmpty()) {
-            //TODO: Er dette ok????????????????????
-            log.error("Fant ikke 14-a vedtak {}", fnr.substring(0, 2) + "*******");
-            secureLog.error("Fant ikke 14-a vedtak for id {}", fnr);
+            log.error("Fant ikke 14-a vedtak");
+            secureLog.error("Fant ikke 14-a vedtak for fnr {}", fnr);
             throw new FeilkodeException(Feilkode.FANT_IKKE_INNSATSBEHOV);
         }
         secureLog.info("Hentet gjeldende 14-a vedtak for {}", fnr);
