@@ -35,6 +35,7 @@ public class AvtaleSorterer {
 
     static List<Sort.Order> getSortingOrderForPageableVeileder(String sorteringskolonne, String sorteringsRetning) {
         Sort.Direction direction = Sort.Direction.fromString(sorteringsRetning);
+
         return switch (sorteringskolonne) {
             case "deltakerFornavn" -> List.of(new Sort.Order(direction, "gjeldendeInnhold.deltakerFornavn"));
             case "opprettetTidspunkt" -> List.of(new Sort.Order(direction, "opprettetTidspunkt"));
@@ -44,11 +45,15 @@ public class AvtaleSorterer {
             case "tiltakstype" -> List.of(new Sort.Order(direction, "tiltakstype"));
             case "veilederNavIdent" -> List.of(new Sort.Order(direction, "veilederNavIdent"));
             case "status" -> List.of(
-                    new Sort.Order(direction, "oppfolgingVarselSendt"),
+                    // I Postgres er null verdier størst som default - derfor reverse
+                    new Sort.Order(direction, "oppfolgingVarselSendt").reverse(),
+                    new Sort.Order(direction, "gjeldendeTilskuddsperiode.status").reverse(),
                     new Sort.Order(direction, "status")
             );
             default -> List.of(
-                    new Sort.Order(direction, "oppfolgingVarselSendt"),
+                    // I Postgres er null verdier størst som default - derfor reverse
+                    new Sort.Order(direction, "oppfolgingVarselSendt").reverse(),
+                    new Sort.Order(direction, "gjeldendeTilskuddsperiode.status").reverse(),
                     new Sort.Order(direction, "sistEndret")
             );
         };
