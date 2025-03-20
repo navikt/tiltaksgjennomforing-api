@@ -24,9 +24,9 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.persondata.domene.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.domene.PdlRespons;
-import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -35,6 +35,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -48,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enArbeidstreningAvtale;
 import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enNavIdent;
@@ -166,14 +168,18 @@ public class AvtaleControllerTest {
         )).thenReturn(false);
         AvtaleQueryParameter avtalePredicate = new AvtaleQueryParameter();
 
-        Map<String, Object> avtalerPageResponse = veileder.hentAlleAvtalerMedLesetilgang(
+        Page<BegrensetAvtale> avtalerPageResponse = veileder.hentBegrensedeAvtalerMedLesetilgang(
                 avtaleRepository,
                 avtalePredicate.setVeilederNavIdent(veilederNavIdent),
                 pageable
         );
 
-        List<Avtale> avtaler = (List<Avtale>) avtalerPageResponse.get("avtaler");
-        assertThat(avtaler).doesNotContain(avtaleForVeilederSomSøkesEtter);
+        List<UUID> avtaleIder = avtalerPageResponse.getContent()
+            .stream()
+            .map(BegrensetAvtale::id)
+            .toList();
+
+        assertThat(avtaleIder).doesNotContain(avtaleForVeilederSomSøkesEtter.getId());
     }
 
     @Disabled("må skrives om")
@@ -204,15 +210,15 @@ public class AvtaleControllerTest {
         ).thenReturn(new PageImpl<>(List.of(enArbeidstreningsAvtale)));
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
 
-        Map<String, Object> avtalerPageResponse = veileder.hentAlleAvtalerMedLesetilgang(
+        Page<BegrensetAvtale> avtalerPageResponse = veileder.hentBegrensedeAvtalerMedLesetilgang(
                 avtaleRepository,
                 new AvtaleQueryParameter().setAvtaleNr(TestData.ET_AVTALENR),
                 pageable
         );
 
-        List<AvtaleMinimalListevisning> avtaler = (List<AvtaleMinimalListevisning>) avtalerPageResponse.get("avtaler");
+        List<BegrensetAvtale> avtaler = avtalerPageResponse.getContent();
         assertThat(avtaler).isNotNull();
-        assertThat(avtaler.stream().filter(avtaleMinimalListevisning -> avtaleMinimalListevisning.getTiltakstype() == Tiltakstype.ARBEIDSTRENING).toList()).isNotNull();
+        assertThat(avtaler.stream().filter(avtaleMinimalListevisning -> avtaleMinimalListevisning.tiltakstype() == Tiltakstype.ARBEIDSTRENING).toList()).isNotNull();
     }
 
     @Test
@@ -398,15 +404,14 @@ public class AvtaleControllerTest {
         alleAvtaler.addAll(lagListeMedAvtaler(avtaleUtenTilgang, 4));
         when(avtaleRepository.findAllByDeltakerFnrAndFeilregistrertIsFalse(eq(deltaker.getIdentifikator()), eq(pageable))).thenReturn(new PageImpl<>(alleAvtaler));
 
-        Map<String, Object> avtalerPageResponse = deltaker.hentAlleAvtalerMedLesetilgang(
+        Page<BegrensetAvtale> avtalerPageResponse = deltaker.hentBegrensedeAvtalerMedLesetilgang(
                 avtaleRepository,
                 new AvtaleQueryParameter(),
                 pageable
         );
 
-        List<AvtaleMinimalListevisning> avtaler = (List<AvtaleMinimalListevisning>) avtalerPageResponse.get("avtaler");
-        assertThat(avtaler)
-                .hasSize(avtalerBrukerHarTilgangTil.size());
+        List<BegrensetAvtale> avtaler = avtalerPageResponse.getContent();
+        assertThat(avtaler).hasSize(avtalerBrukerHarTilgangTil.size());
     }
 
     @Test

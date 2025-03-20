@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
@@ -24,6 +25,7 @@ import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.sql.Date;
@@ -35,9 +37,12 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
+    private static final String NAV_VIKAFOSSEN = "2103";
+
     private static final SecureLog secureLog = SecureLog.getLogger(log);
 
     private final TilgangskontrollService tilgangskontrollService;
@@ -91,6 +96,30 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     @Override
+    public Page<BegrensetAvtale> hentBegrensedeAvtalerMedLesetilgang(
+        AvtaleRepository avtaleRepository,
+        AvtaleQueryParameter queryParametre,
+        Pageable pageable
+    ) {
+        Page<Avtale> avtaler = hentAvtalerMedLesetilgang(avtaleRepository, queryParametre, pageable);
+
+        boolean isSkalViseDiskresjonskoder = avtaler.getContent().stream()
+            .anyMatch(avtale -> NAV_VIKAFOSSEN.equals(avtale.getEnhetOppfolging()));
+
+        Map<Fnr, Diskresjonskode> diskresjon = isSkalViseDiskresjonskoder ? persondataService.hentDiskresjonskoder(
+            avtaler.getContent().stream().map(Avtale::getDeltakerFnr).collect(Collectors.toSet())
+        ) : Map.of();
+
+        List<BegrensetAvtale> begrensedeAvtaler = avtaler
+            .getContent()
+            .stream()
+            .map(avtale -> BegrensetAvtale.fraAvtaleMedDiskresjonskode(avtale, diskresjon.get(avtale.getDeltakerFnr())))
+            .toList();
+
+        return new PageImpl<>(begrensedeAvtaler, pageable, avtaler.getTotalElements());
+    }
+
+    @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
         secureLog.info("Sjekker tilgang for veileder {} til avtale {}", getIdentifikator(), avtale.getId());
         boolean harTilgang = tilgangskontrollService.harSkrivetilgangTilKandidat(this, avtale.getDeltakerFnr());
@@ -127,11 +156,6 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
                 queryParametre.erUfordelt(),
                 pageable
         );
-    }
-
-    @Override
-    AvtaleMinimalListevisning skjulData(AvtaleMinimalListevisning avtaleMinimalListevisning) {
-        return avtaleMinimalListevisning;
     }
 
     public void annullerAvtale(Instant sistEndret, String annullerGrunn, Avtale avtale) {

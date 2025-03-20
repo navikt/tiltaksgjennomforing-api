@@ -51,11 +51,6 @@ public class Deltaker extends Avtalepart<Fnr> {
         return new PageImpl<>(avtaleListe, avtalePage.getPageable(), avtaleListe.size());
     }
 
-    @Override
-    AvtaleMinimalListevisning skjulData(AvtaleMinimalListevisning avtaleMinimalListevisning) {
-        return avtaleMinimalListevisning;
-    }
-
     private Avtale skjulMentorFødselsnummer(Avtale avtale){
         if(avtale.getTiltakstype() == Tiltakstype.MENTOR) {
             avtale.setMentorFnr(null);

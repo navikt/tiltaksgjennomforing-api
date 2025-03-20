@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.persondata.domene;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -13,7 +14,8 @@ public record PdlResponsBolk(Data data) {
     public record Data(List<HentPersonBolk> hentPersonBolk) {}
 
     public Map<Fnr, Optional<Diskresjonskode>> utledDiskresjonskoder(Set<Fnr> fnrSet) {
-        Map<String, Optional<Diskresjonskode>> diskresjonskodeMap = data().hentPersonBolk().stream()
+        List<HentPersonBolk> bolk = Optional.ofNullable(data().hentPersonBolk()).orElse(Collections.emptyList());
+        Map<String, Optional<Diskresjonskode>> diskresjonskodeMap = bolk.stream()
             .filter(HentPersonBolk::isOk)
             .flatMap(person -> person.person().folkeregisteridentifikator().stream().map(a -> Map.entry(
                 a.identifikasjonsnummer(),
