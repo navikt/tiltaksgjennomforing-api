@@ -179,13 +179,15 @@ public class CachingConfigTest {
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
+                null,
                 mockTilgangskontrollService,
                 new PersondataService(persondataClient),
                 norg2Client,
                 Set.of(new NavEnhet(avtale.getEnhetOppfolging(), avtale.getEnhetsnavnOppfolging())),
                 new SlettemerkeProperties(),
-                false,
-            veilarboppfolgingService, featureToggleServiceMock
+                TestData.INGEN_AD_GRUPPER,
+                veilarboppfolgingService,
+                featureToggleServiceMock
         );
 
         lenient().when(mockTilgangskontrollService.harSkrivetilgangTilKandidat(

@@ -240,12 +240,13 @@ public class VeilederTest {
         when(veilarboppfolgingServiceMock.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
+                null,
                 tilgangskontrollService,
                 persondataService,
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingServiceMock,
                 featureToggleServiceMock
         );
@@ -420,12 +421,13 @@ public class VeilederTest {
 
         Veileder veileder = new Veileder(
                 navIdent,
+                null,
                 tilgangskontrollService,
                 new PersondataService(persondataClient),
                 norg2Client,
                 Set.of(navEnhet),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock
         );
@@ -471,12 +473,13 @@ public class VeilederTest {
 
         Veileder veileder = new Veileder(
                 navIdent,
+                null,
                 tilgangskontrollService,
                 new PersondataService(persondataClient),
                 norg2Client,
                 Set.of(navEnhet),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock
         );
@@ -506,12 +509,13 @@ public class VeilederTest {
         FeatureToggleService featureToggleServiceMock = mock(FeatureToggleService.class);
         Veileder veileder = new Veileder(
                 navIdent,
+                null,
                 tilgangskontrollService,
                 mock(PersondataService.class),
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
                 slettemerkeProperties,
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 mock(VeilarboppfolgingService.class),
                 featureToggleServiceMock
         );
@@ -535,12 +539,13 @@ public class VeilederTest {
         slettemerkeProperties.setIdent(List.of(new NavIdent("Z123456")));
         Veileder veileder = new Veileder(
                 navIdent,
+                null,
                 tilgangskontrollService,
                 mock(PersondataService.class),
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
                 slettemerkeProperties,
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 mock(VeilarboppfolgingService.class),
                 featureToggleServiceMock
         );
