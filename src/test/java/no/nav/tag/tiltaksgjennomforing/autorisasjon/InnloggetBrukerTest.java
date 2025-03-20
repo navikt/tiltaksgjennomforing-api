@@ -141,7 +141,9 @@ public class InnloggetBrukerTest {
     @Test
     public void harTilgang__arbeidsgiver_skal_ikke_ha_tilgang_til_avtale() {
         assertThat(
-                new Arbeidsgiver(TestData.etFodselsnummer(),
+                new Arbeidsgiver(
+                        TestData.etBedriftNr(),
+                        TestData.etFodselsnummer(),
                         Set.of(),
                         Map.of(),
                         null,
@@ -188,6 +190,7 @@ public class InnloggetBrukerTest {
     public void harTilgang__ikkepart_selvbetjeningsbruker_skal_ikke_ha_tilgang() {
         assertThat(
                 new Arbeidsgiver(
+                        new BedriftNr("123456789"),
                         new Fnr("00000000001"),
                         Set.of(),
                         Map.of(),
@@ -200,7 +203,8 @@ public class InnloggetBrukerTest {
     public void harTilgang__arbeidsgiver_skal_kunne_representere_bedrift_uten_Fnr() {
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(this.bedriftNr, Set.of(Tiltakstype.values()));
         Arbeidsgiver Arbeidsgiver = new Arbeidsgiver(
-                new Fnr("00000000009"),
+                new BedriftNr("123456789"),
+                new Fnr("00000000001"),
                 Set.of(),
                 tilganger,
                 null,
@@ -213,7 +217,8 @@ public class InnloggetBrukerTest {
     public void harTilgang__arbeidsgiver_skal_ikke_ha_tilgang_til_avbrutt_avtale_eldre_enn_12_uker() {
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(this.bedriftNr, Set.of(Tiltakstype.values()));
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
-                new Fnr("00000000009"),
+                new BedriftNr("123456789"),
+                new Fnr("00000000001"),
                 Set.of(),
                 tilganger,
                 null,
@@ -230,7 +235,8 @@ public class InnloggetBrukerTest {
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusDays(85));
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.values()));
         Arbeidsgiver Arbeidsgiver = new Arbeidsgiver(
-                new Fnr("00000000009"),
+                new BedriftNr("123456789"),
+                new Fnr("00000000001"),
                 Set.of(),
                 tilganger,
                 null,
@@ -245,7 +251,8 @@ public class InnloggetBrukerTest {
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusDays(85));
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.values()));
         Arbeidsgiver Arbeidsgiver = new Arbeidsgiver(
-                new Fnr("00000000009"),
+                new BedriftNr("123456789"),
+                new Fnr("00000000001"),
                 Set.of(),
                 tilganger,
                 null,
@@ -259,7 +266,8 @@ public class InnloggetBrukerTest {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING));
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
-                new Fnr("00000000009"),
+                new BedriftNr("123456789"),
+                new Fnr("00000000001"),
                 Set.of(),
                 tilganger,
                 null,
