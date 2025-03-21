@@ -3,11 +3,14 @@ package no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet;
 import io.getunleash.UnleashContext;
 import io.getunleash.strategy.Strategy;
 import lombok.RequiredArgsConstructor;
-
 import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
 

@@ -5,7 +5,9 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static no.nav.tag.tiltaksgjennomforing.Miljø.*;
+import static no.nav.tag.tiltaksgjennomforing.Miljø.DEV_FSS;
+import static no.nav.tag.tiltaksgjennomforing.Miljø.LOCAL;
+import static no.nav.tag.tiltaksgjennomforing.Miljø.PROD_FSS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ByEnvironmentStrategyTest {

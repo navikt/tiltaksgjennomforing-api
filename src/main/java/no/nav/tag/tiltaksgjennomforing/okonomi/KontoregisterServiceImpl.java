@@ -1,10 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.okonomi;
 
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KontoregisterFantIkkeBedriftFeilException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KontoregisterFeilException;
@@ -19,6 +14,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
 @Slf4j
