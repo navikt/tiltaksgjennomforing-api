@@ -4,8 +4,8 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-public record PagebleAvtalelisteResponse(
-    List<BegrensetAvtale> avtaler,
+public record PagebleAvtalelisteResponse<T>(
+    List<T> avtaler,
     int size,
     int currentPage,
     long totalItems,
@@ -15,14 +15,14 @@ public record PagebleAvtalelisteResponse(
     String sorteringOrder,
     String sokId
 ) {
-    public static PagebleAvtalelisteResponse fra(
-        Page<BegrensetAvtale> avtaler,
+    public static <T>PagebleAvtalelisteResponse<T> fra(
+        Page<T> avtaler,
         AvtaleQueryParameter sokeParametere,
         String sorteringskolonne,
         String sorteringOrder,
         String sokId
     ) {
-        return new PagebleAvtalelisteResponse(
+        return new PagebleAvtalelisteResponse<>(
             avtaler.getContent(),
             avtaler.getSize(),
             avtaler.getNumber(),
@@ -35,11 +35,11 @@ public record PagebleAvtalelisteResponse(
         );
     }
 
-    public static PagebleAvtalelisteResponse fra(Page<BegrensetAvtale> avtaler) {
+    public static <T>PagebleAvtalelisteResponse<T> fra(Page<T> avtaler) {
         return fra(avtaler, null, null, null, null);
     }
 
-    public static PagebleAvtalelisteResponse tom() {
-        return new PagebleAvtalelisteResponse(List.of(), 0, 0, 0, 0, new AvtaleQueryParameter(), "sistEndret", "DESC", "");
+    public static <T>PagebleAvtalelisteResponse<T> tom() {
+        return new PagebleAvtalelisteResponse<T>(List.of(), 0, 0, 0, 0, new AvtaleQueryParameter(), "sistEndret", "DESC", "");
     }
 }
