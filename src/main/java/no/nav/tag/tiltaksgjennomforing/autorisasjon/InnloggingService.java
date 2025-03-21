@@ -109,7 +109,9 @@ public class InnloggingService {
                 tokenUtils.hentAzureOid(),
                 navEnheter,
                 tilgangskontrollService,
-                norg2Client
+                norg2Client,
+                persondataService,
+                adGruppeTilganger
             );
         }
 
