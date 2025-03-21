@@ -11,6 +11,7 @@ spring:
     type: caffeine
   jpa:
     open-in-view: true
+    properties.hibernate.order_by.default_null_ordering: last
   application:
     name: tiltaksgjennomforing-api
   main:
