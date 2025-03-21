@@ -45,14 +45,14 @@ public class AvtaleSorterer {
             case "tiltakstype" -> List.of(new Sort.Order(direction, "tiltakstype"));
             case "veilederNavIdent" -> List.of(new Sort.Order(direction, "veilederNavIdent"));
             case "status" -> List.of(
-                    // I Postgres er null verdier størst som default - derfor reverse
-                    new Sort.Order(direction, "oppfolgingVarselSendt").reverse(),
+                    new Sort.Order(direction, "oppfolgingVarselSendt"),
+                    // Reverse: status 'AVSLÅTT' skal ha høyere prioritering ved DESC sortering
                     new Sort.Order(direction, "gjeldendeTilskuddsperiode.status").reverse(),
                     new Sort.Order(direction, "status")
             );
             default -> List.of(
-                    // I Postgres er null verdier størst som default - derfor reverse
-                    new Sort.Order(direction, "oppfolgingVarselSendt").reverse(),
+                    new Sort.Order(direction, "oppfolgingVarselSendt"),
+                    // Status 'AVSLÅTT' skal ha høyere prioritering
                     new Sort.Order(direction, "gjeldendeTilskuddsperiode.status").reverse(),
                     new Sort.Order(direction, "sistEndret")
             );
