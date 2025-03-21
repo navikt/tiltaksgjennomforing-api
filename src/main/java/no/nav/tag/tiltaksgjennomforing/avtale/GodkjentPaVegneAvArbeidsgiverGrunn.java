@@ -1,10 +1,9 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import jakarta.persistence.Embeddable;
 import lombok.Data;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-
-import jakarta.persistence.Embeddable;
 
 @Data
 @Embeddable

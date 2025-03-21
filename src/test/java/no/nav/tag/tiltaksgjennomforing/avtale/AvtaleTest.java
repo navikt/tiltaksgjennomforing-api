@@ -34,14 +34,8 @@ import java.util.List;
 import java.util.Set;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enBeslutter;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enIdentifikator;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enSommerjobbAvtale;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.endringPåAlleLønnstilskuddFelterForSommerjobb;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.setOppfølgingPåAvtale;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus.AVSLÅTT;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus.GODKJENT;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus.UBEHANDLET;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.*;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;

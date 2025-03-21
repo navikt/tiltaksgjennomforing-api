@@ -1,7 +1,11 @@
 package no.nav.tag.tiltaksgjennomforing;
 
 import no.nav.fnrgen.FnrGen;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Status;
+import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 
 import java.util.ArrayList;
 import java.util.List;

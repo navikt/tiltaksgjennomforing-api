@@ -3,7 +3,12 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Value;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
