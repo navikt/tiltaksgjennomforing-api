@@ -289,7 +289,7 @@ public class VeilederTest {
     public void overta_avtale_hvor_veileder_allerede_er_satt_og_skal_bare_overskrive_oppfølgningsstatus_når_avtalen_endres() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
 
-        VeilarboppfolgingService veilarboppfolgingService = Mockito.spy(new VeilarboppfolgingService(null));
+        VeilarboppfolgingService veilarboppfolgingService = Mockito.spy(new VeilarboppfolgingService(null, null));
         Veileder nyVeileder = TestData.enVeileder(new NavIdent("J987654"),veilarboppfolgingService);
 
         Oppfølgingsstatus nyOppfølgingsstatusSomSkalIkkeSettes = new Oppfølgingsstatus(
@@ -539,7 +539,7 @@ public class VeilederTest {
                 Kvalifiseringsgruppe.IKKE_VURDERT,
                 "0906"
         );
-        VeilarboppfolgingService veilarboppfolgingService = Mockito.spy(new VeilarboppfolgingService(null));
+        VeilarboppfolgingService veilarboppfolgingService = Mockito.spy(new VeilarboppfolgingService(null, null));
         Mockito.doReturn(oppfølgingsstatus).when(veilarboppfolgingService).hentOppfolgingsstatus(Mockito.anyString());
 
         assertThatThrownBy(() -> veilarboppfolgingService.hentOgSjekkOppfolgingstatus(avtale))
