@@ -12,7 +12,9 @@ import static java.util.Collections.singletonMap;
 import static no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.ByEnhetStrategy.PARAM;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ByEnhetStrategyTest {
 

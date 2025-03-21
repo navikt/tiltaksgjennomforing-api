@@ -1,14 +1,36 @@
 package no.nav.tag.tiltaksgjennomforing.datadeling;
 
 import lombok.Data;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnholdType;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
+import no.nav.tag.tiltaksgjennomforing.avtale.ForkortetGrunn;
+import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneAvArbeidsgiverGrunn;
+import no.nav.tag.tiltaksgjennomforing.avtale.GodkjentPaVegneGrunn;
+import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
+import no.nav.tag.tiltaksgjennomforing.avtale.Identifikator;
+import no.nav.tag.tiltaksgjennomforing.avtale.Inkluderingstilskuddsutgift;
+import no.nav.tag.tiltaksgjennomforing.avtale.Maal;
+import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson;
+import no.nav.tag.tiltaksgjennomforing.avtale.Status;
+import no.nav.tag.tiltaksgjennomforing.avtale.Stillingstype;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.UUID;
 
 @Data
 public class AvtaleMelding {

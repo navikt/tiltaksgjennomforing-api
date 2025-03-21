@@ -1,6 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
+import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 

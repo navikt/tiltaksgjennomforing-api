@@ -1,7 +1,18 @@
 package no.nav.tag.tiltaksgjennomforing.autorisasjon;
 
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
-import no.nav.tag.tiltaksgjennomforing.avtale.*;
+import no.nav.tag.tiltaksgjennomforing.avtale.Arbeidsgiver;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.Avtaleopphav;
+import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Deltaker;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.avtale.NavIdent;
+import no.nav.tag.tiltaksgjennomforing.avtale.OpprettAvtale;
+import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
@@ -18,7 +29,9 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class InnloggetBrukerTest {
 

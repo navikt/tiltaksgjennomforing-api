@@ -1,13 +1,19 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;
 import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 
-import jakarta.persistence.*;
 import java.util.UUID;
 
 @Data

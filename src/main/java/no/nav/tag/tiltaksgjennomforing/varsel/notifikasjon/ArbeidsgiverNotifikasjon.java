@@ -1,5 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.varsel.notifikasjon;
 
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,7 +15,6 @@ import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNrConverter;
 import no.nav.tag.tiltaksgjennomforing.avtale.HendelseType;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
