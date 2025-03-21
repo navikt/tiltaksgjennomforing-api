@@ -114,21 +114,34 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
             @Param("sluttDato") Date sluttDato
     );
 
-    @Query(value = "SELECT a.id as id, a.avtaleNr as avtaleNr, a.tiltakstype as tiltakstype, a.veilederNavIdent as veilederNavIdent, a.gjeldendeInnhold.deltakerFornavn as deltakerFornavn, " +
-            "a.opprettetTidspunkt as opprettetTidspunkt, a.sistEndret as sistEndret, a.gjeldendeInnhold.deltakerEtternavn as deltakerEtternavn, " +
-            "a.deltakerFnr as deltakerFnr, a.gjeldendeInnhold.bedriftNavn as bedriftNavn, a.bedriftNr as bedriftNr, min(t.startDato) as startDato, " +
-            " t.status as status, count(t.id) as antallUbehandlet, a.status as avtaleStatus " +
-            "from Avtale a " +
-            "left join AvtaleInnhold i on i.id = a.gjeldendeInnhold.id " +
-            "left join TilskuddPeriode t on (t.avtale.id = a.id and t.status = :tilskuddsperiodestatus and t.startDato <= :decisiondate) " +
-            "where a.gjeldendeInnhold.godkjentAvVeileder is not null " +
-            "and a.tiltakstype in (:tiltakstype) " +
-            "and exists (select distinct p.avtale.id, p.status, p.løpenummer, p.startDato from TilskuddPeriode p where p.avtale.id = a.id " +
-            "and ((:tilskuddsperiodestatus = p.status and p.startDato <= :decisiondate) or (:tilskuddsperiodestatus = p.status AND p.løpenummer = 1))) " +
-            "and a.enhetOppfolging IN (:navEnheter) AND (:avtaleNr is null or a.avtaleNr = :avtaleNr) AND (:bedriftNr is null or cast(a.bedriftNr as text) = :bedriftNr) " +
-            "GROUP BY a.id, a.gjeldendeInnhold.deltakerFornavn, a.gjeldendeInnhold.deltakerEtternavn, a.veilederNavIdent, a.gjeldendeInnhold.bedriftNavn, t.status",
-            nativeQuery = false)
-    Page<BeslutterOversiktDTO> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
+    @Query(value = """
+        SELECT a.id AS id,
+               a.avtaleNr AS avtaleNr,
+               a.tiltakstype AS tiltakstype,
+               a.veilederNavIdent AS veilederNavIdent,
+               a.gjeldendeInnhold.deltakerFornavn AS deltakerFornavn,
+               a.opprettetTidspunkt AS opprettetTidspunkt,
+               a.sistEndret AS sistEndret,
+               a.gjeldendeInnhold.deltakerEtternavn AS deltakerEtternavn,
+               a.deltakerFnr AS deltakerFnr,
+               a.gjeldendeInnhold.bedriftNavn AS bedriftNavn,
+               a.bedriftNr AS bedriftNr,
+               min(t.startDato) AS startDato,
+               t.status AS status,
+               count(t.id) AS antallUbehandlet,
+               a.status AS avtaleStatus,
+               a.enhetOppfolging AS enhetOppfolging
+        FROM Avtale a
+        LEFT JOIN AvtaleInnhold i ON i.id = a.gjeldendeInnhold.id
+        LEFT JOIN TilskuddPeriode t ON (t.avtale.id = a.id AND t.status = :tilskuddsperiodestatus AND t.startDato <= :decisiondate)
+        WHERE a.gjeldendeInnhold.godkjentAvVeileder IS NOT NULL
+          AND a.tiltakstype IN (:tiltakstype)
+          AND EXISTS (SELECT DISTINCT p.avtale.id, p.status, p.løpenummer, p.startDato FROM TilskuddPeriode p WHERE p.avtale.id = a.id
+          AND ((:tilskuddsperiodestatus = p.status AND p.startDato <= :decisiondate) or (:tilskuddsperiodestatus = p.status AND p.løpenummer = 1)))
+          AND a.enhetOppfolging IN (:navEnheter) AND (:avtaleNr IS NULL OR a.avtaleNr = :avtaleNr) AND (:bedriftNr IS NULL OR cast(a.bedriftNr AS text) = :bedriftNr)
+        GROUP BY a.id, a.gjeldendeInnhold.deltakerFornavn, a.gjeldendeInnhold.deltakerEtternavn, a.veilederNavIdent, a.gjeldendeInnhold.bedriftNavn, t.status
+    """)
+    Page<BeslutterOversiktEntity> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
             @Param("tilskuddsperiodestatus") TilskuddPeriodeStatus tilskuddsperiodestatus,
             @Param("decisiondate") LocalDate decisiondate,
             @Param("tiltakstype") Set<Tiltakstype> tiltakstype,

@@ -52,11 +52,9 @@ import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-import static java.util.Map.entry;
 import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleSorterer.getSortingOrderForPageableVeileder;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
 
@@ -148,7 +146,7 @@ public class AvtaleController {
 
     @GetMapping
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    public PagebleAvtalelisteResponse hentAlleAvtalerInnloggetBrukerHarTilgangTil(
+    public PagebleAvtalelisteResponse<BegrensetAvtale> hentAlleAvtalerInnloggetBrukerHarTilgangTil(
             AvtaleQueryParameter queryParametre,
             @CookieValue("innlogget-part") Avtalerolle innloggetPart,
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
@@ -157,15 +155,14 @@ public class AvtaleController {
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageableVeileder(sorteringskolonne)));
-        return PagebleAvtalelisteResponse.fra(
-            avtalepart.hentBegrensedeAvtalerMedLesetilgang(avtaleRepository, queryParametre, pageable)
-        );
+        Page<BegrensetAvtale> avtaler = avtalepart.hentBegrensedeAvtalerMedLesetilgang(avtaleRepository, queryParametre, pageable);
+        return PagebleAvtalelisteResponse.fra(avtaler);
     }
 
     @AuditLogging(value = "Oppslag på arbeidsmarkedstiltak", utfallSomLogges = Utfall.FEIL)
     @GetMapping("/sok")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    public PagebleAvtalelisteResponse hentAlleAvtalerInnloggetBrukerHarTilgangTilMedGet(
+    public PagebleAvtalelisteResponse<BegrensetAvtale> hentAlleAvtalerInnloggetBrukerHarTilgangTilMedGet(
             @RequestParam(value = "sokId") String filterSokId,
             @CookieValue("innlogget-part") Avtalerolle innloggetPart,
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
@@ -209,7 +206,7 @@ public class AvtaleController {
     @AuditLogging(value = "Oppslag på arbeidsmarkedstiltak", utfallSomLogges = Utfall.FEIL)
     @PostMapping("/sok")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    public PagebleAvtalelisteResponse hentAlleAvtalerInnloggetBrukerHarTilgangTilMedPost(
+    public PagebleAvtalelisteResponse<BegrensetAvtale> hentAlleAvtalerInnloggetBrukerHarTilgangTilMedPost(
             @RequestBody AvtaleQueryParameter queryParametre,
             @CookieValue("innlogget-part") Avtalerolle innloggetPart,
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
@@ -255,7 +252,7 @@ public class AvtaleController {
 
     @GetMapping("/beslutter-liste")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    public Map<String, Object> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
+    public PagebleAvtalelisteResponse<BegrensetBeslutterAvtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
             AvtaleQueryParameter queryParametre,
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = "startDato") String sorteringskolonne,
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
@@ -263,7 +260,7 @@ public class AvtaleController {
             @RequestParam(value = "sorteringOrder", required = false, defaultValue = "DESC") String sorteringOrder
     ) {
         Beslutter beslutter = innloggingService.hentBeslutter();
-        Page<BeslutterOversiktDTO> avtaler = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
+        Page<BegrensetBeslutterAvtale> avtaler = beslutter.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
                 avtaleRepository,
                 queryParametre,
                 sorteringskolonne,
@@ -271,17 +268,7 @@ public class AvtaleController {
                 size,
                 sorteringOrder
         );
-        List<BeslutterOversiktDTO> avtalerMedTilgang = avtaler.getContent().stream()
-                .filter(oversiktDTO -> beslutter.harTilgangTilFnr(
-                        oversiktDTO.getDeltakerFnr())).toList();
-
-        return Map.ofEntries(
-                entry("avtaler", avtalerMedTilgang),
-                entry("size", avtaler.getSize()),
-                entry("currentPage", avtaler.getNumber()),
-                entry("totalItems", avtaler.getTotalElements()),
-                entry("totalPages", avtaler.getTotalPages())
-        );
+        return PagebleAvtalelisteResponse.fra(avtaler);
     }
 
     @GetMapping("/{avtaleId}/pdf")
