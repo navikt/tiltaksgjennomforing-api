@@ -1,9 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import no.nav.tag.tiltaksgjennomforing.avtale.EndreAvtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class TestDataTest {
 

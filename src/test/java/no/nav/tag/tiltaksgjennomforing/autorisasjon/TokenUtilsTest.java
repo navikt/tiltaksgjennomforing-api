@@ -16,7 +16,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import static no.nav.security.jwt.test.support.JwtTokenGenerator.ACR_LEVEL_4;
 import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.*;

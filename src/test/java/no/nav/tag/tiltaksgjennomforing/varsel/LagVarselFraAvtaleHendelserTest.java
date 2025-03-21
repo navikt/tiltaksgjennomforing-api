@@ -37,26 +37,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.math.BigDecimal;
 import java.util.EnumSet;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.AVTALE_FORDELT;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.AVTALE_FORLENGET;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.DELT_MED_ARBEIDSGIVER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.DELT_MED_DELTAKER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.DELT_MED_MENTOR;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.ENDRET;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.FJERNET_ETTERREGISTRERING;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.GODKJENNINGER_OPPHEVET_AV_ARBEIDSGIVER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.GODKJENNINGER_OPPHEVET_AV_VEILEDER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.GODKJENT_AV_ARBEIDSGIVER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.GODKJENT_AV_DELTAKER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.GODKJENT_FOR_ETTERREGISTRERING;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.GODKJENT_PAA_VEGNE_AV;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.NY_VEILEDER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.OPPRETTET;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.OPPRETTET_AV_ARBEIDSGIVER;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.STILLINGSBESKRIVELSE_ENDRET;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.TILSKUDDSBEREGNING_ENDRET;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.TILSKUDDSPERIODE_AVSLATT;
-import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.TILSKUDDSPERIODE_GODKJENT;
+import static no.nav.tag.tiltaksgjennomforing.avtale.HendelseType.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest

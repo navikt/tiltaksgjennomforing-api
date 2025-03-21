@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class VtaoStrategy extends BaseAvtaleInnholdStrategy {

@@ -12,9 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISSUER_AAD;
-import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISSUER_SYSTEM;
-import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.ISSUER_TOKENX;
+import static no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils.Issuer.*;
 
 @Component
 @RequiredArgsConstructor

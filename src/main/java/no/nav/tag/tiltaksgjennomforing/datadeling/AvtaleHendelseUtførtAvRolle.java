@@ -1,7 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.datadeling;
 
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtalerolle;
-import no.nav.tag.tiltaksgjennomforing.avtale.Veileder;
 
 public enum AvtaleHendelseUtførtAvRolle {
     VEILEDER, ARBEIDSGIVER, SYSTEM, DELTAKER, MENTOR, BESLUTTER;

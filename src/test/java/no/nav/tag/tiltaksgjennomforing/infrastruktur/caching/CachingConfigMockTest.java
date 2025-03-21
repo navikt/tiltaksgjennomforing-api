@@ -17,12 +17,12 @@ import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.Veilarboppfolging
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataClient;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.persondata.domene.HentGeografiskTilknytning;
 import no.nav.tag.tiltaksgjennomforing.persondata.domene.HentPerson;
 import no.nav.tag.tiltaksgjennomforing.persondata.domene.Navn;
 import no.nav.tag.tiltaksgjennomforing.persondata.domene.PdlRespons;
-import no.nav.tag.tiltaksgjennomforing.persondata.PersondataClient;
-import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,13 +44,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ActiveProfiles("cache-test")
 @ContextConfiguration

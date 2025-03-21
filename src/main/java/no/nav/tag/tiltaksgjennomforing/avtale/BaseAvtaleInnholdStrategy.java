@@ -1,10 +1,11 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
+import no.nav.tag.tiltaksgjennomforing.utils.Now;
+
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
-import no.nav.tag.tiltaksgjennomforing.utils.Now;
 
 public abstract class BaseAvtaleInnholdStrategy implements AvtaleInnholdStrategy {
     final AvtaleInnhold avtaleInnhold;

@@ -1,8 +1,8 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import lombok.RequiredArgsConstructor;
-import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvVeileder;
 import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvArena;
+import no.nav.tag.tiltaksgjennomforing.avtale.events.AvtaleForkortetAvVeileder;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
