@@ -1532,12 +1532,13 @@ public class AvtaleTest {
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
+                null,
                 tilgangskontrollService,
                 persondataService,
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 mock(VeilarboppfolgingService.class),
                 mock(FeatureToggleService.class)
         );
@@ -1569,12 +1570,13 @@ public class AvtaleTest {
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
+                null,
                 tilgangskontrollService,
                 persondataService,
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 mock(VeilarboppfolgingService.class),
                 mock(FeatureToggleService.class)
         );
@@ -1678,12 +1680,13 @@ public class AvtaleTest {
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
+                null,
                 tilgangskontrollService,
                 persondataService,
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 mock(VeilarboppfolgingService.class),
                 mock(FeatureToggleService.class)
         );
@@ -1720,12 +1723,13 @@ public class AvtaleTest {
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
+                null,
                 tilgangskontrollService,
                 persondataService,
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 mock(VeilarboppfolgingService.class),
                 mock(FeatureToggleService.class)
         );

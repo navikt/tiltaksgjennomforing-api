@@ -56,12 +56,13 @@ public class InnloggetBrukerTest {
     public void harTilgang__veileder_skal_ha_lesetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_er_ok() {
         Veileder veileder = new Veileder(
                 navIdent,
+                null,
                 tilgangskontrollService,
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService
         );
@@ -78,12 +79,13 @@ public class InnloggetBrukerTest {
     public void harTilgang__veileder_skal_ikke_ha_lesetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_feiler() {
         Veileder veileder = new Veileder(
                 navIdent,
+                null,
                 tilgangskontrollService,
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService
         );
@@ -99,12 +101,13 @@ public class InnloggetBrukerTest {
     public void harTilgang__veileder_skal_ha_skrivetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_er_ok() {
         Veileder veileder = new Veileder(
                 navIdent,
+                null,
                 tilgangskontrollService,
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService
         );
@@ -121,12 +124,13 @@ public class InnloggetBrukerTest {
     public void harTilgang__veileder_skal_ikke_ha_skrivetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_feiler() {
         Veileder veileder = new Veileder(
                 navIdent,
+                null,
                 tilgangskontrollService,
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService
         );
@@ -155,12 +159,13 @@ public class InnloggetBrukerTest {
         assertThat(
                 new Veileder(
                         new NavIdent("X123456"),
+                        null,
                         tilgangskontrollService,
                         persondataService,
                         norg2Client,
                         Collections.emptySet(),
                         new SlettemerkeProperties(),
-                        false,
+                        TestData.INGEN_AD_GRUPPER,
                         veilarboppfolgingService,
                         featureToggleService
                 ).harTilgangTilAvtale(avtale)
@@ -172,12 +177,13 @@ public class InnloggetBrukerTest {
         assertThat(
                 new Veileder(
                         new NavIdent("X123456"),
+                        null,
                         tilgangskontrollService,
                         persondataService,
                         norg2Client,
                         Collections.emptySet(),
                         new SlettemerkeProperties(),
-                        false,
+                        TestData.INGEN_AD_GRUPPER,
                         veilarboppfolgingService,
                         featureToggleService
                 ).harTilgangTilAvtale(avtale)

@@ -7,7 +7,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import no.nav.security.token.support.core.api.Unprotected;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.BeslutterAdGruppeProperties;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.AdGruppeProperties;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,10 +29,10 @@ public class TokenGeneratorController {
 
     public static final String ISSO_IDTOKEN = "isso-idtoken";
     public static final String SELVBETJENING_IDTOKEN = "selvbetjening-idtoken";
-    private BeslutterAdGruppeProperties beslutterAdGruppeProperties;
+    private AdGruppeProperties adGruppeProperties;
 
-    public TokenGeneratorController(BeslutterAdGruppeProperties beslutterAdGruppeProperties) {
-        this.beslutterAdGruppeProperties = beslutterAdGruppeProperties;
+    public TokenGeneratorController(AdGruppeProperties adGruppeProperties) {
+        this.adGruppeProperties = adGruppeProperties;
     }
 
     private static void bakeCookie(
@@ -97,7 +97,7 @@ public class TokenGeneratorController {
                                        @RequestParam(value = "expiry", required = false) String expiry,
                                        HttpServletResponse response) throws IOException {
         bakeCookie(subject, cookieName, redirect, expiry, response, new HashMap<>(), "selvbetjening", "aud-selvbetjening", acrLevel,
-                List.of(beslutterAdGruppeProperties.getId().toString()));
+                List.of(adGruppeProperties.getBeslutter().toString()));
     }
 
     @Unprotected
@@ -110,7 +110,7 @@ public class TokenGeneratorController {
                              HttpServletResponse response
     ) throws IOException {
         bakeCookie(subject, cookieName, redirect, expiry, response, Collections.singletonMap("NAVident", navIdent), "isso", "aud-isso", null,
-                Collections.singletonList(beslutterAdGruppeProperties.getId().toString()));
+                Collections.singletonList(adGruppeProperties.getBeslutter().toString()));
     }
 
     @Unprotected

@@ -41,7 +41,7 @@ import java.util.Set;
 @Slf4j
 public class InnloggingService {
     private final SystembrukerProperties systembrukerProperties;
-    private final BeslutterAdGruppeProperties beslutterAdGruppeProperties;
+    private final AdGruppeProperties adGrupperProperties;
     private final TokenUtils tokenUtils;
     private final AltinnTilgangsstyringService altinnTilgangsstyringService;
     private final TilgangskontrollService tilgangskontrollService;
@@ -57,34 +57,64 @@ public class InnloggingService {
         BrukerOgIssuer brukerOgIssuer = tokenUtils.hentBrukerOgIssuer().orElseThrow(() -> new TilgangskontrollException("Bruker er ikke innlogget."));
         Issuer issuer = brukerOgIssuer.getIssuer();
 
-        if (issuer == Issuer.ISSUER_TOKENX && (avtalerolle == Avtalerolle.DELTAKER || avtalerolle == Avtalerolle.MENTOR)) {
-            if(avtalerolle == Avtalerolle.DELTAKER) return new Deltaker(new Fnr(brukerOgIssuer.getBrukerIdent()));
-            else return new Mentor(new Fnr(brukerOgIssuer.getBrukerIdent()));
-        }else if (issuer == Issuer.ISSUER_TOKENX && avtalerolle == Avtalerolle.ARBEIDSGIVER) {
+        if (issuer == Issuer.ISSUER_TOKENX && avtalerolle == Avtalerolle.DELTAKER) {
+            return new Deltaker(new Fnr(brukerOgIssuer.getBrukerIdent()));
+        }
+        if (issuer == Issuer.ISSUER_TOKENX && avtalerolle == Avtalerolle.MENTOR) {
+            return new Mentor(new Fnr(brukerOgIssuer.getBrukerIdent()));
+        }
+        if (issuer == Issuer.ISSUER_TOKENX && avtalerolle == Avtalerolle.ARBEIDSGIVER) {
             HentArbeidsgiverToken hentArbeidsgiverToken = arbeidsgiverTokenStrategyFactory.create(issuer);
-
             Set<AltinnReportee> altinnOrganisasjoner = altinnTilgangsstyringService
                     .hentAltinnOrganisasjoner(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
-            Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
-            return new Arbeidsgiver(new Fnr(brukerOgIssuer.getBrukerIdent()), altinnOrganisasjoner, tilganger, persondataService, norg2Client);
-        } else if (issuer == Issuer.ISSUER_AAD && avtalerolle == Avtalerolle.VEILEDER) {
+            Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(
+                new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
+            return new Arbeidsgiver(
+                new Fnr(brukerOgIssuer.getBrukerIdent()),
+                altinnOrganisasjoner,
+                tilganger,
+                persondataService,
+                norg2Client
+            );
+        }
+        if (issuer == Issuer.ISSUER_AAD && avtalerolle == Avtalerolle.VEILEDER) {
             NavIdent navIdent = new NavIdent(brukerOgIssuer.getBrukerIdent());
             Set<NavEnhet> navEnheter = hentNavEnheter(navIdent);
-            boolean harAdGruppeForBeslutter = tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId());
-            return new Veileder(navIdent, tokenUtils.hentAzureOid(), tilgangskontrollService, persondataService, norg2Client, navEnheter, slettemerkeProperties, harAdGruppeForBeslutter, veilarboppfolgingService, featureToggleService);
-        } else if (issuer == Issuer.ISSUER_AAD && avtalerolle == Avtalerolle.BESLUTTER) {
-            boolean harAdGruppeForBeslutter = tokenUtils.harAdGruppe(beslutterAdGruppeProperties.getId());
-            if (harAdGruppeForBeslutter) {
-                var navIdent = new NavIdent(brukerOgIssuer.getBrukerIdent());
-                var navEnheter = hentNavEnheter(navIdent);
-                return new Beslutter(navIdent, tokenUtils.hentAzureOid(), navEnheter, tilgangskontrollService, norg2Client);
-            } else {
-                throw new FeilkodeException(Feilkode.MANGLER_AD_GRUPPE_BESLUTTER);
-            }
-        } else {
-            log.warn("Ugyldig kombinasjon av issuer={} og rolle={}", issuer, avtalerolle);
-            throw new FeilkodeException(Feilkode.UGYLDIG_KOMBINASJON_AV_ISSUER_OG_ROLLE);
+            AdGruppeTilganger adGruppeTilganger = AdGruppeTilganger.av(adGrupperProperties, tokenUtils);
+            return new Veileder(
+                navIdent,
+                tokenUtils.hentAzureOid(),
+                tilgangskontrollService,
+                persondataService,
+                norg2Client,
+                navEnheter,
+                slettemerkeProperties,
+                adGruppeTilganger,
+                veilarboppfolgingService,
+                featureToggleService
+            );
         }
+        if (issuer == Issuer.ISSUER_AAD && avtalerolle == Avtalerolle.BESLUTTER) {
+            AdGruppeTilganger adGruppeTilganger = AdGruppeTilganger.av(adGrupperProperties, tokenUtils);
+
+            if (!adGruppeTilganger.beslutter()) {
+                log.warn("Ugyldig kombinasjon av issuer={} og rolle={}", issuer, avtalerolle);
+                throw new FeilkodeException(Feilkode.UGYLDIG_KOMBINASJON_AV_ISSUER_OG_ROLLE);
+            }
+
+            var navIdent = new NavIdent(brukerOgIssuer.getBrukerIdent());
+            var navEnheter = hentNavEnheter(navIdent);
+            return new Beslutter(
+                navIdent,
+                tokenUtils.hentAzureOid(),
+                navEnheter,
+                tilgangskontrollService,
+                norg2Client
+            );
+        }
+
+        log.warn("Ugyldig kombinasjon av issuer={} og rolle={}", issuer, avtalerolle);
+        throw new FeilkodeException(Feilkode.UGYLDIG_KOMBINASJON_AV_ISSUER_OG_ROLLE);
     }
 
     private Set<NavEnhet> hentNavEnheter(NavIdent navIdent) {

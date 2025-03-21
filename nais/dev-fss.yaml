@@ -18,7 +18,12 @@ spec:
       tenant: trygdeetaten.no
       claims:
         groups:
+          # Beslutter-gruppe
           - id: fbfea82d-13da-43ad-a2f2-d7f21cb95f12
+          # Fortrolig adresse gruppe
+          - id: ea930b6b-9397-44d9-b9e6-f4cf527a632a
+          # Strengt fortrolig adresse gruppe
+          - id: 5ef775f2-61f8-4283-bf3d-8d03f428aa14
         extra:
           - "NAVident"
   kafka:
