@@ -147,6 +147,8 @@ tiltaksgjennomforing:
       id: ${tiltaksgjennomforing.consumer.system}
   veilarboppfolging:
     url: https://veilarboppfolging-gcp.intern.nav.no
+  veilarbvedtaksstotte:
+    url: https://veilarbvedtaksstotte.intern.nav.no
   poao-tilgang:
     url: http://poao-tilgang.poao.svc.nais.local
   norg2:
