@@ -20,7 +20,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -114,11 +113,12 @@ public class MentorTest {
         AvtaleQueryParameter avtalePredicate = new AvtaleQueryParameter();
         // NÅR
         when(avtaleRepository.findAllByMentorFnrAndFeilregistrertIsFalse(any(), eq(pageable))).thenReturn(new PageImpl<>(List.of(avtale)));
-        Map<String, Object> avtalerMinimalPage = mentor.hentAlleAvtalerMedLesetilgang(avtaleRepository, avtalePredicate, pageable);
-        List<AvtaleMinimalListevisning> avtalerMinimal = (List<AvtaleMinimalListevisning>) avtalerMinimalPage.get("avtaler");
+        List<BegrensetAvtale> avtalerMinimal  = mentor
+            .hentBegrensedeAvtalerMedLesetilgang(avtaleRepository, avtalePredicate, pageable)
+            .getContent();
 
         assertThat(avtalerMinimal).isNotEmpty();
-        assertThat(avtalerMinimal.get(0).getBedriftNavn()).isNotNull();
+        assertThat(avtalerMinimal.get(0).bedriftNavn()).isNotNull();
     }
 
     @Test

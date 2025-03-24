@@ -51,7 +51,6 @@ import java.net.URI;
 import java.net.URL;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -149,8 +148,7 @@ public class AvtaleController {
 
     @GetMapping
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTil(
-
+    public PagebleAvtalelisteResponse hentAlleAvtalerInnloggetBrukerHarTilgangTil(
             AvtaleQueryParameter queryParametre,
             @CookieValue("innlogget-part") Avtalerolle innloggetPart,
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
@@ -159,18 +157,15 @@ public class AvtaleController {
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageableVeileder(sorteringskolonne)));
-        Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
-                avtaleRepository,
-                queryParametre,
-                pageable
+        return PagebleAvtalelisteResponse.fra(
+            avtalepart.hentBegrensedeAvtalerMedLesetilgang(avtaleRepository, queryParametre, pageable)
         );
-        return avtaler;
     }
 
     @AuditLogging(value = "Oppslag på arbeidsmarkedstiltak", utfallSomLogges = Utfall.FEIL)
     @GetMapping("/sok")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTilMedGet(
+    public PagebleAvtalelisteResponse hentAlleAvtalerInnloggetBrukerHarTilgangTilMedGet(
             @RequestParam(value = "sokId") String filterSokId,
             @CookieValue("innlogget-part") Avtalerolle innloggetPart,
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
@@ -181,48 +176,40 @@ public class AvtaleController {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
 
         FilterSok filterSok = filterSokRepository.findFilterSokBySokId(filterSokId).orElse(null);
-        if (filterSok != null) {
-            filterSok.setAntallGangerSokt(filterSok.getAntallGangerSokt() + 1);
-            filterSok.setSistSoktTidspunkt(Now.localDateTime());
-            filterSokRepository.save(filterSok);
-            AvtaleQueryParameter avtalePredicate = filterSok.getAvtalePredicate();
 
-            Pageable pageable = PageRequest.of(
-                    Math.abs(page),
-                    Math.abs(size),
-                    Sort.by(getSortingOrderForPageableVeileder(sorteringskolonne, sorteringOrder))
-            );
-            Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
-                    avtaleRepository,
-                    avtalePredicate,
-                    pageable
-            );
-            HashMap<String, Object> stringObjectHashMap = new HashMap<>(avtaler);
-            stringObjectHashMap.put("sokeParametere", avtalePredicate);
-            stringObjectHashMap.put("sokId", filterSok.getSokId());
-            stringObjectHashMap.put("sorteringskolonne", sorteringskolonne);
-            stringObjectHashMap.put("sorteringOrder", sorteringOrder);
-            return stringObjectHashMap;
-
-        } else {
-            return Map.ofEntries(
-                    entry("avtaler", List.of()),
-                    entry("size", 0),
-                    entry("currentPage", 0),
-                    entry("totalItems", 0),
-                    entry("totalPages", 0),
-                    entry("sokeParametere", new AvtaleQueryParameter()),
-                    entry("sorteringskolonne", "sistEndret"),
-                    entry("sorteringOrder", "DESC"),
-                    entry("sokId", "")
-            );
+        if (filterSok == null) {
+            return PagebleAvtalelisteResponse.tom();
         }
+
+        filterSok.setAntallGangerSokt(filterSok.getAntallGangerSokt() + 1);
+        filterSok.setSistSoktTidspunkt(Now.localDateTime());
+        filterSokRepository.save(filterSok);
+        AvtaleQueryParameter avtalePredicate = filterSok.getAvtalePredicate();
+
+        Pageable pageable = PageRequest.of(
+                Math.abs(page),
+                Math.abs(size),
+                Sort.by(getSortingOrderForPageableVeileder(sorteringskolonne, sorteringOrder))
+        );
+        Page<BegrensetAvtale> avtaler = avtalepart.hentBegrensedeAvtalerMedLesetilgang(
+            avtaleRepository,
+            avtalePredicate,
+            pageable
+        );
+
+        return PagebleAvtalelisteResponse.fra(
+            avtaler,
+            avtalePredicate,
+            sorteringskolonne,
+            sorteringOrder,
+            filterSok.getSokId()
+        );
     }
 
     @AuditLogging(value = "Oppslag på arbeidsmarkedstiltak", utfallSomLogges = Utfall.FEIL)
     @PostMapping("/sok")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    public Map<String, Object> hentAlleAvtalerInnloggetBrukerHarTilgangTilMedPost(
+    public PagebleAvtalelisteResponse hentAlleAvtalerInnloggetBrukerHarTilgangTilMedPost(
             @RequestBody AvtaleQueryParameter queryParametre,
             @CookieValue("innlogget-part") Avtalerolle innloggetPart,
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
@@ -231,35 +218,39 @@ public class AvtaleController {
             @RequestParam(value = "sorteringOrder", required = false, defaultValue = "DESC") String sorteringOrder
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-
         Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageableVeileder(sorteringskolonne, sorteringOrder)));
-
-        Map<String, Object> avtaler = avtalepart.hentAlleAvtalerMedLesetilgang(
+        Page<BegrensetAvtale> avtaler = avtalepart.hentBegrensedeAvtalerMedLesetilgang(
                 avtaleRepository,
                 queryParametre,
                 pageable
         );
-        HashMap<String, Object> stringObjectHashMap = new HashMap<>(avtaler);
-        stringObjectHashMap.put("sokeParametere", queryParametre);
-        stringObjectHashMap.put("sorteringskolonne", sorteringskolonne);
-        stringObjectHashMap.put("sorteringOrder", sorteringOrder);
-
 
         FilterSok filterSokiDb = filterSokRepository.findFilterSokBySokId(queryParametre.generateHash()).orElse(null);
         if (filterSokiDb != null) {
-            stringObjectHashMap.put("sokId", filterSokiDb.getSokId());
             filterSokiDb.setAntallGangerSokt(filterSokiDb.getAntallGangerSokt() + 1);
             filterSokiDb.setSistSoktTidspunkt(Now.localDateTime());
             filterSokRepository.save(filterSokiDb);
             if (!filterSokiDb.erLik(queryParametre)) {
                 log.error("Kollisjon i søkId: {}", filterSokiDb.getSokId());
             }
+            return PagebleAvtalelisteResponse.fra(
+                avtaler,
+                queryParametre,
+                sorteringskolonne,
+                sorteringOrder,
+                filterSokiDb.getSokId()
+            );
         } else {
             FilterSok filterSok = new FilterSok(queryParametre);
             filterSokRepository.save(filterSok);
-            stringObjectHashMap.put("sokId", filterSok.getSokId());
+            return PagebleAvtalelisteResponse.fra(
+                avtaler,
+                queryParametre,
+                sorteringskolonne,
+                sorteringOrder,
+                filterSok.getSokId()
+            );
         }
-        return stringObjectHashMap;
     }
 
     @GetMapping("/beslutter-liste")

@@ -29,10 +29,20 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleApiTestUtil.*;
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleApiTestUtil.getForPart;
+import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleApiTestUtil.jsonHarNøkkel;
+import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleApiTestUtil.jsonHarVerdi;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.ENHET_OPPFØLGING;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enArbeidstreningAvtale;
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enMidlertidigLønnstilskuddsAvtaleMedStartOgSluttGodkjentAvAlleParter;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ActiveProfiles(Miljø.TEST)
 @SpringBootTest

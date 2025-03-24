@@ -186,11 +186,6 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         return avtaler;
     }
 
-    @Override
-    AvtaleMinimalListevisning skjulData(AvtaleMinimalListevisning avtaleMinimalListevisning) {
-        return avtaleMinimalListevisning;
-    }
-
     public List<Avtale> hentAvtalerForMinsideArbeidsgiver(AvtaleRepository avtaleRepository, BedriftNr bedriftNr) {
         long start = System.currentTimeMillis();
 

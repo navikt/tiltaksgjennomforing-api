@@ -1,12 +1,16 @@
 package no.nav.tag.tiltaksgjennomforing.datavarehus;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.UUID;
