@@ -46,14 +46,16 @@ public class AvtaleSorterer {
             case "veilederNavIdent" -> List.of(new Sort.Order(direction, "veilederNavIdent"));
             case "status" -> List.of(
                     new Sort.Order(direction, "oppfolgingVarselSendt"),
-                    // Reverse: status 'AVSLÅTT' skal ha høyere prioritering ved DESC sortering
-                    new Sort.Order(direction, "gjeldendeTilskuddsperiode.status").reverse(),
+                    // Sorterting av tilskuddsperioder.
+                    // Status 'AVSLÅTT' skal ha høyere prioritering ved DESC sortering derfor reverse
+                    new Sort.Order(direction, "t.status").reverse(),
                     new Sort.Order(direction, "status")
             );
             default -> List.of(
                     new Sort.Order(direction, "oppfolgingVarselSendt"),
-                    // Status 'AVSLÅTT' skal ha høyere prioritering
-                    new Sort.Order(direction, "gjeldendeTilskuddsperiode.status").reverse(),
+                    // Sorterting av tilskuddsperioder.
+                    // Status 'AVSLÅTT' skal ha høyere prioritering ved DESC sortering derfor reverse
+                    new Sort.Order(direction, "t.status").reverse(),
                     new Sort.Order(direction, "sistEndret")
             );
         };
