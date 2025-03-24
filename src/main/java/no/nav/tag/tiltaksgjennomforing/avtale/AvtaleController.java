@@ -146,7 +146,7 @@ public class AvtaleController {
 
     @GetMapping
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    public PagebleAvtalelisteResponse<BegrensetAvtale> hentAlleAvtalerInnloggetBrukerHarTilgangTil(
+    public PageableAvtalelisteResponse<BegrensetAvtale> hentAlleAvtalerInnloggetBrukerHarTilgangTil(
             AvtaleQueryParameter queryParametre,
             @CookieValue("innlogget-part") Avtalerolle innloggetPart,
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
@@ -156,13 +156,13 @@ public class AvtaleController {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
         Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageableVeileder(sorteringskolonne)));
         Page<BegrensetAvtale> avtaler = avtalepart.hentBegrensedeAvtalerMedLesetilgang(avtaleRepository, queryParametre, pageable);
-        return PagebleAvtalelisteResponse.fra(avtaler);
+        return PageableAvtalelisteResponse.fra(avtaler);
     }
 
     @AuditLogging(value = "Oppslag på arbeidsmarkedstiltak", utfallSomLogges = Utfall.FEIL)
     @GetMapping("/sok")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    public PagebleAvtalelisteResponse<BegrensetAvtale> hentAlleAvtalerInnloggetBrukerHarTilgangTilMedGet(
+    public PageableAvtalelisteResponse<BegrensetAvtale> hentAlleAvtalerInnloggetBrukerHarTilgangTilMedGet(
             @RequestParam(value = "sokId") String filterSokId,
             @CookieValue("innlogget-part") Avtalerolle innloggetPart,
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
@@ -175,7 +175,7 @@ public class AvtaleController {
         FilterSok filterSok = filterSokRepository.findFilterSokBySokId(filterSokId).orElse(null);
 
         if (filterSok == null) {
-            return PagebleAvtalelisteResponse.tom();
+            return PageableAvtalelisteResponse.tom();
         }
 
         filterSok.setAntallGangerSokt(filterSok.getAntallGangerSokt() + 1);
@@ -194,7 +194,7 @@ public class AvtaleController {
             pageable
         );
 
-        return PagebleAvtalelisteResponse.fra(
+        return PageableAvtalelisteResponse.fra(
             avtaler,
             avtalePredicate,
             sorteringskolonne,
@@ -206,7 +206,7 @@ public class AvtaleController {
     @AuditLogging(value = "Oppslag på arbeidsmarkedstiltak", utfallSomLogges = Utfall.FEIL)
     @PostMapping("/sok")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    public PagebleAvtalelisteResponse<BegrensetAvtale> hentAlleAvtalerInnloggetBrukerHarTilgangTilMedPost(
+    public PageableAvtalelisteResponse<BegrensetAvtale> hentAlleAvtalerInnloggetBrukerHarTilgangTilMedPost(
             @RequestBody AvtaleQueryParameter queryParametre,
             @CookieValue("innlogget-part") Avtalerolle innloggetPart,
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = Avtale.Fields.sistEndret) String sorteringskolonne,
@@ -230,7 +230,7 @@ public class AvtaleController {
             if (!filterSokiDb.erLik(queryParametre)) {
                 log.error("Kollisjon i søkId: {}", filterSokiDb.getSokId());
             }
-            return PagebleAvtalelisteResponse.fra(
+            return PageableAvtalelisteResponse.fra(
                 avtaler,
                 queryParametre,
                 sorteringskolonne,
@@ -240,7 +240,7 @@ public class AvtaleController {
         } else {
             FilterSok filterSok = new FilterSok(queryParametre);
             filterSokRepository.save(filterSok);
-            return PagebleAvtalelisteResponse.fra(
+            return PageableAvtalelisteResponse.fra(
                 avtaler,
                 queryParametre,
                 sorteringskolonne,
@@ -252,7 +252,7 @@ public class AvtaleController {
 
     @GetMapping("/beslutter-liste")
     @Timed(percentiles = {0.5d, 0.75d, 0.9d, 0.99d, 0.999d})
-    public PagebleAvtalelisteResponse<BegrensetBeslutterAvtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
+    public PageableAvtalelisteResponse<BegrensetBeslutterAvtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
             AvtaleQueryParameter queryParametre,
             @RequestParam(value = "sorteringskolonne", required = false, defaultValue = "startDato") String sorteringskolonne,
             @RequestParam(value = "page", required = false, defaultValue = "0") Integer page,
@@ -268,7 +268,7 @@ public class AvtaleController {
                 size,
                 sorteringOrder
         );
-        return PagebleAvtalelisteResponse.fra(avtaler);
+        return PageableAvtalelisteResponse.fra(avtaler);
     }
 
     @GetMapping("/{avtaleId}/pdf")
