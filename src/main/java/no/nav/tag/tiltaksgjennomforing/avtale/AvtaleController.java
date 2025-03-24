@@ -650,9 +650,7 @@ public class AvtaleController {
             @RequestBody EndreTilskuddsberegning endreTilskuddsberegning
     ) {
         Veileder veileder = innloggingService.hentVeileder();
-        Avtale avtale = avtaleRepository.findById(avtaleId)
-            .map(this::sjekkVtaoToggle)
-            .orElseThrow(RessursFinnesIkkeException::new);
+        Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         veileder.endreTilskuddsberegning(endreTilskuddsberegning, avtale);
         avtaleRepository.save(avtale);
     }
