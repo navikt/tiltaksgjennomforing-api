@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning;
 import no.nav.tag.tiltaksgjennomforing.avtale.*;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,6 +16,14 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilskuddAvtaleBeregningStrategy {
 
     private  final LocalDate STANDARD_MIGRERINGSDATO = LocalDate.of(2025, 7, 1);
+
+    @Override
+    public boolean nødvendigeFelterErUtfylt(Avtale avtale) {
+        var gjeldendeInnhold = avtale.getGjeldendeInnhold();
+        return !Utils.erNoenTomme(
+                gjeldendeInnhold.getStartDato(),
+                gjeldendeInnhold.getSluttDato());
+    }
 
     public void genererNyeTilskuddsperioder(Avtale avtale) {
         if (avtale.erAvtaleInngått()) {
