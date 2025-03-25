@@ -44,12 +44,12 @@ public class VeilarboppfolgingService {
 
         if (responsOppfolginsstatusOpt.isEmpty()) {
             secureLog.error("Fant ikke innsatsbehov for fnr {}", fnr);
-            log.error("Fant ikke innsatsbehov"); // Trigge alerterator
+            log.error("Fant ikke innsatsbehov (veilarbOppfølging)"); // Trigge alerterator
             throw new FeilkodeException(Feilkode.FANT_IKKE_INNSATSBEHOV);
         }
         if (responseGjeldende14aVedtakOpt.isEmpty()) {
             secureLog.error("Fant ikke 14-a vedtak for fnr {}", fnr);
-            log.error("Fant ikke innsatsbehov"); // Trigge alerterator
+            log.error("Fant ikke innsatsbehov (veilarbVedtaksstøtte)"); // Trigge alerterator
             throw new FeilkodeException(Feilkode.FANT_IKKE_INNSATSBEHOV);
         }
 
