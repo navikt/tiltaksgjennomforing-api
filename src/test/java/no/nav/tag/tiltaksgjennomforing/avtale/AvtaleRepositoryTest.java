@@ -255,7 +255,7 @@ public class AvtaleRepositoryTest {
         long plussDato = ChronoUnit.DAYS.between(Now.localDate(), Now.localDate().plusMonths(3));
         LocalDate decisiondate = Now.localDate().plusDays(plussDato);
 
-        Page<BeslutterOversiktDTO> beslutterOversikt = avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
+        Page<BeslutterOversiktEntity> beslutterOversikt = avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
             TilskuddPeriodeStatus.UBEHANDLET,
             decisiondate,
             tiltakstype,

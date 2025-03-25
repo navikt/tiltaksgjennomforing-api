@@ -123,7 +123,9 @@ public class AvtaleApiTest {
                 UUID.randomUUID(),
                 Set.of(ENHET_OPPFØLGING),
                 tilgangskontrollService,
-                norg2Client
+                norg2Client,
+                persondataService,
+                TestData.INGEN_AD_GRUPPER
         );
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(beslutter), any(Fnr.class))).thenReturn(true);
         when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(List.of(ENHET_OPPFØLGING));
