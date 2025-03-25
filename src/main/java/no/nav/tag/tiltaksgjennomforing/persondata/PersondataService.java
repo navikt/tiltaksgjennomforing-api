@@ -7,6 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.persondata.aktorId.AktorId;
 import no.nav.tag.tiltaksgjennomforing.persondata.domene.Navn;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -32,6 +33,9 @@ public class PersondataService {
     }
 
     public Map<Fnr, Diskresjonskode> hentDiskresjonskoder(Set<Fnr> fnrSet) {
+        if (fnrSet.isEmpty()) {
+            return Collections.emptyMap();
+        }
         if (fnrSet.size() > 1000) {
             throw new IllegalArgumentException("Kan ikke hente diskresjonkode for mer enn 1000 om gangen");
         }
@@ -40,6 +44,10 @@ public class PersondataService {
         Set<Fnr> fnrSomIkkeFinnesICache = fnrSet.stream()
             .filter(fnr -> !diskresjonskoderFraCache.containsKey(fnr))
             .collect(Collectors.toSet());
+
+        if (fnrSomIkkeFinnesICache.isEmpty()) {
+            return diskresjonskoderFraCache;
+        }
 
         Map<Fnr, Optional<Diskresjonskode>> diskresjonskodeOptFraPdl = persondataClient
             .hentPersonBolk(fnrSomIkkeFinnesICache)

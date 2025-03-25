@@ -14,7 +14,9 @@ public record PdlResponsBolk(Data data) {
     public record Data(List<HentPersonBolk> hentPersonBolk) {}
 
     public Map<Fnr, Optional<Diskresjonskode>> utledDiskresjonskoder(Set<Fnr> fnrSet) {
-        List<HentPersonBolk> bolk = Optional.ofNullable(data().hentPersonBolk()).orElse(Collections.emptyList());
+        List<HentPersonBolk> bolk = Optional.ofNullable(data())
+            .flatMap(bolkData -> Optional.ofNullable(bolkData.hentPersonBolk()))
+            .orElse(Collections.emptyList());
         Map<String, Optional<Diskresjonskode>> diskresjonskodeMap = bolk.stream()
             .filter(HentPersonBolk::isOk)
             .flatMap(person -> person.person().folkeregisteridentifikator().stream().map(a -> Map.entry(

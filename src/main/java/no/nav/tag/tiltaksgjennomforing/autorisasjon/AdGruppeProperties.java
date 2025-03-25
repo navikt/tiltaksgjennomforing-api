@@ -8,7 +8,9 @@ import java.util.UUID;
 
 @Data
 @Component
-@ConfigurationProperties(prefix = "tiltaksgjennomforing.beslutter-ad-gruppe")
-public class BeslutterAdGruppeProperties {
-    private UUID id;
+@ConfigurationProperties(prefix = "tiltaksgjennomforing.ad-grupper")
+public class AdGruppeProperties {
+    private UUID beslutter;
+    private UUID fortroligAdresse;
+    private UUID strengtFortroligAdresse;
 }

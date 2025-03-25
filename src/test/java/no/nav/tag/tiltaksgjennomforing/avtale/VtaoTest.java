@@ -67,12 +67,13 @@ public class VtaoTest {
         var navIdent = TestData.enNavIdent();
         Veileder veileder = new Veileder(
                 navIdent,
+                null,
                 tilgangskontrollService,
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService
         );
@@ -91,12 +92,13 @@ public class VtaoTest {
         var navIdent = TestData.enNavIdent();
         Veileder veileder = new Veileder(
                 navIdent,
+                null,
                 tilgangskontrollService,
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService
         );
@@ -155,12 +157,13 @@ public class VtaoTest {
         var navIdent = TestData.enNavIdent();
         Veileder veileder = new Veileder(
                 navIdent,
+                null,
                 tilgangskontrollService,
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService
         );
@@ -217,12 +220,13 @@ public class VtaoTest {
         var navIdent = TestData.enNavIdent();
         Veileder veileder = new Veileder(
                 navIdent,
+                null,
                 tilgangskontrollService,
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService
         );

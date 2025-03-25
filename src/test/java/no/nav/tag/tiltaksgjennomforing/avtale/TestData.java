@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.AdGruppeTilganger;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
@@ -47,10 +48,10 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 public class TestData {
-
     public static NavEnhet ENHET_OPPFØLGING = new NavEnhet("0906", "Oslo gamlebyen");
     public static NavEnhet ENHET_GEOGRAFISK = new NavEnhet("0904", "Vinstra");
     public static Integer ET_AVTALENR = 10;
+    public static AdGruppeTilganger INGEN_AD_GRUPPER = new AdGruppeTilganger(false, false, false);
 
     public static FeatureToggleService featureToggleService = mock(FeatureToggleService.class);
 
@@ -878,12 +879,13 @@ public class TestData {
         final VeilarboppfolgingService veilarbArenaClient = mock(VeilarboppfolgingService.class);
         var veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
+                null,
                 tilgangskontrollService,
                 persondataService,
                 norg2Client,
                 Set.of(new NavEnhet(avtale.getEnhetOppfolging(), avtale.getEnhetsnavnOppfolging())),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarbArenaClient,
                 featureToggleService
         );
@@ -910,12 +912,13 @@ public class TestData {
 
         var veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
+                null,
                 tilgangskontrollService,
                 persondataService,
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Oslo gamlebyen")),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService
         );
@@ -953,6 +956,7 @@ public class TestData {
     public static Beslutter enBeslutter(Avtale avtale) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         Norg2Client norg2Client = mock(Norg2Client.class);
+        PersondataService persondataService = mock(PersondataService.class);
         NavIdent navIdent = new NavIdent("B999999");
         var beslutter = new Beslutter(navIdent, UUID.randomUUID(), Set.of(), tilgangskontrollService, norg2Client);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(beslutter, avtale.getDeltakerFnr())).thenReturn(true);
@@ -1074,12 +1078,13 @@ public class TestData {
         PersondataService persondataService = mock(PersondataService.class);
         var veileder = new Veileder(
                 navIdent,
+                null,
                 tilgangskontrollService,
                 persondataService,
                 mock(Norg2Client.class),
                 Set.of(ENHET_OPPFØLGING),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService
         );
@@ -1092,12 +1097,13 @@ public class TestData {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         var veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
+                null,
                 tilgangskontrollService,
                 persondataService,
                 mock(Norg2Client.class),
                 Set.of(ENHET_OPPFØLGING),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 mock(VeilarboppfolgingService.class),
                 featureToggleService
         );
