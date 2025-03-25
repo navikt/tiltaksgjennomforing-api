@@ -43,10 +43,7 @@ public class PersondataService {
 
         Map<Fnr, Optional<Diskresjonskode>> diskresjonskodeOptFraPdl = persondataClient
             .hentPersonBolk(fnrSomIkkeFinnesICache)
-            .utledDiskresjonskoder(fnrSomIkkeFinnesICache)
-            .entrySet()
-            .stream()
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            .utledDiskresjonskoder(fnrSomIkkeFinnesICache);
 
         diskresjonskodeCache.putAllIfPresent(diskresjonskodeOptFraPdl);
 
