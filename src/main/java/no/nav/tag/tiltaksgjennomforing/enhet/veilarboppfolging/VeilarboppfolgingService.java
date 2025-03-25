@@ -56,12 +56,13 @@ public class VeilarboppfolgingService {
         HentOppfolgingsstatusRespons responsOppfolgingstatus = responsOppfolginsstatusOpt.get();
         Gjeldende14aVedtakResponse gjeldende14aVedtakResponse = responseGjeldende14aVedtakOpt.get();
         secureLog.info("Hentet servicegruppe {} og formidlingsgruppe {} for fnr {}", responsOppfolgingstatus.servicegruppe(), responsOppfolgingstatus.formidlingsgruppe(), fnr);
-        secureLog.info("Hentet gjeldende 14-a vedtak {} for fnr {}", gjeldende14aVedtakResponse.innsatsgruppe().getGammelKode(), fnr);
+        secureLog.info("Hentet gjeldende 14-a vedtak {} for fnr {}", gjeldende14aVedtakResponse, fnr);
+        sammenLignInnsatsgrupper(gjeldende14aVedtakResponse, responsOppfolgingstatus, fnr);
 
         try {
             return new Oppfølgingsstatus(
                     Formidlingsgruppe.parse(responsOppfolgingstatus.formidlingsgruppe()),
-                    Kvalifiseringsgruppe.parse(gjeldende14aVedtakResponse.innsatsgruppe().getArenaKode()),
+                    Kvalifiseringsgruppe.parse(responsOppfolgingstatus.servicegruppe()),
                     responsOppfolgingstatus.oppfolgingsenhet().enhetId()
             );
         } catch (Exception e) {
@@ -96,6 +97,20 @@ public class VeilarboppfolgingService {
         }
 
         return oppfølgingStatus;
+    }
+
+    private void sammenLignInnsatsgrupper(Gjeldende14aVedtakResponse gjeldende14aVedtakResponse, HentOppfolgingsstatusRespons responsOppfolgingstatus, String fnr) {
+        if (gjeldende14aVedtakResponse.innsatsgruppe() == null && responsOppfolgingstatus.servicegruppe() != null) {
+            log.warn("Fant ikke innsatsgruppe i 14a vedtak, men fikk en servicegruppe fra veilarboppfolging: {}", responsOppfolgingstatus.servicegruppe());
+            secureLog.warn("Fant ikke innsatsgruppe i 14a vedtak, men fikk en servicegruppe fra veilarboppfolging: {} for fnr: {}", responsOppfolgingstatus.servicegruppe(), fnr);
+            return;
+        }
+        if (!gjeldende14aVedtakResponse.innsatsgruppe().getArenaKode().equals(responsOppfolgingstatus.servicegruppe())) {
+            log.warn("innsatsgruppe fra veilarbvedtaksstotte ({}) matcher ikke servicegruppe fra veilarboppfolging ({})",
+                    gjeldende14aVedtakResponse.innsatsgruppe().getArenaKode(), responsOppfolgingstatus.servicegruppe());
+            secureLog.warn("innsatsgruppe fra veilarbvedtaksstotte ({}) matcher ikke servicegruppe fra veilarboppfolging ({}) for fnr: {}",
+                    gjeldende14aVedtakResponse.innsatsgruppe().getArenaKode(), responsOppfolgingstatus.servicegruppe(), fnr);
+        }
     }
 
 }

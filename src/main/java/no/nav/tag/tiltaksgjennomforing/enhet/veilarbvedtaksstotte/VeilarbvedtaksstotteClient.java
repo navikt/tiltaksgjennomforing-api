@@ -13,11 +13,11 @@ import java.util.Optional;
 @Component
 public class VeilarbvedtaksstotteClient {
     private final RestTemplate restTemplate;
-    private final VeilarboppfolgingProperties veilarboppfolgingProperties;
+    private final VeilarbvedtaksstøtteProperties veilarbvedtaksstotteProperties;
 
-    public VeilarbvedtaksstotteClient(RestTemplate azureRestTemplate, VeilarboppfolgingProperties properties) {
+    public VeilarbvedtaksstotteClient(RestTemplate azureRestTemplate, VeilarbvedtaksstøtteProperties veilarbvedtaksstotteProperties) {
         this.restTemplate = azureRestTemplate;
-        this.veilarboppfolgingProperties = properties;
+        this.veilarbvedtaksstotteProperties = veilarbvedtaksstotteProperties;
     }
 
     public Optional<Gjeldende14aVedtakResponse> hentGjeldende14aVedtak(Gjeldende14aVedtakRequest gjeldende14aVedtakRequest) {
@@ -28,7 +28,7 @@ public class VeilarbvedtaksstotteClient {
         headers.set("Nav-Consumer-Id", "tiltaksgjennomforing-api");
 
         try {
-            String url = veilarboppfolgingProperties.getUrl() + "/api/ekstern/hent-gjeldende-14a-vedtak";
+            String url = veilarbvedtaksstotteProperties.getUrl() + "/veilarbvedtaksstotte/api/ekstern/hent-gjeldende-14a-vedtak";
             Gjeldende14aVedtakResponse gjeldende14aVedtakResponse = restTemplate.postForObject(url, gjeldende14aVedtakRequest, Gjeldende14aVedtakResponse.class);
             return Optional.ofNullable(gjeldende14aVedtakResponse);
         } catch (HttpClientErrorException.NotFound e) {

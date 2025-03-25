@@ -1,0 +1,166 @@
+{
+  "mappings": [
+    {
+      "priority": 1,
+      "request": {
+        "method": "POST",
+        "urlPattern": "/veilarbvedtaksstotte/api/ekstern/hent-gjeldende-14a-vedtak",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"fnr\":\"31129118213\"}",
+            "ignoreArrayOrder": true
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "innsatsgruppe": "TRENGER_VEILEDNING",
+          "hovedmal": "SKAFFE_ARBEID",
+          "fattetDato": "2025-03-21T13:33:14.678Z"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "POST",
+        "urlPattern": "/veilarbvedtaksstotte/api/ekstern/hent-gjeldende-14a-vedtak",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"fnr\":\"02104317386\"}",
+            "ignoreArrayOrder": true
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "innsatsgruppe": null,
+          "hovedmal": "SKAFFE_ARBEID",
+          "fattetDato": "2025-03-21T13:33:14.678Z"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "POST",
+        "urlPattern": "/veilarbvedtaksstotte/api/ekstern/hent-gjeldende-14a-vedtak",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"fnr\":\"09019621658\"}",
+            "ignoreArrayOrder": true
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "innsatsgruppe": null,
+          "hovedmal": "SKAFFE_ARBEID",
+          "fattetDato": "2025-03-21T13:33:14.678Z"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "POST",
+        "urlPattern": "/veilarbvedtaksstotte/api/ekstern/hent-gjeldende-14a-vedtak",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"fnr\":\"11111111111\"}",
+            "ignoreArrayOrder": true
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "innsatsgruppe": "TRENGER_VEILEDNING",
+          "hovedmal": "SKAFFE_ARBEID",
+          "fattetDato": "2025-03-21T13:33:14.678Z"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "POST",
+        "urlPattern": "/veilarbvedtaksstotte/api/ekstern/hent-gjeldende-14a-vedtak",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"fnr\":\"22222222222\"}",
+            "ignoreArrayOrder": true
+          }
+        ]
+      },
+      "response": {
+        "status": 404
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "POST",
+        "urlPattern": "/veilarbvedtaksstotte/api/ekstern/hent-gjeldende-14a-vedtak",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"fnr\":\"33333333333\"}",
+            "ignoreArrayOrder": true
+          }
+        ]
+      },
+      "response": {
+        "status": 404
+      }
+    },
+    {
+      "priority": 1,
+      "request": {
+        "method": "POST",
+        "urlPath": "/veilarbvedtaksstotte/api/ekstern/hent-gjeldende-14a-vedtak",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"fnr\":\"06109845173\"}",
+            "ignoreArrayOrder": true
+          }
+        ]
+      },
+      "response": {
+        "status": 404
+      }
+    },
+    {
+      "priority": 2,
+      "request": {
+        "method": "POST",
+        "urlPattern": "/veilarbvedtaksstotte/api/ekstern/hent-gjeldende-14a-vedtak"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "innsatsgruppe": "JOBBE_DELVIS",
+          "hovedmal": "BEHOLDE_ARBEID",
+          "fattetDato": "2025-03-21T13:33:14.678Z"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}
