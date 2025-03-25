@@ -25,7 +25,7 @@ public class AktsomhetService {
     public Aktsomhet kreverAktsomhet(Avtalerolle avtalerolle, UUID avtaleId) {
         try {
             switch (avtalerolle) {
-                case VEILEDER -> {
+                case BESLUTTER, VEILEDER -> {
                     Avtalepart avtalepart = innloggingService.hentAvtalepart(avtalerolle);
                     return Optional.ofNullable(avtalepart.hentAvtale(avtaleRepository, avtaleId))
                         .map(avtale -> Aktsomhet.intern(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())))
