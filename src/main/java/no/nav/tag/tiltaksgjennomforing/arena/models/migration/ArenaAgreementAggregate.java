@@ -13,7 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakskode;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Deltakerstatuskode;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.Tiltakstatuskode;
+import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
+import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.tag.tiltaksgjennomforing.exceptions.TiltaksgjennomforingException;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -79,8 +83,54 @@ public class ArenaAgreementAggregate {
             .findFirst();
     }
 
+    public boolean isSluttdatoBeforeStartdato() {
+        return findSluttdato()
+            .map(dato -> findStartdato().filter(dato::isBefore).isPresent())
+            .orElse(false);
+    }
+
+    public boolean isDeltakerOver72AarFraSluttDato() {
+        return getFnr().map(fnr -> findSluttdato().map(fnr::erOver72ÅrFraSluttDato).orElse(false)).orElse(false);
+    }
+
+    public boolean isSluttdatoIDagEllerFremtiden() {
+        return findSluttdato().map(sluttdato -> sluttdato.isAfter(LocalDate.now().minusDays(1))).orElse(false);
+    }
+
     public boolean isDublett() {
         return isDublett(eksternIdTiltak) || isDublett(eksternIdDeltaker);
+    }
+
+    public Optional<BigDecimal> getAntallDagerPrUke() {
+        return !Strings.isNullOrEmpty(antallDagerPrUke)
+            ? Optional.of(new BigDecimal(antallDagerPrUke))
+            : Optional.empty();
+    }
+
+    public Optional<BigDecimal> getProsentDeltid() {
+        return !Strings.isNullOrEmpty(prosentDeltid)
+            ? Optional.of(new BigDecimal(prosentDeltid))
+            : Optional.empty();
+    }
+
+    public Optional<Fnr> getFnr() {
+        try {
+            return !Strings.isNullOrEmpty(fnr)
+                ? Optional.of(Fnr.av(fnr))
+                : Optional.empty();
+        } catch (TiltaksgjennomforingException e) {
+            return Optional.empty();
+        }
+    }
+
+    public Optional<BedriftNr> getVirksomhetsnummer() {
+        try {
+            return !Strings.isNullOrEmpty(virksomhetsnummer)
+                ? Optional.of(BedriftNr.av(virksomhetsnummer))
+                : Optional.empty();
+        } catch (TiltaksgjennomforingException e) {
+            return Optional.empty();
+        }
     }
 
     public Optional<UUID> getEksternIdAsUuid() throws IllegalArgumentException {
