@@ -91,11 +91,10 @@ public class AltinnTilgangsstyringService {
                 arbeidsgiverToken);
         leggTil(tilganger, inkluderingstilskuddOrger, Tiltakstype.INKLUDERINGSTILSKUDD);
 
-        if (Objects.equals(altinnTilgangsstyringProperties.getVtaoAktiv(), Boolean.TRUE)) {
-            AltinnReportee[] vtaoOrger = kallAltinn(altinnTilgangsstyringProperties.getVtaoServiceCode(), altinnTilgangsstyringProperties.getVtaoServiceEdition(), fnr,
-                    arbeidsgiverToken);
-            leggTil(tilganger, vtaoOrger, Tiltakstype.VTAO);
-        }
+        AltinnReportee[] vtaoOrger = kallAltinn(altinnTilgangsstyringProperties.getVtaoServiceCode(), altinnTilgangsstyringProperties.getVtaoServiceEdition(), fnr,
+                arbeidsgiverToken);
+        leggTil(tilganger, vtaoOrger, Tiltakstype.VTAO);
+
 
         return tilganger.toMap();
     }

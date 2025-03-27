@@ -131,8 +131,7 @@ tiltaksgjennomforing:
     arbtreningServiceCode: 5332
     arbtreningServiceEdition: 1
     vtaoServiceCode: 5516
-    vtaoServiceEdition: 5 # TODO: Finn riktig service edition
-    vtaoAktiv: true
+    vtaoServiceEdition: 6
   ereg:
     uri: https://ereg-services.dev.intern.nav.no/api/v2/organisasjon
   sts:
