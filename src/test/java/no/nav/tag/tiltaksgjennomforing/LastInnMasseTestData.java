@@ -19,6 +19,9 @@ public class LastInnMasseTestData implements ApplicationListener<ApplicationRead
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
+        if (avtaleRepository.count() != 0) {
+            return;
+        }
         log.info("Laster inn masse testdata");
         avtaleRepository.saveAll(genererAvtaler(490));
     }

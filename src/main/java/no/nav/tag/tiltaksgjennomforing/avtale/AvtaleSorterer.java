@@ -3,75 +3,83 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import lombok.experimental.UtilityClass;
 import org.springframework.data.domain.Sort;
 
-import java.util.Comparator;
+import java.util.List;
 
 @UtilityClass
 public class AvtaleSorterer {
-    public Comparator<Avtale> comparatorForAvtale(String sorteringskolonne) {
-        return switch (sorteringskolonne) {
-            case Avtale.Fields.opprettetTidspunkt -> Comparator.comparing(Avtale::getOpprettetTidspunkt, Comparator.reverseOrder());
-            case AvtaleInnhold.Fields.bedriftNavn -> Comparator.comparing(avtale -> lowercaseEllerNull(avtale.getGjeldendeInnhold().getBedriftNavn()), Comparator.nullsLast(Comparator.naturalOrder()));
-            case AvtaleInnhold.Fields.deltakerEtternavn -> Comparator.comparing(avtale -> lowercaseEllerNull(avtale.getGjeldendeInnhold().getDeltakerEtternavn()), Comparator.nullsLast(Comparator.naturalOrder()));
-            case AvtaleInnhold.Fields.deltakerFornavn -> Comparator.comparing(avtale -> lowercaseEllerNull(avtale.getGjeldendeInnhold().getDeltakerFornavn()), Comparator.nullsLast(Comparator.naturalOrder()));
-            case "status" -> Comparator.comparing(avtale -> avtale.getStatus().getBeskrivelse().toLowerCase());
-            case "startDato" ->
-                    Comparator.comparing(avtale -> (avtale.getGjeldendeTilskuddsperiode() != null ? avtale.getGjeldendeTilskuddsperiode().getStartDato() : avtale.getGjeldendeInnhold().getStartDato()), Comparator.nullsLast(Comparator.naturalOrder()));
-            default -> Comparator.comparing(Avtale::getSistEndret, Comparator.reverseOrder());
+    enum SortOrder {
+        BEDRIFTNAVN,
+        DELTAKERFORNAVN,
+        OPPRETTETTIDSPUNKT,
+        SISTENDRET,
+        SLUTTDATO,
+        STARTDATO,
+        STATUS,
+        TILTAKSTYPE,
+        VEILEDERNAVIDENT,
+    }
+
+    static Sort getSortingOrder(Avtalerolle rolle, String order, String direction) {
+        SortOrder sortOrder = SortOrder.valueOf(order.toUpperCase());
+        Sort.Direction sortDirection = Sort.Direction.valueOf(direction.toUpperCase());
+
+        return switch (rolle) {
+            case VEILEDER -> Sort.by(getSortingOrderVeileder(sortOrder, sortDirection));
+            case BESLUTTER -> Sort.by(getSortingOrderBeslutter(sortOrder, sortDirection));
+            default -> Sort.by(getSortingOrderDeltakerOgArbeidsgiver(sortOrder, sortDirection));
         };
     }
 
-    private static String lowercaseEllerNull(String x) {
-        return x != null ? x.toLowerCase() : null;
-    }
-
-    static Sort.Order getSortingOrderForPageableVeileder(String sorteringskolonne) {
-        return getSortingOrderForPageableVeileder(sorteringskolonne, "ASC");
-    }
-
-    static Sort.Order getSortingOrderForPageableVeileder(String sorteringskolonne, String sorteringsRetning) {
-        var feldtnavn = switch (sorteringskolonne) {
-            case "deltakerFornavn" -> "gjeldendeInnhold.deltakerFornavn";
-            case "opprettetTidspunkt" -> "opprettetTidspunkt";
-            case "bedriftNavn" -> "gjeldendeInnhold.bedriftNavn";
-            case "startDato" -> "gjeldendeInnhold.startDato";
-            case "sluttDato" -> "gjeldendeInnhold.sluttDato";
-            case "tiltakstype" -> "tiltakstype";
-            case "veilederNavIdent" -> "veilederNavIdent";
-            case "status" -> "status";
-            default -> "sistEndret";
-        };
-        return new Sort.Order(Sort.Direction.fromString(sorteringsRetning), feldtnavn);
-    }
-
-    static protected Sort.Order getSortingOrderForPageableBeslutter(String order, String direction) {
-        SortingDirection sortingDirection = SortingDirection.valueOf(direction.toUpperCase());
-        return switch (sortingDirection) {
-            case ASC -> getSortingOrderForPageableASC(SortingOrder.valueOf(order.toUpperCase()));
-            case DESC -> getSortingOrderForPageableDESC(SortingOrder.valueOf(order.toUpperCase()));
+    private static List<Sort.Order> getSortingOrderVeileder(SortOrder order, Sort.Direction direction) {
+        return switch (order) {
+            case BEDRIFTNAVN -> List.of(new Sort.Order(direction, "gjeldendeInnhold.bedriftNavn"));
+            case DELTAKERFORNAVN -> List.of(new Sort.Order(direction, "gjeldendeInnhold.deltakerFornavn"));
+            case OPPRETTETTIDSPUNKT -> List.of(new Sort.Order(direction, "opprettetTidspunkt"));
+            case SLUTTDATO -> List.of(new Sort.Order(direction, "gjeldendeInnhold.sluttDato"));
+            case STARTDATO -> List.of(new Sort.Order(direction, "gjeldendeInnhold.startDato"));
+            case TILTAKSTYPE -> List.of(new Sort.Order(direction, "tiltakstype"));
+            case VEILEDERNAVIDENT -> List.of(new Sort.Order(direction, "veilederNavIdent"));
+            case STATUS -> List.of(
+                // NULLS_LAST fungerer ikke i postgres, derfor må vi sortere i revers for å få oppfølging øverst
+                new Sort.Order(direction, "oppfolgingVarselSendt").reverse(),
+                new Sort.Order(direction, "status")
+            );
+            default -> List.of(
+                // NULLS_LAST fungerer ikke i postgres, derfor må vi sortere i revers for å få oppfølging øverst
+                new Sort.Order(direction, "oppfolgingVarselSendt").reverse(),
+                new Sort.Order(direction, "sistEndret")
+            );
         };
     }
 
-    static private Sort.Order getSortingOrderForPageableASC(SortingOrder sortingOrder) {
-        return switch (sortingOrder) {
-            case OPPRETTETTIDSPUNKT -> Sort.Order.asc("opprettetTidspunkt");
-            case BEDRIFTNAVN -> Sort.Order.asc("bedriftNavn");
-            case DELTAKERFORNAVN -> Sort.Order.asc("deltakerFornavn");
-            case STATUS -> Sort.Order.asc("antallUbehandlet");
-            case STARTDATO -> Sort.Order.asc("startDato");
-            case SISTENDRET -> Sort.Order.asc("sistEndret");
-            case TILTAKSTYPE -> Sort.Order.asc("tiltakstype");
+    private static List<Sort.Order> getSortingOrderBeslutter(
+        SortOrder order,
+        Sort.Direction direction
+    ) {
+        return switch (order) {
+            case BEDRIFTNAVN -> List.of(new Sort.Order(direction, "bedriftNavn"));
+            case DELTAKERFORNAVN -> List.of(new Sort.Order(direction, "deltakerFornavn"));
+            case OPPRETTETTIDSPUNKT -> List.of(new Sort.Order(direction, "opprettetTidspunkt"));
+            case STARTDATO -> List.of(new Sort.Order(direction, "startDato"));
+            case STATUS -> List.of(new Sort.Order(direction, "antallUbehandlet"));
+            case TILTAKSTYPE -> List.of(new Sort.Order(direction, "tiltakstype"));
+            default -> List.of(new Sort.Order(direction, "sistEndret"));
         };
     }
 
-    static private Sort.Order getSortingOrderForPageableDESC(SortingOrder sortingOrder) {
-        return switch (sortingOrder) {
-            case OPPRETTETTIDSPUNKT -> Sort.Order.desc("opprettetTidspunkt");
-            case BEDRIFTNAVN -> Sort.Order.desc("bedriftNavn");
-            case DELTAKERFORNAVN -> Sort.Order.desc("deltakerFornavn");
-            case STATUS -> Sort.Order.desc("antallUbehandlet");
-            case STARTDATO -> Sort.Order.desc("startDato");
-            case SISTENDRET -> Sort.Order.desc("sistEndret");
-            case TILTAKSTYPE -> Sort.Order.desc("tiltakstype");
+    private static List<Sort.Order> getSortingOrderDeltakerOgArbeidsgiver(
+        SortOrder order,
+        Sort.Direction direction
+    ) {
+        return switch (order) {
+            case BEDRIFTNAVN -> List.of(new Sort.Order(direction, "gjeldendeInnhold.bedriftNavn"));
+            case DELTAKERFORNAVN -> List.of(new Sort.Order(direction, "gjeldendeInnhold.deltakerFornavn"));
+            case OPPRETTETTIDSPUNKT -> List.of(new Sort.Order(direction, "opprettetTidspunkt"));
+            case SLUTTDATO -> List.of(new Sort.Order(direction, "gjeldendeInnhold.sluttDato"));
+            case STARTDATO -> List.of(new Sort.Order(direction, "gjeldendeInnhold.startDato"));
+            case STATUS -> List.of(new Sort.Order(direction, "status"));
+            case TILTAKSTYPE -> List.of(new Sort.Order(direction, "tiltakstype"));
+            default -> List.of(new Sort.Order(direction, "sistEndret"));
         };
     }
 }
