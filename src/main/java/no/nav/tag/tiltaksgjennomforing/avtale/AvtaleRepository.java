@@ -170,7 +170,6 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
         value = """
             SELECT a
             FROM Avtale a
-            LEFT OUTER JOIN TilskuddPeriode t ON t.id = a.gjeldendeTilskuddsperiode.id
             WHERE a.feilregistrert = FALSE AND
                   (:ufordelt = FALSE OR a.veilederNavIdent IS NULL) AND
                   (:ufordelt = TRUE OR :veilederNavIdent IS NULL OR a.veilederNavIdent = :veilederNavIdent) AND
@@ -184,7 +183,6 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
         countQuery = """
             SELECT COUNT(a)
             FROM Avtale a
-            LEFT OUTER JOIN TilskuddPeriode t ON t.id = a.gjeldendeTilskuddsperiode.id
             WHERE a.feilregistrert = FALSE AND
                   (:ufordelt = FALSE OR a.veilederNavIdent IS NULL) AND
                   (:ufordelt = TRUE OR :veilederNavIdent IS NULL OR a.veilederNavIdent = :veilederNavIdent) AND

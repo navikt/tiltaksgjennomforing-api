@@ -42,15 +42,11 @@ public class AvtaleSorterer {
             case STATUS -> List.of(
                 // NULLS_LAST fungerer ikke i postgres, derfor må vi sortere i revers for å få oppfølging øverst
                 new Sort.Order(direction, "oppfolgingVarselSendt").reverse(),
-                // Status 'AVSLÅTT' skal ha høyere prioritering ved DESC sortering derfor reverse
-                new Sort.Order(direction, "t.status").reverse(),
                 new Sort.Order(direction, "status")
             );
             default -> List.of(
                 // NULLS_LAST fungerer ikke i postgres, derfor må vi sortere i revers for å få oppfølging øverst
                 new Sort.Order(direction, "oppfolgingVarselSendt").reverse(),
-                // Status 'AVSLÅTT' skal ha høyere prioritering ved DESC sortering derfor reverse
-                new Sort.Order(direction, "t.status").reverse(),
                 new Sort.Order(direction, "sistEndret")
             );
         };
