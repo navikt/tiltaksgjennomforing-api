@@ -5,6 +5,10 @@ management.endpoints.web:
   base-path: /internal/actuator
 
 spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    locations: classpath:db/migration/common,classpath:db/migration/{vendor}
   task:
     scheduling.pool.size: 8
   cache:

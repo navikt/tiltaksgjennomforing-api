@@ -1,6 +1,5 @@
 spring:
   datasource:
-    driverClassName: org.postgresql.Driver
     url: 'jdbc:postgresql://A01DBVL033.adeo.no:5432/tiltaksgjennomforing-p15-prod'
 
 no.nav.security.jwt:
