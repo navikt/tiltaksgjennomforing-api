@@ -19,7 +19,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 import java.time.temporal.ChronoUnit;
 import java.util.EnumSet;
@@ -116,9 +115,11 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
             Integer size,
             String sorteringOrder
     ) {
-        Sort by = Sort.by(AvtaleSorterer.getSortingOrderForPageableBeslutter(sorteringskolonne, sorteringOrder));
-        Pageable paging = PageRequest.of(page, size, by);
-
+        Pageable pageable = PageRequest.of(
+            page,
+            size,
+            AvtaleSorterer.getSortingOrder(Avtalerolle.BESLUTTER, sorteringskolonne, sorteringOrder)
+        );
         Set<String> navEnheter = hentNavEnheter();
         if (navEnheter.isEmpty()) {
             throw new NavEnhetIkkeFunnetException();
@@ -140,7 +141,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
             Optional.ofNullable(queryParametre.getNavEnhet()).map(Set::of).orElse(navEnheter),
             Optional.ofNullable(queryParametre.getBedriftNr()).map(BedriftNr::asString).orElse(null),
             queryParametre.getAvtaleNr(),
-            paging
+            pageable
         );
 
         boolean isSkalHenteDiskresjonskoder = adGruppeTilganger.fortroligAdresse() || adGruppeTilganger.strengtFortroligAdresse();

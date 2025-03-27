@@ -29,7 +29,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -55,7 +54,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.AvtaleSorterer.getSortingOrderForPageableVeileder;
 import static no.nav.tag.tiltaksgjennomforing.utils.Utils.lagUri;
 
 @Protected
@@ -154,7 +152,11 @@ public class AvtaleController {
             @RequestParam(value = "size", required = false, defaultValue = "10") Integer size
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageableVeileder(sorteringskolonne)));
+        Pageable pageable = PageRequest.of(
+            Math.abs(page),
+            Math.abs(size),
+            AvtaleSorterer.getSortingOrder(avtalepart.rolle(), sorteringskolonne, "ASC")
+        );
         Page<BegrensetAvtale> avtaler = avtalepart.hentBegrensedeAvtalerMedLesetilgang(avtaleRepository, queryParametre, pageable);
         return PageableAvtalelisteResponse.fra(avtaler);
     }
@@ -184,9 +186,9 @@ public class AvtaleController {
         AvtaleQueryParameter avtalePredicate = filterSok.getAvtalePredicate();
 
         Pageable pageable = PageRequest.of(
-                Math.abs(page),
-                Math.abs(size),
-                Sort.by(getSortingOrderForPageableVeileder(sorteringskolonne, sorteringOrder))
+            Math.abs(page),
+            Math.abs(size),
+            AvtaleSorterer.getSortingOrder(avtalepart.rolle(), sorteringskolonne, sorteringOrder)
         );
         Page<BegrensetAvtale> avtaler = avtalepart.hentBegrensedeAvtalerMedLesetilgang(
             avtaleRepository,
@@ -215,7 +217,11 @@ public class AvtaleController {
             @RequestParam(value = "sorteringOrder", required = false, defaultValue = "DESC") String sorteringOrder
     ) {
         Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        Pageable pageable = PageRequest.of(Math.abs(page), Math.abs(size), Sort.by(getSortingOrderForPageableVeileder(sorteringskolonne, sorteringOrder)));
+        Pageable pageable = PageRequest.of(
+            Math.abs(page),
+            Math.abs(size),
+            AvtaleSorterer.getSortingOrder(avtalepart.rolle(), sorteringskolonne, sorteringOrder)
+        );
         Page<BegrensetAvtale> avtaler = avtalepart.hentBegrensedeAvtalerMedLesetilgang(
                 avtaleRepository,
                 queryParametre,
