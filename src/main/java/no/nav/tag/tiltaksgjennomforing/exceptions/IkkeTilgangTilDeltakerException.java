@@ -10,6 +10,11 @@ public class IkkeTilgangTilDeltakerException extends FeilkodeException {
         this.identifikator = identifikator;
     }
 
+    public IkkeTilgangTilDeltakerException(Fnr identifikator, Feilkode feilkode) {
+        super(feilkode);
+        this.identifikator = identifikator;
+    }
+
     public Fnr getFnr() {
         return identifikator;
     }

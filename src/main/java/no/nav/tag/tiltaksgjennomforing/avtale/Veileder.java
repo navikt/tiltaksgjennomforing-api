@@ -1,23 +1,14 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.AdGruppeTilganger;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.*;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
-import no.nav.tag.tiltaksgjennomforing.exceptions.ErAlleredeVeilederException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
-import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeAdminTilgangException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.Kode6SperretForOpprettelseOgEndringException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.*;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
@@ -32,11 +23,7 @@ import org.springframework.data.domain.Pageable;
 import java.sql.Date;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -104,11 +91,16 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
         secureLog.info("Sjekker tilgang for veileder {} til avtale {}", getIdentifikator(), avtale.getId());
-        boolean harTilgang = tilgangskontrollService.harSkrivetilgangTilKandidat(this, avtale.getDeltakerFnr());
-        if (!harTilgang) {
+        Tilgang harTilgang = tilgangskontrollService.hentSkrivetilgang(this, avtale.getDeltakerFnr());
+        if (!harTilgang.erTillat()) { //TODO: SWTICH
+            Tilgang.Avvis avistTilgang = (Tilgang.Avvis) harTilgang;
+            if (avistTilgang.tilgangskode().equals(Avslagskode.STRENGT_FORTROLIG_ADRESSE)
+                    || avistTilgang.tilgangskode().equals(Avslagskode.FORTROLIG_ADRESSE)) {
+                throw new IkkeTilgangTilDeltakerException(avtale.getDeltakerFnr(), Feilkode.IKKE_TILGANG_TIL_AVTALE_KODE6eller7);
+            }
             log.info("Har ikke tilgang til avtalenr {}, id: {}", avtale.getAvtaleNr(), avtale.getId());
         }
-        return harTilgang;
+        return harTilgang.erTillat();
     }
 
     @Override
