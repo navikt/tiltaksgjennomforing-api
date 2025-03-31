@@ -31,10 +31,7 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
@@ -69,10 +66,12 @@ public class InnloggingService {
                     .hentAltinnOrganisasjoner(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
             Map<BedriftNr, Collection<Tiltakstype>> tilganger = altinnTilgangsstyringService.hentTilganger(
                 new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
+            List<BedriftNr> adressesperreTilganger = altinnTilgangsstyringService.hentAdressesperreTilganger(new Fnr(brukerOgIssuer.getBrukerIdent()), hentArbeidsgiverToken);
             return new Arbeidsgiver(
                 new Fnr(brukerOgIssuer.getBrukerIdent()),
                 altinnOrganisasjoner,
                 tilganger,
+                adressesperreTilganger,
                 persondataService,
                 norg2Client
             );
