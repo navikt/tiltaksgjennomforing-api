@@ -70,7 +70,6 @@ public class EndreAvtale {
     private String mentorTlf;
     private Integer mentorTimelonn;
 
-    private VtaoFelter vtao;
 
     public RefusjonKontaktperson getRefusjonKontaktperson() {
         if (refusjonKontaktpersonTlf == null && refusjonKontaktpersonFornavn == null && refusjonKontaktpersonEtternavn == null) {
@@ -136,8 +135,7 @@ public class EndreAvtale {
                 innhold.getMentorOppgaver(),
                 innhold.getMentorAntallTimer(),
                 innhold.getMentorTlf(),
-                innhold.getMentorTimelonn(),
-                ofNullable(innhold.getVtao()).map(Vtao::hentFelter).orElse(null)
+                innhold.getMentorTimelonn()
         );
     }
 }

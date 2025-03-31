@@ -85,13 +85,10 @@ public class AvtaleTilJournalfoeringMapper {
             avtaleTilJournalfoering.setGodkjentTaushetserklæringAvMentor(avtaleInnhold.getGodkjentTaushetserklæringAvMentor().toLocalDate());
         }
 
-        if (avtale.getTiltakstype().equals(Tiltakstype.VTAO) && avtaleInnhold.getVtao() != null) {
+        if (avtale.getTiltakstype().equals(Tiltakstype.VTAO)) {
             avtaleTilJournalfoering.setSumLonnstilskudd(
                     VTAO_SATS.hentGjeldendeSats(avtale.getOpprettetTidspunkt().toLocalDate())
             );
-            avtaleTilJournalfoering.setFadderFornavn(avtaleInnhold.getVtao().getFadderFornavn());
-            avtaleTilJournalfoering.setFadderEtternavn(avtaleInnhold.getVtao().getFadderEtternavn());
-            avtaleTilJournalfoering.setFadderTlf(avtaleInnhold.getVtao().getFadderTlf());
         }
 
         return avtaleTilJournalfoering;

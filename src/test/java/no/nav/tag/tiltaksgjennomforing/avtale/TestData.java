@@ -594,7 +594,6 @@ public class TestData {
     public static EndreAvtale endringPåAlleVTAOFelter() {
         EndreAvtale endreAvtale = new EndreAvtale();
         endreKontaktInfo(endreAvtale);
-        endreFadderInfo(endreAvtale);
         endreAvtale.setOppfolging("Telefon hver uke");
         endreAvtale.setTilrettelegging("Ingen");
         endreAvtale.setStartDato(Now.localDate());
@@ -609,17 +608,6 @@ public class TestData {
         endreAvtale.setHarFamilietilknytning(false);
         return endreAvtale;
     }
-
-    public static EndreAvtale endreFadderInfo(EndreAvtale endreAvtale) {
-        var vtao = new VtaoFelter(
-                "Frank",
-                "Fadder",
-                "12345678"
-        );
-        endreAvtale.setVtao(vtao);
-        return endreAvtale;
-    }
-
 
     public static Avtale enLonnstilskuddAvtaleMedAltUtfyltMedGodkjentForEtterregistrering(LocalDate avtaleStart, LocalDate avtaleSlutt) {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
@@ -1037,8 +1025,8 @@ public class TestData {
                         avtale.getGjeldendeInnhold().getArbeidsgiverFornavn(),
                         avtale.getGjeldendeInnhold().getArbeidsgiverEtternavn(),
                         avtale.getGjeldendeInnhold().getArbeidsgiverTlf(),
-                        new RefusjonKontaktperson("Atle", "Jørgensen", "12345678", true),
-                        null),
+                        new RefusjonKontaktperson("Atle", "Jørgensen", "12345678", true)
+                ),
                 TestData.enNavIdent());
         return avtale;
     }
