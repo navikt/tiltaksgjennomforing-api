@@ -77,7 +77,7 @@ public class ArbeidsgiverTest {
                     )
                 ),
                 Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-                null,
+                List.of(),
                 new PersondataService(persondataClient),
                 norg2Client);
 
