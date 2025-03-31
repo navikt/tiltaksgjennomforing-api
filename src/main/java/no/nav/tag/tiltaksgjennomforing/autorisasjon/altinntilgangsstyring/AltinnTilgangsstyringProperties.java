@@ -29,6 +29,8 @@ public class AltinnTilgangsstyringProperties {
     private Integer mentorServiceEdition;
     private Integer vtaoServiceCode;
     private Integer vtaoServiceEdition;
+    private Integer adressesperreServiceCode;
+    private Integer adressesperreServiceEdition;
     /**
      * Er VTAO-tiltaksrettigheten aktivert?
      * @deprecated Skal fjernes ved lansering av VTAO i prod

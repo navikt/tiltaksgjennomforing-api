@@ -259,13 +259,15 @@ public class AvtaleControllerTest {
 
     @Test
     public void hentSkalKasteExceptionHvisInnloggetSelvbetjeningBrukerIkkeHarTilgang() {
+        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         Avtale avtale = TestData.enArbeidstreningAvtale();
         værInnloggetSom(
                 new Arbeidsgiver(
                         new Fnr("55555566666"),
                         Set.of(),
                         Map.of(),
-                        null,
+                        List.of(),
+                        persondataService,
                         null
                 )
         );
@@ -513,6 +515,7 @@ public class AvtaleControllerTest {
                 TestData.etFodselsnummer(),
                 Set.of(),
                 Map.of(),
+                null,
                 null,
                 null
         );

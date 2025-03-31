@@ -2,9 +2,12 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
@@ -26,19 +29,21 @@ import java.util.stream.Collectors;
 public class Arbeidsgiver extends Avtalepart<Fnr> {
     private final Map<BedriftNr, Collection<Tiltakstype>> tilganger;
     private final Set<AltinnReportee> altinnOrganisasjoner;
+    private final List<BedriftNr> adressesperreTilgang;
     private final PersondataService persondataService;
     private final Norg2Client norg2Client;
 
     public Arbeidsgiver(
             Fnr identifikator,
             Set<AltinnReportee> altinnOrganisasjoner,
-            Map<BedriftNr, Collection<Tiltakstype>> tilganger,
+            Map<BedriftNr, Collection<Tiltakstype>> tilganger, List<BedriftNr> adressesperreTilgang,
             PersondataService persondataService,
             Norg2Client norg2Client
     ) {
         super(identifikator);
         this.altinnOrganisasjoner = altinnOrganisasjoner;
         this.tilganger = tilganger;
+        this.adressesperreTilgang = adressesperreTilgang;
         this.persondataService = persondataService;
         this.norg2Client = norg2Client;
     }
@@ -136,6 +141,12 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         if (annullertForMerEnn12UkerSiden(avtale)) {
             return false;
         }
+        if (!adressesperreTilgang.contains(avtale.getBedriftNr())) {
+            Diskresjonskode diskresjonskode = persondataService.hentDiskresjonskode(avtale.getDeltakerFnr());
+            if (diskresjonskode.erKode6Eller7()) {
+                return false;
+            }
+        }
         return harTilgangPåTiltakIBedrift(avtale.getBedriftNr(), avtale.getTiltakstype());
     }
 
@@ -158,6 +169,16 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         }
         Collection<Tiltakstype> gyldigeTilgangerPåBedriftNr = tilganger.get(bedriftNr);
         return gyldigeTilgangerPåBedriftNr.contains(tiltakstype);
+    }
+
+    private boolean harTilgangPåDeltakerIBedrift(BedriftNr bedriftNr, Fnr deltakerFnr) {
+        if (!adressesperreTilgang.contains(bedriftNr)) {
+            Diskresjonskode diskresjonskode = persondataService.hentDiskresjonskode(deltakerFnr);
+            if (diskresjonskode.erKode6Eller7()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -203,14 +224,17 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         return liste;
     }
 
-    private void tilgangTilBedriftVedOpprettelseAvAvtale(BedriftNr bedriftNr, Tiltakstype tiltakstype) {
+    private void tilgangTilBedriftVedOpprettelseAvAvtale(BedriftNr bedriftNr, Tiltakstype tiltakstype, Fnr deltakerFnr) {
         if (!harTilgangPåTiltakIBedrift(bedriftNr, tiltakstype)) {
             throw new TilgangskontrollException("Har ikke tilgang på tiltak i valgt bedrift");
+        }
+        if (!harTilgangPåDeltakerIBedrift(bedriftNr, deltakerFnr)) {
+            throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_DELTAKER);
         }
     }
 
     public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
-        this.tilgangTilBedriftVedOpprettelseAvAvtale(opprettAvtale.getBedriftNr(), opprettAvtale.getTiltakstype());
+        this.tilgangTilBedriftVedOpprettelseAvAvtale(opprettAvtale.getBedriftNr(), opprettAvtale.getTiltakstype(), opprettAvtale.getDeltakerFnr());
 
         Avtale avtale = Avtale.opprett(opprettAvtale, Avtaleopphav.ARBEIDSGIVER);
         avtale.leggTilDeltakerNavn(persondataService.hentNavn(avtale.getDeltakerFnr()));
