@@ -2,8 +2,10 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Avslagskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
@@ -126,22 +128,37 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     }
 
     @Override
-    public boolean harTilgangTilAvtale(Avtale avtale) {
+    public Tilgang harTilgangTilAvtale(Avtale avtale) {
         if (sluttdatoPassertMedMerEnn12Uker(avtale)) {
-            return false;
+            return new Tilgang.Avvis(
+                Avslagskode.SLUTTDATO_PASSERT,
+                "Sluttdato har passert med mer enn 12 uker"
+            );
         }
         if (avbruttForMerEnn12UkerSiden(avtale)) {
-            return false;
+            return new Tilgang.Avvis(
+                Avslagskode.UTGATT,
+                "Avbrutt for mer enn 12 uker siden"
+            );
         }
         if (annullertForMerEnn12UkerSiden(avtale)) {
-            return false;
+            return new Tilgang.Avvis(
+                Avslagskode.UTGATT,
+                "Annullert for mer enn 12 uker siden"
+            );
         }
-        return harTilgangPåTiltakIBedrift(avtale.getBedriftNr(), avtale.getTiltakstype());
+        if (harTilgangPåTiltakIBedrift(avtale.getBedriftNr(), avtale.getTiltakstype())) {
+            return new Tilgang.Avvis(
+                Avslagskode.IKKE_TILGANG_PAA_TILTAK,
+                "Ikke tilgang på tiltak i valgt bedrift"
+            );
+        }
+        return new Tilgang.Tillat();
     }
 
     @Override
     Predicate<Avtale> harTilgangTilAvtale(List<Avtale> avtaler) {
-        return this::harTilgangTilAvtale;
+        return avtale -> harTilgangTilAvtale(avtale).erTillat();
     }
 
     @Override
@@ -191,7 +208,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
         List<Avtale> liste = avtaleRepository.findAllByBedriftNrAndFeilregistrertIsFalse(bedriftNr).stream()
                 .filter(this::avtalenEksisterer)
-                .filter(this::harTilgangTilAvtale)
+                .filter(avtale -> this.harTilgangTilAvtale(avtale).erTillat())
                 .map(Arbeidsgiver::fjernAvbruttGrunn)
                 .map(Arbeidsgiver::fjernAnnullertGrunn)
                 .collect(Collectors.toList());
