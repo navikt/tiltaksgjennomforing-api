@@ -139,9 +139,6 @@ public class ArbeidsgiverTest {
     @Test
     public void opprettAvtale__ingen_feilmelding_ved_diskresjonskode_og_ikke_adressesperre_tilgang() {
         // PDL Adressepserre og navn
-        PersondataClient persondataClient = mock(PersondataClient.class);
-//        final PdlRespons pdlRespons = TestData.enPdlrespons(true);
-//        when(persondataClient.hentPersondata(any(Fnr.class))).thenReturn(pdlRespons);
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
         when(persondataService.hentNavn(any())).thenReturn(new Navn("Donald", "", "Duck"));
@@ -164,9 +161,6 @@ public class ArbeidsgiverTest {
     @Test
     public void hentAvtale__feilmelding_uten_adressesperre_tilgang() {
         // PDL Adressepserre og navn mock
-//        PersondataClient persondataClient = mock(PersondataClient.class);
-//        final PdlRespons pdlRespons = TestData.enPdlrespons(true);
-//        when(persondataClient.hentPersondata(any(Fnr.class))).thenReturn(pdlRespons);
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
         // Repository mock
@@ -191,9 +185,6 @@ public class ArbeidsgiverTest {
     @Test
     public void hentAvtale__ikke_feilmelding_med_adressesperre_tilgang() {
         // PDL Adressepserre og navn mock
-//        PersondataClient persondataClient = mock(PersondataClient.class);
-//        final PdlRespons pdlRespons = TestData.enPdlrespons(true);
-//        when(persondataClient.hentPersondata(any(Fnr.class))).thenReturn(pdlRespons);
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
         // Repository mock
@@ -218,9 +209,6 @@ public class ArbeidsgiverTest {
     @Test
     public void hentAlleAvterMedMuligTilgang__får_ikke_adressesperre_avtaler() {
         // PDL Adressepserre og navn mock
-//        PersondataClient persondataClient = mock(PersondataClient.class);
-//        final PdlRespons pdlRespons = TestData.enPdlrespons(true);
-//        when(persondataClient.hentPersondata(any(Fnr.class))).thenReturn(pdlRespons);
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
         // Repository mock
