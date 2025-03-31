@@ -132,6 +132,8 @@ tiltaksgjennomforing:
     arbtreningServiceEdition: 1
     vtaoServiceCode: 5516
     vtaoServiceEdition: 6
+    adressesperreServiceCode: 5516
+    adressesperreServiceEdition: 7
   ereg:
     uri: https://ereg-services.dev.intern.nav.no/api/v2/organisasjon
   sts:

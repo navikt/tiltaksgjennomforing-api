@@ -24,6 +24,7 @@ import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.sporingslogg.Sporingslogg;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import no.nav.team_tiltak.felles.persondata.PersondataClient;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Navn;
 
@@ -789,7 +790,10 @@ public class TestData {
     }
 
     public static Arbeidsgiver enArbeidsgiver() {
-        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of(), null, null);
+        // TODO: Fjerne hvis ikke nødvendig
+        PersondataService persondataService = mock(PersondataService.class);
+        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
+        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of(), List.of(), persondataService, null);
     }
 
     public static Mentor enMentor(Avtale avtale) {
@@ -797,12 +801,21 @@ public class TestData {
     }
 
     public static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
+        // TODO: Fjerne hvis ikke nødvendig
+//        PersondataClient persondataClient = mock(PersondataClient.class);
+//        final PdlRespons pdlRespons = TestData.enPdlrespons(false);
+//        when(persondataClient.hentPersondata(any(Fnr.class))).thenReturn(pdlRespons);
+        PersondataService persondataService = mock(PersondataService.class);
+        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
+        when(persondataService.hentNavn(any())).thenReturn(new Navn("Donald", "", "Duck"));
+
         return new Arbeidsgiver(
                 TestData.etFodselsnummer(),
                 Set.of(new AltinnReportee("Bedriftnavn", "", null, avtale.getBedriftNr().asString(), "", "", null))
                 , Map.of(avtale.getBedriftNr(),
                 List.of(Tiltakstype.values())),
-                null,
+                List.of(),
+                persondataService,
                 null);
     }
 
