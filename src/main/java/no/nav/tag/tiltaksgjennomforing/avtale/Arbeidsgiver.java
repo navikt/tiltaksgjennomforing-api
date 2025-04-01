@@ -142,12 +142,10 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         if (annullertForMerEnn12UkerSiden(avtale)) {
             return false;
         }
-        if (!adressesperreTilgang.contains(avtale.getBedriftNr())) {
-            Diskresjonskode diskresjonskode = persondataService.hentDiskresjonskode(avtale.getDeltakerFnr());
-            if (diskresjonskode.erKode6Eller7()) {
-                return false;
-            }
+        if (!harTilgangPåDeltakerIBedrift(avtale.getBedriftNr(), avtale.getDeltakerFnr())) {
+            return false;
         }
+
         return harTilgangPåTiltakIBedrift(avtale.getBedriftNr(), avtale.getTiltakstype());
     }
 
