@@ -9,6 +9,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
@@ -240,7 +241,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
             throw new TilgangskontrollException("Har ikke tilgang på tiltak i valgt bedrift");
         }
         if (!harTilgangPåDeltakerIBedrift(bedriftNr, deltakerFnr)) {
-            throw new FeilkodeException(Feilkode.IKKE_TILGANG_TIL_DELTAKER);
+            throw new IkkeTilgangTilDeltakerException(deltakerFnr);
         }
     }
 
