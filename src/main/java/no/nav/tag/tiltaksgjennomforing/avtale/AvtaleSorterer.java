@@ -10,6 +10,7 @@ public class AvtaleSorterer {
     enum SortOrder {
         BEDRIFTNAVN,
         DELTAKERFORNAVN,
+        DELTAKERETTERNAVN,
         OPPRETTETTIDSPUNKT,
         SISTENDRET,
         SLUTTDATO,
@@ -34,6 +35,7 @@ public class AvtaleSorterer {
         return switch (order) {
             case BEDRIFTNAVN -> List.of(new Sort.Order(direction, "gjeldendeInnhold.bedriftNavn"));
             case DELTAKERFORNAVN -> List.of(new Sort.Order(direction, "gjeldendeInnhold.deltakerFornavn"));
+            case DELTAKERETTERNAVN -> List.of(new Sort.Order(direction, "gjeldendeInnhold.deltakerEtternavn"));
             case OPPRETTETTIDSPUNKT -> List.of(new Sort.Order(direction, "opprettetTidspunkt"));
             case SLUTTDATO -> List.of(new Sort.Order(direction, "gjeldendeInnhold.sluttDato"));
             case STARTDATO -> List.of(new Sort.Order(direction, "gjeldendeInnhold.startDato"));
@@ -59,6 +61,7 @@ public class AvtaleSorterer {
         return switch (order) {
             case BEDRIFTNAVN -> List.of(new Sort.Order(direction, "bedriftNavn"));
             case DELTAKERFORNAVN -> List.of(new Sort.Order(direction, "deltakerFornavn"));
+            case DELTAKERETTERNAVN -> List.of(new Sort.Order(direction, "deltakerEtternavn"));
             case OPPRETTETTIDSPUNKT -> List.of(new Sort.Order(direction, "opprettetTidspunkt"));
             case STARTDATO -> List.of(new Sort.Order(direction, "startDato"));
             case STATUS -> List.of(new Sort.Order(direction, "antallUbehandlet"));
@@ -74,6 +77,7 @@ public class AvtaleSorterer {
         return switch (order) {
             case BEDRIFTNAVN -> List.of(new Sort.Order(direction, "gjeldendeInnhold.bedriftNavn"));
             case DELTAKERFORNAVN -> List.of(new Sort.Order(direction, "gjeldendeInnhold.deltakerFornavn"));
+            case DELTAKERETTERNAVN -> List.of(new Sort.Order(direction, "gjeldendeInnhold.deltakerEtternavn"));
             case OPPRETTETTIDSPUNKT -> List.of(new Sort.Order(direction, "opprettetTidspunkt"));
             case SLUTTDATO -> List.of(new Sort.Order(direction, "gjeldendeInnhold.sluttDato"));
             case STARTDATO -> List.of(new Sort.Order(direction, "gjeldendeInnhold.startDato"));
