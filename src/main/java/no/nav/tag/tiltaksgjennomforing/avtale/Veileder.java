@@ -222,8 +222,12 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             EndreAvtale endreAvtale,
             Avtale avtale
     ) {
-        super.sjekkTilgangOgEndreAvtale(sistEndret, endreAvtale, avtale);
-        this.oppdatereEnheterVedEndreAvtale(avtale);
+        super.endreAvtale(
+            sistEndret,
+            endreAvtale,
+            avtale,
+            () -> oppdatereEnheterVedEndreAvtale(avtale)
+        );
     }
 
     protected void oppdatereEnheterVedEndreAvtale(Avtale avtale) {
