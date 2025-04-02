@@ -41,7 +41,8 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
     public Arbeidsgiver(
             Fnr identifikator,
             Set<AltinnReportee> altinnOrganisasjoner,
-            Map<BedriftNr, Collection<Tiltakstype>> tilganger, List<BedriftNr> adressesperreTilgang,
+            Map<BedriftNr, Collection<Tiltakstype>> tilganger,
+            List<BedriftNr> adressesperreTilgang,
             PersondataService persondataService,
             Norg2Client norg2Client
     ) {
