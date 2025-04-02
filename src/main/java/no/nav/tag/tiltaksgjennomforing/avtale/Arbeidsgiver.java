@@ -19,12 +19,14 @@ import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 public class Arbeidsgiver extends Avtalepart<Fnr> {
@@ -133,6 +135,10 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
+        return harTilgangTilAvtale(avtale, avt -> !harTilgangPåDeltakerIBedrift(avt.getBedriftNr(), avt.getDeltakerFnr()));
+    }
+
+    public boolean harTilgangTilAvtale(Avtale avtale, Predicate<Avtale> tilleggssjekk) {
         if (sluttdatoPassertMedMerEnn12Uker(avtale)) {
             return false;
         }
@@ -142,16 +148,25 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         if (annullertForMerEnn12UkerSiden(avtale)) {
             return false;
         }
-        if (!harTilgangPåDeltakerIBedrift(avtale.getBedriftNr(), avtale.getDeltakerFnr())) {
+        if (tilleggssjekk.test(avtale)) {
             return false;
         }
-
         return harTilgangPåTiltakIBedrift(avtale.getBedriftNr(), avtale.getTiltakstype());
     }
 
     @Override
     Predicate<Avtale> harTilgangTilAvtale(List<Avtale> avtaler) {
-        return this::harTilgangTilAvtale;
+        boolean harAdressesperretilgang = avtaler.stream().anyMatch(avtale -> adressesperreTilgang.contains(avtale.getBedriftNr()));
+        Set<Fnr> set = avtaler.stream()
+                .map(Avtale::getDeltakerFnr)
+                .collect(Collectors.toSet());
+        Map<Fnr, Diskresjonskode> diskresjonskodeMap = !harAdressesperretilgang ? persondataService.hentDiskresjonskoder(set) : Collections.emptyMap();
+
+        return avtale -> {
+            Diskresjonskode diskresjonskode = diskresjonskodeMap.get(avtale.getDeltakerFnr());
+            return harTilgangTilAvtale(avtale, avt -> diskresjonskode.erKode6Eller7());
+        };
+
     }
 
     @Override
