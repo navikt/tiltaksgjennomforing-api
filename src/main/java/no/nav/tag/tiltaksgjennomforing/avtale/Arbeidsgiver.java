@@ -135,38 +135,33 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
-        return harTilgangTilAvtale(avtale, avt -> !harTilgangPåDeltakerIBedrift(avt.getBedriftNr(), avt.getDeltakerFnr()));
-    }
-
-    public boolean harTilgangTilAvtale(Avtale avtale, Predicate<Avtale> tilleggssjekk) {
-        if (sluttdatoPassertMedMerEnn12Uker(avtale)) {
-            return false;
-        }
-        if (avbruttForMerEnn12UkerSiden(avtale)) {
-            return false;
-        }
-        if (annullertForMerEnn12UkerSiden(avtale)) {
-            return false;
-        }
-        if (tilleggssjekk.test(avtale)) {
-            return false;
-        }
-        return harTilgangPåTiltakIBedrift(avtale.getBedriftNr(), avtale.getTiltakstype());
+        return harTilgangTilAvtale(List.of(avtale)).test(avtale);
     }
 
     @Override
     Predicate<Avtale> harTilgangTilAvtale(List<Avtale> avtaler) {
+        // Arbeidsgiver henter alltid en eller flere avtaler på samme bedriftNr, derav anyMatch.
         boolean harAdressesperretilgang = avtaler.stream().anyMatch(avtale -> adressesperreTilgang.contains(avtale.getBedriftNr()));
-        Set<Fnr> set = avtaler.stream()
-                .map(Avtale::getDeltakerFnr)
-                .collect(Collectors.toSet());
-        Map<Fnr, Diskresjonskode> diskresjonskodeMap = !harAdressesperretilgang ? persondataService.hentDiskresjonskoder(set) : Collections.emptyMap();
+        Set<Fnr> unikeFnrIAvtaler = avtaler.stream().map(Avtale::getDeltakerFnr).collect(Collectors.toSet());
 
+        // Slå opp PDL i bolk hvis man ikke har adressesperretilgang
+        Map<Fnr, Diskresjonskode> diskresjonskodeMap = !harAdressesperretilgang ? persondataService.hentDiskresjonskoder(unikeFnrIAvtaler) : Collections.emptyMap();
         return avtale -> {
-            Diskresjonskode diskresjonskode = diskresjonskodeMap.get(avtale.getDeltakerFnr());
-            return harTilgangTilAvtale(avtale, avt -> diskresjonskode.erKode6Eller7());
+            boolean deltakerHarAdressesperre = diskresjonskodeMap.getOrDefault(avtale.getDeltakerFnr(), Diskresjonskode.UGRADERT).erKode6Eller7();
+            if (!harAdressesperretilgang && deltakerHarAdressesperre) {
+                return false;
+            }
+            if (sluttdatoPassertMedMerEnn12Uker(avtale)) {
+                return false;
+            }
+            if (avbruttForMerEnn12UkerSiden(avtale)) {
+                return false;
+            }
+            if (annullertForMerEnn12UkerSiden(avtale)) {
+                return false;
+            }
+            return harTilgangPåTiltakIBedrift(avtale.getBedriftNr(), avtale.getTiltakstype());
         };
-
     }
 
     @Override
