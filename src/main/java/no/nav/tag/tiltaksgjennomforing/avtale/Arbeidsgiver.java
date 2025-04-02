@@ -239,17 +239,13 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         return liste;
     }
 
-    private void tilgangTilBedriftVedOpprettelseAvAvtale(BedriftNr bedriftNr, Tiltakstype tiltakstype, Fnr deltakerFnr) {
-        if (!harTilgangPåTiltakIBedrift(bedriftNr, tiltakstype)) {
+    public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
+        if (!harTilgangPåTiltakIBedrift(opprettAvtale.getBedriftNr(), opprettAvtale.getTiltakstype())) {
             throw new TilgangskontrollException("Har ikke tilgang på tiltak i valgt bedrift");
         }
-        if (!harTilgangPåDeltakerIBedrift(bedriftNr, deltakerFnr)) {
-            throw new IkkeTilgangTilDeltakerException(deltakerFnr);
+        if (!harTilgangPåDeltakerIBedrift(opprettAvtale.getBedriftNr(), opprettAvtale.getDeltakerFnr())) {
+            throw new IkkeTilgangTilDeltakerException(opprettAvtale.getDeltakerFnr());
         }
-    }
-
-    public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
-        this.tilgangTilBedriftVedOpprettelseAvAvtale(opprettAvtale.getBedriftNr(), opprettAvtale.getTiltakstype(), opprettAvtale.getDeltakerFnr());
 
         Avtale avtale = Avtale.opprett(opprettAvtale, Avtaleopphav.ARBEIDSGIVER);
         avtale.leggTilDeltakerNavn(persondataService.hentNavn(avtale.getDeltakerFnr()));
