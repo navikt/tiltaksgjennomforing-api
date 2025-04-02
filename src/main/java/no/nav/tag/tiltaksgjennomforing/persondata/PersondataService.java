@@ -1,13 +1,16 @@
 package no.nav.tag.tiltaksgjennomforing.persondata;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
+import no.nav.security.token.support.client.core.ClientProperties;
+import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService;
+import no.nav.security.token.support.client.spring.ClientConfigurationProperties;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 import no.nav.tag.tiltaksgjennomforing.persondata.aktorId.AktorId;
-import no.nav.tag.tiltaksgjennomforing.persondata.domene.Navn;
+import no.nav.team_tiltak.felles.persondata.PersondataClient;
+import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
+import no.nav.team_tiltak.felles.persondata.pdl.domene.Navn;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -17,66 +20,44 @@ import java.util.stream.Collectors;
 @Service
 public class PersondataService {
     private final PersondataClient persondataClient;
-    private final PersondataDiskresjonskodeCache diskresjonskodeCache;
 
-    public PersondataService(PersondataClient persondataClient) {
-        this.persondataClient = persondataClient;
-        this.diskresjonskodeCache = new PersondataDiskresjonskodeCache();
+    public PersondataService(
+        PersondataProperties persondataProperties,
+        OAuth2AccessTokenService oAuth2AccessTokenService,
+        ClientConfigurationProperties clientConfigurationProperties
+    ) {
+        ClientProperties clientProperties = clientConfigurationProperties.getRegistration().get("pdl-api");
+
+        this.persondataClient = new PersondataClient(
+            persondataProperties.getUri(),
+            () -> Optional.ofNullable(clientProperties)
+                .map(prop -> oAuth2AccessTokenService.getAccessToken(prop).getAccessToken())
+                .orElse(null)
+        );
     }
 
     public Diskresjonskode hentDiskresjonskode(Fnr fnr) {
-        return diskresjonskodeCache.get(fnr).orElseGet(() -> {
-            Optional<Diskresjonskode> diskresjonskodeOpt = persondataClient.hentPersondata(fnr).utledDiskresjonskode();
-            diskresjonskodeCache.putIfPresent(fnr, diskresjonskodeOpt);
-            return diskresjonskodeOpt.orElse(Diskresjonskode.UGRADERT);
-        });
+        return persondataClient.hentDiskresjonskode(fnr.asString()).orElse(Diskresjonskode.UGRADERT);
     }
 
     public Map<Fnr, Diskresjonskode> hentDiskresjonskoder(Set<Fnr> fnrSet) {
-        if (fnrSet.isEmpty()) {
-            return Collections.emptyMap();
-        }
-        if (fnrSet.size() > 1000) {
-            throw new IllegalArgumentException("Kan ikke hente diskresjonkode for mer enn 1000 om gangen");
-        }
-
-        Map<Fnr, Diskresjonskode> diskresjonskoderFraCache = diskresjonskodeCache.getIfPresent(fnrSet);
-        Set<Fnr> fnrSomIkkeFinnesICache = fnrSet.stream()
-            .filter(fnr -> !diskresjonskoderFraCache.containsKey(fnr))
-            .collect(Collectors.toSet());
-
-        if (fnrSomIkkeFinnesICache.isEmpty()) {
-            return diskresjonskoderFraCache;
-        }
-
-        Map<Fnr, Optional<Diskresjonskode>> diskresjonskodeOptFraPdl = persondataClient
-            .hentPersonBolk(fnrSomIkkeFinnesICache)
-            .utledDiskresjonskoder(fnrSomIkkeFinnesICache);
-
-        diskresjonskodeCache.putAllIfPresent(diskresjonskodeOptFraPdl);
-
-        Map<Fnr, Diskresjonskode> diskresjonskodeFraPdl = diskresjonskodeOptFraPdl.entrySet()
-            .stream()
-            .collect(Collectors.toMap(
-                Map.Entry::getKey,
-                entry -> entry.getValue().orElse(Diskresjonskode.UGRADERT)
-            ));
-
-        return PersondataDiskresjonskodeCache.concat(diskresjonskoderFraCache, diskresjonskodeFraPdl);
+        return persondataClient.hentDiskresjonskoderEllerDefault(
+            fnrSet.stream().map(Fnr::asString).collect(Collectors.toSet()),
+            Fnr::av,
+            Diskresjonskode.UGRADERT
+        );
     }
 
     public Optional<AktorId> hentGjeldendeAktørId(Fnr fnr) {
-        return persondataClient.hentPersondata(fnr)
-            .utledGjeldendeIdent()
-            .map(AktorId::av);
+        return persondataClient.hentGjeldendeAktorId(fnr.asString()).map(AktorId::av);
     }
 
     public Optional<String> hentGeografiskTilknytning(Fnr fnr) {
-        return persondataClient.hentPersondata(fnr).utledGeoLokasjon();
+        return persondataClient.hentGeografiskTilknytning(fnr.asString());
     }
 
     public Navn hentNavn(Fnr fnr) {
-        return persondataClient.hentPersondata(fnr).utledNavnEllerTomtNavn();
+        return persondataClient.hentNavn(fnr.asString()).orElse(Navn.TOMT_NAVN);
     }
 
 }

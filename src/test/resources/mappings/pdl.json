@@ -19,7 +19,7 @@
         "urlPath": "/persondata",
         "headers": {
           "Content-Type": {
-            "equalTo": "application/json",
+            "equalTo": "application/json; charset=utf-8",
             "caseInsensitive": true
           }
         },
@@ -48,7 +48,7 @@
         "urlPath": "/persondata",
         "headers": {
           "Content-Type": {
-            "equalTo": "application/json",
+            "equalTo": "application/json; charset=utf-8",
             "caseInsensitive": true
           }
         },
@@ -77,7 +77,7 @@
         "urlPath": "/persondata",
         "headers": {
           "Content-Type": {
-            "equalTo": "application/json",
+            "equalTo": "application/json; charset=utf-8",
             "caseInsensitive": true
           }
         },
@@ -106,7 +106,7 @@
         "urlPath": "/persondata",
         "headers": {
           "Content-Type": {
-            "equalTo": "application/json",
+            "equalTo": "application/json; charset=utf-8",
             "caseInsensitive": true
           }
         },
@@ -135,7 +135,7 @@
         "urlPath": "/persondata",
         "headers": {
           "Content-Type": {
-            "equalTo": "application/json",
+            "equalTo": "application/json; charset=utf-8",
             "caseInsensitive": true
           }
         },
@@ -192,7 +192,7 @@
         "urlPath": "/persondata",
         "headers": {
           "Content-Type": {
-            "equalTo": "application/json",
+            "equalTo": "application/json; charset=utf-8",
             "caseInsensitive": true
           }
         },
