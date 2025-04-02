@@ -1,15 +1,27 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.ArbeidsgiverSkalGodkjenneFørVeilederException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.SamtidigeEndringerException;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
+
+import java.util.Set;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class AvtalepartTest {
 
@@ -23,7 +35,24 @@ public class AvtalepartTest {
     @Test
     public void godkjennForVeilederOgDeltaker__skal_feile_hvis_ag_ikke_har_godkjent() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        Veileder veileder = TestData.enVeileder(avtale);
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        PersondataService persondataService = mock(PersondataService.class);
+
+        Veileder veileder = new Veileder(
+            avtale.getVeilederNavIdent(),
+            null,
+            tilgangskontrollService,
+            persondataService,
+            mock(Norg2Client.class),
+            Set.of(new NavEnhet("4802", "Trysil")),
+            mock(SlettemerkeProperties.class),
+            TestData.INGEN_AD_GRUPPER,
+            mock(VeilarboppfolgingService.class),
+            mock(FeatureToggleService.class)
+        );
+
+        when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
+
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
         assertThatThrownBy(() -> veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale)).isInstanceOf(ArbeidsgiverSkalGodkjenneFørVeilederException.class);
     }
@@ -31,20 +60,54 @@ public class AvtalepartTest {
     @Test
     public void godkjennForVeileder__skal_feile_hvis_mentor_ikke_har_signert() {
         Avtale avtale = TestData.enMentorAvtaleUsignert();
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        PersondataService persondataService = mock(PersondataService.class);
+
+        Veileder veileder = new Veileder(
+            avtale.getVeilederNavIdent(),
+            null,
+            tilgangskontrollService,
+            persondataService,
+            mock(Norg2Client.class),
+            Set.of(new NavEnhet("4802", "Trysil")),
+            mock(SlettemerkeProperties.class),
+            TestData.INGEN_AD_GRUPPER,
+            mock(VeilarboppfolgingService.class),
+            mock(FeatureToggleService.class)
+        );
+
+        when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
+
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         arbeidsgiver.godkjennAvtale(avtale.getSistEndret().plusMillis(60000), avtale);
         Deltaker deltaker = TestData.enDeltaker(avtale);
         deltaker.godkjennAvtale(avtale.getSistEndret().plusMillis(60000), avtale);
-        Veileder veileder = TestData.enVeileder(avtale);
         assertFeilkode(Feilkode.MENTOR_MÅ_SIGNERE_TAUSHETSERKLÆRING,() -> veileder.godkjennAvtale(avtale.getSistEndret().plusMillis(60000), avtale));
     }
 
     @Test
     public void godkjennForVeilederOgDeltaker__skal_feile_hvis_mentor_ikke_har_signert() {
         Avtale avtale = TestData.enMentorAvtaleUsignert();
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        PersondataService persondataService = mock(PersondataService.class);
+
+        Veileder veileder = new Veileder(
+            avtale.getVeilederNavIdent(),
+            null,
+            tilgangskontrollService,
+            persondataService,
+            mock(Norg2Client.class),
+            Set.of(new NavEnhet("4802", "Trysil")),
+            mock(SlettemerkeProperties.class),
+            TestData.INGEN_AD_GRUPPER,
+            mock(VeilarboppfolgingService.class),
+            mock(FeatureToggleService.class)
+        );
+
+        when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
+
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         arbeidsgiver.godkjennAvtale(avtale.getSistEndret().plusMillis(60000), avtale);
-        Veileder veileder = TestData.enVeileder(avtale);
         assertFeilkode(Feilkode.MENTOR_MÅ_SIGNERE_TAUSHETSERKLÆRING,() -> veileder.godkjennForVeilederOgDeltaker(new GodkjentPaVegneGrunn(), avtale));
     }
 
@@ -53,7 +116,24 @@ public class AvtalepartTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         arbeidsgiver.godkjennForAvtalepart(avtale);
-        Veileder veileder = TestData.enVeileder(avtale);
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        PersondataService persondataService = mock(PersondataService.class);
+
+        Veileder veileder = new Veileder(
+            avtale.getVeilederNavIdent(),
+            null,
+            tilgangskontrollService,
+            persondataService,
+            mock(Norg2Client.class),
+            Set.of(new NavEnhet("4802", "Trysil")),
+            mock(SlettemerkeProperties.class),
+            TestData.INGEN_AD_GRUPPER,
+            mock(VeilarboppfolgingService.class),
+            mock(FeatureToggleService.class)
+        );
+
+        when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
+
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
         veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
         assertThat(avtale.erGodkjentAvDeltaker()).isTrue();
@@ -71,7 +151,24 @@ public class AvtalepartTest {
     @Test
     public void endreAvtale__skal_fungere_for_veileder() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
-        Veileder veileder = TestData.enVeileder(avtale);
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        PersondataService persondataService = mock(PersondataService.class);
+
+        Veileder veileder = new Veileder(
+            avtale.getVeilederNavIdent(),
+            null,
+            tilgangskontrollService,
+            persondataService,
+            mock(Norg2Client.class),
+            Set.of(new NavEnhet("4802", "Trysil")),
+            mock(SlettemerkeProperties.class),
+            TestData.INGEN_AD_GRUPPER,
+            mock(VeilarboppfolgingService.class),
+            mock(FeatureToggleService.class)
+        );
+
+        when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
+
         veileder.endreAvtale(Now.instant(), TestData.ingenEndring(), avtale);
     }
 
@@ -105,9 +202,26 @@ public class AvtalepartTest {
     @Test
     public void godkjennForAvtalepart__skal_fungere_for_veileder() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        PersondataService persondataService = mock(PersondataService.class);
+
+        Veileder veileder = new Veileder(
+            avtale.getVeilederNavIdent(),
+            null,
+            tilgangskontrollService,
+            persondataService,
+            mock(Norg2Client.class),
+            Set.of(new NavEnhet("4802", "Trysil")),
+            mock(SlettemerkeProperties.class),
+            TestData.INGEN_AD_GRUPPER,
+            mock(VeilarboppfolgingService.class),
+            mock(FeatureToggleService.class)
+        );
+
+        when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
+
         avtale.getGjeldendeInnhold().setGodkjentAvDeltaker(Now.localDateTime());
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
-        Veileder veileder = TestData.enVeileder(avtale);
         veileder.godkjennAvtale(avtale.getSistEndret(), avtale);
         assertThat(avtale.erGodkjentAvArbeidsgiver()).isTrue();
     }
@@ -126,7 +240,23 @@ public class AvtalepartTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
         arbeidsgiver.godkjennForAvtalepart(avtale);
-        Veileder veileder = TestData.enVeileder(avtale);
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        PersondataService persondataService = mock(PersondataService.class);
+
+        Veileder veileder = new Veileder(
+            avtale.getVeilederNavIdent(),
+            null,
+            tilgangskontrollService,
+            persondataService,
+            mock(Norg2Client.class),
+            Set.of(new NavEnhet("4802", "Trysil")),
+            mock(SlettemerkeProperties.class),
+            TestData.INGEN_AD_GRUPPER,
+            mock(VeilarboppfolgingService.class),
+            mock(FeatureToggleService.class)
+        );
+
+        when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         GodkjentPaVegneGrunn godkjentPaVegneGrunn = TestData.enGodkjentPaVegneGrunn();
         veileder.godkjennForVeilederOgDeltaker(godkjentPaVegneGrunn, avtale);
         assertThat(avtale.erGodkjentAvDeltaker()).isTrue();

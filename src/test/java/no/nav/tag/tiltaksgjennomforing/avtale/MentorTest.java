@@ -3,7 +3,15 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static no.nav.tag.tiltaksgjennomforing.AssertFeilkode.assertFeilkode;
@@ -31,6 +40,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ActiveProfiles(Miljø.TEST)
@@ -125,7 +135,24 @@ public class MentorTest {
     public void endreOmMentor__må_være_en_mentor_avtale() {
         Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        Veileder veileder = TestData.enVeileder(avtale);
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        PersondataService persondataService = mock(PersondataService.class);
+
+        Veileder veileder = new Veileder(
+            avtale.getVeilederNavIdent(),
+            null,
+            tilgangskontrollService,
+            persondataService,
+            mock(Norg2Client.class),
+            Set.of(new NavEnhet("4802", "Trysil")),
+            mock(SlettemerkeProperties.class),
+            TestData.INGEN_AD_GRUPPER,
+            mock(VeilarboppfolgingService.class),
+            mock(FeatureToggleService.class)
+        );
+
+        when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
+
         arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
         EndreOmMentor endreOmMentor = new EndreOmMentor("Per", "Persen", "12345678", "litt mentorering", 5.0, 500);
@@ -136,7 +163,24 @@ public class MentorTest {
     public void endreOmMentor__setter_riktige_felter() {
         Avtale avtale = TestData.enMentorAvtaleSignert();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        Veileder veileder = TestData.enVeileder(avtale);
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        PersondataService persondataService = mock(PersondataService.class);
+
+        Veileder veileder = new Veileder(
+            avtale.getVeilederNavIdent(),
+            null,
+            tilgangskontrollService,
+            persondataService,
+            mock(Norg2Client.class),
+            Set.of(new NavEnhet("4802", "Trysil")),
+            mock(SlettemerkeProperties.class),
+            TestData.INGEN_AD_GRUPPER,
+            mock(VeilarboppfolgingService.class),
+            mock(FeatureToggleService.class)
+        );
+
+        when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
+
         arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
         veileder.godkjennForVeilederOgDeltaker(TestData.enGodkjentPaVegneGrunn(), avtale);
 
@@ -156,7 +200,24 @@ public class MentorTest {
     public void endreOmMentor__avtale_må_være_inngått() {
         Avtale avtale = TestData.enMentorAvtaleSignert();
         Arbeidsgiver arbeidsgiver = TestData.enArbeidsgiver(avtale);
-        Veileder veileder = TestData.enVeileder(avtale);
+        TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
+        PersondataService persondataService = mock(PersondataService.class);
+
+        Veileder veileder = new Veileder(
+            avtale.getVeilederNavIdent(),
+            null,
+            tilgangskontrollService,
+            persondataService,
+            mock(Norg2Client.class),
+            Set.of(new NavEnhet("4802", "Trysil")),
+            mock(SlettemerkeProperties.class),
+            TestData.INGEN_AD_GRUPPER,
+            mock(VeilarboppfolgingService.class),
+            mock(FeatureToggleService.class)
+        );
+
+        when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
+
         arbeidsgiver.godkjennAvtale(Now.instant(), avtale);
         assertThat(avtale.erAvtaleInngått()).isFalse();
         assertFeilkode(

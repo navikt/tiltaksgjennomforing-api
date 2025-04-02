@@ -147,7 +147,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
                 "Annullert for mer enn 12 uker siden"
             );
         }
-        if (harTilgangPåTiltakIBedrift(avtale.getBedriftNr(), avtale.getTiltakstype())) {
+        if (!harTilgangPåTiltakIBedrift(avtale.getBedriftNr(), avtale.getTiltakstype())) {
             return new Tilgang.Avvis(
                 Avslagskode.IKKE_TILGANG_PAA_TILTAK,
                 "Ikke tilgang på tiltak i valgt bedrift"

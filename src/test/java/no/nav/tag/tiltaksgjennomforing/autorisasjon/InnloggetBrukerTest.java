@@ -28,7 +28,9 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enInnloggetVeileder;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -147,10 +149,10 @@ public class InnloggetBrukerTest {
                 veilarboppfolgingService,
                 featureToggleService
         );
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(
+        when(tilgangskontrollService.hentSkrivetilgang(
                 veileder,
                 avtale.getDeltakerFnr())
-        ).thenReturn(false);
+        ).thenReturn(new Tilgang.Avvis(Avslagskode.EKSTERN_BRUKER_HAR_IKKE_TILGANG, "Ekstern bruker har ikke tilgang"));
 
         assertThat(veileder.harTilgangTilAvtale(avtale).erTillat()).isFalse();
     }
@@ -261,16 +263,29 @@ public class InnloggetBrukerTest {
     @Test
     public void harTilgang__arbeidsgiver_skal_ha_tilgang_til_avsluttet_avtale_eldre_enn_12_uker_når_ikke_godkjent_av_veileder() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        Veileder veileder = new Veileder(
+            avtale.getVeilederNavIdent(),
+            null,
+            tilgangskontrollService,
+            persondataService,
+            norg2Client,
+            Collections.emptySet(),
+            new SlettemerkeProperties(),
+            TestData.INGEN_AD_GRUPPER,
+            veilarboppfolgingService,
+            featureToggleService
+        );
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusDays(85));
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.values()));
-        Arbeidsgiver Arbeidsgiver = new Arbeidsgiver(
+        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
                 new Fnr("00000000009"),
                 Set.of(),
                 tilganger,
                 null,
                 null
         );
-        assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isTrue();
+
+        assertThat(arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isTrue();
     }
 
     @Test
