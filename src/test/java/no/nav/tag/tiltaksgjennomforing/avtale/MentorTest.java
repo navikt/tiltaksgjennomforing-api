@@ -89,7 +89,7 @@ public class MentorTest {
         Avtale avtale = TestData.enMentorAvtaleUsignert();
         Mentor mentor = new Mentor(new Fnr("77665521872"));
         // NÅR
-        boolean hartilgang = mentor.harTilgangTilAvtale(avtale);
+        boolean hartilgang = mentor.harTilgangTilAvtale(avtale).erTillat();
         assertFalse(hartilgang);
     }
 
@@ -100,7 +100,7 @@ public class MentorTest {
         Avtale avtale = TestData.enMentorAvtaleUsignert();
         Mentor mentor = new Mentor(new Fnr("77665521872"));
         // NÅR
-        boolean hartilgang = mentor.harTilgangTilAvtale(avtale);
+        boolean hartilgang = mentor.harTilgangTilAvtale(avtale).erTillat();
         assertFalse(hartilgang);
     }
 
