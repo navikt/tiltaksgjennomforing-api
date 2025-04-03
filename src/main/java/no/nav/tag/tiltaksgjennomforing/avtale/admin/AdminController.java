@@ -37,9 +37,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+
+import static no.nav.tag.tiltaksgjennomforing.satser.Sats.VTAO_SATS;
 
 @ProtectedWithClaims(issuer = "azure-access-token", claimMap = { "groups=fb516b74-0f2e-4b62-bad8-d70b82c3ae0b" })
 @RestController
@@ -261,6 +264,22 @@ public class AdminController {
         LocalDate startDato = LocalDate.parse((String) parametere.getOrDefault("startDato", null));
         avtale.midlertidigEndreAvtale(Now.instant(), startDato);
         avtaleRepository.save(avtale);
+    }
+
+    @PostMapping("/oppdater-tilskuddsperiode-belop-vtao")
+    @Transactional
+    public void oppdaterTilskuddsperiodeBelopVtao() {
+        Set<Integer> kjenteVtaoSatsAar = VTAO_SATS.getSatsePerioder().keySet().stream()
+            .map(LocalDate::getYear)
+            .collect(Collectors.toSet());
+        List<TilskuddPeriode> perioderUtenBelop = tilskuddPeriodeRepository.ubehandledeVtaoTilskuddUtenBelopForAar(
+            kjenteVtaoSatsAar
+        );
+
+        perioderUtenBelop.forEach(tilskuddPeriode -> {
+            tilskuddPeriode.setBeløp(VTAO_SATS.hentGjeldendeSats(tilskuddPeriode.getStartDato()));
+        });
+        tilskuddPeriodeRepository.saveAll(perioderUtenBelop);
     }
 
     @GetMapping("/avtale/diskresjonssjekk")
