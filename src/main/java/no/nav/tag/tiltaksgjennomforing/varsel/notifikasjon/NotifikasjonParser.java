@@ -66,7 +66,7 @@ public class NotifikasjonParser {
             case INKLUDERINGSTILSKUDD -> new AltinnNotifikasjonsProperties(
                     altinnTilgangsstyringProperties.getInkluderingstilskuddServiceCode(),
                     altinnTilgangsstyringProperties.getInkluderingstilskuddServiceEdition());
-            case VARIG_LONNSTILSKUDD -> new AltinnNotifikasjonsProperties(
+            case VARIG_LONNSTILSKUDD, LANGVARIG_LONNSTILSKUDD -> new AltinnNotifikasjonsProperties(
                     altinnTilgangsstyringProperties.getLtsVarigServiceCode(),
                     altinnTilgangsstyringProperties.getLtsVarigServiceEdition());
             case VTAO -> new AltinnNotifikasjonsProperties(

@@ -4,6 +4,7 @@ public enum Tiltakstype {
     ARBEIDSTRENING("Arbeidstrening", "ab0422", "ARBTREN"),
     MIDLERTIDIG_LONNSTILSKUDD("Midlertidig lønnstilskudd", "ab0336", "MIDLONTIL"),
     VARIG_LONNSTILSKUDD("Varig lønnstilskudd", "ab0337", "VARLONTIL"),
+    LANGVARIG_LONNSTILSKUDD("Langvarig lønnstilskudd", null, null),
     MENTOR("Mentor", "ab0416", "MENTOR"),
     INKLUDERINGSTILSKUDD("Inkluderingstilskudd", "ab0417", "INKLUTILS"),
     SOMMERJOBB("Sommerjobb", "ab0450", null),

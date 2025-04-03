@@ -9,7 +9,7 @@ public class StartOgSluttDatoStrategyFactory {
             case ARBEIDSTRENING -> new ArbeidstreningStartOgSluttDatoStrategy();
             case MIDLERTIDIG_LONNSTILSKUDD ->
                     new MidlertidigLonnstilskuddStartOgSluttDatoStrategy(kvalifiseringsgruppe);
-            case VARIG_LONNSTILSKUDD -> new VarigLonnstilskuddStartOgSluttDatoStrategy();
+            case VARIG_LONNSTILSKUDD, LANGVARIG_LONNSTILSKUDD -> new VarigLonnstilskuddStartOgSluttDatoStrategy();
             case MENTOR -> new MentorStartOgSluttDatoStrategy(kvalifiseringsgruppe);
             case INKLUDERINGSTILSKUDD -> new InkluderingstilskuddStartOgSluttDatoStrategy();
             case SOMMERJOBB -> new SommerjobbStartOgSluttDatoStrategy();

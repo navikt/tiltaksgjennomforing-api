@@ -8,7 +8,7 @@ public class AvtaleInnholdStrategyFactory {
         return switch (tiltakstype) {
             case ARBEIDSTRENING -> new ArbeidstreningStrategy(avtaleInnhold);
             case MIDLERTIDIG_LONNSTILSKUDD -> new MidlertidigLonnstilskuddAvtaleInnholdStrategy(avtaleInnhold);
-            case VARIG_LONNSTILSKUDD -> new VarigLonnstilskuddAvtaleInnholdStrategy(avtaleInnhold);
+            case VARIG_LONNSTILSKUDD, LANGVARIG_LONNSTILSKUDD -> new VarigLonnstilskuddAvtaleInnholdStrategy(avtaleInnhold);
             case MENTOR -> new MentorStrategy(avtaleInnhold);
             case INKLUDERINGSTILSKUDD -> new InkluderingstilskuddStrategy(avtaleInnhold);
             case SOMMERJOBB -> new SommerjobbAvtaleInnholdStrategy(avtaleInnhold);
