@@ -52,6 +52,7 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         avtaleInnhold.setOtpSats(endreTilskuddsberegning.getOtpSats());
         avtaleInnhold.setManedslonn(endreTilskuddsberegning.getManedslonn());
         avtaleInnhold.setFeriepengesats(endreTilskuddsberegning.getFeriepengesats());
+        avtaleInnhold.setLonnstilskuddProsent(endreTilskuddsberegning.getLonnstilskuddProsent());
         reberegnTotal(avtale);
     }
 

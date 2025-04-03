@@ -12,4 +12,6 @@ public class EndreTilskuddsberegning {
     BigDecimal feriepengesats;
     BigDecimal arbeidsgiveravgift;
     Double otpSats;
+    Integer lonnstilskuddProsent;
+
 }

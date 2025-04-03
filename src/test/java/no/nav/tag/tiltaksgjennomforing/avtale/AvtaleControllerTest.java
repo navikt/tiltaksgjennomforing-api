@@ -327,7 +327,7 @@ public class AvtaleControllerTest {
                         )
                 );
 
-        ResponseEntity svar = avtaleController.opprettAvtaleSomVeileder(opprettAvtale);
+        ResponseEntity svar = avtaleController.opprettAvtaleSomVeileder(opprettAvtale, null);
         assertThat(svar.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(svar.getHeaders().getLocation().getPath()).isEqualTo("/avtaler/" + avtale.getId());
     }
@@ -443,7 +443,7 @@ public class AvtaleControllerTest {
         ).thenReturn(false);
         assertThatThrownBy(
                 () -> avtaleController.opprettAvtaleSomVeileder(
-                        new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING)
+                        new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), null
 
                 )
         ).isInstanceOf(IkkeTilgangTilDeltakerException.class);
@@ -472,7 +472,7 @@ public class AvtaleControllerTest {
         ).thenReturn(false);
         assertThatThrownBy(
                 () -> avtaleController.opprettAvtaleSomVeileder(
-                        new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING)
+                        new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), null
 
                 )
         ).isInstanceOf(IkkeTilgangTilDeltakerException.class);
@@ -502,7 +502,7 @@ public class AvtaleControllerTest {
         when(persondataServiceIMetode.hentDiskresjonskode(deltakerFnr)).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
         assertThatThrownBy(
                 () -> avtaleController.opprettAvtaleSomVeileder(
-                        new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING)
+                        new OpprettAvtale(deltakerFnr, new BedriftNr("111222333"), Tiltakstype.ARBEIDSTRENING), null
                 )
          ).isInstanceOf(Kode6SperretForOpprettelseOgEndringException.class);
     }

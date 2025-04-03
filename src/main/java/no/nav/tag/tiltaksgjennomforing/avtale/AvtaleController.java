@@ -78,6 +78,7 @@ public class AvtaleController {
     private final MeterRegistry meterRegistry;
     private final FeatureToggleService featureToggleService;
     private final AktsomhetService aktsomhetService;
+    private final LangvarigLonnstilskuddRepository langvarigLonnstilskuddRepository;
 
     @AuditLogging("Hent detaljer for avtale om arbeidsmarkedstiltak")
     @GetMapping("/{avtaleId}")
@@ -451,7 +452,7 @@ public class AvtaleController {
     @PostMapping
     @Transactional
     @AuditLogging(value = "Opprett avtale om arbeidsmarkedstiltak", type = EventType.CREATE, utfallSomLogges = Utfall.FEIL)
-    public ResponseEntity<?> opprettAvtaleSomVeileder(@RequestBody OpprettAvtale opprettAvtale) {
+    public ResponseEntity<?> opprettAvtaleSomVeileder(@RequestBody OpprettAvtale opprettAvtale, @RequestParam(value = "type", required = false) String type) {
         sjekkVtaoToggle(opprettAvtale.getTiltakstype());
 
         Veileder veileder = innloggingService.hentVeileder();
@@ -459,6 +460,13 @@ public class AvtaleController {
         avtale.leggTilBedriftNavn(eregService.hentVirksomhet(avtale.getBedriftNr()).getBedriftNavn());
 
         Avtale opprettetAvtale = avtaleRepository.save(avtale);
+
+        if (type != null && type.equals("LANGVARIG_LONNSTILSKUDD") && opprettAvtale.getTiltakstype() == Tiltakstype.VARIG_LONNSTILSKUDD) {
+            LangvarigLonnstilskudd langvarigLonnstilskudd = new LangvarigLonnstilskudd();
+            langvarigLonnstilskudd.setAvtale(avtale);
+            langvarigLonnstilskuddRepository.save(langvarigLonnstilskudd);
+        }
+
         URI uri = lagUri("/avtaler/" + opprettetAvtale.getId());
         return ResponseEntity.created(uri).build();
     }

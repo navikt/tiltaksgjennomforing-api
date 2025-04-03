@@ -195,6 +195,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     private ArenaRyddeAvtale arenaRyddeAvtale;
 
     @JsonIgnore
+    @OneToOne(mappedBy = "avtale", fetch = FetchType.EAGER)
+    private LangvarigLonnstilskudd langvarigLonnstilskudd;
+
+    @JsonIgnore
     @Transient
     private FnrOgBedrift fnrOgBedrift;
 
@@ -1061,7 +1065,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     void endreBeløpITilskuddsperioder() {
         sendTilbakeTilBeslutter();
         tilskuddPeriode.stream().filter(t -> t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET)
-                .forEach(t -> t.setBeløp(beregnTilskuddsbeløpForPeriode(t.getStartDato(), t.getSluttDato())));
+                .forEach(t -> {
+                    t.setBeløp(beregnTilskuddsbeløpForPeriode(t.getStartDato(), t.getSluttDato()));
+                    t.setLonnstilskuddProsent(gjeldendeInnhold.getLonnstilskuddProsent());
+                });
     }
 
     public void sendTilbakeTilBeslutter() {
@@ -1305,7 +1312,8 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         if (Utils.erNoenTomme(endreTilskuddsberegning.getArbeidsgiveravgift(),
                 endreTilskuddsberegning.getFeriepengesats(),
                 endreTilskuddsberegning.getManedslonn(),
-                endreTilskuddsberegning.getOtpSats())) {
+                endreTilskuddsberegning.getOtpSats(),
+                endreTilskuddsberegning.getLonnstilskuddProsent())) {
 
             throw new FeilkodeException(Feilkode.KAN_IKKE_ENDRE_OKONOMI_UGYLDIG_INPUT);
         }
