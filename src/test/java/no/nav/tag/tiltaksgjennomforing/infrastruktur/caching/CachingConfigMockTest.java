@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.infrastruktur.caching;
 
 
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.TestData;
@@ -283,6 +284,7 @@ public class CachingConfigMockTest {
                 mockFeatureToggleService
         );
 
+        when(tilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         veileder.endreAvtale(
                 Now.instant(),
                 TestData.endringPåAlleLønnstilskuddFelter(),
@@ -293,6 +295,7 @@ public class CachingConfigMockTest {
                 TestData.endringPåAlleLønnstilskuddFelter(),
                 avtale
         );
+
 
         /** Blir kalt 2 ganger. Andre iterasjon så treffer vi cache response istedenfor endepunkt */
         verify(mockNorg2Client, times(1)).hentOppfølgingsEnhetFraCacheNorg2(avtale.getEnhetOppfolging());

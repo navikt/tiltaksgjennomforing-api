@@ -408,6 +408,7 @@ public class VeilederTest {
         PersondataService persondataService = mock(PersondataService.class);
         FeatureToggleService featureToggleServiceMock = mock(FeatureToggleService.class);
         when(veilarboppfolgingServiceMock.hentOgSjekkOppfolgingstatus(avtale)).thenReturn(new Oppfølgingsstatus(Formidlingsgruppe.ARBEIDSSOKER, Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS, "0906"));
+        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
                 null,
@@ -420,8 +421,7 @@ public class VeilederTest {
                 veilarboppfolgingServiceMock,
                 featureToggleServiceMock
         );
-        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
+        when(tilgangskontrollService.hentSkrivetilgang(eq(veileder), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
 
         avtale.endreAvtale(
                 Now.instant(),
@@ -476,7 +476,6 @@ public class VeilederTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         NavIdent gammelVeileder = avtale.getVeilederNavIdent();
         Veileder nyVeileder = TestData.enVeileder(new NavIdent("J987654"));
-
         nyVeileder.overtaAvtale(avtale);
         assertThat(gammelVeileder).isNotEqualTo(nyVeileder.getIdentifikator());
         assertThat(avtale.getVeilederNavIdent()).isEqualTo(nyVeileder.getIdentifikator());
@@ -732,7 +731,7 @@ public class VeilederTest {
                 mock(VeilarboppfolgingService.class),
                 featureToggleServiceMock
         );
-
+        when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), eq(avtale.getDeltakerFnr())))
                 .thenReturn(true);
 
@@ -762,7 +761,7 @@ public class VeilederTest {
                 mock(VeilarboppfolgingService.class),
                 featureToggleServiceMock
         );
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), eq(avtale.getDeltakerFnr()))).thenReturn(true);
+        when(tilgangskontrollService.hentSkrivetilgang(eq(veileder), eq(avtale.getDeltakerFnr()))).thenReturn(new Tilgang.Tillat());
         assertThatThrownBy(() -> veileder.slettemerk(avtale)).isExactlyInstanceOf(IkkeAdminTilgangException.class);
     }
 

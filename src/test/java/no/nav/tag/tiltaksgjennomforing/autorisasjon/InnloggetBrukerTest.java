@@ -69,6 +69,7 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__veileder_skal_ha_lesetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_er_ok() {
+        when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
         Veileder veileder = new Veileder(
                 navIdent,
                 null,
@@ -81,17 +82,14 @@ public class InnloggetBrukerTest {
                 veilarboppfolgingService,
                 featureToggleService
         );
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(
-                veileder,
-                avtale.getDeltakerFnr())
-        ).thenReturn(true);
 
         assertThat(veileder.harTilgangTilAvtale(avtale).erTillat()).isTrue();
-        verify(tilgangskontrollService).harSkrivetilgangTilKandidat(veileder, avtale.getDeltakerFnr());
+        verify(tilgangskontrollService).hentSkrivetilgang(veileder, avtale.getDeltakerFnr());
     }
 
     @Test
     public void harTilgang__veileder_skal_ikke_ha_lesetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_feiler() {
+        when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Avvis(Avslagskode.IKKE_TILGANG_FRA_ABAC,"Ikke tilgang fra ABAC"));
         Veileder veileder = new Veileder(
                 navIdent,
                 null,
@@ -126,13 +124,8 @@ public class InnloggetBrukerTest {
                 veilarboppfolgingService,
                 featureToggleService
         );
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(
-                veileder,
-                avtale.getDeltakerFnr())
-        ).thenReturn(true);
-
+        when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
         assertThat(veileder.harTilgangTilAvtale(avtale).erTillat()).isTrue();
-        verify(tilgangskontrollService).harSkrivetilgangTilKandidat(veileder, avtale.getDeltakerFnr());
     }
 
     @Test
@@ -171,6 +164,8 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__ikkepart_veileder_skal_ikke_ha_lesetilgang_hvis_toggle_er_av() {
+        when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Avvis(Avslagskode.IKKE_TILGANG_FRA_ABAC,"Ikke tilgang fra ABAC"));
+
         assertThat(
                 new Veileder(
                         new NavIdent("X123456"),
@@ -189,6 +184,8 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__ikkepart_veileder_skal_ikke_ha_skrivetilgang_hvis_toggle_er_av() {
+
+        when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Avvis(Avslagskode.IKKE_TILGANG_FRA_ABAC,"Ikke tilgang fra ABAC"));
         assertThat(
                 new Veileder(
                         new NavIdent("X123456"),
@@ -207,6 +204,7 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__ikkepart_selvbetjeningsbruker_skal_ikke_ha_tilgang() {
+        when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Avvis(Avslagskode.IKKE_TILGANG_FRA_ABAC,"Ikke tilgang fra ABAC"));
         assertThat(
                 new Arbeidsgiver(
                         new Fnr("00000000001"),
@@ -219,6 +217,7 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__arbeidsgiver_skal_kunne_representere_bedrift_uten_Fnr() {
+        when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Avvis(Avslagskode.IKKE_TILGANG_FRA_ABAC,"Ikke tilgang fra ABAC"));
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(this.bedriftNr, Set.of(Tiltakstype.values()));
         Arbeidsgiver Arbeidsgiver = new Arbeidsgiver(
                 new Fnr("00000000009"),
@@ -232,6 +231,7 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__arbeidsgiver_skal_ikke_ha_tilgang_til_avbrutt_avtale_eldre_enn_12_uker() {
+        when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Avvis(Avslagskode.IKKE_TILGANG_FRA_ABAC,"Ikke tilgang fra ABAC"));
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(this.bedriftNr, Set.of(Tiltakstype.values()));
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
                 new Fnr("00000000009"),
