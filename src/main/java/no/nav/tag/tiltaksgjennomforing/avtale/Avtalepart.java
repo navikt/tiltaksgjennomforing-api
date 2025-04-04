@@ -134,33 +134,26 @@ public abstract class Avtalepart<T extends Identifikator> {
         }
     }
 
-    protected void avtalePartKanEndreAvtale() {
-        if (!kanEndreAvtale()) {
-            throw new KanIkkeEndreException();
-        }
+    public void endreAvtale(
+        Instant sistEndret,
+        EndreAvtale endreAvtale,
+        Avtale avtale
+    ) {
+        endreAvtale(sistEndret, endreAvtale, avtale, () -> {});
     }
 
     public void endreAvtale(
             Instant sistEndret,
             EndreAvtale endreAvtale,
-            Avtale avtale
+            Avtale avtale,
+            Runnable kjorForEndring
     ) {
         sjekkTilgang(avtale);
         if (!kanEndreAvtale()) {
             throw new KanIkkeEndreException();
         }
         avvisDatoerTilbakeITid(avtale, endreAvtale.getStartDato(), endreAvtale.getSluttDato());
-        avtale.endreAvtale(sistEndret, endreAvtale, rolle(), identifikator);
-    }
-
-    protected void sjekkTilgangOgEndreAvtale(
-            Instant sistEndret,
-            EndreAvtale endreAvtale,
-            Avtale avtale
-    ) {
-        sjekkTilgang(avtale);
-        avtalePartKanEndreAvtale();
-        avvisDatoerTilbakeITid(avtale, endreAvtale.getStartDato(), endreAvtale.getSluttDato());
+        kjorForEndring.run();
         avtale.endreAvtale(sistEndret, endreAvtale, rolle(), identifikator);
     }
 
