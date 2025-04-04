@@ -123,8 +123,6 @@ tiltaksgjennomforing:
     uri: http://localhost:8090/api/graphql
     lenke: http://localhost:3000/tiltaksgjennomforing/avtale/
     enabled: false
-  salesforcekontorer:
-    enheter: 0906
   arena:
     kafka:
       tiltakdeltaker-endret-topic: 'teamarenanais.aapen-arena-tiltakdeltakerendret-v1'
