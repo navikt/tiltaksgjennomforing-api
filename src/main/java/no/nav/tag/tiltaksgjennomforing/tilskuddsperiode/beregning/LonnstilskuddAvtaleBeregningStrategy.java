@@ -165,5 +165,5 @@ public interface LonnstilskuddAvtaleBeregningStrategy {
         }
     }
 
-
+    boolean nødvendigeFelterErUtfylt(Avtale avtale);
 }
