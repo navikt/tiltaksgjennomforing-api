@@ -4,11 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilAvtaleException;
+import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeEndreException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
@@ -34,7 +36,7 @@ public abstract class Avtalepart<T extends Identifikator> {
         return !avtale.isFeilregistrert() && !avtale.isSlettemerket();
     }
 
-    abstract boolean harTilgangTilAvtale(Avtale avtale);
+    abstract Tilgang harTilgangTilAvtale(Avtale avtale);
 
     abstract Predicate<Avtale> harTilgangTilAvtale(List<Avtale> avtaler);
 
@@ -113,8 +115,22 @@ public abstract class Avtalepart<T extends Identifikator> {
         if (!avtalenEksisterer(avtale)) {
             throw new RessursFinnesIkkeException();
         }
-        if (!harTilgangTilAvtale(avtale)) {
-            throw new IkkeTilgangTilAvtaleException(avtale);
+        if (harTilgangTilAvtale(avtale) instanceof Tilgang.Avvis avvis) {
+            switch (avvis.tilgangskode()) {
+                case STRENGT_FORTROLIG_ADRESSE -> throw new IkkeTilgangTilDeltakerException(
+                    avtale.getDeltakerFnr(),
+                    Feilkode.IKKE_TILGANG_TIL_DELTAKER_STRENGT_FORTROLIG
+                );
+                case FORTROLIG_ADRESSE -> throw new IkkeTilgangTilDeltakerException(
+                    avtale.getDeltakerFnr(),
+                    Feilkode.IKKE_TILGANG_TIL_DELTAKER_FORTROLIG
+                );
+                case EGNE_ANSATTE -> throw new IkkeTilgangTilDeltakerException(
+                    avtale.getDeltakerFnr(),
+                    Feilkode.IKKE_TILGANG_TIL_DELTAKER_SKJERMET
+                );
+                default -> throw new IkkeTilgangTilAvtaleException(avtale);
+            }
         }
     }
 

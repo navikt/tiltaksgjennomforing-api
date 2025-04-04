@@ -5,6 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.AdGruppeTilganger;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2OppfølgingResponse;
@@ -78,8 +79,8 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     @Override
-    public boolean harTilgangTilAvtale(Avtale avtale) {
-        return tilgangskontrollService.harSkrivetilgangTilKandidat(this, avtale.getDeltakerFnr());
+    public Tilgang harTilgangTilAvtale(Avtale avtale) {
+        return tilgangskontrollService.hentSkrivetilgang(this, avtale.getDeltakerFnr());
     }
 
     @Override

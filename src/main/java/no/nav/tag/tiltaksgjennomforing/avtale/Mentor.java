@@ -2,6 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetMentor;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
@@ -19,13 +20,16 @@ public class Mentor extends Avtalepart<Fnr> {
     }
 
     @Override
-    public boolean harTilgangTilAvtale(Avtale avtale) {
-        return avtale.getMentorFnr().equals(getIdentifikator());
+    public Tilgang harTilgangTilAvtale(Avtale avtale) {
+        if (avtale.getMentorFnr().equals(getIdentifikator())) {
+            return new Tilgang.Tillat();
+        }
+        return new Tilgang.Avvis(null, null);
     }
 
     @Override
     Predicate<Avtale> harTilgangTilAvtale(List<Avtale> avtaler) {
-        return this::harTilgangTilAvtale;
+        return avtale -> harTilgangTilAvtale(avtale).erTillat();
     }
 
     @Override

@@ -5,9 +5,13 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
 public class IkkeTilgangTilDeltakerException extends FeilkodeException {
     private final Fnr identifikator;
 
-    public IkkeTilgangTilDeltakerException(Fnr identifikator) {
-        super(Feilkode.IKKE_TILGANG_TIL_DELTAKER);
+    public IkkeTilgangTilDeltakerException(Fnr identifikator, Feilkode feilkode) {
+        super(feilkode);
         this.identifikator = identifikator;
+    }
+
+    public IkkeTilgangTilDeltakerException(Fnr identifikator) {
+        this(identifikator, Feilkode.IKKE_TILGANG_TIL_DELTAKER);
     }
 
     public Fnr getFnr() {
