@@ -22,6 +22,7 @@ import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -66,6 +67,16 @@ public class AltinnTilgangsstyringService {
                 )
         );
         this.klient = new AltinnrettigheterProxyKlient(proxyKlientConfig);
+    }
+
+    public List<BedriftNr> hentAdressesperreTilganger(Fnr fnr, HentArbeidsgiverToken hentArbeidsgiverToken) {
+        String arbeidsgiverToken = hentArbeidsgiverToken.hentArbeidsgiverToken();
+        AltinnReportee[] adressesperreTilganger = kallAltinn(altinnTilgangsstyringProperties.getAdressesperreServiceCode(), altinnTilgangsstyringProperties.getAdressesperreServiceEdition(), fnr, arbeidsgiverToken);
+        List<BedriftNr> bedrifter = Arrays.stream(adressesperreTilganger)
+                .filter(altinnReportee -> !altinnReportee.getType().equals("Enterprise"))
+                .map(altinnReportee -> new BedriftNr(altinnReportee.getOrganizationNumber()))
+                .toList();
+        return bedrifter;
     }
 
     public Map<BedriftNr, Collection<Tiltakstype>> hentTilganger(Fnr fnr, HentArbeidsgiverToken hentArbeidsgiverToken) {

@@ -133,6 +133,8 @@ tiltaksgjennomforing:
     vtaoServiceCode: 5516
     vtaoServiceEdition: 5 # TODO: Finn riktig service edition
     vtaoAktiv: true
+    adressesperreServiceCode: 5516
+    adressesperreServiceEdition: 7
   ereg:
     uri: https://ereg-services.dev.intern.nav.no/api/v2/organisasjon
   sts:

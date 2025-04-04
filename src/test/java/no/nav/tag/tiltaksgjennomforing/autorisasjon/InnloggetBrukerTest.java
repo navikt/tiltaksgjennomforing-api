@@ -23,12 +23,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.temporal.ChronoUnit;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -58,6 +56,8 @@ public class InnloggetBrukerTest {
         kontoregisterService = mock(KontoregisterService.class);
         veilarboppfolgingService = mock(VeilarboppfolgingService.class);
         avtaleRepository = mock(AvtaleRepository.class);
+
+        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
     }
 
     @Test
@@ -161,7 +161,8 @@ public class InnloggetBrukerTest {
                 new Arbeidsgiver(TestData.etFodselsnummer(),
                         Set.of(),
                         Map.of(),
-                        null,
+                        List.of(),
+                        persondataService,
                         null
                 ).harTilgangTilAvtale(avtale)
         ).isFalse();
@@ -210,7 +211,8 @@ public class InnloggetBrukerTest {
                         new Fnr("00000000001"),
                         Set.of(),
                         Map.of(),
-                        null,
+                        List.of(),
+                        persondataService,
                         null).harTilgangTilAvtale(avtale)
         ).isFalse();
     }
@@ -222,7 +224,8 @@ public class InnloggetBrukerTest {
                 new Fnr("00000000009"),
                 Set.of(),
                 tilganger,
-                null,
+                List.of(),
+                persondataService,
                 null
         );
         assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale)).isTrue();
@@ -235,6 +238,7 @@ public class InnloggetBrukerTest {
                 new Fnr("00000000009"),
                 Set.of(),
                 tilganger,
+                null,
                 null,
                 null
         );
@@ -253,6 +257,7 @@ public class InnloggetBrukerTest {
                 Set.of(),
                 tilganger,
                 null,
+                null,
                 null
         );
         assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale)).isFalse();
@@ -267,7 +272,8 @@ public class InnloggetBrukerTest {
                 new Fnr("00000000009"),
                 Set.of(),
                 tilganger,
-                null,
+                List.of(),
+                persondataService,
                 null
         );
         assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale)).isTrue();
@@ -281,7 +287,8 @@ public class InnloggetBrukerTest {
                 new Fnr("00000000009"),
                 Set.of(),
                 tilganger,
-                null,
+                List.of(),
+                persondataService,
                 null
         );
         assertThat(arbeidsgiver.harTilgangTilAvtale(avtale)).isFalse();

@@ -20,6 +20,7 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Oppfølgingsstatus;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataClient;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.persondata.domene.Adressebeskyttelse;
 import no.nav.tag.tiltaksgjennomforing.persondata.domene.HentGeografiskTilknytning;
@@ -793,7 +794,10 @@ public class TestData {
     }
 
     public static Arbeidsgiver enArbeidsgiver() {
-        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of(), null, null);
+        PersondataClient persondataClient = mock(PersondataClient.class);
+        final PdlRespons pdlRespons = TestData.enPdlrespons(false);
+        when(persondataClient.hentPersondata(any(Fnr.class))).thenReturn(pdlRespons);
+        return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of(), List.of(), new PersondataService(persondataClient), null);
     }
 
     public static Mentor enMentor(Avtale avtale) {
@@ -801,12 +805,17 @@ public class TestData {
     }
 
     public static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
+        PersondataClient persondataClient = mock(PersondataClient.class);
+        final PdlRespons pdlRespons = TestData.enPdlrespons(false);
+        when(persondataClient.hentPersondata(any(Fnr.class))).thenReturn(pdlRespons);
+
         return new Arbeidsgiver(
                 TestData.etFodselsnummer(),
                 Set.of(new AltinnReportee("Bedriftnavn", "", null, avtale.getBedriftNr().asString(), "", "", null))
                 , Map.of(avtale.getBedriftNr(),
                 List.of(Tiltakstype.values())),
-                null,
+                List.of(),
+                new PersondataService(persondataClient),
                 null);
     }
 
