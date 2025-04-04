@@ -29,7 +29,6 @@ public class HendelseAktivitetsplanClient {
 
     public void putAktivietsplanId(UUID avtaleId, UUID aktivitetsplanId, boolean resendSisteMelding) {
         HendelseAktivietsplanIdRequest request = new HendelseAktivietsplanIdRequest(
-            avtaleId,
             aktivitetsplanId,
             resendSisteMelding
         );
@@ -39,12 +38,29 @@ public class HendelseAktivitetsplanClient {
 
         try {
             restTemplate.put(
-                baseUrl + "/tiltak-hendelse-aktivitetsplan/api/aktivitetsplan-id",
+                baseUrl + "/tiltak-hendelse-aktivitetsplan/api/avtale/" + avtaleId.toString() + "/aktivitetsplan-id",
                 new HttpEntity<>(request, headers)
             );
         } catch(RestClientException e) {
             throw new RuntimeException(
                 "Klarte ikke å oppdatere aktivitetsplan id i tiltak-hendelse-aktivitetsplan for avtale: " + avtaleId,
+                e
+            );
+        }
+    }
+
+    public void postSendSisteMelding(UUID avtaleId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        try {
+            restTemplate.postForLocation(
+                baseUrl + "/tiltak-hendelse-aktivitetsplan/api/avtale/" + avtaleId.toString() + "/send-siste-melding",
+                new HttpEntity<>(null, headers)
+            );
+        } catch(RestClientException e) {
+            throw new RuntimeException(
+                "Feil ved ny sending av aktivitetsplanmelding for avtale: " + avtaleId,
                 e
             );
         }

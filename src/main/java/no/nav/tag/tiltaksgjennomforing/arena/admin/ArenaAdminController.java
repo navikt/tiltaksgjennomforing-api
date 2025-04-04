@@ -3,28 +3,21 @@ package no.nav.tag.tiltaksgjennomforing.arena.admin;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
-import no.nav.tag.tiltaksgjennomforing.arena.client.acl.AktivitetArenaAclClient;
-import no.nav.tag.tiltaksgjennomforing.arena.client.hendelse.HendelseAktivitetsplanClient;
 import no.nav.tag.tiltaksgjennomforing.arena.models.arena.ArenaTiltakskode;
-import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaAgreementMigrationRepository;
 import no.nav.tag.tiltaksgjennomforing.arena.repository.ArenaTiltakgjennomforingRepository;
 import no.nav.tag.tiltaksgjennomforing.avtale.BedriftNr;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
-import no.nav.tag.tiltaksgjennomforing.exceptions.RessursFinnesIkkeException;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @ProtectedWithClaims(issuer = "azure-access-token", claimMap = { "groups=fb516b74-0f2e-4b62-bad8-d70b82c3ae0b" })
@@ -35,9 +28,6 @@ import java.util.stream.Collectors;
 public class ArenaAdminController {
     private final ArenaTiltakgjennomforingRepository tiltakgjennomforingRepository;
     private final EregService eregService;
-    private final AktivitetArenaAclClient aktivitetArenaAclClient;
-    private final HendelseAktivitetsplanClient hendelseAktivitetsplanClient;
-    private final ArenaAgreementMigrationRepository arenaAgreementMigrationRepository;
 
     @GetMapping("/tiltak/{tiltakstype}/sjekk-ereg")
     public Map<String, ?> sjekkOppfolgingsstatus(
@@ -75,16 +65,5 @@ public class ArenaAdminController {
         );
     }
 
-    @PostMapping("/avtale/{avtaleId}/aktivitetsplan/ta-over-kort")
-    public void taOverAKtivitetsplankort(@PathVariable UUID avtaleId) {
-        List<Integer> deltakerIder = arenaAgreementMigrationRepository.findTiltakdeltakerIdFromAvtaleId(avtaleId);
 
-        if (deltakerIder.size() > 1) {
-            throw new IllegalArgumentException("Fant mer enn 1 deltaker for avtale " + avtaleId);
-        }
-
-        Integer deltakerId = deltakerIder.stream().findFirst().orElseThrow(RessursFinnesIkkeException::new);
-        UUID aktivitetsplanId = aktivitetArenaAclClient.getAktivitetsId(deltakerId);
-        hendelseAktivitetsplanClient.putAktivietsplanId(avtaleId, aktivitetsplanId, true);
-    }
 }
