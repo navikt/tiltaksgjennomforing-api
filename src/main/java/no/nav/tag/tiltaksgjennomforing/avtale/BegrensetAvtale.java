@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
+
+import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 
 import java.time.Instant;
 import java.time.LocalDate;

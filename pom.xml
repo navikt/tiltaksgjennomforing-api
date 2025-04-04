@@ -164,6 +164,12 @@
             <version>4.28.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>no.nav.team-tiltak</groupId>
+            <artifactId>tiltak-persondata</artifactId>
+            <version>2025.04.04_11.10-28391744c729</version>
+        </dependency>
+
         <!-- Test -->
 
         <dependency>
