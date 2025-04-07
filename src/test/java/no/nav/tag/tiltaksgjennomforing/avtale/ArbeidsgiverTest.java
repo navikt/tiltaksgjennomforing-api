@@ -5,13 +5,13 @@ import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
 import no.nav.tag.tiltaksgjennomforing.exceptions.KanIkkeOppheveException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
-import no.nav.tag.tiltaksgjennomforing.persondata.PersondataClient;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
-import no.nav.tag.tiltaksgjennomforing.persondata.domene.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import no.nav.team_tiltak.felles.persondata.pdl.domene.Navn;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,14 +44,13 @@ public class ArbeidsgiverTest {
     public void oprettAvtale__setter_startverdier_på_avtale() {
         OpprettAvtale opprettAvtale = new OpprettAvtale(TestData.etFodselsnummer(), TestData.etBedriftNr(), Tiltakstype.ARBEIDSTRENING);
 
-        PersondataClient persondataClient = mock(PersondataClient.class);
+        PersondataService persondataService = mock(PersondataService.class);
         Norg2Client norg2Client = mock(Norg2Client.class);
 
-        final PdlRespons pdlRespons = TestData.enPdlrespons(false);
         final Norg2GeoResponse navEnhet = new Norg2GeoResponse("Nav Grorud", "0411");
-
-        when(persondataClient.hentPersondata(any(Fnr.class))).thenReturn(pdlRespons);
-        when(norg2Client.hentGeografiskEnhet(pdlRespons.data().hentGeografiskTilknytning().gtBydel())).thenReturn(navEnhet);
+        when(norg2Client.hentGeografiskEnhet(any())).thenReturn(navEnhet);
+        when(persondataService.hentNavn(any())).thenReturn(new Navn("Donald", "", "Duck"));
+        when(persondataService.hentGeografiskTilknytning(any())).thenReturn(Optional.of("0904"));
 
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
                 TestData.etFodselsnummer(),
@@ -67,7 +66,7 @@ public class ArbeidsgiverTest {
                     )
                 ),
                 Map.of(TestData.etBedriftNr(), Set.of(Tiltakstype.ARBEIDSTRENING)),
-                new PersondataService(persondataClient),
+                persondataService,
                 norg2Client);
 
         Avtale avtale = arbeidsgiver.opprettAvtale(opprettAvtale);
