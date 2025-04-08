@@ -790,7 +790,6 @@ public class TestData {
     }
 
     public static Arbeidsgiver enArbeidsgiver() {
-        // TODO: Fjerne hvis ikke nødvendig
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         return new Arbeidsgiver(new Fnr("01234567890"), Set.of(), Map.of(), List.of(), persondataService, null);
@@ -801,10 +800,6 @@ public class TestData {
     }
 
     public static Arbeidsgiver enArbeidsgiver(Avtale avtale) {
-        // TODO: Fjerne hvis ikke nødvendig
-//        PersondataClient persondataClient = mock(PersondataClient.class);
-//        final PdlRespons pdlRespons = TestData.enPdlrespons(false);
-//        when(persondataClient.hentPersondata(any(Fnr.class))).thenReturn(pdlRespons);
         PersondataService persondataService = mock(PersondataService.class);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         when(persondataService.hentNavn(any())).thenReturn(new Navn("Donald", "", "Duck"));

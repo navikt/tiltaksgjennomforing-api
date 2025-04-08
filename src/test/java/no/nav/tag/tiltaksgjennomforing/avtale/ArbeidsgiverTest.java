@@ -160,17 +160,17 @@ public class ArbeidsgiverTest {
 
     @Test
     public void hentAvtale__feilmelding_uten_adressesperre_tilgang() {
-        // PDL Adressepserre og navn mock
-        PersondataService persondataService = mock(PersondataService.class);
-        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
         // Repository mock
         AvtaleRepository avtaleRepository = mock(AvtaleRepository.class);
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setBedriftNr(TestData.etBedriftNr());
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
 
+        // PDL Adressepserre og navn mock
+        PersondataService persondataService = mock(PersondataService.class);
+        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
+        when(persondataService.hentDiskresjonskoder(any())).thenReturn(Map.of(avtale.getDeltakerFnr(), Diskresjonskode.STRENGT_FORTROLIG));
 
-        List<BedriftNr> adressesperreTilganger = List.of(TestData.etBedriftNr());
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
                 null,
                 null,
@@ -208,16 +208,16 @@ public class ArbeidsgiverTest {
 
     @Test
     public void hentAlleAvterMedMuligTilgang__får_ikke_adressesperre_avtaler() {
-        // PDL Adressepserre og navn mock
-        PersondataService persondataService = mock(PersondataService.class);
-        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.STRENGT_FORTROLIG);
         // Repository mock
         AvtaleRepository avtaleRepository = mock(AvtaleRepository.class);
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
         avtale.setBedriftNr(TestData.etBedriftNr());
-        when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
 
         when(avtaleRepository.findAllByBedriftNrInAndFeilregistrertIsFalse(any(), any())).thenReturn(new PageImpl<>(List.of(avtale)));
+
+        // PDL Adressepserre og navn mock
+        PersondataService persondataService = mock(PersondataService.class);
+        when(persondataService.hentDiskresjonskoder(any())).thenReturn(Map.of(avtale.getDeltakerFnr(), Diskresjonskode.STRENGT_FORTROLIG));
 
 
         List<BedriftNr> adressesperreTilganger = List.of(TestData.etBedriftNr());
