@@ -235,12 +235,13 @@ public class InnloggetBrukerTest {
     @Test
     public void harTilgang__arbeidsgiver_skal_ikke_ha_tilgang_til_avbrutt_avtale_eldre_enn_12_uker() {
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(this.bedriftNr, Set.of(Tiltakstype.values()));
+        PersondataService persondataService = mock(PersondataService.class);
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
                 new Fnr("00000000009"),
                 Set.of(),
                 tilganger,
-                null,
-                null,
+                List.of(),
+                persondataService,
                 null
         );
         avtale.setAvbrutt(true);
@@ -253,12 +254,13 @@ public class InnloggetBrukerTest {
         Avtale avtale = TestData.enAvtaleMedAltUtfyltGodkjentAvVeileder();
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusDays(85));
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.values()));
+        PersondataService persondataService = mock(PersondataService.class);
         Arbeidsgiver Arbeidsgiver = new Arbeidsgiver(
                 new Fnr("00000000009"),
                 Set.of(),
                 tilganger,
-                null,
-                null,
+                List.of(),
+                persondataService,
                 null
         );
         assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale)).isFalse();
