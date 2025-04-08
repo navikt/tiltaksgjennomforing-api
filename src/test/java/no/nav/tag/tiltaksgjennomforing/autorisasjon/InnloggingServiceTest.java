@@ -48,7 +48,7 @@ public class InnloggingServiceTest {
     private SystembrukerProperties systembrukerProperties;
 
     @Mock
-    private BeslutterAdGruppeProperties beslutterAdGruppeProperties;
+    private AdGruppeProperties beslutterAdGruppeProperties;
 
     @Mock
     private ArbeidsgiverTokenStrategyFactoryImpl arbeidsgiverTokenStrategyFactory;

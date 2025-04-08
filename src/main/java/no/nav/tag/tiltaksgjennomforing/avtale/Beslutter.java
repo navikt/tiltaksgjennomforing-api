@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import lombok.extern.slf4j.Slf4j;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.AdGruppeTilganger;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
@@ -11,18 +12,19 @@ import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.NavEnhetIkkeFunnetException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
+import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
-import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -30,19 +32,29 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
-    private Norg2Client norg2Client;
-    private TilgangskontrollService tilgangskontrollService;
+    private final Norg2Client norg2Client;
+    private final TilgangskontrollService tilgangskontrollService;
+    private final UUID azureOid;
+    private final Set<NavEnhet> navEnheter;
+    private final PersondataService persondataService;
+    private final AdGruppeTilganger adGruppeTilganger;
 
-    private UUID azureOid;
-
-    private Set<NavEnhet> navEnheter;
-
-    public Beslutter(NavIdent identifikator, UUID azureOid, Set<NavEnhet> navEnheter, TilgangskontrollService tilgangskontrollService, Norg2Client norg2Client) {
+    public Beslutter(
+        NavIdent identifikator,
+        UUID azureOid,
+        Set<NavEnhet> navEnheter,
+        TilgangskontrollService tilgangskontrollService,
+        Norg2Client norg2Client,
+        PersondataService persondataService,
+        AdGruppeTilganger adGruppeTilganger
+    ) {
         super(identifikator);
         this.azureOid = azureOid;
         this.navEnheter = navEnheter;
         this.tilgangskontrollService = tilgangskontrollService;
         this.norg2Client = norg2Client;
+        this.persondataService = persondataService;
+        this.adGruppeTilganger = adGruppeTilganger;
     }
 
     public void godkjennTilskuddsperiode(Avtale avtale, String enhet) {
@@ -95,7 +107,7 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
         return ((int) ChronoUnit.DAYS.between(Now.localDate(), Now.localDate().plusMonths(3)));
     }
 
-    Page<BeslutterOversiktDTO> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
+    Page<BegrensetBeslutterAvtale> finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheterListe(
             AvtaleRepository avtaleRepository,
             AvtaleQueryParameter queryParametre,
             String sorteringskolonne,
@@ -103,46 +115,50 @@ public class Beslutter extends Avtalepart<NavIdent> implements InternBruker {
             Integer size,
             String sorteringOrder
     ) {
-        Sort by = Sort.by(AvtaleSorterer.getSortingOrderForPageableBeslutter(sorteringskolonne, sorteringOrder));
-        Pageable paging = PageRequest.of(page, size, by);
-
+        Pageable pageable = PageRequest.of(
+            page,
+            size,
+            AvtaleSorterer.getSortingOrder(Avtalerolle.BESLUTTER, sorteringskolonne, sorteringOrder)
+        );
         Set<String> navEnheter = hentNavEnheter();
-
         if (navEnheter.isEmpty()) {
             throw new NavEnhetIkkeFunnetException();
         }
 
-        TilskuddPeriodeStatus status = queryParametre.getTilskuddPeriodeStatus();
-        Tiltakstype tiltakstype = queryParametre.getTiltakstype();
-        BedriftNr bedriftNr = queryParametre.getBedriftNr();
-        Integer avtaleNr = queryParametre.getAvtaleNr();
-        String filtrertNavEnhet = queryParametre.getNavEnhet();
-        Integer plussDato = getPlussdato();
-        LocalDate decisiondate = Now.localDate().plusDays(plussDato);
+        Set<Tiltakstype> tiltakstyper = Optional.ofNullable(queryParametre.getTiltakstype())
+            .map(Set::of)
+            .orElse(Set.of(
+                Tiltakstype.SOMMERJOBB,
+                Tiltakstype.VARIG_LONNSTILSKUDD,
+                Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD,
+                Tiltakstype.VTAO
+            ));
 
-        if (status == null) {
-            status = TilskuddPeriodeStatus.UBEHANDLET;
-        }
-
-        Set<Tiltakstype> tiltakstyper = new HashSet<>();
-        if (tiltakstype != null) {
-            tiltakstyper.add(tiltakstype);
-        } else {
-            tiltakstyper.add(Tiltakstype.SOMMERJOBB);
-            tiltakstyper.add(Tiltakstype.VARIG_LONNSTILSKUDD);
-            tiltakstyper.add(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
-            tiltakstyper.add(Tiltakstype.VTAO);
-        }
-
-        return avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
-                status,
-                decisiondate,
-                tiltakstyper,
-                filtrertNavEnhet != null ? Set.of(filtrertNavEnhet) : navEnheter,
-                bedriftNr != null ? bedriftNr.asString() : null,
-                avtaleNr,
-                paging
+        Page<BeslutterOversiktEntity> avtaler = avtaleRepository.finnGodkjenteAvtalerMedTilskuddsperiodestatusOgNavEnheter(
+            Optional.ofNullable(queryParametre.getTilskuddPeriodeStatus()).orElse(TilskuddPeriodeStatus.UBEHANDLET),
+            Now.localDate().plusDays(getPlussdato()),
+            tiltakstyper,
+            Optional.ofNullable(queryParametre.getNavEnhet()).map(Set::of).orElse(navEnheter),
+            Optional.ofNullable(queryParametre.getBedriftNr()).map(BedriftNr::asString).orElse(null),
+            queryParametre.getAvtaleNr(),
+            pageable
         );
+
+        boolean isSkalHenteDiskresjonskoder = adGruppeTilganger.fortroligAdresse() || adGruppeTilganger.strengtFortroligAdresse();
+        Map<Fnr, Diskresjonskode> diskresjon = isSkalHenteDiskresjonskoder ? persondataService.hentDiskresjonskoder(
+            avtaler.stream().map(BeslutterOversiktEntity::getDeltakerFnr).collect(Collectors.toSet())
+        ) : Map.of();
+
+        List<BegrensetBeslutterAvtale> begrensedeAvtaler = avtaler
+            .stream()
+            .filter(oversiktDTO -> harTilgangTilFnr(oversiktDTO.getDeltakerFnr()))
+            .map(avtale -> BegrensetBeslutterAvtale.fraEntitetMedDiskresjonskode(
+                avtale,
+                diskresjon.get(avtale.getDeltakerFnr())
+            ))
+            .toList();
+
+        return new PageImpl<>(begrensedeAvtaler, avtaler.getPageable(), avtaler.getTotalElements());
     }
 
     private Set<String> hentNavEnheter() {

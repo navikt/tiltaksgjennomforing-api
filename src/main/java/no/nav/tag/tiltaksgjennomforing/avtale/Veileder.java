@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.AdGruppeTilganger;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
@@ -24,6 +24,7 @@ import no.nav.tag.tiltaksgjennomforing.logging.SecureLog;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -41,14 +42,12 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
-    private static final String NAV_VIKAFOSSEN = "2103";
-
     private static final SecureLog secureLog = SecureLog.getLogger(log);
 
     private final TilgangskontrollService tilgangskontrollService;
     private final PersondataService persondataService;
     private final SlettemerkeProperties slettemerkeProperties;
-    private final boolean harAdGruppeForBeslutter;
+    private final AdGruppeTilganger adGruppeTilganger;
     private final Norg2Client norg2Client;
     private final Set<NavEnhet> navEnheter;
     private final VeilarboppfolgingService veilarboppfolgingService;
@@ -63,7 +62,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             Norg2Client norg2Client,
             Set<NavEnhet> navEnheter,
             SlettemerkeProperties slettemerkeProperties,
-            boolean harAdGruppeForBeslutter,
+            AdGruppeTilganger adGruppeTilganger,
             VeilarboppfolgingService veilarboppfolgingService,
             FeatureToggleService featureToggleService
     ) {
@@ -75,24 +74,9 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
         this.norg2Client = norg2Client;
         this.navEnheter = navEnheter;
         this.slettemerkeProperties = slettemerkeProperties;
-        this.harAdGruppeForBeslutter = harAdGruppeForBeslutter;
+        this.adGruppeTilganger = adGruppeTilganger;
         this.veilarboppfolgingService = veilarboppfolgingService;
         this.featureToggleService = featureToggleService;
-    }
-
-    @Deprecated
-    public Veileder(
-            NavIdent identifikator,
-            TilgangskontrollService tilgangskontrollService,
-            PersondataService persondataService,
-            Norg2Client norg2Client,
-            Set<NavEnhet> navEnheter,
-            SlettemerkeProperties slettemerkeProperties,
-            boolean harAdGruppeForBeslutter,
-            VeilarboppfolgingService veilarboppfolgingService,
-            FeatureToggleService featureToggleService
-    ) {
-        this(identifikator, null, tilgangskontrollService, persondataService, norg2Client, navEnheter, slettemerkeProperties, harAdGruppeForBeslutter, veilarboppfolgingService, featureToggleService);
     }
 
     @Override
@@ -103,10 +87,8 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     ) {
         Page<Avtale> avtaler = hentAvtalerMedLesetilgang(avtaleRepository, queryParametre, pageable);
 
-        boolean isSkalViseDiskresjonskoder = avtaler.getContent().stream()
-            .anyMatch(avtale -> NAV_VIKAFOSSEN.equals(avtale.getEnhetOppfolging()));
-
-        Map<Fnr, Diskresjonskode> diskresjon = isSkalViseDiskresjonskoder ? persondataService.hentDiskresjonskoder(
+        boolean isSkalHenteDiskresjonskoder = adGruppeTilganger.fortroligAdresse() || adGruppeTilganger.strengtFortroligAdresse();
+        Map<Fnr, Diskresjonskode> diskresjon = isSkalHenteDiskresjonskoder ? persondataService.hentDiskresjonskoder(
             avtaler.getContent().stream().map(Avtale::getDeltakerFnr).collect(Collectors.toSet())
         ) : Map.of();
 
@@ -219,7 +201,7 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
 
     @Override
     public InnloggetBruker innloggetBruker() {
-        return new InnloggetVeileder(getIdentifikator(), navEnheter, harAdGruppeForBeslutter);
+        return new InnloggetVeileder(getIdentifikator(), navEnheter, adGruppeTilganger.beslutter());
     }
 
     public void delAvtaleMedAvtalepart(Avtalerolle avtalerolle, Avtale avtale) {
@@ -240,8 +222,12 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
             EndreAvtale endreAvtale,
             Avtale avtale
     ) {
-        super.sjekkTilgangOgEndreAvtale(sistEndret, endreAvtale, avtale);
-        this.oppdatereEnheterVedEndreAvtale(avtale);
+        super.endreAvtale(
+            sistEndret,
+            endreAvtale,
+            avtale,
+            () -> oppdatereEnheterVedEndreAvtale(avtale)
+        );
     }
 
     protected void oppdatereEnheterVedEndreAvtale(Avtale avtale) {

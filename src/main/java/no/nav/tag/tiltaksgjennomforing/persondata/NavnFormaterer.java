@@ -1,6 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.persondata;
 
-import no.nav.tag.tiltaksgjennomforing.persondata.domene.Navn;
+import no.nav.team_tiltak.felles.persondata.pdl.domene.Navn;
 import org.apache.commons.text.WordUtils;
 import org.springframework.util.StringUtils;
 

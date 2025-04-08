@@ -9,7 +9,6 @@ public enum FeatureToggle {
     ARENA_PROSESSERINGS_JOBB("arenaProsesseringsJobb"),
     ARENA_CLEAN_UP_JOB("arenaCleanUpJobb"),
     ARENA_KAFKA("arenaKafka"),
-    ARBEIDSTRENING_READONLY("arbeidstreningReadonly"),
     PABEGYNT_AVTALE_RYDDE_JOBB("pabegyntAvtaleRyddeJobb"),
     KODE_6_SPERRE("kode6Sperre"),;
 

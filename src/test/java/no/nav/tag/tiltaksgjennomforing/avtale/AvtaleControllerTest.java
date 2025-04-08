@@ -1,7 +1,6 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
@@ -25,9 +24,9 @@ import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.EregService;
 import no.nav.tag.tiltaksgjennomforing.orgenhet.Organisasjon;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
-import no.nav.tag.tiltaksgjennomforing.persondata.domene.Navn;
-import no.nav.tag.tiltaksgjennomforing.persondata.domene.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
+import no.nav.team_tiltak.felles.persondata.pdl.domene.Navn;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,12 +120,13 @@ public class AvtaleControllerTest {
         værInnloggetSom(
                 new Veileder(
                         new NavIdent("Z333333"),
+                        null,
                         tilgangskontrollService,
                         persondataService,
                         norg2Client,
                         Collections.emptySet(),
                         new SlettemerkeProperties(),
-                        false,
+                        TestData.INGEN_AD_GRUPPER,
                         veilarboppfolgingService,
                         featureToggleServiceMock
                 )
@@ -145,12 +145,13 @@ public class AvtaleControllerTest {
         NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
         Veileder veileder = new Veileder(
                 identTilInnloggetVeileder,
+                null,
                 tilgangskontrollService,
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock
         );
@@ -188,12 +189,13 @@ public class AvtaleControllerTest {
         NavIdent navIdent = new NavIdent("Z123456");
         Veileder veileder = new Veileder(
                 navIdent,
+                null,
                 tilgangskontrollService,
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock
         );
@@ -227,12 +229,13 @@ public class AvtaleControllerTest {
         NavIdent navIdent = new NavIdent("Z123456");
         Veileder veileder = new Veileder(
                 navIdent,
+                null,
                 tilgangskontrollService,
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock
         );
@@ -277,7 +280,6 @@ public class AvtaleControllerTest {
 
         final NavIdent navIdent = new NavIdent("Z123456");
         final NavEnhet navEnhet = TestData.ENHET_OPPFØLGING;
-        final PdlRespons pdlRespons = TestData.enPdlrespons(false);
         final OpprettAvtale opprettAvtale = new OpprettAvtale(
                 avtale.getDeltakerFnr(),
                 avtale.getBedriftNr(),
@@ -285,12 +287,13 @@ public class AvtaleControllerTest {
         );
         var veileder = new Veileder(
                 navIdent,
+                null,
                 tilgangskontrollService,
                 persondataService,
                 norg2Client,
                 Set.of(navEnhet),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock
         );
@@ -306,7 +309,7 @@ public class AvtaleControllerTest {
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any())).thenReturn(true);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
         when(persondataService.hentNavn(any(Fnr.class))).thenReturn(Navn.TOMT_NAVN);
-        when(norg2Client.hentGeografiskEnhet(pdlRespons.data().hentGeografiskTilknytning().gtBydel()))
+        when(norg2Client.hentGeografiskEnhet(any()))
                 .thenReturn(
                         new Norg2GeoResponse(
                                 TestData.ENHET_GEOGRAFISK.getNavn(),
@@ -347,12 +350,13 @@ public class AvtaleControllerTest {
         Avtale avtale = TestData.enArbeidstreningAvtale();
         Veileder veileder = new Veileder(
                 enNavIdent(),
+                null,
                 tilgangskontrollService,
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock
         );
@@ -420,12 +424,13 @@ public class AvtaleControllerTest {
         when(featureToggleServiceMock.isEnabled(FeatureToggle.KODE_6_SPERRE)).thenReturn(true);
         Veileder enNavAnsatt = new Veileder(
                 new NavIdent("T000000"),
+                null,
                 tilgangskontrollService,
                 persondataServiceIMetode,
                 norg2Client,
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock
         );
@@ -448,12 +453,13 @@ public class AvtaleControllerTest {
         when(featureToggleServiceMock.isEnabled(FeatureToggle.KODE_6_SPERRE)).thenReturn(false);
         Veileder enNavAnsatt = new Veileder(
                 new NavIdent("T000000"),
+                null,
                 tilgangskontrollService,
                 persondataServiceIMetode,
                 norg2Client,
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock
         );
@@ -476,12 +482,13 @@ public class AvtaleControllerTest {
         when(featureToggleServiceMock.isEnabled(FeatureToggle.KODE_6_SPERRE)).thenReturn(true);
         Veileder enNavAnsatt = new Veileder(
                 new NavIdent("T000000"),
+                null,
                 tilgangskontrollService,
                 persondataServiceIMetode,
                 norg2Client,
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock
         );
@@ -559,12 +566,13 @@ public class AvtaleControllerTest {
         NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
         Veileder veileder = new Veileder(
                 identTilInnloggetVeileder,
+                null,
                 tilgangskontrollService,
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock
         );
@@ -588,12 +596,13 @@ public class AvtaleControllerTest {
         NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
         Veileder veileder = new Veileder(
                 identTilInnloggetVeileder,
+                null,
                 tilgangskontrollService,
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock
         );
@@ -615,12 +624,13 @@ public class AvtaleControllerTest {
         NavIdent identTilInnloggetVeileder = new NavIdent("Z333333");
         Veileder veileder = new Veileder(
                 identTilInnloggetVeileder,
+                null,
                 tilgangskontrollService,
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleServiceMock
         );

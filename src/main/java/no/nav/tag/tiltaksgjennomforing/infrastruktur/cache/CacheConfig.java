@@ -15,8 +15,6 @@ public class CacheConfig {
 
     public static final String AXSYS_CACHE = "axsys_cache";
 
-    public static final String PDL_CACHE = "pdl_cache";
-
     public static final String NORGNAVN_CACHE = "norgnavn_cache";
 
     public static final String NORG_GEO_ENHET = "norggeoenhet_cache";

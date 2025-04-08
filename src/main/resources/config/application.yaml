@@ -5,6 +5,10 @@ management.endpoints.web:
   base-path: /internal/actuator
 
 spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    locations: classpath:db/migration/common,classpath:db/migration/{vendor}
   task:
     scheduling.pool.size: 8
   cache:
@@ -54,8 +58,6 @@ tiltaksgjennomforing:
   retry: # Delay i millisekunder mellom hver retry
     delay: 1000
     max-delay: 20000
-  beslutter-ad-gruppe:
-    id: ${beslutter.ad.gruppe}
   kafka:
     enabled: true
   dokgen:

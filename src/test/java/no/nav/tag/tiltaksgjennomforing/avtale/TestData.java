@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.AdGruppeTilganger;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBeslutter;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetDeltaker;
@@ -20,14 +20,11 @@ import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.Veilarboppfolging
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
-import no.nav.tag.tiltaksgjennomforing.persondata.domene.Adressebeskyttelse;
-import no.nav.tag.tiltaksgjennomforing.persondata.domene.HentGeografiskTilknytning;
-import no.nav.tag.tiltaksgjennomforing.persondata.domene.HentPerson;
-import no.nav.tag.tiltaksgjennomforing.persondata.domene.Navn;
-import no.nav.tag.tiltaksgjennomforing.persondata.domene.PdlRespons;
 import no.nav.tag.tiltaksgjennomforing.sporingslogg.Sporingslogg;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
+import no.nav.team_tiltak.felles.persondata.pdl.domene.Navn;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -43,14 +40,13 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 public class TestData {
-
     public static NavEnhet ENHET_OPPFØLGING = new NavEnhet("0906", "Oslo gamlebyen");
     public static NavEnhet ENHET_GEOGRAFISK = new NavEnhet("0904", "Vinstra");
     public static Integer ET_AVTALENR = 10;
+    public static AdGruppeTilganger INGEN_AD_GRUPPER = new AdGruppeTilganger(false, false, false);
 
     public static FeatureToggleService featureToggleService = mock(FeatureToggleService.class);
 
@@ -857,7 +853,6 @@ public class TestData {
     public static void setupVeilederMock(
             Avtale avtale,
             Avtalepart<NavIdent> veileder,
-            PdlRespons pdlRespons,
             TilgangskontrollService tilgangskontrollService,
             VeilarboppfolgingService veilarboppfolgingService,
             PersondataService persondataService,
@@ -878,56 +873,11 @@ public class TestData {
                 );
         when(persondataService.hentDiskresjonskode(avtale.getDeltakerFnr())).thenReturn(Diskresjonskode.UGRADERT);
 
-        when(norg2Client.hentGeografiskEnhet(pdlRespons.data().hentGeografiskTilknytning().gtBydel()))
+        when(norg2Client.hentGeografiskEnhet(any()))
                 .thenReturn(new Norg2GeoResponse(
                         avtale.getEnhetsnavnOppfolging(),
                         avtale.getEnhetOppfolging()
                 ));
-
-        when(norg2Client.hentGeografiskEnhet(pdlRespons.data().hentGeografiskTilknytning().gtBydel()))
-                .thenReturn(new Norg2GeoResponse(
-                        avtale.getEnhetsnavnOppfolging(),
-                        avtale.getEnhetOppfolging()
-                ));
-    }
-
-    public static Veileder enVeilederMedMocketEndepunkt(Avtale avtale) {
-        final NavEnhet geoNavEnhet = TestData.ENHET_GEOGRAFISK;
-        final NavEnhet oppfolgingNavEnhet = TestData.ENHET_OPPFØLGING;
-
-        TestData.setGeoNavEnhet(avtale, geoNavEnhet);
-        TestData.setOppfolgingNavEnhet(avtale, oppfolgingNavEnhet);
-
-        final TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
-        final PersondataService persondataService = mock(PersondataService.class);
-        final Norg2Client norg2Client = mock(Norg2Client.class);
-        final PdlRespons pdlRespons = TestData.enPdlrespons(false);
-        final VeilarboppfolgingService veilarbArenaClient = mock(VeilarboppfolgingService.class);
-        var veileder = new Veileder(
-                avtale.getVeilederNavIdent(),
-                tilgangskontrollService,
-                persondataService,
-                norg2Client,
-                Set.of(new NavEnhet(avtale.getEnhetOppfolging(), avtale.getEnhetsnavnOppfolging())),
-                new SlettemerkeProperties(),
-                false,
-                veilarbArenaClient,
-                featureToggleService
-        );
-
-        setupVeilederMock(
-                avtale,
-                veileder,
-                pdlRespons,
-                tilgangskontrollService,
-                veilarbArenaClient,
-                persondataService,
-                norg2Client
-        );
-
-        return spy(
-                veileder
-        );
     }
 
     public static Veileder enVeileder(Avtale avtale) {
@@ -937,12 +887,13 @@ public class TestData {
 
         var veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
+                null,
                 tilgangskontrollService,
                 persondataService,
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Oslo gamlebyen")),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService
         );
@@ -980,8 +931,9 @@ public class TestData {
     public static Beslutter enBeslutter(Avtale avtale) {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         Norg2Client norg2Client = mock(Norg2Client.class);
+        PersondataService persondataService = mock(PersondataService.class);
         NavIdent navIdent = new NavIdent("B999999");
-        var beslutter = new Beslutter(navIdent, UUID.randomUUID(), Set.of(), tilgangskontrollService, norg2Client);
+        var beslutter = new Beslutter(navIdent, UUID.randomUUID(), Set.of(), tilgangskontrollService, norg2Client, persondataService, TestData.INGEN_AD_GRUPPER);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(beslutter, avtale.getDeltakerFnr())).thenReturn(true);
         when(norg2Client.hentOppfølgingsEnhet(eq("0000"))).thenReturn(new Norg2OppfølgingResponse(0, "0000", "Oslo", Norg2EnhetStatus.AKTIV));
         when(norg2Client.hentOppfølgingsEnhet(eq("0906"))).thenReturn(new Norg2OppfølgingResponse(906, "0906", "Oslo", Norg2EnhetStatus.AKTIV));
@@ -1101,12 +1053,13 @@ public class TestData {
         PersondataService persondataService = mock(PersondataService.class);
         var veileder = new Veileder(
                 navIdent,
+                null,
                 tilgangskontrollService,
                 persondataService,
                 mock(Norg2Client.class),
                 Set.of(ENHET_OPPFØLGING),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService
         );
@@ -1119,12 +1072,13 @@ public class TestData {
         TilgangskontrollService tilgangskontrollService = mock(TilgangskontrollService.class);
         var veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
+                null,
                 tilgangskontrollService,
                 persondataService,
                 mock(Norg2Client.class),
                 Set.of(ENHET_OPPFØLGING),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 mock(VeilarboppfolgingService.class),
                 featureToggleService
         );
@@ -1133,16 +1087,6 @@ public class TestData {
                 avtale.getDeltakerFnr())
         ).thenReturn(true);
         return veileder;
-    }
-
-    public static PdlRespons enPdlrespons(boolean harKode6) {
-        List<Adressebeskyttelse> adressebeskyttelser = Collections.emptyList();
-        if (harKode6) {
-            adressebeskyttelser = List.of(new Adressebeskyttelse(Diskresjonskode.STRENGT_FORTROLIG));
-        }
-
-        HentPerson hentPerson = new HentPerson(adressebeskyttelser, null, List.of(new Navn("Donald", null, "Duck")));
-        return new PdlRespons(new PdlRespons.Data(hentPerson, null, new HentGeografiskTilknytning(null, "030101", null, null)));
     }
 
     public static TilskuddPeriode enTilskuddPeriode() {

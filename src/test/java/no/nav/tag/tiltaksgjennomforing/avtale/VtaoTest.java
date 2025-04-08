@@ -1,15 +1,17 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
+import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,22 +52,28 @@ public class VtaoTest {
     private VeilarboppfolgingService veilarboppfolgingService;
     @Mock
     private Norg2Client norg2Client;
-    @Mock
+    @MockBean
     private FeatureToggleService featureToggleService;
     @Autowired
     private AvtaleInnholdRepository avtaleInnholdRepository;
+
+    @BeforeEach
+    void setup() {
+        when(featureToggleService.isEnabled(FeatureToggle.VTAO_TILTAK_TOGGLE)).thenReturn(true);
+    }
 
     @Test
     public void kanOppretteVtaoAvtaleTest() {
         var navIdent = TestData.enNavIdent();
         Veileder veileder = new Veileder(
                 navIdent,
+                null,
                 tilgangskontrollService,
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService
         );
@@ -84,12 +92,13 @@ public class VtaoTest {
         var navIdent = TestData.enNavIdent();
         Veileder veileder = new Veileder(
                 navIdent,
+                null,
                 tilgangskontrollService,
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService
         );
@@ -148,12 +157,13 @@ public class VtaoTest {
         var navIdent = TestData.enNavIdent();
         Veileder veileder = new Veileder(
                 navIdent,
+                null,
                 tilgangskontrollService,
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService
         );
@@ -210,12 +220,13 @@ public class VtaoTest {
         var navIdent = TestData.enNavIdent();
         Veileder veileder = new Veileder(
                 navIdent,
+                null,
                 tilgangskontrollService,
                 persondataService,
                 norg2Client,
                 Collections.emptySet(),
                 new SlettemerkeProperties(),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 veilarboppfolgingService,
                 featureToggleService
         );

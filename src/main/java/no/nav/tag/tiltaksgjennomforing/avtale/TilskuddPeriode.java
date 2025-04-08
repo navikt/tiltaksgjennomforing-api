@@ -58,6 +58,14 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
 
     private LocalDateTime godkjentTidspunkt;
 
+    /**
+     * "Enhet" i denne konteksten er oppfølgingsenheten til deltaker;
+     * og betegnes også som "kostnadssted" i feks besluttervisning.
+     * <p>
+     * Beslutter kan velge å endre kostnadssted per tilskuddsperiode.
+     * <p>
+     * <b>Eksempel:</b> 1702 (Nav Inn-Trøndelag)
+     */
     private String enhet;
     private String enhetsnavn;
 

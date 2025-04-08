@@ -1,6 +1,5 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import no.nav.tag.tiltaksgjennomforing.autorisasjon.Diskresjonskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.RefusjonKontaktperson.Fields;
@@ -18,6 +17,7 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.enhet.NavEnhet;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.tilskuddsperiode.beregning.EndreTilskuddsberegning;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -1532,12 +1532,13 @@ public class AvtaleTest {
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
+                null,
                 tilgangskontrollService,
                 persondataService,
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 mock(VeilarboppfolgingService.class),
                 mock(FeatureToggleService.class)
         );
@@ -1569,12 +1570,13 @@ public class AvtaleTest {
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
+                null,
                 tilgangskontrollService,
                 persondataService,
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 mock(VeilarboppfolgingService.class),
                 mock(FeatureToggleService.class)
         );
@@ -1678,12 +1680,13 @@ public class AvtaleTest {
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
+                null,
                 tilgangskontrollService,
                 persondataService,
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 mock(VeilarboppfolgingService.class),
                 mock(FeatureToggleService.class)
         );
@@ -1720,12 +1723,13 @@ public class AvtaleTest {
 
         Veileder veileder = new Veileder(
                 avtale.getVeilederNavIdent(),
+                null,
                 tilgangskontrollService,
                 persondataService,
                 mock(Norg2Client.class),
                 Set.of(new NavEnhet("4802", "Trysil")),
                 mock(SlettemerkeProperties.class),
-                false,
+                TestData.INGEN_AD_GRUPPER,
                 mock(VeilarboppfolgingService.class),
                 mock(FeatureToggleService.class)
         );
