@@ -31,7 +31,7 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         if (erIkkeTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato(), gjeldendeInnhold.getSumLonnstilskudd())) {
             tilskuddsperioder = hentTilskuddsperioderForPeriode(avtale,gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
             if (avtale.getArenaRyddeAvtale() != null) {
-                LocalDate standardMigreringsdato = LocalDate.of(2023, 02, 01);
+                LocalDate standardMigreringsdato = LocalDate.of(2023, 2, 1);
                 LocalDate migreringsdato = avtale.getArenaRyddeAvtale().getMigreringsdato() != null ? avtale.getArenaRyddeAvtale().getMigreringsdato() : standardMigreringsdato;
 
                 tilskuddsperioder.forEach(periode -> {
