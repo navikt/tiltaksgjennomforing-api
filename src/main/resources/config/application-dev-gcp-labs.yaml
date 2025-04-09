@@ -52,8 +52,7 @@ tiltaksgjennomforing:
     arbtreningServiceCode: 5332
     arbtreningServiceEdition: 1
     vtaoServiceCode: 5516
-    vtaoServiceEdition: 5 # TODO: Finn riktig service edition
-    vtaoAktiv: true
+    vtaoServiceEdition: 6
     altinnApiKey: foo
     apiGwApiKey: foo
   ereg:

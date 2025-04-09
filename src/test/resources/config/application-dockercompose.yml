@@ -61,8 +61,7 @@ tiltaksgjennomforing:
     altinnApiKey: foo
     apiGwApiKey: foo
     vtaoServiceCode: 5516
-    vtaoServiceEdition: 5
-    vtaoAktiv: true
+    vtaoServiceEdition: 6
   ereg:
     uri: http://localhost:8090/ereg
   sts:
