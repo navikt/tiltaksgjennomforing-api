@@ -4,12 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.Status;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
@@ -22,37 +24,34 @@ public class DvhAvtalePatchService {
 
     @Async
     public void lagDvhPatchMeldingForAlleAvtaler() {
-        AtomicInteger antallPatchet = new AtomicInteger();
         List<Avtale> alleAvtaler = avtaleRepository.findAllByGjeldendeInnhold_AvtaleInngåttNotNull();
+        patchAvtaler(alleAvtaler);
+    }
 
-        alleAvtaler.forEach(avtale -> {
-            if(skalPatches(avtale)) {
+    @Async
+    public void lagDvhPatchMeldingerForTiltakstype(Tiltakstype tiltakstype) {
+        List<Avtale> avtaler = avtaleRepository.findAllByTiltakstypeAndStatusInAndGjeldendeInnhold_AvtaleInngåttNotNull(
+            tiltakstype,
+            Set.of(Status.KLAR_FOR_OPPSTART, Status.GJENNOMFØRES)
+        );
+        patchAvtaler(avtaler);
+    }
+
+    private void patchAvtaler(List<Avtale> avtaler) {
+        log.info("Patcher {} avtaler til DVH", avtaler.size());
+        AtomicInteger antallPatchet = new AtomicInteger();
+        avtaler.forEach(avtale -> {
+            if (skalPatches(avtale)) {
                 lagDvhPatchMelding(avtale);
                 antallPatchet.getAndIncrement();
-                if(antallPatchet.get() % 100 == 0) {
+                if (antallPatchet.get() % 100 == 0) {
                     log.info("Migrert {} antall avtaler", antallPatchet.get());
                 }
             }
             log.info("Avtale {} skal ikke patches i DVH", avtale.getId());
         });
         log.info("Migrert {} antall avtaler", antallPatchet.get());
-    }
 
-    @Async
-    public void lagDvhPatchMeldingerForTiltakstype(Tiltakstype tiltakstype) {
-        AtomicInteger antallPatchet = new AtomicInteger();
-        List<Avtale> avtaler = avtaleRepository.findAllByTiltakstypeAndGjeldendeInnhold_AvtaleInngåttNotNull(tiltakstype);
-        avtaler.forEach(avtale -> {
-            if(skalPatches(avtale)) {
-                lagDvhPatchMelding(avtale);
-                antallPatchet.getAndIncrement();
-                if(antallPatchet.get() % 100 == 0) {
-                    log.info("Migrert {} antall avtaler med tiltakstype {}", antallPatchet.get(), tiltakstype);
-                }
-            }
-            log.info("Avtale {} skal ikke patches i DVH", avtale.getId());
-        });
-        log.info("Migrert {} antall avtaler med tiltakstype {}}", antallPatchet.get(), tiltakstype);
     }
 
     @Transactional
@@ -63,8 +62,8 @@ public class DvhAvtalePatchService {
     }
 
     private boolean skalPatches(Avtale avtale) {
-        if(avtale.erAvtaleInngått()) {
-            if(!avtale.erGodkjentAvVeileder()) {
+        if (avtale.erAvtaleInngått()) {
+            if (!avtale.erGodkjentAvVeileder()) {
                 log.warn("Avtale {} er inngått men ikke godkjent av veileder", avtale.getId());
                 return false;
             }
