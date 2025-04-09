@@ -72,7 +72,6 @@ public class AvtaleController {
     private final Norg2Client norg2Client;
     private final KontoregisterService kontoregisterService;
     private final DokgenService dokgenService;
-    private final SalesforceKontorerConfig salesforceKontorerConfig;
     private final VeilarboppfolgingService veilarboppfolgingService;
     private final FilterSokRepository filterSokRepository;
     private final MeterRegistry meterRegistry;
@@ -110,15 +109,6 @@ public class AvtaleController {
             } catch (MalformedURLException e) {
             }
         }
-    }
-
-    @GetMapping("/{avtaleId}/vis-salesforce-dialog")
-    public Boolean visSalesforceDialog(@PathVariable("avtaleId") UUID id, @CookieValue("innlogget-part") Avtalerolle innloggetPart) {
-        Avtalepart avtalepart = innloggingService.hentAvtalepart(innloggetPart);
-        Avtale avtale = avtalepart.hentAvtale(avtaleRepository, id);
-        return salesforceKontorerConfig.getEnheter().contains(avtale.getEnhetOppfolging()) &&
-                SalesforceKontorerConfig.PILOT_TILTAKSTYPER.contains(avtale.getTiltakstype()) &&
-                (avtale.getStatus() == Status.GJENNOMFØRES || avtale.getStatus() == Status.AVSLUTTET);
     }
 
     @AuditLogging("Hent detaljer for avtale om arbeidsmarkedstiltak")
