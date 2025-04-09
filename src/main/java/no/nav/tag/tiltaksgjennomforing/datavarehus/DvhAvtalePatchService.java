@@ -41,7 +41,7 @@ public class DvhAvtalePatchService {
     @Async
     public void lagDvhPatchMeldingerForTiltakstype(Tiltakstype tiltakstype) {
         AtomicInteger antallPatchet = new AtomicInteger();
-        List<Avtale> avtaler = avtaleRepository.findAllByTiltakstypeInAndGjeldendeInnhold_AvtaleInngåttNotNull(tiltakstype);
+        List<Avtale> avtaler = avtaleRepository.findAllByTiltakstypeAndGjeldendeInnhold_AvtaleInngåttNotNull(tiltakstype);
         avtaler.forEach(avtale -> {
             if(skalPatches(avtale)) {
                 lagDvhPatchMelding(avtale);
