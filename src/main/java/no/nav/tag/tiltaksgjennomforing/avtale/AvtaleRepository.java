@@ -64,6 +64,8 @@ public interface AvtaleRepository extends JpaRepository<Avtale, UUID>, JpaSpecif
 
     List<Avtale> findAllByGjeldendeInnhold_AvtaleInngåttNotNull();
 
+    List<Avtale> findAllByTiltakstypeInAndGjeldendeInnhold_AvtaleInngåttNotNull(Tiltakstype tiltakstype);
+
     @Query(value = """
         select a from Avtale a
             where a.tiltakstype in (:tiltakstyper)

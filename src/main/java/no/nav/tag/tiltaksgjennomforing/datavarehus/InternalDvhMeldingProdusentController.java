@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.security.token.support.core.api.ProtectedWithClaims;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleRepository;
+import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +42,12 @@ public class InternalDvhMeldingProdusentController {
     public void patchAlleAvtaler() {
         log.info("Patcher alle avtaler til dvh");
         dvhAvtalePatchService.lagDvhPatchMeldingForAlleAvtaler();
+    }
+
+    @PostMapping("patchtiltakstype/{tiltakstype}")
+    public void patchTiltakstype(@PathVariable Tiltakstype tiltakstype) {
+        log.info("Patcher avtaler med tiltakstype {} til dvh", tiltakstype);
+        dvhAvtalePatchService.lagDvhPatchMeldingerForTiltakstype(tiltakstype);
     }
 
     private record PatchRequest(List<UUID> avtaleIder) {
