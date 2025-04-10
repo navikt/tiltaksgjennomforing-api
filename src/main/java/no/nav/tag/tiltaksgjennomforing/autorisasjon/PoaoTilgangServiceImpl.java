@@ -16,6 +16,7 @@ import no.nav.security.token.support.client.core.oauth2.OAuth2AccessTokenService
 import no.nav.security.token.support.client.spring.ClientConfigurationProperties;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
+import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,8 @@ public class PoaoTilgangServiceImpl implements PoaoTilgangService {
 
     public PoaoTilgangServiceImpl(
             @Value("${tiltaksgjennomforing.poao-tilgang.url}") String poaoTilgangUrl,
-            ClientConfigurationProperties clientConfigurationProperties, OAuth2AccessTokenService oAuth2AccessTokenService
+            ClientConfigurationProperties clientConfigurationProperties,
+            OAuth2AccessTokenService oAuth2AccessTokenService
     ) {
         ClientProperties clientProperties = clientConfigurationProperties.getRegistration().get("poao-tilgang");
         klient = PoaoTilgangCachedClient.createDefaultCacheClient(
