@@ -154,6 +154,33 @@
           "Content-Type": "application/json"
         }
       }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/persondata",
+        "headers": {
+          "Content-Type": {
+            "equalTo": "application/json; charset=utf-8",
+            "caseInsensitive": true
+          }
+        },
+        "bodyPatterns": [
+          {
+            "ignoreArrayOrder": true,
+            "equalToJson": {
+              "query": "query($identer: [ID!]!) { hentPersonBolk(identer: $identer) { ident, person { adressebeskyttelse { gradering } }, code } }"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "body": "{ \"data\": { \"hentPersonBolk\": [ { \"ident\": \"16053900422\", \"code\": \"ok\", \"person\": { \"adressebeskyttelse\": [ { \"gradering\": \"STRENGT_FORTROLIG\" } ] } }, { \"ident\": \"28033114267\", \"code\": \"ok\", \"person\": { \"adressebeskyttelse\": [ { \"gradering\": \"STRENGT_FORTROLIG_UTLAND\" } ] } }, { \"ident\": \"26067114433\", \"code\": \"ok\", \"person\": { \"adressebeskyttelse\": [ { \"gradering\": \"FORTROLIG\" } ] } } ] } }",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
     }
   ]
 }
