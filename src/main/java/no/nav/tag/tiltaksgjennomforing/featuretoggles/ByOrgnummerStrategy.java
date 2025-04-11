@@ -31,7 +31,7 @@ public class ByOrgnummerStrategy implements Strategy {
         return "byOrgnummer";
     }
 
-    @Override
+
     public boolean isEnabled(Map<String, String> map) {
         return false;
     }
