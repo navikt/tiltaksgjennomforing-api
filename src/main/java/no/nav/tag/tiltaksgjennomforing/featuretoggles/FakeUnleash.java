@@ -1,7 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 
 import io.getunleash.UnleashContext;
-import io.getunleash.Variant;
+import io.getunleash.variant.Variant;
 import jakarta.servlet.http.HttpServletRequest;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -45,13 +45,13 @@ public final class FakeUnleash extends io.getunleash.FakeUnleash {
         updateTogglesFromRequest();
         return super.getVariant(toggleName, defaultValue);
     }
-
+/*
     @Override
     public List<String> getFeatureToggleNames() {
         updateTogglesFromRequest();
         return super.getFeatureToggleNames();
     }
-
+*/
     private void updateTogglesFromRequest() {
         if (miljo.contains(Miljø.TEST)) {
             return;

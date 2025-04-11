@@ -27,7 +27,7 @@ public class ByEnhetStrategy implements Strategy {
     }
 
     @Override
-    public boolean isEnabled(Map<String, String> parameters) {
+    public boolean isEnabled(Map<String, String> parameters, UnleashContext unleashContext) {
         return false;
     }
 
