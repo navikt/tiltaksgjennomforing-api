@@ -129,6 +129,8 @@ tiltaksgjennomforing:
     inkluderingstilskuddServiceEdition: 5
     vtaoServiceCode: 5516
     vtaoServiceEdition: 6
+    adressesperreServiceCode: 5516
+    adressesperreServiceEdition: 7
 
   ereg:
     uri: https://ereg-services.intern.nav.no/api/v2/organisasjon

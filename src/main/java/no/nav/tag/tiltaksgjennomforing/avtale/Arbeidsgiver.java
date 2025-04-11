@@ -5,16 +5,19 @@ import no.nav.arbeidsgiver.altinnrettigheter.proxy.klient.model.AltinnReportee;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,6 +29,7 @@ import java.util.stream.Collectors;
 public class Arbeidsgiver extends Avtalepart<Fnr> {
     private final Map<BedriftNr, Collection<Tiltakstype>> tilganger;
     private final Set<AltinnReportee> altinnOrganisasjoner;
+    private final List<BedriftNr> adressesperreTilgang;
     private final PersondataService persondataService;
     private final Norg2Client norg2Client;
 
@@ -33,12 +37,14 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
             Fnr identifikator,
             Set<AltinnReportee> altinnOrganisasjoner,
             Map<BedriftNr, Collection<Tiltakstype>> tilganger,
+            List<BedriftNr> adressesperreTilgang,
             PersondataService persondataService,
             Norg2Client norg2Client
     ) {
         super(identifikator);
         this.altinnOrganisasjoner = altinnOrganisasjoner;
         this.tilganger = tilganger;
+        this.adressesperreTilgang = adressesperreTilgang;
         this.persondataService = persondataService;
         this.norg2Client = norg2Client;
     }
@@ -127,21 +133,33 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
     @Override
     public boolean harTilgangTilAvtale(Avtale avtale) {
-        if (sluttdatoPassertMedMerEnn12Uker(avtale)) {
-            return false;
-        }
-        if (avbruttForMerEnn12UkerSiden(avtale)) {
-            return false;
-        }
-        if (annullertForMerEnn12UkerSiden(avtale)) {
-            return false;
-        }
-        return harTilgangPåTiltakIBedrift(avtale.getBedriftNr(), avtale.getTiltakstype());
+        return harTilgangTilAvtale(List.of(avtale)).test(avtale);
     }
 
     @Override
     Predicate<Avtale> harTilgangTilAvtale(List<Avtale> avtaler) {
-        return this::harTilgangTilAvtale;
+        // Arbeidsgiver henter alltid en eller flere avtaler på samme bedriftNr, derav anyMatch.
+        boolean harAdressesperretilgang = avtaler.stream().anyMatch(avtale -> adressesperreTilgang.contains(avtale.getBedriftNr()));
+        Set<Fnr> unikeFnrIAvtaler = avtaler.stream().map(Avtale::getDeltakerFnr).collect(Collectors.toSet());
+
+        // Slå opp PDL i bolk hvis man ikke har adressesperretilgang
+        Map<Fnr, Diskresjonskode> diskresjonskodeMap = !harAdressesperretilgang ? persondataService.hentDiskresjonskoder(unikeFnrIAvtaler) : Collections.emptyMap();
+        return avtale -> {
+            boolean deltakerHarAdressesperre = diskresjonskodeMap.getOrDefault(avtale.getDeltakerFnr(), Diskresjonskode.UGRADERT).erKode6Eller7();
+            if (!harAdressesperretilgang && deltakerHarAdressesperre) {
+                return false;
+            }
+            if (sluttdatoPassertMedMerEnn12Uker(avtale)) {
+                return false;
+            }
+            if (avbruttForMerEnn12UkerSiden(avtale)) {
+                return false;
+            }
+            if (annullertForMerEnn12UkerSiden(avtale)) {
+                return false;
+            }
+            return harTilgangPåTiltakIBedrift(avtale.getBedriftNr(), avtale.getTiltakstype());
+        };
     }
 
     @Override
@@ -158,6 +176,16 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         }
         Collection<Tiltakstype> gyldigeTilgangerPåBedriftNr = tilganger.get(bedriftNr);
         return gyldigeTilgangerPåBedriftNr.contains(tiltakstype);
+    }
+
+    private boolean harTilgangPåDeltakerIBedrift(BedriftNr bedriftNr, Fnr deltakerFnr) {
+        if (!adressesperreTilgang.contains(bedriftNr)) {
+            Diskresjonskode diskresjonskode = persondataService.hentDiskresjonskode(deltakerFnr);
+            if (diskresjonskode.erKode6Eller7()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -203,14 +231,13 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
         return liste;
     }
 
-    private void tilgangTilBedriftVedOpprettelseAvAvtale(BedriftNr bedriftNr, Tiltakstype tiltakstype) {
-        if (!harTilgangPåTiltakIBedrift(bedriftNr, tiltakstype)) {
+    public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
+        if (!harTilgangPåTiltakIBedrift(opprettAvtale.getBedriftNr(), opprettAvtale.getTiltakstype())) {
             throw new TilgangskontrollException("Har ikke tilgang på tiltak i valgt bedrift");
         }
-    }
-
-    public Avtale opprettAvtale(OpprettAvtale opprettAvtale) {
-        this.tilgangTilBedriftVedOpprettelseAvAvtale(opprettAvtale.getBedriftNr(), opprettAvtale.getTiltakstype());
+        if (!harTilgangPåDeltakerIBedrift(opprettAvtale.getBedriftNr(), opprettAvtale.getDeltakerFnr())) {
+            throw new IkkeTilgangTilDeltakerException(opprettAvtale.getDeltakerFnr());
+        }
 
         Avtale avtale = Avtale.opprett(opprettAvtale, Avtaleopphav.ARBEIDSGIVER);
         avtale.leggTilDeltakerNavn(persondataService.hentNavn(avtale.getDeltakerFnr()));
