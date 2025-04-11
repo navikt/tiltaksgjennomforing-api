@@ -111,6 +111,8 @@ tiltaksgjennomforing:
     oppgave-uri: http://localhost:8090/api/v1/oppgaver
   veilarboppfolging:
     url: http://localhost:8090
+  veilarbvedtaksstotte:
+    url: http://localhost:8090
   norg2:
     geografisk:
       url: http://localhost:8090/norg2/api/v1/enhet/navkontor/

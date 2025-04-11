@@ -45,6 +45,14 @@ no.nav.security.jwt:
           client-id: ${AZURE_APP_CLIENT_ID}
           client-secret: ${AZURE_APP_CLIENT_SECRET}
           client-auth-method: client_secret_basic
+      veilarbvedtaksstotte:
+        token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
+        grant-type: client_credentials
+        scope: api://dev-gcp.obo.veilarbvedtaksstotte/.default
+        authentication:
+          client-id: ${AZURE_APP_CLIENT_ID}
+          client-secret: ${AZURE_APP_CLIENT_SECRET}
+          client-auth-method: client_secret_basic
       poao-tilgang:
         token-endpoint-url: https://login.microsoftonline.com/${AZURE_APP_TENANT_ID}/oauth2/v2.0/token
         grant-type: client_credentials
@@ -152,6 +160,8 @@ tiltaksgjennomforing:
       id: ${tiltaksgjennomforing.consumer.system}
   veilarboppfolging:
     url: https://veilarboppfolging.intern.dev.nav.no
+  veilarbvedtaksstotte:
+    url: https://veilarbvedtaksstotte.intern.dev.nav.no
   poao-tilgang:
     url: http://poao-tilgang.poao.svc.nais.local
   norg2:
