@@ -1,6 +1,7 @@
 package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 
 
+import io.getunleash.UnleashContext;
 import io.getunleash.strategy.Strategy;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +27,7 @@ public class ByEnvironmentStrategy implements Strategy {
     }
 
     @Override
-    public boolean isEnabled(Map<String, String> parameters) {
+    public boolean isEnabled(Map<String, String> parameters, UnleashContext context) {
         return Optional.ofNullable(parameters)
                 .map(map -> map.get("miljø"))
                 .map(env -> asList(env.split(",")).contains(environment))

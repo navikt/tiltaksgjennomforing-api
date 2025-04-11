@@ -2,7 +2,7 @@ package no.nav.tag.tiltaksgjennomforing.featuretoggles;
 
 import io.getunleash.Unleash;
 import io.getunleash.UnleashContext;
-import io.getunleash.Variant;
+import io.getunleash.variant.Variant;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
