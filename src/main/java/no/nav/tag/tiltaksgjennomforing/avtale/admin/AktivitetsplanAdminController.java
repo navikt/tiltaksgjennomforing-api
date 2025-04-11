@@ -25,6 +25,10 @@ public class AktivitetsplanAdminController {
     private final HendelseAktivitetsplanClient hendelseAktivitetsplanClient;
     private final ArenaAgreementMigrationRepository arenaAgreementMigrationRepository;
 
+    /*
+     * Tar over aktivietsplankortet fra Arena og sender siste melding på nytt.
+     * Brukes dersom et tiltak ikke ble migrert fra Arena, men Aktivietsplankortet ennå henger igjen med feil status.
+     */
     @PostMapping("/avtale/{avtaleId}/ta-over-kort")
     public void taOverAktivitetsplankort(@PathVariable UUID avtaleId) {
         List<Integer> deltakerIder = arenaAgreementMigrationRepository.findTiltakdeltakerIdFromAvtaleId(avtaleId);
@@ -38,10 +42,24 @@ public class AktivitetsplanAdminController {
         hendelseAktivitetsplanClient.putAktivietsplanId(avtaleId, aktivitetsplanId, true);
     }
 
+    /*
+     * Sender siste melding på nytt til aktivitetsplanen.
+     * Brukes dersom vi har fått feil fra aktivitetsplanen med kollisjon på melding-id.
+     */
     @PostMapping("/avtale/{avtaleId}/send-siste-melding")
     public void sendSisteMeldingPaaNytt(@PathVariable UUID avtaleId) {
         avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
         hendelseAktivitetsplanClient.postSendSisteMelding(avtaleId);
+    }
+
+    /**
+     * Genererer en ny aktivitetsplan id og sender siste melding på nytt.
+     * Brukes dersom deltaker har falt ut av oppfølging.
+     */
+    @PostMapping("/avtale/{avtaleId}/generer-ny-id")
+    public void genererNyId(@PathVariable UUID avtaleId) {
+        avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
+        hendelseAktivitetsplanClient.putAktivietsplanId(avtaleId, UUID.randomUUID(), true);
     }
 
 }
