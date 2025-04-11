@@ -106,10 +106,8 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     public Tilgang harTilgangTilAvtale(Avtale avtale) {
         secureLog.info("Sjekker tilgang for veileder {} til avtale {}", getIdentifikator(), avtale.getId());
         Tilgang tilgang = tilgangskontrollService.hentSkrivetilgang(this, avtale.getDeltakerFnr());
-        if(tilgang == null ){
-            log.error("Tilgang er NULL for avtalenr {}, id: {}", avtale.getAvtaleNr(), avtale.getId());
-        }
-        if (!tilgang.erTillat()) {
+        boolean harTilgang = tilgang != null && tilgang.erTillat();
+        if (!harTilgang) {
             log.info("Har ikke tilgang til avtalenr {}, id: {}", avtale.getAvtaleNr(), avtale.getId());
         }
         return tilgang;

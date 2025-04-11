@@ -16,7 +16,8 @@ public enum Avslagskode {
     UTGATT,
     IKKE_TILGANG_PAA_TILTAK,
     UKJENT,
-    INGEN_RESPONS;
+    INGEN_RESPONS,
+    IKKE_TILGANG_TIL_DELTAKER;
 
     public static Avslagskode parse(Decision decision) {
         if (decision.isPermit()) {
@@ -40,8 +41,10 @@ public enum Avslagskode {
             case "POLICY_IKKE_IMPLEMENTERT" -> POLICY_IKKE_IMPLEMENTERT;
             case "IKKE_TILGANG_FRA_ABAC" -> IKKE_TILGANG_FRA_ABAC;
             case "IKKE_TILGANG_TIL_NAV_ENHET" -> IKKE_TILGANG_TIL_NAV_ENHET;
+            case "IKKE_TILGANG_TIL_DELTAKER" -> IKKE_TILGANG_TIL_DELTAKER;
             case "UKLAR_TILGANG_MANGLENDE_INFORMASJON" -> UKLAR_TILGANG_MANGLENDE_INFORMASJON;
             case "EKSTERN_BRUKER_HAR_IKKE_TILGANG" -> EKSTERN_BRUKER_HAR_IKKE_TILGANG;
+
             default -> UKJENT;
         };
     }

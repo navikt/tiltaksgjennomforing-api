@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 
+import static no.nav.tag.tiltaksgjennomforing.autorisasjon.Avslagskode.IKKE_TILGANG_TIL_DELTAKER;
+
+
 public class Deltaker extends Avtalepart<Fnr> {
 
     public Deltaker(Fnr identifikator) {
@@ -29,7 +32,7 @@ public class Deltaker extends Avtalepart<Fnr> {
     public Tilgang harTilgangTilAvtale(Avtale avtale) {
         return avtale.getDeltakerFnr().equals(getIdentifikator())
             ? new Tilgang.Tillat()
-            : new Tilgang.Avvis(null, null);
+            : new Tilgang.Avvis(IKKE_TILGANG_TIL_DELTAKER, "Deltaker fnr stemmer ikke med innlogget bruker");
     }
 
     @Override

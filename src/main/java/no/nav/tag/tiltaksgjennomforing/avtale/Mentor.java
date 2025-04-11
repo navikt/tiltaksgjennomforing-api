@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 
+import static no.nav.tag.tiltaksgjennomforing.autorisasjon.Avslagskode.IKKE_TILGANG_TIL_DELTAKER;
+
 public class Mentor extends Avtalepart<Fnr> {
 
     public Mentor(Fnr identifikator) {
@@ -24,7 +26,7 @@ public class Mentor extends Avtalepart<Fnr> {
         if (avtale.getMentorFnr().equals(getIdentifikator())) {
             return new Tilgang.Tillat();
         }
-        return new Tilgang.Avvis(null, null);
+        return new Tilgang.Avvis(IKKE_TILGANG_TIL_DELTAKER, "Mentor fnr stemmer ikke med innlogget bruker");
     }
 
     @Override
