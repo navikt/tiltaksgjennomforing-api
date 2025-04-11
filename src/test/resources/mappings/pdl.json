@@ -167,10 +167,7 @@
         },
         "bodyPatterns": [
           {
-            "ignoreArrayOrder": true,
-            "equalToJson": {
-              "query": "query($identer: [ID!]!) { hentPersonBolk(identer: $identer) { ident, person { adressebeskyttelse { gradering } }, code } }"
-            }
+            "contains": "query($identer: [ID!]!) { hentPersonBolk(identer: $identer) { ident, person { adressebeskyttelse { gradering } }, code } }"
           }
         ]
       },
