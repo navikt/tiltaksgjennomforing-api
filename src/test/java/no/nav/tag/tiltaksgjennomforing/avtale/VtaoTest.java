@@ -4,6 +4,7 @@ import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
+import no.nav.tag.tiltaksgjennomforing.avtale.admin.AdminController;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
 import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggle;
@@ -11,6 +12,8 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
 import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
+import no.nav.team_tiltak.felles.persondata.pdl.domene.Navn;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -20,7 +23,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
@@ -39,6 +44,8 @@ public class VtaoTest {
     @Autowired
     private AvtaleRepository avtaleRepository;
     @Autowired
+    private TilskuddPeriodeRepository tilskuddPeriodeRepository;
+    @Autowired
     private VtaoRepository vtaoRepository;
     @Autowired
     private AvtaleController avtaleController;
@@ -56,6 +63,8 @@ public class VtaoTest {
     private FeatureToggleService featureToggleService;
     @Autowired
     private AvtaleInnholdRepository avtaleInnholdRepository;
+    @Autowired
+    private AdminController adminController;
 
     @BeforeEach
     void setup() {
@@ -274,6 +283,66 @@ public class VtaoTest {
                 .filter(x -> avtaleInnholdIdSet.contains(x.getAvtaleInnhold().getId()))
                 .toList()
                 .size());
+    }
+
+    @Test
+    @Transactional
+    public void adminEndepunktForOppdateringAvSatser() {
+        var navIdent = TestData.enNavIdent();
+        Veileder veileder = new Veileder(
+            navIdent,
+            null,
+            tilgangskontrollService,
+            persondataService,
+            norg2Client,
+            Collections.emptySet(),
+            new SlettemerkeProperties(),
+            TestData.INGEN_AD_GRUPPER,
+            veilarboppfolgingService,
+            featureToggleService
+        );
+        værInnloggetSom(veileder);
+        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
+        when(persondataService.hentNavn(eq(TestData.etFodselsnummer()))).thenReturn(Navn.TOMT_NAVN);
+
+        Avtale avtale = veileder.opprettAvtale(new OpprettAvtale(
+            TestData.etFodselsnummer(),
+            new BedriftNr("999999999"),
+            Tiltakstype.VTAO
+        ));
+        avtale.setGodkjentForEtterregistrering(true);
+        avtaleRepository.save(avtale);
+        var endring = EndreAvtale.fraAvtale(avtale);
+        endring.setStartDato(LocalDate.of(2023, 12, 31));
+        endring.setSluttDato(Now.localDate().plusYears(3));
+
+        veileder.endreAvtale(Now.instant(), endring, avtale);
+        avtaleRepository.save(avtale);
+
+        // Null ut alle tilskuddsbeløp
+        avtale.getTilskuddPeriode().forEach(t -> {
+            t.setBeløp(null);
+        });
+        tilskuddPeriodeRepository.saveAll(avtale.getTilskuddPeriode());
+
+        var antallTilskuddUtenBelop = avtaleRepository.findById(avtale.getId()).get()
+            .getTilskuddPeriode().stream()
+            .filter(t -> t.getBeløp() == null)
+            .count();
+        Assertions.assertThat(antallTilskuddUtenBelop)
+            .isEqualTo(avtale.getTilskuddPeriode().size())
+            .describedAs("Alle tilskuddsperioder har beløpet sitt nullet ut");
+
+        adminController.oppdaterTilskuddsperiodeBelopVtao();
+
+        var oppdatertAvtale = avtaleRepository.findById(avtale.getId()).get();
+        var oppdaterteTilskuddsperioder = oppdatertAvtale.getTilskuddPeriode();
+
+        Assertions.assertThat(
+            oppdaterteTilskuddsperioder.stream()
+                .filter(t -> t.getBeløp() == null)
+                .count()
+        ).isLessThan(antallTilskuddUtenBelop);
     }
 
     @Test
