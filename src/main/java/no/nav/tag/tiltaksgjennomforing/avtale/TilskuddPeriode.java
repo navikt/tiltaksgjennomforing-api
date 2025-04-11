@@ -121,7 +121,9 @@ public class TilskuddPeriode implements Comparable<TilskuddPeriode> {
         if (status != TilskuddPeriodeStatus.UBEHANDLET) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET);
         }
-        if (Now.localDate().isBefore(kanBesluttesFom())) {
+        if (Now.localDate().isBefore(kanBesluttesFom())
+            || getBeløp() == null) {
+            // beløp kan være null når vi fortsatt ikke har sats for en VTAO-avtale
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_BEHANDLE_FOR_TIDLIG);
         }
         if (avtale.getKreverOppfolgingFrist() != null && startDato.isAfter(avtale.getKreverOppfolgingFrist())) {
