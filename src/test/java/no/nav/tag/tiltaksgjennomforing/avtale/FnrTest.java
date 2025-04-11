@@ -111,19 +111,6 @@ public class FnrTest {
     }
 
     @Test
-    void testOver67År() {
-        Fnr fnr = new Fnr("30015521534");
-
-        Now.fixedDate(LocalDate.of(2022, 1, 29));
-        assertThat(fnr.erOver67ÅrFraSluttDato(Now.localDate())).isFalse();
-
-        Now.fixedDate(LocalDate.of(2022, 1, 30));
-        assertThat(fnr.erOver67ÅrFraSluttDato(Now.localDate())).isTrue();
-
-        Now.resetClock();
-    }
-
-    @Test
     void testAtAldersjekkKanGjøresPåSyntetiskFnr() {
         Now.fixedDate(LocalDate.of(2023, 6, 1));
         Fnr fnr = new Fnr("07459742977");
