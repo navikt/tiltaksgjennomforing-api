@@ -5,6 +5,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.AdGruppeTilganger;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetVeileder;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2GeoResponse;
@@ -102,13 +103,14 @@ public class Veileder extends Avtalepart<NavIdent> implements InternBruker {
     }
 
     @Override
-    public boolean harTilgangTilAvtale(Avtale avtale) {
+    public Tilgang harTilgangTilAvtale(Avtale avtale) {
         secureLog.info("Sjekker tilgang for veileder {} til avtale {}", getIdentifikator(), avtale.getId());
-        boolean harTilgang = tilgangskontrollService.harSkrivetilgangTilKandidat(this, avtale.getDeltakerFnr());
+        Tilgang tilgang = tilgangskontrollService.hentSkrivetilgang(this, avtale.getDeltakerFnr());
+        boolean harTilgang = tilgang != null && tilgang.erTillat();
         if (!harTilgang) {
             log.info("Har ikke tilgang til avtalenr {}, id: {}", avtale.getAvtaleNr(), avtale.getId());
         }
-        return harTilgang;
+        return tilgang;
     }
 
     @Override

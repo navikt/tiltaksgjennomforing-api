@@ -1,8 +1,10 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
 import no.nav.tag.tiltaksgjennomforing.Miljø;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Avslagskode;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggingService;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Formidlingsgruppe;
 import no.nav.tag.tiltaksgjennomforing.enhet.Kvalifiseringsgruppe;
@@ -117,21 +119,27 @@ public class AvtaleControllerTest {
     @Test
     public void hentSkalKasteExceptionHvisInnloggetNavAnsattIkkeHarTilgang() {
         Avtale avtale = TestData.enArbeidstreningAvtale();
+        Veileder veileder =
+            new Veileder(
+                new NavIdent("Z333333"),
+                null,
+                tilgangskontrollService,
+                persondataService,
+                norg2Client,
+                Collections.emptySet(),
+                new SlettemerkeProperties(),
+                TestData.INGEN_AD_GRUPPER,
+                veilarboppfolgingService,
+                featureToggleServiceMock
+            );
         værInnloggetSom(
-                new Veileder(
-                        new NavIdent("Z333333"),
-                        null,
-                        tilgangskontrollService,
-                        persondataService,
-                        norg2Client,
-                        Collections.emptySet(),
-                        new SlettemerkeProperties(),
-                        TestData.INGEN_AD_GRUPPER,
-                        veilarboppfolgingService,
-                        featureToggleServiceMock
-                )
+            veileder
         );
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
+        when(tilgangskontrollService.hentSkrivetilgang(
+            veileder,
+            avtale.getDeltakerFnr())
+        ).thenReturn(new Tilgang.Avvis(Avslagskode.IKKE_TILGANG_FRA_ABAC, "Ukjent tilgang"));
         assertThatThrownBy(
                 () -> avtaleController.hent(avtale.getId(), Avtalerolle.VEILEDER, null)
         ).isExactlyInstanceOf(IkkeTilgangTilAvtaleException.class);
@@ -368,6 +376,10 @@ public class AvtaleControllerTest {
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
         when(avtaleRepository.save(avtale)).thenReturn(avtale);
         when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
+        when(tilgangskontrollService.hentSkrivetilgang(
+            veileder,
+            avtale.getDeltakerFnr())
+        ).thenReturn(new Tilgang.Tillat());
         ResponseEntity svar = avtaleController.endreAvtale(
                 avtale.getId(),
                 avtale.getSistEndret(),
@@ -585,6 +597,10 @@ public class AvtaleControllerTest {
                 )
         ).thenReturn(true);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
+        when(tilgangskontrollService.hentSkrivetilgang(
+            veileder,
+            avtale.getDeltakerFnr())
+        ).thenReturn(new Tilgang.Tillat());
         String kontonummer = avtaleController.hentBedriftKontonummer(avtale.getId(), Avtalerolle.VEILEDER);
         assertThat(kontonummer).isEqualTo("990983666");
     }
@@ -612,6 +628,10 @@ public class AvtaleControllerTest {
                 any(Fnr.class)
         )).thenReturn(false);
         when(avtaleRepository.findById(avtale.getId())).thenReturn(Optional.of(avtale));
+        when(tilgangskontrollService.hentSkrivetilgang(
+            veileder,
+            avtale.getDeltakerFnr())
+        ).thenReturn(new Tilgang.Avvis(Avslagskode.IKKE_TILGANG_FRA_ABAC, "Ukjent tilgang"));
         assertThatThrownBy(
                 () -> avtaleController.hentBedriftKontonummer(avtale.getId(), Avtalerolle.VEILEDER)
         ).isInstanceOf(IkkeTilgangTilAvtaleException.class);
@@ -635,6 +655,10 @@ public class AvtaleControllerTest {
                 featureToggleServiceMock
         );
         værInnloggetSom(veileder);
+        when(tilgangskontrollService.hentSkrivetilgang(
+            veileder,
+            avtale.getDeltakerFnr())
+        ).thenReturn(new Tilgang.Tillat());
         when(kontoregisterService.hentKontonummer(anyString())).thenThrow(KontoregisterFeilException.class);
         when(tilgangskontrollService.harSkrivetilgangTilKandidat(
                 eq(veileder),

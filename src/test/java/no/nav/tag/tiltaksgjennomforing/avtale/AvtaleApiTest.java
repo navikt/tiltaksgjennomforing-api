@@ -3,6 +3,7 @@ package no.nav.tag.tiltaksgjennomforing.avtale;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
 import no.nav.tag.tiltaksgjennomforing.enhet.veilarboppfolging.VeilarboppfolgingService;
@@ -79,6 +80,7 @@ public class AvtaleApiTest {
     public void hentSkalReturnereRiktigAvtale() throws Exception {
         Avtale avtale = enArbeidstreningAvtale();
         var navIdent = TestData.enNavIdent();
+
         Veileder veileder = new Veileder(
                 navIdent,
                 null,
@@ -91,7 +93,7 @@ public class AvtaleApiTest {
                 veilarboppfolgingService,
                 featureToggleService
         );
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(eq(veileder), any(Fnr.class))).thenReturn(true);
+        when(tilgangskontrollService.hentSkrivetilgang(veileder,avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
         when(axsysService.hentEnheterNavAnsattHarTilgangTil(any())).thenReturn(List.of());
         avtaleRepository.save(avtale);
         var res = hentAvtaleForVeileder(veileder, avtale.getId());

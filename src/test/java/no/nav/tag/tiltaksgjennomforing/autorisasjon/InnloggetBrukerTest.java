@@ -28,7 +28,9 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
+import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enInnloggetVeileder;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -62,11 +64,12 @@ public class InnloggetBrukerTest {
 
     @Test
     public void harTilgang__deltaker_skal_ha_tilgang_til_avtale() {
-        assertThat(new Deltaker(deltaker).harTilgangTilAvtale(avtale)).isTrue();
+        assertThat(new Deltaker(deltaker).harTilgangTilAvtale(avtale).erTillat()).isTrue();
     }
 
     @Test
     public void harTilgang__veileder_skal_ha_lesetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_er_ok() {
+        when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
         Veileder veileder = new Veileder(
                 navIdent,
                 null,
@@ -79,17 +82,14 @@ public class InnloggetBrukerTest {
                 veilarboppfolgingService,
                 featureToggleService
         );
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(
-                veileder,
-                avtale.getDeltakerFnr())
-        ).thenReturn(true);
 
-        assertThat(veileder.harTilgangTilAvtale(avtale)).isTrue();
-        verify(tilgangskontrollService).harSkrivetilgangTilKandidat(veileder, avtale.getDeltakerFnr());
+        assertThat(veileder.harTilgangTilAvtale(avtale).erTillat()).isTrue();
+        verify(tilgangskontrollService).hentSkrivetilgang(veileder, avtale.getDeltakerFnr());
     }
 
     @Test
     public void harTilgang__veileder_skal_ikke_ha_lesetilgang_til_avtale_hvis_toggle_er_på_og_tilgangskontroll_feiler() {
+        when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Avvis(Avslagskode.IKKE_TILGANG_FRA_ABAC,"Ikke tilgang fra ABAC"));
         Veileder veileder = new Veileder(
                 navIdent,
                 null,
@@ -107,7 +107,7 @@ public class InnloggetBrukerTest {
                 avtale.getDeltakerFnr()
         )).thenReturn(false);
 
-        assertThat(veileder.harTilgangTilAvtale(avtale)).isFalse();
+        assertThat(veileder.harTilgangTilAvtale(avtale).erTillat()).isFalse();
     }
 
     @Test
@@ -124,13 +124,8 @@ public class InnloggetBrukerTest {
                 veilarboppfolgingService,
                 featureToggleService
         );
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(
-                veileder,
-                avtale.getDeltakerFnr())
-        ).thenReturn(true);
-
-        assertThat(veileder.harTilgangTilAvtale(avtale)).isTrue();
-        verify(tilgangskontrollService).harSkrivetilgangTilKandidat(veileder, avtale.getDeltakerFnr());
+        when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Tillat());
+        assertThat(veileder.harTilgangTilAvtale(avtale).erTillat()).isTrue();
     }
 
     @Test
@@ -147,12 +142,12 @@ public class InnloggetBrukerTest {
                 veilarboppfolgingService,
                 featureToggleService
         );
-        when(tilgangskontrollService.harSkrivetilgangTilKandidat(
+        when(tilgangskontrollService.hentSkrivetilgang(
                 veileder,
                 avtale.getDeltakerFnr())
-        ).thenReturn(false);
+        ).thenReturn(new Tilgang.Avvis(Avslagskode.EKSTERN_BRUKER_HAR_IKKE_TILGANG, "Ekstern bruker har ikke tilgang"));
 
-        assertThat(veileder.harTilgangTilAvtale(avtale)).isFalse();
+        assertThat(veileder.harTilgangTilAvtale(avtale).erTillat()).isFalse();
     }
 
     @Test
@@ -163,12 +158,14 @@ public class InnloggetBrukerTest {
                         Map.of(),
                         null,
                         null
-                ).harTilgangTilAvtale(avtale)
+                ).harTilgangTilAvtale(avtale).erTillat()
         ).isFalse();
     }
 
     @Test
     public void harTilgang__ikkepart_veileder_skal_ikke_ha_lesetilgang_hvis_toggle_er_av() {
+        when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Avvis(Avslagskode.IKKE_TILGANG_FRA_ABAC,"Ikke tilgang fra ABAC"));
+
         assertThat(
                 new Veileder(
                         new NavIdent("X123456"),
@@ -181,12 +178,14 @@ public class InnloggetBrukerTest {
                         TestData.INGEN_AD_GRUPPER,
                         veilarboppfolgingService,
                         featureToggleService
-                ).harTilgangTilAvtale(avtale)
+                ).harTilgangTilAvtale(avtale).erTillat()
         ).isFalse();
     }
 
     @Test
     public void harTilgang__ikkepart_veileder_skal_ikke_ha_skrivetilgang_hvis_toggle_er_av() {
+
+        when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Avvis(Avslagskode.IKKE_TILGANG_FRA_ABAC,"Ikke tilgang fra ABAC"));
         assertThat(
                 new Veileder(
                         new NavIdent("X123456"),
@@ -199,24 +198,26 @@ public class InnloggetBrukerTest {
                         TestData.INGEN_AD_GRUPPER,
                         veilarboppfolgingService,
                         featureToggleService
-                ).harTilgangTilAvtale(avtale)
+                ).harTilgangTilAvtale(avtale).erTillat()
         ).isFalse();
     }
 
     @Test
     public void harTilgang__ikkepart_selvbetjeningsbruker_skal_ikke_ha_tilgang() {
+        when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Avvis(Avslagskode.IKKE_TILGANG_FRA_ABAC,"Ikke tilgang fra ABAC"));
         assertThat(
                 new Arbeidsgiver(
                         new Fnr("00000000001"),
                         Set.of(),
                         Map.of(),
                         null,
-                        null).harTilgangTilAvtale(avtale)
+                        null).harTilgangTilAvtale(avtale).erTillat()
         ).isFalse();
     }
 
     @Test
     public void harTilgang__arbeidsgiver_skal_kunne_representere_bedrift_uten_Fnr() {
+        when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Avvis(Avslagskode.IKKE_TILGANG_FRA_ABAC,"Ikke tilgang fra ABAC"));
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(this.bedriftNr, Set.of(Tiltakstype.values()));
         Arbeidsgiver Arbeidsgiver = new Arbeidsgiver(
                 new Fnr("00000000009"),
@@ -225,11 +226,12 @@ public class InnloggetBrukerTest {
                 null,
                 null
         );
-        assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale)).isTrue();
+        assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isTrue();
     }
 
     @Test
     public void harTilgang__arbeidsgiver_skal_ikke_ha_tilgang_til_avbrutt_avtale_eldre_enn_12_uker() {
+        when(tilgangskontrollService.hentSkrivetilgang(any(Veileder.class), any(Fnr.class))).thenReturn(new Tilgang.Avvis(Avslagskode.IKKE_TILGANG_FRA_ABAC,"Ikke tilgang fra ABAC"));
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(this.bedriftNr, Set.of(Tiltakstype.values()));
         Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
                 new Fnr("00000000009"),
@@ -240,7 +242,7 @@ public class InnloggetBrukerTest {
         );
         avtale.setAvbrutt(true);
         avtale.setSistEndret(Now.instant().minus(84, ChronoUnit.DAYS).minusMillis(100));
-        assertThat(arbeidsgiver.harTilgangTilAvtale(avtale)).isFalse();
+        assertThat(arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isFalse();
     }
 
     @Test
@@ -255,22 +257,35 @@ public class InnloggetBrukerTest {
                 null,
                 null
         );
-        assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale)).isFalse();
+        assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isFalse();
     }
 
     @Test
     public void harTilgang__arbeidsgiver_skal_ha_tilgang_til_avsluttet_avtale_eldre_enn_12_uker_når_ikke_godkjent_av_veileder() {
         Avtale avtale = TestData.enAvtaleMedAltUtfylt();
+        Veileder veileder = new Veileder(
+            avtale.getVeilederNavIdent(),
+            null,
+            tilgangskontrollService,
+            persondataService,
+            norg2Client,
+            Collections.emptySet(),
+            new SlettemerkeProperties(),
+            TestData.INGEN_AD_GRUPPER,
+            veilarboppfolgingService,
+            featureToggleService
+        );
         avtale.getGjeldendeInnhold().setSluttDato(Now.localDate().minusDays(85));
         Map<BedriftNr, Collection<Tiltakstype>> tilganger = Map.of(avtale.getBedriftNr(), Set.of(Tiltakstype.values()));
-        Arbeidsgiver Arbeidsgiver = new Arbeidsgiver(
+        Arbeidsgiver arbeidsgiver = new Arbeidsgiver(
                 new Fnr("00000000009"),
                 Set.of(),
                 tilganger,
                 null,
                 null
         );
-        assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale)).isTrue();
+
+        assertThat(arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isTrue();
     }
 
     @Test
@@ -284,6 +299,6 @@ public class InnloggetBrukerTest {
                 null,
                 null
         );
-        assertThat(arbeidsgiver.harTilgangTilAvtale(avtale)).isFalse();
+        assertThat(arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isFalse();
     }
 }

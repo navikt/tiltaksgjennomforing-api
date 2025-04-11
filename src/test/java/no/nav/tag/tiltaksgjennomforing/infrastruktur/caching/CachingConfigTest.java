@@ -4,6 +4,7 @@ package no.nav.tag.tiltaksgjennomforing.infrastruktur.caching;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.tag.tiltaksgjennomforing.Miljø;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.SlettemerkeProperties;
+import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.abac.TilgangskontrollService;
 import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.Fnr;
@@ -39,6 +40,7 @@ import static no.nav.tag.tiltaksgjennomforing.infrastruktur.cache.CacheConfig.VE
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 @Slf4j
@@ -162,6 +164,7 @@ public class CachingConfigTest {
                 veilarboppfolgingService,
                 featureToggleServiceMock
         );
+        when(mockTilgangskontrollService.hentSkrivetilgang(veileder, avtale.getDeltakerFnr())).thenReturn(new Tilgang.Tillat());
 
         lenient().when(mockTilgangskontrollService.harSkrivetilgangTilKandidat(
                 eq(veileder),
