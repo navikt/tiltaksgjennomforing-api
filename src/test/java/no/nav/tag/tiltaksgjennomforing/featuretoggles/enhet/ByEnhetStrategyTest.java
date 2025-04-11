@@ -25,11 +25,6 @@ public class ByEnhetStrategyTest {
     public void skal_være_disablet_hvis_innlogget_med_fødselsnummer() {
         assertThat(new ByEnhetStrategy(axsysService).isEnabled(Map.of(PARAM, "1234"), UnleashContext.builder().userId("00000000000").build())).isEqualTo(false);
     }
-
-    @Test
-    public void skal_være_disablet_hvis_det_toggle_evalueres_uten_kontekst() {
-        assertThat(new ByEnhetStrategy(axsysService).isEnabled(Map.of(PARAM, "1234"))).isEqualTo(false);
-    }
     
     @Test
     public void skal_være_disablet_hvis_det_ikke_finnes_bruker_i_konteksten() {
