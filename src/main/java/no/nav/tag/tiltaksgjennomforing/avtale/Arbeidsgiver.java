@@ -7,6 +7,7 @@ import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetArbeidsgiver;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.InnloggetBruker;
 import no.nav.tag.tiltaksgjennomforing.autorisasjon.Tilgang;
 import no.nav.tag.tiltaksgjennomforing.enhet.Norg2Client;
+import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.IkkeTilgangTilDeltakerException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.TilgangskontrollException;
 import no.nav.tag.tiltaksgjennomforing.exceptions.VarighetDatoErTilbakeITidException;
@@ -135,36 +136,59 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
 
     @Override
     public Tilgang harTilgangTilAvtale(Avtale avtale) {
-        if (sluttdatoPassertMedMerEnn12Uker(avtale)) {
-            return new Tilgang.Avvis(
-                Avslagskode.SLUTTDATO_PASSERT,
-                "Sluttdato har passert med mer enn 12 uker"
-            );
-        }
-        if (avbruttForMerEnn12UkerSiden(avtale)) {
-            return new Tilgang.Avvis(
-                Avslagskode.UTGATT,
-                "Avbrutt for mer enn 12 uker siden"
-            );
-        }
-        if (annullertForMerEnn12UkerSiden(avtale)) {
-            return new Tilgang.Avvis(
-                Avslagskode.UTGATT,
-                "Annullert for mer enn 12 uker siden"
-            );
-        }
-        if (!harTilgangPåTiltakIBedrift(avtale.getBedriftNr(), avtale.getTiltakstype())) {
-            return new Tilgang.Avvis(
-                Avslagskode.IKKE_TILGANG_PAA_TILTAK,
-                "Ikke tilgang på tiltak i valgt bedrift"
-            );
-        }
-        return new Tilgang.Tillat();
+        return tilgangTilAvtaler(List.of(avtale)).get(avtale);
     }
 
     @Override
     Predicate<Avtale> harTilgangTilAvtale(List<Avtale> avtaler) {
-        return avtale -> harTilgangTilAvtale(avtale).erTillat();
+        Map<Avtale, Tilgang> tilgangsmappe = tilgangTilAvtaler(avtaler);
+        return avtale -> tilgangsmappe.get(avtale).erTillat();
+    }
+
+    private Map<Avtale, Tilgang> tilgangTilAvtaler(List<Avtale> avtaler) {
+        // Arbeidsgiver henter alltid en eller flere avtaler på samme bedriftNr, derav anyMatch.
+        boolean harAdressesperretilgang = avtaler.stream().anyMatch(avtale -> adressesperreTilgang.contains(avtale.getBedriftNr()));
+        Set<Fnr> unikeFnrIAvtaler = avtaler.stream().map(Avtale::getDeltakerFnr).collect(Collectors.toSet());
+        // Slå opp PDL i bolk hvis man ikke har adressesperretilgang
+        Map<Fnr, Diskresjonskode> diskresjonskodeMap = !harAdressesperretilgang ? persondataService.hentDiskresjonskoder(unikeFnrIAvtaler) : Collections.emptyMap();
+
+        Map<Avtale, Tilgang> tilgangsmappe = avtaler.stream()
+            .collect(Collectors.toMap(avtale -> avtale, avtale -> {
+                boolean deltakerHarAdressesperre = diskresjonskodeMap.getOrDefault(avtale.getDeltakerFnr(), Diskresjonskode.UGRADERT).erKode6Eller7();
+                if (!harAdressesperretilgang && deltakerHarAdressesperre) {
+                    return new Tilgang.Avvis(
+                        Avslagskode.IKKE_TILGANG_TIL_DELTAKER,
+                        "Deltaker har adressesperre og arbeidsgiver har ikke adressesperretilgang i bedrift"
+                    );
+                }
+
+                if (sluttdatoPassertMedMerEnn12Uker(avtale)) {
+                    return new Tilgang.Avvis(
+                        Avslagskode.SLUTTDATO_PASSERT,
+                        "Sluttdato har passert med mer enn 12 uker"
+                    );
+                }
+                if (avbruttForMerEnn12UkerSiden(avtale)) {
+                    return new Tilgang.Avvis(
+                        Avslagskode.UTGATT,
+                        "Avbrutt for mer enn 12 uker siden"
+                    );
+                }
+                if (annullertForMerEnn12UkerSiden(avtale)) {
+                    return new Tilgang.Avvis(
+                        Avslagskode.UTGATT,
+                        "Annullert for mer enn 12 uker siden"
+                    );
+                }
+                if (!harTilgangPåTiltakIBedrift(avtale.getBedriftNr(), avtale.getTiltakstype())) {
+                    return new Tilgang.Avvis(
+                        Avslagskode.IKKE_TILGANG_PAA_TILTAK,
+                        "Ikke tilgang på tiltak i valgt bedrift"
+                    );
+                }
+                return new Tilgang.Tillat();
+            }));
+        return tilgangsmappe;
     }
 
     @Override
@@ -241,7 +265,7 @@ public class Arbeidsgiver extends Avtalepart<Fnr> {
             throw new TilgangskontrollException("Har ikke tilgang på tiltak i valgt bedrift");
         }
         if (!harTilgangPåDeltakerIBedrift(opprettAvtale.getBedriftNr(), opprettAvtale.getDeltakerFnr())) {
-            throw new IkkeTilgangTilDeltakerException(opprettAvtale.getDeltakerFnr());
+            throw new IkkeTilgangTilDeltakerException(opprettAvtale.getDeltakerFnr(), Feilkode.IKKE_TILGANG_TIL_DELTAKER_ARBEIDSGIVER);
         }
 
         Avtale avtale = Avtale.opprett(opprettAvtale, Avtaleopphav.ARBEIDSGIVER);

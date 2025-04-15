@@ -133,7 +133,7 @@ public class ArbeidsgiverTest {
                 null
         );
         OpprettAvtale opprettAvtale = new OpprettAvtale(new Fnr("12345678910"), TestData.etBedriftNr(), Tiltakstype.ARBEIDSTRENING);
-        assertFeilkode(Feilkode.IKKE_TILGANG_TIL_DELTAKER, () -> arbeidsgiver.opprettAvtale(opprettAvtale));
+        assertFeilkode(Feilkode.IKKE_TILGANG_TIL_DELTAKER_ARBEIDSGIVER, () -> arbeidsgiver.opprettAvtale(opprettAvtale));
     }
 
     @Test

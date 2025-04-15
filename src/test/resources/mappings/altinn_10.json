@@ -1,7 +1,7 @@
 {
   "mappings": [
     {
-      "priority": 2,
+      "priority": 1,
       "request": {
         "method": "GET",
         "urlPath": "/altinn-tilgangsstyring/ekstern/altinn/api/serviceowner/reportees",
@@ -81,7 +81,7 @@
       }
     },
     {
-      "priority": 2,
+      "priority": 1,
       "request": {
         "method": "GET",
         "urlPath": "/altinn-tilgangsstyring/ekstern/altinn/api/serviceowner/reportees",
@@ -122,7 +122,7 @@
       }
     },
     {
-      "priority": 2,
+      "priority": 1,
       "request": {
         "method": "GET",
         "urlPath": "/altinn-tilgangsstyring/ekstern/altinn/api/serviceowner/reportees",
@@ -171,7 +171,7 @@
       }
     },
     {
-      "priority": 2,
+      "priority": 1,
       "request": {
         "method": "GET",
         "urlPath": "/altinn-tilgangsstyring/ekstern/altinn/api/serviceowner/reportees",
@@ -220,7 +220,7 @@
       }
     },
     {
-      "priority": 2,
+      "priority": 1,
       "request": {
         "method": "GET",
         "urlPath": "/altinn-tilgangsstyring/ekstern/altinn/api/serviceowner/reportees",

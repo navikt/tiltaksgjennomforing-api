@@ -19,16 +19,17 @@ import no.nav.tag.tiltaksgjennomforing.featuretoggles.FeatureToggleService;
 import no.nav.tag.tiltaksgjennomforing.okonomi.KontoregisterService;
 import no.nav.tag.tiltaksgjennomforing.persondata.PersondataService;
 import no.nav.tag.tiltaksgjennomforing.utils.Now;
+import no.nav.team_tiltak.felles.persondata.pdl.domene.Diskresjonskode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static no.nav.tag.tiltaksgjennomforing.avtale.TestData.enInnloggetVeileder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -60,6 +61,8 @@ public class InnloggetBrukerTest {
         kontoregisterService = mock(KontoregisterService.class);
         veilarboppfolgingService = mock(VeilarboppfolgingService.class);
         avtaleRepository = mock(AvtaleRepository.class);
+
+        when(persondataService.hentDiskresjonskode(any(Fnr.class))).thenReturn(Diskresjonskode.UGRADERT);
     }
 
     @Test
@@ -156,8 +159,9 @@ public class InnloggetBrukerTest {
                 new Arbeidsgiver(TestData.etFodselsnummer(),
                         Set.of(),
                         Map.of(),
-                        null,
-                        null
+                        List.of(),
+                        persondataService,
+                    null
                 ).harTilgangTilAvtale(avtale).erTillat()
         ).isFalse();
     }
@@ -210,7 +214,8 @@ public class InnloggetBrukerTest {
                         new Fnr("00000000001"),
                         Set.of(),
                         Map.of(),
-                        null,
+                        List.of(),
+                        persondataService,
                         null).harTilgangTilAvtale(avtale).erTillat()
         ).isFalse();
     }
@@ -223,8 +228,9 @@ public class InnloggetBrukerTest {
                 new Fnr("00000000009"),
                 Set.of(),
                 tilganger,
-                null,
-                null
+            List.of(),
+            persondataService,
+            null
         );
         assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isTrue();
     }
@@ -237,8 +243,9 @@ public class InnloggetBrukerTest {
                 new Fnr("00000000009"),
                 Set.of(),
                 tilganger,
-                null,
-                null
+                List.of(),
+                persondataService,
+            null
         );
         avtale.setAvbrutt(true);
         avtale.setSistEndret(Now.instant().minus(84, ChronoUnit.DAYS).minusMillis(100));
@@ -254,8 +261,9 @@ public class InnloggetBrukerTest {
                 new Fnr("00000000009"),
                 Set.of(),
                 tilganger,
-                null,
-                null
+                List.of(),
+                persondataService,
+            null
         );
         assertThat(Arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isFalse();
     }
@@ -281,8 +289,9 @@ public class InnloggetBrukerTest {
                 new Fnr("00000000009"),
                 Set.of(),
                 tilganger,
-                null,
-                null
+                List.of(),
+                persondataService,
+            null
         );
 
         assertThat(arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isTrue();
@@ -296,8 +305,9 @@ public class InnloggetBrukerTest {
                 new Fnr("00000000009"),
                 Set.of(),
                 tilganger,
-                null,
-                null
+                List.of(),
+                persondataService,
+            null
         );
         assertThat(arbeidsgiver.harTilgangTilAvtale(avtale).erTillat()).isFalse();
     }
