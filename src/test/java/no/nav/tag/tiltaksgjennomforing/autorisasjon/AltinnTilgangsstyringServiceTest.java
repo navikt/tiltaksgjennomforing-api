@@ -64,7 +64,7 @@ public class AltinnTilgangsstyringServiceTest {
 
         // Virksomheter skal være i tilgang-map
 
-        assertThat(tilganger.get(new BedriftNr("999999999"))).containsOnly(Tiltakstype.ARBEIDSTRENING, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB, Tiltakstype.MENTOR, Tiltakstype.INKLUDERINGSTILSKUDD);
+        assertThat(tilganger.get(new BedriftNr("999999999"))).containsOnly(Tiltakstype.ARBEIDSTRENING, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB, Tiltakstype.MENTOR, Tiltakstype.INKLUDERINGSTILSKUDD, Tiltakstype.VTAO);
 
         assertThat(tilganger.get(new BedriftNr("910712314"))).containsOnly(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
         assertThat(tilganger.get(new BedriftNr("910712306"))).containsOnly(Tiltakstype.VARIG_LONNSTILSKUDD);
@@ -89,7 +89,7 @@ public class AltinnTilgangsstyringServiceTest {
         // Virksomheter skal være i tilgang-map
         assertThat(tilganger.get(new BedriftNr("999999999"))).containsOnly(
                 Tiltakstype.ARBEIDSTRENING, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD,
-                Tiltakstype.SOMMERJOBB, Tiltakstype.MENTOR, Tiltakstype.INKLUDERINGSTILSKUDD); // TODO: Tilgangsstyring skal skille på midlertidig lønnstilskudd og sommerjobb
+                Tiltakstype.SOMMERJOBB, Tiltakstype.MENTOR, Tiltakstype.INKLUDERINGSTILSKUDD, Tiltakstype.VTAO); // TODO: Tilgangsstyring skal skille på midlertidig lønnstilskudd og sommerjobb
     }
 
     @Test

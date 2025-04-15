@@ -30,8 +30,8 @@ tiltaksgjennomforing:
     fake: true
   ad-grupper:
     beslutter: 1a1d2745-952f-4a0f-839f-9530145b1d4a
-    fortrolig-adresse: ea930b6b-9397-44d9-b9e6-f4cf527a632a
-    strengt-fortrolig-adresse: 5ef775f2-61f8-4283-bf3d-8d03f428aa14
+    fortrolig-adresse: 1a1d2745-952f-4a0f-839f-9530145b1d4a
+    strengt-fortrolig-adresse: 1a1d2745-952f-4a0f-839f-9530145b1d4a
   kafka:
     enabled: false
     fake-url: http://tiltak-refusjon-api-labs/fake-kafka
@@ -52,8 +52,7 @@ tiltaksgjennomforing:
     arbtreningServiceCode: 5332
     arbtreningServiceEdition: 1
     vtaoServiceCode: 5516
-    vtaoServiceEdition: 5 # TODO: Finn riktig service edition
-    vtaoAktiv: true
+    vtaoServiceEdition: 6
     altinnApiKey: foo
     apiGwApiKey: foo
   ereg:

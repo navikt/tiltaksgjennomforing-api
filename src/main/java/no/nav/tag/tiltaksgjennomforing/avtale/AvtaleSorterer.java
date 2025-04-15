@@ -1,12 +1,13 @@
 package no.nav.tag.tiltaksgjennomforing.avtale;
 
-import lombok.experimental.UtilityClass;
 import org.springframework.data.domain.Sort;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-@UtilityClass
 public class AvtaleSorterer {
+
     enum SortOrder {
         BEDRIFTNAVN,
         DELTAKERFORNAVN,
@@ -32,21 +33,22 @@ public class AvtaleSorterer {
     }
 
     private static List<Sort.Order> getSortingOrderVeileder(SortOrder order, Sort.Direction direction) {
+        Sorter sorter = new Sorter(new Sort.Order(direction, "id"));
         return switch (order) {
-            case BEDRIFTNAVN -> List.of(new Sort.Order(direction, "gjeldendeInnhold.bedriftNavn"));
-            case DELTAKERFORNAVN -> List.of(new Sort.Order(direction, "gjeldendeInnhold.deltakerFornavn"));
-            case DELTAKERETTERNAVN -> List.of(new Sort.Order(direction, "gjeldendeInnhold.deltakerEtternavn"));
-            case OPPRETTETTIDSPUNKT -> List.of(new Sort.Order(direction, "opprettetTidspunkt"));
-            case SLUTTDATO -> List.of(new Sort.Order(direction, "gjeldendeInnhold.sluttDato"));
-            case STARTDATO -> List.of(new Sort.Order(direction, "gjeldendeInnhold.startDato"));
-            case TILTAKSTYPE -> List.of(new Sort.Order(direction, "tiltakstype"));
-            case VEILEDERNAVIDENT -> List.of(new Sort.Order(direction, "veilederNavIdent"));
-            case STATUS -> List.of(
+            case BEDRIFTNAVN -> sorter.add(new Sort.Order(direction, "gjeldendeInnhold.bedriftNavn"));
+            case DELTAKERFORNAVN -> sorter.add(new Sort.Order(direction, "gjeldendeInnhold.deltakerFornavn"));
+            case DELTAKERETTERNAVN -> sorter.add(new Sort.Order(direction, "gjeldendeInnhold.deltakerEtternavn"));
+            case OPPRETTETTIDSPUNKT -> sorter.add(new Sort.Order(direction, "opprettetTidspunkt"));
+            case SLUTTDATO -> sorter.add(new Sort.Order(direction, "gjeldendeInnhold.sluttDato"));
+            case STARTDATO -> sorter.add(new Sort.Order(direction, "gjeldendeInnhold.startDato"));
+            case TILTAKSTYPE -> sorter.add(new Sort.Order(direction, "tiltakstype"));
+            case VEILEDERNAVIDENT -> sorter.add(new Sort.Order(direction, "veilederNavIdent"));
+            case STATUS -> sorter.add(
                 // NULLS_LAST fungerer ikke i postgres, derfor må vi sortere i revers for å få oppfølging øverst
                 new Sort.Order(direction, "oppfolgingVarselSendt").reverse(),
                 new Sort.Order(direction, "status")
             );
-            default -> List.of(
+            default -> sorter.add(
                 // NULLS_LAST fungerer ikke i postgres, derfor må vi sortere i revers for å få oppfølging øverst
                 new Sort.Order(direction, "oppfolgingVarselSendt").reverse(),
                 new Sort.Order(direction, "sistEndret")
@@ -58,15 +60,16 @@ public class AvtaleSorterer {
         SortOrder order,
         Sort.Direction direction
     ) {
+        Sorter sorter = new Sorter(new Sort.Order(direction, "id"));
         return switch (order) {
-            case BEDRIFTNAVN -> List.of(new Sort.Order(direction, "bedriftNavn"));
-            case DELTAKERFORNAVN -> List.of(new Sort.Order(direction, "deltakerFornavn"));
-            case DELTAKERETTERNAVN -> List.of(new Sort.Order(direction, "deltakerEtternavn"));
-            case OPPRETTETTIDSPUNKT -> List.of(new Sort.Order(direction, "opprettetTidspunkt"));
-            case STARTDATO -> List.of(new Sort.Order(direction, "startDato"));
-            case STATUS -> List.of(new Sort.Order(direction, "antallUbehandlet"));
-            case TILTAKSTYPE -> List.of(new Sort.Order(direction, "tiltakstype"));
-            default -> List.of(new Sort.Order(direction, "sistEndret"));
+            case BEDRIFTNAVN -> sorter.add(new Sort.Order(direction, "bedriftNavn"));
+            case DELTAKERFORNAVN -> sorter.add(new Sort.Order(direction, "deltakerFornavn"));
+            case DELTAKERETTERNAVN -> sorter.add(new Sort.Order(direction, "deltakerEtternavn"));
+            case OPPRETTETTIDSPUNKT -> sorter.add(new Sort.Order(direction, "opprettetTidspunkt"));
+            case STARTDATO -> sorter.add(new Sort.Order(direction, "startDato"));
+            case STATUS -> sorter.add(new Sort.Order(direction, "antallUbehandlet"));
+            case TILTAKSTYPE -> sorter.add(new Sort.Order(direction, "tiltakstype"));
+            default -> sorter.add(new Sort.Order(direction, "sistEndret"));
         };
     }
 
@@ -74,16 +77,31 @@ public class AvtaleSorterer {
         SortOrder order,
         Sort.Direction direction
     ) {
+        Sorter sorter = new Sorter(new Sort.Order(direction, "id"));
         return switch (order) {
-            case BEDRIFTNAVN -> List.of(new Sort.Order(direction, "gjeldendeInnhold.bedriftNavn"));
-            case DELTAKERFORNAVN -> List.of(new Sort.Order(direction, "gjeldendeInnhold.deltakerFornavn"));
-            case DELTAKERETTERNAVN -> List.of(new Sort.Order(direction, "gjeldendeInnhold.deltakerEtternavn"));
-            case OPPRETTETTIDSPUNKT -> List.of(new Sort.Order(direction, "opprettetTidspunkt"));
-            case SLUTTDATO -> List.of(new Sort.Order(direction, "gjeldendeInnhold.sluttDato"));
-            case STARTDATO -> List.of(new Sort.Order(direction, "gjeldendeInnhold.startDato"));
-            case STATUS -> List.of(new Sort.Order(direction, "status"));
-            case TILTAKSTYPE -> List.of(new Sort.Order(direction, "tiltakstype"));
-            default -> List.of(new Sort.Order(direction, "sistEndret"));
+            case BEDRIFTNAVN -> sorter.add(new Sort.Order(direction, "gjeldendeInnhold.bedriftNavn"));
+            case DELTAKERFORNAVN -> sorter.add(new Sort.Order(direction, "gjeldendeInnhold.deltakerFornavn"));
+            case DELTAKERETTERNAVN -> sorter.add(new Sort.Order(direction, "gjeldendeInnhold.deltakerEtternavn"));
+            case OPPRETTETTIDSPUNKT -> sorter.add(new Sort.Order(direction, "opprettetTidspunkt"));
+            case SLUTTDATO -> sorter.add(new Sort.Order(direction, "gjeldendeInnhold.sluttDato"));
+            case STARTDATO -> sorter.add(new Sort.Order(direction, "gjeldendeInnhold.startDato"));
+            case STATUS -> sorter.add(new Sort.Order(direction, "status"));
+            case TILTAKSTYPE -> sorter.add(new Sort.Order(direction, "tiltakstype"));
+            default -> sorter.add(new Sort.Order(direction, "sistEndret"));
         };
+    }
+
+    static class Sorter {
+        private Sort.Order seed;
+
+        public Sorter(Sort.Order seed) {
+            this.seed = seed;
+        }
+
+        public List<Sort.Order> add(Sort.Order... orders) {
+            List<Sort.Order> order = new ArrayList<>(Arrays.asList(orders));
+            order.add(seed);
+            return order;
+        }
     }
 }
