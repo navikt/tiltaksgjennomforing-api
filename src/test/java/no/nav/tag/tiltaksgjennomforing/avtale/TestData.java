@@ -183,6 +183,13 @@ public class TestData {
         return avtale;
     }
 
+    public static Avtale enVtaoArenaAvtaleMedAltUtfylt() {
+        NavIdent veilderNavIdent = new NavIdent("Z123456");
+        Avtale avtale = Avtale.opprett(lagOpprettAvtale(Tiltakstype.VTAO), Avtaleopphav.ARENA, veilderNavIdent);
+        avtale.endreAvtale(avtale.getSistEndret(), endringPåAlleArbeidstreningFelter(), Avtalerolle.VEILEDER);
+        return avtale;
+    }
+
     public static Avtale enAvtaleMedAltUtfyltGodkjentAvVeileder() {
         Avtale avtale = enAvtaleMedAltUtfylt();
         avtale.getGjeldendeInnhold().setGodkjentAvArbeidsgiver(Now.localDateTime());
@@ -228,8 +235,28 @@ public class TestData {
         return avtale;
     }
 
+    public static Avtale enVtaoRyddeAvtaleMedStartOgSluttGodkjentAvAlleParter(LocalDate startDato, LocalDate sluttDato) {
+        Avtale avtale = TestData.enVtaoAvtaleMedAltUtfylt();
+        avtale.setArenaRyddeAvtale(new ArenaRyddeAvtale());
+        setOppfølgingOgGeografiskPåAvtale(avtale);
+        avtale.setKvalifiseringsgruppe(Kvalifiseringsgruppe.VARIG_TILPASSET_INNSATS);
+        EndreAvtale endring = TestData.endringPåAlleLønnstilskuddFelter();
+        endring.setStartDato(startDato);
+        endring.setSluttDato(sluttDato);
+        avtale.setGodkjentForEtterregistrering(true);
+        avtale.endreAvtale(Now.instant(), endring, Avtalerolle.VEILEDER);
+        avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
+        avtale.godkjennForDeltaker(TestData.enIdentifikator());
+        avtale.godkjennForVeileder(TestData.enNavIdent());
+        return avtale;
+    }
+
     public static Avtale enMidlertidigLonnstilskuddAvtaleMedAltUtfylt() {
         return enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD);
+    }
+
+    public static Avtale enVtaoAvtaleMedAltUtfylt() {
+        return enLonnstilskuddAvtaleMedAltUtfylt(Tiltakstype.VTAO);
     }
 
     public static Avtale enSommerjobbLonnstilskuddAvtaleMedAltUtfylt(int lonnstilskuddProsent) {

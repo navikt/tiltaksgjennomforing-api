@@ -35,4 +35,9 @@ public class IkkeLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddAv
         log.error("Uventet feil i utregning av tilskuddsperioder med startdato: {}, sluttdato: {}, datoForRedusertProsent: {}, avtaleId: {}", datoFraOgMed, datoTilOgMed, datoForRedusertProsent, id);
         throw new FeilkodeException(Feilkode.FORLENG_MIDLERTIDIG_IKKE_TILGJENGELIG);
     }
+
+    @Override
+    public boolean nødvendigeFelterErUtfylt(Avtale avtale) {
+        return true;
+    }
 }

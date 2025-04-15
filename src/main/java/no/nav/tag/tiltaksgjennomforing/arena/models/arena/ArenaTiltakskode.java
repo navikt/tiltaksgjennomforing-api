@@ -10,16 +10,17 @@ import lombok.Getter;
 import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Getter
 @AllArgsConstructor
 public enum ArenaTiltakskode {
-    ARBEIDSTRENING("ARBTREN", Tiltakstype.ARBEIDSTRENING),
-    MENTOR("MENTOR", Tiltakstype.MENTOR),
-    VTAO("VATIAROR", Tiltakstype.VTAO),
-    INKLUDERINGSTILSKUDD("INKLUTILS", Tiltakstype.INKLUDERINGSTILSKUDD),
-    UKJENT("", null);
+    ARBEIDSTRENING("ARBTREN", Tiltakstype.ARBEIDSTRENING, null),
+    MENTOR("MENTOR", Tiltakstype.MENTOR, null),
+    VTAO("VATIAROR", Tiltakstype.VTAO, LocalDate.of(2025, 7, 1)),
+    INKLUDERINGSTILSKUDD("INKLUTILS", Tiltakstype.INKLUDERINGSTILSKUDD, null),
+    UKJENT("", null, null);
 
     public static final ArenaTiltakskode GJELDENDE_MIGRERING = VTAO;
 
@@ -29,6 +30,7 @@ public enum ArenaTiltakskode {
 
     private final String kode;
     private final Tiltakstype tiltakstype;
+    private final LocalDate migreringsdatoForTilskudd;
 
     public boolean skalBehandles() {
         return this != UKJENT;

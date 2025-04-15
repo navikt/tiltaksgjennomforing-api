@@ -1099,14 +1099,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     private boolean sjekkRyddingAvTilskuddsperioder() {
-        if (Utils.erNoenTomme(
-                gjeldendeInnhold.getStartDato(),
-                gjeldendeInnhold.getSluttDato(),
-                gjeldendeInnhold.getSumLonnstilskudd(),
-                gjeldendeInnhold.getLonnstilskuddProsent(),
-                gjeldendeInnhold.getArbeidsgiveravgift(),
-                gjeldendeInnhold.getManedslonn(),
-                gjeldendeInnhold.getOtpSats())) {
+        if(!this.hentBeregningStrategi().nødvendigeFelterErUtfylt(this)){
             return false;
         }
         // Statuser som skal få tilskuddsperioder
@@ -1229,7 +1222,7 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
     }
 
     public void lagNyBehandletIArenaTilskuddsperiodeFraAnnullertPeriode(TilskuddPeriode annullertTilskuddPeriode) {
-        krevEnAvTiltakstyper(Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
+        krevEnAvTiltakstyper(Tiltakstype.VTAO, Tiltakstype.MIDLERTIDIG_LONNSTILSKUDD, Tiltakstype.VARIG_LONNSTILSKUDD, Tiltakstype.SOMMERJOBB);
         if (annullertTilskuddPeriode.getStatus() != TilskuddPeriodeStatus.ANNULLERT) {
             throw new FeilkodeException(Feilkode.TILSKUDDSPERIODE_ER_ALLEREDE_BEHANDLET);
         }

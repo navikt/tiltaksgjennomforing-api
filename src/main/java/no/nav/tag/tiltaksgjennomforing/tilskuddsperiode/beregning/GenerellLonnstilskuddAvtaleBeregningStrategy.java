@@ -4,9 +4,9 @@ import no.nav.tag.tiltaksgjennomforing.avtale.Avtale;
 import no.nav.tag.tiltaksgjennomforing.avtale.AvtaleInnhold;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriode;
 import no.nav.tag.tiltaksgjennomforing.avtale.TilskuddPeriodeStatus;
-import no.nav.tag.tiltaksgjennomforing.avtale.Tiltakstype;
 import no.nav.tag.tiltaksgjennomforing.exceptions.Feilkode;
 import no.nav.tag.tiltaksgjennomforing.exceptions.FeilkodeException;
+import no.nav.tag.tiltaksgjennomforing.utils.Utils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -19,19 +19,18 @@ import static no.nav.tag.tiltaksgjennomforing.utils.Utils.fikseLøpenumre;
 
 public class GenerellLonnstilskuddAvtaleBeregningStrategy implements LonnstilskuddAvtaleBeregningStrategy {
 
-    public void genererNyeTilskuddsperioder(Avtale avtale){
+    public void genererNyeTilskuddsperioder(Avtale avtale) {
         if (avtale.erAvtaleInngått()) {
             throw new FeilkodeException(Feilkode.KAN_IKKE_LAGE_NYE_TILSKUDDSPRIODER_INNGAATT_AVTALE);
         }
         List<TilskuddPeriode> tilskuddsperioder = new ArrayList<>();
         avtale.getTilskuddPeriode().removeIf(t -> (t.getStatus() == TilskuddPeriodeStatus.UBEHANDLET) || (t.getStatus() == TilskuddPeriodeStatus.BEHANDLET_I_ARENA));
         AvtaleInnhold gjeldendeInnhold = avtale.getGjeldendeInnhold();
-        Tiltakstype tiltakstype = avtale.getTiltakstype();
 
         if (erIkkeTomme(gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato(), gjeldendeInnhold.getSumLonnstilskudd())) {
-            tilskuddsperioder = hentTilskuddsperioderForPeriode(avtale,gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
+            tilskuddsperioder = hentTilskuddsperioderForPeriode(avtale, gjeldendeInnhold.getStartDato(), gjeldendeInnhold.getSluttDato());
             if (avtale.getArenaRyddeAvtale() != null) {
-                LocalDate standardMigreringsdato = LocalDate.of(2023, 02, 01);
+                LocalDate standardMigreringsdato = LocalDate.of(2023, 2, 1);
                 LocalDate migreringsdato = avtale.getArenaRyddeAvtale().getMigreringsdato() != null ? avtale.getArenaRyddeAvtale().getMigreringsdato() : standardMigreringsdato;
 
                 tilskuddsperioder.forEach(periode -> {
@@ -46,6 +45,7 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         fikseLøpenumre(tilskuddsperioder, 1);
         avtale.leggtilNyeTilskuddsperioder(tilskuddsperioder);
     }
+
     public void endreBeregning(Avtale avtale, EndreTilskuddsberegning endreTilskuddsberegning) {
         AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
         avtaleInnhold.setArbeidsgiveravgift(endreTilskuddsberegning.getArbeidsgiveravgift());
@@ -55,7 +55,7 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         reberegnTotal(avtale);
     }
 
-    public void reberegnTotal(Avtale avtale ) {
+    public void reberegnTotal(Avtale avtale) {
         AvtaleInnhold avtaleInnhold = avtale.getGjeldendeInnhold();
         BigDecimal feriepengerBelop = getFeriepengerBelop(avtaleInnhold.getFeriepengesats(), avtaleInnhold.getManedslonn());
         BigDecimal obligTjenestepensjon = getBeregnetOtpBelop(toBigDecimal(avtaleInnhold.getOtpSats()), avtaleInnhold.getManedslonn(), feriepengerBelop);
@@ -70,6 +70,19 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         avtaleInnhold.setSumLonnsutgifter(sumLonnsutgifter);
         avtaleInnhold.setSumLonnstilskudd(sumlønnTilskudd);
         avtaleInnhold.setManedslonn100pst(månedslønnFullStilling);
+    }
+
+    @Override
+    public boolean nødvendigeFelterErUtfylt(Avtale avtale) {
+        var gjeldendeInnhold = avtale.getGjeldendeInnhold();
+        return Utils.erIkkeTomme(
+                gjeldendeInnhold.getStartDato(),
+                gjeldendeInnhold.getSluttDato(),
+                gjeldendeInnhold.getSumLonnstilskudd(),
+                gjeldendeInnhold.getLonnstilskuddProsent(),
+                gjeldendeInnhold.getArbeidsgiveravgift(),
+                gjeldendeInnhold.getManedslonn(),
+                gjeldendeInnhold.getOtpSats());
     }
 
     public List<TilskuddPeriode> hentTilskuddsperioderForPeriode(Avtale avtale, LocalDate startDato, LocalDate sluttDato) {
@@ -91,7 +104,7 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
     }
 
 
-    private Integer convertBigDecimalToInt(BigDecimal value){
+    private Integer convertBigDecimalToInt(BigDecimal value) {
         return value == null ? null : value.setScale(0, RoundingMode.HALF_UP).intValue();
     }
 
@@ -104,7 +117,7 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
 
     private BigDecimal getArbeidsgiverAvgift(Integer manedslonn, BigDecimal feriepengerBelop, BigDecimal obligTjenestepensjon, BigDecimal arbeidsgiveravgift) {
         if (erIkkeTomme(manedslonn, feriepengerBelop, obligTjenestepensjon, arbeidsgiveravgift)) {
-            return   arbeidsgiveravgift.multiply(BigDecimal.valueOf(manedslonn).add(feriepengerBelop).add(obligTjenestepensjon));
+            return arbeidsgiveravgift.multiply(BigDecimal.valueOf(manedslonn).add(feriepengerBelop).add(obligTjenestepensjon));
         }
         return null;
     }
@@ -123,8 +136,8 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         return null;
     }
 
-    private BigDecimal toBigDecimal (Double value) {
-        if(value == null){
+    private BigDecimal toBigDecimal(Double value) {
+        if (value == null) {
             return null;
         }
         return BigDecimal.valueOf(value);
@@ -141,10 +154,9 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
         if (sumLonnsutgifter == null || lonnstilskuddProsent == null) {
             return null;
         }
-        double lonnstilskuddProsentSomDecimal = lonnstilskuddProsent != null ? (lonnstilskuddProsent.doubleValue() / 100) : 0;
+        double lonnstilskuddProsentSomDecimal = lonnstilskuddProsent.doubleValue() / 100;
         return (int) Math.round(sumLonnsutgifter * lonnstilskuddProsentSomDecimal);
     }
-
 
 
     public LocalDate getDatoForRedusertProsent(LocalDate startDato, LocalDate sluttDato, Integer lonnstilskuddprosent) {
