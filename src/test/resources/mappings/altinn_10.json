@@ -7,7 +7,7 @@
         "urlPath": "/altinn-tilgangsstyring/ekstern/altinn/api/serviceowner/reportees",
         "queryParameters": {
           "subject": {
-            "matches": "^1\\d{10}$"
+            "matches": "^1[0-57-9]\\d{9}$"
           },
           "serviceCode": {
             "absent": true
@@ -87,7 +87,7 @@
         "urlPath": "/altinn-tilgangsstyring/ekstern/altinn/api/serviceowner/reportees",
         "queryParameters": {
           "subject": {
-            "matches": "^1\\d{10}$"
+            "matches": "^1[0-57-9]\\d{9}$"
           },
           "serviceCode": {
             "equalTo": "5332"
@@ -128,7 +128,7 @@
         "urlPath": "/altinn-tilgangsstyring/ekstern/altinn/api/serviceowner/reportees",
         "queryParameters": {
           "subject": {
-            "matches": "^1\\d{10}$"
+            "matches": "^1[0-57-9]\\d{9}$"
           },
           "serviceCode": {
             "equalTo": "5516"
@@ -177,7 +177,7 @@
         "urlPath": "/altinn-tilgangsstyring/ekstern/altinn/api/serviceowner/reportees",
         "queryParameters": {
           "subject": {
-            "matches": "^1\\d{10}$"
+            "matches": "^1[0-57-9]\\d{9}$"
           },
           "serviceCode": {
             "equalTo": "5516"
@@ -226,13 +226,13 @@
         "urlPath": "/altinn-tilgangsstyring/ekstern/altinn/api/serviceowner/reportees",
         "queryParameters": {
           "subject": {
-            "matches": "^1\\d{10}$"
+            "matches": "^1[0-57-9]\\d{9}$"
           },
           "serviceCode": {
             "equalTo": "5516"
           },
           "serviceEdition": {
-            "matches": "3|4|5|6"
+            "matches": "3|4|5|6|7"
           }
         }
       },
