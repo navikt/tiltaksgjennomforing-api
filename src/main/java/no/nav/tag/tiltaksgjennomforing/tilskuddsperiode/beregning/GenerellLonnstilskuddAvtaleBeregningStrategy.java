@@ -75,7 +75,7 @@ public class GenerellLonnstilskuddAvtaleBeregningStrategy implements Lonnstilsku
     @Override
     public boolean nødvendigeFelterErUtfylt(Avtale avtale) {
         var gjeldendeInnhold = avtale.getGjeldendeInnhold();
-        return !Utils.erNoenTomme(
+        return Utils.erIkkeTomme(
                 gjeldendeInnhold.getStartDato(),
                 gjeldendeInnhold.getSluttDato(),
                 gjeldendeInnhold.getSumLonnstilskudd(),

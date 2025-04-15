@@ -20,7 +20,7 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilsk
     @Override
     public boolean nødvendigeFelterErUtfylt(Avtale avtale) {
         var gjeldendeInnhold = avtale.getGjeldendeInnhold();
-        return !Utils.erNoenTomme(
+        return Utils.erIkkeTomme(
                 gjeldendeInnhold.getStartDato(),
                 gjeldendeInnhold.getSluttDato());
     }
@@ -44,8 +44,6 @@ public class VTAOLonnstilskuddAvtaleBeregningStrategy extends GenerellLonnstilsk
                 }
 
                 tilskuddsperioder.forEach(periode -> {
-                    // Set status BEHANDLET_I_ARENA på tilskuddsperioder før migreringsdato
-                    // Eller skal det være startdato? Er jo den samme datoen som migreringsdato. hmm...
                     if (periode.getSluttDato().minusDays(1).isBefore(migreringsdato)) {
                         periode.setStatus(TilskuddPeriodeStatus.BEHANDLET_I_ARENA);
                     }
