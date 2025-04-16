@@ -45,13 +45,7 @@ public final class FakeUnleash extends io.getunleash.FakeUnleash {
         updateTogglesFromRequest();
         return super.getVariant(toggleName, defaultValue);
     }
-/*
-    @Override
-    public List<String> getFeatureToggleNames() {
-        updateTogglesFromRequest();
-        return super.getFeatureToggleNames();
-    }
-*/
+
     private void updateTogglesFromRequest() {
         if (miljo.contains(Miljø.TEST)) {
             return;

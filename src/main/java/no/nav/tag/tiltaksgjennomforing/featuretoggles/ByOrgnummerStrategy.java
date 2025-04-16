@@ -32,10 +32,6 @@ public class ByOrgnummerStrategy implements Strategy {
     }
 
 
-    public boolean isEnabled(Map<String, String> map) {
-        return false;
-    }
-
     @Override
     public boolean isEnabled(Map<String, String> parameters, UnleashContext unleashContext) {
         return unleashContext.getUserId()
