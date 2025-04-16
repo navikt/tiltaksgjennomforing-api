@@ -1491,13 +1491,10 @@ public class Avtale extends AbstractAggregateRoot<Avtale> implements AuditerbarE
         gjeldendeInnhold = getGjeldendeInnhold().nyGodkjentVersjon(AvtaleInnholdType.ENDRE_INKLUDERINGSTILSKUDD);
 
         List<Inkluderingstilskuddsutgift> nyeInkluderingstilskuddsutgifter = endreInkluderingstilskudd.getInkluderingstilskuddsutgift()
-                .stream()
-                .filter(e -> e.getId() == null)
-                .map(m -> new Inkluderingstilskuddsutgift()
-                        .setId(UUID.randomUUID())
-                        .setBeløp(m.getBeløp())
-                        .setType(m.getType()))
-                .toList();
+            .stream()
+            .filter(e -> e.getId() == null)
+            .map(Inkluderingstilskuddsutgift::new)
+            .toList();
 
         getGjeldendeInnhold().getInkluderingstilskuddsutgift().addAll(nyeInkluderingstilskuddsutgifter);
         getGjeldendeInnhold().getInkluderingstilskuddsutgift().forEach(i -> i.setAvtaleInnhold(getGjeldendeInnhold()));

@@ -33,7 +33,7 @@ public class Vtao {
     }
 
     public Vtao(Vtao vtao) {
-        id = UUID.randomUUID();
+        this.id = null;
         this.fadderFornavn = vtao.fadderFornavn;
         this.fadderEtternavn = vtao.fadderEtternavn;
         this.fadderTlf = vtao.fadderTlf;
@@ -41,7 +41,6 @@ public class Vtao {
     }
 
     public Vtao(VtaoFelter vtao, AvtaleInnhold avtaleInnhold) {
-        id = UUID.randomUUID();
         this.fadderFornavn = vtao.fadderFornavn();
         this.fadderEtternavn = vtao.fadderEtternavn();
         this.fadderTlf = vtao.fadderTlf();
