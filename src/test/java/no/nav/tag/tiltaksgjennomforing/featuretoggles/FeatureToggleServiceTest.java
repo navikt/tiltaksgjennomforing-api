@@ -30,20 +30,20 @@ public class FeatureToggleServiceTest {
     @Test
     public void hentFeatureToggles__skal_returnere_true_hvis_feature_er_på() {
         when(unleash.isEnabled(eq("feature_som_er_på"), any(UnleashContext.class))).thenReturn(true);
-        Map<String, Boolean> toggles = featureToggleService.hentFeatureToggles(Arrays.asList("feature_som_er_på"));
+        Map<String, Boolean> toggles = featureToggleService.hentFeatureToggles(List.of("feature_som_er_på"));
         assertThat(toggles.get("feature_som_er_på")).isTrue();
     }
 
     @Test
     public void hentFeatureToggles__skal_returnere_false_hvis_feature_er_av() {
         when(unleash.isEnabled(eq("feature_som_er_av"), any(UnleashContext.class))).thenReturn(false);
-        Map<String, Boolean> toggles = featureToggleService.hentFeatureToggles(Arrays.asList("feature_som_er_av"));
+        Map<String, Boolean> toggles = featureToggleService.hentFeatureToggles(List.of("feature_som_er_av"));
         assertThat(toggles.get("feature_som_er_av")).isFalse();
     }
 
     @Test
     public void hentFeatureToggles__skal_returnere_false_hvis_feature_ikke_finnes() {
-        Map<String, Boolean> toggles = featureToggleService.hentFeatureToggles(Arrays.asList("feature_som_ikke_finnes"));
+        Map<String, Boolean> toggles = featureToggleService.hentFeatureToggles(List.of("feature_som_ikke_finnes"));
         assertThat(toggles.get("feature_som_ikke_finnes")).isFalse();
     }
 

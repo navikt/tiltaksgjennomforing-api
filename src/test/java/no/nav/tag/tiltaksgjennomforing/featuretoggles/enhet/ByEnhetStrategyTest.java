@@ -18,8 +18,8 @@ import static org.mockito.Mockito.when;
 
 public class ByEnhetStrategyTest {
 
-    private AxsysService axsysService = mock(AxsysService.class);
-    private UnleashContext unleashContext = UnleashContext.builder().userId("X123456").build();
+    private final AxsysService axsysService = mock(AxsysService.class);
+    private final UnleashContext unleashContext = UnleashContext.builder().userId("X123456").build();
 
     @Test
     public void skal_være_disablet_hvis_innlogget_med_fødselsnummer() {
