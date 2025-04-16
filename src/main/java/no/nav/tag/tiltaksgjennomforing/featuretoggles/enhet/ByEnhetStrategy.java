@@ -28,11 +28,6 @@ public class ByEnhetStrategy implements Strategy {
 
     @Override
     public boolean isEnabled(Map<String, String> parameters, UnleashContext unleashContext) {
-        return false;
-    }
-
-    @Override
-    public boolean isEnabled(Map<String, String> parameters, UnleashContext unleashContext) {
         return unleashContext.getUserId()
                 .flatMap(currentUserId -> Optional.ofNullable(parameters.get(PARAM))
                         .map(enheterString -> Set.of(enheterString.split(",\\s?")))
