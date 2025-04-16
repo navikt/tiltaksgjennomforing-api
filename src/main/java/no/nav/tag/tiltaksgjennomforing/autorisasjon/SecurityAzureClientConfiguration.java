@@ -34,15 +34,6 @@ public class SecurityAzureClientConfiguration {
     }
 
     @Bean
-    public OAuth2ClientRequestInterceptor oAuth2ClientRequestInterceptor(
-        ClientConfigurationProperties properties,
-        OAuth2AccessTokenService service,
-        ClientConfigurationPropertiesMatcher matcher
-    ) {
-        return new OAuth2ClientRequestInterceptor(properties, service, matcher);
-    }
-
-    @Bean
     public ClientConfigurationPropertiesMatcher clientConfigurationPropertiesMatcher() {
         return new ClientConfigurationPropertiesMatcher() {
             @Nullable
