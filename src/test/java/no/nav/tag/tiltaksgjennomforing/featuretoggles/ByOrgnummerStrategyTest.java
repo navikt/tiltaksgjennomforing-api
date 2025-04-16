@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class ByOrgnummerStrategyTest {
 
-    private UnleashContext unleashContext = UnleashContext.builder().userId("12345678901").build();
+    private final UnleashContext unleashContext = UnleashContext.builder().userId("12345678901").build();
 
     @Mock
     AltinnTilgangsstyringService altinnTilgangsstyringService;
@@ -51,8 +51,6 @@ public class ByOrgnummerStrategyTest {
     @Test
     public void navIdent_skal_returnere_false() {
         UnleashContext unleashContext = UnleashContext.builder().userId("J154200").build();
-        Set<AltinnReportee> orgSet = new HashSet<>();
-        orgSet.add(new AltinnReportee("", "AS", null, "999999998", "", "", null));
         assertThat(new ByOrgnummerStrategy(altinnTilgangsstyringService).isEnabled(Map.of(ByOrgnummerStrategy.UNLEASH_PARAMETER_ORGNUMRE, "999999999"), unleashContext)).isFalse();
         verify(altinnTilgangsstyringService, never()).hentAltinnOrganisasjoner(any(), any());
     }
@@ -70,8 +68,6 @@ public class ByOrgnummerStrategyTest {
     @Test
     public void skal_være_disablet_hvis_feil_ved_oppslag_i_altinn() {
         Fnr fnr = new Fnr("12345678901");
-        Set<AltinnReportee> orgSet = new HashSet<>();
-        orgSet.add(new AltinnReportee("", "AS", null, "999999998", "", "", null));
 
         when(altinnTilgangsstyringService.hentAltinnOrganisasjoner(fnr, () -> "")).thenThrow(RuntimeException.class);
         assertThat(new ByOrgnummerStrategy(altinnTilgangsstyringService).isEnabled(Map.of(ByOrgnummerStrategy.UNLEASH_PARAMETER_ORGNUMRE, "999999999"), unleashContext)).isFalse();
