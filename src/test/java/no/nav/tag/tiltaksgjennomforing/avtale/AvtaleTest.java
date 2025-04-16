@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.io.Console;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -1908,5 +1909,67 @@ public class AvtaleTest {
         avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
         avtale.togglegodkjennEtterregistrering(TestData.enNavIdent());
     }
+
+
+    @Test
+    public void skal_ikke_oppdatere_kvalifiseringsgruppe_ved_forlengelse_av_inngått_avtale() {
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
+        avtale.godkjennForDeltaker(TestData.etFodselsnummer());
+        Veileder veileder = TestData.enVeileder(avtale);
+        veileder.godkjennAvtale(Instant.now(), avtale);
+        avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), TestData.ENHET_OPPFØLGING.getVerdi());
+        assertThat(avtale.erAvtaleInngått()).isTrue();
+
+        assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        veileder.forlengAvtale(avtale.getGjeldendeInnhold().getSluttDato().plusDays(1), avtale);
+        assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+    }
+    @Test
+    public void skal_ikke_oppdatere_kvalifiseringsgruppe_ved_oppdatereEnheterEtterForespørsel() {
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
+        avtale.godkjennForDeltaker(TestData.etFodselsnummer());
+        Veileder veileder = TestData.enVeileder(avtale);
+        veileder.godkjennAvtale(Instant.now(), avtale);
+        avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), TestData.ENHET_OPPFØLGING.getVerdi());
+        assertThat(avtale.erAvtaleInngått()).isTrue();
+
+        assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+        veileder.oppdatereEnheterEtterForespørsel(avtale);
+        assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+    }
+    @Test
+    public void skal_ikke_oppdatere_kvalifiseringsgruppe_ved_noen_endringer_etter_inngått_avtale() {
+        Avtale avtale = TestData.enMidlertidigLonnstilskuddAvtaleMedAltUtfylt();
+        avtale.godkjennForArbeidsgiver(TestData.enIdentifikator());
+        avtale.godkjennForDeltaker(TestData.etFodselsnummer());
+        Veileder veileder = TestData.enVeileder(avtale);
+        veileder.godkjennAvtale(Instant.now(), avtale);
+        avtale.godkjennTilskuddsperiode(TestData.enNavIdent2(), TestData.ENHET_OPPFØLGING.getVerdi());
+        assertThat(avtale.erAvtaleInngått()).isTrue();
+
+        assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+
+        //Endre kontaktinformasjon
+        veileder.endreKontaktinfo(new EndreKontaktInformasjon("Geir", "Geirsen", "123", "per", "persen", "123", "lars", "larsen", "123", null), avtale);
+        // Forkorte avtale
+        veileder.forkortAvtale(avtale, avtale.getGjeldendeInnhold().getSluttDato().minusDays(1), "lala", null);
+        // Forlenge avtale
+        veileder.forlengAvtale(avtale.getGjeldendeInnhold().getSluttDato().plusDays(1), avtale);
+        // Endre stillingsbeskrivelse
+        veileder.endreStillingbeskrivelse(new EndreStillingsbeskrivelse("Oppfølgingssjef", "Følge opp", 123, 321, 100, 5), avtale);
+        // Endre oppfølging og tilrettelegging
+        veileder.endreOppfølgingOgTilrettelegging(new EndreOppfølgingOgTilrettelegging("Litt", "Noe"), avtale);
+        // Endre tilskuddsberegning
+        veileder.endreTilskuddsberegning(new EndreTilskuddsberegning(10000, new BigDecimal("0.12"), new BigDecimal("0.10"), 0.10), avtale);
+        // Oppdater oppfølgingsenhet
+        veileder.oppdatereEnheterEtterForespørsel(avtale);
+
+
+        assertThat(avtale.getKvalifiseringsgruppe()).isEqualTo(Kvalifiseringsgruppe.SITUASJONSBESTEMT_INNSATS);
+    }
+
+
 
 }
