@@ -10,14 +10,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.ToString;
-import lombok.experimental.Accessors;
 import lombok.experimental.FieldNameConstants;
 
 import java.util.UUID;
 
 @Data
 @Entity
-@Accessors(chain = true)
 @FieldNameConstants
 public class Inkluderingstilskuddsutgift {
     @Id
@@ -35,8 +33,9 @@ public class Inkluderingstilskuddsutgift {
     public Inkluderingstilskuddsutgift() {}
 
     public Inkluderingstilskuddsutgift(Inkluderingstilskuddsutgift utgift) {
-        id = UUID.randomUUID();
+        id = null;
         beløp = utgift.beløp;
         type = utgift.type;
+        avtaleInnhold = null;
     }
 }

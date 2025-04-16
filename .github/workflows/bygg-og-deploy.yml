@@ -33,7 +33,7 @@ jobs:
         uses: nais/docker-build-push@v0
         id: docker-build-push
         with:
-          byosbom: target/bom.json
+          byosbom: target/classes/META-INF/sbom/application.cdx.json
           team: arbeidsgiver
 
   deploy-dev:
