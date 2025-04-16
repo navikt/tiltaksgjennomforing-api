@@ -678,7 +678,7 @@ public class TestData {
     public static EndreInkluderingstilskudd endringMedNyeInkluderingstilskudd(List<Inkluderingstilskuddsutgift> eksisterendeUtgifter) {
         EndreInkluderingstilskudd endreInkluderingstilskudd = new EndreInkluderingstilskudd();
         endreInkluderingstilskudd.getInkluderingstilskuddsutgift().addAll(eksisterendeUtgifter);
-        endreInkluderingstilskudd.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgiftUtenId(13337, InkluderingstilskuddsutgiftType.PROGRAMVARE));
+        endreInkluderingstilskudd.getInkluderingstilskuddsutgift().add(TestData.enInkluderingstilskuddsutgift(13337, InkluderingstilskuddsutgiftType.PROGRAMVARE));
         return endreInkluderingstilskudd;
     }
 
@@ -950,14 +950,6 @@ public class TestData {
     }
 
     public static Inkluderingstilskuddsutgift enInkluderingstilskuddsutgift(Integer beløp, InkluderingstilskuddsutgiftType type) {
-        Inkluderingstilskuddsutgift i = new Inkluderingstilskuddsutgift();
-        i.setId(UUID.randomUUID());
-        i.setBeløp(beløp);
-        i.setType(type);
-        return i;
-    }
-
-    public static Inkluderingstilskuddsutgift enInkluderingstilskuddsutgiftUtenId(Integer beløp, InkluderingstilskuddsutgiftType type) {
         Inkluderingstilskuddsutgift i = new Inkluderingstilskuddsutgift();
         i.setBeløp(beløp);
         i.setType(type);
