@@ -20,25 +20,25 @@ import java.util.UUID;
 @Slf4j
 public class AvtaleHendelseAdminController {
 
-    private final AvtaleHendelseService avtaleHendelseService;
+    private final AvtaleHendelsePatchService avtaleHendelsePatchService;
     private final AvtaleRepository avtaleRepository;
 
     @PostMapping("send-melding-en-avtale/{avtaleId}")
     public void sendMeldingForEnAvtale(@PathVariable("avtaleId") UUID avtaleId) {
         log.info("Sender hendelsemelding for en avtale {}", avtaleId);
         Avtale avtale = avtaleRepository.findById(avtaleId).orElseThrow(RessursFinnesIkkeException::new);
-        avtaleHendelseService.sendAvtaleHendelseMeldingPåEnAvtale(avtale);
+        avtaleHendelsePatchService.sendAvtaleHendelseMeldingPåEnAvtale(avtale);
     }
 
     @PostMapping("dry-send-melding-alle-avtaler")
     public void drySendMeldingAlleAvtaler() {
         log.info("DRY - Sender alle avtaler som hendelsemeldinger på topic");
-        avtaleHendelseService.sendAvtaleHendelseMeldingPåAlleAvtalerDRYRun();
+        avtaleHendelsePatchService.sendAvtaleHendelseMeldingPåAlleAvtalerDRYRun();
     }
 
     @PostMapping("send-melding-alle-avtaler")
     public void sendMeldingAlleAvtaler() {
         log.info("Sender alle avtaler som hendelsemeldinger på topic");
-        avtaleHendelseService.sendAvtaleHendelseMeldingPåAlleAvtaler();
+        avtaleHendelsePatchService.sendAvtaleHendelseMeldingPåAlleAvtaler();
     }
 }
