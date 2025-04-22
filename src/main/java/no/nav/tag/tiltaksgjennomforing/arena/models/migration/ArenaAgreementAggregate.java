@@ -86,15 +86,15 @@ public class ArenaAgreementAggregate {
     public boolean isSluttdatoBeforeStartdato() {
         return findSluttdato()
             .map(dato -> findStartdato().filter(dato::isBefore).isPresent())
-            .orElse(false);
+            .orElse(true);
     }
 
     public boolean isDeltakerOver72AarFraSluttDato() {
-        return getFnr().map(fnr -> findSluttdato().map(fnr::erOver72ÅrFraSluttDato).orElse(false)).orElse(false);
+        return getFnr().map(fnr -> findSluttdato().map(fnr::erOver72ÅrFraSluttDato).orElse(true)).orElse(true);
     }
 
     public boolean isSluttdatoIDagEllerFremtiden() {
-        return findSluttdato().map(sluttdato -> sluttdato.isAfter(LocalDate.now().minusDays(1))).orElse(false);
+        return findSluttdato().map(sluttdato -> sluttdato.isAfter(LocalDate.now().minusDays(1))).orElse(true);
     }
 
     public boolean isDublett() {
@@ -124,13 +124,9 @@ public class ArenaAgreementAggregate {
     }
 
     public Optional<BedriftNr> getVirksomhetsnummer() {
-        try {
-            return !Strings.isNullOrEmpty(virksomhetsnummer)
-                ? Optional.of(BedriftNr.av(virksomhetsnummer))
-                : Optional.empty();
-        } catch (TiltaksgjennomforingException e) {
-            return Optional.empty();
-        }
+        return !Strings.isNullOrEmpty(virksomhetsnummer)
+            ? Optional.of(BedriftNr.av(virksomhetsnummer))
+            : Optional.empty();
     }
 
     public Optional<UUID> getEksternIdAsUuid() throws IllegalArgumentException {

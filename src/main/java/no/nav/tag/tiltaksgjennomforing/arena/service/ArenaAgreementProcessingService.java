@@ -214,13 +214,15 @@ public class ArenaAgreementProcessingService {
                     return new ArenaMigrationProcessResult.Failed(validationAction.get());
                 }
 
-                EndreAvtaleArena endreAvtale = EndreAvtaleArena.builder()
+                EndreAvtaleArena.EndreAvtaleArenaBuilder endreAvtaleBuilder = EndreAvtaleArena.builder()
                     .startdato(agreementAggregate.findStartdato().orElse(null))
-                    .sluttdato(agreementAggregate.findSluttdato().orElse(null))
                     .antallDagerPerUke(agreementAggregate.getAntallDagerPrUke().orElse(null))
                     .stillingprosent(agreementAggregate.getProsentDeltid().orElse(null))
-                    .handling(EndreAvtaleArena.Handling.map(action))
-                    .build();
+                    .handling(EndreAvtaleArena.Handling.map(action));
+
+                if (!agreementAggregate.isSluttdatoBeforeStartdato() && !agreementAggregate.isDeltakerOver72AarFraSluttDato()) {
+                    endreAvtaleBuilder.sluttdato(agreementAggregate.findSluttdato().orElse(null));
+                }
 
                 log.info(
                     "Avtale med id {} og status {} har tiltakstatus {} og deltakerstatus {} i Arena. {}.",
@@ -236,7 +238,7 @@ public class ArenaAgreementProcessingService {
                     }
                 );
 
-                avtale.endreAvtaleArena(endreAvtale);
+                avtale.endreAvtaleArena(endreAvtaleBuilder.build());
                 return new ArenaMigrationProcessResult.Completed(action, avtale);
             }
             default -> throw new IllegalStateException("Ugyldig handling " + action + " for oppdatering av avtale");
