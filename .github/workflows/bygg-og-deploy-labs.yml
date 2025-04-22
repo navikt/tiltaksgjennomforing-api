@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Bygg
+    name: Bygg og deploy applikasjon
     permissions:
       contents: read
       id-token: write
@@ -35,10 +35,9 @@ jobs:
           byosbom: target/classes/META-INF/sbom/application.cdx.json
           team: arbeidsgiver
 
-  deploy-gcp-labs:
-    name: Deploy til gcp (gamle labs)
+  build-push-wiremock-image:
     runs-on: ubuntu-latest
-    needs: build
+    name: 'Bygg og push Wiremock-image'
     permissions:
       contents: read
       id-token: write
@@ -46,16 +45,50 @@ jobs:
       - name: Sjekk ut kode
         uses: actions/checkout@v4
 
-      - name: Generer tiltaksgjennomforing-wiremock configmap
-        run: |
-          curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl"
-          chmod +x ./kubectl
-          ./kubectl create configmap --dry-run=client -o yaml --from-file src/test/resources/mappings -n arbeidsgiver tiltaksgjennomforing-wiremock > nais/wiremock-mappings.yaml
-          cat nais/wiremock-mappings.yaml # debug
+      - name: Push Docker Image to GAR
+        uses: nais/docker-build-push@v0
+        id: docker-build-push
+        with:
+          image_suffix: wiremock
+          team: arbeidsgiver
+          dockerfile: DockerfileWiremock
+    outputs:
+      image: ${{ steps.docker-build-push.outputs.image }}
+
+  deploy-wiremock:
+    needs: build-push-wiremock-image
+    name: 'Deploy Wiremock to dev-gcp'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Sjekk ut kode
+        uses: actions/checkout@v4
+
+      - name: Deploy til gcp
+        uses: nais/deploy/actions/deploy@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CLUSTER: dev-gcp
+          TEAM: arbeidsgiver
+          RESOURCE: "nais/wiremock.yaml"
+          VAR: image=${{ needs.build-push-wiremock-image.outputs.image }}
+
+  deploy-gcp-labs:
+    name: Deploy applikasjon til gcp (gamle labs)
+    runs-on: ubuntu-latest
+    needs: [ build, deploy-wiremock ]
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Sjekk ut kode
+        uses: actions/checkout@v4
 
       - name: Deploy til gcp
         uses: nais/deploy/actions/deploy@v2
         env:
           CLUSTER: dev-gcp
-          RESOURCE: nais/dev-gcp-labs.yaml,nais/wiremock.yaml,nais/wiremock-mappings.yaml
+          RESOURCE: nais/dev-gcp-labs.yaml
           VAR: image=${{ needs.build.outputs.image }},deploytrigger=${{ github.run_number }}
