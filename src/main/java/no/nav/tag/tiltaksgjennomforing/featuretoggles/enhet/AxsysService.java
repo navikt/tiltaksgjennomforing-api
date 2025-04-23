@@ -33,8 +33,14 @@ public class AxsysService {
     @Cacheable(CacheConfig.AXSYS_CACHE)
     public List<NavEnhet> hentEnheterNavAnsattHarTilgangTil(NavIdent ident) {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Nav-Call-Id", CorrelationIdSupplier.get());
-        headers.set("Nav-Consumer-Id", navConsumerId);
+        var callId = CorrelationIdSupplier.get();
+        if (callId != null) {
+            headers.set("Nav-Call-Id", callId);
+        }
+        var consumerId = navConsumerId;
+        if (consumerId != null) {
+            headers.set("Nav-Consumer-Id", consumerId);
+        }
 
         try {
             AxsysRespons respons = restTemplate.exchange(
