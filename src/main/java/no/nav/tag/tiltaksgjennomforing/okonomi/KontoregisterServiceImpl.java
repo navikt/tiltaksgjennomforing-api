@@ -15,8 +15,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.Map;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -25,40 +24,48 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @ConditionalOnPropertyNotEmpty("tiltaksgjennomforing.kontoregister.realClient")
 public class KontoregisterServiceImpl implements KontoregisterService {
 
-    private final KontoregisterProperties kontoregisterProperties;
     private final RestTemplate azureRestTemplate;
+    private final String baseUrl;
+    private final String navConsumerId;
 
     public KontoregisterServiceImpl(
         RestTemplate azureRestTemplate,
         KontoregisterProperties kontoregisterProperties
     ) {
         this.azureRestTemplate = azureRestTemplate;
-        this.kontoregisterProperties = kontoregisterProperties;
+        this.baseUrl = kontoregisterProperties.getUri();
+        this.navConsumerId = kontoregisterProperties.getConsumerId();
     }
 
     public String hentKontonummer(String bedriftNr) {
         try {
             ResponseEntity<KontoregisterResponse> response = azureRestTemplate.exchange(
-                    new URI(String.format("%s/%s", kontoregisterProperties.getUri(), bedriftNr)),
-                    HttpMethod.GET,
-                    lagRequest(),
-                    KontoregisterResponse.class);
+                baseUrl + "/{bedriftNr}",
+                HttpMethod.GET,
+                lagRequest(),
+                KontoregisterResponse.class,
+                Map.of("bedriftNr", bedriftNr)
+            );
             return response.getBody().getKontonr();
 
-        } catch (RestClientException | URISyntaxException exception) {
+        } catch (RestClientException exception) {
             if (exception instanceof HttpClientErrorException hcee) {
                 if (hcee.getStatusCode() == NOT_FOUND) {
                     throw new KontoregisterFantIkkeBedriftFeilException();
                 }
             }
-            log.error(String.format("Feil fra kontoregister med request-url: %s/%s", kontoregisterProperties.getUri(), bedriftNr), exception);
+            log.error(
+                "Feil fra kontoregister for bedriftNr={}",
+                bedriftNr,
+                exception
+            );
             throw new KontoregisterFeilException();
         }
     }
 
     private HttpEntity<String> lagRequest() {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Nav-consumer-Id", kontoregisterProperties.getConsumerId());
+        headers.set("Nav-consumer-Id", navConsumerId);
         headers.set("Nav-Call-Id", CorrelationIdSupplier.get());
         headers.setContentType(MediaType.APPLICATION_JSON);
         return new HttpEntity<>(headers);

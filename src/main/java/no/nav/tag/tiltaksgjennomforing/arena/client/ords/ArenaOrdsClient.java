@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Component
 public class ArenaOrdsClient {
-    private String baseUrl;
+    private final String baseUrl;
     private final RestTemplate restTemplate;
     private final ArenaOrdsTokenClient tokenClient;
 

@@ -13,36 +13,37 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @Slf4j
 public class AxsysService {
-    private final AxsysProperties axsysProperties;
+    private final String baseUrl;
+    private final String navConsumerId;
     private final RestTemplate restTemplate;
 
     public AxsysService(AxsysProperties axsysProperties, RestTemplate noAuthRestTemplate) {
-        this.axsysProperties = axsysProperties;
+        this.baseUrl = axsysProperties.getUri().toString();
+        this.navConsumerId = axsysProperties.getNavConsumerId();
         this.restTemplate = noAuthRestTemplate;
     }
 
     @Cacheable(CacheConfig.AXSYS_CACHE)
     public List<NavEnhet> hentEnheterNavAnsattHarTilgangTil(NavIdent ident) {
-        URI uri = UriComponentsBuilder.fromUri(axsysProperties.getUri())
-                .pathSegment(ident.asString())
-                .queryParam("inkluderAlleEnheter", "false")
-                .build()
-                .toUri();
-
         HttpHeaders headers = new HttpHeaders();
         headers.set("Nav-Call-Id", CorrelationIdSupplier.get());
-        headers.set("Nav-Consumer-Id", axsysProperties.getNavConsumerId());
+        headers.set("Nav-Consumer-Id", navConsumerId);
 
         try {
-            AxsysRespons respons = restTemplate.exchange(uri, HttpMethod.GET, new HttpEntity<>(headers), AxsysRespons.class).getBody();
+            AxsysRespons respons = restTemplate.exchange(
+                baseUrl + "/{navIdent}?inkluderAlleEnheter=false",
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                AxsysRespons.class,
+                Map.of("navIdent", ident.asString())
+            ).getBody();
             return respons.tilEnheter();
         } catch (HttpClientErrorException.NotFound klientfeil) {
             // Nav-identer kan mangle informasjon i Axsys
