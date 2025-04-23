@@ -94,9 +94,6 @@ no.nav.security.jwt:
 
 caches:
   caffeine:
-    - name: pdl_cache
-      expiryInMinutes: 60
-      maximumSize: 1000
     - name: norgnavn_cache
       expiryInMinutes: 60
       maximumSize: 1000
